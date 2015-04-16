@@ -1,0 +1,94 @@
+package delfos.dataset.loaders.database.mysql;
+
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.sql.SQLException;
+import delfos.dataset.basic.item.ContentDataset;
+import delfos.dataset.basic.rating.Rating;
+import delfos.dataset.basic.rating.RatingsDataset;
+import delfos.dataset.basic.rating.RelevanceCriteria;
+import delfos.dataset.storage.memory.BothIndexRatingsDataset;
+import delfos.dataset.loaders.database.DatabaseContentDataset;
+import delfos.dataset.loaders.database.DatabaseRatingsDataset;
+import delfos.dataset.basic.loader.types.ContentDatasetLoader;
+import delfos.ERROR_CODES;
+import delfos.common.exceptions.DatabaseNotReady;
+import delfos.common.exceptions.dataset.CannotLoadContentDataset;
+import delfos.common.parameters.Parameter;
+import delfos.common.parameters.ParameterListener;
+import delfos.common.parameters.restriction.BooleanParameter;
+
+/**
+ * Interfaz que define los métodos que un constructor de datasets para
+ * recomendación basada en contenido debe implementar. Carga el dataset en
+ * memoria y sólo accede a la base de datos la primera vez que se le solicitan
+ * los datasets. Las sucesivas veces que se solicite, el
+ * <code>MovilensDatasetConstructor</code> devolverá la referencia al objeto en
+ * memoria.
+ *
+* @author Jorge Castro Gallardo
+ *
+ * @version UnknownDate
+ * @version 26-Noviembre-2013
+ */
+public class DatabaseDatasetLoader extends MySQLDatabaseDatasetLoaderAbstract implements ContentDatasetLoader {
+
+    private static final long serialVersionUID = 1L;
+    private ContentDataset mcd;
+    private RatingsDataset<? extends Rating> mrd;
+    public static final Parameter cache = new Parameter("cache", new BooleanParameter(Boolean.TRUE));
+
+    public DatabaseDatasetLoader() throws DatabaseNotReady {
+        super();
+
+        addParammeterListener(new ParameterListener() {
+            @Override
+            public void parameterChanged() {
+                mcd = null;
+                mrd = null;
+            }
+        });
+    }
+
+    /**
+     * Construye el datasets de rating de una bbdd, archivo, etc.
+     *
+     * @return el datasets de ratings completo
+     */
+    @Override
+    public RatingsDataset<? extends Rating> getRatingsDataset() {
+
+        if (mrd == null) {
+            if ((Boolean) getParameterValue(cache)) {
+                DatabaseRatingsDataset databaseRatingsDataset = new DatabaseRatingsDataset(getConnection());
+                mrd = new BothIndexRatingsDataset(databaseRatingsDataset);
+            } else {
+                mrd = new DatabaseRatingsDataset(getConnection());
+            }
+        }
+        return mrd;
+    }
+
+    @Override
+    public ContentDataset getContentDataset() throws CannotLoadContentDataset {
+        if (mcd == null) {
+            try {
+                mcd = new DatabaseContentDataset(getConnection());
+            } catch (ClassNotFoundException ex) {
+                ERROR_CODES.DEPENDENCY_NOT_FOUND.exit(ex);
+            } catch (SQLException ex) {
+                ERROR_CODES.DATABASE_NOT_READY.exit(ex);
+            } catch (FileNotFoundException ex) {
+                throw new CannotLoadContentDataset(ex);
+            } catch (IOException ex) {
+                throw new CannotLoadContentDataset(ex);
+            }
+        }
+        return mcd;
+    }
+
+    @Override
+    public RelevanceCriteria getDefaultRelevanceCriteria() {
+        return new RelevanceCriteria(4);
+    }
+}

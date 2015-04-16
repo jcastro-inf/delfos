@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<ConfiguredDatasets>
+  <ConfiguredDataset name="ml-100k" description="MovieLens dataset con 100 mil valoraciones, ... usuarios y ... productos (películas). La información de contenido de las peliculas es: ..., Los atributos de los usuarios son...">
+    <DatasetLoader name="MovieLens100k" type="DATASET_LOADER">
+      <Parameter parameterName="Directory" parameterType="DirectoryParameter" value="/home/jcastro/Datasets/ml-100k" />
+      <Parameter parameterName="Index_init_genres" parameterType="IntegerParameter" minValue="0" maxValue="1000" parameterValue="5" />
+    </DatasetLoader>
+  </ConfiguredDataset>
+  <ConfiguredDataset name="ePinions" description="EPinions">
+    <DatasetLoader name="EPinionsTrustlet" type="DATASET_LOADER">
+      <Parameter parameterName="alias" parameterType="StringParameter" parameterValue="EPinions-TrustLet" />
+      <Parameter parameterName="EPINIONS_TRUSTLET_FOLDER" parameterType="DirectoryParameter" value="/home/jcastro/Datasets/ePinions/ePinions - TXT - Trustlet - Extended" />
+    </DatasetLoader>
+  </ConfiguredDataset>
+  <ConfiguredDataset name="netflix" description="Netflix dataset, with 100 million ratings.">
+    <DatasetLoader name="CSVfileDatasetLoader" type="DATASET_LOADER">
+      <Parameter parameterName="INDEXATION" parameterType="ObjectParameter" parameterValue="INDEX_BOTH" />
+      <Parameter parameterName="Content_file" parameterType="FileParameter" value="/home/jcastro/Datasets/netflix/netflix_peliculas.csv" />
+      <Parameter parameterName="Ratings_file" parameterType="FileParameter" value="/home/jcastro/Datasets/netflix/ratingsCabecera.csv" />
+      <Parameter parameterName="Users_file" parameterType="FileParameter" value="/home/jcastro/Datasets/netflix/users.csv" />
+      <Parameter parameterName="alias" parameterType="StringParameter" parameterValue="CSVfileDatasetLoader" />
+    </DatasetLoader>
+  </ConfiguredDataset>
+</ConfiguredDatasets>

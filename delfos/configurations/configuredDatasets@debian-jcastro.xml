@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<ConfiguredDatasets>
+  <ConfiguredDataset name="complete-5u-10i" description="Dataset completo para testeos.">
+    <DatasetLoader name="CSVfileDatasetLoader" type="DATASET_LOADER">
+      <Parameter parameterName="INDEXATION"   parameterType="ObjectParameter" parameterValue="INDEX_BOTH" />
+      <Parameter parameterName="Content_file" parameterType="FileParameter" value="/home/jcastro/Datasets/DatasetCompleto5U10I/content.csv" />
+      <Parameter parameterName="Ratings_file" parameterType="FileParameter" value="/home/jcastro/Datasets/DatasetCompleto5U10I/ratings.csv" />
+      <Parameter parameterName="Users_file"   parameterType="FileParameter" value="/home/jcastro/Datasets/DatasetCompleto5U10I/users.csv" />
+      <Parameter parameterName="alias" parameterType="StringParameter" parameterValue="CSVfileDatasetLoader" />
+    </DatasetLoader>
+  </ConfiguredDataset>
+  <ConfiguredDataset name="ml-100k" description="MovieLens - 100 thousands ratings.">
+    <DatasetLoader name="MovieLens100k" type="DATASET_LOADER">
+      <Parameter parameterName="Directory" parameterType="DirectoryParameter" value="/home/jcastro/Datasets/ml-100k" />
+      <Parameter parameterName="Index_init_genres" parameterType="IntegerParameter" minValue="0" maxValue="1000" parameterValue="5" />
+    </DatasetLoader>
+  </ConfiguredDataset>
+  <ConfiguredDataset name="ml-1m" description="MovieLens - 1 million ratings.">
+    <DatasetLoader name="MovieLens1Million" type="DATASET_LOADER">
+      <Parameter parameterName="Directory" parameterType="DirectoryParameter" value="/home/jcastro/Datasets/ml-1m" />
+      <Parameter parameterName="File_contentDataset" parameterType="StringParameter" parameterValue="movies.dat" />
+      <Parameter parameterName="File_ratingsDataset" parameterType="StringParameter" parameterValue="ratings.dat" />
+      <Parameter parameterName="File_usersDataset" parameterType="StringParameter" parameterValue="users.dat" />
+      <Parameter parameterName="alias" parameterType="StringParameter" parameterValue="MovieLens1Million" />
+    </DatasetLoader>
+  </ConfiguredDataset>
+  <ConfiguredDataset name="ml-10m" description="MovieLens - 10 million ratings.">
+    <DatasetLoader name="CSVfileDatasetLoader" type="DATASET_LOADER">
+      <Parameter parameterName="INDEXATION" parameterType="ObjectParameter" parameterValue="INDEX_BOTH" />
+      <Parameter parameterName="Content_file" parameterType="FileParameter" value="/home/jcastro/Datasets/ml-10m/movi_peliculas.csv" />
+      <Parameter parameterName="Ratings_file" parameterType="FileParameter" value="/home/jcastro/Datasets/ml-10m/movi_ratings.csv" />
+      <Parameter parameterName="Users_file" parameterType="FileParameter" value="/home/jcastro/Datasets/ml-10m/users.csv" />
+      <Parameter parameterName="alias" parameterType="StringParameter" parameterValue="CSVfileDatasetLoader" />
+    </DatasetLoader>
+  </ConfiguredDataset>
+  <ConfiguredDataset name="netflix" description="Netflix dataset, with 100 million ratings.">
+    <DatasetLoader name="CSVfileDatasetLoader" type="DATASET_LOADER">
+      <Parameter parameterName="INDEXATION" parameterType="ObjectParameter" parameterValue="INDEX_USERS_MAPS" />
+      <Parameter parameterName="Content_file" parameterType="FileParameter" value="/home/sinbad2/Datasets/netflix/netflix_peliculas.csv" />
+      <Parameter parameterName="Ratings_file" parameterType="FileParameter" value="/home/sinbad2/Datasets/netflix/ratingsCabecera.csv" />
+      <Parameter parameterName="Users_file" parameterType="FileParameter" value="/home/sinbad2/Datasets/netflix/users.csv" />
+      <Parameter parameterName="alias" parameterType="StringParameter" parameterValue="CSVfileDatasetLoader" />
+    </DatasetLoader>
+  </ConfiguredDataset>
+</ConfiguredDatasets>

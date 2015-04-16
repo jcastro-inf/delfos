@@ -1,0 +1,19 @@
+/delfos/target/
+/delfos/test-temp/
+/delfos/experiments/
+/delfos/results/
+/delfos/.config/
+
+#Directorio de bufer de las recomendaciones, utilizado para agilizar el cálculo de las recomendaciones.
+/delfos/bufferOfRecommendations/
+
+#Directorio por defecto del que deben colgar los modelos de recomendación que se quieran almacenar en persistencia en fichero.
+/delfos/buffered-recommendation-models/
+
+#Este directorio debe colgar del anterior (./delfos/buffered-recommendation-models/), refactorizar.
+/delfos/svd-folding-in-model/
+
+#Directorio temporal para los ficheros generados durante la ejecución de los tests. Es totalmente seguro borrarlo.
+/delfos/test-set/
+
+*~

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<ConfiguredDatasets>
+  <ConfiguredDataset name="ml-100k" description="MovieLens 100 thousands ratings.">
+    <DatasetLoader name="MovieLens100k" type="DATASET_LOADER">
+      <Parameter parameterName="Directory" parameterType="DirectoryParameter" value="C:\datasets\ml-100k" />
+      <Parameter parameterName="Index_init_genres" parameterType="IntegerParameter" minValue="0" maxValue="1000" parameterValue="5" />
+    </DatasetLoader>
+  </ConfiguredDataset>
+  <ConfiguredDataset name="complete-5u-10i" description="Dataset completo para testeos.">
+    <DatasetLoader name="CSVfileDatasetLoader" type="DATASET_LOADER">
+	  <Parameter parameterName="INDEXATION" parameterType="ObjectParameter" parameterValue="INDEX_BOTH" />
+      <Parameter parameterName="Content_file" parameterType="FileParameter" value="C:\datasets\DatasetCompleto5U10I\content.csv" />
+      <Parameter parameterName="Ratings_file" parameterType="FileParameter" value="C:\datasets\DatasetCompleto5U10I\ratings.csv" />
+      <Parameter parameterName="Users_file" parameterType="FileParameter" value="C:\datasets\DatasetCompleto5U10I\content.csv\users.csv" />
+      <Parameter parameterName="alias" parameterType="StringParameter" parameterValue="CSVfileDatasetLoader" />
+    </DatasetLoader>
+  </ConfiguredDataset>
+</ConfiguredDatasets>

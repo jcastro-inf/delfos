@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<ConfiguredDatasets>
+  <ConfiguredDataset name="ePinions" description="EPinions trustlet extended.">
+    <DatasetLoader name="EPinionsTrustlet" type="DATASET_LOADER">
+      <Parameter parameterName="alias" parameterType="StringParameter" parameterValue="EPinions-TrustLet" />
+      <Parameter parameterName="EPINIONS_TRUSTLET_FOLDER" parameterType="DirectoryParameter" value="/home/jcastro/CloudStation/Datasets/ePinions/ePinions - TXT - Trustlet - Extended" />
+    </DatasetLoader>
+  </ConfiguredDataset>
+  <ConfiguredDataset name="ml-100k" description="MovieLens 100 thousands ratings.">
+    <DatasetLoader name="MovieLens100k" type="DATASET_LOADER">
+      <Parameter parameterName="Directory" parameterType="DirectoryParameter" value="/home/jcastro/CloudStation/Datasets/MovieLens/0 - MovieLens-100k ratings/ml-100k" />
+      <Parameter parameterName="Index_init_genres" parameterType="IntegerParameter" minValue="0" maxValue="1000" parameterValue="5" />
+    </DatasetLoader>
+  </ConfiguredDataset>
+  <ConfiguredDataset name="ml-1m" description="MovieLens - 1 million ratings.">
+    <DatasetLoader name="MovieLens1Million" type="DATASET_LOADER">
+      <Parameter parameterName="Directory" parameterType="DirectoryParameter" value="/home/jcastro/CloudStation/Datasets/MovieLens/1 - MovieLens-1M ratings/ml-1m" />
+      <Parameter parameterName="File_contentDataset" parameterType="StringParameter" parameterValue="movies.dat" />
+      <Parameter parameterName="File_ratingsDataset" parameterType="StringParameter" parameterValue="ratings.dat" />
+      <Parameter parameterName="File_usersDataset" parameterType="StringParameter" parameterValue="users.dat" />
+      <Parameter parameterName="alias" parameterType="StringParameter" parameterValue="MovieLens1Million" />
+    </DatasetLoader>
+  </ConfiguredDataset>
+  <ConfiguredDataset name="ml-10m" description="MovieLens - 10 million ratings.">
+    <DatasetLoader name="CSVfileDatasetLoader" type="DATASET_LOADER">
+      <Parameter parameterName="Content_file" parameterType="FileParameter" value="/home/jcastro/CloudStation/Datasets/MovieLens/2 - MovieLens-10M ratings - CSV/ml-10M_CSV/movi_peliculas.csv" />
+      <Parameter parameterName="INDEXATION" parameterType="ObjectParameter" parameterValue="INDEX_USERS" />
+      <Parameter parameterName="Ratings_file" parameterType="FileParameter" value="/home/jcastro/CloudStation/Datasets/MovieLens/2 - MovieLens-10M ratings - CSV/ml-10M_CSV/movi_ratings.csv" />
+      <Parameter parameterName="Users_file" parameterType="FileParameter" value="../../datasets/users.csv" />
+      <Parameter parameterName="alias" parameterType="StringParameter" parameterValue="CSVfileDatasetLoader" />
+    </DatasetLoader>
+  </ConfiguredDataset>
+</ConfiguredDatasets>
