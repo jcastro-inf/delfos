@@ -116,10 +116,7 @@ public class RSTest extends CollaborativeRecommender<RSTest_Model> {
     }
 
     @Override
-    public List<Recommendation> recommendOnly(DatasetLoader<? extends Rating> datasetLoader,
-            RSTest_Model model,
-            Integer idUser,
-            Collection<Integer> idItemList) throws UserNotFound {
+    public Collection<Recommendation> recommendOnly(DatasetLoader<? extends Rating> datasetLoader, RSTest_Model model, Integer idUser, java.util.Set<Integer> idItemList) throws UserNotFound {
 
         if (Global.isVerboseAnnoying()) {
             Global.showMessageTimestamped(this.getAlias() + " --> Recommending for user '" + idUser + "'\n");

@@ -104,10 +104,7 @@ public class KnnMemoryBasedNWR_itemWeighted extends KnnCollaborativeRecommender<
     }
 
     @Override
-    public List<Recommendation> recommendOnly(DatasetLoader<? extends Rating> datasetLoader,
-            KnnMemoryModel model,
-            Integer idUser,
-            Collection<Integer> idItemList) throws UserNotFound {
+    public Collection<Recommendation> recommendOnly(DatasetLoader<? extends Rating> datasetLoader, KnnMemoryModel model, Integer idUser, java.util.Set<Integer> idItemList) throws UserNotFound {
 
         Map<Integer, Double> itemWeights = new TreeMap<>();
 

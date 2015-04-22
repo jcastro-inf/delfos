@@ -374,7 +374,7 @@ public class TryThisAtHomeSVD
     }
 
     @Override
-    public List<Recommendation> recommendOnly(DatasetLoader<? extends Rating> datasetLoader, TryThisAtHomeSVDModel model, Integer idUser, Collection<Integer> idItemList) throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset {
+    public Collection<Recommendation> recommendOnly(DatasetLoader<? extends Rating> datasetLoader, TryThisAtHomeSVDModel model, Integer idUser, java.util.Set<Integer> idItemList) throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset {
         if (model == null) {
             throw new IllegalArgumentException("SVD recommendation model is null.");
         }
@@ -410,8 +410,7 @@ public class TryThisAtHomeSVD
                         ex);
             } catch (NotEnoughtUserInformation ex) {
                 //Fallo de cobertura, no habia ratings del usuario en la fase de entrenamiento.
-                model.warningUserNotInModel(
-                        idUser,
+                model.warningUserNotInModel(idUser,
                         "SVD recommendation model does not contains the user (" + idUser + ").",
                         ex);
             }

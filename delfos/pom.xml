@@ -2,9 +2,9 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>es.sinbad2.jcastro</groupId>
+    <groupId>es.jcastro.recommendation</groupId>
     <artifactId>delfos</artifactId>
-    <version>1.2.20150217</version>
+    <version>1.2.20150422</version>
     <packaging>jar</packaging>
 
     <name>delfos</name>
@@ -84,14 +84,15 @@
             <version>2.0.5</version>
         </dependency>
         <dependency>
-            <groupId>${project.groupId}</groupId>
+            <groupId>es.sinbad2.jcastro</groupId>
             <artifactId>stat_algos</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
         <dependency>
-            <groupId>${project.groupId}</groupId>
+            <groupId>es.sinbad2.jcastro</groupId>
             <artifactId>es.sinbad2.jcastro.fuzzyclustering</artifactId>
             <version>1.0.20140918</version>
+            <type>jar</type>
         </dependency>
     </dependencies>
 

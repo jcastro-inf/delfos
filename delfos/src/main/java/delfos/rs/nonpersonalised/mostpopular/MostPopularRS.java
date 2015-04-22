@@ -54,7 +54,7 @@ public class MostPopularRS extends RecommenderSystemAdapter<List<Recommendation>
     }
 
     @Override
-    public List<Recommendation> recommendOnly(DatasetLoader<? extends Rating> datasetLoader, List<Recommendation> model, Integer idUser, Collection<Integer> idItemList) throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset {
+    public Collection<Recommendation> recommendOnly(DatasetLoader<? extends Rating> datasetLoader, List<Recommendation> model, Integer idUser, java.util.Set<Integer> idItemList) throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset {
         List<Recommendation> ret = new ArrayList<Recommendation>(idItemList.size());
 
         Set<Integer> added = new TreeSet<Integer>();

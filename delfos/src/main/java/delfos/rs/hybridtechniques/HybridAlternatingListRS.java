@@ -80,7 +80,7 @@ public class HybridAlternatingListRS extends HybridRecommender<HybridRecommender
     }
 
     @Override
-    public List<Recommendation> recommendOnly(DatasetLoader<? extends Rating> datasetLoader, HybridRecommenderSystemModel model, Integer idUser, Collection<Integer> idItemList) throws UserNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset, ItemNotFound, NotEnoughtUserInformation {
+    public Collection<Recommendation> recommendOnly(DatasetLoader<? extends Rating> datasetLoader, HybridRecommenderSystemModel model, Integer idUser, java.util.Set<Integer> idItemList) throws UserNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset, ItemNotFound, NotEnoughtUserInformation {
 
         RecommenderSystem<Object> firstTechnique = (RecommenderSystem<Object>) getParameterValue(FIRST_TECHNIQUE);
 
