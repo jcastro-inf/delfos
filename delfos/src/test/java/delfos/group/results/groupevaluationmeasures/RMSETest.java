@@ -48,7 +48,7 @@ public class RMSETest {
         Map<GroupOfUsers, Collection<Integer>> requests = new TreeMap<GroupOfUsers, Collection<Integer>>();
         requests.put(groupOfUsers, Arrays.asList(12, 13));
 
-        Map<GroupOfUsers, List<Recommendation>> results = new TreeMap<GroupOfUsers, List<Recommendation>>();
+        Map<GroupOfUsers, Collection<Recommendation>> results = new TreeMap<GroupOfUsers, Collection<Recommendation>>();
         ArrayList<Recommendation> recommendations = new ArrayList<Recommendation>();
         results.put(groupOfUsers, recommendations);
 

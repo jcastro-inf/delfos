@@ -1,11 +1,11 @@
 package delfos.rs.recommendation;
 
-import java.io.Serializable;
-import java.util.Arrays;
-import java.util.List;
 import delfos.dataset.basic.user.User;
 import delfos.group.groupsofusers.GroupOfUsers;
 import delfos.group.grs.recommendations.GroupRecommendations;
+import java.io.Serializable;
+import java.util.Arrays;
+import java.util.Collection;
 
 /**
  * Encapsula las recomendaciones hechas a un usuario.
@@ -48,7 +48,7 @@ public abstract class RecommendationsFactory implements Serializable {
         }
     }
 
-    public static Recommendations createRecommendations(String idTarget, List<Recommendation> recommendations, RecommendationComputationDetails recommendationComputationDetails) {
+    public static Recommendations createRecommendations(String idTarget, Collection<Recommendation> recommendations, RecommendationComputationDetails recommendationComputationDetails) {
         RecommendationsTarget targetType = RecommendationsTarget.getTargetType(idTarget);
 
         switch (targetType) {
@@ -61,23 +61,23 @@ public abstract class RecommendationsFactory implements Serializable {
         }
     }
 
-    public static Recommendations createRecommendations(String idTarget, List<Recommendation> recommendations, long timeTaken) {
+    public static Recommendations createRecommendations(String idTarget, Collection<Recommendation> recommendations, long timeTaken) {
         return createRecommendations(idTarget, recommendations, new RecommendationComputationDetails().addDetail(RecommendationComputationDetails.DetailField.TimeTaken, timeTaken));
     }
 
-    public static Recommendations createRecommendations(String idTarget, List<Recommendation> recommendations) {
+    public static Recommendations createRecommendations(String idTarget, Collection<Recommendation> recommendations) {
         return createRecommendations(idTarget, recommendations, RecommendationComputationDetails.EMPTY_DETAILS);
     }
 
-    public static SingleUserRecommendations createRecommendations(User user, List<Recommendation> recommendations) {
+    public static SingleUserRecommendations createRecommendations(User user, Collection<Recommendation> recommendations) {
         return new SingleUserRecommendations(user, recommendations, RecommendationComputationDetails.EMPTY_DETAILS);
     }
 
-    public static GroupRecommendations createRecommendations(GroupOfUsers groupOfUsers, List<Recommendation> recommendations) {
+    public static GroupRecommendations createRecommendations(GroupOfUsers groupOfUsers, Collection<Recommendation> recommendations) {
         return new GroupRecommendations(groupOfUsers, recommendations, RecommendationComputationDetails.EMPTY_DETAILS);
     }
 
-    public static Recommendations copyRecommendationsWithNewRanking(Recommendations recommendations, List<Recommendation> recommendationsNewRanking) {
+    public static Recommendations copyRecommendationsWithNewRanking(Recommendations recommendations, Collection<Recommendation> recommendationsNewRanking) {
         return createRecommendations(recommendations.getTargetIdentifier(), recommendationsNewRanking, recommendations.getRecommendationComputationDetails());
     }
 

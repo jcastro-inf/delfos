@@ -1,10 +1,5 @@
 package delfos.group.results.groupevaluationmeasures;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
 import delfos.ERROR_CODES;
 import delfos.common.exceptions.dataset.users.UserNotFound;
 import delfos.common.statisticalfuncions.MeanIterative;
@@ -16,6 +11,11 @@ import delfos.group.results.grouprecomendationresults.GroupRecommendationResult;
 import delfos.io.xml.evaluationmeasures.NDCGXML;
 import static delfos.results.evaluationmeasures.NDCG.computeDCG;
 import delfos.rs.recommendation.Recommendation;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Evalúa las recomendaciones de un sistema aplicando nDCG, usando logaritmo en
@@ -50,7 +50,7 @@ public class NDCG extends GroupEvaluationMeasure {
         for (Map.Entry<GroupOfUsers, List<Recommendation>> entry : recommendationResults) {
 
             GroupOfUsers groupOfUsers = entry.getKey();
-            List<Recommendation> recommendations = entry.getValue();
+            Collection<Recommendation> recommendations = entry.getValue();
 
             if (recommendations.isEmpty()) {
                 continue;

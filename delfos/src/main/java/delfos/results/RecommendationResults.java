@@ -1,5 +1,11 @@
 package delfos.results;
 
+import delfos.dataset.basic.user.User;
+import delfos.rs.recommendation.Recommendation;
+import delfos.rs.recommendation.Recommendations;
+import delfos.rs.recommendation.SingleUserRecommendations;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
@@ -7,10 +13,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
-import delfos.dataset.basic.user.User;
-import delfos.rs.recommendation.Recommendation;
-import delfos.rs.recommendation.Recommendations;
-import delfos.rs.recommendation.SingleUserRecommendations;
 
 /**
  * Guarda los resultados de una ejecución, es decir, las recomendaciones que se
@@ -34,9 +36,12 @@ public class RecommendationResults {
      * @param recommendations lista de recomendaciones que se le dan ordenadas
      * por relevancia (similitud o valoración predicha)
      */
-    public void add(int idUser, List<Recommendation> recommendations) {
+    public void add(int idUser, Collection<Recommendation> recommendations) {
+
+        ArrayList<Recommendation> recommendationList = new ArrayList<>(recommendations);
+        Collections.sort(recommendationList);
         if (!recommendationResults.containsKey(idUser)) {
-            recommendationResults.put(idUser, recommendations);
+            recommendationResults.put(idUser, recommendationList);
         } else {
             recommendationResults.get(idUser).addAll(recommendations);
             Collections.sort(recommendationResults.get(idUser));
@@ -70,19 +75,16 @@ public class RecommendationResults {
      */
     public boolean containsRecommendation(int idUser, int idItem) {
         if (recommendationResults.containsKey(idUser)) {
-            boolean found = false;
-            List<Recommendation> get = recommendationResults.get(idUser);
-            int i = 0;
-            while (i < get.size() && !found) {
-                if (get.get(i).getIdItem() == idItem) {
-                    found = true;
+            List<Recommendation> thisUserRecommendations = recommendationResults.get(idUser);
+            for (Recommendation recommendation : thisUserRecommendations) {
+                if (recommendation.getIdItem() == idItem) {
+                    return true;
                 }
-                i++;
             }
-            return found;
-        } else {
-            return false;
+
         }
+        return false;
+
     }
 
     public List<Recommendation> getRecommendationsForUser(int idUser) {

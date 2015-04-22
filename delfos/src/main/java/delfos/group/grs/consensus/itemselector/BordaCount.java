@@ -1,6 +1,9 @@
 package delfos.group.grs.consensus.itemselector;
 
+import delfos.common.datastructures.queue.PriorityItem;
+import delfos.rs.recommendation.Recommendation;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -8,8 +11,6 @@ import java.util.PriorityQueue;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
-import delfos.common.datastructures.queue.PriorityItem;
-import delfos.rs.recommendation.Recommendation;
 
 public class BordaCount extends GroupRecommendationsSelector {
 
@@ -20,7 +21,7 @@ public class BordaCount extends GroupRecommendationsSelector {
     }
 
     @Override
-    public Set<Integer> getRecommendationSelection(Map<Integer, List<Recommendation>> membersRecommendations) {
+    public Set<Integer> getRecommendationSelection(Map<Integer, Collection<Recommendation>> membersRecommendations) {
 
         long numItems = getNumItemsSelect();
         Set<Integer> itemsSelected = new TreeSet<>();
@@ -28,7 +29,7 @@ public class BordaCount extends GroupRecommendationsSelector {
         Map<Integer, Integer> bordaCount = new TreeMap<>();
 
         for (int idUser : membersRecommendations.keySet()) {
-            ArrayList<Recommendation> reverseList = new ArrayList<>(membersRecommendations.get(idUser));
+            List<Recommendation> reverseList = new ArrayList<>(membersRecommendations.get(idUser));
             Collections.reverse(reverseList);
 
             int index = 1;

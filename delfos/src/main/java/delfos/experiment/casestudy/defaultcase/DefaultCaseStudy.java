@@ -1,15 +1,5 @@
 package delfos.experiment.casestudy.defaultcase;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeMap;
-import java.util.TreeSet;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import delfos.ERROR_CODES;
 import delfos.common.Chronometer;
 import delfos.common.Global;
@@ -22,34 +12,44 @@ import delfos.common.exceptions.dataset.users.UserNotFound;
 import delfos.common.parallelwork.notblocking.MultiThreadExecutionManager_NotBlocking;
 import delfos.common.parameters.ParameterListener;
 import delfos.common.statisticalfuncions.MeanIterative;
-import delfos.dataset.basic.rating.Rating;
-import delfos.dataset.basic.rating.RatingsDataset;
-import delfos.dataset.basic.rating.RelevanceCriteria;
-import delfos.dataset.loaders.given.DatasetLoaderGiven;
 import delfos.dataset.basic.loader.types.ContentDatasetLoader;
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.loader.types.TrustDatasetLoader;
 import delfos.dataset.basic.loader.types.UsersDatasetLoader;
+import delfos.dataset.basic.rating.Rating;
+import delfos.dataset.basic.rating.RatingsDataset;
+import delfos.dataset.basic.rating.RelevanceCriteria;
+import delfos.dataset.loaders.given.DatasetLoaderGiven;
 import delfos.dataset.storage.validationdatasets.PairOfTrainTestRatingsDataset;
 import delfos.dataset.storage.validationdatasets.ValidationDatasets;
 import delfos.experiment.ExperimentListener;
+import delfos.experiment.SeedHolder;
 import delfos.experiment.casestudy.CaseStudy;
 import delfos.experiment.casestudy.CaseStudyParameterChangedListener;
 import delfos.experiment.casestudy.parallel.SingleUserRecommendationTask;
 import delfos.experiment.casestudy.parallel.SingleUserRecommendationTaskExecutor;
-import delfos.factories.EvaluationMeasuresFactory;
-import delfos.experiment.SeedHolder;
 import delfos.experiment.validation.predictionprotocol.NoPredictionProtocol;
 import delfos.experiment.validation.predictionprotocol.PredictionProtocol;
 import delfos.experiment.validation.validationtechnique.NoPartitions;
 import delfos.experiment.validation.validationtechnique.ValidationTechnique;
 import delfos.experiment.validation.validationtechnique.ValidationTechniqueProgressListener;
-import delfos.results.RecommendationResults;
+import delfos.factories.EvaluationMeasuresFactory;
 import delfos.results.MeasureResult;
+import delfos.results.RecommendationResults;
 import delfos.results.evaluationmeasures.EvaluationMeasure;
 import delfos.rs.RecommenderSystem;
 import delfos.rs.nonpersonalised.randomrecommender.RandomRecommender;
 import delfos.rs.recommendation.Recommendation;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
+import java.util.TreeSet;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Clase encargada de realizar las ejecuciones de los sistemas de recomendación
@@ -287,11 +287,11 @@ public class DefaultCaseStudy extends CaseStudy implements ParameterListener {
                 Global.showMessageTimestamped(getAlias() + " --> Creating recommendation tasks");
                 for (int idUser : thisDatasetUsers) {
                     try {
-                        Collection<Collection<Integer>> consultas = predictionProtocolTechnique.getRecommendationRequests(pairsValidation[_conjuntoActual].test, idUser);
+                        Collection<Set<Integer>> consultas = predictionProtocolTechnique.getRecommendationRequests(pairsValidation[_conjuntoActual].test, idUser);
                         if (consultas.isEmpty()) {
                             continue;
                         }
-                        List<Recommendation> unionResultados = new ArrayList<>();
+                        Collection<Recommendation> unionResultados = new ArrayList<>();
 
                         consultas.parallelStream().forEach((idItemList) -> {
                             try {
@@ -309,7 +309,6 @@ public class DefaultCaseStudy extends CaseStudy implements ParameterListener {
                             }
                         });
 
-                        Collections.sort(unionResultados);
                         esr.add(idUser, unionResultados);
 
                     } catch (UserNotFound ex) {
@@ -326,7 +325,7 @@ public class DefaultCaseStudy extends CaseStudy implements ParameterListener {
                 executionProgressFireEvent(getAlias() + " --> Recommendation process", 100, -1);
                 executionProgressFireEvent("Union of recommendations", 0, -1);
 
-                Map<Integer, List<Recommendation>> predictions = Collections.synchronizedMap(new TreeMap<>());
+                Map<Integer, Collection<Recommendation>> predictions = Collections.synchronizedMap(new TreeMap<>());
 
                 //Para llevar el contador dentro de la expresión lambda de unión de recomendaciones.
                 class ThisTask {

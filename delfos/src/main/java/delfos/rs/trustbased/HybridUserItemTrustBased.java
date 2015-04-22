@@ -1,13 +1,5 @@
 package delfos.rs.trustbased;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeMap;
-import java.util.TreeSet;
 import delfos.ERROR_CODES;
 import delfos.algorithm.Algorithm;
 import delfos.common.Global;
@@ -17,16 +9,24 @@ import delfos.common.exceptions.dataset.users.UserNotFound;
 import delfos.common.parameters.Parameter;
 import delfos.common.parameters.restriction.BooleanParameter;
 import delfos.common.parameters.restriction.IntegerParameter;
-import delfos.rs.collaborativefiltering.knn.RecommendationEntity;
+import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RatingsDataset;
-import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.util.DatasetPrinterDeprecated;
 import delfos.rs.collaborativefiltering.CollaborativeRecommender;
+import delfos.rs.collaborativefiltering.knn.RecommendationEntity;
 import delfos.rs.collaborativefiltering.profile.Neighbor;
 import delfos.rs.recommendation.Recommendation;
 import delfos.rs.trustbased.implicittrustcomputation.ShambourLu_ItemBasedImplicitTrustComputation;
 import delfos.rs.trustbased.implicittrustcomputation.ShambourLu_UserBasedImplicitTrustComputation;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
+import java.util.TreeSet;
 
 /**
  * Sistema de recomendación que utiliza dos módulos basados en confianza:
@@ -66,9 +66,9 @@ public class HybridUserItemTrustBased extends CollaborativeRecommender<HybridUse
     }
 
     @Override
-    public List<Recommendation> recommendOnly(DatasetLoader<? extends Rating> datasetLoader, HybridUserItemTrustBasedModel model, Integer idUser, Collection<Integer> idItemList) throws UserNotFound, CannotLoadRatingsDataset {
+    public Collection<Recommendation> recommendOnly(DatasetLoader<? extends Rating> datasetLoader, HybridUserItemTrustBasedModel model, Integer idUser, java.util.Set<Integer> idItemList) throws UserNotFound, CannotLoadRatingsDataset {
 
-        List<Recommendation> ret = new ArrayList<>(idItemList.size());
+        Collection<Recommendation> ret = new ArrayList<>(idItemList.size());
 
         for (int idItem : idItemList) {
             try {
@@ -126,8 +126,6 @@ public class HybridUserItemTrustBased extends CollaborativeRecommender<HybridUse
                 ERROR_CODES.ITEM_NOT_FOUND.exit(ex);
             }
         }
-
-        Collections.sort(ret);
 
         return ret;
     }

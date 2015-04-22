@@ -1,10 +1,5 @@
 package delfos.rs.collaborativefiltering.knn.memorybased.multicorrelation.jaccard;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
 import delfos.common.Global;
 import delfos.common.exceptions.CouldNotComputeSimilarity;
 import delfos.common.exceptions.CouldNotPredictRating;
@@ -14,12 +9,12 @@ import delfos.common.exceptions.dataset.users.UserNotFound;
 import delfos.common.parameters.Parameter;
 import delfos.common.parameters.restriction.IntegerParameter;
 import delfos.common.parameters.restriction.ParameterOwnerRestriction;
-import delfos.rs.collaborativefiltering.knn.MatchRating;
-import delfos.rs.collaborativefiltering.knn.RecommendationEntity;
+import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RatingsDataset;
-import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.rs.collaborativefiltering.CollaborativeRecommender;
+import delfos.rs.collaborativefiltering.knn.MatchRating;
+import delfos.rs.collaborativefiltering.knn.RecommendationEntity;
 import delfos.rs.collaborativefiltering.predictiontechniques.PredictionTechnique;
 import delfos.rs.collaborativefiltering.predictiontechniques.WeightedSum;
 import delfos.rs.collaborativefiltering.profile.Neighbor;
@@ -30,6 +25,11 @@ import delfos.similaritymeasures.PearsonCorrelationCoefficient;
 import delfos.similaritymeasures.useruser.RelevanceFactor;
 import delfos.similaritymeasures.useruser.UserUserSimilarity;
 import delfos.similaritymeasures.useruser.UserUserSimilarityWrapper;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 /**
  *
@@ -116,10 +116,7 @@ public class RSTest extends CollaborativeRecommender<RSTest_Model> {
     }
 
     @Override
-    public List<Recommendation> recommendOnly(DatasetLoader<? extends Rating> datasetLoader,
-            RSTest_Model model,
-            Integer idUser,
-            Collection<Integer> idItemList) throws UserNotFound {
+    public Collection<Recommendation> recommendOnly(DatasetLoader<? extends Rating> datasetLoader, RSTest_Model model, Integer idUser, java.util.Set<Integer> idItemList) throws UserNotFound {
 
         if (Global.isVerboseAnnoying()) {
             Global.showMessageTimestamped(this.getAlias() + " --> Recommending for user '" + idUser + "'\n");
@@ -128,7 +125,7 @@ public class RSTest extends CollaborativeRecommender<RSTest_Model> {
         try {
             List<Neighbor> neighbors = getNeighbors(datasetLoader, idUser);
 
-            List<Recommendation> ret = recommendWithNeighbors(datasetLoader.getRatingsDataset(), idUser, neighbors, idItemList);
+            Collection<Recommendation> ret = recommendWithNeighbors(datasetLoader.getRatingsDataset(), idUser, neighbors, idItemList);
             if (Global.isVerboseAnnoying()) {
                 Global.showMessage("Finished recommendations for user '" + idUser + "'\n");
             }
@@ -240,7 +237,7 @@ public class RSTest extends CollaborativeRecommender<RSTest_Model> {
      * @throws UserNotFound Si el usuario activo o alguno de los vecinos
      * indicados no se encuentra en el dataset.
      */
-    public List<Recommendation> recommendWithNeighbors(
+    public Collection<Recommendation> recommendWithNeighbors(
             RatingsDataset<? extends Rating> ratingsDataset,
             Integer idUser,
             List<Neighbor> vecinos,
@@ -250,7 +247,7 @@ public class RSTest extends CollaborativeRecommender<RSTest_Model> {
         PredictionTechnique predictionTechnique_ = (PredictionTechnique) getParameterValue(PREDICTION_TECHNIQUE);
 
         //Predicción de la valoración
-        List<Recommendation> recommendationList = new LinkedList<>();
+        Collection<Recommendation> recommendationList = new LinkedList<>();
 
         int numVecinos = (Integer) getParameterValue(NEIGHBORHOOD_SIZE);
 
@@ -294,8 +291,6 @@ public class RSTest extends CollaborativeRecommender<RSTest_Model> {
                 Global.showError(ex);
             }
         }
-
-        Collections.sort(recommendationList);
 
         return recommendationList;
     }

@@ -1,12 +1,12 @@
 package delfos.recommendationcandidates;
 
-import java.util.Collection;
-import java.util.TreeSet;
-import delfos.dataset.basic.rating.Rating;
-import delfos.dataset.basic.user.User;
 import delfos.dataset.basic.loader.types.ContentDatasetLoader;
 import delfos.dataset.basic.loader.types.DatasetLoader;
+import delfos.dataset.basic.rating.Rating;
+import delfos.dataset.basic.user.User;
 import delfos.group.groupsofusers.GroupOfUsers;
+import java.util.Set;
+import java.util.TreeSet;
 
 /**
  * Devuelve todos los productos del catálogo.
@@ -17,8 +17,8 @@ import delfos.group.groupsofusers.GroupOfUsers;
 public class AllCatalogItems extends RecommendationCandidatesSelector {
 
     @Override
-    public Collection<Integer> candidateItems(DatasetLoader<? extends Rating> datasetLoader, User user) {
-        Collection<Integer> idItemList = new TreeSet<>();
+    public Set<Integer> candidateItems(DatasetLoader<? extends Rating> datasetLoader, User user) {
+        Set<Integer> idItemList = new TreeSet<>();
 
         if (datasetLoader instanceof ContentDatasetLoader) {
             ContentDatasetLoader contentDatasetLoader = (ContentDatasetLoader) datasetLoader;
@@ -31,7 +31,7 @@ public class AllCatalogItems extends RecommendationCandidatesSelector {
     }
 
     @Override
-    public Collection<Integer> candidateItems(DatasetLoader<? extends Rating> datasetLoader, GroupOfUsers groupOfUsers) {
+    public Set<Integer> candidateItems(DatasetLoader<? extends Rating> datasetLoader, GroupOfUsers groupOfUsers) {
         return candidateItems(datasetLoader, User.ANONYMOUS_USER);
     }
 

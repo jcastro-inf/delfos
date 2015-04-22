@@ -1,13 +1,5 @@
 package delfos.rs.contentbased.vsm.multivalued;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeMap;
 import delfos.ERROR_CODES;
 import delfos.common.Global;
 import delfos.common.aggregationoperators.AggregationOperator;
@@ -17,15 +9,15 @@ import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
 import delfos.common.exceptions.dataset.entity.EntityNotFound;
 import delfos.common.exceptions.dataset.items.ItemNotFound;
 import delfos.common.exceptions.dataset.users.UserNotFound;
-import delfos.dataset.basic.item.ContentDataset;
-import delfos.dataset.basic.item.Item;
 import delfos.dataset.basic.features.Feature;
 import delfos.dataset.basic.features.FeatureType;
+import delfos.dataset.basic.item.ContentDataset;
+import delfos.dataset.basic.item.Item;
+import delfos.dataset.basic.loader.types.ContentDatasetLoader;
+import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RatingsDataset;
 import delfos.dataset.basic.rating.RelevanceCriteria;
-import delfos.dataset.basic.loader.types.ContentDatasetLoader;
-import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.rs.contentbased.ContentBasedRecommender;
 import static delfos.rs.contentbased.vsm.ContentBasedVSMRS.SIMILARITY_MEASURE;
 import static delfos.rs.contentbased.vsm.multivalued.entropydependence.EntropyDependenceCBRS.AGGREGATION_OPPERATOR;
@@ -33,6 +25,12 @@ import delfos.rs.contentbased.vsm.multivalued.profile.BasicMultivaluedUserProfil
 import delfos.rs.contentbased.vsm.multivalued.profile.MultivaluedUserProfile;
 import delfos.rs.recommendation.Recommendation;
 import delfos.similaritymeasures.BasicSimilarityMeasure;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.LinkedHashSet;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
 
 /**
  * Sistema de recomendación similar al {@link EntropyDependenceCBRS} pero sin
@@ -160,7 +158,7 @@ public class BasicMultivaluedCBRS extends ContentBasedRecommender<MultivaluedUse
     }
 
     @Override
-    protected List<Recommendation> recommendOnly(DatasetLoader<? extends Rating> datasetLoader, MultivaluedUserProfilesModel model, MultivaluedUserProfile userProfile, Collection<Integer> idItemList) throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset {
+    protected Collection<Recommendation> recommendOnly(DatasetLoader<? extends Rating> datasetLoader, MultivaluedUserProfilesModel model, MultivaluedUserProfile userProfile, Collection<Integer> idItemList) throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset {
         final ContentDataset contentDataset;
         if (datasetLoader instanceof ContentDatasetLoader) {
             ContentDatasetLoader contentDatasetLoader = (ContentDatasetLoader) datasetLoader;
@@ -170,7 +168,7 @@ public class BasicMultivaluedCBRS extends ContentBasedRecommender<MultivaluedUse
         }
         BasicSimilarityMeasure similarity = (BasicSimilarityMeasure) getParameterValue(SIMILARITY_MEASURE);
 
-        List<Recommendation> recomendaciones = new ArrayList<>();
+        Collection<Recommendation> recomendaciones = new ArrayList<>();
 
         for (int idItem : idItemList) {
             try {
@@ -210,7 +208,6 @@ public class BasicMultivaluedCBRS extends ContentBasedRecommender<MultivaluedUse
             }
         }
 
-        Collections.sort(recomendaciones);
         return recomendaciones;
 
     }

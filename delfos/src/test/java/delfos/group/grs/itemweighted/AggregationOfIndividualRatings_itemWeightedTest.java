@@ -1,15 +1,11 @@
 package delfos.group.grs.itemweighted;
 
-import delfos.group.grs.itemweighted.AggregationOfIndividualRatings_itemWeighted;
-import java.io.File;
-import java.util.List;
-import org.junit.Test;
 import delfos.common.Chronometer;
 import delfos.common.aggregationoperators.Mean;
 import delfos.configureddatasets.ConfiguredDatasetLoader;
 import delfos.constants.DelfosTest;
-import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.loader.types.DatasetLoader;
+import delfos.dataset.basic.rating.Rating;
 import delfos.group.groupsofusers.GroupOfUsers;
 import delfos.group.grs.GroupRecommenderSystem;
 import delfos.group.grs.SingleRecommenderSystemModel;
@@ -26,6 +22,9 @@ import delfos.rs.output.RecommendationsOutputStandardRaw;
 import delfos.rs.recommendation.Recommendation;
 import delfos.rs.recommendation.RecommendationComputationDetails;
 import delfos.similaritymeasures.PearsonCorrelationCoefficient;
+import java.io.File;
+import java.util.Collection;
+import org.junit.Test;
 
 /**
  *
@@ -53,7 +52,7 @@ public class AggregationOfIndividualRatings_itemWeightedTest extends DelfosTest 
 
         GroupModelWithExplanation groupModel = grs.buildGroupModel(datasetLoader, recommendationModel, groupOfUsers);
 
-        List<Recommendation> recommendOnly = grs.recommendOnly(datasetLoader, recommendationModel, groupModel, groupOfUsers, datasetLoader.getRatingsDataset().allRatedItems());
+        Collection<Recommendation> recommendOnly = grs.recommendOnly(datasetLoader, recommendationModel, groupModel, groupOfUsers, datasetLoader.getRatingsDataset().allRatedItems());
 
         long timeTaken = chronometer.getTotalElapsed();
         writeRecommendationsInStandardOutput(grs, new GroupRecommendations(groupOfUsers, recommendOnly, new RecommendationComputationDetails().addDetail(RecommendationComputationDetails.DetailField.TimeTaken, timeTaken)));
@@ -72,7 +71,7 @@ public class AggregationOfIndividualRatings_itemWeightedTest extends DelfosTest 
         SingleRecommenderSystemModel recommendationModel = grs.build(datasetLoader);
         GroupModelWithExplanation groupModel = grs.buildGroupModel(datasetLoader, recommendationModel, groupOfUsers);
 
-        List<Recommendation> recommendOnly = grs.recommendOnly(datasetLoader, recommendationModel, groupModel, groupOfUsers, datasetLoader.getRatingsDataset().allRatedItems());
+        Collection<Recommendation> recommendOnly = grs.recommendOnly(datasetLoader, recommendationModel, groupModel, groupOfUsers, datasetLoader.getRatingsDataset().allRatedItems());
 
         long timeTaken = chronometer.getTotalElapsed();
         writeRecommendationsInStandardOutput(grs, new GroupRecommendations(groupOfUsers, recommendOnly, new RecommendationComputationDetails().addDetail(RecommendationComputationDetails.DetailField.TimeTaken, timeTaken)));
@@ -92,7 +91,7 @@ public class AggregationOfIndividualRatings_itemWeightedTest extends DelfosTest 
         GroupOfUsers groupOfUsers = new GroupOfUsers(1, 2, 3, 4, 5);
         SingleRecommenderSystemModel recommendationModel = grs.build(datasetLoader);
         GroupModelWithExplanation groupModel = grs.buildGroupModel(datasetLoader, recommendationModel, groupOfUsers);
-        List<Recommendation> recommendOnly = grs.recommendOnly(datasetLoader, recommendationModel, groupModel, groupOfUsers, datasetLoader.getRatingsDataset().allRatedItems());
+        Collection<Recommendation> recommendOnly = grs.recommendOnly(datasetLoader, recommendationModel, groupModel, groupOfUsers, datasetLoader.getRatingsDataset().allRatedItems());
 
         long timeTaken = chronometer.getTotalElapsed();
         GroupRecommendations recommendations = new GroupRecommendations(groupOfUsers, recommendOnly, new RecommendationComputationDetails().addDetail(RecommendationComputationDetails.DetailField.TimeTaken, timeTaken));
@@ -116,7 +115,7 @@ public class AggregationOfIndividualRatings_itemWeightedTest extends DelfosTest 
         GroupOfUsers groupOfUsers = new GroupOfUsers(1, 2, 3, 4, 5);
         SingleRecommenderSystemModel recommendationModel = grs.build(datasetLoader);
         GroupModelWithExplanation groupModel = grs.buildGroupModel(datasetLoader, recommendationModel, groupOfUsers);
-        List<Recommendation> recommendOnly = grs.recommendOnly(datasetLoader, recommendationModel, groupModel, groupOfUsers, datasetLoader.getRatingsDataset().allRatedItems());
+        Collection<Recommendation> recommendOnly = grs.recommendOnly(datasetLoader, recommendationModel, groupModel, groupOfUsers, datasetLoader.getRatingsDataset().allRatedItems());
 
         long timeTaken = chronometer.getTotalElapsed();
         writeRecommendationsInStandardOutput(grs, new GroupRecommendations(groupOfUsers, recommendOnly, new RecommendationComputationDetails().addDetail(RecommendationComputationDetails.DetailField.TimeTaken, timeTaken)));

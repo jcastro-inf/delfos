@@ -27,8 +27,10 @@ import delfos.rs.recommendation.Recommendation;
 import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
@@ -77,8 +79,8 @@ public class TryThisAtHomeSVDTest extends DelfosTest {
         final RecommendationCandidatesSelector candidates = new OnlyNewItems();
 
         for (int idUser : users) {
-            Collection<Integer> candidateItems = candidates.candidateItems(datasetLoader, new User(idUser));
-            List<Recommendation> recommendOnly = recommenderSystem.recommendOnly(datasetLoader, model, idUser, candidateItems);
+            Set<Integer> candidateItems = candidates.candidateItems(datasetLoader, new User(idUser));
+            Collection<Recommendation> recommendOnly = recommenderSystem.recommendOnly(datasetLoader, model, idUser, candidateItems);
         }
     }
 
@@ -168,10 +170,14 @@ public class TryThisAtHomeSVDTest extends DelfosTest {
                     System.out.println("Item " + idItem + "--> " + tryThisAtHomeSVDModel.getItemFeatures(idItem));
                 });
 
-        List<Recommendation> recommendOnly = tryThisAtHomeSVD.recommendOnly(datasetLoader, tryThisAtHomeSVDModel, 3, idItemList);
-        assert recommendOnly.get(0).getIdItem() == 4;
-        Assert.assertEquals(4, recommendOnly.get(0).getPreference().doubleValue(), 0.2);
-        assert recommendOnly.get(1).getIdItem() == 2;
-        Assert.assertEquals(2, recommendOnly.get(1).getPreference().doubleValue(), 0.2);
+        Collection<Recommendation> recommendations = tryThisAtHomeSVD.recommendOnly(datasetLoader, tryThisAtHomeSVDModel, 3, idItemList);
+
+        List<Recommendation> sortedRecommendations = new ArrayList<>(recommendations);
+        Collections.sort(sortedRecommendations);
+
+        assert sortedRecommendations.get(0).getIdItem() == 4;
+        Assert.assertEquals(4, sortedRecommendations.get(0).getPreference().doubleValue(), 0.2);
+        assert sortedRecommendations.get(1).getIdItem() == 2;
+        Assert.assertEquals(2, sortedRecommendations.get(1).getPreference().doubleValue(), 0.2);
     }
 }

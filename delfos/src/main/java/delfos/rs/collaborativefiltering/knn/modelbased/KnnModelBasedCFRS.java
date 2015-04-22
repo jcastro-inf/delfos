@@ -1,5 +1,27 @@
 package delfos.rs.collaborativefiltering.knn.modelbased;
 
+import delfos.common.Global;
+import delfos.common.exceptions.CouldNotComputeSimilarity;
+import delfos.common.exceptions.CouldNotPredictRating;
+import delfos.common.exceptions.dataset.CannotLoadContentDataset;
+import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
+import delfos.common.exceptions.dataset.items.ItemNotFound;
+import delfos.common.exceptions.dataset.users.UserNotFound;
+import delfos.common.parallelwork.MultiThreadExecutionManager;
+import delfos.dataset.basic.loader.types.DatasetLoader;
+import delfos.dataset.basic.rating.Rating;
+import delfos.dataset.basic.rating.RatingsDataset;
+import delfos.rs.collaborativefiltering.CollaborativeRecommender;
+import delfos.rs.collaborativefiltering.knn.CommonRating;
+import delfos.rs.collaborativefiltering.knn.KnnCollaborativeRecommender;
+import delfos.rs.collaborativefiltering.knn.MatchRating;
+import delfos.rs.collaborativefiltering.knn.RecommendationEntity;
+import delfos.rs.collaborativefiltering.predictiontechniques.PredictionTechnique;
+import delfos.rs.collaborativefiltering.profile.Neighbor;
+import delfos.rs.persistence.DatabasePersistence;
+import delfos.rs.persistence.FailureInPersistence;
+import delfos.rs.recommendation.Recommendation;
+import delfos.similaritymeasures.CollaborativeSimilarityMeasure;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -9,28 +31,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
-import delfos.common.Global;
-import delfos.common.exceptions.CouldNotComputeSimilarity;
-import delfos.common.exceptions.CouldNotPredictRating;
-import delfos.common.exceptions.dataset.CannotLoadContentDataset;
-import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
-import delfos.common.exceptions.dataset.items.ItemNotFound;
-import delfos.common.exceptions.dataset.users.UserNotFound;
-import delfos.common.parallelwork.MultiThreadExecutionManager;
-import delfos.rs.collaborativefiltering.knn.CommonRating;
-import delfos.rs.collaborativefiltering.knn.MatchRating;
-import delfos.rs.collaborativefiltering.knn.RecommendationEntity;
-import delfos.dataset.basic.rating.Rating;
-import delfos.dataset.basic.rating.RatingsDataset;
-import delfos.dataset.basic.loader.types.DatasetLoader;
-import delfos.rs.collaborativefiltering.CollaborativeRecommender;
-import delfos.rs.collaborativefiltering.knn.KnnCollaborativeRecommender;
-import delfos.rs.collaborativefiltering.predictiontechniques.PredictionTechnique;
-import delfos.rs.collaborativefiltering.profile.Neighbor;
-import delfos.rs.persistence.DatabasePersistence;
-import delfos.rs.persistence.FailureInPersistence;
-import delfos.rs.recommendation.Recommendation;
-import delfos.similaritymeasures.CollaborativeSimilarityMeasure;
 
 /**
  * Sistema de recomendación basado en el filtrado colaborativo basado en
@@ -98,16 +98,13 @@ public class KnnModelBasedCFRS
     }
 
     @Override
-    public List<Recommendation> recommendOnly(
-            DatasetLoader<? extends Rating> datasetLoader,
-            KnnModelBasedCFRSModel model,
-            Integer idUser,
-            Collection<Integer> idItemList)
+    public Collection<Recommendation> recommendOnly(
+            DatasetLoader<? extends Rating> datasetLoader, KnnModelBasedCFRSModel model, Integer idUser, java.util.Set<Integer> idItemList)
             throws UserNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset, ItemNotFound {
 
         PredictionTechnique prediction = (PredictionTechnique) getParameterValue(KnnModelBasedCFRS.PREDICTION_TECHNIQUE);
 
-        List<Recommendation> recommendationList = new LinkedList<>();
+        Collection<Recommendation> recommendationList = new LinkedList<>();
         Map<Integer, ? extends Rating> userRated = datasetLoader.getRatingsDataset().getUserRatingsRated(idUser);
 
         for (int idItem : idItemList) {
@@ -142,7 +139,6 @@ public class KnnModelBasedCFRS
             }
 
         }
-        Collections.sort(recommendationList);
         return recommendationList;
     }
 

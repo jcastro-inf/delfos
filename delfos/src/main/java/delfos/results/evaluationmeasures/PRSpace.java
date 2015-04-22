@@ -40,7 +40,7 @@ public class PRSpace extends EvaluationMeasure {
 
         int maxLength = 0;
         for (int idUser : testDataset.allUsers()) {
-            List<Recommendation> lr = recommendationResults.getRecommendationsForUser(idUser);
+            Collection<Recommendation> lr = recommendationResults.getRecommendationsForUser(idUser);
 
             if (lr.size() > maxLength) {
                 maxLength = lr.size();
@@ -52,7 +52,7 @@ public class PRSpace extends EvaluationMeasure {
         for (int idUser : testDataset.allUsers()) {
 
             List<Boolean> resultados = new ArrayList<>(recommendationResults.usersWithRecommendations().size());
-            List<Recommendation> recommendationList = recommendationResults.getRecommendationsForUser(idUser);
+            Collection<Recommendation> recommendationList = recommendationResults.getRecommendationsForUser(idUser);
 
             try {
                 Map<Integer, ? extends Rating> userRatings = testDataset.getUserRatingsRated(idUser);

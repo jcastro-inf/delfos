@@ -1,17 +1,16 @@
 package delfos.experiment.validation.predictionprotocol;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Random;
-import java.util.Set;
-import java.util.TreeSet;
 import delfos.common.Global;
 import delfos.common.exceptions.dataset.users.UserNotFound;
 import delfos.common.parameters.Parameter;
 import delfos.common.parameters.restriction.IntegerParameter;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RatingsDataset;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Random;
+import java.util.Set;
+import java.util.TreeSet;
 
 /**
  * Implementa la validación de predicción que realiza una validación que predice
@@ -19,7 +18,7 @@ import delfos.dataset.basic.rating.RatingsDataset;
  * quedarán X-n valoraciones, donde X es el número d evaloraciones original que
  * el usuario había hecho.
  *
-* @author Jorge Castro Gallardo
+ * @author Jorge Castro Gallardo
  *
  * @version 1.1 21-Jan-2013
  * @version 1.0 Unknow date
@@ -52,7 +51,7 @@ public class PredictN extends PredictionProtocol {
     }
 
     @Override
-    public Collection<Collection<Integer>> getRecommendationRequests(RatingsDataset<? extends Rating> testRatingsDataset, int idUser) throws UserNotFound {
+    public Collection<Set<Integer>> getRecommendationRequests(RatingsDataset<? extends Rating> testRatingsDataset, int idUser) throws UserNotFound {
         Random random = new Random(getSeedValue());
         Collection<Integer> userRated = new TreeSet<>(testRatingsDataset.getUserRated(idUser));
         Set<Integer> extraidos = new TreeSet<>();
@@ -62,8 +61,8 @@ public class PredictN extends PredictionProtocol {
             //no se pueden extraer el número que se solicita, qué hacer?
             Global.showWarning("User " + idUser + " has not enough test rating to extract " + extraer + "\n");
 
-            Collection<Collection<Integer>> ret = new ArrayList<>(extraidos.size());
-            List<Integer> l = new ArrayList<>(userRated);
+            Collection<Set<Integer>> ret = new ArrayList<>(extraidos.size());
+            Set<Integer> l = new TreeSet<>(userRated);
             ret.add(l);
             return ret;
         } else {
@@ -74,7 +73,7 @@ public class PredictN extends PredictionProtocol {
                 extraidos.add(idItem);
             }
 
-            Collection<Collection<Integer>> ret = new ArrayList<>(extraidos.size());
+            Collection<Set<Integer>> ret = new ArrayList<>(extraidos.size());
             ret.add(extraidos);
             return ret;
         }

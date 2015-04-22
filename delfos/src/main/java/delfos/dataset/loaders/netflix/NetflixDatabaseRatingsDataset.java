@@ -1,20 +1,19 @@
 package delfos.dataset.loaders.netflix;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeMap;
-import java.util.TreeSet;
 import delfos.databaseconnections.MySQLConnection;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RatingsDatasetAdapter;
 import delfos.dataset.basic.rating.domain.DecimalDomain;
 import delfos.dataset.basic.rating.domain.Domain;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.Collection;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
+import java.util.TreeSet;
 
 /**
  * Objeto que sirve de interfaz a la librería para acceder al dataset
@@ -23,14 +22,14 @@ import delfos.dataset.basic.rating.domain.Domain;
  * al dataset serán lentos. Es recomendable usar este dataset solo para casos
  * muy concretos de recomendación online, nunca en evaluación de algoritmos
  *
-* @author Jorge Castro Gallardo
+ * @author Jorge Castro Gallardo
  *
  * @version 1.1 (21-01-2013) Ahora implementa de {@link RatingsDatasetAdapter}
  * @version 1.0 Unknow date
  */
 public class NetflixDatabaseRatingsDataset extends RatingsDatasetAdapter {
 
-    private MySQLConnection conexion;
+    private final MySQLConnection conexion;
 
     public NetflixDatabaseRatingsDataset(MySQLConnection conexion) {
         super();
@@ -63,8 +62,8 @@ public class NetflixDatabaseRatingsDataset extends RatingsDatasetAdapter {
     }
 
     @Override
-    public Collection<Integer> allUsers() {
-        ArrayList<Integer> ret = new ArrayList<Integer>();
+    public Set<Integer> allUsers() {
+        Set<Integer> ret = new TreeSet<>();
         try {
 
             String query = "select distinct userID from netflix_ratings;";
@@ -90,7 +89,7 @@ public class NetflixDatabaseRatingsDataset extends RatingsDatasetAdapter {
 
     @Override
     public Set<Integer> allRatedItems() {
-        Set<Integer> items = new TreeSet<Integer>();
+        Set<Integer> items = new TreeSet<>();
         try {
 
             String query = "SELECT distinct itemID FROM netflix_ratings;";
@@ -112,7 +111,7 @@ public class NetflixDatabaseRatingsDataset extends RatingsDatasetAdapter {
 
     @Override
     public Set<Integer> getUserRated(Integer idUser) {
-        Set<Integer> valuedItems = new TreeSet<Integer>();
+        Set<Integer> valuedItems = new TreeSet<>();
         try {
 
             String query = "SELECT itemID FROM netflix_ratings WHERE userID = " + idUser + ";";
@@ -135,7 +134,7 @@ public class NetflixDatabaseRatingsDataset extends RatingsDatasetAdapter {
     @Override
     public Map<Integer, Rating> getUserRatingsRated(Integer idUser) {
 
-        Map<Integer, Rating> valuedItems = new TreeMap<Integer, Rating>();
+        Map<Integer, Rating> valuedItems = new TreeMap<>();
         try {
 
             String query = "SELECT itemID,puntuacion FROM netflix_ratings WHERE userID = " + idUser + ";";
@@ -157,8 +156,8 @@ public class NetflixDatabaseRatingsDataset extends RatingsDatasetAdapter {
     }
 
     @Override
-    public Collection<Integer> getItemRated(Integer idItem) {
-        Set<Integer> users = new TreeSet<Integer>();
+    public Set<Integer> getItemRated(Integer idItem) {
+        Set<Integer> users = new TreeSet<>();
         try {
 
             String query = "SELECT userID FROM netflix_ratings WHERE itemID = " + idItem + ";";
@@ -181,7 +180,7 @@ public class NetflixDatabaseRatingsDataset extends RatingsDatasetAdapter {
     @Override
     public Map<Integer, Rating> getItemRatingsRated(Integer idItem) {
 
-        Map<Integer, Rating> usersRatings = new TreeMap<Integer, Rating>();
+        Map<Integer, Rating> usersRatings = new TreeMap<>();
         try {
 
             String query = "SELECT userID,puntuacion FROM netflix_ratings WHERE itemID = " + idItem + ";";

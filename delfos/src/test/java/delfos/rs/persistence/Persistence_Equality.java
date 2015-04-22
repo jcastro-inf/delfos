@@ -1,11 +1,5 @@
 package delfos.rs.persistence;
 
-import java.io.File;
-import java.util.Iterator;
-import org.jdom2.input.SAXBuilder;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import org.junit.Test;
 import delfos.common.Global;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RatingsDataset;
@@ -17,6 +11,12 @@ import delfos.rs.collaborativefiltering.Recommender_DatasetProperties;
 import delfos.rs.output.RecommendationsOutputFileXML;
 import delfos.rs.recommendation.Recommendation;
 import delfos.rs.recommendation.Recommendations;
+import java.io.File;
+import java.util.Iterator;
+import org.jdom2.input.SAXBuilder;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import org.junit.Test;
 
 /**
  * Clase para, una vez que se han ejecutado los test
@@ -40,7 +40,7 @@ public class Persistence_Equality {
      * @throws java.lang.Exception
      */
     @Test
-    
+
     public void testPersistenceRecommendationsAreEqual() throws Exception {
         Global.setVerbose();
 
@@ -81,8 +81,8 @@ public class Persistence_Equality {
     }
 
     private void assertRecommendationsAreEqual(RecommenderSystem recommenderSystem, File fileRecommendations_File, Recommendations fileRecommendations, File databaseRecommendations_File, Recommendations databaseRecommendations) {
-        Iterator<Recommendation> fileRecommendationsIterator = fileRecommendations.getRecommendations().listIterator();
-        Iterator<Recommendation> databaseRecommendationsIterator = databaseRecommendations.getRecommendations().listIterator();
+        Iterator<Recommendation> fileRecommendationsIterator = fileRecommendations.sortByPreference().getRecommendations().listIterator();
+        Iterator<Recommendation> databaseRecommendationsIterator = databaseRecommendations.sortByPreference().getRecommendations().listIterator();
 
         for (; fileRecommendationsIterator.hasNext();) {
             Recommendation fileRecommendation = fileRecommendationsIterator.next();

@@ -1,20 +1,21 @@
 package delfos.dataset.generated.modifieddatasets;
 
-import java.util.Collection;
-import java.util.Map;
+import delfos.common.exceptions.dataset.items.ItemNotFound;
+import delfos.common.exceptions.dataset.users.UserNotFound;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RatingsDataset;
 import delfos.dataset.basic.rating.RatingsDatasetAdapter;
-import delfos.dataset.basic.rating.domain.DecimalDomain;
-import delfos.common.exceptions.dataset.items.ItemNotFound;
-import delfos.common.exceptions.dataset.users.UserNotFound;
 import delfos.dataset.basic.rating.domain.Domain;
+import java.util.Collection;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Implementa la transpuesta de un dataset, cambiando items por productos.
  *
-* @author Jorge Castro Gallardo
+ * @author Jorge Castro Gallardo
  * @version 1.0 01-May-2013
+ * @param <RatingType>
  */
 public class TransposeRatingsDataset<RatingType extends Rating> extends RatingsDatasetAdapter<RatingType> {
 
@@ -42,17 +43,17 @@ public class TransposeRatingsDataset<RatingType extends Rating> extends RatingsD
     }
 
     @Override
-    public Collection<Integer> allUsers() {
+    public Set<Integer> allUsers() {
         return originalDataset.allRatedItems();
     }
 
     @Override
-    public Collection<Integer> allRatedItems() {
+    public Set<Integer> allRatedItems() {
         return originalDataset.allUsers();
     }
 
     @Override
-    public Collection<Integer> getUserRated(Integer idUser) throws UserNotFound {
+    public Set<Integer> getUserRated(Integer idUser) throws UserNotFound {
         try {
             return originalDataset.getItemRated(idUser);
         } catch (ItemNotFound ex) {
@@ -61,7 +62,7 @@ public class TransposeRatingsDataset<RatingType extends Rating> extends RatingsD
     }
 
     @Override
-    public Collection<Integer> getItemRated(Integer idItem) throws ItemNotFound {
+    public Set<Integer> getItemRated(Integer idItem) throws ItemNotFound {
         try {
             return originalDataset.getUserRated(idItem);
         } catch (UserNotFound ex) {

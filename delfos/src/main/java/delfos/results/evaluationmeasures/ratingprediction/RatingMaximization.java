@@ -1,6 +1,5 @@
 package delfos.results.evaluationmeasures.ratingprediction;
 
-import java.util.List;
 import delfos.ERROR_CODES;
 import delfos.common.Global;
 import delfos.common.exceptions.dataset.items.ItemNotFound;
@@ -8,10 +7,11 @@ import delfos.common.exceptions.dataset.users.UserNotFound;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RatingsDataset;
 import delfos.dataset.basic.rating.RelevanceCriteria;
-import delfos.results.RecommendationResults;
 import delfos.results.MeasureResult;
+import delfos.results.RecommendationResults;
 import delfos.results.evaluationmeasures.EvaluationMeasure;
 import delfos.rs.recommendation.Recommendation;
+import java.util.List;
 
 /**
  * Calcula la suma de ratings recomendados a cada usuario y hace la media. El
@@ -42,9 +42,9 @@ public class RatingMaximization extends EvaluationMeasure {
         int numRecommendations = 0;
         for (int idUser : testDataset.allUsers()) {
 
-            List<Recommendation> list = recommendationResults.getRecommendationsForUser(idUser);
-            for (int i = 0; i < list.size(); i++) {
-                int idItem = list.get(i).getIdItem();
+            List<Recommendation> thisUserRecommendations = recommendationResults.getRecommendationsForUser(idUser);
+            for (int i = 0; i < thisUserRecommendations.size(); i++) {
+                int idItem = thisUserRecommendations.get(i).getIdItem();
                 try {
                     value += testDataset.getRating(idUser, idItem).ratingValue.doubleValue();
                     numRecommendations++;

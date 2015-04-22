@@ -1,8 +1,5 @@
 package delfos.group.grs.penalty;
 
-import delfos.group.grs.penalty.PenaltyGRS_Ratings;
-import java.util.List;
-import org.junit.Test;
 import delfos.common.aggregationoperators.penalty.functions.PenaltyWholeMatrix;
 import delfos.constants.DelfosTest;
 import delfos.dataset.loaders.csv.CSVfileDatasetLoader_table;
@@ -16,6 +13,8 @@ import delfos.rs.output.RecommendationsOutputStandardRaw;
 import delfos.rs.recommendation.Recommendation;
 import delfos.rs.recommendation.RecommendationsFactory;
 import delfos.similaritymeasures.CosineCoefficient;
+import java.util.Collection;
+import org.junit.Test;
 
 /**
  *
@@ -38,7 +37,7 @@ public class PenaltyExcelExample extends DelfosTest {
 
         GroupModelPseudoUser groupModel = penaltyGRS_Ratings.buildGroupModel(datasetLoader, recommendationModel, groupOfUsers);
 
-        List<Recommendation> recommendOnly = penaltyGRS_Ratings.recommendOnly(datasetLoader, recommendationModel, groupModel, groupOfUsers, datasetLoader.getRatingsDataset().allRatedItems());
+        Collection<Recommendation> recommendOnly = penaltyGRS_Ratings.recommendOnly(datasetLoader, recommendationModel, groupModel, groupOfUsers, datasetLoader.getRatingsDataset().allRatedItems());
 
         RecommendationsOutputStandardRaw output = new RecommendationsOutputStandardRaw();
 

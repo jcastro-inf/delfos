@@ -184,12 +184,8 @@ public class PenaltyGRS_Ratings extends GroupRecommenderSystemAdapter<SingleReco
     }
 
     @Override
-    public List<Recommendation> recommendOnly(
-            DatasetLoader<? extends Rating> datasetLoader,
-            SingleRecommenderSystemModel recommenderSystemModel,
-            GroupModelPseudoUser groupModel,
-            GroupOfUsers groupOfUsers,
-            Collection<Integer> idItemList)
+    public Collection<Recommendation> recommendOnly(
+            DatasetLoader<? extends Rating> datasetLoader, SingleRecommenderSystemModel recommenderSystemModel, GroupModelPseudoUser groupModel, GroupOfUsers groupOfUsers, java.util.Set<Integer> idItemList)
             throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset, NotEnoughtUserInformation {
 
         RecommenderSystem recommenderSystem = getSingleUserRecommender();
@@ -205,7 +201,7 @@ public class PenaltyGRS_Ratings extends GroupRecommenderSystemAdapter<SingleReco
             DatasetPrinterDeprecated.printCompactRatingTable(ratingsDataset_withPseudoUser, Arrays.asList(idGroup), ratingsDataset_withPseudoUser.getUserRated(idGroup));
         }
 
-        List<Recommendation> groupRecomendations;
+        Collection<Recommendation> groupRecomendations;
 
         groupRecomendations = recommenderSystem.recommendOnly(
                 new DatasetLoaderGiven(datasetLoader, ratingsDataset_withPseudoUser),

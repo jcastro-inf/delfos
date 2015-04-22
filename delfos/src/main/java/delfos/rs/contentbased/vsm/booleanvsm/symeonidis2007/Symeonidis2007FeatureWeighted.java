@@ -1,5 +1,29 @@
 package delfos.rs.contentbased.vsm.booleanvsm.symeonidis2007;
 
+import delfos.ERROR_CODES;
+import delfos.common.Global;
+import delfos.common.exceptions.CouldNotComputeSimilarity;
+import delfos.common.exceptions.dataset.CannotLoadContentDataset;
+import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
+import delfos.common.exceptions.dataset.entity.EntityNotFound;
+import delfos.common.exceptions.dataset.items.ItemNotFound;
+import delfos.common.exceptions.dataset.users.UserNotFound;
+import delfos.common.parameters.Parameter;
+import delfos.common.parameters.restriction.IntegerParameter;
+import delfos.dataset.basic.features.Feature;
+import delfos.dataset.basic.item.ContentDataset;
+import delfos.dataset.basic.item.Item;
+import delfos.dataset.basic.loader.types.ContentDatasetLoader;
+import delfos.dataset.basic.loader.types.DatasetLoader;
+import delfos.dataset.basic.rating.Rating;
+import delfos.dataset.basic.rating.RatingsDataset;
+import delfos.dataset.basic.rating.RelevanceCriteria;
+import delfos.rs.collaborativefiltering.knn.RecommendationEntity;
+import delfos.rs.collaborativefiltering.profile.Neighbor;
+import delfos.rs.contentbased.ContentBasedRecommender;
+import delfos.rs.contentbased.vsm.booleanvsm.BooleanFeaturesTransformation;
+import delfos.rs.recommendation.Recommendation;
+import delfos.similaritymeasures.CosineCoefficient;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -12,30 +36,6 @@ import java.util.TreeSet;
 import org.grouplens.lenskit.vectors.MutableSparseVector;
 import org.grouplens.lenskit.vectors.SparseVector;
 import org.grouplens.lenskit.vectors.VectorEntry;
-import delfos.dataset.basic.item.ContentDataset;
-import delfos.dataset.basic.item.Item;
-import delfos.dataset.basic.features.Feature;
-import delfos.dataset.basic.rating.Rating;
-import delfos.dataset.basic.rating.RatingsDataset;
-import delfos.dataset.basic.rating.RelevanceCriteria;
-import delfos.dataset.basic.loader.types.ContentDatasetLoader;
-import delfos.dataset.basic.loader.types.DatasetLoader;
-import delfos.rs.collaborativefiltering.knn.RecommendationEntity;
-import delfos.ERROR_CODES;
-import delfos.rs.collaborativefiltering.profile.Neighbor;
-import delfos.rs.contentbased.ContentBasedRecommender;
-import delfos.rs.contentbased.vsm.booleanvsm.BooleanFeaturesTransformation;
-import delfos.rs.recommendation.Recommendation;
-import delfos.similaritymeasures.CosineCoefficient;
-import delfos.common.exceptions.CouldNotComputeSimilarity;
-import delfos.common.exceptions.dataset.CannotLoadContentDataset;
-import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
-import delfos.common.exceptions.dataset.entity.EntityNotFound;
-import delfos.common.exceptions.dataset.items.ItemNotFound;
-import delfos.common.exceptions.dataset.users.UserNotFound;
-import delfos.common.Global;
-import delfos.common.parameters.Parameter;
-import delfos.common.parameters.restriction.IntegerParameter;
 
 /**
  * Clase que implementa el sistema de recomendación propuesto en el paper:
@@ -277,7 +277,7 @@ public class Symeonidis2007FeatureWeighted extends ContentBasedRecommender<Symeo
     }
 
     @Override
-    protected List<Recommendation> recommendOnly(DatasetLoader<? extends Rating> datasetLoader, Symeonidis2007Model model, Symeonidis2007UserProfile userProfile, Collection<Integer> idItemList) throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset {
+    protected Collection<Recommendation> recommendOnly(DatasetLoader<? extends Rating> datasetLoader, Symeonidis2007Model model, Symeonidis2007UserProfile userProfile, Collection<Integer> idItemList) throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset {
         final RatingsDataset<? extends Rating> ratingsDataset = datasetLoader.getRatingsDataset();
         final ContentDataset contentDataset;
         if (datasetLoader instanceof ContentDatasetLoader) {
@@ -315,7 +315,7 @@ public class Symeonidis2007FeatureWeighted extends ContentBasedRecommender<Symeo
             }
         }
 //Step 5: For each item, we add its features frequency ﬁnding its weight in the neighborhood: w(I1) = 3, w(I3) = 5, w(I5) = 6.
-        List<Recommendation> recommendations = new ArrayList<Recommendation>();
+        Collection<Recommendation> recommendations = new ArrayList<>();
 
         for (int idItem : idItemList) {
             try {
@@ -334,7 +334,6 @@ public class Symeonidis2007FeatureWeighted extends ContentBasedRecommender<Symeo
             }
         }
 
-        Collections.sort(recommendations);
         return recommendations;
     }
 
@@ -342,11 +341,11 @@ public class Symeonidis2007FeatureWeighted extends ContentBasedRecommender<Symeo
 
         CosineCoefficient cosineCoefficient = new CosineCoefficient();
 
-        List<Neighbor> neighbors = new ArrayList<Neighbor>();
+        List<Neighbor> neighbors = new ArrayList<>();
         for (Symeonidis2007UserProfile neighborProfile : model.userProfiles()) {
             if (neighborProfile.getId() != userProfile.getId()) {
-                List<Float> v1 = new LinkedList<Float>();
-                List<Float> v2 = new LinkedList<Float>();
+                List<Float> v1 = new LinkedList<>();
+                List<Float> v2 = new LinkedList<>();
 
                 for (Feature feature : userProfile.getFeatures()) {
                     for (Object value : userProfile.getValuedFeatureValues(feature)) {

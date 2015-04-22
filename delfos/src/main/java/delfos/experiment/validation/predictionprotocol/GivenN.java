@@ -1,10 +1,5 @@
 package delfos.experiment.validation.predictionprotocol;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Random;
-import java.util.Set;
-import java.util.TreeSet;
 import delfos.common.Global;
 import delfos.common.exceptions.dataset.users.UserNotFound;
 import delfos.common.parameters.Parameter;
@@ -12,12 +7,17 @@ import delfos.common.parameters.restriction.IntegerParameter;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RatingsDataset;
 import delfos.rs.RecommenderSystemAdapter;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Random;
+import java.util.Set;
+import java.util.TreeSet;
 
 /**
  * Implementa la validación de predicción que realiza una validación dadas N
  * valoraciones para el usuario que se predice
  *
-* @author Jorge Castro Gallardo
+ * @author Jorge Castro Gallardo
  */
 public class GivenN extends PredictionProtocol {
 
@@ -61,7 +61,7 @@ public class GivenN extends PredictionProtocol {
      * @throws UserNotFound
      */
     @Override
-    public Collection<Collection<Integer>> getRecommendationRequests(RatingsDataset<? extends Rating> testRatingsDataset, int idUser) throws UserNotFound {
+    public Collection<Set<Integer>> getRecommendationRequests(RatingsDataset<? extends Rating> testRatingsDataset, int idUser) throws UserNotFound {
         Random random = new Random(getSeedValue());
         Integer[] itemsRated = testRatingsDataset.getUserRatingsRated(idUser).keySet().toArray(new Integer[0]);
         int nValue = (Integer) getParameterValue(n);
@@ -83,7 +83,7 @@ public class GivenN extends PredictionProtocol {
             }
         }
 
-        Collection<Collection<Integer>> ret = new ArrayList<>(predecir.size());
+        Collection<Set<Integer>> ret = new ArrayList<>(predecir.size());
         ret.add(predecir);
         return ret;
     }

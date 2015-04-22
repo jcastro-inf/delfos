@@ -1,11 +1,5 @@
 package delfos.group.view.grouprecommendation;
 
-import java.io.File;
-import java.util.List;
-import java.util.Random;
-import java.util.Set;
-import java.util.TreeSet;
-import javax.swing.JFrame;
 import delfos.common.exceptions.dataset.CannotLoadContentDataset;
 import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
 import delfos.common.exceptions.dataset.items.ItemNotFound;
@@ -24,6 +18,12 @@ import delfos.group.view.InitialFrame;
 import delfos.rs.output.RecommendationsOutputStandardRaw;
 import delfos.rs.recommendation.Recommendation;
 import delfos.rs.recommendation.RecommendationComputationDetails;
+import java.io.File;
+import java.util.Collection;
+import java.util.Random;
+import java.util.Set;
+import java.util.TreeSet;
+import javax.swing.JFrame;
 
 /**
  *
@@ -71,7 +71,7 @@ public class GroupRecommendationWindow extends JFrame {
             allItems = new TreeSet<>(datasetLoader.getRatingsDataset().allRatedItems());
         }
 
-        List<Recommendation> recomm = groupRecommenderSystem.recommendOnly(datasetLoader, build, buildGroupModel, groupOfUsers, allItems);
+        Collection<Recommendation> recomm = groupRecommenderSystem.recommendOnly(datasetLoader, build, buildGroupModel, groupOfUsers, allItems);
 
         RecommendationsOutputStandardRaw output = new RecommendationsOutputStandardRaw();
         output.writeRecommendations(new GroupRecommendations(groupOfUsers, recomm, RecommendationComputationDetails.EMPTY_DETAILS));

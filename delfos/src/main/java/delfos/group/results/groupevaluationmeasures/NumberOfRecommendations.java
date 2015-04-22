@@ -1,23 +1,23 @@
 package delfos.group.results.groupevaluationmeasures;
 
+import delfos.common.Global;
+import delfos.dataset.basic.rating.Rating;
+import delfos.dataset.basic.rating.RatingsDataset;
+import delfos.dataset.basic.rating.RelevanceCriteria;
+import delfos.group.groupsofusers.GroupOfUsers;
+import delfos.group.results.grouprecomendationresults.GroupRecommendationResult;
+import delfos.io.xml.parameterowner.ParameterOwnerXML;
+import delfos.rs.recommendation.Recommendation;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map.Entry;
 import org.jdom2.Element;
-import delfos.dataset.basic.rating.Rating;
-import delfos.dataset.basic.rating.RatingsDataset;
-import delfos.dataset.basic.rating.RelevanceCriteria;
-import delfos.io.xml.parameterowner.ParameterOwnerXML;
-import delfos.rs.recommendation.Recommendation;
-import delfos.common.Global;
-import delfos.group.groupsofusers.GroupOfUsers;
-import delfos.group.results.grouprecomendationresults.GroupRecommendationResult;
 
 /**
  * Medida de evaluación para calcular el número de predicciones que se
  * calcularon.
  *
-* @author Jorge Castro Gallardo
+ * @author Jorge Castro Gallardo
  *
  * @version 1.0 (26-01-2013)
  * @see delfos.Results.EvaluationMeasures.RatingPrediction.MAE_ForGroups
@@ -31,7 +31,7 @@ public class NumberOfRecommendations extends GroupEvaluationMeasure {
         int recomendadas = 0;
         for (Entry<GroupOfUsers, List<Recommendation>> entry : recommendationResults) {
             GroupOfUsers group = entry.getKey();
-            List<Recommendation> recommendations = entry.getValue();
+            Collection<Recommendation> recommendations = entry.getValue();
             Element groupRequests = new Element("GroupRecommendations");
             groupRequests.setAttribute("group", group.toString());
             if (recommendations == null) {

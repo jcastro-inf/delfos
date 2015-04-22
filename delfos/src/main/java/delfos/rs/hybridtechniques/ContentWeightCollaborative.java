@@ -86,13 +86,13 @@ public class ContentWeightCollaborative extends HybridRecommender<HybridRecommen
     }
 
     @Override
-    public List<Recommendation> recommendOnly(DatasetLoader<? extends Rating> datasetLoader, HybridRecommenderSystemModel model, Integer idUser, Collection<Integer> idItemList) throws UserNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset, ItemNotFound, NotEnoughtUserInformation {
+    public Collection<Recommendation> recommendOnly(DatasetLoader<? extends Rating> datasetLoader, HybridRecommenderSystemModel model, Integer idUser, java.util.Set<Integer> idItemList) throws UserNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset, ItemNotFound, NotEnoughtUserInformation {
 
         ContentBasedRecommender<Object, Object> contentBasedAlgorithm = (ContentBasedRecommender<Object, Object>) getParameterValue(CONTENT_BASED_TECHNIQUE);
         CollaborativeRecommender<Object> collaborativeFilteringTechnique = (CollaborativeRecommender<Object>) getParameterValue(COLLABORATIVE_TECHNIQUE);
 
-        List<Recommendation> content = contentBasedAlgorithm.recommendOnly(datasetLoader, model.getModel(0), idUser, idItemList);
-        List<Recommendation> collaborative = collaborativeFilteringTechnique.recommendOnly(datasetLoader, model.getModel(1), idUser, idItemList);
+        Collection<Recommendation> content = contentBasedAlgorithm.recommendOnly(datasetLoader, model.getModel(0), idUser, idItemList);
+        Collection<Recommendation> collaborative = collaborativeFilteringTechnique.recommendOnly(datasetLoader, model.getModel(1), idUser, idItemList);
 
         return joinRecommendationLists(content, collaborative);
     }
@@ -115,7 +115,7 @@ public class ContentWeightCollaborative extends HybridRecommender<HybridRecommen
      * @param l2 Lista de recomendaciones.
      * @return Lista de recomendaciones unida.
      */
-    private List<Recommendation> joinRecommendationLists(List<Recommendation> l1, List<Recommendation> l2) {
+    private Collection<Recommendation> joinRecommendationLists(Collection<Recommendation> l1, Collection<Recommendation> l2) {
         int size = Math.max(l1.size(), l2.size());
 
         class rank implements Comparable<rank> {
@@ -178,7 +178,7 @@ public class ContentWeightCollaborative extends HybridRecommender<HybridRecommen
 
         Collections.sort(finalList);
 
-        List<Recommendation> ret = new LinkedList<>();
+        Collection<Recommendation> ret = new LinkedList<>();
 
         finalList.stream().filter((r) -> (r.valorCombinado != 0)).forEach((r) -> {
             ret.add(new Recommendation(r.idItem, r.valorCombinado));

@@ -1,15 +1,15 @@
 package delfos.group.grs.recommendations;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeMap;
-import java.util.TreeSet;
 import delfos.dataset.basic.user.User;
 import delfos.group.groupsofusers.GroupOfUsers;
 import delfos.rs.recommendation.Recommendation;
 import delfos.rs.recommendation.Recommendations;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
+import java.util.TreeSet;
 
 /**
  * Encapsula las recomendaciones hechas a un grupo.
@@ -53,7 +53,7 @@ public class GroupRecommendationsWithMembersRecommendations extends Recommendati
      * @return recomendaciones del grupo.
      */
     @Override
-    public List<Recommendation> getRecommendations() {
+    public Collection<Recommendation> getRecommendations() {
         return super.getRecommendations();
     }
 

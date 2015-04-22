@@ -1,13 +1,14 @@
 package delfos.group.experiment.validation.predictionvalidation;
 
-import java.util.Arrays;
-import java.util.Collection;
 import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
 import delfos.common.exceptions.dataset.users.UserNotFound;
-import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.loader.types.DatasetLoader;
+import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.util.DatasetUtilities;
 import delfos.group.groupsofusers.GroupOfUsers;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Set;
 
 /**
  * Implementa el protocolo de predicción HoldOut, que divide el conjunto de
@@ -26,7 +27,7 @@ public class NoPredictionProtocol extends GroupPredictionProtocol {
         super();
     }
 
-    private Collection<Integer> getRatedItems(DatasetLoader<? extends Rating> datasetLoader, GroupOfUsers group) throws CannotLoadRatingsDataset, UserNotFound {
+    private Set<Integer> getRatedItems(DatasetLoader<? extends Rating> datasetLoader, GroupOfUsers group) throws CannotLoadRatingsDataset, UserNotFound {
         return DatasetUtilities.getMembersRatings_byItem(group, datasetLoader).keySet();
     }
 

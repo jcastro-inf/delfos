@@ -1,11 +1,5 @@
 package delfos.dataset.generated.modifieddatasets;
 
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.TreeMap;
-import java.util.TreeSet;
 import delfos.ERROR_CODES;
 import delfos.common.Global;
 import delfos.common.exceptions.dataset.items.ItemNotFound;
@@ -13,14 +7,21 @@ import delfos.common.exceptions.dataset.users.UserNotFound;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RatingsDataset;
 import delfos.dataset.basic.rating.RatingsDatasetAdapter;
-import delfos.dataset.basic.rating.domain.DecimalDomain;
 import delfos.dataset.basic.rating.domain.Domain;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+import java.util.TreeMap;
+import java.util.TreeSet;
 
 /**
  * Clase que se comporta como una envoltura de un dataset, haciendo visibles
  * solo los productos y los usuarios que se le pasan por parámetros.
  *
-* @author Jorge Castro Gallardo
+ *
+ * @author Jorge Castro Gallardo
  *
  * @version 1.1 (21-01-2013) Ahora implementa de {@link RatingsDatasetAdapter}
  * @version 1.0 Unknow date
@@ -78,8 +79,8 @@ public class SelectionDataset<RatingType extends Rating> extends RatingsDatasetA
     }
 
     @Override
-    public Collection<Integer> allUsers() {
-        Collection<Integer> ratedUsers = new TreeSet<>();
+    public Set<Integer> allUsers() {
+        Set<Integer> ratedUsers = new TreeSet<>();
         usuariosPermitidos.stream().forEach((idUser) -> {
             try {
                 if (!getUserRated(idUser).isEmpty()) {
@@ -93,8 +94,8 @@ public class SelectionDataset<RatingType extends Rating> extends RatingsDatasetA
     }
 
     @Override
-    public Collection<Integer> allRatedItems() {
-        Collection<Integer> ratedItems = new TreeSet<>();
+    public Set<Integer> allRatedItems() {
+        Set<Integer> ratedItems = new TreeSet<>();
         for (int idItem : productosPermitidos) {
             try {
                 if (isRatedItem(idItem)) {
@@ -108,7 +109,7 @@ public class SelectionDataset<RatingType extends Rating> extends RatingsDatasetA
     }
 
     @Override
-    public Collection<Integer> getUserRated(Integer idUser) throws UserNotFound {
+    public Set<Integer> getUserRated(Integer idUser) throws UserNotFound {
         if (!usuariosPermitidos.contains(idUser)) {
             throw new UserNotFound(idUser);
         }
@@ -134,7 +135,7 @@ public class SelectionDataset<RatingType extends Rating> extends RatingsDatasetA
     }
 
     @Override
-    public Collection<Integer> getItemRated(Integer idItem) throws ItemNotFound {
+    public Set<Integer> getItemRated(Integer idItem) throws ItemNotFound {
         if (!productosPermitidos.contains(idItem)) {
             throw new ItemNotFound(idItem);
         }

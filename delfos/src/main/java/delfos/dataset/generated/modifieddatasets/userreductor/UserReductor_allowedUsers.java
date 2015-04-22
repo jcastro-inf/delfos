@@ -1,12 +1,5 @@
 package delfos.dataset.generated.modifieddatasets.userreductor;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeMap;
-import java.util.TreeSet;
 import delfos.ERROR_CODES;
 import delfos.common.Global;
 import delfos.common.exceptions.dataset.items.ItemNotFound;
@@ -14,12 +7,16 @@ import delfos.common.exceptions.dataset.users.UserNotFound;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RatingsDataset;
 import delfos.dataset.basic.rating.RatingsDatasetAdapter;
-import delfos.dataset.basic.rating.domain.DecimalDomain;
 import delfos.dataset.basic.rating.domain.Domain;
+import java.util.Collections;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
+import java.util.TreeSet;
 
 /**
  *
-* @author Jorge Castro Gallardo
+ * @author Jorge Castro Gallardo
  *
  * @version 1.0 Unknow date
  *
@@ -54,8 +51,8 @@ public class UserReductor_allowedUsers<RatingType extends Rating> extends Rating
     }
 
     @Override
-    public Collection<Integer> allUsers() {
-        Set<Integer> ret = new TreeSet<Integer>();
+    public Set<Integer> allUsers() {
+        Set<Integer> ret = new TreeSet<>();
         for (int idUser : allowedUsers) {
             ret.add(idUser);
         }
@@ -63,9 +60,9 @@ public class UserReductor_allowedUsers<RatingType extends Rating> extends Rating
     }
 
     @Override
-    public Collection<Integer> allRatedItems() {
+    public Set<Integer> allRatedItems() {
         if (this.allRatedItems == null || allRatedItems.isEmpty()) {
-            allRatedItems = new TreeSet<Integer>();
+            allRatedItems = new TreeSet<>();
 
             for (Integer idUser : allowedUsers) {
                 try {
@@ -77,11 +74,11 @@ public class UserReductor_allowedUsers<RatingType extends Rating> extends Rating
             }
         }
 
-        return Collections.unmodifiableCollection(allRatedItems);
+        return Collections.unmodifiableSet(allRatedItems);
     }
 
     @Override
-    public Collection<Integer> getUserRated(Integer idUser) throws UserNotFound {
+    public Set<Integer> getUserRated(Integer idUser) throws UserNotFound {
         if (isAllowed(idUser)) {
             return originalDataset.getUserRated(idUser);
         } else {
@@ -90,9 +87,9 @@ public class UserReductor_allowedUsers<RatingType extends Rating> extends Rating
     }
 
     @Override
-    public Collection<Integer> getItemRated(Integer idItem) throws ItemNotFound {
+    public Set<Integer> getItemRated(Integer idItem) throws ItemNotFound {
 
-        Collection<Integer> ret = new LinkedList<Integer>();
+        Set<Integer> ret = new TreeSet<>();
         for (int idUser : originalDataset.getItemRated(idItem)) {
             if (isAllowed(idUser)) {
                 ret.add(idUser);
@@ -112,7 +109,7 @@ public class UserReductor_allowedUsers<RatingType extends Rating> extends Rating
 
     @Override
     public Map<Integer, RatingType> getItemRatingsRated(Integer idItem) throws ItemNotFound {
-        Map<Integer, RatingType> ret = new TreeMap<Integer, RatingType>();
+        Map<Integer, RatingType> ret = new TreeMap<>();
 
         for (int idUser : getItemRated(idItem)) {
             try {

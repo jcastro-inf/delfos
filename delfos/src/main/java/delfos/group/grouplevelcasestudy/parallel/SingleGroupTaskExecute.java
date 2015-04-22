@@ -86,7 +86,7 @@ public class SingleGroupTaskExecute implements SingleTaskExecute<SingleGroupTask
             for (GroupRecommenderSystem groupRecommenderSystem : groupRecommenderSystems) {
 
                 Object recommenderSystemModel = groupRecommenderSystem.build(trainingDatasetLoader);
-                List<Recommendation> allPredictions = new ArrayList<>();
+                Collection<Recommendation> allPredictions = new ArrayList<>();
                 List<Integer> requests = new ArrayList<>();
 
                 Collection<GroupRecommendationRequest> allRequests = predictionProtocol.getGroupRecommendationRequests(trainingDatasetLoader, testDatasetLoader, group);
@@ -97,7 +97,7 @@ public class SingleGroupTaskExecute implements SingleTaskExecute<SingleGroupTask
                             recommenderSystemModel,
                             group);
 
-                    List<Recommendation> groupRecommendations = groupRecommenderSystem.recommendOnly(
+                    Collection<Recommendation> groupRecommendations = groupRecommenderSystem.recommendOnly(
                             groupRecommendationRequest.predictionPhaseDatasetLoader,
                             recommenderSystemModel,
                             groupModel,
@@ -116,7 +116,7 @@ public class SingleGroupTaskExecute implements SingleTaskExecute<SingleGroupTask
                 for (GroupEvaluationMeasure evaluationMeasure : evaluationMeasures) {
                     Map<GroupOfUsers, Collection<Integer>> _requests = new TreeMap<>();
                     _requests.put(group, requests);
-                    Map<GroupOfUsers, List<Recommendation>> _recommendations = new TreeMap<>();
+                    Map<GroupOfUsers, Collection<Recommendation>> _recommendations = new TreeMap<>();
                     _recommendations.put(group, allPredictions);
                     GroupRecommendationResult groupRecommendationResult = new GroupRecommendationResult(0, 0, 0, 1, _requests, _recommendations, groupRecommenderSystem.getAlias());
                     GroupMeasureResult measureResult = evaluationMeasure.getMeasureResult(groupRecommendationResult, testDatasetLoader.getRatingsDataset(), datasetLoader.getDefaultRelevanceCriteria());

@@ -1,14 +1,14 @@
 package delfos.rs.recommendation;
 
+import delfos.common.decimalnumbers.NumberCompare;
+import delfos.common.decimalnumbers.NumberRounder;
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.Comparator;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
-import delfos.common.decimalnumbers.NumberCompare;
-import delfos.common.decimalnumbers.NumberRounder;
 
 /**
  * Almacena una recomendación devuelta por un sistema de recomendación.
@@ -26,7 +26,7 @@ public class Recommendation implements Comparable<Recommendation>, Serializable 
      * @param recommendations
      * @return
      */
-    public static Set<Integer> getSetOfItems(List<Recommendation> recommendations) {
+    public static Set<Integer> getSetOfItems(Collection<Recommendation> recommendations) {
         Set<Integer> ret = new TreeSet<>();
         for (Recommendation r : recommendations) {
             ret.add(r.getIdItem());
@@ -34,7 +34,7 @@ public class Recommendation implements Comparable<Recommendation>, Serializable 
         return ret;
     }
 
-    public static Map<Integer, Number> convertToMapOfNumbers(List<Recommendation> recommendations) {
+    public static Map<Integer, Number> convertToMapOfNumbers(Collection<Recommendation> recommendations) {
 
         Map<Integer, Number> map = new TreeMap<>();
 
@@ -52,7 +52,7 @@ public class Recommendation implements Comparable<Recommendation>, Serializable 
 
     }
 
-    public static Map<Integer, Number> convertToMapOfNumbers_onlyRankPreference(List<Recommendation> recommendations) {
+    public static Map<Integer, Number> convertToMapOfNumbers_onlyRankPreference(Collection<Recommendation> recommendations) {
         Map<Integer, Number> map = new TreeMap<>();
 
         final double size = recommendations.size();

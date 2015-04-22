@@ -22,6 +22,7 @@ import delfos.dataset.basic.rating.RatingsDataset;
 import delfos.dataset.basic.rating.domain.Domain;
 import delfos.dataset.changeable.ChangeableRatingsDataset;
 import delfos.dataset.storage.memory.BothIndexRatingsDataset;
+import java.util.Set;
 
 /**
  * Implementa un dataset de valoraciones modificable sobre fichero CSV.
@@ -70,17 +71,17 @@ public final class ChangeableMySQLRatingsDataset implements RatingsDataset<Ratin
     }
 
     @Override
-    public Collection<Integer> allUsers() {
+    public Set<Integer> allUsers() {
         return ratingsDataset.allUsers();
     }
 
     @Override
-    public Collection<Integer> allRatedItems() {
+    public Set<Integer> allRatedItems() {
         return ratingsDataset.allRatedItems();
     }
 
     @Override
-    public Collection<Integer> getUserRated(Integer idUser) throws UserNotFound {
+    public Set<Integer> getUserRated(Integer idUser) throws UserNotFound {
         return ratingsDataset.getUserRated(idUser);
     }
 
@@ -90,7 +91,7 @@ public final class ChangeableMySQLRatingsDataset implements RatingsDataset<Ratin
     }
 
     @Override
-    public Collection<Integer> getItemRated(Integer idItem) throws ItemNotFound {
+    public Set<Integer> getItemRated(Integer idItem) throws ItemNotFound {
         return ratingsDataset.getItemRated(idItem);
     }
 

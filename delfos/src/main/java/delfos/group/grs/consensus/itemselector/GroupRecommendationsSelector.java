@@ -1,16 +1,16 @@
 package delfos.group.grs.consensus.itemselector;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 import delfos.common.parameters.Parameter;
 import delfos.common.parameters.ParameterOwnerAdapter;
 import delfos.common.parameters.ParameterOwnerType;
 import delfos.common.parameters.restriction.IntegerParameter;
 import delfos.rs.recommendation.Recommendation;
+import java.util.Collection;
+import java.util.Map;
+import java.util.Set;
 
 /**
-* @author Jorge Castro Gallardo
+ * @author Jorge Castro Gallardo
  *
  * @version 02-Mayo-2014
  */
@@ -29,7 +29,7 @@ public abstract class GroupRecommendationsSelector extends ParameterOwnerAdapter
         setParameterValue(NUMBER_OF_ITEM_SELECTED, numberOfItems);
     }
 
-    public abstract Set<Integer> getRecommendationSelection(Map<Integer, List<Recommendation>> membersRecommendations);
+    public abstract Set<Integer> getRecommendationSelection(Map<Integer, Collection<Recommendation>> membersRecommendations);
 
     @Override
     public ParameterOwnerType getParameterOwnerType() {

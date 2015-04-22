@@ -1,25 +1,24 @@
 package delfos.dataset.generated.modifieddatasets;
 
+import delfos.common.exceptions.dataset.items.ItemNotFound;
+import delfos.common.exceptions.dataset.users.UserNotFound;
+import delfos.dataset.basic.rating.Rating;
+import delfos.dataset.basic.rating.RatingsDataset;
+import delfos.dataset.basic.rating.RatingsDatasetAdapter;
+import delfos.dataset.basic.rating.domain.Domain;
+import delfos.dataset.generated.modifieddatasets.userreductor.UserReductor_allowedUsers;
+import delfos.dataset.storage.memory.BothIndexRatingsDataset;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
-import delfos.common.exceptions.dataset.items.ItemNotFound;
-import delfos.common.exceptions.dataset.users.UserNotFound;
-import delfos.dataset.basic.rating.Rating;
-import delfos.dataset.basic.rating.RatingsDataset;
-import delfos.dataset.basic.rating.RatingsDatasetAdapter;
-import delfos.dataset.storage.memory.BothIndexRatingsDataset;
-import delfos.dataset.generated.modifieddatasets.userreductor.UserReductor_allowedUsers;
-import delfos.dataset.basic.rating.domain.DecimalDomain;
-import delfos.dataset.basic.rating.domain.Domain;
 
 /**
  * Dataset utilizado para añadir un usuario que no existe realmente.
  *
-* @author Jorge Castro Gallardo
+ * @author Jorge Castro Gallardo
  *
  * @version 1.1 (21-01-2013) Ahora implementa de {@link RatingsDatasetAdapter}
  * @version 21-Enero-2014 Ahora también se permite eliminar usuarios, para dar
@@ -92,23 +91,23 @@ public class PseudoUserRatingsDataset_manyPseudoUsers<RatingType extends Rating>
     }
 
     @Override
-    public Collection<Integer> allUsers() {
+    public Set<Integer> allUsers() {
         Set<Integer> allUsers = new TreeSet<>(workingDataset.allUsers());
         allUsers.addAll(pseudoRatings.allUsers());
         return allUsers;
     }
 
     @Override
-    public Collection<Integer> allRatedItems() {
+    public Set<Integer> allRatedItems() {
         if (ratedItems == null) {
             ratedItems = new TreeSet<>(workingDataset.allRatedItems());
             ratedItems.addAll(pseudoRatings.allRatedItems());
         }
-        return Collections.unmodifiableCollection(ratedItems);
+        return Collections.unmodifiableSet(ratedItems);
     }
 
     @Override
-    public Collection<Integer> getUserRated(Integer idUser) throws UserNotFound {
+    public Set<Integer> getUserRated(Integer idUser) throws UserNotFound {
         if (pseudoRatings.allUsers().contains(idUser)) {
             return pseudoRatings.getUserRated(idUser);
         } else {
@@ -117,7 +116,7 @@ public class PseudoUserRatingsDataset_manyPseudoUsers<RatingType extends Rating>
     }
 
     @Override
-    public Collection<Integer> getItemRated(Integer idItem) {
+    public Set<Integer> getItemRated(Integer idItem) {
         Set<Integer> ret = new TreeSet<>();
         try {
             ret.addAll(pseudoRatings.getItemRated(idItem));

@@ -53,7 +53,7 @@ public abstract class RatingsDatasetAdapter<RatingType extends Rating> implement
      * @return Conjunto de id de usuarios
      */
     @Override
-    public abstract Collection<Integer> allUsers();
+    public abstract Set<Integer> allUsers();
 
     /**
      * Implementación por defecto del método que devuelve todos los items del
@@ -65,7 +65,7 @@ public abstract class RatingsDatasetAdapter<RatingType extends Rating> implement
      * @return Conjunto con los id de los items que han sido valorados
      */
     @Override
-    public abstract Collection<Integer> allRatedItems();
+    public abstract Set<Integer> allRatedItems();
 
     /**
      * Devuelve las peliculas valoradas por un usuario
@@ -75,7 +75,7 @@ public abstract class RatingsDatasetAdapter<RatingType extends Rating> implement
      * @throws delfos.common.exceptions.dataset.users.UserNotFound
      */
     @Override
-    public abstract Collection<Integer> getUserRated(Integer idUser) throws UserNotFound;
+    public abstract Set<Integer> getUserRated(Integer idUser) throws UserNotFound;
 
     /**
      * Devuelve los usuarios que han valorado el item
@@ -86,7 +86,7 @@ public abstract class RatingsDatasetAdapter<RatingType extends Rating> implement
      * @throws delfos.common.exceptions.dataset.items.ItemNotFound
      */
     @Override
-    public abstract Collection<Integer> getItemRated(Integer idItem) throws ItemNotFound;
+    public abstract Set<Integer> getItemRated(Integer idItem) throws ItemNotFound;
 
     /**
      * Devuelve las peliculas valoradas por un usuario

@@ -1,17 +1,17 @@
 package delfos.group.results.groupevaluationmeasures;
 
+import delfos.common.Global;
+import delfos.dataset.basic.rating.Rating;
+import delfos.dataset.basic.rating.RatingsDataset;
+import delfos.dataset.basic.rating.RelevanceCriteria;
+import delfos.group.groupsofusers.GroupOfUsers;
+import delfos.group.results.grouprecomendationresults.GroupRecommendationResult;
+import delfos.rs.recommendation.Recommendation;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeSet;
-import delfos.dataset.basic.rating.Rating;
-import delfos.dataset.basic.rating.RatingsDataset;
-import delfos.dataset.basic.rating.RelevanceCriteria;
-import delfos.rs.recommendation.Recommendation;
-import delfos.common.Global;
-import delfos.group.groupsofusers.GroupOfUsers;
-import delfos.group.results.grouprecomendationresults.GroupRecommendationResult;
 
 /**
  * Medida de evaluación para calcular la cobertura del sistema de recomendación
@@ -19,10 +19,10 @@ import delfos.group.results.grouprecomendationresults.GroupRecommendationResult;
  *
  * <p>
  * Es una extensión de la medida de evaluación
- * {@link delfos.Results.EvaluationMeasures.Coverage} para
- * recomendaciones individuales.
+ * {@link delfos.Results.EvaluationMeasures.Coverage} para recomendaciones
+ * individuales.
  *
-* @author Jorge Castro Gallardo
+ * @author Jorge Castro Gallardo
  *
  * @version 1.0 (26-01-2013)
  * @see delfos.Results.EvaluationMeasures.RatingPrediction.MAE_ForGroups
@@ -37,11 +37,11 @@ public class Coverage extends GroupEvaluationMeasure {
 
         for (Entry<GroupOfUsers, List<Recommendation>> entry : recommendationResults) {
             GroupOfUsers group = entry.getKey();
-            List<Recommendation> recommendationsToGroup = entry.getValue();
+            Collection<Recommendation> recommendationsToGroup = entry.getValue();
 
             {
                 //Compruebo que no hay recomendaciones repetidas.
-                Set<Integer> itemsRecomendados = new TreeSet<Integer>();
+                Set<Integer> itemsRecomendados = new TreeSet<>();
                 for (Recommendation r : recommendationsToGroup) {
                     if (itemsRecomendados.contains(r.getIdItem())) {
                         Global.showWarning("The group " + group + " has received item " + r.getIdItem() + " as recommendation multiple times.");

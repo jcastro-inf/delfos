@@ -56,7 +56,7 @@ public class AreaUnderROC extends EvaluationMeasure {
 
         for (Iterator<Integer> iter = recommendationResults.usersWithRecommendations().iterator(); iter.hasNext();) {
             Integer idUser = iter.next();
-            List<Recommendation> recList = recommendationResults.getRecommendationsForUser(idUser);
+            Collection<Recommendation> recList = recommendationResults.getRecommendationsForUser(idUser);
             if (recList.size() > maxLength) {
                 maxLength = recList.size();
             }
@@ -68,7 +68,7 @@ public class AreaUnderROC extends EvaluationMeasure {
 
         List<List<Boolean>> resultados = new ArrayList<>(recommendationResults.usersWithRecommendations().size());
         for (int idUser : testDataset.allUsers()) {
-            List<Recommendation> recommendationList = recommendationResults.getRecommendationsForUser(idUser);
+            Collection<Recommendation> recommendationList = recommendationResults.getRecommendationsForUser(idUser);
             List<Boolean> listaTransformada = new ArrayList<>(recommendationList.size());
 
             try {

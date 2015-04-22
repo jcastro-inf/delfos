@@ -1,14 +1,5 @@
 package delfos.dataset.storage.memory;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeMap;
-import java.util.TreeSet;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import delfos.ERROR_CODES;
 import delfos.common.exceptions.dataset.items.ItemNotFound;
 import delfos.common.exceptions.dataset.users.UserNotFound;
@@ -17,13 +8,20 @@ import delfos.dataset.basic.rating.RatingsDataset;
 import delfos.dataset.basic.rating.RatingsDatasetAdapter;
 import delfos.dataset.basic.rating.domain.DecimalDomain;
 import delfos.dataset.basic.rating.domain.Domain;
+import java.util.Collections;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
+import java.util.TreeSet;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Dataset que almacena las valoraciones doblemente indexadas, es decir, por
  * usuarios y por productos. De esta manera se gana en eficiencia temporal a
  * costa de utilizar una mayor cantidad de memoria ram
  *
-* @author Jorge Castro Gallardo
+ * @author Jorge Castro Gallardo
  *
  * @version 1.1 (21-01-2013) Ahora implementa de {@link RatingsDatasetAdapter}
  * @version 1.0 Unknow date
@@ -199,30 +197,30 @@ public class BothIndexRatingsDataset<RatingType extends Rating> extends RatingsD
     }
 
     @Override
-    public Collection<Integer> allUsers() {
-        return new ArrayList<>(userIndex.keySet());
+    public Set<Integer> allUsers() {
+        return new TreeSet<>(userIndex.keySet());
     }
 
     @Override
-    public Collection<Integer> allRatedItems() {
-        return new ArrayList<>(itemIndex.keySet());
+    public Set<Integer> allRatedItems() {
+        return new TreeSet<>(itemIndex.keySet());
     }
 
     @Override
-    public Collection<Integer> getUserRated(Integer idUser) throws UserNotFound {
+    public Set<Integer> getUserRated(Integer idUser) throws UserNotFound {
         if (userIndex.containsKey(idUser)) {
-            return Collections.unmodifiableCollection(getUserRatingsRated(idUser).keySet());
+            return Collections.unmodifiableSet(getUserRatingsRated(idUser).keySet());
         } else {
-            return Collections.EMPTY_LIST;
+            return Collections.EMPTY_SET;
         }
     }
 
     @Override
-    public Collection<Integer> getItemRated(Integer idItem) throws ItemNotFound {
+    public Set<Integer> getItemRated(Integer idItem) throws ItemNotFound {
         if (itemIndex.containsKey(idItem)) {
-            return Collections.unmodifiableCollection(getItemRatingsRated(idItem).keySet());
+            return Collections.unmodifiableSet(getItemRatingsRated(idItem).keySet());
         } else {
-            return Collections.EMPTY_LIST;
+            return Collections.EMPTY_SET;
         }
     }
 

@@ -1,7 +1,5 @@
 package delfos.results.evaluationmeasures.ratingprediction;
 
-import java.util.List;
-import java.util.Map;
 import delfos.ERROR_CODES;
 import delfos.common.Global;
 import delfos.common.exceptions.dataset.users.UserNotFound;
@@ -15,6 +13,8 @@ import delfos.results.RecommendationResults;
 import delfos.results.evaluationmeasures.EvaluationMeasure;
 import delfos.rs.recommendation.Recommendation;
 import delfos.rs.recommendation.SingleUserRecommendations;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Calcula el error absoluto medio de una ejecución con un algoritmo de

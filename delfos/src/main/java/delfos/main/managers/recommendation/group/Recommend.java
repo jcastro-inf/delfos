@@ -1,10 +1,5 @@
 package delfos.main.managers.recommendation.group;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.List;
 import delfos.ConsoleParameters;
 import delfos.ERROR_CODES;
 import delfos.UndefinedParameterException;
@@ -15,8 +10,8 @@ import delfos.common.exceptions.dataset.users.UserNotFound;
 import delfos.common.exceptions.ratings.NotEnoughtUserInformation;
 import delfos.configfile.rs.single.RecommenderSystemConfiguration;
 import delfos.configfile.rs.single.RecommenderSystemConfigurationFileParser;
-import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.loader.types.DatasetLoader;
+import delfos.dataset.basic.rating.Rating;
 import delfos.group.groupsofusers.GroupOfUsers;
 import delfos.group.grs.GroupRecommenderSystem;
 import delfos.group.grs.recommendations.GroupRecommendations;
@@ -27,6 +22,12 @@ import delfos.rs.persistence.FailureInPersistence;
 import delfos.rs.persistence.PersistenceMethodStrategy;
 import delfos.rs.recommendation.Recommendation;
 import delfos.rs.recommendation.RecommendationComputationDetails;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
 
 /**
  *
@@ -79,9 +80,9 @@ public class Recommend implements CaseUseManager {
             DatasetLoader<? extends Rating> datasetLoader = rsc.datasetLoader;
             RecommendationCandidatesSelector candidatesSelector = rsc.recommendationCandidatesSelector;
 
-            List<Recommendation> recommendations = null;
+            Collection<Recommendation> recommendations = null;
 
-            Collection<Integer> idItemList;
+            Set<Integer> idItemList;
             try {
                 idItemList = candidatesSelector.candidateItems(datasetLoader, targetGroup);
             } catch (UserNotFound ex) {

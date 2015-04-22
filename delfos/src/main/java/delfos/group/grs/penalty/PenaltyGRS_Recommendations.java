@@ -1,21 +1,14 @@
 package delfos.group.grs.penalty;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
 import delfos.common.aggregationoperators.penalty.functions.PenaltyFunction;
 import delfos.common.aggregationoperators.penalty.functions.PenaltyWholeMatrix;
 import delfos.common.exceptions.dataset.CannotLoadContentDataset;
 import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
 import delfos.common.exceptions.dataset.items.ItemNotFound;
 import delfos.common.exceptions.dataset.users.UserNotFound;
-import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.loader.types.DatasetLoader;
+import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.util.DatasetUtilities;
-import delfos.group.groupsofusers.GroupOfUsers;
 import delfos.group.groupsofusers.GroupOfUsers;
 import delfos.group.grs.GroupRecommenderSystemAdapter;
 import delfos.group.grs.SingleRecommenderSystemModel;
@@ -28,12 +21,16 @@ import delfos.group.grs.penalty.grouper.GrouperByIdItem;
 import delfos.rs.RecommenderSystem;
 import delfos.rs.RecommenderSystemBuildingProgressListener;
 import delfos.rs.recommendation.Recommendation;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Map;
+import java.util.TreeMap;
 
 /**
  * Agregación de valoraciones de los usuarios usando múltiples agregaciones y
  * una función penalty para elegir la agregación que se aplica para cada item.
  *
-* @author Jorge Castro Gallardo
+ * @author Jorge Castro Gallardo
  *
  * @version 2-julio-2014
  */
@@ -107,13 +104,13 @@ public class PenaltyGRS_Recommendations extends GroupRecommenderSystemAdapter<Si
     }
 
     @Override
-    public List<Recommendation> recommendOnly(DatasetLoader<? extends Rating> datasetLoader, SingleRecommenderSystemModel recommenderSystemModel, GroupOfUsers groupModel, GroupOfUsers groupOfUsers, Collection<Integer> idItemList) throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset {
+    public Collection<Recommendation> recommendOnly(DatasetLoader<? extends Rating> datasetLoader, SingleRecommenderSystemModel recommenderSystemModel, GroupOfUsers groupModel, GroupOfUsers groupOfUsers, java.util.Set<Integer> idItemList) throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset {
 
         PenaltyFunction penaltyFunction = (PenaltyFunction) getParameterValue(PENALTY);
         Grouper grouper = (Grouper) getParameterValue(ITEM_GROUPER);
 
         RecommenderSystem singleUserRecommender = getSingleUserRecommender();
-        Map<Integer, List<Recommendation>> recommendationsLists_byMember
+        Map<Integer, Collection<Recommendation>> recommendationsLists_byMember
                 = performSingleUserRecommendations(
                         groupOfUsers.getGroupMembers(),
                         singleUserRecommender, datasetLoader,
@@ -140,13 +137,11 @@ public class PenaltyGRS_Recommendations extends GroupRecommenderSystemAdapter<Si
                 penaltyFunction,
                 grouper);
 
-        List<Recommendation> groupRecommendations = new ArrayList<>(aggregatedPredictions.size());
+        Collection<Recommendation> groupRecommendations = new ArrayList<>(aggregatedPredictions.size());
 
         aggregatedPredictions.keySet().stream().forEach((idItem) -> {
             groupRecommendations.add(new Recommendation(idItem, aggregatedPredictions.get(idItem)));
         });
-
-        Collections.sort(groupRecommendations);
 
         return groupRecommendations;
     }
