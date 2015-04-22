@@ -72,12 +72,12 @@ public class TestRatingsDataset_Memory<RatingType extends Rating> extends Rating
     }
 
     @Override
-    public Collection<Integer> allUsers() {
+    public Set<Integer> allUsers() {
         return testRatingsDataset.allUsers();
     }
 
     @Override
-    public Collection<Integer> allRatedItems() {
+    public Set<Integer> allRatedItems() {
         return testRatingsDataset.allRatedItems();
     }
 

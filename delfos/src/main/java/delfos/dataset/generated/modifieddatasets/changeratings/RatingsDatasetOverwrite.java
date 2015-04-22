@@ -77,7 +77,7 @@ public class RatingsDatasetOverwrite<RatingType extends Rating> extends RatingsD
     }
 
     @Override
-    public Collection<Integer> allUsers() {
+    public Set<Integer> allUsers() {
         Set<Integer> allUsers = new TreeSet<>();
 
         allUsers.addAll(originalRatingsDataset.allUsers());
@@ -87,7 +87,7 @@ public class RatingsDatasetOverwrite<RatingType extends Rating> extends RatingsD
     }
 
     @Override
-    public Collection<Integer> allRatedItems() {
+    public Set<Integer> allRatedItems() {
         Set<Integer> allRatedItems = new TreeSet<>();
 
         allRatedItems.addAll(originalRatingsDataset.allRatedItems());

@@ -1,19 +1,20 @@
 package delfos.dataset.storage.memory;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
-import java.util.TreeSet;
 import delfos.common.Global;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RatingDatasetEfficiencyException;
 import delfos.dataset.basic.rating.RatingsDatasetAdapter;
 import delfos.dataset.basic.rating.domain.DecimalDomain;
 import delfos.dataset.basic.rating.domain.Domain;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
+import java.util.TreeSet;
 
 /**
  * Dataset que almacena los datos indexados por productos.
@@ -86,12 +87,12 @@ public class DefaultMemoryRatingsDataset_ItemIndexed<RatingType extends Rating> 
     }
 
     @Override
-    public Collection<Integer> allUsers() {
-        return Collections.unmodifiableCollection(users);
+    public Set<Integer> allUsers() {
+        return Collections.unmodifiableSet(users);
     }
 
     @Override
-    public Collection<Integer> allRatedItems() {
+    public Set<Integer> allRatedItems() {
         return itemsIndex.keySet();
     }
     private boolean getUserRatingsWarningMessageShown = false;

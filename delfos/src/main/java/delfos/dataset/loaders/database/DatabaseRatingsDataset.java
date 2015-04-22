@@ -1,24 +1,23 @@
 package delfos.dataset.loaders.database;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeMap;
-import java.util.TreeSet;
 import delfos.databaseconnections.DatabaseConection;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RatingsDatasetAdapter;
 import delfos.dataset.basic.rating.domain.DecimalDomain;
 import delfos.dataset.basic.rating.domain.Domain;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.Collection;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
+import java.util.TreeSet;
 
 /**
  *
-* @author Jorge Castro Gallardo
+ * @author Jorge Castro Gallardo
  *
  * @version 1.1 (21-01-2013) Ahora implementa de {@link RatingsDatasetAdapter}
  * @version 1.0 Unknow date
@@ -59,8 +58,8 @@ public class DatabaseRatingsDataset extends RatingsDatasetAdapter {
     }
 
     @Override
-    public Collection<Integer> allUsers() {
-        ArrayList<Integer> ret = new ArrayList<Integer>();
+    public Set<Integer> allUsers() {
+        Set<Integer> ret = new TreeSet<>();
         String query = "select distinct idUser from ratings;";
         try (
                 Connection connection = conexion.doConnection();
@@ -84,7 +83,7 @@ public class DatabaseRatingsDataset extends RatingsDatasetAdapter {
 
     @Override
     public Set<Integer> allRatedItems() {
-        Set<Integer> items = new TreeSet<Integer>();
+        Set<Integer> items = new TreeSet<>();
         String query = "SELECT distinct idItem FROM ratings;";
 
         try (

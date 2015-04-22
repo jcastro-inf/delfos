@@ -91,12 +91,12 @@ public class TrainingRatingsDataset_Memory<RatingType extends Rating> extends Ra
     }
 
     @Override
-    public Collection<Integer> allUsers() {
+    public Set<Integer> allUsers() {
         return trainingRatingsDataset.allUsers();
     }
 
     @Override
-    public Collection<Integer> allRatedItems() {
+    public Set<Integer> allRatedItems() {
         return trainingRatingsDataset.allRatedItems();
     }
 

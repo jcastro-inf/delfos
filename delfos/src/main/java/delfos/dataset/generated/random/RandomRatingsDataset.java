@@ -183,12 +183,12 @@ public class RandomRatingsDataset extends ParameterOwnerAdapter implements Ratin
     }
 
     @Override
-    public Collection<Integer> allUsers() {
+    public Set<Integer> allUsers() {
         return dataset.allUsers();
     }
 
     @Override
-    public Collection<Integer> allRatedItems() {
+    public Set<Integer> allRatedItems() {
         return dataset.allRatedItems();
     }
 

@@ -18,6 +18,7 @@ import delfos.dataset.basic.rating.domain.Domain;
 import delfos.rs.collaborativefiltering.CollaborativeRecommender;
 import delfos.rs.collaborativefiltering.svd.TryThisAtHomeSVD;
 import delfos.rs.recommendation.Recommendation;
+import java.util.Set;
 
 /**
  * Dataset que se basa en las predicciones hechas por un sistema de
@@ -64,12 +65,12 @@ public class RecommenderBasedDataset extends RatingsDatasetAdapter<Rating> {
     }
 
     @Override
-    public Collection<Integer> allUsers() {
+    public Set<Integer> allUsers() {
         return datasetLoader.getRatingsDataset().allUsers();
     }
 
     @Override
-    public Collection<Integer> allRatedItems() {
+    public Set<Integer> allRatedItems() {
         return datasetLoader.getRatingsDataset().allRatedItems();
     }
 

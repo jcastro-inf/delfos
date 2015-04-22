@@ -121,12 +121,12 @@ public class MockRatingsDataset implements RatingsDataset<Rating> {
     }
 
     @Override
-    public Collection<Integer> allUsers() {
+    public Set<Integer> allUsers() {
         return new TreeSet<>(users);
     }
 
     @Override
-    public Collection<Integer> allRatedItems() {
+    public Set<Integer> allRatedItems() {
         return new TreeSet<>(items);
     }
 

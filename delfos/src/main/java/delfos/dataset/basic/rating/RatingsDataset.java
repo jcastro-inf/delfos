@@ -5,6 +5,7 @@ import java.util.Map;
 import delfos.common.exceptions.dataset.items.ItemNotFound;
 import delfos.common.exceptions.dataset.users.UserNotFound;
 import delfos.dataset.basic.rating.domain.Domain;
+import java.util.Set;
 
 /**
  * Almacena un datasets de ratings. (idUser,idItem,Rating)
@@ -34,7 +35,7 @@ public interface RatingsDataset<RatingType extends Rating> extends Iterable<Rati
      *
      * @return Conjunto de id de usuarios
      */
-    public Collection<Integer> allUsers();
+    public Set<Integer> allUsers();
 
     /**
      * Implementación por defecto del método que devuelve todos los items del
@@ -51,7 +52,7 @@ public interface RatingsDataset<RatingType extends Rating> extends Iterable<Rati
      *
      * @return Conjunto con los id de los items que han sido valorados
      */
-    public Collection<Integer> allRatedItems();
+    public Set<Integer> allRatedItems();
 
     /**
      * Devuelve las peliculas valoradas por un usuario

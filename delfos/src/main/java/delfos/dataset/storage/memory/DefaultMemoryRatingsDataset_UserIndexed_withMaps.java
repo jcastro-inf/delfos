@@ -1,17 +1,18 @@
 package delfos.dataset.storage.memory;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Map;
-import java.util.TreeMap;
-import java.util.TreeSet;
 import delfos.common.Global;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RatingDatasetEfficiencyException;
 import delfos.dataset.basic.rating.RatingsDatasetAdapter;
 import delfos.dataset.basic.rating.domain.DecimalDomain;
 import delfos.dataset.basic.rating.domain.Domain;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
+import java.util.TreeSet;
 
 /**
  * Datase que almacena los datos de manera desordenada. Solo calcula los
@@ -78,13 +79,13 @@ public class DefaultMemoryRatingsDataset_UserIndexed_withMaps<RatingType extends
     }
 
     @Override
-    public Collection<Integer> allUsers() {
+    public Set<Integer> allUsers() {
         return ratings_byUser.keySet();
     }
 
     @Override
-    public Collection<Integer> allRatedItems() {
-        return Collections.unmodifiableCollection(items);
+    public Set<Integer> allRatedItems() {
+        return Collections.unmodifiableSet(items);
     }
 
     @Override

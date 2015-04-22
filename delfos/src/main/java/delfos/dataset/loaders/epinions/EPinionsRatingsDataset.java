@@ -22,6 +22,7 @@ import delfos.dataset.basic.rating.RatingsDataset;
 import delfos.dataset.storage.memory.BothIndexRatingsDataset;
 import delfos.dataset.basic.rating.domain.DecimalDomain;
 import delfos.dataset.basic.rating.domain.Domain;
+import java.util.Set;
 
 /**
  *
@@ -188,12 +189,12 @@ public class EPinionsRatingsDataset implements RatingsDataset<EPinionsRating> {
     }
 
     @Override
-    public Collection<Integer> allUsers() {
+    public Set<Integer> allUsers() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public Collection<Integer> allRatedItems() {
+    public Set<Integer> allRatedItems() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 

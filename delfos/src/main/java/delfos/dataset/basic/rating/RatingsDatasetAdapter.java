@@ -53,7 +53,7 @@ public abstract class RatingsDatasetAdapter<RatingType extends Rating> implement
      * @return Conjunto de id de usuarios
      */
     @Override
-    public abstract Collection<Integer> allUsers();
+    public abstract Set<Integer> allUsers();
 
     /**
      * Implementación por defecto del método que devuelve todos los items del
@@ -65,7 +65,7 @@ public abstract class RatingsDatasetAdapter<RatingType extends Rating> implement
      * @return Conjunto con los id de los items que han sido valorados
      */
     @Override
-    public abstract Collection<Integer> allRatedItems();
+    public abstract Set<Integer> allRatedItems();
 
     /**
      * Devuelve las peliculas valoradas por un usuario
