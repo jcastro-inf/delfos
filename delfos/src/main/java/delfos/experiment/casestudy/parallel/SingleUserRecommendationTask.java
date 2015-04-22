@@ -1,29 +1,29 @@
 package delfos.experiment.casestudy.parallel;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
 import delfos.common.parallelwork.Task;
-import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.loader.types.DatasetLoader;
+import delfos.dataset.basic.rating.Rating;
 import delfos.rs.RecommenderSystem;
 import delfos.rs.recommendation.Recommendation;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Set;
 
 /**
  * Almacena todos los datos para realizar una solicitud de recomendación.
  *
-* @author Jorge Castro Gallardo
+ * @author Jorge Castro Gallardo
  */
 public class SingleUserRecommendationTask extends Task {
 
     private final Object model;
     private final int idUser;
     private final DatasetLoader<? extends Rating> datasetLoader;
-    private final Collection<Integer> idItemList;
-    private List<Recommendation> recommendationList = null;
+    private final Set<Integer> idItemList;
+    private Collection<Recommendation> recommendationList = null;
     private final RecommenderSystem<? extends Object> recommenderSystem;
 
-    public SingleUserRecommendationTask(RecommenderSystem<? extends Object> recommenderSystem, DatasetLoader<? extends Rating> datasetLoader, Object model, int idUser, Collection<Integer> idItemList) {
+    public SingleUserRecommendationTask(RecommenderSystem<? extends Object> recommenderSystem, DatasetLoader<? extends Rating> datasetLoader, Object model, int idUser, Set<Integer> idItemList) {
         this.model = model;
         this.idUser = idUser;
         this.recommenderSystem = recommenderSystem;
@@ -43,8 +43,8 @@ public class SingleUserRecommendationTask extends Task {
         return str.toString();
     }
 
-    public Collection<Integer> getIdItemList() {
-        return Collections.unmodifiableCollection(idItemList);
+    public Set<Integer> getIdItemList() {
+        return Collections.unmodifiableSet(idItemList);
     }
 
     public DatasetLoader<? extends Rating> getDatasetLoader() {
@@ -66,11 +66,11 @@ public class SingleUserRecommendationTask extends Task {
         return idUser;
     }
 
-    public List<Recommendation> getRecommendationList() {
-        return Collections.unmodifiableList(recommendationList);
+    public Collection<Recommendation> getRecommendationList() {
+        return Collections.unmodifiableCollection(recommendationList);
     }
 
-    public void setRecommendationList(List<Recommendation> recommendationList) {
+    public void setRecommendationList(Collection<Recommendation> recommendationList) {
         this.recommendationList = recommendationList;
     }
 }

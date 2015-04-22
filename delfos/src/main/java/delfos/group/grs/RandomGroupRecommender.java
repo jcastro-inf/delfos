@@ -1,20 +1,19 @@
 package delfos.group.grs;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
 import delfos.common.Global;
 import delfos.common.exceptions.dataset.CannotLoadContentDataset;
 import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
 import delfos.common.exceptions.dataset.users.UserNotFound;
 import delfos.common.parameters.ParameterListener;
-import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.loader.types.DatasetLoader;
+import delfos.dataset.basic.rating.Rating;
 import delfos.experiment.SeedHolder;
 import delfos.group.groupsofusers.GroupOfUsers;
 import delfos.rs.nonpersonalised.randomrecommender.RandomRecommenderModel;
 import delfos.rs.recommendation.Recommendation;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 
 /**
  * Recomendador aleatorio para grupos de usuarios. No usar en un sistema real
@@ -48,12 +47,8 @@ public class RandomGroupRecommender
     }
 
     @Override
-    public List<Recommendation> recommendOnly(
-            DatasetLoader<? extends Rating> datasetLoader,
-            RandomRecommenderModel<GroupOfUsers> recommenderSystemModel,
-            GroupOfUsers groupModel,
-            GroupOfUsers groupOfUsers,
-            Collection<Integer> idItemList)
+    public Collection<Recommendation> recommendOnly(
+            DatasetLoader<? extends Rating> datasetLoader, RandomRecommenderModel<GroupOfUsers> recommenderSystemModel, GroupOfUsers groupModel, GroupOfUsers groupOfUsers, java.util.Set<Integer> idItemList)
             throws UserNotFound, CannotLoadRatingsDataset {
 
         if (recommenderSystemModel.getRandomFloat(groupOfUsers) > 0.999) {
@@ -63,7 +58,7 @@ public class RandomGroupRecommender
             final double min = datasetLoader.getRatingsDataset().getRatingsDomain().min().doubleValue();
             final double rango = datasetLoader.getRatingsDataset().getRatingsDomain().width().doubleValue();
 
-            List<Recommendation> recommendationList = new ArrayList<>(numRecomendaciones);
+            Collection<Recommendation> recommendationList = new ArrayList<>(numRecomendaciones);
             ArrayList<Integer> toPredict = new ArrayList<>(idItemList);
             for (int i = 0; i < numRecomendaciones; i++) {
                 int idItem = toPredict.remove(recommenderSystemModel.getRandomInt(groupOfUsers, toPredict.size()));
@@ -72,7 +67,6 @@ public class RandomGroupRecommender
                 ratingAleatorio = ratingAleatorio * rango + min;
                 recommendationList.add(new Recommendation(idItem, ratingAleatorio));
             }
-            Collections.sort(recommendationList);
             return recommendationList;
         }
     }

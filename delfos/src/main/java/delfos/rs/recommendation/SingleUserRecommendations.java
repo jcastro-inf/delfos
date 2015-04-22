@@ -1,7 +1,7 @@
 package delfos.rs.recommendation;
 
-import java.util.List;
 import delfos.dataset.basic.user.User;
+import java.util.Collection;
 
 /**
  * Encapsula las recomendaciones hechas a un usuario.
@@ -21,12 +21,12 @@ public class SingleUserRecommendations extends Recommendations {
         targetUser = null;
     }
 
-    public SingleUserRecommendations(User user, List<Recommendation> recommendations) {
+    public SingleUserRecommendations(User user, Collection<Recommendation> recommendations) {
         super(user.getTargetId(), recommendations, RecommendationComputationDetails.EMPTY_DETAILS);
         this.targetUser = user;
     }
 
-    public SingleUserRecommendations(User user, List<Recommendation> recommendations, RecommendationComputationDetails recommendationComputationDetails) {
+    public SingleUserRecommendations(User user, Collection<Recommendation> recommendations, RecommendationComputationDetails recommendationComputationDetails) {
         super(user.getTargetId(), recommendations, recommendationComputationDetails);
         this.targetUser = user;
     }

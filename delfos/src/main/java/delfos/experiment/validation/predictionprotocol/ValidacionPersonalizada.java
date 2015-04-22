@@ -1,16 +1,16 @@
 package delfos.experiment.validation.predictionprotocol;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Random;
-import java.util.Set;
-import java.util.TreeSet;
 import delfos.common.exceptions.dataset.users.UserNotFound;
 import delfos.common.parameters.Parameter;
 import delfos.common.parameters.restriction.FloatParameter;
 import delfos.common.parameters.restriction.IntegerParameter;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RatingsDataset;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Random;
+import java.util.Set;
+import java.util.TreeSet;
 
 /**
  * Técnica de validación que permite controlar de una manera avanzada el número
@@ -21,7 +21,7 @@ import delfos.dataset.basic.rating.RatingsDataset;
  *
  * Esta técnica de predicción surge al comprobar que la validación
  *
-* @author Jorge Castro Gallardo
+ * @author Jorge Castro Gallardo
  *
  *
  * @version 1.1 21-Jan-2013
@@ -74,7 +74,7 @@ public class ValidacionPersonalizada extends PredictionProtocol {
     }
 
     @Override
-    public Collection<Collection<Integer>> getRecommendationRequests(RatingsDataset<? extends Rating> testRatingsDataset, int idUser) throws UserNotFound {
+    public Collection<Set<Integer>> getRecommendationRequests(RatingsDataset<? extends Rating> testRatingsDataset, int idUser) throws UserNotFound {
         Random random = new Random(getSeedValue());
 
         float userPercentValue = (Float) getParameterValue(userPercent);
@@ -100,7 +100,7 @@ public class ValidacionPersonalizada extends PredictionProtocol {
             extraidos.add(itemsRated[index]);
         }
 
-        Collection<Collection<Integer>> ret = new ArrayList<>(extraidos.size());
+        Collection<Set<Integer>> ret = new ArrayList<>(extraidos.size());
         ret.add(extraidos);
         return ret;
     }

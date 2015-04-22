@@ -154,8 +154,8 @@ public class Recommender_DatasetProperties extends CollaborativeRecommender<Numb
         return getRecommendationList(model, idItemList);
     }
 
-    private List<Recommendation> getRecommendationList(Number model, Collection<Integer> idItemList) {
-        List<Recommendation> ret = new ArrayList<>(idItemList.size());
+    private Collection<Recommendation> getRecommendationList(Number model, Collection<Integer> idItemList) {
+        Collection<Recommendation> ret = new ArrayList<>(idItemList.size());
         for (int idItem : idItemList) {
             ret.add(new Recommendation(idItem, model));
         }

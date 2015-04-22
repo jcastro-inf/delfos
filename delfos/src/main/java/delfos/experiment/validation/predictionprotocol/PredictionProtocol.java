@@ -10,6 +10,7 @@ import delfos.common.Global;
 import delfos.common.parameters.ParameterListener;
 import delfos.common.parameters.ParameterOwnerAdapter;
 import delfos.common.parameters.ParameterOwnerType;
+import java.util.Set;
 
 /**
  * Interfaz que especifica los métodos que deberá tener una validación de
@@ -65,7 +66,7 @@ public abstract class PredictionProtocol extends ParameterOwnerAdapter implement
      * @throws UserNotFound Si el usuario <code>idUser<\code> no se encuentra en
      * el dataset original.
      */
-    public abstract Collection<Collection<Integer>> getRecommendationRequests(RatingsDataset<? extends Rating> testRatingsDataset, int idUser) throws UserNotFound;
+    public abstract Collection<Set<Integer>> getRecommendationRequests(RatingsDataset<? extends Rating> testRatingsDataset, int idUser) throws UserNotFound;
 
     @Override
     public void setSeedValue(long seedValue) {

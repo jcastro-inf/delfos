@@ -10,7 +10,6 @@ import delfos.dataset.basic.rating.RatingsDatasetAdapter;
 import delfos.dataset.basic.rating.domain.Domain;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
@@ -85,7 +84,7 @@ public class TestRatingsDataset_CPU<RatingType extends Rating> extends RatingsDa
     }
 
     @Override
-    public Collection<Integer> getUserRated(Integer idUser) throws UserNotFound {
+    public Set<Integer> getUserRated(Integer idUser) throws UserNotFound {
         if (testRatings_byUser.containsKey(idUser)) {
             Set<Integer> ret = new TreeSet<>();
             ret.addAll(testRatings_byUser.get(idUser));
@@ -114,9 +113,8 @@ public class TestRatingsDataset_CPU<RatingType extends Rating> extends RatingsDa
     }
 
     @Override
-    public Collection<Integer> getItemRated(Integer idItem) {
-        Collection<Integer> ret;
-        ret = new LinkedList<>();
+    public Set<Integer> getItemRated(Integer idItem) {
+        Set<Integer> ret = new TreeSet<>();
 
         testRatings_byUser
                 .keySet().stream()

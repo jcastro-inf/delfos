@@ -1,21 +1,5 @@
 package delfos.rs.hybridtechniques;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
-import delfos.dataset.basic.rating.Rating;
-import delfos.dataset.basic.loader.types.DatasetLoader;
-import delfos.rs.collaborativefiltering.CollaborativeRecommender;
-import delfos.rs.collaborativefiltering.knn.memorybased.KnnMemoryBasedCFRS;
-import delfos.rs.contentbased.ContentBasedRecommender;
-import delfos.rs.contentbased.vsm.booleanvsm.tfidf.TfIdfCBRS;
-import delfos.rs.recommendation.Recommendation;
-import delfos.rs.RecommenderSystem;
-import delfos.rs.RecommenderSystemBuildingProgressListener;
 import delfos.common.exceptions.dataset.CannotLoadContentDataset;
 import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
 import delfos.common.exceptions.dataset.CannotLoadUsersDataset;
@@ -24,6 +8,22 @@ import delfos.common.exceptions.dataset.users.UserNotFound;
 import delfos.common.exceptions.ratings.NotEnoughtUserInformation;
 import delfos.common.parameters.Parameter;
 import delfos.common.parameters.restriction.RecommenderSystemParameterRestriction;
+import delfos.dataset.basic.loader.types.DatasetLoader;
+import delfos.dataset.basic.rating.Rating;
+import delfos.rs.RecommenderSystem;
+import delfos.rs.RecommenderSystemBuildingProgressListener;
+import delfos.rs.collaborativefiltering.CollaborativeRecommender;
+import delfos.rs.collaborativefiltering.knn.memorybased.KnnMemoryBasedCFRS;
+import delfos.rs.contentbased.ContentBasedRecommender;
+import delfos.rs.contentbased.vsm.booleanvsm.tfidf.TfIdfCBRS;
+import delfos.rs.recommendation.Recommendation;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
 /**
  *
@@ -86,8 +86,8 @@ public class HybridAlternatingListRS extends HybridRecommender<HybridRecommender
 
         RecommenderSystem<Object> secondTechnique = (RecommenderSystem<Object>) getParameterValue(SECOND_TECHNIQUE);
 
-        List<Recommendation> firstTechniqueList = firstTechnique.recommendOnly(datasetLoader, model.getModel(0), idUser, idItemList);
-        List<Recommendation> secondTechniqueList = secondTechnique.recommendOnly(datasetLoader, model.getModel(1), idUser, idItemList);
+        Collection<Recommendation> firstTechniqueList = firstTechnique.recommendOnly(datasetLoader, model.getModel(0), idUser, idItemList);
+        Collection<Recommendation> secondTechniqueList = secondTechnique.recommendOnly(datasetLoader, model.getModel(1), idUser, idItemList);
 
         return joinRecommendationLists(firstTechniqueList, secondTechniqueList);
     }
@@ -110,21 +110,21 @@ public class HybridAlternatingListRS extends HybridRecommender<HybridRecommender
      * @param l2 Lista de recomendaciones.
      * @return Lista de recomendaciones unida.
      */
-    private List<Recommendation> joinRecommendationLists(List<Recommendation> l1, List<Recommendation> l2) {
+    private Collection<Recommendation> joinRecommendationLists(Collection<Recommendation> l1, Collection<Recommendation> l2) {
         final float numItems;
         {
-            Set<Integer> allItems = new TreeSet<Integer>();
+            Set<Integer> allItems = new TreeSet<>();
             for (Recommendation recommendation : l1) {
                 allItems.add(recommendation.getIdItem());
             }
-            for (Recommendation recommendation : l2) {
+            l2.stream().forEach((recommendation) -> {
                 allItems.add(recommendation.getIdItem());
-            }
+            });
             numItems = allItems.size();
         }
 
-        Set<Integer> alreadyAddedItems = new TreeSet<Integer>();
-        List<Recommendation> ret = new ArrayList<Recommendation>();
+        Set<Integer> alreadyAddedItems = new TreeSet<>();
+        Collection<Recommendation> ret = new ArrayList<>();
 
         int i = 0;
         Iterator<Recommendation> l1Iterator = l1.iterator();

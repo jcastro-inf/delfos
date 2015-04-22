@@ -98,7 +98,7 @@ public class DefaultMemoryRatingsDataset_ItemIndexed<RatingType extends Rating> 
     private boolean getUserRatingsWarningMessageShown = false;
 
     @Override
-    public Collection<Integer> getUserRated(Integer idUser) {
+    public Set<Integer> getUserRated(Integer idUser) {
         if (!getUserRatingsWarningMessageShown) {
             RatingDatasetEfficiencyException ratingDatasetEfficiencyException = new RatingDatasetEfficiencyException(this.getClass().getSimpleName() + ": Using an inefficient method:[getUserRated(Integer idUser):Collection<Integer>]");
             Global.showWarning(ratingDatasetEfficiencyException);
@@ -109,7 +109,7 @@ public class DefaultMemoryRatingsDataset_ItemIndexed<RatingType extends Rating> 
     }
 
     @Override
-    public Collection<Integer> getItemRated(Integer idItem) {
+    public Set<Integer> getItemRated(Integer idItem) {
         return getItemRatingsRated(idItem).keySet();
     }
     private boolean getUserRatingsRatedWarningMessageShown = false;

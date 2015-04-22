@@ -112,7 +112,7 @@ public class TrainingRatingsDataset_CPU<RatingType extends Rating>
     }
 
     @Override
-    public Collection<Integer> getItemRated(Integer idItem) throws ItemNotFound {
+    public Set<Integer> getItemRated(Integer idItem) throws ItemNotFound {
         return getItemRatingsRated(idItem).keySet();
     }
 

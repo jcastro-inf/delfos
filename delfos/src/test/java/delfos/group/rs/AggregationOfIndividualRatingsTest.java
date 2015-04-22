@@ -1,15 +1,5 @@
 package delfos.group.rs;
 
-import java.io.File;
-import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
 import delfos.common.Global;
 import delfos.common.aggregationoperators.Mean;
 import delfos.common.exceptions.dataset.CannotLoadContentDataset;
@@ -35,6 +25,16 @@ import delfos.rs.persistence.FilePersistence;
 import delfos.rs.recommendation.Recommendation;
 import delfos.rs.recommendation.RecommendationComputationDetails;
 import delfos.similaritymeasures.CosineCoefficient;
+import java.io.File;
+import java.util.Collection;
+import java.util.Set;
+import java.util.TreeSet;
+import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
 
 /**
  *
@@ -95,7 +95,7 @@ public class AggregationOfIndividualRatingsTest {
         GroupOfUsers group = new GroupOfUsers(15743, 24357, 162779);
 
         GroupModelWithExplanation<GroupModelPseudoUser, ? extends Object> groupModel = grs.buildGroupModel(datasetLoader, recommenderSystemModel, group);
-        List<Recommendation> recommendOnly = grs.recommendOnly(datasetLoader, recommenderSystemModel, groupModel, group, notRated);
+        Collection<Recommendation> recommendOnly = grs.recommendOnly(datasetLoader, recommenderSystemModel, groupModel, group, notRated);
 
         RecommendationsOutputStandardRaw output = new RecommendationsOutputStandardRaw();
         output.writeRecommendations(new GroupRecommendations(group, recommendOnly, RecommendationComputationDetails.EMPTY_DETAILS));
@@ -104,20 +104,20 @@ public class AggregationOfIndividualRatingsTest {
             // 4697 -> 4.300307
             int idItem = 4697;
             double prediction = 4.300307;
-            List<Recommendation> predictionList = grs.recommendOnly(datasetLoader, recommenderSystemModel, groupModel, group, idItem);
+            Collection<Recommendation> predictionList = grs.recommendOnly(datasetLoader, recommenderSystemModel, groupModel, group, idItem);
             Assert.assertEquals(1, predictionList.size());
-            Assert.assertEquals(idItem, predictionList.get(0).getIdItem());
-            Assert.assertEquals(prediction, predictionList.get(0).getPreference().doubleValue(), 0.0001);
+            Assert.assertEquals(idItem, predictionList.iterator().next().getIdItem());
+            Assert.assertEquals(prediction, predictionList.iterator().next().getPreference().doubleValue(), 0.0001);
         }
 
         {
             // 10082 -> 2.50053
             int idItem = 10082;
             double prediction = 2.50053;
-            List<Recommendation> predictionList = grs.recommendOnly(datasetLoader, recommenderSystemModel, groupModel, group, idItem);
+            Collection<Recommendation> predictionList = grs.recommendOnly(datasetLoader, recommenderSystemModel, groupModel, group, idItem);
             Assert.assertEquals(1, predictionList.size());
-            Assert.assertEquals(idItem, predictionList.get(0).getIdItem());
-            Assert.assertEquals(prediction, predictionList.get(0).getPreference().doubleValue(), 0.0001);
+            Assert.assertEquals(idItem, predictionList.iterator().next().getIdItem());
+            Assert.assertEquals(prediction, predictionList.iterator().next().getPreference().doubleValue(), 0.0001);
         }
     }
 }

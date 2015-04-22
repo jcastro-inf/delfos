@@ -1,20 +1,22 @@
 package delfos.group.experiment.validation.predictionvalidation;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Map;
-import java.util.Random;
 import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
 import delfos.common.exceptions.dataset.users.UserNotFound;
 import delfos.common.parameters.Parameter;
 import delfos.common.parameters.restriction.IntegerParameter;
+import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RatingsDataset;
-import delfos.dataset.loaders.given.DatasetLoaderGiven;
-import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.generated.modifieddatasets.changeratings.RatingsDatasetOverwrite;
+import delfos.dataset.loaders.given.DatasetLoaderGiven;
 import delfos.dataset.util.DatasetUtilities;
 import delfos.group.groupsofusers.GroupOfUsers;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Map;
+import java.util.Random;
+import java.util.Set;
+import java.util.TreeSet;
 
 /**
  * Implementa el protocolo de predicción similar a la validación cruzada.
@@ -47,11 +49,11 @@ public class CrossFoldPredictionProtocol extends GroupPredictionProtocol {
 
         Random random = new Random(getSeedValue());
 
-        ArrayList<Collection<Integer>> crossFoldValidations = new ArrayList<>();
+        ArrayList<Set<Integer>> crossFoldValidations = new ArrayList<>();
         Collection<Integer> items = getRatedItems(testDatasetLoader, group);
 
         for (int i = 0; i < getNumPartitions(); i++) {
-            crossFoldValidations.add(new ArrayList<>(items.size() / getNumPartitions() + 1));
+            crossFoldValidations.add(new TreeSet<>());
         }
         int n = 0;
         while (!items.isEmpty()) {
@@ -66,7 +68,7 @@ public class CrossFoldPredictionProtocol extends GroupPredictionProtocol {
 
         ArrayList<GroupRecommendationRequest> groupRecommendationRequests = new ArrayList<>(ratedItems.size());
 
-        for (Collection<Integer> itemsInThisFold : crossFoldValidations) {
+        for (Set<Integer> itemsInThisFold : crossFoldValidations) {
 
             Map<Integer, Map<Integer, Number>> membersRatings_byItem = DatasetUtilities.getMembersRatings_byItem(group, testDatasetLoader);
 

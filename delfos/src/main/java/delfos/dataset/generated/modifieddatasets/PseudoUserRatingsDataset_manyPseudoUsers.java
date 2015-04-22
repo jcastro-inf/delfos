@@ -107,7 +107,7 @@ public class PseudoUserRatingsDataset_manyPseudoUsers<RatingType extends Rating>
     }
 
     @Override
-    public Collection<Integer> getUserRated(Integer idUser) throws UserNotFound {
+    public Set<Integer> getUserRated(Integer idUser) throws UserNotFound {
         if (pseudoRatings.allUsers().contains(idUser)) {
             return pseudoRatings.getUserRated(idUser);
         } else {
@@ -116,7 +116,7 @@ public class PseudoUserRatingsDataset_manyPseudoUsers<RatingType extends Rating>
     }
 
     @Override
-    public Collection<Integer> getItemRated(Integer idItem) {
+    public Set<Integer> getItemRated(Integer idItem) {
         Set<Integer> ret = new TreeSet<>();
         try {
             ret.addAll(pseudoRatings.getItemRated(idItem));

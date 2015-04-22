@@ -1,14 +1,5 @@
 package delfos.rs.collaborativefiltering.knn.modelbased.nwr;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeMap;
 import delfos.common.Global;
 import delfos.common.exceptions.CouldNotComputeSimilarity;
 import delfos.common.exceptions.CouldNotPredictRating;
@@ -19,14 +10,14 @@ import delfos.common.exceptions.dataset.users.UserNotFound;
 import delfos.common.parallelwork.MultiThreadExecutionManager;
 import delfos.common.parameters.Parameter;
 import delfos.common.parameters.restriction.IntegerParameter;
-import delfos.rs.collaborativefiltering.knn.CommonRating;
-import delfos.rs.collaborativefiltering.knn.MatchRating;
-import delfos.rs.collaborativefiltering.knn.RecommendationEntity;
+import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RatingsDataset;
-import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.rs.collaborativefiltering.CollaborativeRecommender;
+import delfos.rs.collaborativefiltering.knn.CommonRating;
 import delfos.rs.collaborativefiltering.knn.KnnCollaborativeRecommender;
+import delfos.rs.collaborativefiltering.knn.MatchRating;
+import delfos.rs.collaborativefiltering.knn.RecommendationEntity;
 import delfos.rs.collaborativefiltering.knn.modelbased.DAOKnnModelBasedDatabaseModel;
 import delfos.rs.collaborativefiltering.knn.modelbased.KnnModelBasedCFRS;
 import delfos.rs.collaborativefiltering.knn.modelbased.KnnModelBasedCFRSModel;
@@ -37,6 +28,15 @@ import delfos.rs.persistence.DatabasePersistence;
 import delfos.rs.persistence.FailureInPersistence;
 import delfos.rs.recommendation.Recommendation;
 import delfos.similaritymeasures.CollaborativeSimilarityMeasure;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
 
 /**
  * Sistema de recomendación basado en el filtrado colaborativo basado en
@@ -150,7 +150,7 @@ public class KnnModelBased_NWR
 
         PredictionTechnique prediction = (PredictionTechnique) getParameterValue(KnnModelBasedCFRS.PREDICTION_TECHNIQUE);
 
-        List<Recommendation> recommendationList = new LinkedList<>();
+        Collection<Recommendation> recommendationList = new LinkedList<>();
         Map<Integer, ? extends Rating> userRated = datasetLoader.getRatingsDataset().getUserRatingsRated(idUser);
         if (userRated.isEmpty()) {
             return Collections.EMPTY_LIST;
@@ -197,7 +197,6 @@ public class KnnModelBased_NWR
             }
 
         }
-        Collections.sort(recommendationList);
         return recommendationList;
     }
 

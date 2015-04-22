@@ -1,11 +1,5 @@
 package delfos.group.grs.aggregation;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
 import delfos.common.Global;
 import delfos.common.aggregationoperators.AggregationOperator;
 import delfos.common.aggregationoperators.Mean;
@@ -19,10 +13,10 @@ import delfos.common.exceptions.ratings.NotEnoughtUserInformation;
 import delfos.common.parameters.Parameter;
 import delfos.common.parameters.restriction.ParameterOwnerRestriction;
 import delfos.common.parameters.restriction.RecommenderSystemParameterRestriction;
-import delfos.dataset.basic.rating.Rating;
-import delfos.dataset.loaders.given.DatasetLoaderGiven;
 import delfos.dataset.basic.loader.types.DatasetLoader;
+import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.generated.modifieddatasets.PseudoUserRatingsDataset;
+import delfos.dataset.loaders.given.DatasetLoaderGiven;
 import delfos.dataset.util.DatasetPrinterDeprecated;
 import delfos.dataset.util.DatasetUtilities;
 import delfos.group.groupsofusers.GroupOfUsers;
@@ -34,6 +28,13 @@ import delfos.rs.collaborativefiltering.knn.memorybased.KnnMemoryBasedCFRS;
 import delfos.rs.explanation.GroupModelWithExplanation;
 import delfos.rs.explanation.PenaltyAggregationExplanation;
 import delfos.rs.recommendation.Recommendation;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
 
 /**
  * Implementa un sistema de recomendación a grupos que agrega las valoraciones
@@ -44,7 +45,7 @@ import delfos.rs.recommendation.Recommendation;
  * La técnica utilizada para la agregación de preferencias es calcular la media
  * de las valoraciones de los usuarios en cada producto
  *
-* @author Jorge Castro Gallardo
+ * @author Jorge Castro Gallardo
  *
  * @version Unknown date.
  * @version 12-Enero-2014
@@ -140,18 +141,14 @@ public class AggregationOfIndividualRatings
     }
 
     @Override
-    public List<Recommendation> recommendOnly(
-            DatasetLoader<? extends Rating> datasetLoader,
-            SingleRecommenderSystemModel recommenderSystemModel,
-            GroupModelWithExplanation<GroupModelPseudoUser, ? extends Object> groupModel,
-            GroupOfUsers groupOfUsers,
-            Collection<Integer> idItemList)
+    public Collection<Recommendation> recommendOnly(
+            DatasetLoader<? extends Rating> datasetLoader, SingleRecommenderSystemModel recommenderSystemModel, GroupModelWithExplanation<GroupModelPseudoUser, ? extends Object> groupModel, GroupOfUsers groupOfUsers, java.util.Set<Integer> idItemList)
             throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset, NotEnoughtUserInformation {
 
         //Recojo los parámetros en variables
         RecommenderSystem recommenderSystem = getSingleUserRecommender();
         Map<Integer, Number> groupRatings_Number = groupModel.getGroupModel().getRatings();
-        List<Recommendation> groupRecom = recommendWithGroupRatings(datasetLoader, recommenderSystem, recommenderSystemModel, groupRatings_Number, idItemList);
+        Collection<Recommendation> groupRecom = recommendWithGroupRatings(datasetLoader, recommenderSystem, recommenderSystemModel, groupRatings_Number, idItemList);
 
         return groupRecom;
     }
@@ -250,11 +247,11 @@ public class AggregationOfIndividualRatings
         return new GroupModelWithExplanation<>(new GroupModelPseudoUser(groupOfUsers, groupRatings), new PenaltyAggregationExplanation(groupRatingsAggregationExplanation, groupRatingsAggregationExplanation_noTies));
     }
 
-    public static List<Recommendation> recommendWithGroupRatings(
+    public static Collection<Recommendation> recommendWithGroupRatings(
             DatasetLoader<? extends Rating> datasetLoader,
             RecommenderSystem recommenderSystem,
             SingleRecommenderSystemModel recommenderSystemModel,
-            Map<Integer, Number> groupRatings, Collection<Integer> idItemList) throws ItemNotFound, NotEnoughtUserInformation, UserNotFound, CannotLoadContentDataset, CannotLoadRatingsDataset {
+            Map<Integer, Number> groupRatings, Set<Integer> idItemList) throws ItemNotFound, NotEnoughtUserInformation, UserNotFound, CannotLoadContentDataset, CannotLoadRatingsDataset {
 
         Map<Integer, Rating> groupRatings_Ratings = DatasetUtilities.getUserMap_Rating(-1, groupRatings);
         PseudoUserRatingsDataset<Rating> ratingsDataset_withPseudoUser = new PseudoUserRatingsDataset<>(
@@ -264,7 +261,7 @@ public class AggregationOfIndividualRatings
         if (Global.isVerboseAnnoying()) {
             DatasetPrinterDeprecated.printCompactRatingTable(ratingsDataset_withPseudoUser, Arrays.asList(idGroup), ratingsDataset_withPseudoUser.getUserRated(idGroup));
         }
-        List<Recommendation> groupRecom;
+        Collection<Recommendation> groupRecom;
         groupRecom = recommenderSystem.recommendOnly(
                 new DatasetLoaderGiven(datasetLoader, ratingsDataset_withPseudoUser),
                 recommenderSystemModel.getRecommenderSystemModel(),

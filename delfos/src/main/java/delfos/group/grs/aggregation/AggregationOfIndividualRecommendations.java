@@ -1,12 +1,5 @@
 package delfos.group.grs.aggregation;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
 import delfos.common.aggregationoperators.AggregationOperator;
 import delfos.common.aggregationoperators.Mean;
 import delfos.common.exceptions.dataset.CannotLoadContentDataset;
@@ -17,8 +10,8 @@ import delfos.common.parallelwork.MultiThreadExecutionManager;
 import delfos.common.parameters.Parameter;
 import delfos.common.parameters.restriction.ParameterOwnerRestriction;
 import delfos.common.parameters.restriction.RecommenderSystemParameterRestriction;
-import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.loader.types.DatasetLoader;
+import delfos.dataset.basic.rating.Rating;
 import delfos.experiment.casestudy.parallel.SingleUserRecommendationTask;
 import delfos.experiment.casestudy.parallel.SingleUserRecommendationTaskExecutor;
 import delfos.group.groupsofusers.GroupOfUsers;
@@ -28,7 +21,13 @@ import delfos.rs.RecommenderSystem;
 import delfos.rs.RecommenderSystemBuildingProgressListener;
 import delfos.rs.collaborativefiltering.knn.memorybased.KnnMemoryBasedCFRS;
 import delfos.rs.recommendation.Recommendation;
-//TODO: Completar Javadoc
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
 
 /**
  * Implementa un sistema de recomendación a grupos que agrega las
@@ -128,16 +127,16 @@ public class AggregationOfIndividualRecommendations extends GroupRecommenderSyst
     }
 
     @Override
-    public List<Recommendation> recommendOnly(DatasetLoader<? extends Rating> datasetLoader, SingleRecommenderSystemModel recommenderSystemModel, GroupOfUsers groupModel, GroupOfUsers groupOfUsers, Collection<Integer> idItemList) throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset {
+    public Collection<Recommendation> recommendOnly(DatasetLoader<? extends Rating> datasetLoader, SingleRecommenderSystemModel recommenderSystemModel, GroupOfUsers groupModel, GroupOfUsers groupOfUsers, java.util.Set<Integer> idItemList) throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset {
 
         RecommenderSystem singleUserRecommender = getSingleUserRecommender();
-        Map<Integer, List<Recommendation>> recommendationsLists_byMember = performSingleUserRecommendations(groupOfUsers.getGroupMembers(), singleUserRecommender, datasetLoader, recommenderSystemModel, idItemList);
+        Map<Integer, Collection<Recommendation>> recommendationsLists_byMember = performSingleUserRecommendations(groupOfUsers.getGroupMembers(), singleUserRecommender, datasetLoader, recommenderSystemModel, idItemList);
 
-        List<Recommendation> groupRecommendations = aggregateLists(getAggregationOperator(), recommendationsLists_byMember);
+        Collection<Recommendation> groupRecommendations = aggregateLists(getAggregationOperator(), recommendationsLists_byMember);
         return groupRecommendations;
     }
 
-    public static List<Recommendation> aggregateLists(AggregationOperator aggregationOperator, Map<Integer, List<Recommendation>> groupUtilityList) {
+    public static Collection<Recommendation> aggregateLists(AggregationOperator aggregationOperator, Map<Integer, Collection<Recommendation>> groupUtilityList) {
 
         //Reordeno las predicciones.
         Map<Integer, Collection<Number>> prediction_byItem = new TreeMap<>();
@@ -155,7 +154,7 @@ public class AggregationOfIndividualRecommendations extends GroupRecommenderSyst
         }
 
         //agrego las predicciones de cada item.
-        ArrayList<Recommendation> recommendations = new ArrayList<>();
+        Collection<Recommendation> recommendations = new ArrayList<>();
         for (int idItem : prediction_byItem.keySet()) {
             Collection<Number> predictionsThisItem = prediction_byItem.get(idItem);
 
@@ -167,13 +166,10 @@ public class AggregationOfIndividualRecommendations extends GroupRecommenderSyst
             recommendations.add(new Recommendation(idItem, aggregateValue));
         }
 
-        //Ordeno las recomendaciones.
-        Collections.sort(recommendations);
-
         return recommendations;
     }
 
-    public static Map<Integer, List<Recommendation>> performSingleUserRecommendations(Collection<Integer> users, RecommenderSystem singleUserRecommender, DatasetLoader<? extends Rating> datasetLoader, SingleRecommenderSystemModel recommenderSystemModel, Collection<Integer> idItemList) throws UserNotFound {
+    public static Map<Integer, Collection<Recommendation>> performSingleUserRecommendations(Collection<Integer> users, RecommenderSystem singleUserRecommender, DatasetLoader<? extends Rating> datasetLoader, SingleRecommenderSystemModel recommenderSystemModel, Set<Integer> idItemList) throws UserNotFound {
 
         List<SingleUserRecommendationTask> tasks = new LinkedList<>();
         for (int idUser : users) {
@@ -191,9 +187,9 @@ public class AggregationOfIndividualRecommendations extends GroupRecommenderSyst
                 tasks,
                 SingleUserRecommendationTaskExecutor.class);
         executionManager.run();
-        Map<Integer, List<Recommendation>> singleUserRecomendationLists = new TreeMap<>();
+        Map<Integer, Collection<Recommendation>> singleUserRecomendationLists = new TreeMap<>();
         for (SingleUserRecommendationTask task : executionManager.getAllFinishedTasks()) {
-            List<Recommendation> recommendations = task.getRecommendationList();
+            Collection<Recommendation> recommendations = task.getRecommendationList();
             if (recommendations == null) {
                 throw new UserNotFound(task.getIdUser());
             }

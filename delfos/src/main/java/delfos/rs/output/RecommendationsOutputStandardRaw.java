@@ -1,13 +1,13 @@
 package delfos.rs.output;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 import delfos.common.parameters.Parameter;
 import delfos.common.parameters.restriction.ObjectParameter;
 import delfos.rs.output.sort.SortBy;
 import delfos.rs.recommendation.Recommendation;
 import delfos.rs.recommendation.Recommendations;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Escribe las recomendaciones en la salida estándar.

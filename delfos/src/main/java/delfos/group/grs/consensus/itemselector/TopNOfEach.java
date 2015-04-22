@@ -1,12 +1,12 @@
 package delfos.group.grs.consensus.itemselector;
 
+import delfos.rs.recommendation.Recommendation;
+import java.util.Collection;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
-import delfos.rs.recommendation.Recommendation;
 
 public class TopNOfEach extends GroupRecommendationsSelector {
 
@@ -17,7 +17,7 @@ public class TopNOfEach extends GroupRecommendationsSelector {
     }
 
     @Override
-    public Set<Integer> getRecommendationSelection(Map<Integer, List<Recommendation>> membersRecommendations) {
+    public Set<Integer> getRecommendationSelection(Map<Integer, Collection<Recommendation>> membersRecommendations) {
 
         Set<Integer> itemsSelected = new TreeSet<>();
         Map<Integer, LinkedList<Recommendation>> removableRecommendations = new TreeMap<>();

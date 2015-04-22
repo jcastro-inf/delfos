@@ -6,8 +6,6 @@ import delfos.dataset.basic.rating.RatingDatasetEfficiencyException;
 import delfos.dataset.basic.rating.RatingsDatasetAdapter;
 import delfos.dataset.basic.rating.domain.DecimalDomain;
 import delfos.dataset.basic.rating.domain.Domain;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
@@ -89,17 +87,17 @@ public class DefaultMemoryRatingsDataset_UserIndexed_withMaps<RatingType extends
     }
 
     @Override
-    public Collection<Integer> getUserRated(Integer idUser) {
+    public Set<Integer> getUserRated(Integer idUser) {
         if (ratings_byUser.containsKey(idUser)) {
-            return ratings_byUser.get(idUser).keySet();
+            return Collections.unmodifiableSet(ratings_byUser.get(idUser).keySet());
         } else {
-            return new ArrayList<>();
+            return Collections.EMPTY_SET;
         }
     }
     private boolean getItemRated = false;
 
     @Override
-    public Collection<Integer> getItemRated(Integer idItem) {
+    public Set<Integer> getItemRated(Integer idItem) {
         if (!getItemRated) {
             RatingDatasetEfficiencyException ratingDatasetEfficiencyException = new RatingDatasetEfficiencyException(this.getClass().getSimpleName() + ": Using an inefficient method:[getItemRated(Integer idItem):Collection<Integer>]");
             Global.showWarning(ratingDatasetEfficiencyException);

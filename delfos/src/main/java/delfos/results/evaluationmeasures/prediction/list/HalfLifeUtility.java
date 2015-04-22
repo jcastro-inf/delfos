@@ -1,7 +1,5 @@
 package delfos.results.evaluationmeasures.prediction.list;
 
-import java.util.List;
-import java.util.Map;
 import delfos.ERROR_CODES;
 import delfos.common.exceptions.dataset.users.UserNotFound;
 import delfos.common.parameters.Parameter;
@@ -11,10 +9,12 @@ import delfos.common.statisticalfuncions.MeanIterative;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RatingsDataset;
 import delfos.dataset.basic.rating.RelevanceCriteria;
-import delfos.results.RecommendationResults;
 import delfos.results.MeasureResult;
+import delfos.results.RecommendationResults;
 import delfos.results.evaluationmeasures.EvaluationMeasure;
 import delfos.rs.recommendation.Recommendation;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Medida de evaluación para calcular la probabilidad de que un usuario vea un

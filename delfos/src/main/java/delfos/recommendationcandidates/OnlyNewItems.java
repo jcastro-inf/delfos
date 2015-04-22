@@ -1,15 +1,15 @@
 package delfos.recommendationcandidates;
 
+import delfos.common.exceptions.dataset.users.UserNotFound;
+import delfos.dataset.basic.loader.types.ContentDatasetLoader;
+import delfos.dataset.basic.loader.types.DatasetLoader;
+import delfos.dataset.basic.rating.Rating;
+import delfos.dataset.basic.user.User;
+import delfos.group.groupsofusers.GroupOfUsers;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.TreeSet;
-import delfos.common.exceptions.dataset.users.UserNotFound;
-import delfos.dataset.basic.rating.Rating;
-import delfos.dataset.basic.user.User;
-import delfos.dataset.basic.loader.types.ContentDatasetLoader;
-import delfos.dataset.basic.loader.types.DatasetLoader;
-import delfos.group.groupsofusers.GroupOfUsers;
 
 /**
  * Devuelve los productos del catálogo no valorados por el usuario indicado.
@@ -20,8 +20,8 @@ import delfos.group.groupsofusers.GroupOfUsers;
 public class OnlyNewItems extends RecommendationCandidatesSelector {
 
     @Override
-    public Collection<Integer> candidateItems(DatasetLoader<? extends Rating> datasetLoader, User user) throws UserNotFound {
-        Collection<Integer> candidateItems = new TreeSet<>();
+    public Set<Integer> candidateItems(DatasetLoader<? extends Rating> datasetLoader, User user) throws UserNotFound {
+        Set<Integer> candidateItems = new TreeSet<>();
 
         if (datasetLoader instanceof ContentDatasetLoader) {
             ContentDatasetLoader contentDatasetLoader = (ContentDatasetLoader) datasetLoader;
@@ -40,7 +40,7 @@ public class OnlyNewItems extends RecommendationCandidatesSelector {
     }
 
     @Override
-    public Collection<Integer> candidateItems(DatasetLoader<? extends Rating> datasetLoader, GroupOfUsers groupOfUsers) throws UserNotFound {
+    public Set<Integer> candidateItems(DatasetLoader<? extends Rating> datasetLoader, GroupOfUsers groupOfUsers) throws UserNotFound {
 
         Set<Integer> candidateItems = new TreeSet<>();
 

@@ -1,16 +1,16 @@
 package delfos.io.xml.recommendations;
 
+import delfos.rs.recommendation.Recommendation;
+import delfos.rs.recommendation.RecommendationComputationDetails;
+import delfos.rs.recommendation.RecommendationComputationDetails.DetailField;
+import delfos.rs.recommendation.Recommendations;
+import delfos.rs.recommendation.RecommendationsFactory;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import org.jdom2.Attribute;
 import org.jdom2.Element;
-import delfos.rs.recommendation.Recommendation;
-import delfos.rs.recommendation.RecommendationComputationDetails;
-import delfos.rs.recommendation.RecommendationComputationDetails.DetailField;
-import delfos.rs.recommendation.Recommendations;
-import delfos.rs.recommendation.RecommendationsFactory;
 
 /**
  * Clase que se utiliza para generar un XML que almacene los productos que un

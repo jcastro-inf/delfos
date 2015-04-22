@@ -1,21 +1,13 @@
 package delfos.rs.bias;
 
-import delfos.rs.bias.PredictUserItemBias;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import org.junit.Assert;
-import static org.junit.Assert.fail;
-import org.junit.Test;
 import delfos.common.datastructures.histograms.HistogramNumbersSmart;
 import delfos.common.statisticalfuncions.MeanIterative;
 import delfos.configureddatasets.ConfiguredDatasetsFactory;
+import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RatingsDataset;
 import delfos.dataset.basic.rating.RelevanceCriteria;
 import delfos.dataset.basic.user.User;
-import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.generated.recommender.RecommenderBasedDataset;
 import delfos.results.MeasureResult;
 import delfos.results.RecommendationResults;
@@ -23,6 +15,14 @@ import delfos.results.evaluationmeasures.Coverage;
 import delfos.results.evaluationmeasures.ratingprediction.MAE;
 import delfos.rs.recommendation.Recommendation;
 import delfos.rs.recommendation.SingleUserRecommendations;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import org.junit.Assert;
+import static org.junit.Assert.fail;
+import org.junit.Test;
 
 /**
  *
@@ -40,7 +40,7 @@ public class PredictUserItemBiasTest {
         DatasetLoader<? extends Rating> datasetLoader = ConfiguredDatasetsFactory.getInstance().getDatasetLoader("ml-100k");
 
         User user = new User(45);
-        Collection<Integer> idItemList = datasetLoader.getRatingsDataset().allRatedItems();
+        Set<Integer> idItemList = datasetLoader.getRatingsDataset().allRatedItems();
         PredictUserItemBias bias = new PredictUserItemBias();
 
         Object model = bias.build(datasetLoader);
@@ -71,7 +71,7 @@ public class PredictUserItemBiasTest {
         List<SingleUserRecommendations> allRecommendations = new ArrayList<>(datasetLoader.getRatingsDataset().allUsers().size());
         for (int idUser : datasetLoader.getRatingsDataset().allUsers()) {
             User user = new User(idUser);
-            List<Recommendation> recommendations = bias.recommendOnly(datasetLoader, model, idUser, datasetLoader.getRatingsDataset().getUserRated(idUser));
+            Collection<Recommendation> recommendations = bias.recommendOnly(datasetLoader, model, idUser, datasetLoader.getRatingsDataset().getUserRated(idUser));
             final SingleUserRecommendations singleUserRecommendations = new SingleUserRecommendations(new User(idUser), recommendations);
             allRecommendations.add(singleUserRecommendations);
             final Map<Integer, ? extends Rating> userRatingsRated = datasetLoader.getRatingsDataset().getUserRatingsRated(user.getId());

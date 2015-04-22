@@ -74,5 +74,5 @@ public abstract class ContentBasedRecommender<RecommenderSystemModel, UserProfil
         return recommendOnly(datasetLoader, model, makeUserProfile, idItemList);
     }
 
-    protected abstract List<Recommendation> recommendOnly(DatasetLoader<? extends Rating> datasetLoader, RecommenderSystemModel model, UserProfile userProfile, Collection<Integer> idItemList) throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset;
+    protected abstract Collection<Recommendation> recommendOnly(DatasetLoader<? extends Rating> datasetLoader, RecommenderSystemModel model, UserProfile userProfile, Collection<Integer> idItemList) throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset;
 }

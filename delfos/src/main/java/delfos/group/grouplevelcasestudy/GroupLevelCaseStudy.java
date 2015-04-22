@@ -96,7 +96,7 @@ public class GroupLevelCaseStudy {
 
                 for (GroupRecommenderSystem groupRecommenderSystem : groupRecommenderSystems) {
                     Object recommenderSystemModel = groupRecommenderSystem.build(trainingDatasetLoader);
-                    List<Recommendation> allPredictions = new ArrayList<>();
+                    Collection<Recommendation> allPredictions = new ArrayList<>();
                     List<Integer> requests = new ArrayList<>();
 
                     for (GroupRecommendationRequest groupRecommendationRequest : predictionProtocol.getGroupRecommendationRequests(trainingDatasetLoader, testDatasetLoader, group)) {
@@ -106,7 +106,7 @@ public class GroupLevelCaseStudy {
                                 recommenderSystemModel,
                                 group);
 
-                        List<Recommendation> groupRecommendations = groupRecommenderSystem.recommendOnly(
+                        Collection<Recommendation> groupRecommendations = groupRecommenderSystem.recommendOnly(
                                 groupRecommendationRequest.predictionPhaseDatasetLoader,
                                 recommenderSystemModel,
                                 groupModel,
@@ -125,7 +125,7 @@ public class GroupLevelCaseStudy {
                     for (GroupEvaluationMeasure evaluationMeasure : evaluationMeasures) {
                         Map<GroupOfUsers, Collection<Integer>> _requests = new TreeMap<>();
                         _requests.put(group, requests);
-                        Map<GroupOfUsers, List<Recommendation>> _recommendations = new TreeMap<>();
+                        Map<GroupOfUsers, Collection<Recommendation>> _recommendations = new TreeMap<>();
                         _recommendations.put(group, allPredictions);
                         GroupRecommendationResult groupRecommendationResult = new GroupRecommendationResult(0, 0, 0, 1, _requests, _recommendations, groupRecommenderSystem.getAlias());
                         GroupMeasureResult measureResult = evaluationMeasure.getMeasureResult(groupRecommendationResult, testDatasetLoader.getRatingsDataset(), relevanceCriteria);

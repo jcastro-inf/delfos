@@ -62,7 +62,7 @@ public interface RatingsDataset<RatingType extends Rating> extends Iterable<Rati
      *
      * @throws UserNotFound Si el usuario no existe.
      */
-    public Collection<Integer> getUserRated(Integer idUser) throws UserNotFound;
+    public Set<Integer> getUserRated(Integer idUser) throws UserNotFound;
 
     /**
      * Devuelve los usuarios que han valorado el item
@@ -73,7 +73,7 @@ public interface RatingsDataset<RatingType extends Rating> extends Iterable<Rati
      *
      * @throws ItemNotFound Si el producto no existe.
      */
-    public Collection<Integer> getItemRated(Integer idItem) throws ItemNotFound;
+    public Set<Integer> getItemRated(Integer idItem) throws ItemNotFound;
 
     /**
      * Devuelve las valoraciones de un usuario, indexadas por id de producto.

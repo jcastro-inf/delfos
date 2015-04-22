@@ -1,23 +1,21 @@
 package delfos.group.grs.consensus;
 
+import delfos.Constants;
+import delfos.ERROR_CODES;
+import delfos.dataset.basic.loader.types.DatasetLoader;
+import delfos.dataset.basic.rating.Rating;
+import delfos.rs.recommendation.Recommendation;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
 import java.util.Map;
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import org.jdom2.input.SAXBuilder;
 import org.jdom2.output.XMLOutputter;
-import delfos.ERROR_CODES;
-import delfos.Constants;
-import delfos.dataset.basic.rating.Rating;
-import delfos.dataset.basic.loader.types.DatasetLoader;
-import delfos.rs.recommendation.Recommendation;
 
 /**
  *
@@ -36,7 +34,7 @@ public class ConsensusOfIndividualRecommendationsToXML {
     public static final String RECOMMENDATION_ELEMENT_PREFERENCE_ATTRIBUTE_NAME = "preference";
     public static final String RECOMMENDATION_ELEMENT_RANK_ATTRIBUTE_NAME = "rank";
 
-    public static void writeConsensusInputXML(DatasetLoader datasetLoader, List<Recommendation> groupRecommendations, Map<Integer, List<Recommendation>> singleUserRecommendations, File outputFile) {
+    public static void writeConsensusInputXML(DatasetLoader datasetLoader, Collection<Recommendation> groupRecommendations, Map<Integer, Collection<Recommendation>> singleUserRecommendations, File outputFile) {
 
         Element root = new Element(CONSENSUS_ROOT_ELEMENT_NAME);
 
@@ -171,7 +169,7 @@ public class ConsensusOfIndividualRecommendationsToXML {
         int round = Integer.parseInt(consensus.getAttributeValue(CONSENSUS_OUTPUT_CONSENSUS_ATTRIBUTE_ROUND));
         double consensusDegree = Double.parseDouble(consensus.getAttributeValue(CONSENSUS_OUTPUT_CONSENSUS_ATTRIBUTE_CONSENSUS_DEGREE));
 
-        List<Recommendation> consensusRecommendations = new ArrayList<>();
+        Collection<Recommendation> consensusRecommendations = new ArrayList<>();
 
         for (Element alternative : consensus.getChildren(CONSENSUS_OUTPUT_ALTERNATVE_ELEMENT_NAME)) {
             int idItem = Integer.parseInt(alternative.getAttributeValue(CONSENSUS_OUTPUT_ALTERNATVE_ATTRIBUTE_ID_ITEM));
@@ -180,7 +178,6 @@ public class ConsensusOfIndividualRecommendationsToXML {
             double preference = 1 / rank;
             consensusRecommendations.add(new Recommendation(idItem, preference));
         }
-        Collections.sort(consensusRecommendations);
 
         return new ConsensusOutputModel(consensusDegree, round, consensusRecommendations);
     }

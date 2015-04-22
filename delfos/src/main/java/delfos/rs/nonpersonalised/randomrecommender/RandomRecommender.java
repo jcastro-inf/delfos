@@ -1,18 +1,17 @@
 package delfos.rs.nonpersonalised.randomrecommender;
 
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.List;
 import delfos.common.Global;
 import delfos.common.datastructures.histograms.HistogramNumbersSmart;
 import delfos.common.exceptions.dataset.CannotLoadContentDataset;
 import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
 import delfos.common.exceptions.dataset.users.UserNotFound;
-import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.loader.types.DatasetLoader;
+import delfos.dataset.basic.rating.Rating;
 import delfos.experiment.SeedHolder;
 import delfos.rs.collaborativefiltering.CollaborativeRecommender;
 import delfos.rs.recommendation.Recommendation;
+import java.util.Collection;
+import java.util.LinkedList;
 
 /**
  * Sistema de recomendación que realiza la recomendación de manera aleatoria. No

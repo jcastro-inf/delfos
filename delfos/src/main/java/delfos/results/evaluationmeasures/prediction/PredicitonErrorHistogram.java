@@ -53,7 +53,7 @@ public class PredicitonErrorHistogram extends EvaluationMeasure {
         HistogramNumbersSmart histogram = new HistogramNumbersSmart(binWidth);
 
         for (int idUser : testDataset.allUsers()) {
-            List<Recommendation> recommendationList = recommendationResults.getRecommendationsForUser(idUser);
+            Collection<Recommendation> recommendationList = recommendationResults.getRecommendationsForUser(idUser);
             try {
                 Map<Integer, ? extends Rating> userRated = testDataset.getUserRatingsRated(idUser);
                 for (Recommendation lista : recommendationList) {

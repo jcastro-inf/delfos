@@ -1,5 +1,19 @@
 package delfos.rs.nonpersonalised.meanrating.arithmeticmean;
 
+import delfos.ERROR_CODES;
+import delfos.common.exceptions.dataset.CannotLoadContentDataset;
+import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
+import delfos.common.exceptions.dataset.items.ItemNotFound;
+import delfos.common.exceptions.dataset.users.UserNotFound;
+import delfos.common.statisticalfuncions.MeanIterative;
+import delfos.dataset.basic.loader.types.DatasetLoader;
+import delfos.dataset.basic.rating.Rating;
+import delfos.dataset.basic.rating.RatingsDataset;
+import delfos.rs.collaborativefiltering.CollaborativeRecommender;
+import delfos.rs.persistence.DatabasePersistence;
+import delfos.rs.persistence.FailureInPersistence;
+import delfos.rs.persistence.database.DAOMeanRatingProfile;
+import delfos.rs.recommendation.Recommendation;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -7,20 +21,6 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import delfos.dataset.basic.rating.Rating;
-import delfos.dataset.basic.rating.RatingsDataset;
-import delfos.dataset.basic.loader.types.DatasetLoader;
-import delfos.ERROR_CODES;
-import delfos.rs.collaborativefiltering.CollaborativeRecommender;
-import delfos.rs.persistence.database.DAOMeanRatingProfile;
-import delfos.rs.persistence.DatabasePersistence;
-import delfos.rs.persistence.FailureInPersistence;
-import delfos.rs.recommendation.Recommendation;
-import delfos.common.exceptions.dataset.CannotLoadContentDataset;
-import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
-import delfos.common.exceptions.dataset.items.ItemNotFound;
-import delfos.common.exceptions.dataset.users.UserNotFound;
-import delfos.common.statisticalfuncions.MeanIterative;
 
 /**
  * Sistema de recomendación que realiza la recomendación basándose en el rating
@@ -82,7 +82,7 @@ public class MeanRatingRS extends CollaborativeRecommender<MeanRatingRSModel> {
     @Override
     public Collection<Recommendation> recommendOnly(DatasetLoader<? extends Rating> datasetLoader, MeanRatingRSModel model, Integer idUser, java.util.Set<Integer> idItemList) throws UserNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset {
 
-        LinkedList<Recommendation> recom = new LinkedList<Recommendation>();
+        Collection<Recommendation> recom = new LinkedList<>();
         Iterator<MeanRating> iterator = model.getRangedMeanRatings().listIterator();
 
         int i = 0;

@@ -1,15 +1,16 @@
 package delfos.dataset.util;
 
+import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
+import delfos.common.exceptions.dataset.users.UserNotFound;
+import delfos.dataset.basic.loader.types.DatasetLoader;
+import delfos.dataset.basic.rating.Rating;
+import delfos.group.groupsofusers.GroupOfUsers;
+import delfos.rs.recommendation.Recommendation;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
-import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
-import delfos.common.exceptions.dataset.users.UserNotFound;
-import delfos.dataset.basic.rating.Rating;
-import delfos.dataset.basic.loader.types.DatasetLoader;
-import delfos.group.groupsofusers.GroupOfUsers;
-import delfos.rs.recommendation.Recommendation;
 
 /**
  * Clase para transformar mapas de valoraciones
@@ -121,7 +122,7 @@ public class DatasetUtilities {
         return membersRatings;
     }
 
-    protected static List convertRatingsMapToRecommendationList(Map<Integer, Number> groupAggregatedProfile) {
+    protected static List<Recommendation> convertRatingsMapToRecommendationList(Map<Integer, Number> groupAggregatedProfile) {
         List<Recommendation> recommendations = new ArrayList<>(groupAggregatedProfile.size());
         for (Map.Entry<Integer, Number> entry : groupAggregatedProfile.entrySet()) {
             int idItem = entry.getKey();
@@ -131,7 +132,7 @@ public class DatasetUtilities {
         return recommendations;
     }
 
-    public static Map convertToMemberRatings(Map<Integer, List<Recommendation>> recommendationsLists_byMember) {
+    public static Map convertToMemberRatings(Map<Integer, Collection<Recommendation>> recommendationsLists_byMember) {
         Map<Integer, List<Number>> membersRatingsPrediction_byItem = new TreeMap<>();
         for (int idUser : recommendationsLists_byMember.keySet()) {
             for (Recommendation recommendation : recommendationsLists_byMember.get(idUser)) {

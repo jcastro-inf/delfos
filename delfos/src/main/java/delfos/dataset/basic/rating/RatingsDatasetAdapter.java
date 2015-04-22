@@ -75,7 +75,7 @@ public abstract class RatingsDatasetAdapter<RatingType extends Rating> implement
      * @throws delfos.common.exceptions.dataset.users.UserNotFound
      */
     @Override
-    public abstract Collection<Integer> getUserRated(Integer idUser) throws UserNotFound;
+    public abstract Set<Integer> getUserRated(Integer idUser) throws UserNotFound;
 
     /**
      * Devuelve los usuarios que han valorado el item
@@ -86,7 +86,7 @@ public abstract class RatingsDatasetAdapter<RatingType extends Rating> implement
      * @throws delfos.common.exceptions.dataset.items.ItemNotFound
      */
     @Override
-    public abstract Collection<Integer> getItemRated(Integer idItem) throws ItemNotFound;
+    public abstract Set<Integer> getItemRated(Integer idItem) throws ItemNotFound;
 
     /**
      * Devuelve las peliculas valoradas por un usuario

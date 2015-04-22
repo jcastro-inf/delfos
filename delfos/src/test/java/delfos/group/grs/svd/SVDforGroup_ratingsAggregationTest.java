@@ -1,11 +1,5 @@
 package delfos.group.grs.svd;
 
-import delfos.group.grs.svd.GroupSVDModel;
-import delfos.group.grs.svd.SVDforGroup_ratingsAggregation;
-import java.util.Collection;
-import java.util.List;
-import java.util.TreeSet;
-import org.junit.Test;
 import delfos.common.Global;
 import delfos.dataset.generated.random.RandomDatasetLoader;
 import delfos.dataset.util.DatasetPrinter;
@@ -16,6 +10,10 @@ import delfos.rs.collaborativefiltering.svd.TryThisAtHomeSVDModel;
 import delfos.rs.output.RecommendationsOutputStandardRaw;
 import delfos.rs.recommendation.Recommendation;
 import delfos.rs.recommendation.RecommendationComputationDetails;
+import java.util.Collection;
+import java.util.Set;
+import java.util.TreeSet;
+import org.junit.Test;
 
 /**
  *
@@ -40,13 +38,13 @@ public class SVDforGroup_ratingsAggregationTest {
         GroupOfUsers group = new GroupOfUsers(1, 2, 3);
         GroupSVDModel groupModel = grs.buildGroupModel(randomDataset, recommenderSystemModel, group);
 
-        Collection<Integer> idItemList = new TreeSet<>();
+        Set<Integer> idItemList = new TreeSet<>();
         for (int idUser : group) {
             idItemList.addAll(randomDataset.getRatingsDataset().getUserRated(idUser));
         }
-        List<Recommendation> recommendOnly = grs.recommendOnly(randomDataset, recommenderSystemModel, groupModel, group, idItemList);
+        Collection<Recommendation> recommendOnly = grs.recommendOnly(randomDataset, recommenderSystemModel, groupModel, group, idItemList);
 
-        Global.showMessage(DatasetPrinter.printCompactRatingTable(randomDataset.getRatingsDataset(), group.getGroupMembers(), recommendOnly));
+        Global.showMessage(DatasetPrinter.printCompactRatingTable(randomDataset.getRatingsDataset(), group.getGroupMembers(), idItemList));
 
         RecommendationsOutputStandardRaw output = new RecommendationsOutputStandardRaw();
         output.writeRecommendations(new GroupRecommendations(group, recommendOnly, RecommendationComputationDetails.EMPTY_DETAILS));

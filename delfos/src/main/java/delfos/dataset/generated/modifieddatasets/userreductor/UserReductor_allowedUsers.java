@@ -8,9 +8,7 @@ import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RatingsDataset;
 import delfos.dataset.basic.rating.RatingsDatasetAdapter;
 import delfos.dataset.basic.rating.domain.Domain;
-import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
@@ -80,7 +78,7 @@ public class UserReductor_allowedUsers<RatingType extends Rating> extends Rating
     }
 
     @Override
-    public Collection<Integer> getUserRated(Integer idUser) throws UserNotFound {
+    public Set<Integer> getUserRated(Integer idUser) throws UserNotFound {
         if (isAllowed(idUser)) {
             return originalDataset.getUserRated(idUser);
         } else {
@@ -89,9 +87,9 @@ public class UserReductor_allowedUsers<RatingType extends Rating> extends Rating
     }
 
     @Override
-    public Collection<Integer> getItemRated(Integer idItem) throws ItemNotFound {
+    public Set<Integer> getItemRated(Integer idItem) throws ItemNotFound {
 
-        Collection<Integer> ret = new LinkedList<>();
+        Set<Integer> ret = new TreeSet<>();
         for (int idUser : originalDataset.getItemRated(idItem)) {
             if (isAllowed(idUser)) {
                 ret.add(idUser);

@@ -1,9 +1,5 @@
 package delfos.rs.output;
 
-import delfos.rs.output.RecommendationsOutputStandardRaw;
-import java.util.LinkedList;
-import java.util.List;
-import org.junit.Test;
 import delfos.constants.DelfosTest;
 import delfos.dataset.basic.user.User;
 import delfos.rs.output.sort.SortBy;
@@ -11,6 +7,9 @@ import delfos.rs.recommendation.Recommendation;
 import delfos.rs.recommendation.Recommendations;
 import delfos.rs.recommendation.RecommendationsFactory;
 import delfos.rs.recommendation.SingleUserRecommendations;
+import java.util.LinkedList;
+import java.util.List;
+import org.junit.Test;
 
 public class RecommendationsOutputStandardRawTest extends DelfosTest {
 

@@ -1,10 +1,5 @@
 package delfos.rs.trustbased.similaritymodification;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
 import delfos.common.Global;
 import delfos.common.exceptions.CouldNotPredictRating;
 import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
@@ -13,11 +8,9 @@ import delfos.common.exceptions.dataset.users.UserNotFound;
 import delfos.common.parallelwork.MultiThreadExecutionManager;
 import delfos.common.parameters.Parameter;
 import delfos.common.parameters.restriction.ParameterOwnerRestriction;
-import delfos.rs.collaborativefiltering.knn.MatchRating;
-import delfos.rs.collaborativefiltering.knn.RecommendationEntity;
+import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RatingsDataset;
-import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.rs.collaborativefiltering.CollaborativeRecommender;
 import static delfos.rs.collaborativefiltering.knn.KnnCollaborativeRecommender.CASE_AMPLIFICATION;
 import static delfos.rs.collaborativefiltering.knn.KnnCollaborativeRecommender.DEFAULT_RATING;
@@ -28,6 +21,8 @@ import static delfos.rs.collaborativefiltering.knn.KnnCollaborativeRecommender.P
 import static delfos.rs.collaborativefiltering.knn.KnnCollaborativeRecommender.RELEVANCE_FACTOR;
 import static delfos.rs.collaborativefiltering.knn.KnnCollaborativeRecommender.RELEVANCE_FACTOR_VALUE;
 import static delfos.rs.collaborativefiltering.knn.KnnCollaborativeRecommender.SIMILARITY_MEASURE;
+import delfos.rs.collaborativefiltering.knn.MatchRating;
+import delfos.rs.collaborativefiltering.knn.RecommendationEntity;
 import delfos.rs.collaborativefiltering.predictiontechniques.PredictionTechnique;
 import delfos.rs.collaborativefiltering.profile.Neighbor;
 import delfos.rs.persistence.DatabasePersistence;
@@ -36,6 +31,11 @@ import delfos.rs.recommendation.Recommendation;
 import delfos.rs.trustbased.belieffunctions.BeliefFunction;
 import delfos.rs.trustbased.belieffunctions.LinearBelief;
 import delfos.similaritymeasures.CollaborativeSimilarityMeasure;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Sistema de recomendación basado en el filtrado colaborativo basado en
@@ -125,7 +125,7 @@ public class TrustModificationKnnMemory extends CollaborativeRecommender<Object>
             List<Neighbor> neighbors;
             neighbors = getNeighbors(datasetLoader.getRatingsDataset(), idUser);
 
-            List<Recommendation> ret = recommendWithNeighbors(datasetLoader.getRatingsDataset(), idUser, neighbors, idItemList);
+            Collection<Recommendation> ret = recommendWithNeighbors(datasetLoader.getRatingsDataset(), idUser, neighbors, idItemList);
 
             return ret;
         } catch (CannotLoadRatingsDataset ex) {
@@ -191,7 +191,7 @@ public class TrustModificationKnnMemory extends CollaborativeRecommender<Object>
      * @throws UserNotFound Si el usuario activo o alguno de los vecinos
      * indicados no se encuentra en el dataset.
      */
-    public List<Recommendation> recommendWithNeighbors(
+    public Collection<Recommendation> recommendWithNeighbors(
             RatingsDataset<? extends Rating> ratingsDataset,
             Integer idUser,
             List<Neighbor> vecinos,
@@ -201,7 +201,7 @@ public class TrustModificationKnnMemory extends CollaborativeRecommender<Object>
         PredictionTechnique predictionTechnique_ = (PredictionTechnique) getParameterValue(PREDICTION_TECHNIQUE);
 
         //Predicción de la valoración
-        List<Recommendation> recommendationList = new LinkedList<>();
+        Collection<Recommendation> recommendationList = new LinkedList<>();
 
         int numVecinos = (Integer) getParameterValue(NEIGHBORHOOD_SIZE);
 
@@ -243,8 +243,6 @@ public class TrustModificationKnnMemory extends CollaborativeRecommender<Object>
                 Global.showError(ex);
             }
         }
-
-        Collections.sort(recommendationList);
 
         return recommendationList;
     }

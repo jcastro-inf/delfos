@@ -1,11 +1,5 @@
 package delfos.rs.output;
 
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 import delfos.ERROR_CODES;
 import delfos.common.parameters.Parameter;
 import delfos.common.parameters.restriction.IntegerParameter;
@@ -15,6 +9,12 @@ import delfos.databaseconnections.DatabaseConection;
 import delfos.databaseconnections.MySQLConnection;
 import delfos.rs.recommendation.Recommendation;
 import delfos.rs.recommendation.Recommendations;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Escribe las recomendaciones en una tabla de base de datos MySQL.

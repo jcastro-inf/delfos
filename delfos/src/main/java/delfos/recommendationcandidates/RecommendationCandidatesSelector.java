@@ -1,13 +1,13 @@
 package delfos.recommendationcandidates;
 
-import java.util.Collection;
 import delfos.common.exceptions.dataset.users.UserNotFound;
 import delfos.common.parameters.ParameterOwnerAdapter;
 import delfos.common.parameters.ParameterOwnerType;
+import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.user.User;
-import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.group.groupsofusers.GroupOfUsers;
+import java.util.Set;
 
 /**
  *
@@ -23,9 +23,9 @@ public abstract class RecommendationCandidatesSelector extends ParameterOwnerAda
         super();
     }
 
-    public abstract Collection<Integer> candidateItems(DatasetLoader<? extends Rating> datasetLoader, User user) throws UserNotFound;
+    public abstract Set<Integer> candidateItems(DatasetLoader<? extends Rating> datasetLoader, User user) throws UserNotFound;
 
-    public abstract Collection<Integer> candidateItems(DatasetLoader<? extends Rating> datasetLoader, GroupOfUsers groupOfUsers) throws UserNotFound;
+    public abstract Set<Integer> candidateItems(DatasetLoader<? extends Rating> datasetLoader, GroupOfUsers groupOfUsers) throws UserNotFound;
 
     @Override
     public ParameterOwnerType getParameterOwnerType() {

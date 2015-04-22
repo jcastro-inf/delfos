@@ -156,7 +156,7 @@ public class NetflixDatabaseRatingsDataset extends RatingsDatasetAdapter {
     }
 
     @Override
-    public Collection<Integer> getItemRated(Integer idItem) {
+    public Set<Integer> getItemRated(Integer idItem) {
         Set<Integer> users = new TreeSet<>();
         try {
 

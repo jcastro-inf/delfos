@@ -1,22 +1,20 @@
 package delfos.rs.nonpersonalised.mostpopular;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
-import delfos.dataset.basic.rating.Rating;
-import delfos.dataset.basic.rating.RatingsDataset;
-import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.ERROR_CODES;
-import delfos.rs.recommendation.Recommendation;
-import delfos.rs.RecommenderSystemAdapter;
 import delfos.common.exceptions.dataset.CannotLoadContentDataset;
 import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
 import delfos.common.exceptions.dataset.CannotLoadUsersDataset;
 import delfos.common.exceptions.dataset.items.ItemNotFound;
 import delfos.common.exceptions.dataset.users.UserNotFound;
+import delfos.dataset.basic.loader.types.DatasetLoader;
+import delfos.dataset.basic.rating.Rating;
+import delfos.dataset.basic.rating.RatingsDataset;
+import delfos.rs.RecommenderSystemAdapter;
+import delfos.rs.recommendation.Recommendation;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Set;
+import java.util.TreeSet;
 
 /**
  *
@@ -24,7 +22,7 @@ import delfos.common.exceptions.dataset.users.UserNotFound;
  *
  * @version 25-Noviembre-2013
  */
-public class MostPopularRS extends RecommenderSystemAdapter<List<Recommendation>> {
+public class MostPopularRS extends RecommenderSystemAdapter<Collection<Recommendation>> {
 
     private static final long serialVersionUID = 1L;
 
@@ -34,10 +32,10 @@ public class MostPopularRS extends RecommenderSystemAdapter<List<Recommendation>
     }
 
     @Override
-    public List<Recommendation> build(DatasetLoader<? extends Rating> datasetLoader) throws CannotLoadRatingsDataset, CannotLoadContentDataset, CannotLoadUsersDataset {
+    public Collection<Recommendation> build(DatasetLoader<? extends Rating> datasetLoader) throws CannotLoadRatingsDataset, CannotLoadContentDataset, CannotLoadUsersDataset {
 
         final float numUsers = datasetLoader.getRatingsDataset().allUsers().size();
-        List<Recommendation> model = new ArrayList<Recommendation>(datasetLoader.getRatingsDataset().allRatedItems().size());
+        Collection<Recommendation> model = new ArrayList<>(datasetLoader.getRatingsDataset().allRatedItems().size());
         RatingsDataset<? extends Rating> ratingDataset = datasetLoader.getRatingsDataset();
         for (int idItem : ratingDataset.allRatedItems()) {
             try {
@@ -49,15 +47,14 @@ public class MostPopularRS extends RecommenderSystemAdapter<List<Recommendation>
             }
         }
 
-        Collections.sort(model);
         return model;
     }
 
     @Override
-    public Collection<Recommendation> recommendOnly(DatasetLoader<? extends Rating> datasetLoader, List<Recommendation> model, Integer idUser, java.util.Set<Integer> idItemList) throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset {
-        List<Recommendation> ret = new ArrayList<Recommendation>(idItemList.size());
+    public Collection<Recommendation> recommendOnly(DatasetLoader<? extends Rating> datasetLoader, Collection<Recommendation> model, Integer idUser, java.util.Set<Integer> idItemList) throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset {
+        Collection<Recommendation> ret = new ArrayList<>(idItemList.size());
 
-        Set<Integer> added = new TreeSet<Integer>();
+        Set<Integer> added = new TreeSet<>();
         for (Recommendation recommendation : model) {
             if (idItemList.contains(recommendation.getIdItem())) {
                 ret.add(new Recommendation(recommendation.getIdItem(), recommendation.getPreference()));
@@ -66,13 +63,12 @@ public class MostPopularRS extends RecommenderSystemAdapter<List<Recommendation>
         }
 
         //Para que la cobertura sea 1 en todos los casos.
-        Set<Integer> toAdd = new TreeSet<Integer>(idItemList);
+        Set<Integer> toAdd = new TreeSet<>(idItemList);
         toAdd.removeAll(added);
         for (int idItem : toAdd) {
             ret.add(new Recommendation(idItem, 0));
         }
 
-        Collections.sort(ret);
         return ret;
     }
 }

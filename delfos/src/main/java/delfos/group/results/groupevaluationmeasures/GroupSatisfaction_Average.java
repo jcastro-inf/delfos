@@ -1,20 +1,20 @@
 package delfos.group.results.groupevaluationmeasures;
 
+import delfos.ERROR_CODES;
+import delfos.common.exceptions.dataset.users.UserNotFound;
+import delfos.common.statisticalfuncions.MeanIterative;
+import delfos.dataset.basic.rating.Rating;
+import delfos.dataset.basic.rating.RatingsDataset;
+import delfos.dataset.basic.rating.RelevanceCriteria;
+import delfos.group.groupsofusers.GroupOfUsers;
+import delfos.group.results.grouprecomendationresults.GroupRecommendationResult;
+import delfos.rs.recommendation.Recommendation;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeSet;
-import delfos.dataset.basic.rating.Rating;
-import delfos.dataset.basic.rating.RatingsDataset;
-import delfos.dataset.basic.rating.RelevanceCriteria;
-import delfos.ERROR_CODES;
-import delfos.rs.recommendation.Recommendation;
-import delfos.common.exceptions.dataset.users.UserNotFound;
-import delfos.common.statisticalfuncions.MeanIterative;
-import delfos.group.groupsofusers.GroupOfUsers;
-import delfos.group.results.grouprecomendationresults.GroupRecommendationResult;
 
 //TODO: revisar si las características e interpretación de la medida son correctas
 /**
@@ -33,7 +33,7 @@ import delfos.group.results.grouprecomendationresults.GroupRecommendationResult;
  * Pajares, Laura Sebastia, Eva Onaindia: Preference elicitation techniques for
  * group recommender systems]
  *
-* @author Jorge Castro Gallardo
+ * @author Jorge Castro Gallardo
  *
  * @version Unknown Date
  * @version 20-Noviembre-2013
@@ -53,7 +53,7 @@ public class GroupSatisfaction_Average extends GroupEvaluationMeasure {
             MeanIterative maeGupos = new MeanIterative();
 
             /* Hago esta reordenación de los resultados para ganar eficiencia */
-            Map<Integer, Recommendation> recomendacionesAlGrupoReordenadas = new HashMap<Integer, Recommendation>();
+            Map<Integer, Recommendation> recomendacionesAlGrupoReordenadas = new HashMap<>();
             for (Recommendation r : next.getValue()) {
                 recomendacionesAlGrupoReordenadas.put(r.getIdItem(), r);
             }

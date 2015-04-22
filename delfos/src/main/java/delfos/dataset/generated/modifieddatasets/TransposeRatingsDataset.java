@@ -53,7 +53,7 @@ public class TransposeRatingsDataset<RatingType extends Rating> extends RatingsD
     }
 
     @Override
-    public Collection<Integer> getUserRated(Integer idUser) throws UserNotFound {
+    public Set<Integer> getUserRated(Integer idUser) throws UserNotFound {
         try {
             return originalDataset.getItemRated(idUser);
         } catch (ItemNotFound ex) {
@@ -62,7 +62,7 @@ public class TransposeRatingsDataset<RatingType extends Rating> extends RatingsD
     }
 
     @Override
-    public Collection<Integer> getItemRated(Integer idItem) throws ItemNotFound {
+    public Set<Integer> getItemRated(Integer idItem) throws ItemNotFound {
         try {
             return originalDataset.getUserRated(idItem);
         } catch (UserNotFound ex) {

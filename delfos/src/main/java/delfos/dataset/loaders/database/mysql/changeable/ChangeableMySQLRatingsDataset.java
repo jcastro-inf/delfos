@@ -81,7 +81,7 @@ public final class ChangeableMySQLRatingsDataset implements RatingsDataset<Ratin
     }
 
     @Override
-    public Collection<Integer> getUserRated(Integer idUser) throws UserNotFound {
+    public Set<Integer> getUserRated(Integer idUser) throws UserNotFound {
         return ratingsDataset.getUserRated(idUser);
     }
 
@@ -91,7 +91,7 @@ public final class ChangeableMySQLRatingsDataset implements RatingsDataset<Ratin
     }
 
     @Override
-    public Collection<Integer> getItemRated(Integer idItem) throws ItemNotFound {
+    public Set<Integer> getItemRated(Integer idItem) throws ItemNotFound {
         return ratingsDataset.getItemRated(idItem);
     }
 

@@ -8,7 +8,6 @@ import delfos.dataset.basic.rating.RatingsDataset;
 import delfos.dataset.basic.rating.RatingsDatasetAdapter;
 import delfos.dataset.basic.rating.domain.DecimalDomain;
 import delfos.dataset.basic.rating.domain.Domain;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
@@ -208,20 +207,20 @@ public class BothIndexRatingsDataset<RatingType extends Rating> extends RatingsD
     }
 
     @Override
-    public Collection<Integer> getUserRated(Integer idUser) throws UserNotFound {
+    public Set<Integer> getUserRated(Integer idUser) throws UserNotFound {
         if (userIndex.containsKey(idUser)) {
-            return Collections.unmodifiableCollection(getUserRatingsRated(idUser).keySet());
+            return Collections.unmodifiableSet(getUserRatingsRated(idUser).keySet());
         } else {
-            return Collections.EMPTY_LIST;
+            return Collections.EMPTY_SET;
         }
     }
 
     @Override
-    public Collection<Integer> getItemRated(Integer idItem) throws ItemNotFound {
+    public Set<Integer> getItemRated(Integer idItem) throws ItemNotFound {
         if (itemIndex.containsKey(idItem)) {
-            return Collections.unmodifiableCollection(getItemRatingsRated(idItem).keySet());
+            return Collections.unmodifiableSet(getItemRatingsRated(idItem).keySet());
         } else {
-            return Collections.EMPTY_LIST;
+            return Collections.EMPTY_SET;
         }
     }
 

@@ -1,7 +1,7 @@
 package delfos.rs.explanation;
 
-import java.util.List;
 import delfos.rs.recommendation.Recommendation;
+import java.util.Collection;
 
 /**
  *
@@ -11,10 +11,10 @@ import delfos.rs.recommendation.Recommendation;
  */
 public class RecommendationWithExplanation<ExplanationType> {
 
-    private final List<Recommendation> recommendations;
+    private final Collection<Recommendation> recommendations;
     private final ExplanationType explanation;
 
-    public RecommendationWithExplanation(List<Recommendation> recommendations, ExplanationType explanation) {
+    public RecommendationWithExplanation(Collection<Recommendation> recommendations, ExplanationType explanation) {
         this.recommendations = recommendations;
         this.explanation = explanation;
     }

@@ -101,7 +101,7 @@ public class TrainingRatingsDataset_Memory<RatingType extends Rating> extends Ra
     }
 
     @Override
-    public Collection<Integer> getUserRated(Integer idUser) throws UserNotFound {
+    public Set<Integer> getUserRated(Integer idUser) throws UserNotFound {
         return trainingRatingsDataset.getUserRated(idUser);
     }
 
@@ -111,7 +111,7 @@ public class TrainingRatingsDataset_Memory<RatingType extends Rating> extends Ra
     }
 
     @Override
-    public Collection<Integer> getItemRated(Integer idItem) throws ItemNotFound {
+    public Set<Integer> getItemRated(Integer idItem) throws ItemNotFound {
         return trainingRatingsDataset.getItemRated(idItem);
     }
 

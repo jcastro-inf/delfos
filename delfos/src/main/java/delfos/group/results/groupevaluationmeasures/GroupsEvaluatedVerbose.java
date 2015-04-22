@@ -1,26 +1,26 @@
 package delfos.group.results.groupevaluationmeasures;
 
+import delfos.common.statisticalfuncions.MeanIterative;
+import delfos.dataset.basic.rating.Rating;
+import delfos.dataset.basic.rating.RatingsDataset;
+import delfos.dataset.basic.rating.RelevanceCriteria;
+import delfos.group.groupsofusers.GroupOfUsers;
+import delfos.group.results.grouprecomendationresults.GroupRecommendationResult;
+import delfos.io.xml.parameterowner.ParameterOwnerXML;
+import delfos.rs.recommendation.Recommendation;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TreeMap;
 import org.jdom2.Element;
-import delfos.dataset.basic.rating.Rating;
-import delfos.dataset.basic.rating.RatingsDataset;
-import delfos.dataset.basic.rating.RelevanceCriteria;
-import delfos.io.xml.parameterowner.ParameterOwnerXML;
-import delfos.rs.recommendation.Recommendation;
-import delfos.common.statisticalfuncions.MeanIterative;
-import delfos.group.groupsofusers.GroupOfUsers;
-import delfos.group.results.grouprecomendationresults.GroupRecommendationResult;
 
 /**
  * Medida de evaluación que muestra los grupos que se evaluaron y los usuarios
  * que hay en cada uno de los grupos evaluados. Asimismo añade algunas
  * estadísticas generales sobre los mismos.
  *
-* @author Jorge Castro Gallardo
+ * @author Jorge Castro Gallardo
  *
  * @version 1.0 15-Jan-2013
  */
@@ -31,7 +31,7 @@ public class GroupsEvaluatedVerbose extends GroupEvaluationMeasure {
         MeanIterative meanMembers = new MeanIterative();
         //todo: implementarlo
 
-        Map<Integer, Integer> numGroupsWithKeyMembers = new TreeMap<Integer, Integer>();
+        Map<Integer, Integer> numGroupsWithKeyMembers = new TreeMap<>();
 
         Element allGroupsDescribed = ParameterOwnerXML.getElement(this);
 

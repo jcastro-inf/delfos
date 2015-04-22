@@ -1,5 +1,19 @@
 package delfos.group.results.groupevaluationmeasures.precisionrecall;
 
+import delfos.ERROR_CODES;
+import delfos.common.exceptions.dataset.users.UserNotFound;
+import delfos.dataset.basic.rating.Rating;
+import delfos.dataset.basic.rating.RatingsDataset;
+import delfos.dataset.basic.rating.RelevanceCriteria;
+import delfos.group.groupsofusers.GroupOfUsers;
+import delfos.group.results.groupevaluationmeasures.GroupEvaluationMeasure;
+import delfos.group.results.groupevaluationmeasures.GroupMeasureResult;
+import delfos.group.results.grouprecomendationresults.GroupRecommendationResult;
+import delfos.io.xml.UnrecognizedElementException;
+import delfos.io.xml.evaluationmeasures.confusionmatricescurve.ConfusionMatricesCurveXML;
+import delfos.results.evaluationmeasures.confusionmatrix.ConfusionMatricesCurve;
+import delfos.results.evaluationmeasures.confusionmatrix.ConfusionMatrix;
+import delfos.rs.recommendation.Recommendation;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -8,26 +22,12 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
 import org.jdom2.Element;
-import delfos.dataset.basic.rating.Rating;
-import delfos.dataset.basic.rating.RatingsDataset;
-import delfos.dataset.basic.rating.RelevanceCriteria;
-import delfos.ERROR_CODES;
-import delfos.io.xml.evaluationmeasures.confusionmatricescurve.ConfusionMatricesCurveXML;
-import delfos.io.xml.UnrecognizedElementException;
-import delfos.rs.recommendation.Recommendation;
-import delfos.results.evaluationmeasures.confusionmatrix.ConfusionMatricesCurve;
-import delfos.results.evaluationmeasures.confusionmatrix.ConfusionMatrix;
-import delfos.common.exceptions.dataset.users.UserNotFound;
-import delfos.group.groupsofusers.GroupOfUsers;
-import delfos.group.results.groupevaluationmeasures.GroupEvaluationMeasure;
-import delfos.group.results.groupevaluationmeasures.GroupMeasureResult;
-import delfos.group.results.grouprecomendationresults.GroupRecommendationResult;
 
 /**
  * Medida de evaluación para sistemas de recomendación a grupos que calcula la
  * precisión y recall a lo largo de todos los tamaño de recomendación al grupo.
  *
-* @author Jorge Castro Gallardo
+ * @author Jorge Castro Gallardo
  */
 public class PRSpace_EachMember extends GroupEvaluationMeasure {
 
@@ -47,16 +47,16 @@ public class PRSpace_EachMember extends GroupEvaluationMeasure {
 
     @Override
     public GroupMeasureResult getMeasureResult(GroupRecommendationResult recommendationResults, RatingsDataset<? extends Rating> testDataset, RelevanceCriteria relevanceCriteria) {
-        Map<GroupOfUsers, ConfusionMatricesCurve> groupsCurves = new TreeMap<GroupOfUsers, ConfusionMatricesCurve>();
+        Map<GroupOfUsers, ConfusionMatricesCurve> groupsCurves = new TreeMap<>();
 
         Element measureElement = new Element(getName());
 
         for (Map.Entry<GroupOfUsers, List<Recommendation>> next : recommendationResults) {
 
             GroupOfUsers group = next.getKey();
-            List<Recommendation> groupRecommendations = next.getValue();
+            Collection<Recommendation> groupRecommendations = next.getValue();
 
-            Set<Integer> recommendedItems = new TreeSet<Integer>();
+            Set<Integer> recommendedItems = new TreeSet<>();
             for (Recommendation r : groupRecommendations) {
                 recommendedItems.add(r.getIdItem());
             }

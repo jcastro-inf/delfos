@@ -109,7 +109,7 @@ public class SelectionDataset<RatingType extends Rating> extends RatingsDatasetA
     }
 
     @Override
-    public Collection<Integer> getUserRated(Integer idUser) throws UserNotFound {
+    public Set<Integer> getUserRated(Integer idUser) throws UserNotFound {
         if (!usuariosPermitidos.contains(idUser)) {
             throw new UserNotFound(idUser);
         }
@@ -135,7 +135,7 @@ public class SelectionDataset<RatingType extends Rating> extends RatingsDatasetA
     }
 
     @Override
-    public Collection<Integer> getItemRated(Integer idItem) throws ItemNotFound {
+    public Set<Integer> getItemRated(Integer idItem) throws ItemNotFound {
         if (!productosPermitidos.contains(idItem)) {
             throw new ItemNotFound(idItem);
         }

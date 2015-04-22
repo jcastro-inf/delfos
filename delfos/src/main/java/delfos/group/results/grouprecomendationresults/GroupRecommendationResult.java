@@ -1,19 +1,21 @@
 package delfos.group.results.grouprecomendationresults;
 
+import delfos.group.groupsofusers.GroupOfUsers;
+import delfos.rs.recommendation.Recommendation;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TreeMap;
-import delfos.group.groupsofusers.GroupOfUsers;
-import delfos.rs.recommendation.Recommendation;
 
 /**
  * Almacena los resultados de recomendaciones de un sistema de recomendación a
  * grupos
  *
-* @author Jorge Castro Gallardo
+ * @author Jorge Castro Gallardo
  *
  * @version Unknown date
  */
@@ -66,8 +68,12 @@ public class GroupRecommendationResult implements Iterable<Entry<GroupOfUsers, L
      * @param recomendations lista de recomendaciones que se le dan al grupo
      * ordenadas por relevancia (similitud o valoración predicha)
      */
-    public void add(GroupOfUsers groupOfUsers, List<Recommendation> recomendations) {
-        recommendationResults.put(groupOfUsers, recomendations);
+    public void add(GroupOfUsers groupOfUsers, Collection<Recommendation> recomendations) {
+        ArrayList<Recommendation> recomendationList = new ArrayList<>(recomendations);
+
+        Collections.sort(recomendationList);
+
+        recommendationResults.put(groupOfUsers, recomendationList);
     }
 
     /**
@@ -82,8 +88,14 @@ public class GroupRecommendationResult implements Iterable<Entry<GroupOfUsers, L
      * @param requests
      * @param caseAlias
      */
-    public GroupRecommendationResult(long seed, long buildTime, long groupBuildTime, long groupRecommendationTime, Map<GroupOfUsers, Collection<Integer>> requests, Map<GroupOfUsers, List<Recommendation>> results, String caseAlias) {
-        this.recommendationResults = new TreeMap<>(results);
+    public GroupRecommendationResult(long seed, long buildTime, long groupBuildTime, long groupRecommendationTime, Map<GroupOfUsers, Collection<Integer>> requests, Map<GroupOfUsers, Collection<Recommendation>> results, String caseAlias) {
+        this.recommendationResults = new TreeMap<>();
+
+        for (GroupOfUsers group : results.keySet()) {
+            ArrayList<Recommendation> groupRecommendationsSorted = new ArrayList<>(results.get(group));
+            Collections.sort(groupRecommendationsSorted);
+            recommendationResults.put(group, groupRecommendationsSorted);
+        }
         this.seed = seed;
         this.buildTime = buildTime;
         this.groupBuildTime = groupBuildTime;

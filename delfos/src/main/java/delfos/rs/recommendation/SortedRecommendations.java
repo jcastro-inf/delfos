@@ -2,7 +2,9 @@ package delfos.rs.recommendation;
 
 import java.io.Serializable;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -12,29 +14,31 @@ import java.util.Set;
  *
  * @version 1.0 22-Mar-2013
  */
-public class Recommendations implements Serializable {
+public class SortedRecommendations implements Serializable {
 
     private static final long serialVersionUID = 654546L;
 
     private final String targetIdentifier;
-    private final Collection<Recommendation> recommendations;
+    private final List<Recommendation> sortedRecommendations;
     private final RecommendationComputationDetails recommendationComputationDetails;
 
-    protected Recommendations() {
+    protected SortedRecommendations() {
         this.targetIdentifier = null;
-        this.recommendations = null;
+        this.sortedRecommendations = null;
         this.recommendationComputationDetails = null;
     }
 
-    public Recommendations(String targetIdentifier, Collection<Recommendation> recommendations) {
+    public SortedRecommendations(String targetIdentifier, Collection<Recommendation> recommendations) {
         this.targetIdentifier = targetIdentifier;
-        this.recommendations = new LinkedList<>(recommendations);
+        this.sortedRecommendations = new LinkedList<>(recommendations);
+        Collections.sort(sortedRecommendations);
         recommendationComputationDetails = new RecommendationComputationDetails();
     }
 
-    public Recommendations(String targetIdentifier, Collection<Recommendation> recommendations, RecommendationComputationDetails recommendationComputationDetails) {
+    public SortedRecommendations(String targetIdentifier, Collection<Recommendation> recommendations, RecommendationComputationDetails recommendationComputationDetails) {
         this.targetIdentifier = targetIdentifier;
-        this.recommendations = new LinkedList<>(recommendations);
+        this.sortedRecommendations = new LinkedList<>(recommendations);
+        Collections.sort(sortedRecommendations);
         this.recommendationComputationDetails = recommendationComputationDetails;
     }
 
@@ -46,8 +50,8 @@ public class Recommendations implements Serializable {
         return targetIdentifier;
     }
 
-    public Collection<Recommendation> getRecommendations() {
-        return new LinkedList<>(recommendations);
+    public List<Recommendation> getRecommendations() {
+        return new LinkedList<>(sortedRecommendations);
     }
 
     public RecommendationComputationDetails getRecommendationComputationDetails() {
@@ -59,7 +63,7 @@ public class Recommendations implements Serializable {
     }
 
     public SortedRecommendations sortByPreference() {
-        return new SortedRecommendations(targetIdentifier, recommendations, recommendationComputationDetails);
+        return this;
     }
 
 }

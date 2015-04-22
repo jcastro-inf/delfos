@@ -1,10 +1,5 @@
 package delfos.main.managers.recommendation.singleuser;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
 import delfos.ConsoleParameters;
 import delfos.ERROR_CODES;
 import delfos.UndefinedParameterException;
@@ -34,6 +29,11 @@ import delfos.rs.persistence.PersistenceMethodStrategy;
 import delfos.rs.recommendation.Recommendation;
 import delfos.rs.recommendation.RecommendationComputationDetails;
 import delfos.rs.recommendation.SingleUserRecommendations;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Set;
 
 /**
  *
@@ -111,7 +111,7 @@ public class Recommend implements CaseUseManager {
             RecommenderSystem<Object> recommender = (RecommenderSystem<Object>) rsc.recommenderSystem;
 
             DatasetLoader<? extends Rating> datasetLoader = rsc.datasetLoader;
-            List<Recommendation> recommendations = null;
+            Collection<Recommendation> recommendations = null;
             try {
                 if (rsc.datasetLoader instanceof ContentDatasetLoader) {
                     ContentDatasetLoader contentDatasetLoader = (ContentDatasetLoader) datasetLoader;
@@ -130,7 +130,7 @@ public class Recommend implements CaseUseManager {
                 throw new IllegalArgumentException(ex);
             }
 
-            Collection<Integer> idItemList;
+            Set<Integer> idItemList;
             try {
                 idItemList = rsc.recommendationCandidatesSelector.candidateItems(datasetLoader, new User(idUser));
             } catch (UserNotFound ex) {
