@@ -7,6 +7,7 @@ import delfos.rs.collaborativefiltering.profile.Neighbor;
 import delfos.rs.contentbased.vsm.booleanvsm.BooleanFeaturesTransformation;
 import delfos.rs.recommendation.Recommendation;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
@@ -196,17 +197,18 @@ public class Symeonidis2007FeatureWeightedTest extends DelfosTest {
         idItemList.add(5);
 
         //Step2: Execution
-        List<Recommendation> result = new ArrayList<>(instance.recommendOnly(datasetLoader, model, idUser, idItemList));
+        List<Recommendation> sortedRecommendations = new ArrayList<>(instance.recommendOnly(datasetLoader, model, idUser, idItemList));
+        Collections.sort(sortedRecommendations);
 
         //Step3: Results check
         //Check the item order
-        assertEquals("The item recommended in the first place should be Item", 5, result.get(0).getIdItem());
-        assertEquals("The item recommended in the second place should be Item", 3, result.get(1).getIdItem());
-        assertEquals("The item recommended in the third place should be Item", 1, result.get(2).getIdItem());
+        assertEquals("The item recommended in the first place should be Item", 5, sortedRecommendations.get(0).getIdItem());
+        assertEquals("The item recommended in the second place should be Item", 3, sortedRecommendations.get(1).getIdItem());
+        assertEquals("The item recommended in the third place should be Item", 1, sortedRecommendations.get(2).getIdItem());
 
         //Check the item preference value
-        assertEquals("For Item 5, preference value", 6, result.get(0).getPreference().doubleValue(), delta);
-        assertEquals("For Item 3, preference value", 5, result.get(1).getPreference().doubleValue(), delta);
-        assertEquals("For Item 1, preference value", 3, result.get(2).getPreference().doubleValue(), delta);
+        assertEquals("For Item 5, preference value", 6, sortedRecommendations.get(0).getPreference().doubleValue(), delta);
+        assertEquals("For Item 3, preference value", 5, sortedRecommendations.get(1).getPreference().doubleValue(), delta);
+        assertEquals("For Item 1, preference value", 3, sortedRecommendations.get(2).getPreference().doubleValue(), delta);
     }
 }
