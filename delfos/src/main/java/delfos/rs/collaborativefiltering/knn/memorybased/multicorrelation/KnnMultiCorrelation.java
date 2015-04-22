@@ -102,10 +102,7 @@ public class KnnMultiCorrelation extends CollaborativeRecommender<KnnMultiCorrel
     }
 
     @Override
-    public List<Recommendation> recommendOnly(DatasetLoader<? extends Rating> datasetLoader,
-            KnnMultiCorrelation_Model model,
-            Integer idUser,
-            Collection<Integer> idItemList) throws UserNotFound {
+    public Collection<Recommendation> recommendOnly(DatasetLoader<? extends Rating> datasetLoader, KnnMultiCorrelation_Model model, Integer idUser, java.util.Set<Integer> idItemList) throws UserNotFound {
 
         if (Global.isVerboseAnnoying()) {
             Global.showMessage(new Date().toGMTString() + " --> Recommending for user '" + idUser + "'\n");

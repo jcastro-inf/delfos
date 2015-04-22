@@ -126,10 +126,7 @@ public class KnnMemoryBasedNWR extends KnnCollaborativeRecommender<KnnMemoryMode
     }
 
     @Override
-    public List<Recommendation> recommendOnly(DatasetLoader<? extends Rating> datasetLoader,
-            KnnMemoryModel model,
-            Integer idUser,
-            Collection<Integer> idItemList) throws UserNotFound {
+    public Collection<Recommendation> recommendOnly(DatasetLoader<? extends Rating> datasetLoader, KnnMemoryModel model, Integer idUser, java.util.Set<Integer> idItemList) throws UserNotFound {
         if (Global.isVerboseAnnoying()) {
             Global.showMessage(new Date().toGMTString() + " --> Recommending for user '" + idUser + "'\n");
         }

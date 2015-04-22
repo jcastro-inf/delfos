@@ -62,7 +62,7 @@ public class RandomRecommender extends CollaborativeRecommender<RandomRecommende
     }
 
     @Override
-    public List<Recommendation> recommendOnly(DatasetLoader<? extends Rating> datasetLoader, RandomRecommenderModel<Integer> model, Integer idUser, Collection<Integer> idItemList) throws UserNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset {
+    public Collection<Recommendation> recommendOnly(DatasetLoader<? extends Rating> datasetLoader, RandomRecommenderModel<Integer> model, Integer idUser, java.util.Set<Integer> idItemList) throws UserNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset {
         LinkedList<Recommendation> recom = new LinkedList<>();
 
         int i = 0;

@@ -104,10 +104,7 @@ public class KnnMemoryBasedCFRS extends KnnCollaborativeRecommender<KnnMemoryMod
     }
 
     @Override
-    public List<Recommendation> recommendOnly(DatasetLoader<? extends Rating> datasetLoader,
-            KnnMemoryModel model,
-            Integer idUser,
-            Collection<Integer> idItemList) throws UserNotFound {
+    public Collection<Recommendation> recommendOnly(DatasetLoader<? extends Rating> datasetLoader, KnnMemoryModel model, Integer idUser, java.util.Set<Integer> idItemList) throws UserNotFound {
         try {
             List<Neighbor> neighbors;
             RatingsDataset<? extends Rating> ratingsDataset = datasetLoader.getRatingsDataset();

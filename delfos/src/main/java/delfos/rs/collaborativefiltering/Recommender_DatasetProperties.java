@@ -112,7 +112,7 @@ public class Recommender_DatasetProperties extends CollaborativeRecommender<Numb
     }
 
     @Override
-    public List<Recommendation> recommendOnly(DatasetLoader<? extends Rating> datasetLoader, Number model, Integer idUser, Collection<Integer> idItemList) throws UserNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset {
+    public Collection<Recommendation> recommendOnly(DatasetLoader<? extends Rating> datasetLoader, Number model, Integer idUser, java.util.Set<Integer> idItemList) throws UserNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset {
 
         Map<Integer, Rating> userRatingsInRecommendation = new TreeMap<>();
         Map<Integer, Rating> userRatingsInTraining = new TreeMap<>();

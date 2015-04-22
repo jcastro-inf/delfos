@@ -144,11 +144,8 @@ public class KnnModelBased_NWR
     }
 
     @Override
-    public List<Recommendation> recommendOnly(
-            DatasetLoader<? extends Rating> datasetLoader,
-            KnnModelBasedCFRSModel model,
-            Integer idUser,
-            Collection<Integer> idItemList)
+    public Collection<Recommendation> recommendOnly(
+            DatasetLoader<? extends Rating> datasetLoader, KnnModelBasedCFRSModel model, Integer idUser, java.util.Set<Integer> idItemList)
             throws UserNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset, ItemNotFound {
 
         PredictionTechnique prediction = (PredictionTechnique) getParameterValue(KnnModelBasedCFRS.PREDICTION_TECHNIQUE);
