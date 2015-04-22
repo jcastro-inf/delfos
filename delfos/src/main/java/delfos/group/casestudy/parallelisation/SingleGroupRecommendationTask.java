@@ -1,14 +1,14 @@
 package delfos.group.casestudy.parallelisation;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
 import delfos.common.parallelwork.Task;
-import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.loader.types.DatasetLoader;
+import delfos.dataset.basic.rating.Rating;
 import delfos.group.groupsofusers.GroupOfUsers;
 import delfos.group.grs.GroupRecommenderSystem;
 import delfos.rs.recommendation.Recommendation;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Set;
 
 /**
  *
@@ -21,14 +21,14 @@ public class SingleGroupRecommendationTask extends Task {
     private GroupRecommenderSystem groupRecommenderSystem;
     private DatasetLoader<? extends Rating> datasetLoader;
     private Object recommenderSystemModel;
-    private final Collection<Integer> idItemList;
+    private final Set<Integer> idItemList;
 
-    private List<Recommendation> recommendations;
+    private Collection<Recommendation> recommendations;
     private long buildGroupModelTime;
     private long recommendationTime;
 
     public SingleGroupRecommendationTask(GroupRecommenderSystem groupRecommenderSystem, DatasetLoader<? extends Rating> datasetLoader,
-            Object recommenderSystemModel, GroupOfUsers group, Collection<Integer> idItemList) {
+            Object recommenderSystemModel, GroupOfUsers group, Set<Integer> idItemList) {
         this.group = group;
         this.groupRecommenderSystem = groupRecommenderSystem;
         this.datasetLoader = datasetLoader;
@@ -72,11 +72,11 @@ public class SingleGroupRecommendationTask extends Task {
         return recommenderSystemModel;
     }
 
-    public Collection<Integer> getIdItemList() {
-        return Collections.unmodifiableCollection(idItemList);
+    public Set<Integer> getIdItemList() {
+        return Collections.unmodifiableSet(idItemList);
     }
 
-    protected void setResults(List<Recommendation> recommendations, long buildGroupModelTime, long recommendationTime) {
+    protected void setResults(Collection<Recommendation> recommendations, long buildGroupModelTime, long recommendationTime) {
         this.recommendations = recommendations;
         this.buildGroupModelTime = buildGroupModelTime;
         this.recommendationTime = recommendationTime;
@@ -85,7 +85,7 @@ public class SingleGroupRecommendationTask extends Task {
         recommenderSystemModel = null;
     }
 
-    public List<Recommendation> getRecommendations() {
-        return Collections.unmodifiableList(recommendations);
+    public Collection<Recommendation> getRecommendations() {
+        return Collections.unmodifiableCollection(recommendations);
     }
 }

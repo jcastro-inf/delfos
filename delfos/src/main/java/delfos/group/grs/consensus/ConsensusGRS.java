@@ -1,20 +1,5 @@
 package delfos.group.grs.consensus;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.PriorityQueue;
-import java.util.Set;
-import java.util.TreeMap;
-import java.util.TreeSet;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.jdom2.JDOMException;
 import delfos.ERROR_CODES;
 import delfos.common.Global;
 import delfos.common.aggregationoperators.AggregationOperator;
@@ -32,10 +17,10 @@ import delfos.common.parameters.restriction.FloatParameter;
 import delfos.common.parameters.restriction.ObjectParameter;
 import delfos.common.parameters.restriction.ParameterOwnerRestriction;
 import delfos.common.parameters.restriction.RecommenderSystemParameterRestriction;
+import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RatingsDataset;
 import delfos.dataset.basic.user.User;
-import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.util.DatasetOperations;
 import delfos.factories.AggregationOperatorFactory;
 import delfos.group.groupsofusers.GroupOfUsers;
@@ -54,6 +39,21 @@ import delfos.rs.collaborativefiltering.svd.SVDFoldingIn;
 import delfos.rs.recommendation.Recommendation;
 import delfos.rs.recommendation.RecommendationComputationDetails;
 import delfos.rs.recommendation.Recommendations;
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.PriorityQueue;
+import java.util.Set;
+import java.util.TreeMap;
+import java.util.TreeSet;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.jdom2.JDOMException;
 
 /**
  * @author Jorge Castro Gallardo
@@ -173,12 +173,8 @@ public class ConsensusGRS extends GroupRecommenderSystemAdapter<SingleRecommende
     }
 
     @Override
-    public List<Recommendation> recommendOnly(
-            DatasetLoader<? extends Rating> datasetLoader,
-            SingleRecommenderSystemModel recommenderSystemModel,
-            GroupModelPseudoUser groupModel,
-            GroupOfUsers groupOfUsers,
-            Collection<Integer> idItemList)
+    public Collection<Recommendation> recommendOnly(
+            DatasetLoader<? extends Rating> datasetLoader, SingleRecommenderSystemModel recommenderSystemModel, GroupModelPseudoUser groupModel, GroupOfUsers groupOfUsers, java.util.Set<Integer> idItemList)
             throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset, NotEnoughtUserInformation {
 
         GroupRecommendationsWithMembersRecommendations groupRecommendationsWithMembersRecommendations = recommendOnlyWithMembersRecommendations(datasetLoader, recommenderSystemModel, groupModel, groupOfUsers, idItemList);
@@ -192,7 +188,7 @@ public class ConsensusGRS extends GroupRecommenderSystemAdapter<SingleRecommende
             SingleRecommenderSystemModel recommenderSystemModel,
             GroupModelPseudoUser groupModel,
             GroupOfUsers groupOfUsers,
-            Collection<Integer> idItemList)
+            Set<Integer> idItemList)
             throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset, NotEnoughtUserInformation {
 
         final GroupRecommendationsSelector itemSelector = new BordaCount();
@@ -213,7 +209,7 @@ public class ConsensusGRS extends GroupRecommenderSystemAdapter<SingleRecommende
                 idItemList
         );
 
-        Map<Integer, List<Recommendation>> membersRecommendationsList
+        Map<Integer, Collection<Recommendation>> membersRecommendationsList
                 = AggregationOfIndividualRecommendations.performSingleUserRecommendations(
                         groupOfUsers.getGroupMembers(),
                         singleUserRecommenderSystem,
@@ -221,7 +217,7 @@ public class ConsensusGRS extends GroupRecommenderSystemAdapter<SingleRecommende
                         recommenderSystemModel,
                         idItemList);
 
-        List<Recommendation> groupRecommendationsList = AggregationOfIndividualRecommendations.aggregateLists(aggregationOperator, membersRecommendationsList);
+        Collection<Recommendation> groupRecommendationsList = AggregationOfIndividualRecommendations.aggregateLists(aggregationOperator, membersRecommendationsList);
 
         Set<Integer> itemsIntersection = intersectionOfRecommendations(groupRecommendationsList, membersRecommendationsList);
         groupRecommendationsList = applyItemIntersection(groupRecommendationsList, itemsIntersection);
@@ -244,7 +240,7 @@ public class ConsensusGRS extends GroupRecommenderSystemAdapter<SingleRecommende
         Recommendations[] membersRecommendations = new Recommendations[membersRecommendationsList.size()];
         {
             int i = 0;
-            for (Map.Entry<Integer, List<Recommendation>> entry : membersRecommendationsList.entrySet()) {
+            for (Map.Entry<Integer, Collection<Recommendation>> entry : membersRecommendationsList.entrySet()) {
                 Integer idMember = entry.getKey();
                 membersRecommendations[i]
                         = new Recommendations(User.getTargetId(idMember), membersRecommendationsList.get(idMember), RecommendationComputationDetails.EMPTY_DETAILS);
@@ -283,15 +279,15 @@ public class ConsensusGRS extends GroupRecommenderSystemAdapter<SingleRecommende
         }
     }
 
-    public File getConsensusInputXML(Map<Integer, List<Recommendation>> membersRecommendations, List<Recommendation> groupRecommendations, GroupOfUsers groupOfUsers) {
+    public File getConsensusInputXML(Map<Integer, Collection<Recommendation>> membersRecommendations, Collection<Recommendation> groupRecommendations, GroupOfUsers groupOfUsers) {
         final File consensusInputFilesDirectory = (File) getParameterValue(CONSENSUS_INPUT_FILES_DIRECTORY);
         File consensusIntputXML = new File(consensusInputFilesDirectory.getAbsolutePath() + File.separator + groupOfUsers.toString() + "_consensusInput.xml");
         return consensusIntputXML;
     }
 
     public static Set<Integer> intersectionOfRecommendations(
-            List<Recommendation> groupRecommendations,
-            Map<Integer, List<Recommendation>> membersRecommendations) {
+            Collection<Recommendation> groupRecommendations,
+            Map<Integer, Collection<Recommendation>> membersRecommendations) {
 
         Set<Integer> itemsIntersection = new TreeSet<>();
         for (Recommendation r : groupRecommendations) {
@@ -309,9 +305,9 @@ public class ConsensusGRS extends GroupRecommenderSystemAdapter<SingleRecommende
         return itemsIntersection;
     }
 
-    public static List<Recommendation> applyItemIntersection(
-            List<Recommendation> recommendations, Set<Integer> items) {
-        List<Recommendation> recommendationsIntersected = new ArrayList<>(items.size());
+    public static Collection<Recommendation> applyItemIntersection(
+            Collection<Recommendation> recommendations, Set<Integer> items) {
+        Collection<Recommendation> recommendationsIntersected = new ArrayList<>(items.size());
 
         recommendations.stream()
                 .filter(
@@ -324,15 +320,15 @@ public class ConsensusGRS extends GroupRecommenderSystemAdapter<SingleRecommende
         return recommendationsIntersected;
     }
 
-    public static Map<Integer, List<Recommendation>> applyItemIntersection(
-            Map<Integer, List<Recommendation>> usersRecommendations, Set<Integer> items) {
+    public static Map<Integer, Collection<Recommendation>> applyItemIntersection(
+            Map<Integer, Collection<Recommendation>> usersRecommendations, Set<Integer> items) {
 
-        Map<Integer, List<Recommendation>> userRecommendationsIntersected
+        Map<Integer, Collection<Recommendation>> userRecommendationsIntersected
                 = new TreeMap<>();
 
         usersRecommendations.entrySet().stream().forEach((entry) -> {
             int idUser = entry.getKey();
-            List<Recommendation> userRecommendations = entry.getValue();
+            Collection<Recommendation> userRecommendations = entry.getValue();
 
             userRecommendationsIntersected.put(idUser, new ArrayList<>(items.size()));
 

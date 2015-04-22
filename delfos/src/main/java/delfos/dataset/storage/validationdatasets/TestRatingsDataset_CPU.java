@@ -1,12 +1,5 @@
 package delfos.dataset.storage.validationdatasets;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeMap;
-import java.util.TreeSet;
 import delfos.ERROR_CODES;
 import delfos.common.Global;
 import delfos.common.exceptions.dataset.items.ItemNotFound;
@@ -14,14 +7,19 @@ import delfos.common.exceptions.dataset.users.UserNotFound;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RatingsDataset;
 import delfos.dataset.basic.rating.RatingsDatasetAdapter;
-import delfos.dataset.basic.rating.domain.DecimalDomain;
 import delfos.dataset.basic.rating.domain.Domain;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
+import java.util.TreeSet;
 
 /**
  * Dataset que deja visibles las valoraciones especificadas en el conjunto de
  * datos indicado.
  *
-* @author Jorge Castro Gallardo
+ * @author Jorge Castro Gallardo
  *
  * @version 1.0 Unknow date
  * @version 1.2 06-Mar-2013 Modificación de los parámetros del constructor y
@@ -75,7 +73,7 @@ public class TestRatingsDataset_CPU<RatingType extends Rating> extends RatingsDa
     @Override
     public Set<Integer> allRatedItems() {
         if (this.allRatedItems == null) {
-            allRatedItems = new TreeSet<Integer>();
+            allRatedItems = new TreeSet<>();
 
             for (Integer idUser : testRatings_byUser.keySet()) {
                 allRatedItems.addAll(testRatings_byUser.get(idUser));
@@ -88,7 +86,7 @@ public class TestRatingsDataset_CPU<RatingType extends Rating> extends RatingsDa
     @Override
     public Set<Integer> getUserRated(Integer idUser) throws UserNotFound {
         if (testRatings_byUser.containsKey(idUser)) {
-            Set<Integer> ret = new TreeSet<Integer>();
+            Set<Integer> ret = new TreeSet<>();
             ret.addAll(testRatings_byUser.get(idUser));
             return ret;
         } else {
@@ -98,7 +96,7 @@ public class TestRatingsDataset_CPU<RatingType extends Rating> extends RatingsDa
 
     @Override
     public Map<Integer, RatingType> getUserRatingsRated(Integer idUser) throws UserNotFound {
-        TreeMap<Integer, RatingType> ret = new TreeMap<Integer, RatingType>();
+        TreeMap<Integer, RatingType> ret = new TreeMap<>();
         Collection<Integer> testSetForUser = testRatings_byUser.get(idUser);
         if (testSetForUser == null) {
             throw new UserNotFound(idUser);
@@ -115,20 +113,22 @@ public class TestRatingsDataset_CPU<RatingType extends Rating> extends RatingsDa
     }
 
     @Override
-    public Collection<Integer> getItemRated(Integer idItem) {
-        Collection<Integer> ret = new LinkedList<Integer>();
+    public Set<Integer> getItemRated(Integer idItem) {
+        Set<Integer> ret = new TreeSet<>();
 
-        for (int idUser : testRatings_byUser.keySet()) {
-            if (testRatings_byUser.get(idUser).contains(idItem)) {
-                ret.add(idUser);
-            }
-        }
+        testRatings_byUser
+                .keySet().stream()
+                .filter(
+                        (idUser) -> (testRatings_byUser.get(idUser).contains(idItem)))
+                .forEach((idUser) -> {
+                    ret.add(idUser);
+                });
         return ret;
     }
 
     @Override
     public Map<Integer, RatingType> getItemRatingsRated(Integer idItem) throws ItemNotFound {
-        Map<Integer, RatingType> ret = new TreeMap<Integer, RatingType>();
+        Map<Integer, RatingType> ret = new TreeMap<>();
 
         for (int idUser : testRatings_byUser.keySet()) {
             if (testRatings_byUser.get(idUser).contains(idItem)) {

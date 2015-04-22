@@ -1,13 +1,13 @@
 package delfos.group.grs.consensus.itemselector;
 
+import delfos.experiment.SeedHolder;
+import delfos.rs.recommendation.Recommendation;
+import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 import java.util.TreeSet;
-import delfos.experiment.SeedHolder;
-import delfos.rs.recommendation.Recommendation;
 
 public class RandomSelection extends GroupRecommendationsSelector implements SeedHolder {
 
@@ -19,7 +19,7 @@ public class RandomSelection extends GroupRecommendationsSelector implements See
     }
 
     @Override
-    public Set<Integer> getRecommendationSelection(Map<Integer, List<Recommendation>> membersRecommendations) {
+    public Set<Integer> getRecommendationSelection(Map<Integer, Collection<Recommendation>> membersRecommendations) {
 
         long groupSeed = getGroupSeed(membersRecommendations.keySet());
         long numItems = getNumItemsSelect();

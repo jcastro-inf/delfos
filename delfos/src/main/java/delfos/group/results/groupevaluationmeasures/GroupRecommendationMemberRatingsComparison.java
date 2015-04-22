@@ -1,5 +1,14 @@
 package delfos.group.results.groupevaluationmeasures;
 
+import delfos.common.FileUtilities;
+import delfos.common.exceptions.dataset.users.UserNotFound;
+import delfos.dataset.basic.rating.Rating;
+import delfos.dataset.basic.rating.RatingsDataset;
+import delfos.dataset.basic.rating.RelevanceCriteria;
+import delfos.dataset.util.DatasetPrinter;
+import delfos.group.groupsofusers.GroupOfUsers;
+import delfos.group.results.grouprecomendationresults.GroupRecommendationResult;
+import delfos.rs.recommendation.Recommendation;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
@@ -10,15 +19,6 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import delfos.common.FileUtilities;
-import delfos.common.exceptions.dataset.users.UserNotFound;
-import delfos.dataset.basic.rating.Rating;
-import delfos.dataset.basic.rating.RatingsDataset;
-import delfos.dataset.basic.rating.RelevanceCriteria;
-import delfos.dataset.util.DatasetPrinter;
-import delfos.group.groupsofusers.GroupOfUsers;
-import delfos.group.results.grouprecomendationresults.GroupRecommendationResult;
-import delfos.rs.recommendation.Recommendation;
 
 /**
  *

@@ -1,20 +1,18 @@
 package delfos.rs.bias;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
 import delfos.common.exceptions.dataset.CannotLoadContentDataset;
 import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
 import delfos.common.exceptions.dataset.CannotLoadUsersDataset;
 import delfos.common.exceptions.dataset.items.ItemNotFound;
 import delfos.common.exceptions.dataset.users.UserNotFound;
 import delfos.common.exceptions.ratings.NotEnoughtUserInformation;
+import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RatingsDataset;
-import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.rs.collaborativefiltering.CollaborativeRecommender;
 import delfos.rs.recommendation.Recommendation;
+import java.util.ArrayList;
+import java.util.Collection;
 
 /**
  * Sistema de recomendación que siempre devuelve una predicción usando el bias
@@ -36,9 +34,9 @@ public class PredictUserItemBias extends CollaborativeRecommender<Object> {
     }
 
     @Override
-    public List<Recommendation> recommendOnly(DatasetLoader<? extends Rating> datasetLoader, Object model, Integer idUser, Collection<Integer> idItemList) throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset, NotEnoughtUserInformation {
+    public Collection<Recommendation> recommendOnly(DatasetLoader<? extends Rating> datasetLoader, Object model, Integer idUser, java.util.Set<Integer> idItemList) throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset, NotEnoughtUserInformation {
 
-        List<Recommendation> recommendations = new ArrayList<>(idItemList.size());
+        Collection<Recommendation> recommendations = new ArrayList<>(idItemList.size());
 
         RatingsDataset<? extends Rating> ratingsDataset = datasetLoader.getRatingsDataset();
         double generalBias = ((Number) model).doubleValue();
@@ -48,8 +46,6 @@ public class PredictUserItemBias extends CollaborativeRecommender<Object> {
             double itemBias = getItemBias(ratingsDataset, idUser);
             recommendations.add(new Recommendation(idItem, generalBias + userBias + itemBias));
         }
-
-        Collections.sort(recommendations);
 
         return recommendations;
     }

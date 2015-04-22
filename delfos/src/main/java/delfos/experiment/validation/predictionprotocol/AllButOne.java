@@ -1,35 +1,36 @@
 package delfos.experiment.validation.predictionprotocol;
 
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.List;
+import delfos.common.exceptions.dataset.users.UserNotFound;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RatingsDataset;
-import delfos.common.exceptions.dataset.users.UserNotFound;
+import java.util.Collection;
+import java.util.LinkedList;
+import java.util.Set;
+import java.util.TreeSet;
 
 /**
  * Esta técnica realiza la composición de recomendaciones de manera que se
  * utilizan todos los ratings del usuario en la predicción excepto el que se
  * desea predecir.
  *
-* @author Jorge Castro Gallardo
+ * @author Jorge Castro Gallardo
  */
 public class AllButOne extends PredictionProtocol {
 
     private static final long serialVersionUID = 1L;
 
     @Override
-    public Collection<Collection<Integer>> getRecommendationRequests(RatingsDataset<? extends Rating> testRatingsDataset, int idUser) throws UserNotFound {
+    public Collection<Set<Integer>> getRecommendationRequests(RatingsDataset<? extends Rating> testRatingsDataset, int idUser) throws UserNotFound {
         Collection<Integer> userRated = testRatingsDataset.getUserRated(idUser);
 
-        Collection<Collection<Integer>> ret = new LinkedList<Collection<Integer>>();
+        Collection<Set<Integer>> collectionOfSetsOfRequests = new LinkedList<>();
 
         for (int idItem : userRated) {
-            List<Integer> lista = new LinkedList<Integer>();
-            lista.add(idItem);
-            ret.add(lista);
+            Set<Integer> oneRequestSet = new TreeSet<>();
+            oneRequestSet.add(idItem);
+            collectionOfSetsOfRequests.add(oneRequestSet);
         }
 
-        return ret;
+        return collectionOfSetsOfRequests;
     }
 }

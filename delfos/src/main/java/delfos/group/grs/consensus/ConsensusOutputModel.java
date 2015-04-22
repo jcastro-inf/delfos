@@ -1,11 +1,11 @@
 package delfos.group.grs.consensus;
 
-import java.util.List;
 import delfos.rs.recommendation.Recommendation;
+import java.util.Collection;
 
 /**
  *
-* @author Jorge Castro Gallardo
+ * @author Jorge Castro Gallardo
  */
 public class ConsensusOutputModel {
 
@@ -13,7 +13,7 @@ public class ConsensusOutputModel {
 
     public final int round;
 
-    public final List<Recommendation> consensusRecommendations;
+    public final Collection<Recommendation> consensusRecommendations;
 
     public ConsensusOutputModel() {
         this.consensusDegree = 0;
@@ -21,7 +21,7 @@ public class ConsensusOutputModel {
         this.consensusRecommendations = null;
     }
 
-    public ConsensusOutputModel(double consensusDegree, int round, List<Recommendation> consensusRecommendations) {
+    public ConsensusOutputModel(double consensusDegree, int round, Collection<Recommendation> consensusRecommendations) {
         this.consensusDegree = consensusDegree;
         this.round = round;
         this.consensusRecommendations = consensusRecommendations;

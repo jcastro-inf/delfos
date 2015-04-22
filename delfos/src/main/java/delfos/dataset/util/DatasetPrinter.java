@@ -1,12 +1,5 @@
 package delfos.dataset.util;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeMap;
-import java.util.TreeSet;
 import delfos.ERROR_CODES;
 import delfos.common.Global;
 import delfos.common.decimalnumbers.NumberRounder;
@@ -16,8 +9,13 @@ import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RatingsDataset;
 import delfos.dataset.storage.memory.BothIndexRatingsDataset;
 import delfos.rs.collaborativefiltering.profile.Neighbor;
-import delfos.rs.recommendation.Recommendation;
 import delfos.rs.trustbased.WeightedGraph;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
+import java.util.TreeSet;
 
 /**
  * Clase para transformar datasets a cadenas con formato amigable para el
@@ -384,28 +382,6 @@ public class DatasetPrinter {
         str.append("\n");
 
         return str.toString();
-    }
-
-    public static String printCompactRatingTable(RatingsDataset<? extends Rating> rd, Collection<Integer> users, List<Recommendation> recommendations) {
-        Map<Integer, Map<Integer, ? extends Rating>> ratings = new TreeMap<>();
-
-        for (int idUser : users) {
-            try {
-                ratings.put(idUser, rd.getUserRatingsRated(idUser));
-            } catch (UserNotFound ex) {
-                ERROR_CODES.USER_NOT_FOUND.exit(ex);
-            }
-        }
-
-        int idUserRecommendacion = -1;
-        Map<Integer, Rating> recommendationsMap = new TreeMap<Integer, Rating>();
-        for (Recommendation r : recommendations) {
-            recommendationsMap.put(r.getIdItem(), new Rating(-1, r.getIdItem(), r.getPreference()));
-        }
-
-        ratings.put(idUserRecommendacion, recommendationsMap);
-
-        return printCompactRatingTable(DatasetOperations.convertRatingsToNumber(ratings));
     }
 
     public static String datasetDiff(RatingsDataset<? extends Rating> rd1, RatingsDataset<? extends Rating> rd2) {

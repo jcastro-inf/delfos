@@ -1,9 +1,5 @@
 package delfos.group.grs.penalty;
 
-import delfos.group.grs.penalty.PenaltyGRS_Recommendations;
-import java.io.File;
-import java.util.List;
-import org.junit.Test;
 import delfos.common.aggregationoperators.penalty.functions.PenaltyWholeMatrix;
 import delfos.common.exceptions.dataset.CannotLoadContentDataset;
 import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
@@ -12,16 +8,21 @@ import delfos.common.exceptions.dataset.users.UserNotFound;
 import delfos.common.exceptions.ratings.NotEnoughtUserInformation;
 import delfos.configureddatasets.ConfiguredDatasetsFactory;
 import delfos.constants.DelfosTest;
-import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.loader.types.DatasetLoader;
+import delfos.dataset.basic.rating.Rating;
 import delfos.group.groupsofusers.GroupOfUsers;
 import delfos.group.grs.SingleRecommenderSystemModel;
 import delfos.group.grs.penalty.grouper.GrouperByIdItem;
 import delfos.rs.RecommenderSystem;
 import delfos.rs.bufferedrecommenders.RecommenderSystem_fixedFilePersistence;
 import delfos.rs.collaborativefiltering.svd.SVDFoldingIn;
+import delfos.rs.output.RecommendationsOutputStandardRaw;
 import delfos.rs.persistence.FilePersistence;
 import delfos.rs.recommendation.Recommendation;
+import delfos.rs.recommendation.Recommendations;
+import java.io.File;
+import java.util.Collection;
+import org.junit.Test;
 
 /**
  *
@@ -58,11 +59,9 @@ public class PenaltyGRS_RecommendationsTest extends DelfosTest {
 
         GroupOfUsers groupModel = penaltyGRS_Recommendations.buildGroupModel(datasetLoader, recommendationModel, groupOfUsers);
 
-        List<Recommendation> recommendations = penaltyGRS_Recommendations.recommendOnly(datasetLoader, recommendationModel, groupModel, groupOfUsers, datasetLoader.getRatingsDataset().allRatedItems());
+        Collection<Recommendation> recommendations = penaltyGRS_Recommendations.recommendOnly(datasetLoader, recommendationModel, groupModel, groupOfUsers, datasetLoader.getRatingsDataset().allRatedItems());
 
-        for (Recommendation recommendation : recommendations.subList(0, Math.min(recommendations.size(), 10))) {
-            System.out.println(recommendation);
-        }
+        new RecommendationsOutputStandardRaw(10).writeRecommendations(new Recommendations(groupOfUsers.getTargetId(), recommendations));
 
     }
 

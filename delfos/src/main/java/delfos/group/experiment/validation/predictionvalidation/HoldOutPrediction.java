@@ -1,23 +1,23 @@
 package delfos.group.experiment.validation.predictionvalidation;
 
+import delfos.ERROR_CODES;
+import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
+import delfos.common.exceptions.dataset.users.UserNotFound;
+import delfos.common.parameters.Parameter;
+import delfos.common.parameters.restriction.FloatParameter;
+import delfos.dataset.basic.loader.types.DatasetLoader;
+import delfos.dataset.basic.rating.Rating;
+import delfos.dataset.basic.rating.RatingsDataset;
+import delfos.dataset.generated.modifieddatasets.changeratings.RatingsDatasetOverwrite;
+import delfos.dataset.loaders.given.DatasetLoaderGiven;
+import delfos.dataset.util.DatasetUtilities;
+import delfos.group.groupsofusers.GroupOfUsers;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 import java.util.TreeSet;
-import delfos.ERROR_CODES;
-import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
-import delfos.common.exceptions.dataset.users.UserNotFound;
-import delfos.common.parameters.Parameter;
-import delfos.common.parameters.restriction.FloatParameter;
-import delfos.dataset.basic.rating.Rating;
-import delfos.dataset.basic.rating.RatingsDataset;
-import delfos.dataset.loaders.given.DatasetLoaderGiven;
-import delfos.dataset.basic.loader.types.DatasetLoader;
-import delfos.dataset.generated.modifieddatasets.changeratings.RatingsDatasetOverwrite;
-import delfos.dataset.util.DatasetUtilities;
-import delfos.group.groupsofusers.GroupOfUsers;
 
 /**
  * Implementa el protocolo de predicción HoldOut, que divide el conjunto de
@@ -43,7 +43,7 @@ public class HoldOutPrediction extends GroupPredictionProtocol {
         addParameter(trainingPercent);
     }
 
-    private Collection<Integer> getItemsToPredict(DatasetLoader<? extends Rating> datasetLoader, GroupOfUsers group, long seed) throws CannotLoadRatingsDataset {
+    private Set<Integer> getItemsToPredict(DatasetLoader<? extends Rating> datasetLoader, GroupOfUsers group, long seed) throws CannotLoadRatingsDataset {
 
         Random random = new Random(getSeedValue());
         Set<Integer> ratedProducts = new TreeSet<>();
@@ -69,7 +69,7 @@ public class HoldOutPrediction extends GroupPredictionProtocol {
     @Override
     public Collection<GroupRecommendationRequest> getGroupRecommendationRequests(DatasetLoader<? extends Rating> trainDatasetLoader, DatasetLoader<? extends Rating> testDatasetLoader, GroupOfUsers group) throws CannotLoadRatingsDataset, UserNotFound {
 
-        Collection<Integer> itemsToPredict = getItemsToPredict(testDatasetLoader, group, getSeedValue());
+        Set<Integer> itemsToPredict = getItemsToPredict(testDatasetLoader, group, getSeedValue());
 
         Map<Integer, Map<Integer, Number>> membersRatings_byItem = DatasetUtilities.getMembersRatings_byItem(group, testDatasetLoader);
         itemsToPredict.stream().forEach((idItem) -> membersRatings_byItem.remove(idItem));

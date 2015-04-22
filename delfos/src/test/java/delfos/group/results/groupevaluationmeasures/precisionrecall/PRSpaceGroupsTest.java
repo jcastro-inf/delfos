@@ -1,18 +1,9 @@
 package delfos.group.results.groupevaluationmeasures.precisionrecall;
 
-import delfos.group.results.groupevaluationmeasures.precisionrecall.PRSpaceGroups;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
-import org.junit.Test;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RatingsDataset;
 import delfos.dataset.basic.rating.RelevanceCriteria;
 import delfos.dataset.storage.memory.BothIndexRatingsDataset;
-import delfos.group.groupsofusers.GroupOfUsers;
 import delfos.group.groupsofusers.GroupOfUsers;
 import delfos.group.results.groupevaluationmeasures.GroupMeasureResult;
 import delfos.group.results.grouprecomendationresults.GroupRecommendationResult;
@@ -20,6 +11,13 @@ import delfos.io.xml.evaluationmeasures.confusionmatricescurve.ConfusionMatrices
 import delfos.results.evaluationmeasures.confusionmatrix.ConfusionMatricesCurve;
 import delfos.results.evaluationmeasures.confusionmatrix.ConfusionMatrix;
 import delfos.rs.recommendation.Recommendation;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
+import org.junit.Test;
 
 /**
  *
@@ -38,7 +36,7 @@ public class PRSpaceGroupsTest {
     public void testGetMeasureResult() {
         System.out.println("getMeasureResult");
 
-        List<Rating> ratings = new ArrayList<Rating>(20);
+        List<Rating> ratings = new ArrayList<>(20);
 
         ratings.add(new Rating(1, 1, 4));
         ratings.add(new Rating(1, 2, 4));
@@ -65,17 +63,17 @@ public class PRSpaceGroupsTest {
         groupOne.addUser(2);
         groupOne.addUser(3);
 
-        Map<GroupOfUsers, List<Recommendation>> recommendations_byGroup = new TreeMap<GroupOfUsers, List<Recommendation>>();
-        Map<GroupOfUsers, Collection<Integer>> requests_byGroup = new TreeMap<GroupOfUsers, Collection<Integer>>();
+        Map<GroupOfUsers, Collection<Recommendation>> recommendations_byGroup = new TreeMap<>();
+        Map<GroupOfUsers, Collection<Integer>> requests_byGroup = new TreeMap<>();
 
-        List<Recommendation> recommendations = new LinkedList<Recommendation>();
+        Collection<Recommendation> recommendations = new ArrayList<>();
         recommendations.add(new Recommendation(2, 5));
         recommendations.add(new Recommendation(4, 4.9));
         recommendations.add(new Recommendation(1, 4.8));
         recommendations.add(new Recommendation(3, 4.7));
         recommendations.add(new Recommendation(5, 4.6));
 
-        List<Integer> requests = new LinkedList<Integer>();
+        List<Integer> requests = new LinkedList<>();
         requests.add(1);
         requests.add(2);
         requests.add(3);

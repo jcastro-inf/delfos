@@ -1,5 +1,14 @@
 package delfos.group.results.groupevaluationmeasures;
 
+import delfos.ERROR_CODES;
+import delfos.common.exceptions.dataset.users.UserNotFound;
+import delfos.common.statisticalfuncions.MeanIterative;
+import delfos.dataset.basic.rating.Rating;
+import delfos.dataset.basic.rating.RatingsDataset;
+import delfos.dataset.basic.rating.RelevanceCriteria;
+import delfos.group.groupsofusers.GroupOfUsers;
+import delfos.group.results.grouprecomendationresults.GroupRecommendationResult;
+import delfos.rs.recommendation.Recommendation;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -7,15 +16,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TreeMap;
 import org.jdom2.Element;
-import delfos.dataset.basic.rating.Rating;
-import delfos.dataset.basic.rating.RatingsDataset;
-import delfos.dataset.basic.rating.RelevanceCriteria;
-import delfos.ERROR_CODES;
-import delfos.rs.recommendation.Recommendation;
-import delfos.common.exceptions.dataset.users.UserNotFound;
-import delfos.common.statisticalfuncions.MeanIterative;
-import delfos.group.groupsofusers.GroupOfUsers;
-import delfos.group.results.grouprecomendationresults.GroupRecommendationResult;
 
 //TODO: revisar si las características e interpretación de la medida son correctas
 /**
@@ -30,7 +30,7 @@ import delfos.group.results.grouprecomendationresults.GroupRecommendationResult;
  * ichriste@exa.unicen.edu.ar, christenseningrid@gmail.com (I.A.Christensen),
  * sschia@exa.unicen.edu.ar (S. Schiafﬁno)
  *
-* @author Jorge Castro Gallardo
+ * @author Jorge Castro Gallardo
  *
  * @version Unknown Date
  * @version 20-Noviembre-2013
@@ -70,10 +70,10 @@ public class NormalizedIndividualSatisfaction extends GroupEvaluationMeasure {
             GroupOfUsers grupo = next.getKey();
             List<Recommendation> groupRecommendation = next.getValue();
 
-            Map<Integer, Number> predicciones = new TreeMap<Integer, Number>();
-            for (Recommendation r : groupRecommendation) {
+            Map<Integer, Number> predicciones = new TreeMap<>();
+            groupRecommendation.stream().forEach((r) -> {
                 predicciones.put(r.getIdItem(), r.getPreference());
-            }
+            });
 
             MeanIterative groupNIS = new MeanIterative();
             for (int idUser : grupo.getGroupMembers()) {
@@ -87,14 +87,8 @@ public class NormalizedIndividualSatisfaction extends GroupEvaluationMeasure {
                     double denominador = 0;
                     double numerador = 0;
 
-                    for (int idItem : predicciones.keySet()) {
-                        if (userRated.containsKey(idItem)) {
-                        }
-                    }
-
-                    //double denominadorConLasPredicciones = 0;
-                    List<Recommendation> recomendacionesAlGrupoParaUser = new ArrayList<Recommendation>(predicciones.size());
-                    List<Recommendation> recomendacionesOptimasAlUser = new ArrayList<Recommendation>(userRated.size());
+                    List<Recommendation> recomendacionesAlGrupoParaUser = new ArrayList<>(predicciones.size());
+                    List<Recommendation> recomendacionesOptimasAlUser = new ArrayList<>(userRated.size());
                     for (int idItem : userRated.keySet()) {
                         recomendacionesOptimasAlUser.add(new Recommendation(idItem, userRated.get(idItem).ratingValue));
                     }

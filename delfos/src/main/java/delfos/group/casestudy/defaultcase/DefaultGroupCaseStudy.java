@@ -223,7 +223,7 @@ public class DefaultGroupCaseStudy extends GroupCaseStudy {
                 });
                 groupsModelsRecommendation.run();
 
-                Map<GroupOfUsers, List<Recommendation>> recomendacionesPorGrupo = new TreeMap<>();
+                Map<GroupOfUsers, Collection<Recommendation>> recomendacionesPorGrupo = new TreeMap<>();
                 Map<GroupOfUsers, Collection<Integer>> solicitudesPorGrupo = new TreeMap<>();
 
                 Collection<SingleGroupRecommendationTask> allFinishedTasks = groupsModelsRecommendation.getAllFinishedTasks();

@@ -1,5 +1,10 @@
 package delfos.rs.output;
 
+import delfos.ERROR_CODES;
+import delfos.io.xml.recommendations.RecommendationsToXML;
+import delfos.rs.recommendation.Recommendation;
+import delfos.rs.recommendation.Recommendations;
+import delfos.rs.recommendation.RecommendationsFactory;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -8,11 +13,6 @@ import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.output.Format;
 import org.jdom2.output.XMLOutputter;
-import delfos.ERROR_CODES;
-import delfos.io.xml.recommendations.RecommendationsToXML;
-import delfos.rs.recommendation.Recommendation;
-import delfos.rs.recommendation.Recommendations;
-import delfos.rs.recommendation.RecommendationsFactory;
 
 /**
  * Escribe las recomendaciones en formato XML en la salida estándar.

@@ -1,5 +1,24 @@
 package delfos.group;
 
+import delfos.ConsoleParameters;
+import delfos.Constants;
+import delfos.ERROR_CODES;
+import delfos.UndefinedParameterException;
+import delfos.common.Global;
+import delfos.common.parallelwork.MultiThreadExecutionManager;
+import delfos.configfile.rs.single.RecommenderSystemConfiguration;
+import delfos.configfile.rs.single.RecommenderSystemConfigurationFileParser;
+import delfos.dataset.basic.loader.types.ContentDatasetLoader;
+import delfos.dataset.basic.loader.types.DatasetLoader;
+import delfos.dataset.basic.loader.types.UsersDatasetLoader;
+import delfos.dataset.basic.rating.Rating;
+import delfos.experiment.casestudy.parallel.SingleUserRecommendationTask;
+import delfos.experiment.casestudy.parallel.SingleUserRecommendationTaskExecutor;
+import delfos.group.groupsofusers.GroupOfUsers;
+import delfos.group.grs.GroupRecommenderSystem;
+import delfos.rs.RecommenderSystem;
+import delfos.rs.persistence.FilePersistence;
+import delfos.rs.recommendation.Recommendation;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -16,30 +35,10 @@ import java.util.TreeSet;
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.output.XMLOutputter;
-import delfos.ConsoleParameters;
-import delfos.ERROR_CODES;
-import delfos.Constants;
-import delfos.UndefinedParameterException;
-import delfos.common.Global;
-import delfos.common.parallelwork.MultiThreadExecutionManager;
-import delfos.configfile.rs.single.RecommenderSystemConfiguration;
-import delfos.configfile.rs.single.RecommenderSystemConfigurationFileParser;
-import delfos.dataset.basic.rating.Rating;
-import delfos.dataset.basic.loader.types.ContentDatasetLoader;
-import delfos.dataset.basic.loader.types.DatasetLoader;
-import delfos.dataset.basic.loader.types.UsersDatasetLoader;
-import delfos.experiment.casestudy.parallel.SingleUserRecommendationTask;
-import delfos.experiment.casestudy.parallel.SingleUserRecommendationTaskExecutor;
-import delfos.group.groupsofusers.GroupOfUsers;
-import delfos.group.groupsofusers.GroupOfUsers;
-import delfos.group.grs.GroupRecommenderSystem;
-import delfos.rs.RecommenderSystem;
-import delfos.rs.persistence.FilePersistence;
-import delfos.rs.recommendation.Recommendation;
 
 /**
  *
-* @author Jorge Castro Gallardo
+ * @author Jorge Castro Gallardo
  */
 public class GroupRecommendationManager {
 
@@ -124,7 +123,7 @@ public class GroupRecommendationManager {
             Global.showMessage("Recommending for grs described in file '" + configFile_grs.getAbsolutePath() + "'\n");
 
             List<Recommendation> groupRecommendations;
-            Map<Integer, List<Recommendation>> singleUserRecommendations = new TreeMap<>();
+            Map<Integer, Collection<Recommendation>> singleUserRecommendations = new TreeMap<>();
 
             GroupOfUsers group;
             {
@@ -182,7 +181,8 @@ public class GroupRecommendationManager {
 
             Object groupModel = groupRecommenderSystem.buildGroupModel(datasetLoader, recommendationModel_grs, group);
 
-            groupRecommendations = groupRecommenderSystem.recommendOnly(datasetLoader, recommendationModel_grs, groupModel, group, idItemList);
+            groupRecommendations = new ArrayList<>(groupRecommenderSystem.recommendOnly(datasetLoader, recommendationModel_grs, groupModel, group, idItemList));
+            Collections.sort(groupRecommendations);
 
             Object recommendationModel_singleUser = recommenderSystem.loadModel(rsFilePersistence, users, items);
 
@@ -297,7 +297,7 @@ public class GroupRecommendationManager {
     public static final String RECOMMENDATION_ELEMENT_ID_ITEM_ATTRIBUTE_NAME = "idItem";
     public static final String RECOMMENDATION_ELEMENT_PREFERENCE_ATTRIBUTE_NAME = "preference";
 
-    private static void writeXML(List<Recommendation> groupRecommendations, Map<Integer, List<Recommendation>> singleUserRecommendations, File outputFile) {
+    private static void writeXML(Collection<Recommendation> groupRecommendations, Map<Integer, Collection<Recommendation>> singleUserRecommendations, File outputFile) {
 
         Element root = new Element(CASE_ROOT_ELEMENT_NAME);
 

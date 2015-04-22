@@ -87,7 +87,7 @@ public class Recommend implements CaseUseManager {
             }
 
             try {
-                List<Recommendation> recommendOnly = nonPersonalisedRecommender.recommendOnly(rsc.datasetLoader, recommendationModel, candidateItems);
+                Collection<Recommendation> recommendOnly = nonPersonalisedRecommender.recommendOnly(rsc.datasetLoader, recommendationModel, candidateItems);
 
                 long timeTaken = chronometer.getTotalElapsed();
                 rsc.recommdendationsOutputMethod.writeRecommendations(new SingleUserRecommendations(user, recommendOnly, new RecommendationComputationDetails().addDetail(RecommendationComputationDetails.DetailField.TimeTaken, timeTaken)));

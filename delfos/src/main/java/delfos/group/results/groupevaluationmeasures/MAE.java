@@ -1,9 +1,5 @@
 package delfos.group.results.groupevaluationmeasures;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.TreeMap;
 import delfos.ERROR_CODES;
 import delfos.common.exceptions.dataset.users.UserNotFound;
 import delfos.dataset.basic.rating.Rating;
@@ -12,6 +8,11 @@ import delfos.dataset.basic.rating.RelevanceCriteria;
 import delfos.group.groupsofusers.GroupOfUsers;
 import delfos.group.results.grouprecomendationresults.GroupRecommendationResult;
 import delfos.rs.recommendation.Recommendation;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.TreeMap;
 
 /**
  * Medida de evaluación para calcular el error absoluto medio del sistema de
@@ -24,7 +25,7 @@ import delfos.rs.recommendation.Recommendation;
  * {@link delfos.Results.EvaluationMeasures.RatingPrediction.MAE} para
  * recomendaciones individuales.
  *
-* @author Jorge Castro Gallardo
+ * @author Jorge Castro Gallardo
  *
  * @version 1.0 (10-01-2013)
  * @see delfos.Results.EvaluationMeasures.RatingPrediction.MAE
@@ -42,7 +43,7 @@ public class MAE extends GroupEvaluationMeasure {
 
         for (Entry<GroupOfUsers, List<Recommendation>> entry : recommendationResults) {
             GroupOfUsers group = entry.getKey();
-            List<Recommendation> recommendationsToGroup = entry.getValue();
+            Collection<Recommendation> recommendationsToGroup = entry.getValue();
 
             Map<Integer, Map<Integer, ? extends Rating>> groupTrueRatings = new TreeMap<>();
             group.getGroupMembers().stream().forEach((idUser) -> {

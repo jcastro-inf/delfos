@@ -1,15 +1,5 @@
 package delfos.rs.contentbased.vsm.multivalued.entropydependence;
 
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeMap;
-import java.util.TreeSet;
 import delfos.ERROR_CODES;
 import delfos.common.Global;
 import delfos.common.aggregationoperators.AggregationOperator;
@@ -24,15 +14,15 @@ import delfos.common.exceptions.dataset.users.UserNotFound;
 import delfos.common.exceptions.ratings.NotEnoughtUserInformation;
 import delfos.common.parameters.Parameter;
 import delfos.common.parameters.restriction.ParameterOwnerRestriction;
-import delfos.dataset.basic.item.ContentDataset;
-import delfos.dataset.basic.item.Item;
 import delfos.dataset.basic.features.Feature;
 import delfos.dataset.basic.features.FeatureType;
+import delfos.dataset.basic.item.ContentDataset;
+import delfos.dataset.basic.item.Item;
+import delfos.dataset.basic.loader.types.ContentDatasetLoader;
+import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RatingsDataset;
 import delfos.dataset.basic.rating.RelevanceCriteria;
-import delfos.dataset.basic.loader.types.ContentDatasetLoader;
-import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.rs.contentbased.ContentBasedRecommender;
 import static delfos.rs.contentbased.vsm.ContentBasedVSMRS.SIMILARITY_MEASURE;
 import delfos.rs.persistence.DatabasePersistence;
@@ -42,6 +32,15 @@ import delfos.similaritymeasures.PearsonCorrelationCoefficient;
 import delfos.similaritymeasures.WeightedSimilarityMeasure;
 import delfos.stats.associationmeasures.CannotComputeAssociation;
 import delfos.stats.associationmeasures.CramerV;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
+import java.util.TreeSet;
 
 /**
  * Sistema de recomendación basado en contenido con ponderación de
@@ -319,7 +318,7 @@ public class EntropyDependenceCBRS extends ContentBasedRecommender<EntropyDepend
     }
 
     @Override
-    protected List<Recommendation> recommendOnly(DatasetLoader<? extends Rating> datasetLoader, EntropyDependenceCBRSModel model, EntropyDependenceCBRSUserProfile userProfile, Collection<Integer> idItemList) throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset {
+    protected Collection<Recommendation> recommendOnly(DatasetLoader<? extends Rating> datasetLoader, EntropyDependenceCBRSModel model, EntropyDependenceCBRSUserProfile userProfile, Collection<Integer> idItemList) throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset {
         final ContentDataset contentDataset;
         if (datasetLoader instanceof ContentDatasetLoader) {
             ContentDatasetLoader contentDatasetLoader = (ContentDatasetLoader) datasetLoader;
@@ -329,7 +328,7 @@ public class EntropyDependenceCBRS extends ContentBasedRecommender<EntropyDepend
         }
 
         WeightedSimilarityMeasure similarity = (WeightedSimilarityMeasure) getParameterValue(SIMILARITY_MEASURE);
-        List<Recommendation> recomendaciones = new ArrayList<>();
+        Collection<Recommendation> recomendaciones = new ArrayList<>();
 
         for (int idItem : idItemList) {
             Item item;
@@ -392,7 +391,6 @@ public class EntropyDependenceCBRS extends ContentBasedRecommender<EntropyDepend
             return recommendOnly(datasetLoader, model, userProfile, idItemList);
         }
 
-        Collections.sort(recomendaciones);
         return recomendaciones;
     }
 

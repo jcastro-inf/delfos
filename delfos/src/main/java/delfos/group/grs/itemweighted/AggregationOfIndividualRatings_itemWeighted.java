@@ -253,7 +253,7 @@ public final class AggregationOfIndividualRatings_itemWeighted
             Set<Integer> toPredict = new TreeSet<>(itemUnion);
             toPredict.removeAll(membersRatings.get(idUser).keySet());
 
-            List<Recommendation> recommendOnly;
+            Collection<Recommendation> recommendOnly;
             try {
                 recommendOnly = rs.recommendOnly(datasetLoader, recommendationModel, idUser, toPredict);
             } catch (ItemNotFound | CannotLoadContentDataset | NotEnoughtUserInformation ex) {
@@ -293,12 +293,8 @@ public final class AggregationOfIndividualRatings_itemWeighted
     }
 
     @Override
-    public List<Recommendation> recommendOnly(
-            DatasetLoader<? extends Rating> datasetLoader,
-            SingleRecommenderSystemModel recommenderSystemModel,
-            GroupModelWithExplanation<GroupModelPseudoUser_itemWeighted, ? extends Object> groupModel,
-            GroupOfUsers groupOfUsers,
-            Collection<Integer> idItemList)
+    public Collection<Recommendation> recommendOnly(
+            DatasetLoader<? extends Rating> datasetLoader, SingleRecommenderSystemModel recommenderSystemModel, GroupModelWithExplanation<GroupModelPseudoUser_itemWeighted, ? extends Object> groupModel, GroupOfUsers groupOfUsers, java.util.Set<Integer> idItemList)
             throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset, NotEnoughtUserInformation {
 
         //Recojo los parámetros en variables
@@ -307,7 +303,7 @@ public final class AggregationOfIndividualRatings_itemWeighted
         if (recommenderSystem instanceof KnnMemoryBasedNWR_itemWeighted) {
             Map<Integer, Number> groupRatings_Number = groupModel.getGroupModel().getRatings();
             Map<Integer, Double> itemWeights = groupModel.getGroupModel().getItemWeights();
-            List<Recommendation> groupRecom = recommendWithRatingsAndWeights(datasetLoader, recommenderSystem, recommenderSystemModel, groupRatings_Number, itemWeights, idItemList);
+            Collection<Recommendation> groupRecom = recommendWithRatingsAndWeights(datasetLoader, recommenderSystem, recommenderSystemModel, groupRatings_Number, itemWeights, idItemList);
             return groupRecom;
         } else {
             throw new IllegalStateException("Cannot use this GRS with a " + recommenderSystem.getAlias() + ", must be a " + KnnMemoryBasedNWR_itemWeighted.class);
@@ -363,7 +359,7 @@ public final class AggregationOfIndividualRatings_itemWeighted
         return groupRatings;
     }
 
-    public static List<Recommendation> recommendWithRatingsAndWeights(
+    public static Collection<Recommendation> recommendWithRatingsAndWeights(
             DatasetLoader<? extends Rating> datasetLoader,
             RecommenderSystem recommenderSystem,
             SingleRecommenderSystemModel recommenderSystemModel,
@@ -379,7 +375,7 @@ public final class AggregationOfIndividualRatings_itemWeighted
         if (Global.isVerboseAnnoying()) {
             DatasetPrinterDeprecated.printCompactRatingTable(ratingsDataset_withPseudoUser, Arrays.asList(idGroup), ratingsDataset_withPseudoUser.getUserRated(idGroup));
         }
-        List<Recommendation> groupRecom;
+        Collection<Recommendation> groupRecom;
 
         if (recommenderSystem instanceof KnnMemoryBasedNWR_itemWeighted) {
             KnnMemoryBasedNWR_itemWeighted knnMemoryBasedNWR_NaturalNoise = (KnnMemoryBasedNWR_itemWeighted) recommenderSystem;

@@ -92,7 +92,7 @@ public class RecommenderSystem_bufferedRecommendations extends RecommenderSystem
     }
 
     @Override
-    public List<Recommendation> recommendOnly(DatasetLoader<? extends Rating> datasetLoader, Object model, Integer idUser, Collection<Integer> idItemList) throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset, NotEnoughtUserInformation {
+    public Collection<Recommendation> recommendOnly(DatasetLoader<? extends Rating> datasetLoader, Object model, Integer idUser, java.util.Set<Integer> idItemList) throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset, NotEnoughtUserInformation {
         Map<Integer, ? extends Rating> userRatings = datasetLoader.getRatingsDataset().getUserRatingsRated(idUser);
 
         int hashCodeOfRatings = userRatings.hashCode();
@@ -101,7 +101,7 @@ public class RecommenderSystem_bufferedRecommendations extends RecommenderSystem
 
         file.getParentFile().mkdirs();
 
-        List<Recommendation> recommendations;
+        Collection<Recommendation> recommendations;
 
         if (!file.exists()) {
             recommendations = getRecommenderSystem().recommendOnly(datasetLoader, model, idUser, idItemList);
@@ -131,7 +131,7 @@ public class RecommenderSystem_bufferedRecommendations extends RecommenderSystem
                             + userRatings_file.toString() + "\n");
                 }
 
-                recommendations = (List<Recommendation>) ois.readObject();
+                recommendations = (Collection<Recommendation>) ois.readObject();
 
                 if (Global.isVerboseAnnoying()) {
                     Global.showMessage("The recommendations have been loaded: \n" + recommendations.toString() + "\n");

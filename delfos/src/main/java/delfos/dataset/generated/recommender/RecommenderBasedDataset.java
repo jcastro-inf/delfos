@@ -1,23 +1,23 @@
 package delfos.dataset.generated.recommender;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
 import delfos.ERROR_CODES;
 import delfos.common.exceptions.dataset.CannotLoadContentDataset;
 import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
 import delfos.common.exceptions.dataset.items.ItemNotFound;
 import delfos.common.exceptions.dataset.users.UserNotFound;
 import delfos.common.exceptions.ratings.NotEnoughtUserInformation;
+import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RatingsDatasetAdapter;
-import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.domain.Domain;
 import delfos.rs.collaborativefiltering.CollaborativeRecommender;
 import delfos.rs.collaborativefiltering.svd.TryThisAtHomeSVD;
 import delfos.rs.recommendation.Recommendation;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
 
 /**
  * Dataset que se basa en las predicciones hechas por un sistema de
@@ -64,22 +64,22 @@ public class RecommenderBasedDataset extends RatingsDatasetAdapter<Rating> {
     }
 
     @Override
-    public Collection<Integer> allUsers() {
+    public Set<Integer> allUsers() {
         return datasetLoader.getRatingsDataset().allUsers();
     }
 
     @Override
-    public Collection<Integer> allRatedItems() {
+    public Set<Integer> allRatedItems() {
         return datasetLoader.getRatingsDataset().allRatedItems();
     }
 
     @Override
-    public Collection<Integer> getUserRated(Integer idUser) throws UserNotFound {
+    public Set<Integer> getUserRated(Integer idUser) throws UserNotFound {
         return getUserRatingsRated(idUser).keySet();
     }
 
     @Override
-    public Collection<Integer> getItemRated(Integer idItem) throws ItemNotFound {
+    public Set<Integer> getItemRated(Integer idItem) throws ItemNotFound {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
@@ -87,8 +87,9 @@ public class RecommenderBasedDataset extends RatingsDatasetAdapter<Rating> {
     public Map<Integer, Rating> getUserRatingsRated(Integer idUser) throws UserNotFound {
         try {
             Map<Integer, Rating> ret = new TreeMap<>();
-            List<Recommendation> recommendOnly = recommenderSystem.recommendOnly(datasetLoader, model, idUser, allRatedItems());
-            for (Recommendation r : recommendOnly) {
+            Collection<Recommendation> recommendations = recommenderSystem.recommendOnly(datasetLoader, model, idUser, allRatedItems());
+
+            for (Recommendation r : recommendations) {
                 ret.put(r.getIdItem(), new Rating(idUser, r.getIdItem(), r.getPreference()));
             }
             return ret;

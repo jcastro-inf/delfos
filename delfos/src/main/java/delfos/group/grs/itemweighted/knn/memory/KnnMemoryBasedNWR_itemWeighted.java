@@ -1,5 +1,24 @@
 package delfos.group.grs.itemweighted.knn.memory;
 
+import delfos.common.Global;
+import delfos.common.exceptions.CouldNotPredictRating;
+import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
+import delfos.common.exceptions.dataset.items.ItemNotFound;
+import delfos.common.exceptions.dataset.users.UserNotFound;
+import delfos.common.parallelwork.MultiThreadExecutionManager;
+import delfos.dataset.basic.loader.types.DatasetLoader;
+import delfos.dataset.basic.rating.Rating;
+import delfos.dataset.basic.rating.RatingsDataset;
+import delfos.rs.collaborativefiltering.knn.KnnCollaborativeRecommender;
+import delfos.rs.collaborativefiltering.knn.MatchRating;
+import delfos.rs.collaborativefiltering.knn.RecommendationEntity;
+import delfos.rs.collaborativefiltering.knn.memorybased.KnnMemoryModel;
+import delfos.rs.collaborativefiltering.predictiontechniques.PredictionTechnique;
+import delfos.rs.collaborativefiltering.profile.Neighbor;
+import delfos.rs.persistence.DatabasePersistence;
+import delfos.rs.persistence.FailureInPersistence;
+import delfos.rs.recommendation.Recommendation;
+import delfos.similaritymeasures.CollaborativeSimilarityMeasure;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -8,25 +27,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
-import delfos.common.Global;
-import delfos.common.exceptions.CouldNotPredictRating;
-import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
-import delfos.common.exceptions.dataset.items.ItemNotFound;
-import delfos.common.exceptions.dataset.users.UserNotFound;
-import delfos.common.parallelwork.MultiThreadExecutionManager;
-import delfos.rs.collaborativefiltering.knn.MatchRating;
-import delfos.rs.collaborativefiltering.knn.RecommendationEntity;
-import delfos.dataset.basic.rating.Rating;
-import delfos.dataset.basic.rating.RatingsDataset;
-import delfos.dataset.basic.loader.types.DatasetLoader;
-import delfos.rs.collaborativefiltering.knn.KnnCollaborativeRecommender;
-import delfos.rs.collaborativefiltering.knn.memorybased.KnnMemoryModel;
-import delfos.rs.collaborativefiltering.predictiontechniques.PredictionTechnique;
-import delfos.rs.collaborativefiltering.profile.Neighbor;
-import delfos.rs.persistence.DatabasePersistence;
-import delfos.rs.persistence.FailureInPersistence;
-import delfos.rs.recommendation.Recommendation;
-import delfos.similaritymeasures.CollaborativeSimilarityMeasure;
 
 public class KnnMemoryBasedNWR_itemWeighted extends KnnCollaborativeRecommender<KnnMemoryModel> {
 
@@ -104,10 +104,7 @@ public class KnnMemoryBasedNWR_itemWeighted extends KnnCollaborativeRecommender<
     }
 
     @Override
-    public List<Recommendation> recommendOnly(DatasetLoader<? extends Rating> datasetLoader,
-            KnnMemoryModel model,
-            Integer idUser,
-            Collection<Integer> idItemList) throws UserNotFound {
+    public Collection<Recommendation> recommendOnly(DatasetLoader<? extends Rating> datasetLoader, KnnMemoryModel model, Integer idUser, java.util.Set<Integer> idItemList) throws UserNotFound {
 
         Map<Integer, Double> itemWeights = new TreeMap<>();
 
@@ -120,7 +117,7 @@ public class KnnMemoryBasedNWR_itemWeighted extends KnnCollaborativeRecommender<
         return recommendOnlyWithItemWeighting(datasetLoader, model, idUser, itemWeights, idItemList);
     }
 
-    public List<Recommendation> recommendOnlyWithItemWeighting(DatasetLoader<? extends Rating> datasetLoader,
+    public Collection<Recommendation> recommendOnlyWithItemWeighting(DatasetLoader<? extends Rating> datasetLoader,
             KnnMemoryModel model,
             Integer idUser,
             Map<Integer, Double> itemWeights,
@@ -133,7 +130,7 @@ public class KnnMemoryBasedNWR_itemWeighted extends KnnCollaborativeRecommender<
             List<Neighbor> neighbors;
             neighbors = getNeighbors(datasetLoader.getRatingsDataset(), idUser, itemWeights);
 
-            List<Recommendation> ret = recommendWithNeighbors(datasetLoader.getRatingsDataset(), idUser, neighbors, idItemList);
+            Collection<Recommendation> ret = recommendWithNeighbors(datasetLoader.getRatingsDataset(), idUser, neighbors, idItemList);
             if (Global.isVerboseAnnoying()) {
                 Global.showMessage("Finished recommendations for user '" + idUser + "'\n");
             }
@@ -181,7 +178,7 @@ public class KnnMemoryBasedNWR_itemWeighted extends KnnCollaborativeRecommender<
         return ret;
     }
 
-    public List<Recommendation> recommendWithNeighbors(
+    public Collection<Recommendation> recommendWithNeighbors(
             RatingsDataset<? extends Rating> ratingsDataset,
             Integer idUser,
             List<Neighbor> vecinos,
@@ -191,7 +188,7 @@ public class KnnMemoryBasedNWR_itemWeighted extends KnnCollaborativeRecommender<
         PredictionTechnique predictionTechnique_ = (PredictionTechnique) getParameterValue(KnnMemoryBasedNWR_itemWeighted.PREDICTION_TECHNIQUE);
 
         //Predicción de la valoración
-        List<Recommendation> recommendationList = new LinkedList<>();
+        Collection<Recommendation> recommendationList = new LinkedList<>();
 
         int numVecinos = (Integer) getParameterValue(NEIGHBORHOOD_SIZE);
 
@@ -225,8 +222,6 @@ public class KnnMemoryBasedNWR_itemWeighted extends KnnCollaborativeRecommender<
                 Global.showError(ex);
             }
         }
-
-        Collections.sort(recommendationList);
 
         return recommendationList;
     }

@@ -91,17 +91,17 @@ public class TrainingRatingsDataset_Memory<RatingType extends Rating> extends Ra
     }
 
     @Override
-    public Collection<Integer> allUsers() {
+    public Set<Integer> allUsers() {
         return trainingRatingsDataset.allUsers();
     }
 
     @Override
-    public Collection<Integer> allRatedItems() {
+    public Set<Integer> allRatedItems() {
         return trainingRatingsDataset.allRatedItems();
     }
 
     @Override
-    public Collection<Integer> getUserRated(Integer idUser) throws UserNotFound {
+    public Set<Integer> getUserRated(Integer idUser) throws UserNotFound {
         return trainingRatingsDataset.getUserRated(idUser);
     }
 
@@ -111,7 +111,7 @@ public class TrainingRatingsDataset_Memory<RatingType extends Rating> extends Ra
     }
 
     @Override
-    public Collection<Integer> getItemRated(Integer idItem) throws ItemNotFound {
+    public Set<Integer> getItemRated(Integer idItem) throws ItemNotFound {
         return trainingRatingsDataset.getItemRated(idItem);
     }
 

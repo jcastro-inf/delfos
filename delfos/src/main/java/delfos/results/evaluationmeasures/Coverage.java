@@ -35,7 +35,7 @@ public class Coverage extends EvaluationMeasure {
 
         for (int idUser : testDataset.allUsers()) {
             try {
-                List<Recommendation> positivosList = recommendationResults.getRecommendationsForUser(idUser);
+                Collection<Recommendation> positivosList = recommendationResults.getRecommendationsForUser(idUser);
                 Collection<Integer> totalList = testDataset.getUserRated(idUser);
                 positivos += positivosList.size();
                 total += totalList.size();

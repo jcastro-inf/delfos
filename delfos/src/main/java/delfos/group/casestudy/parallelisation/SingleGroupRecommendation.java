@@ -1,6 +1,5 @@
 package delfos.group.casestudy.parallelisation;
 
-import java.util.List;
 import delfos.common.Chronometer;
 import delfos.common.exceptions.dataset.CannotLoadContentDataset;
 import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
@@ -9,6 +8,7 @@ import delfos.common.exceptions.dataset.users.UserNotFound;
 import delfos.common.exceptions.ratings.NotEnoughtUserInformation;
 import delfos.common.parallelwork.SingleTaskExecute;
 import delfos.rs.recommendation.Recommendation;
+import java.util.Collection;
 
 /**
  *
@@ -21,7 +21,7 @@ public class SingleGroupRecommendation implements SingleTaskExecute<SingleGroupR
     @Override
     public void executeSingleTask(SingleGroupRecommendationTask task) {
 
-        List<Recommendation> recommendations = null;
+        Collection<Recommendation> recommendations = null;
         long buildTime = 0;
         long recommendationTime = 0;
         try {

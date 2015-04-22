@@ -1,24 +1,16 @@
 package delfos.rs.nonpersonalised.meanrating.wilsonscoreonterval;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
-import org.jdom2.JDOMException;
 import delfos.common.Global;
 import delfos.common.decimalnumbers.NumberRounder;
 import delfos.common.exceptions.dataset.CannotLoadContentDataset;
 import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
 import delfos.common.exceptions.dataset.CannotLoadUsersDataset;
 import delfos.common.exceptions.dataset.items.ItemNotFound;
+import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RatingsDataset;
 import delfos.dataset.basic.rating.RelevanceCriteria;
 import delfos.dataset.basic.user.User;
-import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.rs.nonpersonalised.NonPersonalisedRecommender;
 import delfos.rs.output.RecommendationsOutputFileXML;
 import delfos.rs.persistence.FailureInPersistence;
@@ -27,6 +19,12 @@ import delfos.rs.recommendation.Recommendation;
 import delfos.rs.recommendation.RecommendationComputationDetails;
 import delfos.rs.recommendation.SingleUserRecommendations;
 import delfos.stats.distributions.NormalDistribution;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
+import org.jdom2.JDOMException;
 
 /**
  * Lower bound of Wilson score confidence interval for a Bernoulli parameter.
@@ -35,7 +33,7 @@ import delfos.stats.distributions.NormalDistribution;
  *
  * @version 07-ene-2014
  */
-public class WilsonScoreLowerBound extends NonPersonalisedRecommender<List<Recommendation>> {
+public class WilsonScoreLowerBound extends NonPersonalisedRecommender<Collection<Recommendation>> {
 
     public WilsonScoreLowerBound() {
         super();
@@ -47,7 +45,7 @@ public class WilsonScoreLowerBound extends NonPersonalisedRecommender<List<Recom
     }
 
     @Override
-    public List<Recommendation> build(DatasetLoader<? extends Rating> datasetLoader) throws CannotLoadRatingsDataset, CannotLoadContentDataset, CannotLoadUsersDataset {
+    public Collection<Recommendation> build(DatasetLoader<? extends Rating> datasetLoader) throws CannotLoadRatingsDataset, CannotLoadContentDataset, CannotLoadUsersDataset {
         final RatingsDataset<? extends Rating> ratingsDataset = datasetLoader.getRatingsDataset();
 
         final double confidence = 0.95;
@@ -56,7 +54,7 @@ public class WilsonScoreLowerBound extends NonPersonalisedRecommender<List<Recom
         final double z = NormalDistribution.z(confidence);
         RelevanceCriteria relevanceCriteria = new RelevanceCriteria(ratingThreshold);
 
-        List<Recommendation> recommendationModel1 = new ArrayList<>(ratingsDataset.allRatedItems().size());
+        Collection<Recommendation> recommendationModel1 = new ArrayList<>(ratingsDataset.allRatedItems().size());
 
         for (int idItem : ratingsDataset.allRatedItems()) {
             try {
@@ -92,7 +90,6 @@ public class WilsonScoreLowerBound extends NonPersonalisedRecommender<List<Recom
             }
 
         }
-        Collections.sort(recommendationModel1);
 
         if (Global.isVerboseAnnoying()) {
             System.out.println("================= Recommendation model for " + this.getName() + "==============");
@@ -104,8 +101,8 @@ public class WilsonScoreLowerBound extends NonPersonalisedRecommender<List<Recom
     }
 
     @Override
-    public List<Recommendation> recommendOnly(DatasetLoader<? extends Rating> datasetLoader, List<Recommendation> recommendationModel, Collection<Integer> idItemList) throws ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset {
-        List<Recommendation> recommendations = new ArrayList<>();
+    public Collection<Recommendation> recommendOnly(DatasetLoader<? extends Rating> datasetLoader, Collection<Recommendation> recommendationModel, Collection<Integer> idItemList) throws ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset {
+        Collection<Recommendation> recommendations = new ArrayList<>();
 
         Set<Integer> unpredicted = new TreeSet<>(idItemList);
         recommendationModel.stream()
@@ -120,11 +117,10 @@ public class WilsonScoreLowerBound extends NonPersonalisedRecommender<List<Recom
             recommendations.add(new Recommendation(idItem, 0));
         });
 
-        Collections.sort(recommendations);
         return recommendations;
     }
 
-    public List<Recommendation> loadModel(FilePersistence filePersistence) throws FailureInPersistence {
+    public Collection<Recommendation> loadModel(FilePersistence filePersistence) throws FailureInPersistence {
 
         try {
             RecommendationsOutputFileXML recommendationsOutputMethod = new RecommendationsOutputFileXML(filePersistence.getCompleteFileName());
@@ -138,12 +134,12 @@ public class WilsonScoreLowerBound extends NonPersonalisedRecommender<List<Recom
 
     @Override
     @SuppressWarnings("unchecked")
-    public List<Recommendation> loadModel(FilePersistence filePersistence, Collection<Integer> users, Collection<Integer> items) throws FailureInPersistence {
+    public Collection<Recommendation> loadModel(FilePersistence filePersistence, Collection<Integer> users, Collection<Integer> items) throws FailureInPersistence {
         return loadModel(filePersistence);
     }
 
     @Override
-    public void saveModel(FilePersistence filePersistence, List<Recommendation> model) throws FailureInPersistence {
+    public void saveModel(FilePersistence filePersistence, Collection<Recommendation> model) throws FailureInPersistence {
         RecommendationsOutputFileXML recommendationsOutputMethod = new RecommendationsOutputFileXML(filePersistence.getCompleteFileName());
         recommendationsOutputMethod.writeRecommendations(new SingleUserRecommendations(User.ANONYMOUS_USER, model, RecommendationComputationDetails.EMPTY_DETAILS));
     }

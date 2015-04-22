@@ -1,20 +1,20 @@
 package delfos.experiment.validation.predictionprotocol;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Random;
-import java.util.Set;
-import java.util.TreeSet;
 import delfos.common.exceptions.dataset.users.UserNotFound;
 import delfos.common.parameters.Parameter;
 import delfos.common.parameters.restriction.IntegerParameter;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RatingsDataset;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Random;
+import java.util.Set;
+import java.util.TreeSet;
 
 /**
  * Esta técnica aplica la validación cruzada para la predicción de valoraciones.
  *
-* @author Jorge Castro Gallardo
+ * @author Jorge Castro Gallardo
  */
 public class CrossFoldPredictionProtocol extends PredictionProtocol {
 
@@ -33,12 +33,12 @@ public class CrossFoldPredictionProtocol extends PredictionProtocol {
     }
 
     @Override
-    public Collection<Collection<Integer>> getRecommendationRequests(RatingsDataset<? extends Rating> testRatingsDataset, int idUser) throws UserNotFound {
+    public Collection<Set<Integer>> getRecommendationRequests(RatingsDataset<? extends Rating> testRatingsDataset, int idUser) throws UserNotFound {
         Random random = new Random(getSeedValue());
-        ArrayList<Collection<Integer>> ret = new ArrayList<>();
+        ArrayList<Set<Integer>> ret = new ArrayList<>();
         Set<Integer> items = new TreeSet<>(testRatingsDataset.getUserRated(idUser));
         for (int i = 0; i < getNumPartitions(); i++) {
-            ret.add(new ArrayList<>(items.size() / getNumPartitions() + 1));
+            ret.add(new TreeSet<>());
         }
         int n = 0;
         while (!items.isEmpty()) {

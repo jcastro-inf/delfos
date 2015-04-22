@@ -1,7 +1,5 @@
 package delfos.results.evaluationmeasures.ratingprediction;
 
-import java.util.List;
-import java.util.Map;
 import delfos.ERROR_CODES;
 import delfos.common.Global;
 import delfos.common.exceptions.dataset.users.UserNotFound;
@@ -9,12 +7,14 @@ import delfos.common.statisticalfuncions.MeanIterative;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RatingsDataset;
 import delfos.dataset.basic.rating.RelevanceCriteria;
-import delfos.results.RecommendationResults;
-import delfos.results.MeasureResult;
-import delfos.results.evaluationmeasures.EvaluationMeasure;
 import delfos.dataset.basic.rating.domain.DecimalDomain;
 import delfos.dataset.basic.rating.domain.Domain;
+import delfos.results.MeasureResult;
+import delfos.results.RecommendationResults;
+import delfos.results.evaluationmeasures.EvaluationMeasure;
 import delfos.rs.recommendation.Recommendation;
+import java.util.Collection;
+import java.util.Map;
 
 /**
  * Implementa NRMSE.
@@ -34,7 +34,7 @@ public class NMAE extends EvaluationMeasure {
         Domain originalDomain = testDataset.getRatingsDomain();
 
         for (int idUser : testDataset.allUsers()) {
-            List<Recommendation> recommendationList = recommendationResults.getRecommendationsForUser(idUser);
+            Collection<Recommendation> recommendationList = recommendationResults.getRecommendationsForUser(idUser);
             if (recommendationList == null) {
                 throw new IllegalStateException("Recommendation list is null.");
             }

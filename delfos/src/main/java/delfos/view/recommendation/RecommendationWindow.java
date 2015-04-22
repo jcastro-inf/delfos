@@ -312,7 +312,7 @@ public class RecommendationWindow extends JFrame {
                 recommendationsJTableModel.setContentDataset(contentDataset);
 
                 Object model = recommenderSystem.build(datasetLoader);
-                List<Recommendation> recommendations = recommenderSystem.recommendOnly(datasetLoader, model, idUser, noValoradas);
+                Collection<Recommendation> recommendations = recommenderSystem.recommendOnly(datasetLoader, model, idUser, noValoradas);
                 RecommendationWindow.this.recommendationsJTableModel.setRecomendaciones(recommendations);
             } catch (CannotLoadRatingsDataset ex) {
                 ERROR_CODES.CANNOT_LOAD_RATINGS_DATASET.exit(ex);

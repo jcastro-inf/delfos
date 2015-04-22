@@ -146,12 +146,8 @@ public class CentralityWeightedAggregationGRS extends GroupRecommenderSystemAdap
     }
 
     @Override
-    public List<Recommendation> recommendOnly(
-            DatasetLoader<? extends Rating> datasetLoader,
-            SingleRecommenderSystemModel recommenderSystemModel,
-            GroupModelPseudoUser groupModel,
-            GroupOfUsers groupOfUsers,
-            Collection<Integer> idItemList)
+    public Collection<Recommendation> recommendOnly(
+            DatasetLoader<? extends Rating> datasetLoader, SingleRecommenderSystemModel recommenderSystemModel, GroupModelPseudoUser groupModel, GroupOfUsers groupOfUsers, java.util.Set<Integer> idItemList)
             throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset, NotEnoughtUserInformation {
 
         //Recojo los parámetros en variables
@@ -167,7 +163,7 @@ public class CentralityWeightedAggregationGRS extends GroupRecommenderSystemAdap
             DatasetPrinterDeprecated.printCompactRatingTable(ratingsDataset_withPseudoUser, Arrays.asList(idGroup), ratingsDataset_withPseudoUser.getUserRated(idGroup));
         }
 
-        List<Recommendation> groupRecom;
+        Collection<Recommendation> groupRecom;
 
         groupRecom = recommenderSystem.recommendOnly(
                 new DatasetLoaderGiven(datasetLoader, ratingsDataset_withPseudoUser),

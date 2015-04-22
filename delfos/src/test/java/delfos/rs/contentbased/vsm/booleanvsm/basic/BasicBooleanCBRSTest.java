@@ -81,8 +81,8 @@ public class BasicBooleanCBRSTest extends DelfosTest {
         SparseVector userProfile = null;
         Collection<Integer> idItemList = null;
         BasicBooleanCBRS instance = new BasicBooleanCBRS();
-        List<Recommendation> expResult = null;
-        List<Recommendation> result = instance.recommendOnly(datasetLoader, model, userProfile, idItemList);
+        Collection<Recommendation> expResult = null;
+        Collection<Recommendation> result = instance.recommendOnly(datasetLoader, model, userProfile, idItemList);
         assertEquals(expResult, result);
         // TODO review the generated test code and remove the default call to fail.
         fail("The test case is a prototype.");

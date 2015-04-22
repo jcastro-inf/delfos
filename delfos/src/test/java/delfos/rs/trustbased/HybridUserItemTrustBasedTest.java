@@ -1,29 +1,23 @@
 package delfos.rs.trustbased;
 
-import delfos.rs.trustbased.HybridUserItemTrustBased;
-import delfos.rs.trustbased.HybridUserItemTrustBasedModel;
+import delfos.common.Global;
+import delfos.constants.DelfosTest;
+import delfos.dataset.basic.loader.types.DatasetLoader;
+import delfos.dataset.basic.rating.Rating;
+import delfos.dataset.basic.rating.RatingsDataset;
+import delfos.dataset.papertestdatasets.ImplicitTrustDataset;
+import delfos.dataset.storage.memory.BothIndexRatingsDataset;
+import delfos.dataset.util.DatasetPrinterDeprecated;
+import delfos.rs.recommendation.Recommendation;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 import org.junit.Test;
-import delfos.dataset.basic.rating.Rating;
-import delfos.dataset.storage.memory.BothIndexRatingsDataset;
-import delfos.dataset.papertestdatasets.ImplicitTrustDataset;
-import delfos.dataset.basic.loader.types.DatasetLoader;
-import delfos.dataset.util.DatasetPrinterDeprecated;
-import delfos.rs.recommendation.Recommendation;
-import delfos.common.exceptions.dataset.CannotLoadContentDataset;
-import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
-import delfos.common.exceptions.dataset.items.ItemNotFound;
-import delfos.common.exceptions.dataset.users.UserNotFound;
-import delfos.common.Global;
-import delfos.constants.DelfosTest;
-import delfos.dataset.basic.rating.RatingsDataset;
-import delfos.common.exceptions.ratings.NotEnoughtUserInformation;
 
 /**
  *
@@ -40,7 +34,7 @@ public class HybridUserItemTrustBasedTest extends DelfosTest {
      * se describe el algoritmo.
      */
     @Test
-    public void paperTest() throws UserNotFound, ItemNotFound, CannotLoadContentDataset, CannotLoadRatingsDataset, NotEnoughtUserInformation {
+    public void paperTest() throws Exception {
         Global.setVerbose();
         Global.setVerboseAnnoying();
 
@@ -51,18 +45,18 @@ public class HybridUserItemTrustBasedTest extends DelfosTest {
 
         HybridUserItemTrustBasedModel model = recommenderSystem.build(datasetLoader);
 
-        Map<Integer, Map<Integer, Number>> finalPredictions = new TreeMap<Integer, Map<Integer, Number>>();
+        Map<Integer, Map<Integer, Number>> finalPredictions = new TreeMap<>();
 
         RatingsDataset<? extends Rating> ratingsDataset = datasetLoader.getRatingsDataset();
 
         for (int idUser : ratingsDataset.allUsers()) {
-            Set<Integer> items = new TreeSet<Integer>(datasetLoader.getRatingsDataset().allRatedItems());
+            Set<Integer> items = new TreeSet<>(datasetLoader.getRatingsDataset().allRatedItems());
 
             items.removeAll(datasetLoader.getRatingsDataset().getUserRated(idUser));
 
-            List<Recommendation> recommendations = recommenderSystem.recommendOnly(datasetLoader, model, idUser, items);
+            Collection<Recommendation> recommendations = recommenderSystem.recommendOnly(datasetLoader, model, idUser, items);
 
-            finalPredictions.put(idUser, new TreeMap<Integer, Number>());
+            finalPredictions.put(idUser, new TreeMap<>());
 
             for (Recommendation r : recommendations) {
                 finalPredictions.get(idUser).put(r.getIdItem(), r.getPreference());
@@ -77,7 +71,7 @@ public class HybridUserItemTrustBasedTest extends DelfosTest {
 
         double delta = 0.01;
 
-        List<Rating> predictions = new ArrayList<Rating>(12);
+        List<Rating> predictions = new ArrayList<>(12);
 
         //User 1 predictions
         double predictionUser1Item1 = recommenderSystem.predictRating(datasetLoader, model, 1, 1).doubleValue();

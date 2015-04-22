@@ -1,18 +1,19 @@
 package delfos.group.results.groupevaluationmeasures;
 
+import delfos.ERROR_CODES;
+import delfos.common.exceptions.dataset.users.UserNotFound;
+import delfos.common.statisticalfuncions.MeanIterative;
+import delfos.dataset.basic.rating.Rating;
+import delfos.dataset.basic.rating.RatingsDataset;
+import delfos.dataset.basic.rating.RelevanceCriteria;
+import delfos.group.groupsofusers.GroupOfUsers;
+import delfos.group.results.grouprecomendationresults.GroupRecommendationResult;
+import delfos.rs.recommendation.Recommendation;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TreeMap;
-import delfos.dataset.basic.rating.Rating;
-import delfos.dataset.basic.rating.RatingsDataset;
-import delfos.dataset.basic.rating.RelevanceCriteria;
-import delfos.ERROR_CODES;
-import delfos.rs.recommendation.Recommendation;
-import delfos.common.exceptions.dataset.users.UserNotFound;
-import delfos.common.statisticalfuncions.MeanIterative;
-import delfos.group.groupsofusers.GroupOfUsers;
-import delfos.group.results.grouprecomendationresults.GroupRecommendationResult;
 
 /**
  * Medida de evaluación para calcular el error cuadrático medio del sistema de
@@ -25,7 +26,7 @@ import delfos.group.results.grouprecomendationresults.GroupRecommendationResult;
  * {@link delfos.Results.EvaluationMeasures.RatingPrediction.RMSE} para
  * recomendaciones individuales.
  *
-* @author Jorge Castro Gallardo
+ * @author Jorge Castro Gallardo
  *
  * @version 1.0 (22-01-2013)
  * @see delfos.Results.EvaluationMeasures.RatingPrediction.MAE_ForGroups
@@ -38,9 +39,9 @@ public class RMSE extends GroupEvaluationMeasure {
         MeanIterative rmse = new MeanIterative();
         for (Entry<GroupOfUsers, List<Recommendation>> entry : recommendationResults) {
             GroupOfUsers group = entry.getKey();
-            List<Recommendation> recommendationsToGroup = entry.getValue();
+            Collection<Recommendation> recommendationsToGroup = entry.getValue();
 
-            Map<Integer, Map<Integer, ? extends Rating>> groupTrueRatings = new TreeMap<Integer, Map<Integer, ? extends Rating>>();
+            Map<Integer, Map<Integer, ? extends Rating>> groupTrueRatings = new TreeMap<>();
             for (int idUser : group.getGroupMembers()) {
                 try {
                     groupTrueRatings.put(idUser, testDataset.getUserRatingsRated(idUser));

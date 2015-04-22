@@ -1,14 +1,5 @@
 package delfos.group.grs.filtered;
 
-import delfos.group.grs.filtered.filters.GroupRatingsFilter;
-import delfos.group.grs.filtered.filters.OutliersRatingsFilter;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
 import delfos.common.Global;
 import delfos.common.aggregationoperators.AggregationOperator;
 import delfos.common.aggregationoperators.Mean;
@@ -22,27 +13,35 @@ import delfos.common.parameters.ParameterListener;
 import delfos.common.parameters.restriction.ObjectParameter;
 import delfos.common.parameters.restriction.ParameterOwnerRestriction;
 import delfos.common.parameters.restriction.RecommenderSystemParameterRestriction;
-import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.loader.types.DatasetLoader;
+import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.util.DatasetPrinterDeprecated;
 import delfos.experiment.casestudy.parallel.SingleUserRecommendationTask;
 import delfos.experiment.casestudy.parallel.SingleUserRecommendationTaskExecutor;
 import delfos.factories.AggregationOperatorFactory;
 import delfos.group.groupsofusers.GroupOfUsers;
-import delfos.group.groupsofusers.GroupOfUsers;
 import delfos.group.grs.GroupRecommenderSystemAdapter;
 import delfos.group.grs.SingleRecommenderSystemModel;
+import delfos.group.grs.filtered.filters.GroupRatingsFilter;
+import delfos.group.grs.filtered.filters.OutliersRatingsFilter;
 import delfos.rs.RecommenderSystem;
 import delfos.rs.RecommenderSystemBuildingProgressListener;
 import delfos.rs.collaborativefiltering.knn.modelbased.KnnModelBasedCFRS;
 import delfos.rs.recommendation.Recommendation;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 /**
  * Implementa la unión de un sistema de recomendación a individuos con un
  * algoritmo de filtrado de las predicciones de los usuarios. Finalmente agrega
  * con una función de agregación.
  *
-* @author Jorge Castro Gallardo
+ * @author Jorge Castro Gallardo
  * @version 1.0 22-May-2013
  */
 public class GroupRecommenderSystemWithPostFilter extends GroupRecommenderSystemAdapter<SingleRecommenderSystemModel, GroupOfUsers> {
@@ -132,7 +131,7 @@ public class GroupRecommenderSystemWithPostFilter extends GroupRecommenderSystem
     }
 
     @Override
-    public List<Recommendation> recommendOnly(DatasetLoader<? extends Rating> datasetLoader, SingleRecommenderSystemModel recommenderSystemModel, GroupOfUsers groupModel, GroupOfUsers groupOfUsers, Collection<Integer> idItemList) throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset {
+    public Collection<Recommendation> recommendOnly(DatasetLoader<? extends Rating> datasetLoader, SingleRecommenderSystemModel recommenderSystemModel, GroupOfUsers groupModel, GroupOfUsers groupOfUsers, java.util.Set<Integer> idItemList) throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset {
 
         List<SingleUserRecommendationTask> tasks = new LinkedList<SingleUserRecommendationTask>();
         for (int idUser : groupOfUsers) {
@@ -147,7 +146,7 @@ public class GroupRecommenderSystemWithPostFilter extends GroupRecommenderSystem
 
         Map<Integer, Map<Integer, Number>> listsWithoutFilter = new TreeMap<Integer, Map<Integer, Number>>();
         for (SingleUserRecommendationTask task : executionManager.getAllFinishedTasks()) {
-            List<Recommendation> recommendations = task.getRecommendationList();
+            Collection<Recommendation> recommendations = task.getRecommendationList();
             if (recommendations == null) {
                 throw new UserNotFound(task.getIdUser());
             }
@@ -160,7 +159,7 @@ public class GroupRecommenderSystemWithPostFilter extends GroupRecommenderSystem
 
         Map<Integer, Map<Integer, Number>> filteredLists = filterLists(getFilter(), listsWithoutFilter);
 
-        List<Recommendation> ret = aggregateLists(getAggregationOperator(), filteredLists);
+        Collection<Recommendation> ret = aggregateLists(getAggregationOperator(), filteredLists);
 
         {
             //Muestro las listas individuales y agregadas, para depuración.
@@ -168,7 +167,7 @@ public class GroupRecommenderSystemWithPostFilter extends GroupRecommenderSystem
             all.putAll(listsWithoutFilter);
 
             Map<Integer, Number> aggregateListNotFiltered = new TreeMap<Integer, Number>();
-            List<Recommendation> retNoFilter = aggregateLists(getAggregationOperator(), listsWithoutFilter);
+            Collection<Recommendation> retNoFilter = aggregateLists(getAggregationOperator(), listsWithoutFilter);
             for (Recommendation r : retNoFilter) {
                 aggregateListNotFiltered.put(r.getIdItem(), r.getPreference());
             }
@@ -195,7 +194,7 @@ public class GroupRecommenderSystemWithPostFilter extends GroupRecommenderSystem
         return filtered;
     }
 
-    public static List<Recommendation> aggregateLists(AggregationOperator aggregationOperator, Map<Integer, Map<Integer, Number>> groupUtilityList) {
+    public static Collection<Recommendation> aggregateLists(AggregationOperator aggregationOperator, Map<Integer, Map<Integer, Number>> groupUtilityList) {
 
         //Reordeno las predicciones.
         Map<Integer, Collection<Number>> prediction_byItem = new TreeMap<Integer, Collection<Number>>();
@@ -212,7 +211,7 @@ public class GroupRecommenderSystemWithPostFilter extends GroupRecommenderSystem
         }
 
         //agrego las predicciones de cada item.
-        ArrayList<Recommendation> ret = new ArrayList<Recommendation>();
+        ArrayList<Recommendation> ret = new ArrayList<>();
         for (int idItem : prediction_byItem.keySet()) {
             Collection<Number> predictionsThisItem = prediction_byItem.get(idItem);
 

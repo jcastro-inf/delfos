@@ -1,26 +1,28 @@
 package delfos.dataset.util;
 
-import java.util.*;
-import delfos.dataset.basic.rating.Rating;
-import delfos.dataset.basic.rating.RatingsDataset;
-import delfos.dataset.storage.memory.BothIndexRatingsDataset;
-import delfos.ERROR_CODES;
-import delfos.rs.collaborativefiltering.profile.Neighbor;
-import delfos.rs.recommendation.Recommendation;
-import delfos.rs.trustbased.WeightedGraph;
+import delfos.common.Global;
 import delfos.common.decimalnumbers.NumberRounder;
 import delfos.common.exceptions.dataset.items.ItemNotFound;
 import delfos.common.exceptions.dataset.users.UserNotFound;
-import delfos.common.Global;
+import delfos.dataset.basic.rating.Rating;
+import delfos.dataset.basic.rating.RatingsDataset;
+import delfos.dataset.storage.memory.BothIndexRatingsDataset;
+import delfos.rs.collaborativefiltering.profile.Neighbor;
+import delfos.rs.trustbased.WeightedGraph;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
+import java.util.TreeSet;
 
 /**
  * Clase para escribir datasets al estilo linea de comandos.
  *
-* @author Jorge Castro Gallardo
+ * @author Jorge Castro Gallardo
  * @version 1.0 24-Apr-2013
  *
- * @deprecated Ahora se debe usar la clase
- * {@link delfos.util.DatasetPrinter}
+ * @deprecated Ahora se debe usar la clase {@link delfos.util.DatasetPrinter}
  */
 public class DatasetPrinterDeprecated {
 
@@ -401,32 +403,4 @@ public class DatasetPrinterDeprecated {
         Global.showMessage("\n");
     }
 
-    /**
-     * @param rd
-     * @param users
-     * @param recommendations
-     * @deprecated Ahora se debe usar la clase
-     * {@link delfos.util.DatasetPrinter}
-     */
-    public static void printCompactRatingTable(RatingsDataset<? extends Rating> rd, Collection<Integer> users, List<Recommendation> recommendations) {
-        Map<Integer, Map<Integer, ? extends Rating>> ratings = new TreeMap<Integer, Map<Integer, ? extends Rating>>();
-
-        for (int idUser : users) {
-            try {
-                ratings.put(idUser, rd.getUserRatingsRated(idUser));
-            } catch (UserNotFound ex) {
-                ERROR_CODES.USER_NOT_FOUND.exit(ex);
-            }
-        }
-
-        int idUserRecommendacion = -1;
-        Map<Integer, Rating> recommendationsMap = new TreeMap<Integer, Rating>();
-        for (Recommendation r : recommendations) {
-            recommendationsMap.put(r.getIdItem(), new Rating(-1, r.getIdItem(), r.getPreference()));
-        }
-
-        ratings.put(idUserRecommendacion, recommendationsMap);
-
-        printCompactRatingTable(DatasetOperations.convertRatingsToNumber(ratings));
-    }
 }

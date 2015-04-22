@@ -58,7 +58,7 @@ public class GroupPartialOrder_Collaborative extends GroupRecommenderSystemAdapt
     }
 
     @Override
-    public List<Recommendation> recommendOnly(DatasetLoader<? extends Rating> datasetLoader, GroupPartialOrderModel recommenderSystemModel, GroupPartialOrderGroupModel groupModel, GroupOfUsers groupOfUsers, Collection<Integer> idItemList) throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset {
+    public Collection<Recommendation> recommendOnly(DatasetLoader<? extends Rating> datasetLoader, GroupPartialOrderModel recommenderSystemModel, GroupPartialOrderGroupModel groupModel, GroupOfUsers groupOfUsers, java.util.Set<Integer> idItemList) throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset {
 
         if (1 == 1) {
             throw new UnsupportedOperationException("Not supported yet.");
@@ -154,7 +154,7 @@ public class GroupPartialOrder_Collaborative extends GroupRecommenderSystemAdapt
         memoryBased.setParameterValue(KnnMemoryBasedCFRS.SIMILARITY_MEASURE, new PearsonCorrelationCoefficient());
         memoryBased.setParameterValue(KnnMemoryBasedCFRS.PREDICTION_TECHNIQUE, new WeightedSum());
 
-        List<Recommendation> recommendOnly = memoryBased.recommendOnly(datasetLoader, memoryBased.build(datasetLoader), idPseudoUser, idItemList);
+        Collection<Recommendation> recommendOnly = memoryBased.recommendOnly(datasetLoader, memoryBased.build(datasetLoader), idPseudoUser, idItemList);
         return recommendOnly;
 
     }

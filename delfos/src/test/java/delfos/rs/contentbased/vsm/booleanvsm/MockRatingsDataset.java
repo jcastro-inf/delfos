@@ -9,6 +9,7 @@ import delfos.dataset.basic.rating.domain.DecimalDomain;
 import delfos.common.exceptions.dataset.items.ItemNotFound;
 import delfos.common.exceptions.dataset.users.UserNotFound;
 import delfos.dataset.basic.rating.domain.Domain;
+import java.util.Set;
 
 /**
  *
@@ -24,22 +25,22 @@ class MockRatingsDataset implements RatingsDataset<Rating> {
     }
 
     @Override
-    public Collection<Integer> allUsers() {
+    public Set<Integer> allUsers() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public Collection<Integer> allRatedItems() {
+    public Set<Integer> allRatedItems() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public Collection<Integer> getUserRated(Integer idUser) throws UserNotFound {
+    public Set<Integer> getUserRated(Integer idUser) throws UserNotFound {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public Collection<Integer> getItemRated(Integer idItem) throws ItemNotFound {
+    public Set<Integer> getItemRated(Integer idItem) throws ItemNotFound {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 

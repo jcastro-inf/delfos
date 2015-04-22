@@ -1,19 +1,20 @@
 package delfos.dataset.storage.memory;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
-import java.util.TreeSet;
 import delfos.common.Global;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RatingDatasetEfficiencyException;
 import delfos.dataset.basic.rating.RatingsDatasetAdapter;
 import delfos.dataset.basic.rating.domain.DecimalDomain;
 import delfos.dataset.basic.rating.domain.Domain;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
+import java.util.TreeSet;
 
 /**
  * Datase que almacena los datos de manera desordenada. Solo calcula los
@@ -97,23 +98,23 @@ public class DefaultMemoryRatingsDataset_UserIndexed<RatingType extends Rating> 
     }
 
     @Override
-    public Collection<Integer> allUsers() {
+    public Set<Integer> allUsers() {
         return userIndex.keySet();
     }
 
     @Override
-    public Collection<Integer> allRatedItems() {
-        return Collections.unmodifiableCollection(items);
+    public Set<Integer> allRatedItems() {
+        return Collections.unmodifiableSet(items);
     }
 
     @Override
-    public Collection<Integer> getUserRated(Integer idUser) {
+    public Set<Integer> getUserRated(Integer idUser) {
         return getUserRatingsRated(idUser).keySet();
     }
     private boolean getItemRated = false;
 
     @Override
-    public Collection<Integer> getItemRated(Integer idItem) {
+    public Set<Integer> getItemRated(Integer idItem) {
         if (!getItemRated) {
             RatingDatasetEfficiencyException ratingDatasetEfficiencyException = new RatingDatasetEfficiencyException(this.getClass().getSimpleName() + ": Using an inefficient method:[getItemRated(Integer idItem):Collection<Integer>]");
             Global.showWarning(ratingDatasetEfficiencyException);

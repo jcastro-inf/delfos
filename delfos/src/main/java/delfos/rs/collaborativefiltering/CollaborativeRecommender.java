@@ -1,17 +1,17 @@
 package delfos.rs.collaborativefiltering;
 
-import java.util.LinkedList;
-import java.util.List;
 import delfos.common.Global;
 import delfos.common.exceptions.dataset.CannotLoadContentDataset;
 import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
 import delfos.common.exceptions.dataset.items.ItemNotFound;
 import delfos.common.exceptions.dataset.users.UserNotFound;
 import delfos.common.exceptions.ratings.NotEnoughtUserInformation;
-import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.loader.types.DatasetLoader;
+import delfos.dataset.basic.rating.Rating;
 import delfos.rs.RecommenderSystemAdapter;
 import delfos.rs.recommendation.Recommendation;
+import java.util.Collection;
+import java.util.TreeSet;
 
 /**
  * Clase de la que deben heredar todos los sistemas de recomendación que estén
@@ -91,8 +91,7 @@ public abstract class CollaborativeRecommender<RecommenderSystemModel>
      * calcular, devuelve null (indica un fallo de cobertura)
      * @throws UserNotFound Si no se encuentra el usuario en los datasets.
      * @throws ItemNotFound Si no se encuenta el producto en los datasets.
-     * @throws
-     * delfos.common.exceptions.ratings.NotEnoughtUserInformation
+     * @throws delfos.common.exceptions.ratings.NotEnoughtUserInformation
      */
     public Number predictRating(DatasetLoader<? extends Rating> datasetLoader, RecommenderSystemModel model, int idUser, int idItem)
             throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset, NotEnoughtUserInformation {
@@ -107,20 +106,21 @@ public abstract class CollaborativeRecommender<RecommenderSystemModel>
             }
         }
 
-        LinkedList<Integer> items = new LinkedList<>();
+        TreeSet<Integer> items = new TreeSet<>();
         items.add(idItem);
 
-        List<Recommendation> recommendOnly = recommendOnly(datasetLoader, model, idUser, items);
+        Collection<Recommendation> recommendOnly = recommendOnly(datasetLoader, model, idUser, items);
         if (recommendOnly.isEmpty()) {
             if (Global.isVerboseAnnoying()) {
                 Global.showMessage("Prediction of rating of user " + idUser + " over item " + idItem + " can't be predicted\n");
             }
             return null;
         } else {
+            double prediction = recommendOnly.iterator().next().getPreference().doubleValue();
             if (Global.isVerboseAnnoying()) {
-                Global.showMessage("Prediction of rating of user " + idUser + " over item " + idItem + " ---> " + recommendOnly.get(0).getPreference() + "\n");
+                Global.showMessage("Prediction of rating of user " + idUser + " over item " + idItem + " ---> " + prediction + "\n");
             }
-            return recommendOnly.get(0).getPreference();
+            return prediction;
         }
     }
 

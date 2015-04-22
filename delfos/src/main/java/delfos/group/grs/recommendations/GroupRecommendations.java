@@ -1,10 +1,10 @@
 package delfos.group.grs.recommendations;
 
-import java.util.List;
 import delfos.group.groupsofusers.GroupOfUsers;
 import delfos.rs.recommendation.Recommendation;
 import delfos.rs.recommendation.RecommendationComputationDetails;
 import delfos.rs.recommendation.Recommendations;
+import java.util.Collection;
 
 /**
  * Encapsula las recomendaciones hechas a un grupo.
@@ -22,7 +22,7 @@ public class GroupRecommendations extends Recommendations {
         targetGroupOfUsers = null;
     }
 
-    public GroupRecommendations(GroupOfUsers groupOfUsers, List<Recommendation> recommendations, RecommendationComputationDetails recommendationComputationDetails) {
+    public GroupRecommendations(GroupOfUsers groupOfUsers, Collection<Recommendation> recommendations, RecommendationComputationDetails recommendationComputationDetails) {
         super(groupOfUsers.getTargetId(), recommendations, recommendationComputationDetails);
         this.targetGroupOfUsers = groupOfUsers;
     }

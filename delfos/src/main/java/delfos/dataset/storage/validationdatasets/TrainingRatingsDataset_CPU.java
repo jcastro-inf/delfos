@@ -1,24 +1,23 @@
 package delfos.dataset.storage.validationdatasets;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeMap;
-import java.util.TreeSet;
 import delfos.common.Global;
 import delfos.common.exceptions.dataset.items.ItemNotFound;
 import delfos.common.exceptions.dataset.users.UserNotFound;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RatingsDataset;
 import delfos.dataset.basic.rating.RatingsDatasetAdapter;
-import delfos.dataset.basic.rating.domain.DecimalDomain;
 import delfos.dataset.basic.rating.domain.Domain;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
+import java.util.TreeSet;
 
 /**
  * Dataset para la validación de
  *
-* @author Jorge Castro Gallardo
+ * @author Jorge Castro Gallardo
  *
  * @version 1.0 Unknow date
  * @version 1.1 (21-01-2013) Ahora implementa de {@link RatingsDatasetAdapter}
@@ -26,7 +25,9 @@ import delfos.dataset.basic.rating.domain.Domain;
  * corrección de errores.
  * @param <RatingType>
  */
-public class TrainingRatingsDataset_CPU<RatingType extends Rating> extends RatingsDatasetAdapter<RatingType> implements TrainingRatingsDataset<RatingType> {
+public class TrainingRatingsDataset_CPU<RatingType extends Rating>
+        extends RatingsDatasetAdapter<RatingType>
+        implements TrainingRatingsDataset<RatingType> {
 
     private final Map<Integer, Set<Integer>> testRatings_byUser;
     private final RatingsDataset<RatingType> originalDataset;
@@ -68,7 +69,7 @@ public class TrainingRatingsDataset_CPU<RatingType extends Rating> extends Ratin
     }
 
     @Override
-    public Collection<Integer> allUsers() {
+    public Set<Integer> allUsers() {
         return originalDataset.allUsers();
     }
 
@@ -111,7 +112,7 @@ public class TrainingRatingsDataset_CPU<RatingType extends Rating> extends Ratin
     }
 
     @Override
-    public Collection<Integer> getItemRated(Integer idItem) throws ItemNotFound {
+    public Set<Integer> getItemRated(Integer idItem) throws ItemNotFound {
         return getItemRatingsRated(idItem).keySet();
     }
 

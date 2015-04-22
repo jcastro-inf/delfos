@@ -1,16 +1,16 @@
 package delfos.rs;
 
-import java.util.Collection;
-import java.util.List;
 import delfos.common.exceptions.dataset.CannotLoadContentDataset;
 import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
 import delfos.common.exceptions.dataset.items.ItemNotFound;
 import delfos.common.exceptions.dataset.users.UserNotFound;
 import delfos.common.exceptions.ratings.NotEnoughtItemInformation;
 import delfos.common.exceptions.ratings.NotEnoughtUserInformation;
-import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.loader.types.DatasetLoader;
+import delfos.dataset.basic.rating.Rating;
 import delfos.rs.recommendation.Recommendation;
+import java.util.Collection;
+import java.util.Set;
 
 /**
  * Sistema de recomendación básico, con recomendación de productos a usuarios
@@ -52,10 +52,7 @@ public interface RecommenderSystem<RecommenderSystemModel> extends GenericRecomm
      *
      * @throws NotEnoughtUserInformation
      */
-    public List<Recommendation> recommendOnly(
-            DatasetLoader<? extends Rating> datasetLoader,
-            RecommenderSystemModel model,
-            Integer idUser,
-            Collection<Integer> idItemList)
+    public Collection<Recommendation> recommendOnly(
+            DatasetLoader<? extends Rating> datasetLoader, RecommenderSystemModel model, Integer idUser, Set<Integer> idItemList)
             throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset, NotEnoughtUserInformation;
 }

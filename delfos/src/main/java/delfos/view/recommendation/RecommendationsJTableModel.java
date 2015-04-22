@@ -1,14 +1,14 @@
 package delfos.view.recommendation;
 
-import java.util.LinkedList;
-import java.util.List;
-import javax.swing.table.AbstractTableModel;
 import delfos.ERROR_CODES;
 import delfos.common.exceptions.dataset.entity.EntityNotFound;
 import delfos.common.exceptions.dataset.items.ItemNotFound;
 import delfos.dataset.basic.item.ContentDataset;
 import delfos.dataset.basic.item.Item;
 import delfos.rs.recommendation.Recommendation;
+import java.util.Collection;
+import java.util.LinkedList;
+import javax.swing.table.AbstractTableModel;
 
 /**
  * Clase que tiene los datos necesarios para establecer el orden de izquierda a
@@ -23,7 +23,7 @@ import delfos.rs.recommendation.Recommendation;
 public class RecommendationsJTableModel extends AbstractTableModel {
 
     private final static long serialVersionUID = 1L;
-    List<Recommendation> lista = new LinkedList<>();
+    Collection<Recommendation> lista = new LinkedList<>();
     private Object[][] datos = new Object[3][0];
     private ContentDataset cd;
 
@@ -56,7 +56,7 @@ public class RecommendationsJTableModel extends AbstractTableModel {
         return datos[columnIndex][rowIndex];
     }
 
-    void setRecomendaciones(List<Recommendation> recommendOnly) {
+    void setRecomendaciones(Collection<Recommendation> recommendOnly) {
         if (this.cd == null) {
             datos = new Object[3][0];
             return;

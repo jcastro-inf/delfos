@@ -1,12 +1,5 @@
 package delfos.rs.contentbased.vsm.booleanvsm.tfidf;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import org.grouplens.lenskit.vectors.MutableSparseVector;
-import org.grouplens.lenskit.vectors.SparseVector;
-import org.grouplens.lenskit.vectors.VectorEntry;
 import delfos.ERROR_CODES;
 import delfos.common.Global;
 import delfos.common.exceptions.CouldNotComputeSimilarity;
@@ -14,19 +7,26 @@ import delfos.common.exceptions.dataset.CannotLoadContentDataset;
 import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
 import delfos.common.exceptions.dataset.items.ItemNotFound;
 import delfos.common.exceptions.dataset.users.UserNotFound;
+import delfos.dataset.basic.features.Feature;
 import delfos.dataset.basic.item.ContentDataset;
 import delfos.dataset.basic.item.Item;
-import delfos.dataset.basic.features.Feature;
+import delfos.dataset.basic.loader.types.ContentDatasetLoader;
+import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RatingsDataset;
 import delfos.dataset.basic.rating.RelevanceCriteria;
-import delfos.dataset.basic.loader.types.ContentDatasetLoader;
-import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.rs.contentbased.ContentBasedRecommender;
 import static delfos.rs.contentbased.vsm.ContentBasedVSMRS.SIMILARITY_MEASURE;
 import delfos.rs.contentbased.vsm.booleanvsm.BooleanFeaturesTransformation;
 import delfos.rs.recommendation.Recommendation;
 import delfos.similaritymeasures.WeightedSimilarityMeasure;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import org.grouplens.lenskit.vectors.MutableSparseVector;
+import org.grouplens.lenskit.vectors.SparseVector;
+import org.grouplens.lenskit.vectors.VectorEntry;
 
 /**
  * Clase que implementa el sistema de pesado Tf Idf (procedente del área de la
@@ -242,8 +242,8 @@ public class TfIdfCBRS extends ContentBasedRecommender<TfIdfCBRSModel, TfIdfCBRS
     }
 
     @Override
-    protected List<Recommendation> recommendOnly(DatasetLoader<? extends Rating> datasetLoader, TfIdfCBRSModel model, TfIdfCBRSUserProfile userProfile, Collection<Integer> idItemList) throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset {
-        List<Recommendation> ret = new ArrayList<Recommendation>(idItemList.size());
+    protected Collection<Recommendation> recommendOnly(DatasetLoader<? extends Rating> datasetLoader, TfIdfCBRSModel model, TfIdfCBRSUserProfile userProfile, Collection<Integer> idItemList) throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset {
+        Collection<Recommendation> ret = new ArrayList<>(idItemList.size());
 
         WeightedSimilarityMeasure weightedSimilarity = getSimilarityMeasure();
 

@@ -1,21 +1,19 @@
 package delfos.rs.contentbased.vsm.booleanvsm.symeonidis2007;
 
-import delfos.rs.contentbased.vsm.booleanvsm.symeonidis2007.Symeonidis2007FeatureWeighted;
-import delfos.rs.contentbased.vsm.booleanvsm.symeonidis2007.Symeonidis2007UserProfile;
-import delfos.rs.contentbased.vsm.booleanvsm.symeonidis2007.Symeonidis2007Model;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import org.grouplens.lenskit.vectors.MutableSparseVector;
-import org.grouplens.lenskit.vectors.SparseVector;
-import org.junit.Test;
-import static org.junit.Assert.*;
+import delfos.constants.DelfosTest;
 import delfos.dataset.basic.loader.types.DatasetLoader;
+import delfos.dataset.basic.rating.Rating;
 import delfos.rs.collaborativefiltering.profile.Neighbor;
 import delfos.rs.contentbased.vsm.booleanvsm.BooleanFeaturesTransformation;
 import delfos.rs.recommendation.Recommendation;
-import delfos.constants.DelfosTest;
-import delfos.dataset.basic.rating.Rating;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
+import org.grouplens.lenskit.vectors.MutableSparseVector;
+import org.grouplens.lenskit.vectors.SparseVector;
+import static org.junit.Assert.assertEquals;
+import org.junit.Test;
 
 /**
  * Test del sistema de recomendación {@link Symeonidis2007FeatureWeighted}
@@ -192,13 +190,13 @@ public class Symeonidis2007FeatureWeightedTest extends DelfosTest {
         DatasetLoader<? extends Rating> datasetLoader = new DatasetLoaderSymeonidisMock();
         Symeonidis2007FeatureWeighted instance = new Symeonidis2007FeatureWeighted();
         Symeonidis2007Model model = instance.build(datasetLoader);
-        Collection<Integer> idItemList = new ArrayList<Integer>(3);
+        Set<Integer> idItemList = new TreeSet<>();
         idItemList.add(1);
         idItemList.add(3);
         idItemList.add(5);
 
         //Step2: Execution
-        List<Recommendation> result = instance.recommendOnly(datasetLoader, model, idUser, idItemList);
+        List<Recommendation> result = new ArrayList<>(instance.recommendOnly(datasetLoader, model, idUser, idItemList));
 
         //Step3: Results check
         //Check the item order

@@ -1,11 +1,5 @@
 package delfos.results.evaluationmeasures;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
 import delfos.ERROR_CODES;
 import delfos.common.exceptions.dataset.users.UserNotFound;
 import delfos.common.statisticalfuncions.MeanIterative;
@@ -16,6 +10,12 @@ import delfos.io.xml.evaluationmeasures.NDCGXML;
 import delfos.results.MeasureResult;
 import delfos.results.RecommendationResults;
 import delfos.rs.recommendation.Recommendation;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Evalúa las recomendaciones de un sistema aplicando NDCG, usando logaritmo en
@@ -37,19 +37,18 @@ public class NDCG extends EvaluationMeasure {
         for (int idUser : testDataset.allUsers()) {
             try {
 
-                List<Recommendation> recommendations = recommendationResults.getRecommendationsForUser(idUser);
+                Collection<Recommendation> recommendations = recommendationResults.getRecommendationsForUser(idUser);
                 if (recommendations.isEmpty()) {
                     continue;
                 }
 
-                List<Recommendation> idealRecommendations = new ArrayList<>(recommendations.size());
+                Collection<Recommendation> idealRecommendations = new ArrayList<>(recommendations.size());
                 Map<Integer, Rating> userRatings = (Map<Integer, Rating>) testDataset.getUserRatingsRated(idUser);
 
                 for (Recommendation recommendation : recommendations) {
                     int idItem = recommendation.getIdItem();
                     idealRecommendations.add(new Recommendation(idItem, userRatings.get(idItem).ratingValue));
                 }
-                Collections.sort(idealRecommendations);
 
                 double idealGain = computeDCG(idealRecommendations, userRatings);
                 double gain = computeDCG(recommendations, userRatings);
@@ -76,7 +75,7 @@ public class NDCG extends EvaluationMeasure {
      * @param values
      * @return
      */
-    public static double computeDCG(List<Recommendation> items, Map<Integer, ? extends Rating> values) {
+    public static double computeDCG(Collection<Recommendation> items, Map<Integer, ? extends Rating> values) {
         final double lg2 = Math.log(2);
 
         double gain = 0;
