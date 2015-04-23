@@ -1,12 +1,12 @@
 package delfos.algorithm;
 
-import java.util.LinkedList;
 import delfos.common.parameters.ParameterOwnerAdapter;
+import java.util.LinkedList;
 
 /**
  * Adaptador que implementa la interfaz {@link Algorithm}
  *
-* @author Jorge Castro Gallardo
+ * @author Jorge Castro Gallardo
  *
  * @version 1.0 17-Julio-2013
  */
@@ -29,7 +29,7 @@ public abstract class AlgorithmAdapter extends ParameterOwnerAdapter implements 
      * Objetos que desean ser notificados de cambios en la ejecución del
      * experimento
      */
-    private final LinkedList<AlgorithmProgressListener> progressListeners = new LinkedList<AlgorithmProgressListener>();
+    private final LinkedList<AlgorithmProgressListener> progressListeners = new LinkedList<>();
     /**
      * Porcentaje completado de la ejecución actual.
      */
