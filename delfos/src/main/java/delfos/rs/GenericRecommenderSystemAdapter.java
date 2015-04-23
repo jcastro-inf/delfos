@@ -38,7 +38,7 @@ public abstract class GenericRecommenderSystemAdapter<RecommendationModel> exten
      * Lista de objetos que desean ser notificados del cambio en el progreso de
      * construcción del modelo de este sistema de recomendación.
      */
-    private final List<RecommenderSystemBuildingProgressListener> progressListeners = Collections.synchronizedList(new LinkedList<RecommenderSystemBuildingProgressListener>());
+    private final List<RecommendationModelBuildingProgressListener> progressListeners = Collections.synchronizedList(new LinkedList<RecommendationModelBuildingProgressListener>());
 
     /**
      * Añade un listener para que sea notificado del progreso de la construcción
@@ -47,7 +47,7 @@ public abstract class GenericRecommenderSystemAdapter<RecommendationModel> exten
      * @param listener Objeto que desea ser notificado de los cambios
      */
     @Override
-    public void addBuildingProgressListener(RecommenderSystemBuildingProgressListener listener) {
+    public void addRecommendationModelBuildingProgressListener(RecommendationModelBuildingProgressListener listener) {
         this.progressListeners.add(listener);
         listener.buildingProgressChanged("", 0, -1);
     }
@@ -59,13 +59,13 @@ public abstract class GenericRecommenderSystemAdapter<RecommendationModel> exten
      * @param rl Objeto que desea dejar de ser notificado de los cambios
      */
     @Override
-    public void removeBuildingProgressListener(RecommenderSystemBuildingProgressListener rl) {
+    public void removeRecommendationModelBuildingProgressListener(RecommendationModelBuildingProgressListener rl) {
         this.progressListeners.remove(rl);
     }
 
     /**
      * Notifica a todos los observadores del progreso de construcción del modelo
-     * {@link RecommenderSystemBuildingProgressListener} de un cambio en el
+     * {@link RecommendationModelBuildingProgressListener} de un cambio en el
      * progreso de construcción del mismo.
      *
      * @param actualJob Nombre de la tarea actual
@@ -82,7 +82,7 @@ public abstract class GenericRecommenderSystemAdapter<RecommendationModel> exten
 
     @Override
     @SuppressWarnings("unchecked")
-    public RecommendationModel loadModel(FilePersistence filePersistence, Collection<Integer> users, Collection<Integer> items) throws FailureInPersistence {
+    public RecommendationModel loadRecommendationModel(FilePersistence filePersistence, Collection<Integer> users, Collection<Integer> items) throws FailureInPersistence {
         String completeFileName = filePersistence.getCompleteFileName();
         RecommendationModel model;
 
@@ -103,7 +103,7 @@ public abstract class GenericRecommenderSystemAdapter<RecommendationModel> exten
     }
 
     @Override
-    public void saveModel(FilePersistence filePersistence, RecommendationModel model) throws FailureInPersistence {
+    public void saveRecommendationModel(FilePersistence filePersistence, RecommendationModel model) throws FailureInPersistence {
         try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(filePersistence.getCompleteFileName()))) {
             oos.writeObject(model);
         } catch (NotSerializableException ex) {
@@ -116,7 +116,7 @@ public abstract class GenericRecommenderSystemAdapter<RecommendationModel> exten
             boolean mkdirs = recommendationModelDirectory.mkdirs();
             if (mkdirs) {
                 Global.showWarning("Created directory " + recommendationModelDirectory.getAbsolutePath() + " for recommendation model");
-                saveModel(filePersistence, model);
+                saveRecommendationModel(filePersistence, model);
             } else {
                 Global.showWarning("Cannot create directory " + recommendationModelDirectory.getAbsolutePath() + " for recommendation model");
                 throw new FailureInPersistence(ex);
@@ -127,12 +127,12 @@ public abstract class GenericRecommenderSystemAdapter<RecommendationModel> exten
     }
 
     @Override
-    public void saveModel(DatabasePersistence databasePersistence, RecommendationModel model) throws FailureInPersistence {
+    public void saveRecommendationModel(DatabasePersistence databasePersistence, RecommendationModel model) throws FailureInPersistence {
         throw new UnsupportedOperationException("The system " + this.getClass() + " does not implement the database persistence: this method should be overrided and perform the model saving.");
     }
 
     @Override
-    public RecommendationModel loadModel(DatabasePersistence databasePersistence, Collection<Integer> users, Collection<Integer> items) throws FailureInPersistence {
+    public RecommendationModel loadRecommendationModel(DatabasePersistence databasePersistence, Collection<Integer> users, Collection<Integer> items) throws FailureInPersistence {
         throw new UnsupportedOperationException("The system " + this.getClass() + " does not implement the database persistence: this method should be overrided and perform the model loading.");
     }
 }

@@ -150,7 +150,7 @@ public class DefaultGroupCaseStudy extends GroupCaseStudy {
                 executionsResult[execution][split] = new TreeMap<>();
             }
         }
-        groupRecommenderSystem.addBuildingProgressListener(new RecommenderSystemBuildingProgressListener_default(System.out, 5000));
+        groupRecommenderSystem.addRecommendationModelBuildingProgressListener(new RecommenderSystemBuildingProgressListener_default(System.out, 5000));
         initTimes(numEjecuciones, numParticiones);
 
         MeanIterative tiempoParticion = new MeanIterative();
@@ -183,7 +183,7 @@ public class DefaultGroupCaseStudy extends GroupCaseStudy {
                 Object groupRecommendationModel;
                 {
                     Chronometer c = new Chronometer();
-                    groupRecommendationModel = groupRecommenderSystem.build(trainDatasetLoader);
+                    groupRecommendationModel = groupRecommenderSystem.buildRecommendationModel(trainDatasetLoader);
                     if (groupRecommendationModel == null) {
                         throw new IllegalStateException("The RecommendationModel cannot be null");
                     }

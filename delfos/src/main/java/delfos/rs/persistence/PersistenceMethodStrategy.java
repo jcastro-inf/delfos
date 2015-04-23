@@ -22,7 +22,7 @@ public class PersistenceMethodStrategy {
             DatabasePersistence databasePersistence = (DatabasePersistence) persistenceMethod;
 
             Global.showMessageTimestamped("Loading recommendation model from database");
-            RecommendationModel = recommenderSystem.loadModel(databasePersistence, users, items);
+            RecommendationModel = recommenderSystem.loadRecommendationModel(databasePersistence, users, items);
             Global.showMessageTimestamped("Loaded recommendation model from database");
         }
 
@@ -31,7 +31,7 @@ public class PersistenceMethodStrategy {
             FilePersistence filePersistence = (FilePersistence) persistenceMethod;
 
             Global.showMessageTimestamped("Loading recommendation model from file");
-            RecommendationModel = recommenderSystem.loadModel(filePersistence, users, items);
+            RecommendationModel = recommenderSystem.loadRecommendationModel(filePersistence, users, items);
             Global.showMessageTimestamped("Loaded recommendation model from file");
         }
 
@@ -51,7 +51,7 @@ public class PersistenceMethodStrategy {
             DatabasePersistence databasePersistence = (DatabasePersistence) persistenceMethod;
 
             Global.showMessageTimestamped("Saving recommendation model in database");
-            recommenderSystem.saveModel(databasePersistence, RecommendationModel);
+            recommenderSystem.saveRecommendationModel(databasePersistence, RecommendationModel);
             Global.showMessageTimestamped("Saved recommendation model in database");
         }
 
@@ -60,7 +60,7 @@ public class PersistenceMethodStrategy {
             FilePersistence filePersistence = (FilePersistence) persistenceMethod;
 
             Global.showMessageTimestamped("Saving recommendation model in file");
-            recommenderSystem.saveModel(filePersistence, RecommendationModel);
+            recommenderSystem.saveRecommendationModel(filePersistence, RecommendationModel);
             Global.showMessageTimestamped("Saved recommendation model in file");
         }
 

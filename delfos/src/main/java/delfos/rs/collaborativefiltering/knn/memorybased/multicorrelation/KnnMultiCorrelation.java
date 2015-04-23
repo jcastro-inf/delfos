@@ -96,13 +96,13 @@ public class KnnMultiCorrelation extends CollaborativeRecommender<KnnMultiCorrel
     }
 
     @Override
-    public KnnMultiCorrelation_Model build(DatasetLoader<? extends Rating> datasetLoader) {
+    public KnnMultiCorrelation_Model buildRecommendationModel(DatasetLoader<? extends Rating> datasetLoader) {
         //No se necesitan perfiles porque se examina la base de datos directamente
         return new KnnMultiCorrelation_Model();
     }
 
     @Override
-    public Collection<Recommendation> recommendOnly(DatasetLoader<? extends Rating> datasetLoader, KnnMultiCorrelation_Model model, Integer idUser, java.util.Set<Integer> candidateItems) throws UserNotFound {
+    public Collection<Recommendation> recommendToUser(DatasetLoader<? extends Rating> datasetLoader, KnnMultiCorrelation_Model model, Integer idUser, java.util.Set<Integer> candidateItems) throws UserNotFound {
 
         if (Global.isVerboseAnnoying()) {
             Global.showMessage(new Date().toGMTString() + " --> Recommending for user '" + idUser + "'\n");
@@ -227,12 +227,12 @@ public class KnnMultiCorrelation extends CollaborativeRecommender<KnnMultiCorrel
     }
 
     @Override
-    public KnnMultiCorrelation_Model loadModel(DatabasePersistence databasePersistence, Collection<Integer> users, Collection<Integer> items) throws FailureInPersistence {
+    public KnnMultiCorrelation_Model loadRecommendationModel(DatabasePersistence databasePersistence, Collection<Integer> users, Collection<Integer> items) throws FailureInPersistence {
         return new KnnMultiCorrelation_Model();
     }
 
     @Override
-    public void saveModel(DatabasePersistence databasePersistence, KnnMultiCorrelation_Model model) throws FailureInPersistence {
+    public void saveRecommendationModel(DatabasePersistence databasePersistence, KnnMultiCorrelation_Model model) throws FailureInPersistence {
         //No hay modelo que guardar.
 
     }

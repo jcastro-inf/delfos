@@ -23,7 +23,7 @@ import delfos.group.groupsofusers.GroupOfUsers;
 import delfos.group.grs.GroupRecommenderSystemAdapter;
 import delfos.group.grs.SingleRecommendationModel;
 import delfos.rs.RecommenderSystem;
-import delfos.rs.RecommenderSystemBuildingProgressListener;
+import delfos.rs.RecommendationModelBuildingProgressListener;
 import delfos.rs.collaborativefiltering.knn.memorybased.KnnMemoryBasedCFRS;
 import delfos.rs.explanation.GroupModelWithExplanation;
 import delfos.rs.explanation.PenaltyAggregationExplanation;
@@ -117,12 +117,12 @@ public class AggregationOfIndividualRatings
     }
 
     @Override
-    public SingleRecommendationModel build(DatasetLoader<? extends Rating> datasetLoader) throws CannotLoadRatingsDataset, CannotLoadContentDataset {
+    public SingleRecommendationModel buildRecommendationModel(DatasetLoader<? extends Rating> datasetLoader) throws CannotLoadRatingsDataset, CannotLoadContentDataset {
 
-        RecommenderSystemBuildingProgressListener buildListener = this::fireBuildingProgressChangedEvent;
-        getSingleUserRecommender().addBuildingProgressListener(buildListener);
-        Object build = getSingleUserRecommender().build(datasetLoader);
-        getSingleUserRecommender().removeBuildingProgressListener(buildListener);
+        RecommendationModelBuildingProgressListener buildListener = this::fireBuildingProgressChangedEvent;
+        getSingleUserRecommender().addRecommendationModelBuildingProgressListener(buildListener);
+        Object build = getSingleUserRecommender().buildRecommendationModel(datasetLoader);
+        getSingleUserRecommender().removeRecommendationModelBuildingProgressListener(buildListener);
         return new SingleRecommendationModel(build);
     }
 
@@ -262,7 +262,7 @@ public class AggregationOfIndividualRatings
             DatasetPrinterDeprecated.printCompactRatingTable(ratingsDataset_withPseudoUser, Arrays.asList(idGroup), ratingsDataset_withPseudoUser.getUserRated(idGroup));
         }
         Collection<Recommendation> groupRecom;
-        groupRecom = recommenderSystem.recommendOnly(
+        groupRecom = recommenderSystem.recommendToUser(
                 new DatasetLoaderGiven(datasetLoader, ratingsDataset_withPseudoUser),
                 RecommendationModel.getRecommendationModel(),
                 idGroup,

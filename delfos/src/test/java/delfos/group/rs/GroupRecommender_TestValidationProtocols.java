@@ -50,7 +50,7 @@ public class GroupRecommender_TestValidationProtocols extends GroupRecommenderSy
     }
 
     @Override
-    public Object build(DatasetLoader<? extends Rating> datasetLoader) throws CannotLoadRatingsDataset {
+    public Object buildRecommendationModel(DatasetLoader<? extends Rating> datasetLoader) throws CannotLoadRatingsDataset {
         datasetEnBuild = datasetLoader.getRatingsDataset();
         Global.showMessage("Built.\n");
         return null;

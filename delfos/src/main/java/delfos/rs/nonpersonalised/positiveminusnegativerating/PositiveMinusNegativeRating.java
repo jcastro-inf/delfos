@@ -31,7 +31,7 @@ public class PositiveMinusNegativeRating extends NonPersonalisedRecommender<Coll
     }
 
     @Override
-    public Collection<Recommendation> build(DatasetLoader<? extends Rating> datasetLoader) throws CannotLoadRatingsDataset, CannotLoadContentDataset, CannotLoadUsersDataset {
+    public Collection<Recommendation> buildRecommendationModel(DatasetLoader<? extends Rating> datasetLoader) throws CannotLoadRatingsDataset, CannotLoadContentDataset, CannotLoadUsersDataset {
         final RatingsDataset<? extends Rating> ratingsDataset = datasetLoader.getRatingsDataset();
 
         final double ratingThreshold = 4;

@@ -154,7 +154,7 @@ public class Recommend implements CaseUseManager {
             }
 
             try {
-                recommendations = recommender.recommendOnly(datasetLoader, RecommendationModel, idUser, candidateItems);
+                recommendations = recommender.recommendToUser(datasetLoader, RecommendationModel, idUser, candidateItems);
             } catch (UserNotFound ex) {
                 ERROR_CODES.USER_NOT_FOUND.exit(ex);
                 throw new IllegalArgumentException(ex);

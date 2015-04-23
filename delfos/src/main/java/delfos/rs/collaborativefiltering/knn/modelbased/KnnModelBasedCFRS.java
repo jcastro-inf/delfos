@@ -69,7 +69,7 @@ public class KnnModelBasedCFRS
     }
 
     @Override
-    public KnnModelBasedCFRSModel build(DatasetLoader<? extends Rating> datasetLoader) throws CannotLoadRatingsDataset {
+    public KnnModelBasedCFRSModel buildRecommendationModel(DatasetLoader<? extends Rating> datasetLoader) throws CannotLoadRatingsDataset {
         final RatingsDataset<? extends Rating> ratingsDataset = datasetLoader.getRatingsDataset();
 
         Collection<Integer> allRatedItems = ratingsDataset.allRatedItems();
@@ -98,7 +98,7 @@ public class KnnModelBasedCFRS
     }
 
     @Override
-    public Collection<Recommendation> recommendOnly(
+    public Collection<Recommendation> recommendToUser(
             DatasetLoader<? extends Rating> datasetLoader, KnnModelBasedCFRSModel model, Integer idUser, java.util.Set<Integer> candidateItems)
             throws UserNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset, ItemNotFound {
 
@@ -209,13 +209,13 @@ public class KnnModelBasedCFRS
     }
 
     @Override
-    public KnnModelBasedCFRSModel loadModel(DatabasePersistence databasePersistence, Collection<Integer> users, Collection<Integer> items) throws FailureInPersistence {
+    public KnnModelBasedCFRSModel loadRecommendationModel(DatabasePersistence databasePersistence, Collection<Integer> users, Collection<Integer> items) throws FailureInPersistence {
         DAOKnnModelBasedDatabaseModel dao = new DAOKnnModelBasedDatabaseModel();
         return dao.loadModel(databasePersistence, users, items);
     }
 
     @Override
-    public void saveModel(DatabasePersistence databasePersistence, KnnModelBasedCFRSModel model) throws FailureInPersistence {
+    public void saveRecommendationModel(DatabasePersistence databasePersistence, KnnModelBasedCFRSModel model) throws FailureInPersistence {
         DAOKnnModelBasedDatabaseModel dao = new DAOKnnModelBasedDatabaseModel();
         dao.saveModel(databasePersistence, model);
     }

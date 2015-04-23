@@ -57,7 +57,7 @@ public abstract class CollaborativeRecommender<RecommendationModel>
     }
 
     @Override
-    public abstract RecommendationModel build(
+    public abstract RecommendationModel buildRecommendationModel(
             DatasetLoader<? extends Rating> datasetLoader)
             throws CannotLoadRatingsDataset, CannotLoadContentDataset, CannotLoadUsersDataset;
 
@@ -114,7 +114,7 @@ public abstract class CollaborativeRecommender<RecommendationModel>
         TreeSet<Integer> items = new TreeSet<>();
         items.add(idItem);
 
-        Collection<Recommendation> recommendOnly = recommendOnly(datasetLoader, model, idUser, items);
+        Collection<Recommendation> recommendOnly = recommendToUser(datasetLoader, model, idUser, items);
         if (recommendOnly.isEmpty()) {
             if (Global.isVerboseAnnoying()) {
                 Global.showMessage("Prediction of rating of user " + idUser + " over item " + idItem + " can't be predicted\n");

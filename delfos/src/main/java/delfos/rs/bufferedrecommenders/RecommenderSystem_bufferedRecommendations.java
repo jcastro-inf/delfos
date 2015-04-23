@@ -25,7 +25,7 @@ import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.rs.RecommenderSystem;
 import delfos.rs.RecommenderSystemAdapter;
-import delfos.rs.RecommenderSystemBuildingProgressListener;
+import delfos.rs.RecommendationModelBuildingProgressListener;
 import delfos.rs.collaborativefiltering.svd.TryThisAtHomeSVD;
 import delfos.rs.recommendation.Recommendation;
 
@@ -74,15 +74,15 @@ public class RecommenderSystem_bufferedRecommendations extends RecommenderSystem
     }
 
     @Override
-    public Object build(DatasetLoader<? extends Rating> datasetLoader) throws CannotLoadRatingsDataset, CannotLoadContentDataset, CannotLoadUsersDataset {
-        RecommenderSystemBuildingProgressListener listener
+    public Object buildRecommendationModel(DatasetLoader<? extends Rating> datasetLoader) throws CannotLoadRatingsDataset, CannotLoadContentDataset, CannotLoadUsersDataset {
+        RecommendationModelBuildingProgressListener listener
                 = (String actualJob, int percent, long remainingTime) -> {
                     fireBuildingProgressChangedEvent(actualJob, percent, remainingTime);
                 };
 
-        getRecommenderSystem().addBuildingProgressListener(listener);
-        Object model = getRecommenderSystem().build(datasetLoader);
-        getRecommenderSystem().removeBuildingProgressListener(listener);
+        getRecommenderSystem().addRecommendationModelBuildingProgressListener(listener);
+        Object model = getRecommenderSystem().buildRecommendationModel(datasetLoader);
+        getRecommenderSystem().removeRecommendationModelBuildingProgressListener(listener);
 
         if (!getPersistenceDirectory().exists()) {
             getPersistenceDirectory().mkdir();
@@ -92,7 +92,7 @@ public class RecommenderSystem_bufferedRecommendations extends RecommenderSystem
     }
 
     @Override
-    public Collection<Recommendation> recommendOnly(DatasetLoader<? extends Rating> datasetLoader, Object model, Integer idUser, java.util.Set<Integer> candidateItems) throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset, NotEnoughtUserInformation {
+    public Collection<Recommendation> recommendToUser(DatasetLoader<? extends Rating> datasetLoader, Object model, Integer idUser, java.util.Set<Integer> candidateItems) throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset, NotEnoughtUserInformation {
         Map<Integer, ? extends Rating> userRatings = datasetLoader.getRatingsDataset().getUserRatingsRated(idUser);
 
         int hashCodeOfRatings = userRatings.hashCode();
@@ -104,7 +104,7 @@ public class RecommenderSystem_bufferedRecommendations extends RecommenderSystem
         Collection<Recommendation> recommendations;
 
         if (!file.exists()) {
-            recommendations = getRecommenderSystem().recommendOnly(datasetLoader, model, idUser, candidateItems);
+            recommendations = getRecommenderSystem().recommendToUser(datasetLoader, model, idUser, candidateItems);
             try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(file))) {
                 oos.writeObject(userRatings);
                 oos.writeObject(recommendations);

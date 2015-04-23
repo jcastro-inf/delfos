@@ -74,7 +74,7 @@ public class SVDforGroup_ratingsAggregation extends GroupRecommenderSystemAdapte
             singleUserSR.setParameterValue(TryThisAtHomeSVD.K, getParameterValue(TryThisAtHomeSVD.K));
         });
 
-        singleUserSR.addBuildingProgressListener(this::fireBuildingProgressChangedEvent);
+        singleUserSR.addRecommendationModelBuildingProgressListener(this::fireBuildingProgressChangedEvent);
     }
 
     @Override
@@ -83,8 +83,8 @@ public class SVDforGroup_ratingsAggregation extends GroupRecommenderSystemAdapte
     }
 
     @Override
-    public TryThisAtHomeSVDModel build(DatasetLoader<? extends Rating> datasetLoader) throws CannotLoadRatingsDataset, CannotLoadContentDataset {
-        return singleUserSR.build(datasetLoader);
+    public TryThisAtHomeSVDModel buildRecommendationModel(DatasetLoader<? extends Rating> datasetLoader) throws CannotLoadRatingsDataset, CannotLoadContentDataset {
+        return singleUserSR.buildRecommendationModel(datasetLoader);
     }
 
     @Override
@@ -126,6 +126,6 @@ public class SVDforGroup_ratingsAggregation extends GroupRecommenderSystemAdapte
         }
 
         TryThisAtHomeSVDModel extendedModel = TryThisAtHomeSVDModel.addUser(RecommendationModel, idUser, groupModel.getGroupFeatures());
-        return singleUserSR.recommendOnly(datasetLoader, extendedModel, idUser, candidateItems);
+        return singleUserSR.recommendToUser(datasetLoader, extendedModel, idUser, candidateItems);
     }
 }

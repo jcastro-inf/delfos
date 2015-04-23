@@ -19,7 +19,7 @@ import static delfos.group.grs.penalty.PenaltyGRS_Ratings.SINGLE_USER_RECOMMENDE
 import delfos.group.grs.penalty.grouper.Grouper;
 import delfos.group.grs.penalty.grouper.GrouperByIdItem;
 import delfos.rs.RecommenderSystem;
-import delfos.rs.RecommenderSystemBuildingProgressListener;
+import delfos.rs.RecommendationModelBuildingProgressListener;
 import delfos.rs.recommendation.Recommendation;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -86,15 +86,15 @@ public class PenaltyGRS_Recommendations extends GroupRecommenderSystemAdapter<Si
     }
 
     @Override
-    public SingleRecommendationModel build(DatasetLoader<? extends Rating> datasetLoader) throws CannotLoadRatingsDataset, CannotLoadContentDataset {
+    public SingleRecommendationModel buildRecommendationModel(DatasetLoader<? extends Rating> datasetLoader) throws CannotLoadRatingsDataset, CannotLoadContentDataset {
 
-        RecommenderSystemBuildingProgressListener buildListener = (String actualJob, int percent, long remainingTime) -> {
+        RecommendationModelBuildingProgressListener buildListener = (String actualJob, int percent, long remainingTime) -> {
             fireBuildingProgressChangedEvent(actualJob, percent, remainingTime);
         };
 
-        getSingleUserRecommender().addBuildingProgressListener(buildListener);
-        Object build = getSingleUserRecommender().build(datasetLoader);
-        getSingleUserRecommender().removeBuildingProgressListener(buildListener);
+        getSingleUserRecommender().addRecommendationModelBuildingProgressListener(buildListener);
+        Object build = getSingleUserRecommender().buildRecommendationModel(datasetLoader);
+        getSingleUserRecommender().removeRecommendationModelBuildingProgressListener(buildListener);
         return new SingleRecommendationModel(build);
     }
 

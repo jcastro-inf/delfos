@@ -30,7 +30,7 @@ public class Recommender_DatasetProperties extends CollaborativeRecommender<Numb
     private BothIndexRatingsDataset copyOfTrainingDataset;
 
     @Override
-    public Number build(DatasetLoader<? extends Rating> datasetLoader) throws CannotLoadRatingsDataset {
+    public Number buildRecommendationModel(DatasetLoader<? extends Rating> datasetLoader) throws CannotLoadRatingsDataset {
         this.copyOfTrainingDataset = new BothIndexRatingsDataset(datasetLoader.getRatingsDataset());
 
         Global.showMessage("Showing statistics about the dataset\n");
@@ -112,7 +112,7 @@ public class Recommender_DatasetProperties extends CollaborativeRecommender<Numb
     }
 
     @Override
-    public Collection<Recommendation> recommendOnly(DatasetLoader<? extends Rating> datasetLoader, Number model, Integer idUser, java.util.Set<Integer> candidateItems) throws UserNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset {
+    public Collection<Recommendation> recommendToUser(DatasetLoader<? extends Rating> datasetLoader, Number model, Integer idUser, java.util.Set<Integer> candidateItems) throws UserNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset {
 
         Map<Integer, Rating> userRatingsInRecommendation = new TreeMap<>();
         Map<Integer, Rating> userRatingsInTraining = new TreeMap<>();

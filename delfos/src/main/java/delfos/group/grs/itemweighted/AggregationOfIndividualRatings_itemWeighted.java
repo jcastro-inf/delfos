@@ -41,7 +41,7 @@ import delfos.group.grs.itemweighted.knn.memory.KnnMemoryBasedNWR_itemWeighted;
 import delfos.group.grs.itemweighted.measures.GroupItemWeight;
 import delfos.group.grs.itemweighted.measures.StandardDeviationWeights;
 import delfos.rs.RecommenderSystem;
-import delfos.rs.RecommenderSystemBuildingProgressListener;
+import delfos.rs.RecommendationModelBuildingProgressListener;
 import delfos.rs.bufferedrecommenders.RecommenderSystem_fixedFilePersistence;
 import delfos.rs.collaborativefiltering.knn.memorybased.KnnMemoryModel;
 import delfos.rs.collaborativefiltering.svd.TryThisAtHomeSVD;
@@ -192,18 +192,18 @@ public final class AggregationOfIndividualRatings_itemWeighted
     }
 
     @Override
-    public SingleRecommendationModel build(DatasetLoader<? extends Rating> datasetLoader) throws CannotLoadRatingsDataset, CannotLoadContentDataset {
+    public SingleRecommendationModel buildRecommendationModel(DatasetLoader<? extends Rating> datasetLoader) throws CannotLoadRatingsDataset, CannotLoadContentDataset {
 
-        RecommenderSystemBuildingProgressListener buildListener = this::fireBuildingProgressChangedEvent;
-        getSingleUserRecommender().addBuildingProgressListener(buildListener);
-        Object singleUserRecommendationModel = getSingleUserRecommender().build(datasetLoader);
-        getSingleUserRecommender().removeBuildingProgressListener(buildListener);
+        RecommendationModelBuildingProgressListener buildListener = this::fireBuildingProgressChangedEvent;
+        getSingleUserRecommender().addRecommendationModelBuildingProgressListener(buildListener);
+        Object singleUserRecommendationModel = getSingleUserRecommender().buildRecommendationModel(datasetLoader);
+        getSingleUserRecommender().removeRecommendationModelBuildingProgressListener(buildListener);
 
         if (isCompletePreferences()) {
             RecommenderSystem completePreferencesRS = getCompletePreferencesRS();
-            completePreferencesRS.addBuildingProgressListener(buildListener);
-            completePreferencesRS.build(datasetLoader);
-            completePreferencesRS.removeBuildingProgressListener(buildListener);
+            completePreferencesRS.addRecommendationModelBuildingProgressListener(buildListener);
+            completePreferencesRS.buildRecommendationModel(datasetLoader);
+            completePreferencesRS.removeRecommendationModelBuildingProgressListener(buildListener);
         }
         return new SingleRecommendationModel(singleUserRecommendationModel);
     }
@@ -242,7 +242,7 @@ public final class AggregationOfIndividualRatings_itemWeighted
     }
 
     public static RatingsDataset<Rating> completeRatings(GroupRecommenderSystem grs, RecommenderSystem_fixedFilePersistence rs, GroupOfUsers groupOfUsers, DatasetLoader<? extends Rating> datasetLoader, RelevanceCriteria relevanceCriteria) throws CannotLoadRatingsDataset, UserNotFound {
-        Object recommendationModel = rs.build(datasetLoader);
+        Object recommendationModel = rs.buildRecommendationModel(datasetLoader);
 
         Map<Integer, Map<Integer, Number>> membersRatings = DatasetUtilities.getMembersRatings_byUser(groupOfUsers, datasetLoader);
         Set<Integer> itemUnion = DatasetUtilities.transformIndexedByUsersToIndexedByItems_Map(membersRatings).keySet();
@@ -255,7 +255,7 @@ public final class AggregationOfIndividualRatings_itemWeighted
 
             Collection<Recommendation> recommendOnly;
             try {
-                recommendOnly = rs.recommendOnly(datasetLoader, recommendationModel, idUser, toPredict);
+                recommendOnly = rs.recommendToUser(datasetLoader, recommendationModel, idUser, toPredict);
             } catch (ItemNotFound | CannotLoadContentDataset | NotEnoughtUserInformation ex) {
                 ERROR_CODES.UNDEFINED_ERROR.exit(ex);
                 throw new IllegalStateException("arg");

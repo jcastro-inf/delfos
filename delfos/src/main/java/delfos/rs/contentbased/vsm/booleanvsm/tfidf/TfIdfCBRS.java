@@ -69,7 +69,7 @@ public class TfIdfCBRS extends ContentBasedRecommender<TfIdfCBRSModel, TfIdfCBRS
     }
 
     @Override
-    public TfIdfCBRSModel build(DatasetLoader<? extends Rating> datasetLoader) throws CannotLoadRatingsDataset, CannotLoadContentDataset {
+    public TfIdfCBRSModel buildRecommendationModel(DatasetLoader<? extends Rating> datasetLoader) throws CannotLoadRatingsDataset, CannotLoadContentDataset {
         final ContentDataset contentDataset;
         if (datasetLoader instanceof ContentDatasetLoader) {
             ContentDatasetLoader contentDatasetLoader = (ContentDatasetLoader) datasetLoader;

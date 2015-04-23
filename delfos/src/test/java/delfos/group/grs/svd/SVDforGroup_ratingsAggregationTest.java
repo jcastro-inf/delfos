@@ -33,7 +33,7 @@ public class SVDforGroup_ratingsAggregationTest {
         SVDforGroup_ratingsAggregation grs = new SVDforGroup_ratingsAggregation();
         grs.setParameterValue(TryThisAtHomeSVD.LEARNING_RATE, 0.02f);
         grs.setParameterValue(TryThisAtHomeSVD.K, 0.02f);
-        TryThisAtHomeSVDModel RecommendationModel = grs.build(randomDataset);
+        TryThisAtHomeSVDModel RecommendationModel = grs.buildRecommendationModel(randomDataset);
 
         GroupOfUsers group = new GroupOfUsers(1, 2, 3);
         GroupSVDModel groupModel = grs.buildGroupModel(randomDataset, RecommendationModel, group);

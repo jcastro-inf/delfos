@@ -33,7 +33,7 @@ import delfos.group.grs.itemweighted.AggregationOfIndividualRatings_itemWeighted
 import delfos.group.grs.penalty.grouper.Grouper;
 import delfos.group.grs.penalty.grouper.GrouperByIdItem;
 import delfos.rs.RecommenderSystem;
-import delfos.rs.RecommenderSystemBuildingProgressListener;
+import delfos.rs.RecommendationModelBuildingProgressListener;
 import delfos.rs.bufferedrecommenders.RecommenderSystem_fixedFilePersistence;
 import delfos.rs.collaborativefiltering.svd.SVDFoldingIn;
 import delfos.rs.collaborativefiltering.svd.TryThisAtHomeSVD;
@@ -138,19 +138,19 @@ public class PenaltyGRS_Ratings extends GroupRecommenderSystemAdapter<SingleReco
     }
 
     @Override
-    public SingleRecommendationModel build(DatasetLoader<? extends Rating> datasetLoader) throws CannotLoadRatingsDataset, CannotLoadContentDataset {
+    public SingleRecommendationModel buildRecommendationModel(DatasetLoader<? extends Rating> datasetLoader) throws CannotLoadRatingsDataset, CannotLoadContentDataset {
 
-        RecommenderSystemBuildingProgressListener buildListener = (String actualJob, int percent, long remainingTime) -> {
+        RecommendationModelBuildingProgressListener buildListener = (String actualJob, int percent, long remainingTime) -> {
             fireBuildingProgressChangedEvent(actualJob, percent, remainingTime);
         };
 
         if (isCompleteUngivenPreferences()) {
-            knnUser.build(datasetLoader);
+            knnUser.buildRecommendationModel(datasetLoader);
         }
 
-        getSingleUserRecommender().addBuildingProgressListener(buildListener);
-        Object build = getSingleUserRecommender().build(datasetLoader);
-        getSingleUserRecommender().removeBuildingProgressListener(buildListener);
+        getSingleUserRecommender().addRecommendationModelBuildingProgressListener(buildListener);
+        Object build = getSingleUserRecommender().buildRecommendationModel(datasetLoader);
+        getSingleUserRecommender().removeRecommendationModelBuildingProgressListener(buildListener);
         return new SingleRecommendationModel(build);
     }
 
@@ -203,7 +203,7 @@ public class PenaltyGRS_Ratings extends GroupRecommenderSystemAdapter<SingleReco
 
         Collection<Recommendation> groupRecomendations;
 
-        groupRecomendations = recommenderSystem.recommendOnly(
+        groupRecomendations = recommenderSystem.recommendToUser(
                 new DatasetLoaderGiven(datasetLoader, ratingsDataset_withPseudoUser),
                 RecommendationModel.getRecommendationModel(),
                 idGroup,

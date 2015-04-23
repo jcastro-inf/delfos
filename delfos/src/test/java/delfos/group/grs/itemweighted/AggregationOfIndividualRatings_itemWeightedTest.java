@@ -45,10 +45,10 @@ public class AggregationOfIndividualRatings_itemWeightedTest extends DelfosTest 
         KnnMemoryBasedNWR_itemWeighted knnMemory_itemWeighted = getCoreRS();
 
         AggregationOfIndividualRatings_itemWeighted grs = new AggregationOfIndividualRatings_itemWeighted(knnMemory_itemWeighted, new Mean(), new StandardDeviationWeights(), 0.0);
-        grs.addBuildingProgressListener(new RecommenderSystemBuildingProgressListener_default(System.out, 1000));
+        grs.addRecommendationModelBuildingProgressListener(new RecommenderSystemBuildingProgressListener_default(System.out, 1000));
 
         GroupOfUsers groupOfUsers = new GroupOfUsers(1, 2, 3, 4, 5);
-        SingleRecommendationModel recommendationModel = grs.build(datasetLoader);
+        SingleRecommendationModel recommendationModel = grs.buildRecommendationModel(datasetLoader);
 
         GroupModelWithExplanation groupModel = grs.buildGroupModel(datasetLoader, recommendationModel, groupOfUsers);
 
@@ -65,10 +65,10 @@ public class AggregationOfIndividualRatings_itemWeightedTest extends DelfosTest 
         KnnMemoryBasedNWR_itemWeighted knnMemory_itemWeighted = getCoreRS();
 
         AggregationOfIndividualRatings_itemWeighted grs = new AggregationOfIndividualRatings_itemWeighted(knnMemory_itemWeighted, new Mean(), new Tweak2Weights(), 0.0);
-        grs.addBuildingProgressListener(new RecommenderSystemBuildingProgressListener_default(System.out, 1000));
+        grs.addRecommendationModelBuildingProgressListener(new RecommenderSystemBuildingProgressListener_default(System.out, 1000));
 
         GroupOfUsers groupOfUsers = new GroupOfUsers(1, 2, 3, 4, 5);
-        SingleRecommendationModel recommendationModel = grs.build(datasetLoader);
+        SingleRecommendationModel recommendationModel = grs.buildRecommendationModel(datasetLoader);
         GroupModelWithExplanation groupModel = grs.buildGroupModel(datasetLoader, recommendationModel, groupOfUsers);
 
         Collection<Recommendation> recommendOnly = grs.recommendOnly(datasetLoader, recommendationModel, groupModel, groupOfUsers, datasetLoader.getRatingsDataset().allRatedItems());
@@ -89,7 +89,7 @@ public class AggregationOfIndividualRatings_itemWeightedTest extends DelfosTest 
         KnnMemoryBasedNWR_itemWeighted knnMemory_itemWeighted = getCoreRS();
         AggregationOfIndividualRatings_itemWeighted grs = new AggregationOfIndividualRatings_itemWeighted(knnMemory_itemWeighted, new Mean(), new Tweak2Weights(), null);
         GroupOfUsers groupOfUsers = new GroupOfUsers(1, 2, 3, 4, 5);
-        SingleRecommendationModel recommendationModel = grs.build(datasetLoader);
+        SingleRecommendationModel recommendationModel = grs.buildRecommendationModel(datasetLoader);
         GroupModelWithExplanation groupModel = grs.buildGroupModel(datasetLoader, recommendationModel, groupOfUsers);
         Collection<Recommendation> recommendOnly = grs.recommendOnly(datasetLoader, recommendationModel, groupModel, groupOfUsers, datasetLoader.getRatingsDataset().allRatedItems());
 
@@ -113,7 +113,7 @@ public class AggregationOfIndividualRatings_itemWeightedTest extends DelfosTest 
         KnnMemoryBasedNWR_itemWeighted knnMemory_itemWeighted = getCoreRS();
         AggregationOfIndividualRatings_itemWeighted grs = new AggregationOfIndividualRatings_itemWeighted(knnMemory_itemWeighted, new Mean(), new StandardDeviationWeights(), 0.0);
         GroupOfUsers groupOfUsers = new GroupOfUsers(1, 2, 3, 4, 5);
-        SingleRecommendationModel recommendationModel = grs.build(datasetLoader);
+        SingleRecommendationModel recommendationModel = grs.buildRecommendationModel(datasetLoader);
         GroupModelWithExplanation groupModel = grs.buildGroupModel(datasetLoader, recommendationModel, groupOfUsers);
         Collection<Recommendation> recommendOnly = grs.recommendOnly(datasetLoader, recommendationModel, groupModel, groupOfUsers, datasetLoader.getRatingsDataset().allRatedItems());
 

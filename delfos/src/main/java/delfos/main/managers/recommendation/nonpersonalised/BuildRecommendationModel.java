@@ -61,7 +61,7 @@ public class BuildRecommendationModel implements CaseUseManager {
         Object recomenderSystemModel = null;
         try {
             Global.showMessageTimestamped("Building recommendation model.");
-            recomenderSystemModel = nonPersonalisedRecommender.build(datasetLoader);
+            recomenderSystemModel = nonPersonalisedRecommender.buildRecommendationModel(datasetLoader);
             Global.showMessageTimestamped("Built recommendation model.");
         } catch (CannotLoadRatingsDataset ex) {
             ERROR_CODES.CANNOT_LOAD_RATINGS_DATASET.exit(ex);

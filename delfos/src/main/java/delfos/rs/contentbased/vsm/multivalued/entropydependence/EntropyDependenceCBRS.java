@@ -92,7 +92,7 @@ public class EntropyDependenceCBRS extends ContentBasedRecommender<EntropyDepend
     }
 
     @Override
-    public EntropyDependenceCBRSModel build(DatasetLoader<? extends Rating> datasetLoader) throws CannotLoadContentDataset {
+    public EntropyDependenceCBRSModel buildRecommendationModel(DatasetLoader<? extends Rating> datasetLoader) throws CannotLoadContentDataset {
 
         Global.showMessage(new Date().toString() + "\tBuilding model");
 
@@ -395,7 +395,7 @@ public class EntropyDependenceCBRS extends ContentBasedRecommender<EntropyDepend
     }
 
     @Override
-    public void saveModel(DatabasePersistence databasePersistence, EntropyDependenceCBRSModel model) throws FailureInPersistence {
+    public void saveRecommendationModel(DatabasePersistence databasePersistence, EntropyDependenceCBRSModel model) throws FailureInPersistence {
         DAOEntropyDependenceCBRSModel dao = new DAOEntropyDependenceCBRSModel();
         try {
             dao.saveModel(databasePersistence, model);
@@ -408,7 +408,7 @@ public class EntropyDependenceCBRS extends ContentBasedRecommender<EntropyDepend
     }
 
     @Override
-    public EntropyDependenceCBRSModel loadModel(DatabasePersistence databasePersistence, Collection<Integer> users, Collection<Integer> items) throws FailureInPersistence {
+    public EntropyDependenceCBRSModel loadRecommendationModel(DatabasePersistence databasePersistence, Collection<Integer> users, Collection<Integer> items) throws FailureInPersistence {
         DAOEntropyDependenceCBRSModel dao = new DAOEntropyDependenceCBRSModel();
         return dao.loadModel(databasePersistence, users, items);
     }

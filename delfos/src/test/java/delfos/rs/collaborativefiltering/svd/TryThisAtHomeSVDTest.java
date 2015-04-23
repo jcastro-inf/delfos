@@ -75,12 +75,12 @@ public class TryThisAtHomeSVDTest extends DelfosTest {
 
         final DatasetLoader<? extends Rating> datasetLoader = ConfiguredDatasetsFactory.getInstance().getDatasetLoader("ml-100k");
         final TryThisAtHomeSVD recommenderSystem = new TryThisAtHomeSVD(5, 10);
-        final TryThisAtHomeSVDModel model = recommenderSystem.build(datasetLoader);
+        final TryThisAtHomeSVDModel model = recommenderSystem.buildRecommendationModel(datasetLoader);
         final RecommendationCandidatesSelector candidates = new OnlyNewItems();
 
         for (int idUser : users) {
             Set<Integer> candidateItems = candidates.candidateItems(datasetLoader, new User(idUser));
-            Collection<Recommendation> recommendOnly = recommenderSystem.recommendOnly(datasetLoader, model, idUser, candidateItems);
+            Collection<Recommendation> recommendOnly = recommenderSystem.recommendToUser(datasetLoader, model, idUser, candidateItems);
         }
     }
 
@@ -149,7 +149,7 @@ public class TryThisAtHomeSVDTest extends DelfosTest {
         MockDatasetLoader datasetLoader = new MockDatasetLoader();
 
         TryThisAtHomeSVD tryThisAtHomeSVD = new TryThisAtHomeSVD(1, 400);
-        TryThisAtHomeSVDModel tryThisAtHomeSVDModel = tryThisAtHomeSVD.build(datasetLoader);
+        TryThisAtHomeSVDModel tryThisAtHomeSVDModel = tryThisAtHomeSVD.buildRecommendationModel(datasetLoader);
 
         Set<Integer> candidateItems = new TreeSet<>();
         candidateItems.add(2);
@@ -170,7 +170,7 @@ public class TryThisAtHomeSVDTest extends DelfosTest {
                     System.out.println("Item " + idItem + "--> " + tryThisAtHomeSVDModel.getItemFeatures(idItem));
                 });
 
-        Collection<Recommendation> recommendations = tryThisAtHomeSVD.recommendOnly(datasetLoader, tryThisAtHomeSVDModel, 3, candidateItems);
+        Collection<Recommendation> recommendations = tryThisAtHomeSVD.recommendToUser(datasetLoader, tryThisAtHomeSVDModel, 3, candidateItems);
 
         List<Recommendation> sortedRecommendations = new ArrayList<>(recommendations);
         Collections.sort(sortedRecommendations);

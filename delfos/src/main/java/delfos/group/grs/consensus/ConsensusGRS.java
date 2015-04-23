@@ -34,7 +34,7 @@ import delfos.group.grs.recommendations.GroupRecommendations;
 import delfos.group.grs.recommendations.GroupRecommendationsWithMembersRecommendations;
 import delfos.io.csv.dataset.DatasetToCSV;
 import delfos.rs.RecommenderSystem;
-import delfos.rs.RecommenderSystemBuildingProgressListener;
+import delfos.rs.RecommendationModelBuildingProgressListener;
 import delfos.rs.collaborativefiltering.svd.SVDFoldingIn;
 import delfos.rs.recommendation.Recommendation;
 import delfos.rs.recommendation.RecommendationComputationDetails;
@@ -139,15 +139,15 @@ public class ConsensusGRS extends GroupRecommenderSystemAdapter<SingleRecommenda
     }
 
     @Override
-    public SingleRecommendationModel build(DatasetLoader<? extends Rating> datasetLoader) throws CannotLoadRatingsDataset, CannotLoadContentDataset {
+    public SingleRecommendationModel buildRecommendationModel(DatasetLoader<? extends Rating> datasetLoader) throws CannotLoadRatingsDataset, CannotLoadContentDataset {
 
         saveDataset(datasetLoader);
 
-        RecommenderSystemBuildingProgressListener buildListener = this::fireBuildingProgressChangedEvent;
+        RecommendationModelBuildingProgressListener buildListener = this::fireBuildingProgressChangedEvent;
         RecommenderSystem singleUserRecommender = getSingleUserRecommender();
-        singleUserRecommender.addBuildingProgressListener(buildListener);
-        Object innerRecommendationModel = singleUserRecommender.build(datasetLoader);
-        singleUserRecommender.removeBuildingProgressListener(buildListener);
+        singleUserRecommender.addRecommendationModelBuildingProgressListener(buildListener);
+        Object innerRecommendationModel = singleUserRecommender.buildRecommendationModel(datasetLoader);
+        singleUserRecommender.removeRecommendationModelBuildingProgressListener(buildListener);
 
         return new SingleRecommendationModel(innerRecommendationModel);
     }

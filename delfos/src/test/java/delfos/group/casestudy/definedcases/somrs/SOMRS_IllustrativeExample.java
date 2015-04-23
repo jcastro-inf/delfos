@@ -157,7 +157,7 @@ public class SOMRS_IllustrativeExample {
 
         for (RecommenderSystem singleUserRS : getCoreRSs()) {
             for (ConsensusGRS consensusGRS : getConsensusGRS(singleUserRS)) {
-                SingleRecommendationModel recommendationModel = consensusGRS.build(datasetLoader);
+                SingleRecommendationModel recommendationModel = consensusGRS.buildRecommendationModel(datasetLoader);
 
                 for (GroupOfUsers groupOfUsers : getGroupFormationTechnique().shuffle(datasetLoader)) {
                     try {

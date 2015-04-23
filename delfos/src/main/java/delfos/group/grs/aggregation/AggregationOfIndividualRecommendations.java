@@ -18,7 +18,7 @@ import delfos.group.groupsofusers.GroupOfUsers;
 import delfos.group.grs.GroupRecommenderSystemAdapter;
 import delfos.group.grs.SingleRecommendationModel;
 import delfos.rs.RecommenderSystem;
-import delfos.rs.RecommenderSystemBuildingProgressListener;
+import delfos.rs.RecommendationModelBuildingProgressListener;
 import delfos.rs.collaborativefiltering.knn.memorybased.KnnMemoryBasedCFRS;
 import delfos.rs.recommendation.Recommendation;
 import java.util.ArrayList;
@@ -110,14 +110,14 @@ public class AggregationOfIndividualRecommendations extends GroupRecommenderSyst
     }
 
     @Override
-    public SingleRecommendationModel build(DatasetLoader<? extends Rating> datasetLoader) throws CannotLoadRatingsDataset, CannotLoadContentDataset {
-        RecommenderSystemBuildingProgressListener buildListener = (String actualJob, int percent, long remainingTime) -> {
+    public SingleRecommendationModel buildRecommendationModel(DatasetLoader<? extends Rating> datasetLoader) throws CannotLoadRatingsDataset, CannotLoadContentDataset {
+        RecommendationModelBuildingProgressListener buildListener = (String actualJob, int percent, long remainingTime) -> {
             fireBuildingProgressChangedEvent(actualJob, percent, remainingTime);
         };
 
-        getSingleUserRecommender().addBuildingProgressListener(buildListener);
-        Object build = getSingleUserRecommender().build(datasetLoader);
-        getSingleUserRecommender().removeBuildingProgressListener(buildListener);
+        getSingleUserRecommender().addRecommendationModelBuildingProgressListener(buildListener);
+        Object build = getSingleUserRecommender().buildRecommendationModel(datasetLoader);
+        getSingleUserRecommender().removeRecommendationModelBuildingProgressListener(buildListener);
         return new SingleRecommendationModel(build);
     }
 

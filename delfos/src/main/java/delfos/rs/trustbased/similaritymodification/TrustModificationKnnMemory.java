@@ -113,13 +113,13 @@ public class TrustModificationKnnMemory extends CollaborativeRecommender<Object>
     }
 
     @Override
-    public Object build(DatasetLoader<? extends Rating> datasetLoader) {
+    public Object buildRecommendationModel(DatasetLoader<? extends Rating> datasetLoader) {
         //No se necesitan perfiles porque se examina la base de datos directamente
         return 1l;
     }
 
     @Override
-    public Collection<Recommendation> recommendOnly(DatasetLoader<? extends Rating> datasetLoader, Object model, Integer idUser, java.util.Set<Integer> candidateItems) throws UserNotFound {
+    public Collection<Recommendation> recommendToUser(DatasetLoader<? extends Rating> datasetLoader, Object model, Integer idUser, java.util.Set<Integer> candidateItems) throws UserNotFound {
 
         try {
             List<Neighbor> neighbors;
@@ -248,12 +248,12 @@ public class TrustModificationKnnMemory extends CollaborativeRecommender<Object>
     }
 
     @Override
-    public Object loadModel(DatabasePersistence databasePersistence, Collection<Integer> users, Collection<Integer> items) throws FailureInPersistence {
+    public Object loadRecommendationModel(DatabasePersistence databasePersistence, Collection<Integer> users, Collection<Integer> items) throws FailureInPersistence {
         return 1l;
     }
 
     @Override
-    public void saveModel(DatabasePersistence databasePersistence, Object model) throws FailureInPersistence {
+    public void saveRecommendationModel(DatabasePersistence databasePersistence, Object model) throws FailureInPersistence {
         //No hay modelo que guardar.
     }
 }

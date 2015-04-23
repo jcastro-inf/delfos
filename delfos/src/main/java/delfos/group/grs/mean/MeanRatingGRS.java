@@ -36,7 +36,7 @@ public class MeanRatingGRS extends GroupRecommenderSystemAdapter<MeanRatingRSMod
     }
 
     @Override
-    public MeanRatingRSModel build(DatasetLoader<? extends Rating> datasetLoader) throws CannotLoadRatingsDataset, CannotLoadContentDataset {
+    public MeanRatingRSModel buildRecommendationModel(DatasetLoader<? extends Rating> datasetLoader) throws CannotLoadRatingsDataset, CannotLoadContentDataset {
 
         Set<Integer> allItems = new TreeSet(datasetLoader.getRatingsDataset().allRatedItems());
         List<MeanRating> meanRatings = new ArrayList<>(allItems.size());

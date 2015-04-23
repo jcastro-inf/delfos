@@ -58,7 +58,7 @@ public class GroupRecommendationWindow extends JFrame {
         while (groupOfUsers.size() < 4) {
             groupOfUsers.addUser(allUsers[r.nextInt(allUsers.length)]);
         }
-        SingleRecommendationModel build = groupRecommenderSystem.build(datasetLoader);
+        SingleRecommendationModel build = groupRecommenderSystem.buildRecommendationModel(datasetLoader);
         GroupOfUsers buildGroupModel = groupRecommenderSystem.buildGroupModel(datasetLoader, build, groupOfUsers);
 
         NeverRatedItems nri = new NeverRatedItems();

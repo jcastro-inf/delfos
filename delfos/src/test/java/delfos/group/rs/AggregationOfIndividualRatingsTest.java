@@ -83,8 +83,8 @@ public class AggregationOfIndividualRatingsTest {
 
         AggregationOfIndividualRatings grs = new AggregationOfIndividualRatings(traditionalRecommenderSystem, new Mean());
 
-        grs.addBuildingProgressListener(new RecommenderSystemBuildingProgressListener_default(System.out, 5000));
-        SingleRecommendationModel RecommendationModel = grs.build(datasetLoader);
+        grs.addRecommendationModelBuildingProgressListener(new RecommenderSystemBuildingProgressListener_default(System.out, 5000));
+        SingleRecommendationModel RecommendationModel = grs.buildRecommendationModel(datasetLoader);
 
         Set<Integer> notRated = new TreeSet<>(ratingsDataset.allRatedItems());
 

@@ -163,7 +163,7 @@ public class Symeonidis2007FeatureWeighted extends ContentBasedRecommender<Symeo
     }
 
     @Override
-    public Symeonidis2007Model build(DatasetLoader<? extends Rating> datasetLoader) throws CannotLoadRatingsDataset, CannotLoadContentDataset {
+    public Symeonidis2007Model buildRecommendationModel(DatasetLoader<? extends Rating> datasetLoader) throws CannotLoadRatingsDataset, CannotLoadContentDataset {
 
         final RatingsDataset<? extends Rating> ratingsDataset = datasetLoader.getRatingsDataset();
         final ContentDataset contentDataset;

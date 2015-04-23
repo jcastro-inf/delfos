@@ -98,13 +98,13 @@ public class KnnMemoryBasedCFRS extends KnnCollaborativeRecommender<KnnMemoryMod
     }
 
     @Override
-    public KnnMemoryModel build(DatasetLoader<? extends Rating> datasetLoader) {
+    public KnnMemoryModel buildRecommendationModel(DatasetLoader<? extends Rating> datasetLoader) {
         //No se necesitan perfiles porque se examina la base de datos directamente
         return new KnnMemoryModel();
     }
 
     @Override
-    public Collection<Recommendation> recommendOnly(DatasetLoader<? extends Rating> datasetLoader, KnnMemoryModel model, Integer idUser, java.util.Set<Integer> candidateItems) throws UserNotFound {
+    public Collection<Recommendation> recommendToUser(DatasetLoader<? extends Rating> datasetLoader, KnnMemoryModel model, Integer idUser, java.util.Set<Integer> candidateItems) throws UserNotFound {
         try {
             List<Neighbor> neighbors;
             RatingsDataset<? extends Rating> ratingsDataset = datasetLoader.getRatingsDataset();
@@ -217,12 +217,12 @@ public class KnnMemoryBasedCFRS extends KnnCollaborativeRecommender<KnnMemoryMod
     }
 
     @Override
-    public KnnMemoryModel loadModel(DatabasePersistence databasePersistence, Collection<Integer> users, Collection<Integer> items) throws FailureInPersistence {
+    public KnnMemoryModel loadRecommendationModel(DatabasePersistence databasePersistence, Collection<Integer> users, Collection<Integer> items) throws FailureInPersistence {
         return new KnnMemoryModel();
     }
 
     @Override
-    public void saveModel(DatabasePersistence databasePersistence, KnnMemoryModel model) throws FailureInPersistence {
+    public void saveRecommendationModel(DatabasePersistence databasePersistence, KnnMemoryModel model) throws FailureInPersistence {
         //No hay modelo que guardar.
     }
 }

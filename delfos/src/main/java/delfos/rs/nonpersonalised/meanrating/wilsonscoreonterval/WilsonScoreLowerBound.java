@@ -45,7 +45,7 @@ public class WilsonScoreLowerBound extends NonPersonalisedRecommender<Collection
     }
 
     @Override
-    public Collection<Recommendation> build(DatasetLoader<? extends Rating> datasetLoader) throws CannotLoadRatingsDataset, CannotLoadContentDataset, CannotLoadUsersDataset {
+    public Collection<Recommendation> buildRecommendationModel(DatasetLoader<? extends Rating> datasetLoader) throws CannotLoadRatingsDataset, CannotLoadContentDataset, CannotLoadUsersDataset {
         final RatingsDataset<? extends Rating> ratingsDataset = datasetLoader.getRatingsDataset();
 
         final double confidence = 0.95;
@@ -134,12 +134,12 @@ public class WilsonScoreLowerBound extends NonPersonalisedRecommender<Collection
 
     @Override
     @SuppressWarnings("unchecked")
-    public Collection<Recommendation> loadModel(FilePersistence filePersistence, Collection<Integer> users, Collection<Integer> items) throws FailureInPersistence {
+    public Collection<Recommendation> loadRecommendationModel(FilePersistence filePersistence, Collection<Integer> users, Collection<Integer> items) throws FailureInPersistence {
         return loadModel(filePersistence);
     }
 
     @Override
-    public void saveModel(FilePersistence filePersistence, Collection<Recommendation> model) throws FailureInPersistence {
+    public void saveRecommendationModel(FilePersistence filePersistence, Collection<Recommendation> model) throws FailureInPersistence {
         RecommendationsOutputFileXML recommendationsOutputMethod = new RecommendationsOutputFileXML(filePersistence.getCompleteFileName());
         recommendationsOutputMethod.writeRecommendations(new SingleUserRecommendations(User.ANONYMOUS_USER, model, RecommendationComputationDetails.EMPTY_DETAILS));
     }

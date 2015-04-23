@@ -62,7 +62,7 @@ public class BasicMultivaluedCBRS extends ContentBasedRecommender<MultivaluedUse
     }
 
     @Override
-    public MultivaluedUserProfilesModel build(DatasetLoader<? extends Rating> datasetLoader) throws CannotLoadRatingsDataset, CannotLoadContentDataset {
+    public MultivaluedUserProfilesModel buildRecommendationModel(DatasetLoader<? extends Rating> datasetLoader) throws CannotLoadRatingsDataset, CannotLoadContentDataset {
 
         final RatingsDataset<? extends Rating> ratingsDataset = datasetLoader.getRatingsDataset();
         final ContentDataset contentDataset;

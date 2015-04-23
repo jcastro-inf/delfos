@@ -41,7 +41,7 @@ public class RandomRecommender extends CollaborativeRecommender<RandomRecommenda
     }
 
     @Override
-    public RandomRecommendationModel<Integer> build(DatasetLoader<? extends Rating> datasetLoader) throws CannotLoadRatingsDataset {
+    public RandomRecommendationModel<Integer> buildRecommendationModel(DatasetLoader<? extends Rating> datasetLoader) throws CannotLoadRatingsDataset {
 
         System.out.println("Dataset Alias: " + datasetLoader.getAlias());
         System.out.println("#Ratings: \t" + datasetLoader.getRatingsDataset().getNumRatings());
@@ -61,7 +61,7 @@ public class RandomRecommender extends CollaborativeRecommender<RandomRecommenda
     }
 
     @Override
-    public Collection<Recommendation> recommendOnly(DatasetLoader<? extends Rating> datasetLoader, RandomRecommendationModel<Integer> model, Integer idUser, java.util.Set<Integer> candidateItems) throws UserNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset {
+    public Collection<Recommendation> recommendToUser(DatasetLoader<? extends Rating> datasetLoader, RandomRecommendationModel<Integer> model, Integer idUser, java.util.Set<Integer> candidateItems) throws UserNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset {
         LinkedList<Recommendation> recom = new LinkedList<>();
 
         int i = 0;

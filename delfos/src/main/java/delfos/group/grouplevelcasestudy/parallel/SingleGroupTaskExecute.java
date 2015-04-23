@@ -85,7 +85,7 @@ public class SingleGroupTaskExecute implements SingleTaskExecute<SingleGroupTask
 
             for (GroupRecommenderSystem groupRecommenderSystem : groupRecommenderSystems) {
 
-                Object RecommendationModel = groupRecommenderSystem.build(trainingDatasetLoader);
+                Object RecommendationModel = groupRecommenderSystem.buildRecommendationModel(trainingDatasetLoader);
                 Collection<Recommendation> allPredictions = new ArrayList<>();
                 List<Integer> requests = new ArrayList<>();
 

@@ -59,7 +59,7 @@ public class PenaltyGRS_RatingsTest extends DelfosTest {
                 new PenaltyWholeMatrix(1, 1.5),
                 new GrouperByIdItem(3), 4);
 
-        SingleRecommendationModel recommendationModel = penaltyGRS_Ratings.build(datasetLoader);
+        SingleRecommendationModel recommendationModel = penaltyGRS_Ratings.buildRecommendationModel(datasetLoader);
 
         GroupOfUsers groupOfUsers = new GroupOfUsers(
                 42,
@@ -97,7 +97,7 @@ public class PenaltyGRS_RatingsTest extends DelfosTest {
                 new GrouperByDataClustering(numItems, numClusters, numRounds, fuzzyness, new CosineCoefficient()),
                 4.5);
 
-        SingleRecommendationModel recommendationModel = penaltyGRS_Ratings.build(datasetLoader);
+        SingleRecommendationModel recommendationModel = penaltyGRS_Ratings.buildRecommendationModel(datasetLoader);
 
         GroupOfUsers groupOfUsers = new GroupOfUsers(
                 42,

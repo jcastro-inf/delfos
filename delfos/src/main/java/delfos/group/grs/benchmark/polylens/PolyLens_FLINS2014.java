@@ -73,8 +73,8 @@ public class PolyLens_FLINS2014 extends GroupRecommenderSystemAdapter<SingleReco
     }
 
     @Override
-    public SingleRecommendationModel build(DatasetLoader<? extends Rating> datasetLoader) throws CannotLoadRatingsDataset, CannotLoadContentDataset {
-        return aggregationOfIndividualRatings.build(datasetLoader);
+    public SingleRecommendationModel buildRecommendationModel(DatasetLoader<? extends Rating> datasetLoader) throws CannotLoadRatingsDataset, CannotLoadContentDataset {
+        return aggregationOfIndividualRatings.buildRecommendationModel(datasetLoader);
     }
 
     @Override

@@ -20,9 +20,10 @@ import java.util.Set;
  * @version 1.0 08-Mar-2013
  * @version 2.0 26-Mayo-2013 Ahora los datasets se pasan por parámetro en cada
  * método.
- * @param <RecommendationModel> Modelo de recomendación
+ * @param <RecommendationModel>
  */
-public interface RecommenderSystem<RecommendationModel> extends GenericRecommenderSystem<RecommendationModel> {
+public interface RecommenderSystem<RecommendationModel>
+        extends GenericRecommenderSystem<RecommendationModel> {
 
     /**
      * Método para la realización de una recomendación al usuario <i>idUser</i>
@@ -51,7 +52,7 @@ public interface RecommenderSystem<RecommendationModel> extends GenericRecommend
      *
      * @throws NotEnoughtUserInformation
      */
-    public Collection<Recommendation> recommendOnly(
+    public Collection<Recommendation> recommendToUser(
             DatasetLoader<? extends Rating> dataset,
             RecommendationModel model,
             Integer idUser,

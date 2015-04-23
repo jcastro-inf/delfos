@@ -33,7 +33,7 @@ public class RandomGroupRecommender
     }
 
     @Override
-    public RandomRecommendationModel<GroupOfUsers> build(DatasetLoader<? extends Rating> datasetLoader)
+    public RandomRecommendationModel<GroupOfUsers> buildRecommendationModel(DatasetLoader<? extends Rating> datasetLoader)
             throws CannotLoadRatingsDataset, CannotLoadContentDataset {
         return new RandomRecommendationModel(
                 (int) getSeedValue(),

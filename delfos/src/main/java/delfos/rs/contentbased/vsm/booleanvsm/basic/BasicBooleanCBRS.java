@@ -68,7 +68,7 @@ public class BasicBooleanCBRS extends ContentBasedRecommender<BasicBooleanCBRSMo
     }
 
     @Override
-    public BasicBooleanCBRSModel build(DatasetLoader<? extends Rating> datasetLoader) throws CannotLoadRatingsDataset, CannotLoadContentDataset {
+    public BasicBooleanCBRSModel buildRecommendationModel(DatasetLoader<? extends Rating> datasetLoader) throws CannotLoadRatingsDataset, CannotLoadContentDataset {
 
         final ContentDataset contentDataset;
         if (datasetLoader instanceof ContentDatasetLoader) {

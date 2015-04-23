@@ -32,15 +32,17 @@ public interface GenericRecommenderSystem<RecommendationModel>
      *
      * @param listener Objeto que desea ser notificado de los cambios
      */
-    public void addBuildingProgressListener(RecommenderSystemBuildingProgressListener listener);
+    public void addRecommendationModelBuildingProgressListener(
+            RecommendationModelBuildingProgressListener listener);
 
     /**
      * Elimina un listener para que no sea notificado más del progreso de la
      * construcción del modelo del sistema de recomendación
      *
-     * @param rl Objeto que desea dejar de ser notificado de los cambios
+     * @param listener Objeto que desea dejar de ser notificado de los cambios
      */
-    public void removeBuildingProgressListener(RecommenderSystemBuildingProgressListener rl);
+    public void removeRecommendationModelBuildingProgressListener(
+            RecommendationModelBuildingProgressListener listener);
 
     /**
      * Esta función debe devolver true si el sistema de recomendación basa su
@@ -61,13 +63,29 @@ public interface GenericRecommenderSystem<RecommendationModel>
      * @return Modelo de recomendación calculado a partir del dataset
      * especificado.
      */
-    public RecommendationModel build(DatasetLoader<? extends Rating> datasetLoader) throws CannotLoadRatingsDataset, CannotLoadContentDataset, CannotLoadUsersDataset;
+    public RecommendationModel buildRecommendationModel(
+            DatasetLoader<? extends Rating> datasetLoader)
+            throws CannotLoadRatingsDataset, CannotLoadContentDataset, CannotLoadUsersDataset;
 
-    public RecommendationModel loadModel(FilePersistence filePersistence, Collection<Integer> users, Collection<Integer> items) throws FailureInPersistence;
+    public RecommendationModel loadRecommendationModel(
+            FilePersistence filePersistence,
+            Collection<Integer> users,
+            Collection<Integer> items)
+            throws FailureInPersistence;
 
-    public RecommendationModel loadModel(DatabasePersistence databasePersistence, Collection<Integer> users, Collection<Integer> items) throws FailureInPersistence;
+    public RecommendationModel loadRecommendationModel(
+            DatabasePersistence databasePersistence,
+            Collection<Integer> users,
+            Collection<Integer> items)
+            throws FailureInPersistence;
 
-    public void saveModel(FilePersistence filePersistence, RecommendationModel model) throws FailureInPersistence;
+    public void saveRecommendationModel(
+            FilePersistence filePersistence,
+            RecommendationModel model)
+            throws FailureInPersistence;
 
-    public void saveModel(DatabasePersistence databasePersistence, RecommendationModel model) throws FailureInPersistence;
+    public void saveRecommendationModel(
+            DatabasePersistence databasePersistence,
+            RecommendationModel model)
+            throws FailureInPersistence;
 }

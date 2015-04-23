@@ -33,7 +33,7 @@ public class PenaltyExcelExample extends DelfosTest {
 
         PenaltyGRS_Ratings penaltyGRS_Ratings = new PenaltyGRS_Ratings(new SVDFoldingIn(10, 1000), new PenaltyWholeMatrix(1, 3), itemGrouper, null);
 
-        SingleRecommendationModel recommendationModel = penaltyGRS_Ratings.build(datasetLoader);
+        SingleRecommendationModel recommendationModel = penaltyGRS_Ratings.buildRecommendationModel(datasetLoader);
 
         GroupModelPseudoUser groupModel = penaltyGRS_Ratings.buildGroupModel(datasetLoader, recommendationModel, groupOfUsers);
 

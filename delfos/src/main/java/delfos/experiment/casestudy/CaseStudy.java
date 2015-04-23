@@ -20,7 +20,7 @@ import delfos.experiment.validation.validationtechnique.ValidationTechnique;
 import delfos.results.MeasureResult;
 import delfos.results.evaluationmeasures.EvaluationMeasure;
 import delfos.rs.RecommenderSystem;
-import delfos.rs.RecommenderSystemBuildingProgressListener;
+import delfos.rs.RecommendationModelBuildingProgressListener;
 
 /**
  *
@@ -28,7 +28,7 @@ import delfos.rs.RecommenderSystemBuildingProgressListener;
  *
  * @version 27-feb-2014
  */
-public abstract class CaseStudy extends ExperimentAdapter implements RecommenderSystemBuildingProgressListener {
+public abstract class CaseStudy extends ExperimentAdapter implements RecommendationModelBuildingProgressListener {
 
     public CaseStudy() {
         addParameter(SEED);

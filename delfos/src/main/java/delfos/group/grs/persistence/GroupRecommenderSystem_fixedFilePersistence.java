@@ -23,7 +23,7 @@ import delfos.group.groupsofusers.GroupOfUsers;
 import delfos.group.grs.GroupRecommenderSystem;
 import delfos.group.grs.GroupRecommenderSystemAdapter;
 import delfos.group.grs.aggregation.AggregationOfIndividualRatings;
-import delfos.rs.RecommenderSystemBuildingProgressListener;
+import delfos.rs.RecommendationModelBuildingProgressListener;
 import delfos.rs.collaborativefiltering.knn.modelbased.KnnModelBasedCFRS;
 import delfos.rs.persistence.FailureInPersistence;
 import delfos.rs.persistence.FilePersistence;
@@ -111,7 +111,7 @@ public class GroupRecommenderSystem_fixedFilePersistence extends GroupRecommende
         setParameterValue(persistenceFileSuffix, filePersistence.getSuffix());
         setParameterValue(persistenceFileType, filePersistence.getExtension());
 
-        getGroupRecommenderSystem().addBuildingProgressListener(new RecommenderSystemBuildingProgressListener() {
+        getGroupRecommenderSystem().addRecommendationModelBuildingProgressListener(new RecommendationModelBuildingProgressListener() {
             @Override
             public void buildingProgressChanged(String actualJob, int percent, long remainingTime) {
                 fireBuildingProgressChangedEvent(actualJob, percent, remainingTime);
@@ -120,7 +120,7 @@ public class GroupRecommenderSystem_fixedFilePersistence extends GroupRecommende
     }
 
     @Override
-    public Object build(DatasetLoader<? extends Rating> datasetLoader) throws CannotLoadRatingsDataset, CannotLoadContentDataset {
+    public Object buildRecommendationModel(DatasetLoader<? extends Rating> datasetLoader) throws CannotLoadRatingsDataset, CannotLoadContentDataset {
 
         synchronized (exMut) {
             if (RecommendationModel == null) {
@@ -134,7 +134,7 @@ public class GroupRecommenderSystem_fixedFilePersistence extends GroupRecommende
                 }
 
                 try {
-                    Object loadedModel = getGroupRecommenderSystem().loadModel(
+                    Object loadedModel = getGroupRecommenderSystem().loadRecommendationModel(
                             getFilePersistence(),
                             datasetLoader.getRatingsDataset().allUsers(),
                             allItems);
@@ -143,21 +143,21 @@ public class GroupRecommenderSystem_fixedFilePersistence extends GroupRecommende
                 } catch (Exception ex) {
 
                     Global.showWarning(ex);
-                    RecommenderSystemBuildingProgressListener listener = new RecommenderSystemBuildingProgressListener() {
+                    RecommendationModelBuildingProgressListener listener = new RecommendationModelBuildingProgressListener() {
                         @Override
                         public void buildingProgressChanged(String actualJob, int percent, long remainingTime) {
                             fireBuildingProgressChangedEvent(actualJob, percent, remainingTime);
                         }
                     };
                     Global.showWarning("Recommendation model not found: \n\tThe recommender system model needs to be constructed.\n");
-                    getGroupRecommenderSystem().addBuildingProgressListener(listener);
+                    getGroupRecommenderSystem().addRecommendationModelBuildingProgressListener(listener);
                     try {
-                        RecommendationModel = getGroupRecommenderSystem().build(datasetLoader);
-                        getGroupRecommenderSystem().saveModel(getFilePersistence(), RecommendationModel);
+                        RecommendationModel = getGroupRecommenderSystem().buildRecommendationModel(datasetLoader);
+                        getGroupRecommenderSystem().saveRecommendationModel(getFilePersistence(), RecommendationModel);
                     } catch (FailureInPersistence ex1) {
                         ERROR_CODES.FAILURE_IN_PERSISTENCE.exit(ex1);
                     }
-                    getGroupRecommenderSystem().removeBuildingProgressListener(listener);
+                    getGroupRecommenderSystem().removeRecommendationModelBuildingProgressListener(listener);
                 }
             }
             return RecommendationModel;

@@ -25,7 +25,7 @@ import delfos.group.grs.SingleRecommendationModel;
 import delfos.group.grs.filtered.filters.GroupRatingsFilter;
 import delfos.group.grs.filtered.filters.OutliersRatingsFilter;
 import delfos.rs.RecommenderSystem;
-import delfos.rs.RecommenderSystemBuildingProgressListener;
+import delfos.rs.RecommendationModelBuildingProgressListener;
 import delfos.rs.collaborativefiltering.knn.modelbased.KnnModelBasedCFRS;
 import delfos.rs.recommendation.Recommendation;
 import java.util.ArrayList;
@@ -80,7 +80,7 @@ public class GroupRecommenderSystemWithPostFilter extends GroupRecommenderSystem
 
         ParameterListener keepMaintainRecommender = new ParameterListener() {
             private RecommenderSystem rs = null;
-            private RecommenderSystemBuildingProgressListener bpl = new RecommenderSystemBuildingProgressListener() {
+            private RecommendationModelBuildingProgressListener bpl = new RecommendationModelBuildingProgressListener() {
                 @Override
                 public void buildingProgressChanged(String actualJob, int percent, long remainingTime) {
                     fireBuildingProgressChangedEvent(actualJob, percent, remainingTime);
@@ -91,14 +91,14 @@ public class GroupRecommenderSystemWithPostFilter extends GroupRecommenderSystem
             public void parameterChanged() {
                 if (rs == null) {
                     rs = GroupRecommenderSystemWithPostFilter.this.getRecommenderSystem();
-                    rs.addBuildingProgressListener(bpl);
+                    rs.addRecommendationModelBuildingProgressListener(bpl);
                 }
                 if (getRecommenderSystem() == rs) {
                     //Es el mismo, no hacer nada.
                 } else {
-                    rs.removeBuildingProgressListener(bpl);
+                    rs.removeRecommendationModelBuildingProgressListener(bpl);
                     rs = getRecommenderSystem();
-                    rs.addBuildingProgressListener(bpl);
+                    rs.addRecommendationModelBuildingProgressListener(bpl);
                 }
             }
         };
@@ -120,8 +120,8 @@ public class GroupRecommenderSystemWithPostFilter extends GroupRecommenderSystem
     }
 
     @Override
-    public SingleRecommendationModel build(DatasetLoader<? extends Rating> datasetLoader) throws CannotLoadRatingsDataset, CannotLoadContentDataset {
-        Object build = getRecommenderSystem().build(datasetLoader);
+    public SingleRecommendationModel buildRecommendationModel(DatasetLoader<? extends Rating> datasetLoader) throws CannotLoadRatingsDataset, CannotLoadContentDataset {
+        Object build = getRecommenderSystem().buildRecommendationModel(datasetLoader);
         return new SingleRecommendationModel(build);
     }
 

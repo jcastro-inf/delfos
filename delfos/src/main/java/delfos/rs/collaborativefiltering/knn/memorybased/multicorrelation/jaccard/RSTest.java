@@ -110,13 +110,13 @@ public class RSTest extends CollaborativeRecommender<RSTest_Model> {
     }
 
     @Override
-    public RSTest_Model build(DatasetLoader<? extends Rating> datasetLoader) {
+    public RSTest_Model buildRecommendationModel(DatasetLoader<? extends Rating> datasetLoader) {
         //No se necesitan perfiles porque se examina la base de datos directamente
         return new RSTest_Model();
     }
 
     @Override
-    public Collection<Recommendation> recommendOnly(DatasetLoader<? extends Rating> datasetLoader, RSTest_Model model, Integer idUser, java.util.Set<Integer> candidateItems) throws UserNotFound {
+    public Collection<Recommendation> recommendToUser(DatasetLoader<? extends Rating> datasetLoader, RSTest_Model model, Integer idUser, java.util.Set<Integer> candidateItems) throws UserNotFound {
 
         if (Global.isVerboseAnnoying()) {
             Global.showMessageTimestamped(this.getAlias() + " --> Recommending for user '" + idUser + "'\n");
@@ -296,12 +296,12 @@ public class RSTest extends CollaborativeRecommender<RSTest_Model> {
     }
 
     @Override
-    public RSTest_Model loadModel(DatabasePersistence databasePersistence, Collection<Integer> users, Collection<Integer> items) throws FailureInPersistence {
+    public RSTest_Model loadRecommendationModel(DatabasePersistence databasePersistence, Collection<Integer> users, Collection<Integer> items) throws FailureInPersistence {
         return new RSTest_Model();
     }
 
     @Override
-    public void saveModel(DatabasePersistence databasePersistence, RSTest_Model model) throws FailureInPersistence {
+    public void saveRecommendationModel(DatabasePersistence databasePersistence, RSTest_Model model) throws FailureInPersistence {
         //No hay modelo que guardar.
 
     }

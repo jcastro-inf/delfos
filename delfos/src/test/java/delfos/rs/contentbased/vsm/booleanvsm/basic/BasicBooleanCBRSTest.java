@@ -39,7 +39,7 @@ public class BasicBooleanCBRSTest extends DelfosTest {
     }
 
     /**
-     * Test of build method, of class BasicBooleanCBRS.
+     * Test of buildRecommendationModel method, of class BasicBooleanCBRS.
      *
      * @throws java.lang.Exception
      */
@@ -55,7 +55,7 @@ public class BasicBooleanCBRSTest extends DelfosTest {
         DatasetLoader<? extends Rating> datasetLoader = new MockDatasetLoader();
         BasicBooleanCBRS instance = new BasicBooleanCBRS();
         BasicBooleanCBRSModel expResult = null;
-        BasicBooleanCBRSModel result = instance.build(datasetLoader);
+        BasicBooleanCBRSModel result = instance.buildRecommendationModel(datasetLoader);
         assertEquals(expResult, result);
         // TODO review the generated test code and remove the default call to fail.
         fail("The test case is a prototype.");
