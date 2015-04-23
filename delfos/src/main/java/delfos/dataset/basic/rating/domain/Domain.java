@@ -2,26 +2,40 @@ package delfos.dataset.basic.rating.domain;
 
 import java.io.Serializable;
 
-public interface Domain extends Serializable {
+public abstract class Domain implements Serializable {
 
-    public Number getValueAssociatedToProbability(Number value);
+    public abstract Number getValueAssociatedToProbability(Number value);
 
-    public Number max();
+    public abstract Number max();
 
-    public Number min();
+    public abstract Number min();
 
-    public Number trimValueToDomain(Number preference);
+    public abstract Number trimValueToDomain(Number preference);
 
-    public Number convertToDomain(Number valueInThisDomain, DecimalDomain destinyDomain);
+    public Number convertToDomain(Number valueInThisDomain, Domain destinyDomain) {
+        if (destinyDomain instanceof IntegerDomain) {
+            IntegerDomain integerDomain = (IntegerDomain) destinyDomain;
+            return convertToIntegerDomain(valueInThisDomain, integerDomain);
+        }
 
-    public Number convertToDomain(Number valueInThisDomain, IntegerDomain destinyDomain);
+        if (destinyDomain instanceof DecimalDomain) {
+            DecimalDomain decimalDomain = (DecimalDomain) destinyDomain;
+            return convertToDecimalDomain(valueInThisDomain, decimalDomain);
+        }
+
+        throw new IllegalStateException("Unknown destiny domain type '" + destinyDomain.getClass() + "'");
+    }
+
+    public abstract Number convertToDecimalDomain(Number valueInThisDomain, DecimalDomain destinyDomain);
+
+    public abstract Number convertToIntegerDomain(Number valueInThisDomain, IntegerDomain destinyDomain);
 
     public static long drawnInteger(double value, IntegerDomainWithProbabilities domain) {
         return domain.getValueAssociatedToProbability(value);
     }
 
-    public Number width();
+    public abstract Number width();
 
-    public Number mean();
+    public abstract Number mean();
 
 }

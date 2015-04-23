@@ -33,18 +33,18 @@ public class SVDforGroup_ratingsAggregationTest {
         SVDforGroup_ratingsAggregation grs = new SVDforGroup_ratingsAggregation();
         grs.setParameterValue(TryThisAtHomeSVD.LEARNING_RATE, 0.02f);
         grs.setParameterValue(TryThisAtHomeSVD.K, 0.02f);
-        TryThisAtHomeSVDModel recommenderSystemModel = grs.build(randomDataset);
+        TryThisAtHomeSVDModel RecommendationModel = grs.buildRecommendationModel(randomDataset);
 
         GroupOfUsers group = new GroupOfUsers(1, 2, 3);
-        GroupSVDModel groupModel = grs.buildGroupModel(randomDataset, recommenderSystemModel, group);
+        GroupSVDModel groupModel = grs.buildGroupModel(randomDataset, RecommendationModel, group);
 
-        Set<Integer> idItemList = new TreeSet<>();
+        Set<Integer> candidateItems = new TreeSet<>();
         for (int idUser : group) {
-            idItemList.addAll(randomDataset.getRatingsDataset().getUserRated(idUser));
+            candidateItems.addAll(randomDataset.getRatingsDataset().getUserRated(idUser));
         }
-        Collection<Recommendation> recommendOnly = grs.recommendOnly(randomDataset, recommenderSystemModel, groupModel, group, idItemList);
+        Collection<Recommendation> recommendOnly = grs.recommendOnly(randomDataset, RecommendationModel, groupModel, group, candidateItems);
 
-        Global.showMessage(DatasetPrinter.printCompactRatingTable(randomDataset.getRatingsDataset(), group.getGroupMembers(), idItemList));
+        Global.showMessage(DatasetPrinter.printCompactRatingTable(randomDataset.getRatingsDataset(), group.getGroupMembers(), candidateItems));
 
         RecommendationsOutputStandardRaw output = new RecommendationsOutputStandardRaw();
         output.writeRecommendations(new GroupRecommendations(group, recommendOnly, RecommendationComputationDetails.EMPTY_DETAILS));

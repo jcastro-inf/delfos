@@ -62,7 +62,7 @@ public class BasicMultivaluedCBRS extends ContentBasedRecommender<MultivaluedUse
     }
 
     @Override
-    public MultivaluedUserProfilesModel build(DatasetLoader<? extends Rating> datasetLoader) throws CannotLoadRatingsDataset, CannotLoadContentDataset {
+    public MultivaluedUserProfilesModel buildRecommendationModel(DatasetLoader<? extends Rating> datasetLoader) throws CannotLoadRatingsDataset, CannotLoadContentDataset {
 
         final RatingsDataset<? extends Rating> ratingsDataset = datasetLoader.getRatingsDataset();
         final ContentDataset contentDataset;
@@ -158,7 +158,7 @@ public class BasicMultivaluedCBRS extends ContentBasedRecommender<MultivaluedUse
     }
 
     @Override
-    protected Collection<Recommendation> recommendOnly(DatasetLoader<? extends Rating> datasetLoader, MultivaluedUserProfilesModel model, MultivaluedUserProfile userProfile, Collection<Integer> idItemList) throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset {
+    protected Collection<Recommendation> recommendOnly(DatasetLoader<? extends Rating> datasetLoader, MultivaluedUserProfilesModel model, MultivaluedUserProfile userProfile, Collection<Integer> candidateItems) throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset {
         final ContentDataset contentDataset;
         if (datasetLoader instanceof ContentDatasetLoader) {
             ContentDatasetLoader contentDatasetLoader = (ContentDatasetLoader) datasetLoader;
@@ -170,7 +170,7 @@ public class BasicMultivaluedCBRS extends ContentBasedRecommender<MultivaluedUse
 
         Collection<Recommendation> recomendaciones = new ArrayList<>();
 
-        for (int idItem : idItemList) {
+        for (int idItem : candidateItems) {
             try {
                 Item item = contentDataset.get(idItem);
                 //Extraer v1 y v2 del perfil del usuario y del perfil del item

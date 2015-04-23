@@ -13,23 +13,24 @@ import java.util.Collection;
 import java.util.Set;
 
 /**
- * Sistema de recomendación básico, con recomendación de productos a usuarios
- * individuales.
+ * Interface of a single-user recommender system, which recommends items to
+ * users. This interface provides the recommendation method.
  *
  * @author Jorge Castro Gallardo (Universidad de Jaén, Sinbad2)
  * @version 1.0 08-Mar-2013
  * @version 2.0 26-Mayo-2013 Ahora los datasets se pasan por parámetro en cada
  * método.
- * @param <RecommenderSystemModel> Modelo de recomendación
+ * @param <RecommendationModel>
  */
-public interface RecommenderSystem<RecommenderSystemModel> extends GenericRecommenderSystem<RecommenderSystemModel> {
+public interface RecommenderSystem<RecommendationModel>
+        extends GenericRecommenderSystem<RecommendationModel> {
 
     /**
      * Método para la realización de una recomendación al usuario <i>idUser</i>
      * en una ejecución de evaluación del sistema de recomendación. La lista de
      * películas que se pueden recomendar viene determinada por el parámetro
-     * <i>idItemList</i>, que generalmente vendrá determinado por un conjunto de
-     * test.
+     * <i>candidateItems</i>, que generalmente vendrá determinado por un
+     * conjunto de test.
      *
      * <p>
      * <p>
@@ -39,11 +40,10 @@ public interface RecommenderSystem<RecommenderSystemModel> extends GenericRecomm
      * {@link NotEnoughtItemInformation}, para indicar que no pudo generar su
      * correspondiente perfil.
      *
-     * @param datasetLoader Establece el dataset que se usará en la
-     * recomendación.
+     * @param dataset Establece el dataset que se usará en la recomendación.
      * @param model Modelo de recomendación que se usará en la recomendación.
      * @param idUser id del usuario para el que se realiza la recomendación
-     * @param idItemList Lista de productos que pueden ser recomendados al
+     * @param candidateItems Lista de productos que pueden ser recomendados al
      * usuario.
      * @return Lista de recomendaciones ordenada por la métrica que utiliza el
      * sistema de recomendación (similarity o predicted rating).
@@ -52,7 +52,10 @@ public interface RecommenderSystem<RecommenderSystemModel> extends GenericRecomm
      *
      * @throws NotEnoughtUserInformation
      */
-    public Collection<Recommendation> recommendOnly(
-            DatasetLoader<? extends Rating> datasetLoader, RecommenderSystemModel model, Integer idUser, Set<Integer> idItemList)
+    public Collection<Recommendation> recommendToUser(
+            DatasetLoader<? extends Rating> dataset,
+            RecommendationModel model,
+            Integer idUser,
+            Set<Integer> candidateItems)
             throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset, NotEnoughtUserInformation;
 }

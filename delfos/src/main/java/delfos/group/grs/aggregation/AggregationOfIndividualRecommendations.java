@@ -16,9 +16,9 @@ import delfos.experiment.casestudy.parallel.SingleUserRecommendationTask;
 import delfos.experiment.casestudy.parallel.SingleUserRecommendationTaskExecutor;
 import delfos.group.groupsofusers.GroupOfUsers;
 import delfos.group.grs.GroupRecommenderSystemAdapter;
-import delfos.group.grs.SingleRecommenderSystemModel;
+import delfos.group.grs.SingleRecommendationModel;
 import delfos.rs.RecommenderSystem;
-import delfos.rs.RecommenderSystemBuildingProgressListener;
+import delfos.rs.RecommendationModelBuildingProgressListener;
 import delfos.rs.collaborativefiltering.knn.memorybased.KnnMemoryBasedCFRS;
 import delfos.rs.recommendation.Recommendation;
 import java.util.ArrayList;
@@ -39,7 +39,7 @@ import java.util.TreeMap;
  * @version 1.0 Unknown date
  * @version 1.1 9-Mayo-2013
  */
-public class AggregationOfIndividualRecommendations extends GroupRecommenderSystemAdapter<SingleRecommenderSystemModel, GroupOfUsers> {
+public class AggregationOfIndividualRecommendations extends GroupRecommenderSystemAdapter<SingleRecommendationModel, GroupOfUsers> {
 
     private static final long serialVersionUID = 1L;
     /**
@@ -110,27 +110,27 @@ public class AggregationOfIndividualRecommendations extends GroupRecommenderSyst
     }
 
     @Override
-    public SingleRecommenderSystemModel build(DatasetLoader<? extends Rating> datasetLoader) throws CannotLoadRatingsDataset, CannotLoadContentDataset {
-        RecommenderSystemBuildingProgressListener buildListener = (String actualJob, int percent, long remainingTime) -> {
+    public SingleRecommendationModel buildRecommendationModel(DatasetLoader<? extends Rating> datasetLoader) throws CannotLoadRatingsDataset, CannotLoadContentDataset {
+        RecommendationModelBuildingProgressListener buildListener = (String actualJob, int percent, long remainingTime) -> {
             fireBuildingProgressChangedEvent(actualJob, percent, remainingTime);
         };
 
-        getSingleUserRecommender().addBuildingProgressListener(buildListener);
-        Object build = getSingleUserRecommender().build(datasetLoader);
-        getSingleUserRecommender().removeBuildingProgressListener(buildListener);
-        return new SingleRecommenderSystemModel(build);
+        getSingleUserRecommender().addRecommendationModelBuildingProgressListener(buildListener);
+        Object build = getSingleUserRecommender().buildRecommendationModel(datasetLoader);
+        getSingleUserRecommender().removeRecommendationModelBuildingProgressListener(buildListener);
+        return new SingleRecommendationModel(build);
     }
 
     @Override
-    public GroupOfUsers buildGroupModel(DatasetLoader<? extends Rating> datasetLoader, SingleRecommenderSystemModel recommenderSystemModel, GroupOfUsers groupOfUsers) throws UserNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset {
+    public GroupOfUsers buildGroupModel(DatasetLoader<? extends Rating> datasetLoader, SingleRecommendationModel RecommendationModel, GroupOfUsers groupOfUsers) throws UserNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset {
         return new GroupOfUsers(groupOfUsers.getGroupMembers());
     }
 
     @Override
-    public Collection<Recommendation> recommendOnly(DatasetLoader<? extends Rating> datasetLoader, SingleRecommenderSystemModel recommenderSystemModel, GroupOfUsers groupModel, GroupOfUsers groupOfUsers, java.util.Set<Integer> idItemList) throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset {
+    public Collection<Recommendation> recommendOnly(DatasetLoader<? extends Rating> datasetLoader, SingleRecommendationModel RecommendationModel, GroupOfUsers groupModel, GroupOfUsers groupOfUsers, java.util.Set<Integer> candidateItems) throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset {
 
         RecommenderSystem singleUserRecommender = getSingleUserRecommender();
-        Map<Integer, Collection<Recommendation>> recommendationsLists_byMember = performSingleUserRecommendations(groupOfUsers.getGroupMembers(), singleUserRecommender, datasetLoader, recommenderSystemModel, idItemList);
+        Map<Integer, Collection<Recommendation>> recommendationsLists_byMember = performSingleUserRecommendations(groupOfUsers.getGroupMembers(), singleUserRecommender, datasetLoader, RecommendationModel, candidateItems);
 
         Collection<Recommendation> groupRecommendations = aggregateLists(getAggregationOperator(), recommendationsLists_byMember);
         return groupRecommendations;
@@ -169,7 +169,7 @@ public class AggregationOfIndividualRecommendations extends GroupRecommenderSyst
         return recommendations;
     }
 
-    public static Map<Integer, Collection<Recommendation>> performSingleUserRecommendations(Collection<Integer> users, RecommenderSystem singleUserRecommender, DatasetLoader<? extends Rating> datasetLoader, SingleRecommenderSystemModel recommenderSystemModel, Set<Integer> idItemList) throws UserNotFound {
+    public static Map<Integer, Collection<Recommendation>> performSingleUserRecommendations(Collection<Integer> users, RecommenderSystem singleUserRecommender, DatasetLoader<? extends Rating> datasetLoader, SingleRecommendationModel RecommendationModel, Set<Integer> candidateItems) throws UserNotFound {
 
         List<SingleUserRecommendationTask> tasks = new LinkedList<>();
         for (int idUser : users) {
@@ -177,9 +177,9 @@ public class AggregationOfIndividualRecommendations extends GroupRecommenderSyst
                     new SingleUserRecommendationTask(
                             singleUserRecommender,
                             datasetLoader,
-                            recommenderSystemModel.getRecommenderSystemModel(),
+                            RecommendationModel.getRecommendationModel(),
                             idUser,
-                            idItemList));
+                            candidateItems));
 
         }
         MultiThreadExecutionManager<SingleUserRecommendationTask> executionManager = new MultiThreadExecutionManager<>(

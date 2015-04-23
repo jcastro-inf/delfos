@@ -107,14 +107,14 @@ public class GroupRecommendationManager {
         if (consoleParameters.isDefined(BUILD_MODEL_PARAMETER)) {
             Global.showMessage("Building model for grs described in file '" + configFile_grs.getAbsolutePath() + "'\n");
 
-            Object recommendationModel = groupRecommenderSystem.build(datasetLoader);
+            Object recommendationModel = groupRecommenderSystem.buildRecommendationModel(datasetLoader);
 
-            groupRecommenderSystem.saveModel(grsFilePersistence, recommendationModel);
+            groupRecommenderSystem.saveRecommendationModel(grsFilePersistence, recommendationModel);
 
             Global.showMessage("Building model for rs described in file '" + configFile_rs.getAbsolutePath() + "'\n");
-            Object recommendationModel_singleUser = recommenderSystem.build(datasetLoader);
+            Object recommendationModel_singleUser = recommenderSystem.buildRecommendationModel(datasetLoader);
 
-            recommenderSystem.saveModel(rsFilePersistence, recommendationModel_singleUser);
+            recommenderSystem.saveRecommendationModel(rsFilePersistence, recommendationModel_singleUser);
 
             correctOption = true;
         }
@@ -166,25 +166,25 @@ public class GroupRecommendationManager {
             Global.showMessage("\tUsers:   " + users.size() + "\n");
             Global.showMessage("\tItems:   " + items.size() + "\n");
             Global.showMessage("\tRatings: " + grsc.datasetLoader.getRatingsDataset().getNumRatings() + "\n");
-            Set<Integer> idItemList = new TreeSet<>();
-            idItemList.addAll(items);
+            Set<Integer> candidateItems = new TreeSet<>();
+            candidateItems.addAll(items);
 
             for (int idMember : group) {
-                idItemList.removeAll(datasetLoader.getRatingsDataset().getUserRated(idMember));
+                candidateItems.removeAll(datasetLoader.getRatingsDataset().getUserRated(idMember));
             }
-            idItemList = Collections.unmodifiableSet(idItemList);
+            candidateItems = Collections.unmodifiableSet(candidateItems);
 
-            Object recommendationModel_grs = groupRecommenderSystem.loadModel(
+            Object recommendationModel_grs = groupRecommenderSystem.loadRecommendationModel(
                     grsFilePersistence,
                     users,
                     items);
 
             Object groupModel = groupRecommenderSystem.buildGroupModel(datasetLoader, recommendationModel_grs, group);
 
-            groupRecommendations = new ArrayList<>(groupRecommenderSystem.recommendOnly(datasetLoader, recommendationModel_grs, groupModel, group, idItemList));
+            groupRecommendations = new ArrayList<>(groupRecommenderSystem.recommendOnly(datasetLoader, recommendationModel_grs, groupModel, group, candidateItems));
             Collections.sort(groupRecommendations);
 
-            Object recommendationModel_singleUser = recommenderSystem.loadModel(rsFilePersistence, users, items);
+            Object recommendationModel_singleUser = recommenderSystem.loadRecommendationModel(rsFilePersistence, users, items);
 
             List<SingleUserRecommendationTask> tareas = new LinkedList<>();
 
@@ -194,7 +194,7 @@ public class GroupRecommendationManager {
                         datasetLoader,
                         recommendationModel_singleUser,
                         idUser,
-                        idItemList));
+                        candidateItems));
             }
 
             MultiThreadExecutionManager<SingleUserRecommendationTask> multiThreadExecutionManager = new MultiThreadExecutionManager<>(

@@ -11,7 +11,7 @@ import delfos.constants.DelfosTest;
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
 import delfos.group.groupsofusers.GroupOfUsers;
-import delfos.group.grs.SingleRecommenderSystemModel;
+import delfos.group.grs.SingleRecommendationModel;
 import delfos.group.grs.penalty.grouper.GrouperByIdItem;
 import delfos.rs.RecommenderSystem;
 import delfos.rs.bufferedrecommenders.RecommenderSystem_fixedFilePersistence;
@@ -53,7 +53,7 @@ public class PenaltyGRS_RecommendationsTest extends DelfosTest {
 
         PenaltyGRS_Recommendations penaltyGRS_Recommendations = new PenaltyGRS_Recommendations(getCoreRS(), new PenaltyWholeMatrix(1, 1.5), new GrouperByIdItem(3));
 
-        SingleRecommenderSystemModel recommendationModel = penaltyGRS_Recommendations.build(datasetLoader);
+        SingleRecommendationModel recommendationModel = penaltyGRS_Recommendations.buildRecommendationModel(datasetLoader);
 
         GroupOfUsers groupOfUsers = new GroupOfUsers(42, 222, 267);
 

@@ -74,7 +74,7 @@ public class BuildRecommendationModel implements CaseUseManager {
 
             Object recomenderSystemModel;
             Global.showMessageTimestamped("Building recommendation model.");
-            recomenderSystemModel = recommender.build(rsc.datasetLoader);
+            recomenderSystemModel = recommender.buildRecommendationModel(rsc.datasetLoader);
             Global.showMessageTimestamped("Built recommendation model.");
 
             PersistenceMethodStrategy.saveModel(

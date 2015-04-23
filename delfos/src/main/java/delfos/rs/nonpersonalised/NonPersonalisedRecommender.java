@@ -23,11 +23,11 @@ import delfos.rs.recommendation.Recommendation;
  */
 public abstract class NonPersonalisedRecommender<RecommendationModel> extends GenericRecommenderSystemAdapter<RecommendationModel> {
 
-    public final Collection<Recommendation> recommendOnly(DatasetLoader<? extends Rating> datasetLoader, RecommendationModel model, Integer idUser, Collection<Integer> idItemList) throws ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset {
-        return recommendOnly(datasetLoader, model, idItemList);
+    public final Collection<Recommendation> recommendOnly(DatasetLoader<? extends Rating> datasetLoader, RecommendationModel model, Integer idUser, Collection<Integer> candidateItems) throws ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset {
+        return recommendOnly(datasetLoader, model, candidateItems);
     }
 
-    public abstract Collection<Recommendation> recommendOnly(DatasetLoader<? extends Rating> datasetLoader, RecommendationModel model, Collection<Integer> idItemList) throws ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset;
+    public abstract Collection<Recommendation> recommendOnly(DatasetLoader<? extends Rating> datasetLoader, RecommendationModel model, Collection<Integer> candidateItems) throws ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset;
 
     @Override
     public ParameterOwnerType getParameterOwnerType() {

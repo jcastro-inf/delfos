@@ -42,7 +42,7 @@ import delfos.factories.RecommendationsOutputMethodFactory;
 import delfos.factories.RecommenderSystemsFactory;
 import delfos.recommendationcandidates.RecommendationCandidatesSelector;
 import delfos.rs.GenericRecommenderSystem;
-import delfos.rs.RecommenderSystemBuildingProgressListener;
+import delfos.rs.RecommendationModelBuildingProgressListener;
 import delfos.rs.RecommenderSystemBuildingProgressListener_default;
 import delfos.rs.output.RecommendationsOutputMethod;
 import delfos.rs.persistence.DatabasePersistence;
@@ -399,7 +399,7 @@ public class RSBuilderFrame extends Frame {
 
             RecommenderSystemConfigurationFileParser.saveConfigFile(configFile, rs_generic, loader, relevanceCriteria, persistenceMethod, recommendationCandidatesSelector, recommendationsOutputMethod);
 
-            class Worker extends SwingWorker<Void, Void> implements RecommenderSystemBuildingProgressListener {
+            class Worker extends SwingWorker<Void, Void> implements RecommendationModelBuildingProgressListener {
 
                 private String actualJob = "Starting";
                 private boolean error = false;
@@ -414,30 +414,30 @@ public class RSBuilderFrame extends Frame {
                 protected Void doInBackground() throws Exception {
 
                     try {
-                        rs.addBuildingProgressListener(this);
-                        rs.addBuildingProgressListener(new RecommenderSystemBuildingProgressListener_default(System.out, 10000));
+                        rs.addRecommendationModelBuildingProgressListener(this);
+                        rs.addRecommendationModelBuildingProgressListener(new RecommenderSystemBuildingProgressListener_default(System.out, 10000));
 
                         PersistenceMethod persistenceTechnique = (PersistenceMethod) persistenceMethodSelector.getSelectedItem();
 
                         if (persistenceTechnique instanceof FilePersistence) {
                             FilePersistence filePersistence = (FilePersistence) persistenceTechnique;
                             buildingProgressChanged(actualJob, 0, -1);
-                            Object model = rs.build(loader);
-                            rs.saveModel(filePersistence, model);
+                            Object model = rs.buildRecommendationModel(loader);
+                            rs.saveRecommendationModel(filePersistence, model);
                         } else {
                             System.out.println("");
                             if (persistenceTechnique instanceof DatabasePersistence) {
                                 DatabasePersistence databasePersistence = (DatabasePersistence) persistenceTechnique;
                                 buildingProgressChanged(actualJob, 0, -1);
-                                Object model = rs.build(loader);
-                                rs.saveModel(databasePersistence, model);
+                                Object model = rs.buildRecommendationModel(loader);
+                                rs.saveRecommendationModel(databasePersistence, model);
 
                             } else {
                                 throw new IllegalStateException("The persistence technique is not recognised: " + persistenceTechnique.getName());
                             }
                         }
 
-                        rs.removeBuildingProgressListener(this);
+                        rs.removeRecommendationModelBuildingProgressListener(this);
                     } catch (Throwable ex) {
                         JOptionPane.showMessageDialog(RSBuilderFrame.this, ex.getMessage() + "\n" + Arrays.toString(ex.getStackTrace()), "ERROR in build", JOptionPane.ERROR_MESSAGE);
                         error = true;

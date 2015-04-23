@@ -49,8 +49,8 @@ public class NRMSE extends EvaluationMeasure {
                                 && !Double.isNaN(predictedRating.doubleValue())
                                 && !Double.isInfinite(predictedRating.doubleValue())) {
 
-                            double trueRatingNormalised = originalDomain.convertToDomain(trueRating, DecimalDomain.ZERO_TO_ONE).doubleValue();
-                            double predictedNormalised = originalDomain.convertToDomain(predictedRating, DecimalDomain.ZERO_TO_ONE).doubleValue();
+                            double trueRatingNormalised = originalDomain.convertToDecimalDomain(trueRating, DecimalDomain.ZERO_TO_ONE).doubleValue();
+                            double predictedNormalised = originalDomain.convertToDecimalDomain(predictedRating, DecimalDomain.ZERO_TO_ONE).doubleValue();
 
                             mean.addValue(Math.pow(trueRatingNormalised - predictedNormalised, 2));
                         }

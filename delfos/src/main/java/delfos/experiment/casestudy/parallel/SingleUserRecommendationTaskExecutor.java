@@ -28,10 +28,10 @@ public class SingleUserRecommendationTaskExecutor implements SingleTaskExecute<S
         RecommenderSystem recommenderSystem = task.getRecommenderSystem();
         DatasetLoader<? extends Rating> datasetLoader = task.getDatasetLoader();
         int idUser = task.getIdUser();
-        Set<Integer> idItemList = task.getIdItemList();
-        Object model = task.getRecommenderSystemModel();
+        Set<Integer> candidateItems = task.getCandidateItems();
+        Object model = task.getRecommendationModel();
         try {
-            Collection<Recommendation> recommend = recommenderSystem.recommendOnly(datasetLoader, model, idUser, idItemList);
+            Collection<Recommendation> recommend = recommenderSystem.recommendToUser(datasetLoader, model, idUser, candidateItems);
             task.setRecommendationList(recommend);
         } catch (CannotLoadRatingsDataset ex) {
             ERROR_CODES.CANNOT_LOAD_RATINGS_DATASET.exit(ex);

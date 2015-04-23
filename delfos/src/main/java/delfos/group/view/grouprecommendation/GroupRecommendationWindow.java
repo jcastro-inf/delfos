@@ -11,7 +11,7 @@ import delfos.dataset.basic.rating.RatingsDataset;
 import delfos.dataset.loaders.csv.CSVfileDatasetLoader;
 import delfos.group.experiment.validation.recommendableitems.NeverRatedItems;
 import delfos.group.groupsofusers.GroupOfUsers;
-import delfos.group.grs.SingleRecommenderSystemModel;
+import delfos.group.grs.SingleRecommendationModel;
 import delfos.group.grs.benchmark.polylens.PolyLens;
 import delfos.group.grs.recommendations.GroupRecommendations;
 import delfos.group.view.InitialFrame;
@@ -58,7 +58,7 @@ public class GroupRecommendationWindow extends JFrame {
         while (groupOfUsers.size() < 4) {
             groupOfUsers.addUser(allUsers[r.nextInt(allUsers.length)]);
         }
-        SingleRecommenderSystemModel build = groupRecommenderSystem.build(datasetLoader);
+        SingleRecommendationModel build = groupRecommenderSystem.buildRecommendationModel(datasetLoader);
         GroupOfUsers buildGroupModel = groupRecommenderSystem.buildGroupModel(datasetLoader, build, groupOfUsers);
 
         NeverRatedItems nri = new NeverRatedItems();

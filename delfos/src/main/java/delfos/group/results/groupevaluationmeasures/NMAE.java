@@ -61,8 +61,8 @@ public class NMAE extends GroupEvaluationMeasure {
                         double trueRating = groupTrueRatings.get(idUser).get(idItem).ratingValue.doubleValue();
                         double predictedRating = r.getPreference().doubleValue();
 
-                        double trueRatingNormalised = originalDomain.convertToDomain(trueRating, DecimalDomain.ZERO_TO_ONE).doubleValue();
-                        double predictedNormalised = originalDomain.convertToDomain(predictedRating, DecimalDomain.ZERO_TO_ONE).doubleValue();
+                        double trueRatingNormalised = originalDomain.convertToDecimalDomain(trueRating, DecimalDomain.ZERO_TO_ONE).doubleValue();
+                        double predictedNormalised = originalDomain.convertToDecimalDomain(predictedRating, DecimalDomain.ZERO_TO_ONE).doubleValue();
 
                         nmae.addValue(Math.abs(predictedNormalised - trueRatingNormalised));
                     }

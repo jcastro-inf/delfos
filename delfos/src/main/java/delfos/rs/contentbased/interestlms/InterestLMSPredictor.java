@@ -63,7 +63,7 @@ public class InterestLMSPredictor extends RecommenderSystemAdapter<InterestLMSPr
     }
 
     @Override
-    public InterestLMSPredictorModel build(DatasetLoader<? extends Rating> datasetLoader) throws CannotLoadRatingsDataset, CannotLoadContentDataset, CannotLoadUsersDataset {
+    public InterestLMSPredictorModel buildRecommendationModel(DatasetLoader<? extends Rating> datasetLoader) throws CannotLoadRatingsDataset, CannotLoadContentDataset, CannotLoadUsersDataset {
         final ContentDataset contentDataset;
         if (datasetLoader instanceof ContentDatasetLoader) {
             ContentDatasetLoader contentDatasetLoader = (ContentDatasetLoader) datasetLoader;
@@ -89,7 +89,7 @@ public class InterestLMSPredictor extends RecommenderSystemAdapter<InterestLMSPr
                 Item item = contentDataset.get(idItem);
 
                 Number ratingValue = rating.ratingValue;
-                Number minusOneToOneValue = domain.convertToDomain(ratingValue, minusOneToOne);
+                Number minusOneToOneValue = domain.convertToDecimalDomain(ratingValue, minusOneToOne);
 
                 predictorModel.enterFeedback(idUser, item, minusOneToOneValue.floatValue());
             } catch (EntityNotFound ex) {
@@ -104,7 +104,7 @@ public class InterestLMSPredictor extends RecommenderSystemAdapter<InterestLMSPr
     }
 
     @Override
-    public Collection<Recommendation> recommendOnly(DatasetLoader<? extends Rating> datasetLoader, InterestLMSPredictorModel model, Integer idUser, java.util.Set<Integer> idItemList) throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset {
+    public Collection<Recommendation> recommendToUser(DatasetLoader<? extends Rating> datasetLoader, InterestLMSPredictorModel model, Integer idUser, java.util.Set<Integer> candidateItems) throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset {
         final ContentDataset contentDataset;
         if (datasetLoader instanceof ContentDatasetLoader) {
             ContentDatasetLoader contentDatasetLoader = (ContentDatasetLoader) datasetLoader;
@@ -113,8 +113,8 @@ public class InterestLMSPredictor extends RecommenderSystemAdapter<InterestLMSPr
             throw new CannotLoadContentDataset("The dataset loader is not a ContentDatasetLoader, cannot apply a content-based ");
         }
 
-        Collection<Recommendation> ret = new ArrayList<>(idItemList.size());
-        for (int idItem : idItemList) {
+        Collection<Recommendation> ret = new ArrayList<>(candidateItems.size());
+        for (int idItem : candidateItems) {
             try {
                 Item item = contentDataset.get(idItem);
                 float prediction = model.predict(idUser, item);

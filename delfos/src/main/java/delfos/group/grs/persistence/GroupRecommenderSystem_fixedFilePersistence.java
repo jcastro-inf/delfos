@@ -23,7 +23,7 @@ import delfos.group.groupsofusers.GroupOfUsers;
 import delfos.group.grs.GroupRecommenderSystem;
 import delfos.group.grs.GroupRecommenderSystemAdapter;
 import delfos.group.grs.aggregation.AggregationOfIndividualRatings;
-import delfos.rs.RecommenderSystemBuildingProgressListener;
+import delfos.rs.RecommendationModelBuildingProgressListener;
 import delfos.rs.collaborativefiltering.knn.modelbased.KnnModelBasedCFRS;
 import delfos.rs.persistence.FailureInPersistence;
 import delfos.rs.persistence.FilePersistence;
@@ -81,7 +81,7 @@ public class GroupRecommenderSystem_fixedFilePersistence extends GroupRecommende
      * Objeto para realizar la exclusión mútua en la generación del dataset.
      */
     private final Object exMut = this;
-    private Object recommenderSystemModel = null;
+    private Object RecommendationModel = null;
 
     public GroupRecommenderSystem_fixedFilePersistence() {
         super();
@@ -111,7 +111,7 @@ public class GroupRecommenderSystem_fixedFilePersistence extends GroupRecommende
         setParameterValue(persistenceFileSuffix, filePersistence.getSuffix());
         setParameterValue(persistenceFileType, filePersistence.getExtension());
 
-        getGroupRecommenderSystem().addBuildingProgressListener(new RecommenderSystemBuildingProgressListener() {
+        getGroupRecommenderSystem().addRecommendationModelBuildingProgressListener(new RecommendationModelBuildingProgressListener() {
             @Override
             public void buildingProgressChanged(String actualJob, int percent, long remainingTime) {
                 fireBuildingProgressChangedEvent(actualJob, percent, remainingTime);
@@ -120,10 +120,10 @@ public class GroupRecommenderSystem_fixedFilePersistence extends GroupRecommende
     }
 
     @Override
-    public Object build(DatasetLoader<? extends Rating> datasetLoader) throws CannotLoadRatingsDataset, CannotLoadContentDataset {
+    public Object buildRecommendationModel(DatasetLoader<? extends Rating> datasetLoader) throws CannotLoadRatingsDataset, CannotLoadContentDataset {
 
         synchronized (exMut) {
-            if (recommenderSystemModel == null) {
+            if (RecommendationModel == null) {
 
                 Set<Integer> allItems = new TreeSet<Integer>();
                 if (datasetLoader instanceof ContentDatasetLoader) {
@@ -134,39 +134,39 @@ public class GroupRecommenderSystem_fixedFilePersistence extends GroupRecommende
                 }
 
                 try {
-                    Object loadedModel = getGroupRecommenderSystem().loadModel(
+                    Object loadedModel = getGroupRecommenderSystem().loadRecommendationModel(
                             getFilePersistence(),
                             datasetLoader.getRatingsDataset().allUsers(),
                             allItems);
-                    this.recommenderSystemModel = loadedModel;
+                    this.RecommendationModel = loadedModel;
                     return loadedModel;
                 } catch (Exception ex) {
 
                     Global.showWarning(ex);
-                    RecommenderSystemBuildingProgressListener listener = new RecommenderSystemBuildingProgressListener() {
+                    RecommendationModelBuildingProgressListener listener = new RecommendationModelBuildingProgressListener() {
                         @Override
                         public void buildingProgressChanged(String actualJob, int percent, long remainingTime) {
                             fireBuildingProgressChangedEvent(actualJob, percent, remainingTime);
                         }
                     };
                     Global.showWarning("Recommendation model not found: \n\tThe recommender system model needs to be constructed.\n");
-                    getGroupRecommenderSystem().addBuildingProgressListener(listener);
+                    getGroupRecommenderSystem().addRecommendationModelBuildingProgressListener(listener);
                     try {
-                        recommenderSystemModel = getGroupRecommenderSystem().build(datasetLoader);
-                        getGroupRecommenderSystem().saveModel(getFilePersistence(), recommenderSystemModel);
+                        RecommendationModel = getGroupRecommenderSystem().buildRecommendationModel(datasetLoader);
+                        getGroupRecommenderSystem().saveRecommendationModel(getFilePersistence(), RecommendationModel);
                     } catch (FailureInPersistence ex1) {
                         ERROR_CODES.FAILURE_IN_PERSISTENCE.exit(ex1);
                     }
-                    getGroupRecommenderSystem().removeBuildingProgressListener(listener);
+                    getGroupRecommenderSystem().removeRecommendationModelBuildingProgressListener(listener);
                 }
             }
-            return recommenderSystemModel;
+            return RecommendationModel;
         }
     }
 
     @Override
-    public Object buildGroupModel(DatasetLoader<? extends Rating> datasetLoader, Object recommenderSystemModel, GroupOfUsers groupOfUsers) throws UserNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset, NotEnoughtUserInformation {
-        return getGroupRecommenderSystem().buildGroupModel(datasetLoader, recommenderSystemModel, groupOfUsers);
+    public Object buildGroupModel(DatasetLoader<? extends Rating> datasetLoader, Object RecommendationModel, GroupOfUsers groupOfUsers) throws UserNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset, NotEnoughtUserInformation {
+        return getGroupRecommenderSystem().buildGroupModel(datasetLoader, RecommendationModel, groupOfUsers);
     }
 
     @Override
@@ -175,9 +175,9 @@ public class GroupRecommenderSystem_fixedFilePersistence extends GroupRecommende
     }
 
     @Override
-    public Collection<Recommendation> recommendOnly(DatasetLoader<? extends Rating> datasetLoader, Object recommenderSystemModel, Object groupModel, GroupOfUsers groupOfUsers, java.util.Set<Integer> idItemList) throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset, NotEnoughtUserInformation {
+    public Collection<Recommendation> recommendOnly(DatasetLoader<? extends Rating> datasetLoader, Object RecommendationModel, Object groupModel, GroupOfUsers groupOfUsers, java.util.Set<Integer> candidateItems) throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset, NotEnoughtUserInformation {
         Collection<Recommendation> recommendations;
-        recommendations = getGroupRecommenderSystem().recommendOnly(datasetLoader, recommenderSystemModel, groupModel, groupOfUsers, idItemList);
+        recommendations = getGroupRecommenderSystem().recommendOnly(datasetLoader, RecommendationModel, groupModel, groupOfUsers, candidateItems);
         return recommendations;
     }
 

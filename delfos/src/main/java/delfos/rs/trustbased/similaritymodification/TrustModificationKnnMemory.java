@@ -113,19 +113,19 @@ public class TrustModificationKnnMemory extends CollaborativeRecommender<Object>
     }
 
     @Override
-    public Object build(DatasetLoader<? extends Rating> datasetLoader) {
+    public Object buildRecommendationModel(DatasetLoader<? extends Rating> datasetLoader) {
         //No se necesitan perfiles porque se examina la base de datos directamente
         return 1l;
     }
 
     @Override
-    public Collection<Recommendation> recommendOnly(DatasetLoader<? extends Rating> datasetLoader, Object model, Integer idUser, java.util.Set<Integer> idItemList) throws UserNotFound {
+    public Collection<Recommendation> recommendToUser(DatasetLoader<? extends Rating> datasetLoader, Object model, Integer idUser, java.util.Set<Integer> candidateItems) throws UserNotFound {
 
         try {
             List<Neighbor> neighbors;
             neighbors = getNeighbors(datasetLoader.getRatingsDataset(), idUser);
 
-            Collection<Recommendation> ret = recommendWithNeighbors(datasetLoader.getRatingsDataset(), idUser, neighbors, idItemList);
+            Collection<Recommendation> ret = recommendWithNeighbors(datasetLoader.getRatingsDataset(), idUser, neighbors, candidateItems);
 
             return ret;
         } catch (CannotLoadRatingsDataset ex) {
@@ -184,7 +184,7 @@ public class TrustModificationKnnMemory extends CollaborativeRecommender<Object>
      * @param ratingsDataset Conjunto de valoraciones.
      * @param idUser Id del usuario activo
      * @param vecinos Vecinos del usuario activo
-     * @param idItemList Lista de productos que se consideran recomendables, es
+     * @param candidateItems Lista de productos que se consideran recomendables, es
      * decir, que podrían ser recomendados si la predicción es alta
      * @return Lista de recomendaciones para el usuario, ordenadas por
      * valoracion predicha.
@@ -195,7 +195,7 @@ public class TrustModificationKnnMemory extends CollaborativeRecommender<Object>
             RatingsDataset<? extends Rating> ratingsDataset,
             Integer idUser,
             List<Neighbor> vecinos,
-            Collection<Integer> idItemList)
+            Collection<Integer> candidateItems)
             throws UserNotFound {
 
         PredictionTechnique predictionTechnique_ = (PredictionTechnique) getParameterValue(PREDICTION_TECHNIQUE);
@@ -217,7 +217,7 @@ public class TrustModificationKnnMemory extends CollaborativeRecommender<Object>
             vecinosTransformados.add(new Neighbor(RecommendationEntity.USER, neighbor.getIdNeighbor(), trust));
         }
 
-        for (int idItem : idItemList) {
+        for (int idItem : candidateItems) {
             Collection<MatchRating> match = new LinkedList<>();
 
             int numNeighborsUsed = 0;
@@ -248,12 +248,12 @@ public class TrustModificationKnnMemory extends CollaborativeRecommender<Object>
     }
 
     @Override
-    public Object loadModel(DatabasePersistence databasePersistence, Collection<Integer> users, Collection<Integer> items) throws FailureInPersistence {
+    public Object loadRecommendationModel(DatabasePersistence databasePersistence, Collection<Integer> users, Collection<Integer> items) throws FailureInPersistence {
         return 1l;
     }
 
     @Override
-    public void saveModel(DatabasePersistence databasePersistence, Object model) throws FailureInPersistence {
+    public void saveRecommendationModel(DatabasePersistence databasePersistence, Object model) throws FailureInPersistence {
         //No hay modelo que guardar.
     }
 }

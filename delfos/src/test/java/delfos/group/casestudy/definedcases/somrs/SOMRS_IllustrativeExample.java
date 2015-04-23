@@ -15,7 +15,7 @@ import delfos.configureddatasets.ConfiguredDatasetsFactory;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.group.groupsofusers.GroupOfUsers;
-import delfos.group.grs.SingleRecommenderSystemModel;
+import delfos.group.grs.SingleRecommendationModel;
 import delfos.group.grs.aggregation.GroupModelPseudoUser;
 import delfos.group.grs.consensus.ConsensusGRS;
 import delfos.group.grs.consensus.itemselector.TopNOfEach;
@@ -157,7 +157,7 @@ public class SOMRS_IllustrativeExample {
 
         for (RecommenderSystem singleUserRS : getCoreRSs()) {
             for (ConsensusGRS consensusGRS : getConsensusGRS(singleUserRS)) {
-                SingleRecommenderSystemModel recommendationModel = consensusGRS.build(datasetLoader);
+                SingleRecommendationModel recommendationModel = consensusGRS.buildRecommendationModel(datasetLoader);
 
                 for (GroupOfUsers groupOfUsers : getGroupFormationTechnique().shuffle(datasetLoader)) {
                     try {

@@ -77,12 +77,12 @@ public class SVDFoldingIn
     }
 
     @Override
-    public TryThisAtHomeSVDModel build(DatasetLoader<? extends Rating> datasetLoader) throws CannotLoadRatingsDataset, CannotLoadRatingsDataset, CannotLoadContentDataset {
-        return super.build(datasetLoader);
+    public TryThisAtHomeSVDModel buildRecommendationModel(DatasetLoader<? extends Rating> datasetLoader) throws CannotLoadRatingsDataset, CannotLoadRatingsDataset, CannotLoadContentDataset {
+        return super.buildRecommendationModel(datasetLoader);
     }
 
     @Override
-    public Collection<Recommendation> recommendOnly(DatasetLoader<? extends Rating> datasetLoader, TryThisAtHomeSVDModel model, Integer idUser, java.util.Set<Integer> idItemList) throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset {
+    public Collection<Recommendation> recommendToUser(DatasetLoader<? extends Rating> datasetLoader, TryThisAtHomeSVDModel model, Integer idUser, java.util.Set<Integer> candidateItems) throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset {
 
         TryThisAtHomeSVDModel incrementedModel;
         if (model.getUsersIndex().containsKey(idUser)) {
@@ -91,17 +91,17 @@ public class SVDFoldingIn
             incrementedModel = incrementModelWithUserRatings(model, datasetLoader, idUser);
         }
 
-        return super.recommendOnly(datasetLoader, incrementedModel, idUser, idItemList);
+        return super.recommendToUser(datasetLoader, incrementedModel, idUser, candidateItems);
     }
 
     @Override
-    public void saveModel(DatabasePersistence databasePersistence, TryThisAtHomeSVDModel model) throws FailureInPersistence {
-        super.saveModel(databasePersistence, model); //To change body of generated methods, choose Tools | Templates.
+    public void saveRecommendationModel(DatabasePersistence databasePersistence, TryThisAtHomeSVDModel model) throws FailureInPersistence {
+        super.saveRecommendationModel(databasePersistence, model); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public TryThisAtHomeSVDModel loadModel(DatabasePersistence databasePersistence, Collection<Integer> users, Collection<Integer> items) throws FailureInPersistence {
-        return super.loadModel(databasePersistence, users, items); //To change body of generated methods, choose Tools | Templates.
+    public TryThisAtHomeSVDModel loadRecommendationModel(DatabasePersistence databasePersistence, Collection<Integer> users, Collection<Integer> items) throws FailureInPersistence {
+        return super.loadRecommendationModel(databasePersistence, users, items); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override

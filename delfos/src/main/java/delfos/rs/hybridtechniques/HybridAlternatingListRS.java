@@ -11,7 +11,7 @@ import delfos.common.parameters.restriction.RecommenderSystemParameterRestrictio
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
 import delfos.rs.RecommenderSystem;
-import delfos.rs.RecommenderSystemBuildingProgressListener;
+import delfos.rs.RecommendationModelBuildingProgressListener;
 import delfos.rs.collaborativefiltering.CollaborativeRecommender;
 import delfos.rs.collaborativefiltering.knn.memorybased.KnnMemoryBasedCFRS;
 import delfos.rs.contentbased.ContentBasedRecommender;
@@ -31,7 +31,7 @@ import java.util.TreeSet;
  *
  * @version 25-Noviembre-2013
  */
-public class HybridAlternatingListRS extends HybridRecommender<HybridRecommenderSystemModel> {
+public class HybridAlternatingListRS extends HybridRecommender<HybridRecommendationModel> {
 
     private static final long serialVersionUID = -3387516993124229948L;
 
@@ -55,39 +55,39 @@ public class HybridAlternatingListRS extends HybridRecommender<HybridRecommender
     }
 
     @Override
-    public HybridRecommenderSystemModel build(DatasetLoader<? extends Rating> datasetLoader) throws CannotLoadRatingsDataset, CannotLoadContentDataset, CannotLoadUsersDataset {
+    public HybridRecommendationModel buildRecommendationModel(DatasetLoader<? extends Rating> datasetLoader) throws CannotLoadRatingsDataset, CannotLoadContentDataset, CannotLoadUsersDataset {
         RecommenderSystem<Object> firstTechnique = (RecommenderSystem<Object>) getParameterValue(FIRST_TECHNIQUE);
-        RecommenderSystemBuildingProgressListener firstTechniqueListener = new RecommenderSystemBuildingProgressListener() {
+        RecommendationModelBuildingProgressListener firstTechniqueListener = new RecommendationModelBuildingProgressListener() {
             @Override
             public void buildingProgressChanged(String actualJob, int percent, long remainingSeconds) {
                 HybridAlternatingListRS.this.fireBuildingProgressChangedEvent(actualJob, percent / 2 + 50, -1);
             }
         };
-        firstTechnique.addBuildingProgressListener(firstTechniqueListener);
-        Object firstTechniqueModel = firstTechnique.build(datasetLoader);
+        firstTechnique.addRecommendationModelBuildingProgressListener(firstTechniqueListener);
+        Object firstTechniqueModel = firstTechnique.buildRecommendationModel(datasetLoader);
 
         RecommenderSystem<Object> secondTechnique = (RecommenderSystem<Object>) getParameterValue(SECOND_TECHNIQUE);
-        RecommenderSystemBuildingProgressListener secondTechniqueListener = new RecommenderSystemBuildingProgressListener() {
+        RecommendationModelBuildingProgressListener secondTechniqueListener = new RecommendationModelBuildingProgressListener() {
             @Override
             public void buildingProgressChanged(String actualJob, int percent, long remainingSeconds) {
                 HybridAlternatingListRS.this.fireBuildingProgressChangedEvent(actualJob, percent / 2, -1);
             }
         };
-        secondTechnique.addBuildingProgressListener(secondTechniqueListener);
-        Object secondTechniqueModel = secondTechnique.build(datasetLoader);
+        secondTechnique.addRecommendationModelBuildingProgressListener(secondTechniqueListener);
+        Object secondTechniqueModel = secondTechnique.buildRecommendationModel(datasetLoader);
 
-        return new HybridRecommenderSystemModel(firstTechniqueModel, secondTechniqueModel);
+        return new HybridRecommendationModel(firstTechniqueModel, secondTechniqueModel);
     }
 
     @Override
-    public Collection<Recommendation> recommendOnly(DatasetLoader<? extends Rating> datasetLoader, HybridRecommenderSystemModel model, Integer idUser, java.util.Set<Integer> idItemList) throws UserNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset, ItemNotFound, NotEnoughtUserInformation {
+    public Collection<Recommendation> recommendToUser(DatasetLoader<? extends Rating> datasetLoader, HybridRecommendationModel model, Integer idUser, java.util.Set<Integer> candidateItems) throws UserNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset, ItemNotFound, NotEnoughtUserInformation {
 
         RecommenderSystem<Object> firstTechnique = (RecommenderSystem<Object>) getParameterValue(FIRST_TECHNIQUE);
 
         RecommenderSystem<Object> secondTechnique = (RecommenderSystem<Object>) getParameterValue(SECOND_TECHNIQUE);
 
-        Collection<Recommendation> firstTechniqueList = firstTechnique.recommendOnly(datasetLoader, model.getModel(0), idUser, idItemList);
-        Collection<Recommendation> secondTechniqueList = secondTechnique.recommendOnly(datasetLoader, model.getModel(1), idUser, idItemList);
+        Collection<Recommendation> firstTechniqueList = firstTechnique.recommendToUser(datasetLoader, model.getModel(0), idUser, candidateItems);
+        Collection<Recommendation> secondTechniqueList = secondTechnique.recommendToUser(datasetLoader, model.getModel(1), idUser, candidateItems);
 
         return joinRecommendationLists(firstTechniqueList, secondTechniqueList);
     }

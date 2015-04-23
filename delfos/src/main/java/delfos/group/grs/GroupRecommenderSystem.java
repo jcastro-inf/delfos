@@ -17,10 +17,10 @@ import java.util.List;
  *
  * @author Jorge Castro Gallardo
  * @version 1.0 13-Feb-2013
- * @param <RecommenderSystemModel>
+ * @param <RecommendationModel>
  * @param <GroupModel>
  */
-public interface GroupRecommenderSystem<RecommenderSystemModel, GroupModel> extends GenericRecommenderSystem<RecommenderSystemModel> {
+public interface GroupRecommenderSystem<RecommendationModel, GroupModel> extends GenericRecommenderSystem<RecommendationModel> {
 
     /**
      * Método utilizado para construir el modelo de los usuarios que pertenecen
@@ -32,7 +32,7 @@ public interface GroupRecommenderSystem<RecommenderSystemModel, GroupModel> exte
      * recomendación que lo necesiten deben sobreescribirlo.
      *
      * @param datasetLoader
-     * @param recommenderSystemModel
+     * @param RecommendationModel
      * @param groupOfUsers Grupo para el que se genera su modelo asociado
      * @return
      * @throws UserNotFound Cuando algún usuario del el usuario del grupo no
@@ -41,7 +41,7 @@ public interface GroupRecommenderSystem<RecommenderSystemModel, GroupModel> exte
      */
     public GroupModel buildGroupModel(
             DatasetLoader<? extends Rating> datasetLoader,
-            RecommenderSystemModel recommenderSystemModel,
+            RecommendationModel RecommendationModel,
             GroupOfUsers groupOfUsers)
             throws UserNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset, NotEnoughtUserInformation;
 
@@ -51,13 +51,13 @@ public interface GroupRecommenderSystem<RecommenderSystemModel, GroupModel> exte
      *
      * @param groupOfUsers Grupo de usuarios para el que se realiza la
      * recomendación
-     * @param idItemList Conjunto de opciones disponibles para recomendar
+     * @param candidateItems Conjunto de opciones disponibles para recomendar
      * @return Lista ordenada de recomendaciones para el grupo
      * @throws UserNotFound Cuando algún usuario del el usuario del grupo no
      * existe
      */
     public Collection<Recommendation> recommendOnly(
-            DatasetLoader<? extends Rating> datasetLoader, RecommenderSystemModel recommenderSystemModel, GroupModel groupModel, GroupOfUsers groupOfUsers, java.util.Set<Integer> idItemList)
+            DatasetLoader<? extends Rating> datasetLoader, RecommendationModel RecommendationModel, GroupModel groupModel, GroupOfUsers groupOfUsers, java.util.Set<Integer> candidateItems)
             throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset, NotEnoughtUserInformation;
 
     /**
@@ -66,16 +66,16 @@ public interface GroupRecommenderSystem<RecommenderSystemModel, GroupModel> exte
      *
      * @param groupOfUsers Grupo de usuarios para el que se realiza la
      * recomendación
-     * @param idItemList Conjunto de opciones disponibles para recomendar
+     * @param candidateItems Conjunto de opciones disponibles para recomendar
      * @return Lista ordenada de recomendaciones para el grupo
      * @throws UserNotFound Cuando algún usuario del el usuario del grupo no
      * existe
      */
     public Collection<Recommendation> recommendOnly(
             DatasetLoader<? extends Rating> datasetLoader,
-            RecommenderSystemModel recommenderSystemModel,
+            RecommendationModel RecommendationModel,
             GroupModel groupModel,
             GroupOfUsers groupOfUsers,
-            Integer... idItemList)
+            Integer... candidateItems)
             throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset, NotEnoughtUserInformation;
 }

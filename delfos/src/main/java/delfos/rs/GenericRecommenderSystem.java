@@ -1,21 +1,21 @@
 package delfos.rs;
 
-import java.util.Collection;
-import delfos.dataset.basic.rating.Rating;
-import delfos.dataset.basic.loader.types.DatasetLoader;
-import delfos.rs.persistence.DatabasePersistence;
-import delfos.rs.persistence.FailureInPersistence;
-import delfos.rs.persistence.FilePersistence;
 import delfos.common.exceptions.dataset.CannotLoadContentDataset;
 import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
 import delfos.common.exceptions.dataset.CannotLoadUsersDataset;
 import delfos.common.parameters.ParameterOwner;
+import delfos.dataset.basic.loader.types.DatasetLoader;
+import delfos.dataset.basic.rating.Rating;
+import delfos.rs.persistence.DatabasePersistence;
+import delfos.rs.persistence.FailureInPersistence;
+import delfos.rs.persistence.FilePersistence;
+import java.util.Collection;
 
 /**
  * Interfaz que implementa cualquier sistema de recomendación, ya sea de
  * recomendación a individuos, a grupos, etc.
  *
- * @param <RecommenderSystemModel> Clase que almacena el modelo de recomendación
+ * @param <RecommendationModel> Clase que almacena el modelo de recomendación
  * del sistema.
  *
  * @author Jorge Castro Gallardo (Universidad de Jaén, Sinbad2)
@@ -23,7 +23,8 @@ import delfos.common.parameters.ParameterOwner;
  * @version 2.0 26-Mayo-2013 Ahora los datasets se pasan por parámetro en cada
  * método.
  */
-public interface GenericRecommenderSystem<RecommenderSystemModel> extends ParameterOwner {
+public interface GenericRecommenderSystem<RecommendationModel>
+        extends ParameterOwner {
 
     /**
      * Añade un listener para que sea notificado del progreso de la construcción
@@ -31,15 +32,17 @@ public interface GenericRecommenderSystem<RecommenderSystemModel> extends Parame
      *
      * @param listener Objeto que desea ser notificado de los cambios
      */
-    public void addBuildingProgressListener(RecommenderSystemBuildingProgressListener listener);
+    public void addRecommendationModelBuildingProgressListener(
+            RecommendationModelBuildingProgressListener listener);
 
     /**
      * Elimina un listener para que no sea notificado más del progreso de la
      * construcción del modelo del sistema de recomendación
      *
-     * @param rl Objeto que desea dejar de ser notificado de los cambios
+     * @param listener Objeto que desea dejar de ser notificado de los cambios
      */
-    public void removeBuildingProgressListener(RecommenderSystemBuildingProgressListener rl);
+    public void removeRecommendationModelBuildingProgressListener(
+            RecommendationModelBuildingProgressListener listener);
 
     /**
      * Esta función debe devolver true si el sistema de recomendación basa su
@@ -60,13 +63,29 @@ public interface GenericRecommenderSystem<RecommenderSystemModel> extends Parame
      * @return Modelo de recomendación calculado a partir del dataset
      * especificado.
      */
-    public RecommenderSystemModel build(DatasetLoader<? extends Rating> datasetLoader) throws CannotLoadRatingsDataset, CannotLoadContentDataset, CannotLoadUsersDataset;
+    public RecommendationModel buildRecommendationModel(
+            DatasetLoader<? extends Rating> datasetLoader)
+            throws CannotLoadRatingsDataset, CannotLoadContentDataset, CannotLoadUsersDataset;
 
-    public RecommenderSystemModel loadModel(FilePersistence filePersistence, Collection<Integer> users, Collection<Integer> items) throws FailureInPersistence;
+    public RecommendationModel loadRecommendationModel(
+            FilePersistence filePersistence,
+            Collection<Integer> users,
+            Collection<Integer> items)
+            throws FailureInPersistence;
 
-    public RecommenderSystemModel loadModel(DatabasePersistence databasePersistence, Collection<Integer> users, Collection<Integer> items) throws FailureInPersistence;
+    public RecommendationModel loadRecommendationModel(
+            DatabasePersistence databasePersistence,
+            Collection<Integer> users,
+            Collection<Integer> items)
+            throws FailureInPersistence;
 
-    public void saveModel(FilePersistence filePersistence, RecommenderSystemModel model) throws FailureInPersistence;
+    public void saveRecommendationModel(
+            FilePersistence filePersistence,
+            RecommendationModel model)
+            throws FailureInPersistence;
 
-    public void saveModel(DatabasePersistence databasePersistence, RecommenderSystemModel model) throws FailureInPersistence;
+    public void saveRecommendationModel(
+            DatabasePersistence databasePersistence,
+            RecommendationModel model)
+            throws FailureInPersistence;
 }

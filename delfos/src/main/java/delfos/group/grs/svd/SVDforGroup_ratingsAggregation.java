@@ -74,7 +74,7 @@ public class SVDforGroup_ratingsAggregation extends GroupRecommenderSystemAdapte
             singleUserSR.setParameterValue(TryThisAtHomeSVD.K, getParameterValue(TryThisAtHomeSVD.K));
         });
 
-        singleUserSR.addBuildingProgressListener(this::fireBuildingProgressChangedEvent);
+        singleUserSR.addRecommendationModelBuildingProgressListener(this::fireBuildingProgressChangedEvent);
     }
 
     @Override
@@ -83,14 +83,14 @@ public class SVDforGroup_ratingsAggregation extends GroupRecommenderSystemAdapte
     }
 
     @Override
-    public TryThisAtHomeSVDModel build(DatasetLoader<? extends Rating> datasetLoader) throws CannotLoadRatingsDataset, CannotLoadContentDataset {
-        return singleUserSR.build(datasetLoader);
+    public TryThisAtHomeSVDModel buildRecommendationModel(DatasetLoader<? extends Rating> datasetLoader) throws CannotLoadRatingsDataset, CannotLoadContentDataset {
+        return singleUserSR.buildRecommendationModel(datasetLoader);
     }
 
     @Override
     public GroupSVDModel buildGroupModel(
             DatasetLoader<? extends Rating> datasetLoader,
-            TryThisAtHomeSVDModel recommenderSystemModel,
+            TryThisAtHomeSVDModel RecommendationModel,
             GroupOfUsers groupOfUsers)
             throws UserNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset {
 
@@ -104,7 +104,7 @@ public class SVDforGroup_ratingsAggregation extends GroupRecommenderSystemAdapte
 
         final int idPseudoUser = rd.getIdPseudoUser();
 
-        TryThisAtHomeSVDModel foldInModel = singleUserSR.incrementModelWithUserRatings(recommenderSystemModel, new DatasetLoaderGiven(datasetLoader, rd), idPseudoUser);
+        TryThisAtHomeSVDModel foldInModel = singleUserSR.incrementModelWithUserRatings(RecommendationModel, new DatasetLoaderGiven(datasetLoader, rd), idPseudoUser);
 
         int idPseudoUserIndex = foldInModel.getUsersIndex().get(idPseudoUser);
 
@@ -118,14 +118,14 @@ public class SVDforGroup_ratingsAggregation extends GroupRecommenderSystemAdapte
     }
 
     @Override
-    public Collection<Recommendation> recommendOnly(DatasetLoader<? extends Rating> datasetLoader, TryThisAtHomeSVDModel recommenderSystemModel, GroupSVDModel groupModel, GroupOfUsers groupOfUsers, java.util.Set<Integer> idItemList) throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset {
+    public Collection<Recommendation> recommendOnly(DatasetLoader<? extends Rating> datasetLoader, TryThisAtHomeSVDModel RecommendationModel, GroupSVDModel groupModel, GroupOfUsers groupOfUsers, java.util.Set<Integer> candidateItems) throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset {
 
         int idUser = -1;
         if (datasetLoader.getRatingsDataset().allUsers().contains(idUser)) {
             idUser--;
         }
 
-        TryThisAtHomeSVDModel extendedModel = TryThisAtHomeSVDModel.addUser(recommenderSystemModel, idUser, groupModel.getGroupFeatures());
-        return singleUserSR.recommendOnly(datasetLoader, extendedModel, idUser, idItemList);
+        TryThisAtHomeSVDModel extendedModel = TryThisAtHomeSVDModel.addUser(RecommendationModel, idUser, groupModel.getGroupFeatures());
+        return singleUserSR.recommendToUser(datasetLoader, extendedModel, idUser, candidateItems);
     }
 }

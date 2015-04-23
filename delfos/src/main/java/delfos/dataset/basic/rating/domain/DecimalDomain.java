@@ -5,7 +5,7 @@ package delfos.dataset.basic.rating.domain;
  *
  * @author Jorge Castro Gallardo (Universidad de Jaén, Sinbad2)
  */
-public class DecimalDomain implements Domain {
+public class DecimalDomain extends Domain {
 
     private static final long serialVersionUID = 1L;
 
@@ -63,7 +63,7 @@ public class DecimalDomain implements Domain {
     }
 
     @Override
-    public Double convertToDomain(Number valueInThisDomain, DecimalDomain destinyDomain) {
+    public Double convertToDecimalDomain(Number valueInThisDomain, DecimalDomain destinyDomain) {
         checkValueIsInDomain(valueInThisDomain);
 
         //From original to [0,1]
@@ -76,7 +76,7 @@ public class DecimalDomain implements Domain {
     }
 
     @Override
-    public Long convertToDomain(Number valueInThisDomain, IntegerDomain destinyDomain) {
+    public Long convertToIntegerDomain(Number valueInThisDomain, IntegerDomain destinyDomain) {
         checkValueIsInDomain(valueInThisDomain);
 
         //From original to [0,1]
@@ -132,7 +132,7 @@ public class DecimalDomain implements Domain {
     public Double getValueAssociatedToProbability(Number probability) {
         ZERO_TO_ONE.checkValueIsInDomain(probability);
 
-        double valueInThisDomain = ZERO_TO_ONE.convertToDomain(probability, this);
+        double valueInThisDomain = ZERO_TO_ONE.convertToDecimalDomain(probability, this);
         return valueInThisDomain;
     }
 

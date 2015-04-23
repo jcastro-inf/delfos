@@ -11,9 +11,9 @@ import delfos.rs.persistence.FailureInPersistence;
  * @author Jorge Castro Gallardo (Sinbad2,Universidad de Jaén)
  * @version 1.0 28-May-2013
  */
-public interface RecommendationModelDatabasePersistence<RecommenderSystemModel> {
+public interface RecommendationModelDatabasePersistence<RecommendationModel> {
 
-    public RecommenderSystemModel loadModel(DatabasePersistence databasePersistence, Collection<Integer> users, Collection<Integer> items) throws FailureInPersistence;
+    public RecommendationModel loadModel(DatabasePersistence databasePersistence, Collection<Integer> users, Collection<Integer> items) throws FailureInPersistence;
 
-    public void saveModel(DatabasePersistence databasePersistence, RecommenderSystemModel model) throws FailureInPersistence;
+    public void saveModel(DatabasePersistence databasePersistence, RecommendationModel model) throws FailureInPersistence;
 }

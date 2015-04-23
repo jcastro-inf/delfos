@@ -150,7 +150,7 @@ public class DefaultGroupCaseStudy extends GroupCaseStudy {
                 executionsResult[execution][split] = new TreeMap<>();
             }
         }
-        groupRecommenderSystem.addBuildingProgressListener(new RecommenderSystemBuildingProgressListener_default(System.out, 5000));
+        groupRecommenderSystem.addRecommendationModelBuildingProgressListener(new RecommenderSystemBuildingProgressListener_default(System.out, 5000));
         initTimes(numEjecuciones, numParticiones);
 
         MeanIterative tiempoParticion = new MeanIterative();
@@ -180,12 +180,12 @@ public class DefaultGroupCaseStudy extends GroupCaseStudy {
                 DatasetLoader<? extends Rating> testDatasetLoader = pairsOfTrainTest[particionActual].getTestDatasetLoader();
 
                 long totalBuildTime;
-                Object groupRecommenderSystemModel;
+                Object groupRecommendationModel;
                 {
                     Chronometer c = new Chronometer();
-                    groupRecommenderSystemModel = groupRecommenderSystem.build(trainDatasetLoader);
-                    if (groupRecommenderSystemModel == null) {
-                        throw new IllegalStateException("The recommenderSystemModel cannot be null");
+                    groupRecommendationModel = groupRecommenderSystem.buildRecommendationModel(trainDatasetLoader);
+                    if (groupRecommendationModel == null) {
+                        throw new IllegalStateException("The RecommendationModel cannot be null");
                     }
 
                     long spent = c.getTotalElapsed();
@@ -206,7 +206,7 @@ public class DefaultGroupCaseStudy extends GroupCaseStudy {
                         taskRecommendGroup.add(new SingleGroupRecommendationTask(
                                 groupRecommenderSystem,
                                 groupRecommendationRequest.predictionPhaseDatasetLoader,
-                                groupRecommenderSystemModel,
+                                groupRecommendationModel,
                                 groupOfUsers,
                                 groupRecommendationRequest.itemsToPredict)
                         );
@@ -240,12 +240,12 @@ public class DefaultGroupCaseStudy extends GroupCaseStudy {
                         throw new IllegalStateException(getAlias() + " --> Cannot recommend to group a null recommendations, should be an empty list instead.");
                     }
 
-                    if (task.getIdItemList() == null) {
+                    if (task.getCandidateItems() == null) {
                         throw new IllegalStateException(getAlias() + " --> Cannot retrieve the group requests.");
                     }
 
                     recomendacionesPorGrupo.get(group).addAll(task.getRecommendations());
-                    solicitudesPorGrupo.get(group).addAll(task.getIdItemList());
+                    solicitudesPorGrupo.get(group).addAll(task.getCandidateItems());
 
                     totalGroupBuildTime += task.getBuildGroupModelTime();
                     totalGroupRecommendationTime += task.getRecommendationTime();

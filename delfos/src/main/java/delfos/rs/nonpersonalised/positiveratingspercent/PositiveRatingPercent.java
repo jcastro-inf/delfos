@@ -31,7 +31,7 @@ public class PositiveRatingPercent extends NonPersonalisedRecommender<Collection
     }
 
     @Override
-    public Collection<Recommendation> build(DatasetLoader<? extends Rating> datasetLoader) throws CannotLoadRatingsDataset, CannotLoadContentDataset, CannotLoadUsersDataset {
+    public Collection<Recommendation> buildRecommendationModel(DatasetLoader<? extends Rating> datasetLoader) throws CannotLoadRatingsDataset, CannotLoadContentDataset, CannotLoadUsersDataset {
         final RatingsDataset<? extends Rating> ratingsDataset = datasetLoader.getRatingsDataset();
 
         final double ratingThreshold = 4;
@@ -71,11 +71,11 @@ public class PositiveRatingPercent extends NonPersonalisedRecommender<Collection
     }
 
     @Override
-    public Collection<Recommendation> recommendOnly(DatasetLoader<? extends Rating> datasetLoader, Collection<Recommendation> model, Collection<Integer> idItemList)
+    public Collection<Recommendation> recommendOnly(DatasetLoader<? extends Rating> datasetLoader, Collection<Recommendation> model, Collection<Integer> candidateItems)
             throws ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset {
         Collection<Recommendation> recommendations = new ArrayList<>();
         model.stream()
-                .filter((recommendation) -> (idItemList.contains(recommendation.getIdItem())))
+                .filter((recommendation) -> (candidateItems.contains(recommendation.getIdItem())))
                 .forEach((recommendation) -> {
                     recommendations.add(new Recommendation(recommendation.getIdItem(), recommendation.getPreference()));
                 });

@@ -95,7 +95,7 @@ public class GroupLevelCaseStudy {
                 DatasetLoader<? extends Rating> testDatasetLoader = pairs[split].getTestDatasetLoader();
 
                 for (GroupRecommenderSystem groupRecommenderSystem : groupRecommenderSystems) {
-                    Object recommenderSystemModel = groupRecommenderSystem.build(trainingDatasetLoader);
+                    Object RecommendationModel = groupRecommenderSystem.buildRecommendationModel(trainingDatasetLoader);
                     Collection<Recommendation> allPredictions = new ArrayList<>();
                     List<Integer> requests = new ArrayList<>();
 
@@ -103,12 +103,12 @@ public class GroupLevelCaseStudy {
 
                         Object groupModel = groupRecommenderSystem.buildGroupModel(
                                 groupRecommendationRequest.predictionPhaseDatasetLoader,
-                                recommenderSystemModel,
+                                RecommendationModel,
                                 group);
 
                         Collection<Recommendation> groupRecommendations = groupRecommenderSystem.recommendOnly(
                                 groupRecommendationRequest.predictionPhaseDatasetLoader,
-                                recommenderSystemModel,
+                                RecommendationModel,
                                 groupModel,
                                 group,
                                 groupRecommendationRequest.itemsToPredict);

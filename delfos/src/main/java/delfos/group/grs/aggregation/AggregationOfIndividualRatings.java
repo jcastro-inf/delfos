@@ -21,9 +21,9 @@ import delfos.dataset.util.DatasetPrinterDeprecated;
 import delfos.dataset.util.DatasetUtilities;
 import delfos.group.groupsofusers.GroupOfUsers;
 import delfos.group.grs.GroupRecommenderSystemAdapter;
-import delfos.group.grs.SingleRecommenderSystemModel;
+import delfos.group.grs.SingleRecommendationModel;
 import delfos.rs.RecommenderSystem;
-import delfos.rs.RecommenderSystemBuildingProgressListener;
+import delfos.rs.RecommendationModelBuildingProgressListener;
 import delfos.rs.collaborativefiltering.knn.memorybased.KnnMemoryBasedCFRS;
 import delfos.rs.explanation.GroupModelWithExplanation;
 import delfos.rs.explanation.PenaltyAggregationExplanation;
@@ -51,7 +51,7 @@ import java.util.TreeMap;
  * @version 12-Enero-2014
  */
 public class AggregationOfIndividualRatings
-        extends GroupRecommenderSystemAdapter<SingleRecommenderSystemModel, GroupModelWithExplanation<GroupModelPseudoUser, ? extends Object>> {
+        extends GroupRecommenderSystemAdapter<SingleRecommendationModel, GroupModelWithExplanation<GroupModelPseudoUser, ? extends Object>> {
 
     private static final long serialVersionUID = 1L;
     /**
@@ -117,17 +117,17 @@ public class AggregationOfIndividualRatings
     }
 
     @Override
-    public SingleRecommenderSystemModel build(DatasetLoader<? extends Rating> datasetLoader) throws CannotLoadRatingsDataset, CannotLoadContentDataset {
+    public SingleRecommendationModel buildRecommendationModel(DatasetLoader<? extends Rating> datasetLoader) throws CannotLoadRatingsDataset, CannotLoadContentDataset {
 
-        RecommenderSystemBuildingProgressListener buildListener = this::fireBuildingProgressChangedEvent;
-        getSingleUserRecommender().addBuildingProgressListener(buildListener);
-        Object build = getSingleUserRecommender().build(datasetLoader);
-        getSingleUserRecommender().removeBuildingProgressListener(buildListener);
-        return new SingleRecommenderSystemModel(build);
+        RecommendationModelBuildingProgressListener buildListener = this::fireBuildingProgressChangedEvent;
+        getSingleUserRecommender().addRecommendationModelBuildingProgressListener(buildListener);
+        Object build = getSingleUserRecommender().buildRecommendationModel(datasetLoader);
+        getSingleUserRecommender().removeRecommendationModelBuildingProgressListener(buildListener);
+        return new SingleRecommendationModel(build);
     }
 
     @Override
-    public GroupModelWithExplanation<GroupModelPseudoUser, ? extends Object> buildGroupModel(DatasetLoader<? extends Rating> datasetLoader, SingleRecommenderSystemModel recommenderSystemModel, GroupOfUsers groupOfUsers) throws UserNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset, NotEnoughtUserInformation {
+    public GroupModelWithExplanation<GroupModelPseudoUser, ? extends Object> buildGroupModel(DatasetLoader<? extends Rating> datasetLoader, SingleRecommendationModel RecommendationModel, GroupOfUsers groupOfUsers) throws UserNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset, NotEnoughtUserInformation {
 
         GroupModelWithExplanation<GroupModelPseudoUser, ? extends Object> groupModelWithExplanation;
         AggregationOperator aggregationOperator = getAggregationOperator();
@@ -142,13 +142,13 @@ public class AggregationOfIndividualRatings
 
     @Override
     public Collection<Recommendation> recommendOnly(
-            DatasetLoader<? extends Rating> datasetLoader, SingleRecommenderSystemModel recommenderSystemModel, GroupModelWithExplanation<GroupModelPseudoUser, ? extends Object> groupModel, GroupOfUsers groupOfUsers, java.util.Set<Integer> idItemList)
+            DatasetLoader<? extends Rating> datasetLoader, SingleRecommendationModel RecommendationModel, GroupModelWithExplanation<GroupModelPseudoUser, ? extends Object> groupModel, GroupOfUsers groupOfUsers, java.util.Set<Integer> candidateItems)
             throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset, NotEnoughtUserInformation {
 
         //Recojo los parámetros en variables
         RecommenderSystem recommenderSystem = getSingleUserRecommender();
         Map<Integer, Number> groupRatings_Number = groupModel.getGroupModel().getRatings();
-        Collection<Recommendation> groupRecom = recommendWithGroupRatings(datasetLoader, recommenderSystem, recommenderSystemModel, groupRatings_Number, idItemList);
+        Collection<Recommendation> groupRecom = recommendWithGroupRatings(datasetLoader, recommenderSystem, RecommendationModel, groupRatings_Number, candidateItems);
 
         return groupRecom;
     }
@@ -250,8 +250,8 @@ public class AggregationOfIndividualRatings
     public static Collection<Recommendation> recommendWithGroupRatings(
             DatasetLoader<? extends Rating> datasetLoader,
             RecommenderSystem recommenderSystem,
-            SingleRecommenderSystemModel recommenderSystemModel,
-            Map<Integer, Number> groupRatings, Set<Integer> idItemList) throws ItemNotFound, NotEnoughtUserInformation, UserNotFound, CannotLoadContentDataset, CannotLoadRatingsDataset {
+            SingleRecommendationModel RecommendationModel,
+            Map<Integer, Number> groupRatings, Set<Integer> candidateItems) throws ItemNotFound, NotEnoughtUserInformation, UserNotFound, CannotLoadContentDataset, CannotLoadRatingsDataset {
 
         Map<Integer, Rating> groupRatings_Ratings = DatasetUtilities.getUserMap_Rating(-1, groupRatings);
         PseudoUserRatingsDataset<Rating> ratingsDataset_withPseudoUser = new PseudoUserRatingsDataset<>(
@@ -262,11 +262,11 @@ public class AggregationOfIndividualRatings
             DatasetPrinterDeprecated.printCompactRatingTable(ratingsDataset_withPseudoUser, Arrays.asList(idGroup), ratingsDataset_withPseudoUser.getUserRated(idGroup));
         }
         Collection<Recommendation> groupRecom;
-        groupRecom = recommenderSystem.recommendOnly(
+        groupRecom = recommenderSystem.recommendToUser(
                 new DatasetLoaderGiven(datasetLoader, ratingsDataset_withPseudoUser),
-                recommenderSystemModel.getRecommenderSystemModel(),
+                RecommendationModel.getRecommendationModel(),
                 idGroup,
-                idItemList);
+                candidateItems);
         return groupRecom;
     }
 }

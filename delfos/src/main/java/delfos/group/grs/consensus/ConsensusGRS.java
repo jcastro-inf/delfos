@@ -25,7 +25,7 @@ import delfos.dataset.util.DatasetOperations;
 import delfos.factories.AggregationOperatorFactory;
 import delfos.group.groupsofusers.GroupOfUsers;
 import delfos.group.grs.GroupRecommenderSystemAdapter;
-import delfos.group.grs.SingleRecommenderSystemModel;
+import delfos.group.grs.SingleRecommendationModel;
 import delfos.group.grs.aggregation.AggregationOfIndividualRecommendations;
 import delfos.group.grs.aggregation.GroupModelPseudoUser;
 import delfos.group.grs.consensus.itemselector.BordaCount;
@@ -34,7 +34,7 @@ import delfos.group.grs.recommendations.GroupRecommendations;
 import delfos.group.grs.recommendations.GroupRecommendationsWithMembersRecommendations;
 import delfos.io.csv.dataset.DatasetToCSV;
 import delfos.rs.RecommenderSystem;
-import delfos.rs.RecommenderSystemBuildingProgressListener;
+import delfos.rs.RecommendationModelBuildingProgressListener;
 import delfos.rs.collaborativefiltering.svd.SVDFoldingIn;
 import delfos.rs.recommendation.Recommendation;
 import delfos.rs.recommendation.RecommendationComputationDetails;
@@ -60,7 +60,7 @@ import org.jdom2.JDOMException;
  *
  * @version 02-Mayo-2014
  */
-public class ConsensusGRS extends GroupRecommenderSystemAdapter<SingleRecommenderSystemModel, GroupModelPseudoUser> {
+public class ConsensusGRS extends GroupRecommenderSystemAdapter<SingleRecommendationModel, GroupModelPseudoUser> {
 
     private static final long serialVersionUID = 1L;
     /**
@@ -139,17 +139,17 @@ public class ConsensusGRS extends GroupRecommenderSystemAdapter<SingleRecommende
     }
 
     @Override
-    public SingleRecommenderSystemModel build(DatasetLoader<? extends Rating> datasetLoader) throws CannotLoadRatingsDataset, CannotLoadContentDataset {
+    public SingleRecommendationModel buildRecommendationModel(DatasetLoader<? extends Rating> datasetLoader) throws CannotLoadRatingsDataset, CannotLoadContentDataset {
 
         saveDataset(datasetLoader);
 
-        RecommenderSystemBuildingProgressListener buildListener = this::fireBuildingProgressChangedEvent;
+        RecommendationModelBuildingProgressListener buildListener = this::fireBuildingProgressChangedEvent;
         RecommenderSystem singleUserRecommender = getSingleUserRecommender();
-        singleUserRecommender.addBuildingProgressListener(buildListener);
-        Object innerRecommendationModel = singleUserRecommender.build(datasetLoader);
-        singleUserRecommender.removeBuildingProgressListener(buildListener);
+        singleUserRecommender.addRecommendationModelBuildingProgressListener(buildListener);
+        Object innerRecommendationModel = singleUserRecommender.buildRecommendationModel(datasetLoader);
+        singleUserRecommender.removeRecommendationModelBuildingProgressListener(buildListener);
 
-        return new SingleRecommenderSystemModel(innerRecommendationModel);
+        return new SingleRecommendationModel(innerRecommendationModel);
     }
 
     private void saveDataset(DatasetLoader<? extends Rating> datasetLoader) throws CannotLoadRatingsDataset {
@@ -166,7 +166,7 @@ public class ConsensusGRS extends GroupRecommenderSystemAdapter<SingleRecommende
     }
 
     @Override
-    public GroupModelPseudoUser buildGroupModel(DatasetLoader<? extends Rating> datasetLoader, SingleRecommenderSystemModel recommenderSystemModel, GroupOfUsers groupOfUsers) throws UserNotFound, CannotLoadRatingsDataset {
+    public GroupModelPseudoUser buildGroupModel(DatasetLoader<? extends Rating> datasetLoader, SingleRecommendationModel RecommendationModel, GroupOfUsers groupOfUsers) throws UserNotFound, CannotLoadRatingsDataset {
         AggregationOperator aggregationOperator = getAggregationOperator();
         Map<Integer, Number> groupAggregatedProfile = getGroupProfile(datasetLoader, aggregationOperator, groupOfUsers);
         return new GroupModelPseudoUser(groupOfUsers, groupAggregatedProfile);
@@ -174,10 +174,10 @@ public class ConsensusGRS extends GroupRecommenderSystemAdapter<SingleRecommende
 
     @Override
     public Collection<Recommendation> recommendOnly(
-            DatasetLoader<? extends Rating> datasetLoader, SingleRecommenderSystemModel recommenderSystemModel, GroupModelPseudoUser groupModel, GroupOfUsers groupOfUsers, java.util.Set<Integer> idItemList)
+            DatasetLoader<? extends Rating> datasetLoader, SingleRecommendationModel RecommendationModel, GroupModelPseudoUser groupModel, GroupOfUsers groupOfUsers, java.util.Set<Integer> candidateItems)
             throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset, NotEnoughtUserInformation {
 
-        GroupRecommendationsWithMembersRecommendations groupRecommendationsWithMembersRecommendations = recommendOnlyWithMembersRecommendations(datasetLoader, recommenderSystemModel, groupModel, groupOfUsers, idItemList);
+        GroupRecommendationsWithMembersRecommendations groupRecommendationsWithMembersRecommendations = recommendOnlyWithMembersRecommendations(datasetLoader, RecommendationModel, groupModel, groupOfUsers, candidateItems);
 
         return groupRecommendationsWithMembersRecommendations.getRecommendations();
 
@@ -185,10 +185,10 @@ public class ConsensusGRS extends GroupRecommenderSystemAdapter<SingleRecommende
 
     public GroupRecommendationsWithMembersRecommendations recommendOnlyWithMembersRecommendations(
             DatasetLoader<? extends Rating> datasetLoader,
-            SingleRecommenderSystemModel recommenderSystemModel,
+            SingleRecommendationModel RecommendationModel,
             GroupModelPseudoUser groupModel,
             GroupOfUsers groupOfUsers,
-            Set<Integer> idItemList)
+            Set<Integer> candidateItems)
             throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset, NotEnoughtUserInformation {
 
         final GroupRecommendationsSelector itemSelector = new BordaCount();
@@ -206,7 +206,7 @@ public class ConsensusGRS extends GroupRecommenderSystemAdapter<SingleRecommende
 
         saveGroupInputDataAndRequests(
                 membersRatings,
-                idItemList
+                candidateItems
         );
 
         Map<Integer, Collection<Recommendation>> membersRecommendationsList
@@ -214,8 +214,8 @@ public class ConsensusGRS extends GroupRecommenderSystemAdapter<SingleRecommende
                         groupOfUsers.getGroupMembers(),
                         singleUserRecommenderSystem,
                         datasetLoader,
-                        recommenderSystemModel,
-                        idItemList);
+                        RecommendationModel,
+                        candidateItems);
 
         Collection<Recommendation> groupRecommendationsList = AggregationOfIndividualRecommendations.aggregateLists(aggregationOperator, membersRecommendationsList);
 
@@ -343,7 +343,7 @@ public class ConsensusGRS extends GroupRecommenderSystemAdapter<SingleRecommende
 
     public <RatingType extends Rating> void saveGroupInputDataAndRequests(
             Map<Integer, Map<Integer, RatingType>> membersRatings,
-            Collection<Integer> idItemList) {
+            Collection<Integer> candidateItems) {
 
         File consensusInputFilesDirectory = (File) getParameterValue(CONSENSUS_INPUT_FILES_DIRECTORY);
         if (!consensusInputFilesDirectory.exists()) {
@@ -352,12 +352,12 @@ public class ConsensusGRS extends GroupRecommenderSystemAdapter<SingleRecommende
 
         HashCodeBuilder hashBuilder = new HashCodeBuilder(37, 11);
         hashBuilder.append(membersRatings);
-        hashBuilder.append(idItemList);
+        hashBuilder.append(candidateItems);
         File groupPredictionRequestsFile = new File(
                 consensusInputFilesDirectory.getAbsolutePath() + File.separator
                 + membersRatings.keySet() + "_groupDataAndRequests.xml");
 
-        ConsensusOfIndividualRecommendationsToXML.writeRecommendationMembersRatingsXML(membersRatings, idItemList, groupPredictionRequestsFile);
+        ConsensusOfIndividualRecommendationsToXML.writeRecommendationMembersRatingsXML(membersRatings, candidateItems, groupPredictionRequestsFile);
     }
 
     @Override

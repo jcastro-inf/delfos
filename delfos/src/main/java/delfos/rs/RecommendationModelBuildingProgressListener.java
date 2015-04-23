@@ -6,7 +6,7 @@ package delfos.rs;
  *
  * @author Jorge Castro Gallardo (Universidad de Jaén, Sinbad2)
  */
-public interface RecommenderSystemBuildingProgressListener {
+public interface RecommendationModelBuildingProgressListener {
 
     /**
      * Método que se invocará cuando el sistema de recomendación tenga un
