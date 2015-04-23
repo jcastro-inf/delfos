@@ -19,6 +19,7 @@ import org.jdom2.output.XMLOutputter;
 import delfos.ERROR_CODES;
 import delfos.Constants;
 import delfos.common.Global;
+import delfos.configuration.ConfigurationManager;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.loader.types.ContentDatasetLoader;
 import delfos.dataset.basic.loader.types.DatasetLoader;
@@ -48,7 +49,7 @@ public final class ConfiguredDatasetsFactory {
     private static final String machineName;
 
     private static final File fileOfConfiguredDatasets
-            = new File(Constants.CONFIGURATION_DIRECTORY.getPath() + File.separator + "configuredDatasets@" + machineName + ".xml");
+            = new File(ConfigurationManager.CONFIGURATION_DIRECTORY.getPath() + File.separator + "configuredDatasets@" + machineName + ".xml");
 
     public static final String CONFIGURED_DATASETS_ROOT_ELEMENT_NAME = "ConfiguredDatasets";
 

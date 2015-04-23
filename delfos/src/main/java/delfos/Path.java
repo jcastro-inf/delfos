@@ -1,9 +1,9 @@
 package delfos;
 
-import static delfos.Constants.CONFIGURATION_DIRECTORY;
 import delfos.common.Global;
 import delfos.common.parameters.ParameterOwnerAdapter;
 import delfos.common.parameters.ParameterOwnerType;
+import delfos.configuration.ConfigurationManager;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -39,12 +39,6 @@ import org.jdom2.output.XMLOutputter;
  */
 public class Path extends ParameterOwnerAdapter {
 
-    /**
-     * Nombre del archivo donde se guardan los valores de configuración de las
-     * rutas por defecto de la biblioteca de recomendación.
-     */
-    public static final File CONFIGURATION_FILE_NAME = new File(CONFIGURATION_DIRECTORY.getPath() + File.separator + "path.config");
-    private static final long serialVersionUID = 1L;
     private static Path instance;
 
     /**
@@ -52,14 +46,14 @@ public class Path extends ParameterOwnerAdapter {
      */
     private static void init() {
 
-        if (!CONFIGURATION_DIRECTORY.exists()) {
-            boolean mkdir = CONFIGURATION_DIRECTORY.mkdir();
+        if (!ConfigurationManager.CONFIGURATION_DIRECTORY.exists()) {
+            boolean mkdir = ConfigurationManager.CONFIGURATION_DIRECTORY.mkdir();
             if (!mkdir) {
-                IOException ex = new IOException("Cannot create '" + CONFIGURATION_DIRECTORY.getAbsolutePath() + "' directory");
+                IOException ex = new IOException("Cannot create '" + ConfigurationManager.CONFIGURATION_DIRECTORY.getAbsolutePath() + "' directory");
                 ERROR_CODES.CANNOT_WRITE_LIBRARY_CONFIG_FILE.exit(ex);
             }
         } else {
-            Global.showMessage("Configuration directory exists. (" + CONFIGURATION_DIRECTORY.getAbsolutePath() + ")\n");
+            Global.showMessage("Configuration directory exists. (" + ConfigurationManager.CONFIGURATION_DIRECTORY.getAbsolutePath() + ")\n");
         }
 
         if (instance == null) {
@@ -75,7 +69,7 @@ public class Path extends ParameterOwnerAdapter {
      * elegir los valores y lo crea.
      */
     private Path() {
-        if (CONFIGURATION_FILE_NAME.exists()) {
+        if (ConfigurationManager.CONFIGURATION_FILE_NAME.exists()) {
             readFile();
             File datasetDirectoryFile = new File(datasetDirectory);
             if (!datasetDirectoryFile.exists() || !datasetDirectoryFile.isDirectory()) {
@@ -178,7 +172,7 @@ public class Path extends ParameterOwnerAdapter {
         boolean correcto = false;
         try {
             SAXBuilder builder = new SAXBuilder();
-            Document doc = builder.build(CONFIGURATION_FILE_NAME);
+            Document doc = builder.build(ConfigurationManager.CONFIGURATION_FILE_NAME);
 
             Element config = doc.getRootElement();
 
@@ -228,7 +222,7 @@ public class Path extends ParameterOwnerAdapter {
         Document doc = new Document(config);
         XMLOutputter outputter = new XMLOutputter(Constants.getXMLFormat());
         try {
-            FileWriter fileWriter = new FileWriter(CONFIGURATION_FILE_NAME);
+            FileWriter fileWriter = new FileWriter(ConfigurationManager.CONFIGURATION_FILE_NAME);
             outputter.output(doc, fileWriter);
             fileWriter.close();
         } catch (IOException ex) {

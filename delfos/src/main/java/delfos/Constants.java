@@ -2,6 +2,7 @@ package delfos;
 
 import delfos.common.Global;
 import delfos.common.parallelwork.Parallelisation;
+import delfos.configuration.ConfigurationManager;
 import delfos.view.InitialFrame;
 import delfos.view.SwingGUI;
 import delfos.view.recommendation.RecommendationWindow;
@@ -22,14 +23,6 @@ import org.jdom2.output.Format;
  * @version 1.1 15/11/2012
  */
 public class Constants {
-
-    /**
-     * Directorio dentro del que sólo se guardan archivos de configuración.
-     */
-    public static File CONFIGURATION_DIRECTORY = new File(
-            "~" + File.separator
-            + ".config" + File.separator
-            + ".delfos" + File.separator);
 
     /**
      * Parameter to specify the location of the directory that contains the
@@ -180,17 +173,17 @@ public class Constants {
 
         if (consoleParameters.isDefined(LIBRARY_CONFIGURATION_DIRECTORY)) {
             String configDirectory = consoleParameters.getValue(LIBRARY_CONFIGURATION_DIRECTORY);
-            CONFIGURATION_DIRECTORY = new File(configDirectory + File.separator);
+            ConfigurationManager.CONFIGURATION_DIRECTORY = new File(configDirectory + File.separator);
         }
 
-        if (!CONFIGURATION_DIRECTORY.exists()) {
-            boolean mkdir = CONFIGURATION_DIRECTORY.mkdirs();
+        if (!ConfigurationManager.CONFIGURATION_DIRECTORY.exists()) {
+            boolean mkdir = ConfigurationManager.CONFIGURATION_DIRECTORY.mkdirs();
             if (!mkdir) {
-                IOException ex = new IOException("Cannot create '" + CONFIGURATION_DIRECTORY.getAbsolutePath() + "' directory");
+                IOException ex = new IOException("Cannot create '" + ConfigurationManager.CONFIGURATION_DIRECTORY.getAbsolutePath() + "' directory");
                 ERROR_CODES.CANNOT_WRITE_LIBRARY_CONFIG_FILE.exit(ex);
             }
         } else {
-            Global.showMessage("Configuration directory exists. (" + CONFIGURATION_DIRECTORY.getAbsolutePath() + ")\n");
+            Global.showMessage("Configuration directory exists. (" + ConfigurationManager.CONFIGURATION_DIRECTORY.getAbsolutePath() + ")\n");
         }
 
         Locale.setDefault(Locale.ENGLISH);

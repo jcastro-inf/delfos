@@ -3,6 +3,7 @@ package delfos.view;
 import delfos.Constants;
 import delfos.ERROR_CODES;
 import delfos.common.Global;
+import delfos.configuration.ConfigurationManager;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -26,7 +27,7 @@ import java.util.TreeMap;
  */
 public class SwingGUIConfigurationFile {
 
-    private static final File f = new File(Constants.CONFIGURATION_DIRECTORY.getPath() + File.separator + "swing-gui.config");
+    private static final File f = new File(ConfigurationManager.CONFIGURATION_DIRECTORY.getPath() + File.separator + "swing-gui.config");
     private static Map<String, String> cache;
 
     static {
