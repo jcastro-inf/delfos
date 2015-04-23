@@ -95,10 +95,10 @@ public class Recommend implements CaseUseManager {
                 Global.showMessage("\t" + idItemList + "\n");
             }
 
-            Object recommenderSystemModel;
+            Object RecommendationModel;
             try {
                 Global.showMessageTimestamped("Loading recommendation model");
-                recommenderSystemModel = PersistenceMethodStrategy.loadModel(groupRecommenderSystem, rsc.persistenceMethod, targetGroup.getGroupMembers(), idItemList);
+                RecommendationModel = PersistenceMethodStrategy.loadModel(groupRecommenderSystem, rsc.persistenceMethod, targetGroup.getGroupMembers(), idItemList);
                 Global.showMessageTimestamped("Loaded recommendation model");
             } catch (FailureInPersistence ex) {
                 ERROR_CODES.FAILURE_IN_PERSISTENCE.exit(ex);
@@ -107,8 +107,8 @@ public class Recommend implements CaseUseManager {
 
             Object groupModel;
             try {
-                groupModel = groupRecommenderSystem.buildGroupModel(datasetLoader, recommenderSystemModel, targetGroup);
-                recommendations = groupRecommenderSystem.recommendOnly(datasetLoader, recommenderSystemModel, groupModel, targetGroup, idItemList);
+                groupModel = groupRecommenderSystem.buildGroupModel(datasetLoader, RecommendationModel, targetGroup);
+                recommendations = groupRecommenderSystem.recommendOnly(datasetLoader, RecommendationModel, groupModel, targetGroup, idItemList);
             } catch (UserNotFound ex) {
                 ERROR_CODES.USER_NOT_FOUND.exit(ex);
                 throw new IllegalArgumentException(ex);

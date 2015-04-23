@@ -4,7 +4,7 @@ import delfos.common.aggregationoperators.penalty.functions.PenaltyWholeMatrix;
 import delfos.constants.DelfosTest;
 import delfos.dataset.loaders.csv.CSVfileDatasetLoader_table;
 import delfos.group.groupsofusers.GroupOfUsers;
-import delfos.group.grs.SingleRecommenderSystemModel;
+import delfos.group.grs.SingleRecommendationModel;
 import delfos.group.grs.aggregation.GroupModelPseudoUser;
 import delfos.group.grs.penalty.grouper.Grouper;
 import delfos.group.grs.penalty.grouper.GrouperByDataClustering;
@@ -33,7 +33,7 @@ public class PenaltyExcelExample extends DelfosTest {
 
         PenaltyGRS_Ratings penaltyGRS_Ratings = new PenaltyGRS_Ratings(new SVDFoldingIn(10, 1000), new PenaltyWholeMatrix(1, 3), itemGrouper, null);
 
-        SingleRecommenderSystemModel recommendationModel = penaltyGRS_Ratings.build(datasetLoader);
+        SingleRecommendationModel recommendationModel = penaltyGRS_Ratings.build(datasetLoader);
 
         GroupModelPseudoUser groupModel = penaltyGRS_Ratings.buildGroupModel(datasetLoader, recommendationModel, groupOfUsers);
 

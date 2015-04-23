@@ -25,7 +25,7 @@ import delfos.dataset.util.DatasetOperations;
 import delfos.factories.AggregationOperatorFactory;
 import delfos.group.groupsofusers.GroupOfUsers;
 import delfos.group.grs.GroupRecommenderSystemAdapter;
-import delfos.group.grs.SingleRecommenderSystemModel;
+import delfos.group.grs.SingleRecommendationModel;
 import delfos.group.grs.aggregation.AggregationOfIndividualRecommendations;
 import delfos.group.grs.aggregation.GroupModelPseudoUser;
 import delfos.group.grs.consensus.itemselector.BordaCount;
@@ -60,7 +60,7 @@ import org.jdom2.JDOMException;
  *
  * @version 02-Mayo-2014
  */
-public class ConsensusGRS extends GroupRecommenderSystemAdapter<SingleRecommenderSystemModel, GroupModelPseudoUser> {
+public class ConsensusGRS extends GroupRecommenderSystemAdapter<SingleRecommendationModel, GroupModelPseudoUser> {
 
     private static final long serialVersionUID = 1L;
     /**
@@ -139,7 +139,7 @@ public class ConsensusGRS extends GroupRecommenderSystemAdapter<SingleRecommende
     }
 
     @Override
-    public SingleRecommenderSystemModel build(DatasetLoader<? extends Rating> datasetLoader) throws CannotLoadRatingsDataset, CannotLoadContentDataset {
+    public SingleRecommendationModel build(DatasetLoader<? extends Rating> datasetLoader) throws CannotLoadRatingsDataset, CannotLoadContentDataset {
 
         saveDataset(datasetLoader);
 
@@ -149,7 +149,7 @@ public class ConsensusGRS extends GroupRecommenderSystemAdapter<SingleRecommende
         Object innerRecommendationModel = singleUserRecommender.build(datasetLoader);
         singleUserRecommender.removeBuildingProgressListener(buildListener);
 
-        return new SingleRecommenderSystemModel(innerRecommendationModel);
+        return new SingleRecommendationModel(innerRecommendationModel);
     }
 
     private void saveDataset(DatasetLoader<? extends Rating> datasetLoader) throws CannotLoadRatingsDataset {
@@ -166,7 +166,7 @@ public class ConsensusGRS extends GroupRecommenderSystemAdapter<SingleRecommende
     }
 
     @Override
-    public GroupModelPseudoUser buildGroupModel(DatasetLoader<? extends Rating> datasetLoader, SingleRecommenderSystemModel recommenderSystemModel, GroupOfUsers groupOfUsers) throws UserNotFound, CannotLoadRatingsDataset {
+    public GroupModelPseudoUser buildGroupModel(DatasetLoader<? extends Rating> datasetLoader, SingleRecommendationModel RecommendationModel, GroupOfUsers groupOfUsers) throws UserNotFound, CannotLoadRatingsDataset {
         AggregationOperator aggregationOperator = getAggregationOperator();
         Map<Integer, Number> groupAggregatedProfile = getGroupProfile(datasetLoader, aggregationOperator, groupOfUsers);
         return new GroupModelPseudoUser(groupOfUsers, groupAggregatedProfile);
@@ -174,10 +174,10 @@ public class ConsensusGRS extends GroupRecommenderSystemAdapter<SingleRecommende
 
     @Override
     public Collection<Recommendation> recommendOnly(
-            DatasetLoader<? extends Rating> datasetLoader, SingleRecommenderSystemModel recommenderSystemModel, GroupModelPseudoUser groupModel, GroupOfUsers groupOfUsers, java.util.Set<Integer> idItemList)
+            DatasetLoader<? extends Rating> datasetLoader, SingleRecommendationModel RecommendationModel, GroupModelPseudoUser groupModel, GroupOfUsers groupOfUsers, java.util.Set<Integer> idItemList)
             throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset, NotEnoughtUserInformation {
 
-        GroupRecommendationsWithMembersRecommendations groupRecommendationsWithMembersRecommendations = recommendOnlyWithMembersRecommendations(datasetLoader, recommenderSystemModel, groupModel, groupOfUsers, idItemList);
+        GroupRecommendationsWithMembersRecommendations groupRecommendationsWithMembersRecommendations = recommendOnlyWithMembersRecommendations(datasetLoader, RecommendationModel, groupModel, groupOfUsers, idItemList);
 
         return groupRecommendationsWithMembersRecommendations.getRecommendations();
 
@@ -185,7 +185,7 @@ public class ConsensusGRS extends GroupRecommenderSystemAdapter<SingleRecommende
 
     public GroupRecommendationsWithMembersRecommendations recommendOnlyWithMembersRecommendations(
             DatasetLoader<? extends Rating> datasetLoader,
-            SingleRecommenderSystemModel recommenderSystemModel,
+            SingleRecommendationModel RecommendationModel,
             GroupModelPseudoUser groupModel,
             GroupOfUsers groupOfUsers,
             Set<Integer> idItemList)
@@ -214,7 +214,7 @@ public class ConsensusGRS extends GroupRecommenderSystemAdapter<SingleRecommende
                         groupOfUsers.getGroupMembers(),
                         singleUserRecommenderSystem,
                         datasetLoader,
-                        recommenderSystemModel,
+                        RecommendationModel,
                         idItemList);
 
         Collection<Recommendation> groupRecommendationsList = AggregationOfIndividualRecommendations.aggregateLists(aggregationOperator, membersRecommendationsList);

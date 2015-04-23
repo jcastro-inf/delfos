@@ -117,7 +117,7 @@ public class GroupRecommenderSystemWithPreFilter extends GroupRecommenderSystemA
     }
 
     @Override
-    public GroupModelWithExplanation<GroupModelRatingsPreFilter, ? extends Object> buildGroupModel(DatasetLoader<? extends Rating> datasetLoader, Object recommenderSystemModel, GroupOfUsers groupOfUsers) throws UserNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset, NotEnoughtUserInformation {
+    public GroupModelWithExplanation<GroupModelRatingsPreFilter, ? extends Object> buildGroupModel(DatasetLoader<? extends Rating> datasetLoader, Object RecommendationModel, GroupOfUsers groupOfUsers) throws UserNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset, NotEnoughtUserInformation {
         Map<Integer, Map<Integer, Rating>> filteredRatings = getGroupRatingsFilter().getFilteredRatings(datasetLoader.getRatingsDataset(), groupOfUsers);
 
         checkFilteredRatings(datasetLoader, groupOfUsers, filteredRatings);
@@ -140,7 +140,7 @@ public class GroupRecommenderSystemWithPreFilter extends GroupRecommenderSystemA
 
         Object innerGRSGroupModel = getGroupRecommenderSystem().buildGroupModel(
                 new DatasetLoaderGiven(datasetLoader, modifiedDataset),
-                recommenderSystemModel,
+                RecommendationModel,
                 new GroupOfUsers(pseudoMembers.keySet()));
 
         final Object explanation;
@@ -170,7 +170,7 @@ public class GroupRecommenderSystemWithPreFilter extends GroupRecommenderSystemA
 
     @Override
     public Collection<Recommendation> recommendOnly(
-            DatasetLoader<? extends Rating> datasetLoader, Object recommenderSystemModel, GroupModelWithExplanation<GroupModelRatingsPreFilter, ? extends Object> groupModelWithExplanation, GroupOfUsers groupOfUsers, java.util.Set<Integer> idItemList)
+            DatasetLoader<? extends Rating> datasetLoader, Object RecommendationModel, GroupModelWithExplanation<GroupModelRatingsPreFilter, ? extends Object> groupModelWithExplanation, GroupOfUsers groupOfUsers, java.util.Set<Integer> idItemList)
             throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset, NotEnoughtUserInformation {
 
         Object innerGRSGroupModel = groupModelWithExplanation.getGroupModel().getInnerGRSGroupModel();
@@ -191,7 +191,7 @@ public class GroupRecommenderSystemWithPreFilter extends GroupRecommenderSystemA
         try {
             Collection<Recommendation> recommendations = getGroupRecommenderSystem().recommendOnly(
                     new DatasetLoaderGiven(datasetLoader, modifiedDataset),
-                    recommenderSystemModel,
+                    RecommendationModel,
                     innerGRSGroupModel,
                     new GroupOfUsers(pseudoMembers.keySet()),
                     idItemList);

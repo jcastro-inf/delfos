@@ -11,7 +11,7 @@ import delfos.rs.contentbased.ContentBasedRecommender;
  * de la clase <code>{@link ContentBasedRecommender}</code>.
  *
  *
- * @param <RecommenderSystemModel> Clase que almacena el modelo de recomendación
+ * @param <RecommendationModel> Clase que almacena el modelo de recomendación
  * del sistema.
  *
  * @author Jorge Castro Gallardo (Universidad de Jaén, Sinbad2)
@@ -19,9 +19,9 @@ import delfos.rs.contentbased.ContentBasedRecommender;
  * @version 2.0 26-Mayo-2013 Ahora los datasets se pasan por parámetro en cada
  * método.
  */
-public abstract class RecommenderSystemAdapter<RecommenderSystemModel>
-        extends GenericRecommenderSystemAdapter<RecommenderSystemModel>
-        implements RecommenderSystem<RecommenderSystemModel> {
+public abstract class RecommenderSystemAdapter<RecommendationModel>
+        extends GenericRecommenderSystemAdapter<RecommendationModel>
+        implements RecommenderSystem<RecommendationModel> {
 
     /**
      * Constructor por defecto de un sistema de recomendación a usuarios

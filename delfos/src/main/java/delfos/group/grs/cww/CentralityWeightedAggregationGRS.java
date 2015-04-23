@@ -30,7 +30,7 @@ import delfos.dataset.util.DatasetPrinterDeprecated;
 import delfos.dataset.util.DatasetUtilities;
 import delfos.group.groupsofusers.GroupOfUsers;
 import delfos.group.grs.GroupRecommenderSystemAdapter;
-import delfos.group.grs.SingleRecommenderSystemModel;
+import delfos.group.grs.SingleRecommendationModel;
 import delfos.group.grs.aggregation.GroupModelPseudoUser;
 import delfos.group.grs.cww.centrality.CentralityConceptDefinition;
 import delfos.group.grs.cww.centrality.definitions.AritmethicMeanConnectionWeightCentrality;
@@ -52,7 +52,7 @@ import delfos.rs.trustbased.implicittrustcomputation.ShambourLu_UserBasedImplici
  *
  * @version 12-Enero-2014
  */
-public class CentralityWeightedAggregationGRS extends GroupRecommenderSystemAdapter<SingleRecommenderSystemModel, GroupModelPseudoUser> {
+public class CentralityWeightedAggregationGRS extends GroupRecommenderSystemAdapter<SingleRecommendationModel, GroupModelPseudoUser> {
 
     private static final long serialVersionUID = 1L;
 
@@ -129,17 +129,17 @@ public class CentralityWeightedAggregationGRS extends GroupRecommenderSystemAdap
     }
 
     @Override
-    public SingleRecommenderSystemModel build(DatasetLoader<? extends Rating> datasetLoader) throws CannotLoadRatingsDataset, CannotLoadContentDataset {
+    public SingleRecommendationModel build(DatasetLoader<? extends Rating> datasetLoader) throws CannotLoadRatingsDataset, CannotLoadContentDataset {
 
         RecommenderSystemBuildingProgressListener buildListener = this::fireBuildingProgressChangedEvent;
         getSingleUserRecommender().addBuildingProgressListener(buildListener);
         Object build = getSingleUserRecommender().build(datasetLoader);
         getSingleUserRecommender().removeBuildingProgressListener(buildListener);
-        return new SingleRecommenderSystemModel(build);
+        return new SingleRecommendationModel(build);
     }
 
     @Override
-    public GroupModelPseudoUser buildGroupModel(DatasetLoader<? extends Rating> datasetLoader, SingleRecommenderSystemModel recommenderSystemModel, GroupOfUsers groupOfUsers) throws UserNotFound, CannotLoadRatingsDataset {
+    public GroupModelPseudoUser buildGroupModel(DatasetLoader<? extends Rating> datasetLoader, SingleRecommendationModel RecommendationModel, GroupOfUsers groupOfUsers) throws UserNotFound, CannotLoadRatingsDataset {
         Map<Integer, Number> groupRatings = getGroupRatings(datasetLoader, groupOfUsers, getSocialNetworkCalculator());
 
         return new GroupModelPseudoUser(groupOfUsers, groupRatings);
@@ -147,7 +147,7 @@ public class CentralityWeightedAggregationGRS extends GroupRecommenderSystemAdap
 
     @Override
     public Collection<Recommendation> recommendOnly(
-            DatasetLoader<? extends Rating> datasetLoader, SingleRecommenderSystemModel recommenderSystemModel, GroupModelPseudoUser groupModel, GroupOfUsers groupOfUsers, java.util.Set<Integer> idItemList)
+            DatasetLoader<? extends Rating> datasetLoader, SingleRecommendationModel RecommendationModel, GroupModelPseudoUser groupModel, GroupOfUsers groupOfUsers, java.util.Set<Integer> idItemList)
             throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset, NotEnoughtUserInformation {
 
         //Recojo los parámetros en variables
@@ -167,7 +167,7 @@ public class CentralityWeightedAggregationGRS extends GroupRecommenderSystemAdap
 
         groupRecom = recommenderSystem.recommendOnly(
                 new DatasetLoaderGiven(datasetLoader, ratingsDataset_withPseudoUser),
-                recommenderSystemModel.getRecommenderSystemModel(),
+                RecommendationModel.getRecommendationModel(),
                 idGroup,
                 idItemList);
 

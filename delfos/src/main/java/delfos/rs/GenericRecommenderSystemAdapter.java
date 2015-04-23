@@ -22,7 +22,7 @@ import delfos.rs.persistence.FilePersistence;
  * recomendación, como el comportamiento que soporta los listener de progreso de
  * ejecución o los métodos set y get de los datasets
  *
- * @param <RecommenderSystemModel> Clase que almacena el modelo de recomendación
+ * @param <RecommendationModel> Clase que almacena el modelo de recomendación
  * del sistema.
  *
  * @author Jorge Castro Gallardo (Universidad de Jaén, Sinbad2)
@@ -32,7 +32,7 @@ import delfos.rs.persistence.FilePersistence;
  * @version 2.0 26-Mayo-2013 Ahora los datasets se pasan por parámetro en cada
  * método.
  */
-public abstract class GenericRecommenderSystemAdapter<RecommenderSystemModel> extends ParameterOwnerAdapter implements GenericRecommenderSystem<RecommenderSystemModel> {
+public abstract class GenericRecommenderSystemAdapter<RecommendationModel> extends ParameterOwnerAdapter implements GenericRecommenderSystem<RecommendationModel> {
 
     /**
      * Lista de objetos que desean ser notificados del cambio en el progreso de
@@ -82,12 +82,12 @@ public abstract class GenericRecommenderSystemAdapter<RecommenderSystemModel> ex
 
     @Override
     @SuppressWarnings("unchecked")
-    public RecommenderSystemModel loadModel(FilePersistence filePersistence, Collection<Integer> users, Collection<Integer> items) throws FailureInPersistence {
+    public RecommendationModel loadModel(FilePersistence filePersistence, Collection<Integer> users, Collection<Integer> items) throws FailureInPersistence {
         String completeFileName = filePersistence.getCompleteFileName();
-        RecommenderSystemModel model;
+        RecommendationModel model;
 
         try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(completeFileName))) {
-            model = (RecommenderSystemModel) ois.readObject();
+            model = (RecommendationModel) ois.readObject();
             if (model == null) {
                 Global.showWarning("The loaded model is null. (Recommender: " + this.getClass().getName() + ")");
                 throw new FailureInPersistence("The loaded model is null.");
@@ -103,7 +103,7 @@ public abstract class GenericRecommenderSystemAdapter<RecommenderSystemModel> ex
     }
 
     @Override
-    public void saveModel(FilePersistence filePersistence, RecommenderSystemModel model) throws FailureInPersistence {
+    public void saveModel(FilePersistence filePersistence, RecommendationModel model) throws FailureInPersistence {
         try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(filePersistence.getCompleteFileName()))) {
             oos.writeObject(model);
         } catch (NotSerializableException ex) {
@@ -127,12 +127,12 @@ public abstract class GenericRecommenderSystemAdapter<RecommenderSystemModel> ex
     }
 
     @Override
-    public void saveModel(DatabasePersistence databasePersistence, RecommenderSystemModel model) throws FailureInPersistence {
+    public void saveModel(DatabasePersistence databasePersistence, RecommendationModel model) throws FailureInPersistence {
         throw new UnsupportedOperationException("The system " + this.getClass() + " does not implement the database persistence: this method should be overrided and perform the model saving.");
     }
 
     @Override
-    public RecommenderSystemModel loadModel(DatabasePersistence databasePersistence, Collection<Integer> users, Collection<Integer> items) throws FailureInPersistence {
+    public RecommendationModel loadModel(DatabasePersistence databasePersistence, Collection<Integer> users, Collection<Integer> items) throws FailureInPersistence {
         throw new UnsupportedOperationException("The system " + this.getClass() + " does not implement the database persistence: this method should be overrided and perform the model loading.");
     }
 }

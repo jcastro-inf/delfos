@@ -58,7 +58,7 @@ public class SingleUserRecommendationTask extends Task {
     public void clearResources() {
     }
 
-    public Object getRecommenderSystemModel() {
+    public Object getRecommendationModel() {
         return model;
     }
 

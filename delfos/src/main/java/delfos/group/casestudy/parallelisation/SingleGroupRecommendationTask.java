@@ -20,7 +20,7 @@ public class SingleGroupRecommendationTask extends Task {
     private final GroupOfUsers group;
     private GroupRecommenderSystem groupRecommenderSystem;
     private DatasetLoader<? extends Rating> datasetLoader;
-    private Object recommenderSystemModel;
+    private Object RecommendationModel;
     private final Set<Integer> idItemList;
 
     private Collection<Recommendation> recommendations;
@@ -28,11 +28,11 @@ public class SingleGroupRecommendationTask extends Task {
     private long recommendationTime;
 
     public SingleGroupRecommendationTask(GroupRecommenderSystem groupRecommenderSystem, DatasetLoader<? extends Rating> datasetLoader,
-            Object recommenderSystemModel, GroupOfUsers group, Set<Integer> idItemList) {
+            Object RecommendationModel, GroupOfUsers group, Set<Integer> idItemList) {
         this.group = group;
         this.groupRecommenderSystem = groupRecommenderSystem;
         this.datasetLoader = datasetLoader;
-        this.recommenderSystemModel = recommenderSystemModel;
+        this.RecommendationModel = RecommendationModel;
         this.idItemList = idItemList;
     }
 
@@ -68,8 +68,8 @@ public class SingleGroupRecommendationTask extends Task {
         return datasetLoader;
     }
 
-    public Object getRecommenderSystemModel() {
-        return recommenderSystemModel;
+    public Object getRecommendationModel() {
+        return RecommendationModel;
     }
 
     public Set<Integer> getIdItemList() {
@@ -82,7 +82,7 @@ public class SingleGroupRecommendationTask extends Task {
         this.recommendationTime = recommendationTime;
         groupRecommenderSystem = null;
         datasetLoader = null;
-        recommenderSystemModel = null;
+        RecommendationModel = null;
     }
 
     public Collection<Recommendation> getRecommendations() {

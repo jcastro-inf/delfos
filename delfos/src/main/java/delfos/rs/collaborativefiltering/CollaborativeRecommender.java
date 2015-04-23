@@ -30,10 +30,10 @@ import java.util.TreeSet;
  * @version 1.0 Unknown date
  * @version 2.0 Unknown date
  * @version 2.1 (18-Feb-2013)
- * @param <RecommenderSystemModel> Modelo de recomendación del sistema.
+ * @param <RecommendationModel> Modelo de recomendación del sistema.
  */
-public abstract class CollaborativeRecommender<RecommenderSystemModel>
-        extends RecommenderSystemAdapter<RecommenderSystemModel> {
+public abstract class CollaborativeRecommender<RecommendationModel>
+        extends RecommenderSystemAdapter<RecommendationModel> {
 
     /**
      * Constructor por defecto de un sistema de recomendación colaborativo.
@@ -93,7 +93,7 @@ public abstract class CollaborativeRecommender<RecommenderSystemModel>
      * @throws ItemNotFound Si no se encuenta el producto en los datasets.
      * @throws delfos.common.exceptions.ratings.NotEnoughtUserInformation
      */
-    public Number predictRating(DatasetLoader<? extends Rating> datasetLoader, RecommenderSystemModel model, int idUser, int idItem)
+    public Number predictRating(DatasetLoader<? extends Rating> datasetLoader, RecommendationModel model, int idUser, int idItem)
             throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset, NotEnoughtUserInformation {
         if (Global.isVerboseAnnoying()) {
             Global.showMessage("Predicting rating of user " + idUser + " over item " + idItem + "\n");

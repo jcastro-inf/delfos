@@ -29,7 +29,7 @@ public class SingleUserRecommendationTaskExecutor implements SingleTaskExecute<S
         DatasetLoader<? extends Rating> datasetLoader = task.getDatasetLoader();
         int idUser = task.getIdUser();
         Set<Integer> idItemList = task.getIdItemList();
-        Object model = task.getRecommenderSystemModel();
+        Object model = task.getRecommendationModel();
         try {
             Collection<Recommendation> recommend = recommenderSystem.recommendOnly(datasetLoader, model, idUser, idItemList);
             task.setRecommendationList(recommend);

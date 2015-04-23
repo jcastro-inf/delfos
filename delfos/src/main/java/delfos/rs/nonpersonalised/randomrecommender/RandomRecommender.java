@@ -25,7 +25,7 @@ import java.util.LinkedList;
  * @version 1.0 Unknown date
  * @version 1.1 (28 de Febrero de 2013)
  */
-public class RandomRecommender extends CollaborativeRecommender<RandomRecommenderModel<Integer>> implements SeedHolder {
+public class RandomRecommender extends CollaborativeRecommender<RandomRecommendationModel<Integer>> implements SeedHolder {
 
     private static final long serialVersionUID = 1L;
 
@@ -41,7 +41,7 @@ public class RandomRecommender extends CollaborativeRecommender<RandomRecommende
     }
 
     @Override
-    public RandomRecommenderModel<Integer> build(DatasetLoader<? extends Rating> datasetLoader) throws CannotLoadRatingsDataset {
+    public RandomRecommendationModel<Integer> build(DatasetLoader<? extends Rating> datasetLoader) throws CannotLoadRatingsDataset {
 
         System.out.println("Dataset Alias: " + datasetLoader.getAlias());
         System.out.println("#Ratings: \t" + datasetLoader.getRatingsDataset().getNumRatings());
@@ -54,14 +54,14 @@ public class RandomRecommender extends CollaborativeRecommender<RandomRecommende
         }
 
         histogramSmart.printHistogram(System.out);
-        return new RandomRecommenderModel<>(
+        return new RandomRecommendationModel<>(
                 getSeedValue(),
                 datasetLoader.getRatingsDataset().getRatingsDomain().min(),
                 datasetLoader.getRatingsDataset().getRatingsDomain().max());
     }
 
     @Override
-    public Collection<Recommendation> recommendOnly(DatasetLoader<? extends Rating> datasetLoader, RandomRecommenderModel<Integer> model, Integer idUser, java.util.Set<Integer> idItemList) throws UserNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset {
+    public Collection<Recommendation> recommendOnly(DatasetLoader<? extends Rating> datasetLoader, RandomRecommendationModel<Integer> model, Integer idUser, java.util.Set<Integer> idItemList) throws UserNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset {
         LinkedList<Recommendation> recom = new LinkedList<>();
 
         int i = 0;

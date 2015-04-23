@@ -64,13 +64,13 @@ public class MeanRatingGRS extends GroupRecommenderSystemAdapter<MeanRatingRSMod
     }
 
     @Override
-    public GroupOfUsers buildGroupModel(DatasetLoader<? extends Rating> datasetLoader, MeanRatingRSModel recommenderSystemModel, GroupOfUsers groupOfUsers) throws UserNotFound {
+    public GroupOfUsers buildGroupModel(DatasetLoader<? extends Rating> datasetLoader, MeanRatingRSModel RecommendationModel, GroupOfUsers groupOfUsers) throws UserNotFound {
         return new GroupOfUsers(groupOfUsers.getGroupMembers());
     }
 
     @Override
-    public Collection<Recommendation> recommendOnly(DatasetLoader<? extends Rating> datasetLoader, MeanRatingRSModel recommenderSystemModel, GroupOfUsers groupModel, GroupOfUsers groupOfUsers, java.util.Set<Integer> idItemList) throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadRatingsDataset {
-        List<MeanRating> media = recommenderSystemModel.getRangedMeanRatings();
+    public Collection<Recommendation> recommendOnly(DatasetLoader<? extends Rating> datasetLoader, MeanRatingRSModel RecommendationModel, GroupOfUsers groupModel, GroupOfUsers groupOfUsers, java.util.Set<Integer> idItemList) throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadRatingsDataset {
+        List<MeanRating> media = RecommendationModel.getRangedMeanRatings();
         Collection<Recommendation> recommendationList = new ArrayList<>(idItemList.size());
         for (MeanRating meanRating : media) {
             if (idItemList.contains(meanRating.getIdItem())) {

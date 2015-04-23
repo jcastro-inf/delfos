@@ -14,7 +14,7 @@ import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.group.groupsofusers.GroupOfUsers;
 import delfos.group.grs.GroupRecommenderSystemAdapter;
-import delfos.group.grs.SingleRecommenderSystemModel;
+import delfos.group.grs.SingleRecommendationModel;
 import delfos.group.grs.aggregation.AggregationOfIndividualRecommendations;
 import delfos.rs.collaborativefiltering.knn.memorybased.nwr.KnnMemoryBasedNWR;
 import delfos.rs.collaborativefiltering.predictiontechniques.WeightedSum;
@@ -38,7 +38,7 @@ import delfos.similaritymeasures.PearsonCorrelationCoefficient;
 * @author Jorge Castro Gallardo
  * @version 1.0 20-May-2013
  */
-public class PolyLens extends GroupRecommenderSystemAdapter<SingleRecommenderSystemModel, GroupOfUsers> {
+public class PolyLens extends GroupRecommenderSystemAdapter<SingleRecommendationModel, GroupOfUsers> {
 
     private final AggregationOfIndividualRecommendations aggregationOfIndividualRecommendations;
 
@@ -73,18 +73,18 @@ public class PolyLens extends GroupRecommenderSystemAdapter<SingleRecommenderSys
     }
 
     @Override
-    public SingleRecommenderSystemModel build(DatasetLoader<? extends Rating> datasetLoader) throws CannotLoadRatingsDataset, CannotLoadContentDataset {
+    public SingleRecommendationModel build(DatasetLoader<? extends Rating> datasetLoader) throws CannotLoadRatingsDataset, CannotLoadContentDataset {
         return aggregationOfIndividualRecommendations.build(datasetLoader);
     }
 
     @Override
-    public GroupOfUsers buildGroupModel(DatasetLoader<? extends Rating> datasetLoader, SingleRecommenderSystemModel recommenderSystemModel, GroupOfUsers groupOfUsers) throws UserNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset {
-        return aggregationOfIndividualRecommendations.buildGroupModel(datasetLoader, recommenderSystemModel, groupOfUsers);
+    public GroupOfUsers buildGroupModel(DatasetLoader<? extends Rating> datasetLoader, SingleRecommendationModel RecommendationModel, GroupOfUsers groupOfUsers) throws UserNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset {
+        return aggregationOfIndividualRecommendations.buildGroupModel(datasetLoader, RecommendationModel, groupOfUsers);
     }
 
     @Override
-    public Collection<Recommendation> recommendOnly(DatasetLoader<? extends Rating> datasetLoader, SingleRecommenderSystemModel recommenderSystemModel, GroupOfUsers groupModel, GroupOfUsers groupOfUsers, java.util.Set<Integer> idItemList) throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset {
-        return aggregationOfIndividualRecommendations.recommendOnly(datasetLoader, recommenderSystemModel, groupModel, groupOfUsers, idItemList);
+    public Collection<Recommendation> recommendOnly(DatasetLoader<? extends Rating> datasetLoader, SingleRecommendationModel RecommendationModel, GroupOfUsers groupModel, GroupOfUsers groupOfUsers, java.util.Set<Integer> idItemList) throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset {
+        return aggregationOfIndividualRecommendations.recommendOnly(datasetLoader, RecommendationModel, groupModel, groupOfUsers, idItemList);
     }
 
 }

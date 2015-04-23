@@ -22,12 +22,12 @@ import delfos.rs.recommendation.Recommendation;
  * @author Jorge Castro Gallardo (Universidad de Jaén, Sinbad2)
  * @version 1.0 (18 Octubre 2011)
  * @version 2.1 9-Octubre-2013 Incorporación del método makeUserModel
- * @param <RecommenderSystemModel> Clase que almacena el modelo de recomendación
+ * @param <RecommendationModel> Clase que almacena el modelo de recomendación
  * del sistema.
  * @param <UserProfile> Clase que almacena el perfil de usuario.
  *
  */
-public abstract class ContentBasedRecommender<RecommenderSystemModel, UserProfile> extends RecommenderSystemAdapter<RecommenderSystemModel> {
+public abstract class ContentBasedRecommender<RecommendationModel, UserProfile> extends RecommenderSystemAdapter<RecommendationModel> {
 
     /**
      * Constructor por defecto de la clase. No realiza ninguna instrucción
@@ -64,15 +64,15 @@ public abstract class ContentBasedRecommender<RecommenderSystemModel, UserProfil
      * @throws
      * delfos.common.exceptions.ratings.NotEnoughtUserInformation
      */
-    protected abstract UserProfile makeUserProfile(int idUser, DatasetLoader<? extends Rating> datasetLoader, RecommenderSystemModel model) throws CannotLoadRatingsDataset, CannotLoadContentDataset, UserNotFound, NotEnoughtUserInformation;
+    protected abstract UserProfile makeUserProfile(int idUser, DatasetLoader<? extends Rating> datasetLoader, RecommendationModel model) throws CannotLoadRatingsDataset, CannotLoadContentDataset, UserNotFound, NotEnoughtUserInformation;
 
     @Override
-    public final Collection<Recommendation> recommendOnly(DatasetLoader<? extends Rating> datasetLoader, RecommenderSystemModel model, Integer idUser, java.util.Set<Integer> idItemList) throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset, NotEnoughtUserInformation {
+    public final Collection<Recommendation> recommendOnly(DatasetLoader<? extends Rating> datasetLoader, RecommendationModel model, Integer idUser, java.util.Set<Integer> idItemList) throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset, NotEnoughtUserInformation {
         UserProfile makeUserProfile;
 
         makeUserProfile = makeUserProfile(idUser, datasetLoader, model);
         return recommendOnly(datasetLoader, model, makeUserProfile, idItemList);
     }
 
-    protected abstract Collection<Recommendation> recommendOnly(DatasetLoader<? extends Rating> datasetLoader, RecommenderSystemModel model, UserProfile userProfile, Collection<Integer> idItemList) throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset;
+    protected abstract Collection<Recommendation> recommendOnly(DatasetLoader<? extends Rating> datasetLoader, RecommendationModel model, UserProfile userProfile, Collection<Integer> idItemList) throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset;
 }

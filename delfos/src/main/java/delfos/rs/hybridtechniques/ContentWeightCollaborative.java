@@ -37,7 +37,7 @@ import delfos.rs.recommendation.Recommendation;
  * @version 1.1 21-Jan-2013
  * @version 1.0 Unknow date
  */
-public class ContentWeightCollaborative extends HybridRecommender<HybridRecommenderSystemModel> {
+public class ContentWeightCollaborative extends HybridRecommender<HybridRecommendationModel> {
 
     private static final long serialVersionUID = -3387516993124229948L;
 
@@ -66,7 +66,7 @@ public class ContentWeightCollaborative extends HybridRecommender<HybridRecommen
     }
 
     @Override
-    public HybridRecommenderSystemModel build(DatasetLoader<? extends Rating> datasetLoader) throws CannotLoadRatingsDataset, CannotLoadContentDataset, CannotLoadUsersDataset {
+    public HybridRecommendationModel build(DatasetLoader<? extends Rating> datasetLoader) throws CannotLoadRatingsDataset, CannotLoadContentDataset, CannotLoadUsersDataset {
         ContentBasedRecommender<Object, Object> contentBasedAlgorithm = (ContentBasedRecommender<Object, Object>) getParameterValue(CONTENT_BASED_TECHNIQUE);
 
         RecommenderSystemBuildingProgressListener contentBasedListener = (String actualJob, int percent, long remainingSeconds) -> {
@@ -82,11 +82,11 @@ public class ContentWeightCollaborative extends HybridRecommender<HybridRecommen
         collaborativeFilteringTechnique.addBuildingProgressListener(collaborativeListener);
         Object collaborativeModel = collaborativeFilteringTechnique.build(datasetLoader);
 
-        return new HybridRecommenderSystemModel(contentBasedModel, collaborativeModel);
+        return new HybridRecommendationModel(contentBasedModel, collaborativeModel);
     }
 
     @Override
-    public Collection<Recommendation> recommendOnly(DatasetLoader<? extends Rating> datasetLoader, HybridRecommenderSystemModel model, Integer idUser, java.util.Set<Integer> idItemList) throws UserNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset, ItemNotFound, NotEnoughtUserInformation {
+    public Collection<Recommendation> recommendOnly(DatasetLoader<? extends Rating> datasetLoader, HybridRecommendationModel model, Integer idUser, java.util.Set<Integer> idItemList) throws UserNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset, ItemNotFound, NotEnoughtUserInformation {
 
         ContentBasedRecommender<Object, Object> contentBasedAlgorithm = (ContentBasedRecommender<Object, Object>) getParameterValue(CONTENT_BASED_TECHNIQUE);
         CollaborativeRecommender<Object> collaborativeFilteringTechnique = (CollaborativeRecommender<Object>) getParameterValue(COLLABORATIVE_TECHNIQUE);

@@ -11,7 +11,7 @@ import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.util.DatasetUtilities;
 import delfos.group.groupsofusers.GroupOfUsers;
 import delfos.group.grs.GroupRecommenderSystemAdapter;
-import delfos.group.grs.SingleRecommenderSystemModel;
+import delfos.group.grs.SingleRecommendationModel;
 import static delfos.group.grs.aggregation.AggregationOfIndividualRecommendations.performSingleUserRecommendations;
 import static delfos.group.grs.penalty.PenaltyGRS_Ratings.ITEM_GROUPER;
 import static delfos.group.grs.penalty.PenaltyGRS_Ratings.PENALTY;
@@ -34,7 +34,7 @@ import java.util.TreeMap;
  *
  * @version 2-julio-2014
  */
-public class PenaltyGRS_Recommendations extends GroupRecommenderSystemAdapter<SingleRecommenderSystemModel, GroupOfUsers> {
+public class PenaltyGRS_Recommendations extends GroupRecommenderSystemAdapter<SingleRecommendationModel, GroupOfUsers> {
 
     private static final long serialVersionUID = 1L;
 
@@ -86,7 +86,7 @@ public class PenaltyGRS_Recommendations extends GroupRecommenderSystemAdapter<Si
     }
 
     @Override
-    public SingleRecommenderSystemModel build(DatasetLoader<? extends Rating> datasetLoader) throws CannotLoadRatingsDataset, CannotLoadContentDataset {
+    public SingleRecommendationModel build(DatasetLoader<? extends Rating> datasetLoader) throws CannotLoadRatingsDataset, CannotLoadContentDataset {
 
         RecommenderSystemBuildingProgressListener buildListener = (String actualJob, int percent, long remainingTime) -> {
             fireBuildingProgressChangedEvent(actualJob, percent, remainingTime);
@@ -95,16 +95,16 @@ public class PenaltyGRS_Recommendations extends GroupRecommenderSystemAdapter<Si
         getSingleUserRecommender().addBuildingProgressListener(buildListener);
         Object build = getSingleUserRecommender().build(datasetLoader);
         getSingleUserRecommender().removeBuildingProgressListener(buildListener);
-        return new SingleRecommenderSystemModel(build);
+        return new SingleRecommendationModel(build);
     }
 
     @Override
-    public GroupOfUsers buildGroupModel(DatasetLoader<? extends Rating> datasetLoader, SingleRecommenderSystemModel recommenderSystemModel, GroupOfUsers groupOfUsers) throws UserNotFound, CannotLoadRatingsDataset {
+    public GroupOfUsers buildGroupModel(DatasetLoader<? extends Rating> datasetLoader, SingleRecommendationModel RecommendationModel, GroupOfUsers groupOfUsers) throws UserNotFound, CannotLoadRatingsDataset {
         return new GroupOfUsers(groupOfUsers.getGroupMembers());
     }
 
     @Override
-    public Collection<Recommendation> recommendOnly(DatasetLoader<? extends Rating> datasetLoader, SingleRecommenderSystemModel recommenderSystemModel, GroupOfUsers groupModel, GroupOfUsers groupOfUsers, java.util.Set<Integer> idItemList) throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset {
+    public Collection<Recommendation> recommendOnly(DatasetLoader<? extends Rating> datasetLoader, SingleRecommendationModel RecommendationModel, GroupOfUsers groupModel, GroupOfUsers groupOfUsers, java.util.Set<Integer> idItemList) throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset {
 
         PenaltyFunction penaltyFunction = (PenaltyFunction) getParameterValue(PENALTY);
         Grouper grouper = (Grouper) getParameterValue(ITEM_GROUPER);
@@ -114,7 +114,7 @@ public class PenaltyGRS_Recommendations extends GroupRecommenderSystemAdapter<Si
                 = performSingleUserRecommendations(
                         groupOfUsers.getGroupMembers(),
                         singleUserRecommender, datasetLoader,
-                        recommenderSystemModel,
+                        RecommendationModel,
                         idItemList);
 
         Map<Integer, Map<Integer, Number>> predictionsByMember = new TreeMap<>();

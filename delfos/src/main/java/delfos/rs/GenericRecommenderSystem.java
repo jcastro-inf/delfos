@@ -15,7 +15,7 @@ import delfos.common.parameters.ParameterOwner;
  * Interfaz que implementa cualquier sistema de recomendación, ya sea de
  * recomendación a individuos, a grupos, etc.
  *
- * @param <RecommenderSystemModel> Clase que almacena el modelo de recomendación
+ * @param <RecommendationModel> Clase que almacena el modelo de recomendación
  * del sistema.
  *
  * @author Jorge Castro Gallardo (Universidad de Jaén, Sinbad2)
@@ -23,7 +23,7 @@ import delfos.common.parameters.ParameterOwner;
  * @version 2.0 26-Mayo-2013 Ahora los datasets se pasan por parámetro en cada
  * método.
  */
-public interface GenericRecommenderSystem<RecommenderSystemModel> extends ParameterOwner {
+public interface GenericRecommenderSystem<RecommendationModel> extends ParameterOwner {
 
     /**
      * Añade un listener para que sea notificado del progreso de la construcción
@@ -60,13 +60,13 @@ public interface GenericRecommenderSystem<RecommenderSystemModel> extends Parame
      * @return Modelo de recomendación calculado a partir del dataset
      * especificado.
      */
-    public RecommenderSystemModel build(DatasetLoader<? extends Rating> datasetLoader) throws CannotLoadRatingsDataset, CannotLoadContentDataset, CannotLoadUsersDataset;
+    public RecommendationModel build(DatasetLoader<? extends Rating> datasetLoader) throws CannotLoadRatingsDataset, CannotLoadContentDataset, CannotLoadUsersDataset;
 
-    public RecommenderSystemModel loadModel(FilePersistence filePersistence, Collection<Integer> users, Collection<Integer> items) throws FailureInPersistence;
+    public RecommendationModel loadModel(FilePersistence filePersistence, Collection<Integer> users, Collection<Integer> items) throws FailureInPersistence;
 
-    public RecommenderSystemModel loadModel(DatabasePersistence databasePersistence, Collection<Integer> users, Collection<Integer> items) throws FailureInPersistence;
+    public RecommendationModel loadModel(DatabasePersistence databasePersistence, Collection<Integer> users, Collection<Integer> items) throws FailureInPersistence;
 
-    public void saveModel(FilePersistence filePersistence, RecommenderSystemModel model) throws FailureInPersistence;
+    public void saveModel(FilePersistence filePersistence, RecommendationModel model) throws FailureInPersistence;
 
-    public void saveModel(DatabasePersistence databasePersistence, RecommenderSystemModel model) throws FailureInPersistence;
+    public void saveModel(DatabasePersistence databasePersistence, RecommendationModel model) throws FailureInPersistence;
 }

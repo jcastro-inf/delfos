@@ -53,12 +53,12 @@ public class GroupPartialOrder_Collaborative extends GroupRecommenderSystemAdapt
     }
 
     @Override
-    public GroupPartialOrderGroupModel buildGroupModel(DatasetLoader<? extends Rating> datasetLoader, GroupPartialOrderModel recommenderSystemModel, GroupOfUsers groupOfUsers) throws UserNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset {
+    public GroupPartialOrderGroupModel buildGroupModel(DatasetLoader<? extends Rating> datasetLoader, GroupPartialOrderModel RecommendationModel, GroupOfUsers groupOfUsers) throws UserNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
-    public Collection<Recommendation> recommendOnly(DatasetLoader<? extends Rating> datasetLoader, GroupPartialOrderModel recommenderSystemModel, GroupPartialOrderGroupModel groupModel, GroupOfUsers groupOfUsers, java.util.Set<Integer> idItemList) throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset {
+    public Collection<Recommendation> recommendOnly(DatasetLoader<? extends Rating> datasetLoader, GroupPartialOrderModel RecommendationModel, GroupPartialOrderGroupModel groupModel, GroupOfUsers groupOfUsers, java.util.Set<Integer> idItemList) throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset {
 
         if (1 == 1) {
             throw new UnsupportedOperationException("Not supported yet.");

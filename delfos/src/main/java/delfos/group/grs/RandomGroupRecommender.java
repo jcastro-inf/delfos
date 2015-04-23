@@ -9,7 +9,7 @@ import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
 import delfos.experiment.SeedHolder;
 import delfos.group.groupsofusers.GroupOfUsers;
-import delfos.rs.nonpersonalised.randomrecommender.RandomRecommenderModel;
+import delfos.rs.nonpersonalised.randomrecommender.RandomRecommendationModel;
 import delfos.rs.recommendation.Recommendation;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -21,7 +21,7 @@ import java.util.Collections;
  * @author Jorge Castro Gallardo
  */
 public class RandomGroupRecommender
-        extends GroupRecommenderSystemAdapter<RandomRecommenderModel<GroupOfUsers>, GroupOfUsers>
+        extends GroupRecommenderSystemAdapter<RandomRecommendationModel<GroupOfUsers>, GroupOfUsers>
         implements SeedHolder {
 
     private static final long serialVersionUID = 1L;
@@ -33,37 +33,37 @@ public class RandomGroupRecommender
     }
 
     @Override
-    public RandomRecommenderModel<GroupOfUsers> build(DatasetLoader<? extends Rating> datasetLoader)
+    public RandomRecommendationModel<GroupOfUsers> build(DatasetLoader<? extends Rating> datasetLoader)
             throws CannotLoadRatingsDataset, CannotLoadContentDataset {
-        return new RandomRecommenderModel(
+        return new RandomRecommendationModel(
                 (int) getSeedValue(),
                 datasetLoader.getRatingsDataset().getRatingsDomain().min(),
                 datasetLoader.getRatingsDataset().getRatingsDomain().max());
     }
 
     @Override
-    public GroupOfUsers buildGroupModel(DatasetLoader<? extends Rating> datasetLoader, RandomRecommenderModel<GroupOfUsers> recommenderSystemModel, GroupOfUsers groupOfUsers) throws UserNotFound {
+    public GroupOfUsers buildGroupModel(DatasetLoader<? extends Rating> datasetLoader, RandomRecommendationModel<GroupOfUsers> RecommendationModel, GroupOfUsers groupOfUsers) throws UserNotFound {
         return new GroupOfUsers(groupOfUsers.getGroupMembers());
     }
 
     @Override
     public Collection<Recommendation> recommendOnly(
-            DatasetLoader<? extends Rating> datasetLoader, RandomRecommenderModel<GroupOfUsers> recommenderSystemModel, GroupOfUsers groupModel, GroupOfUsers groupOfUsers, java.util.Set<Integer> idItemList)
+            DatasetLoader<? extends Rating> datasetLoader, RandomRecommendationModel<GroupOfUsers> RecommendationModel, GroupOfUsers groupModel, GroupOfUsers groupOfUsers, java.util.Set<Integer> idItemList)
             throws UserNotFound, CannotLoadRatingsDataset {
 
-        if (recommenderSystemModel.getRandomFloat(groupOfUsers) > 0.999) {
+        if (RecommendationModel.getRandomFloat(groupOfUsers) > 0.999) {
             return Collections.EMPTY_LIST;
         } else {
-            final int numRecomendaciones = (int) (recommenderSystemModel.getRandomInt(groupOfUsers, idItemList.size()));
+            final int numRecomendaciones = (int) (RecommendationModel.getRandomInt(groupOfUsers, idItemList.size()));
             final double min = datasetLoader.getRatingsDataset().getRatingsDomain().min().doubleValue();
             final double rango = datasetLoader.getRatingsDataset().getRatingsDomain().width().doubleValue();
 
             Collection<Recommendation> recommendationList = new ArrayList<>(numRecomendaciones);
             ArrayList<Integer> toPredict = new ArrayList<>(idItemList);
             for (int i = 0; i < numRecomendaciones; i++) {
-                int idItem = toPredict.remove(recommenderSystemModel.getRandomInt(groupOfUsers, toPredict.size()));
+                int idItem = toPredict.remove(RecommendationModel.getRandomInt(groupOfUsers, toPredict.size()));
 
-                double ratingAleatorio = recommenderSystemModel.getRandomFloat(groupOfUsers);
+                double ratingAleatorio = RecommendationModel.getRandomFloat(groupOfUsers);
                 ratingAleatorio = ratingAleatorio * rango + min;
                 recommendationList.add(new Recommendation(idItem, ratingAleatorio));
             }

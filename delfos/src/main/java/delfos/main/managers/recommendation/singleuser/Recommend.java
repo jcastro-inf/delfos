@@ -143,10 +143,10 @@ public class Recommend implements CaseUseManager {
                 Global.showMessage("\t" + idItemList + "\n");
             }
 
-            Object recommenderSystemModel;
+            Object RecommendationModel;
             try {
                 Global.showMessageTimestamped("Computing recommendations");
-                recommenderSystemModel = PersistenceMethodStrategy.loadModel(recommender, rsc.persistenceMethod, Arrays.asList(idUser), idItemList);
+                RecommendationModel = PersistenceMethodStrategy.loadModel(recommender, rsc.persistenceMethod, Arrays.asList(idUser), idItemList);
                 Global.showMessageTimestamped("Computed recommendations");
             } catch (FailureInPersistence ex) {
                 ERROR_CODES.FAILURE_IN_PERSISTENCE.exit(ex);
@@ -154,7 +154,7 @@ public class Recommend implements CaseUseManager {
             }
 
             try {
-                recommendations = recommender.recommendOnly(datasetLoader, recommenderSystemModel, idUser, idItemList);
+                recommendations = recommender.recommendOnly(datasetLoader, RecommendationModel, idUser, idItemList);
             } catch (UserNotFound ex) {
                 ERROR_CODES.USER_NOT_FOUND.exit(ex);
                 throw new IllegalArgumentException(ex);

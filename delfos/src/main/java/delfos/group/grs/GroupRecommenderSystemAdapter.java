@@ -21,13 +21,13 @@ import java.util.TreeSet;
  *
  * @author Jorge Castro Gallardo
  *
- * @param <RecommenderSystemModel> Modelo del sistema de recomendación. Es el
+ * @param <RecommendationModel> Modelo del sistema de recomendación. Es el
  * modelo general utilizado para todos los grupos de usuarios.
  * @param <GroupModel> Modelo de cada grupo, específico al mismo.
  */
-public abstract class GroupRecommenderSystemAdapter<RecommenderSystemModel, GroupModel>
-        extends GenericRecommenderSystemAdapter<RecommenderSystemModel>
-        implements GroupRecommenderSystem<RecommenderSystemModel, GroupModel> {
+public abstract class GroupRecommenderSystemAdapter<RecommendationModel, GroupModel>
+        extends GenericRecommenderSystemAdapter<RecommendationModel>
+        implements GroupRecommenderSystem<RecommendationModel, GroupModel> {
 
     public GroupRecommenderSystemAdapter() {
         super();
@@ -39,7 +39,7 @@ public abstract class GroupRecommenderSystemAdapter<RecommenderSystemModel, Grou
     }
 
     @Override
-    public Collection<Recommendation> recommendOnly(DatasetLoader<? extends Rating> datasetLoader, RecommenderSystemModel recommenderSystemModel, GroupModel groupModel, GroupOfUsers groupOfUsers, Integer... idItemList) throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadRatingsDataset, CannotLoadContentDataset, NotEnoughtUserInformation {
-        return recommendOnly(datasetLoader, recommenderSystemModel, groupModel, groupOfUsers, new TreeSet<>(Arrays.asList(idItemList)));
+    public Collection<Recommendation> recommendOnly(DatasetLoader<? extends Rating> datasetLoader, RecommendationModel RecommendationModel, GroupModel groupModel, GroupOfUsers groupOfUsers, Integer... idItemList) throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadRatingsDataset, CannotLoadContentDataset, NotEnoughtUserInformation {
+        return recommendOnly(datasetLoader, RecommendationModel, groupModel, groupOfUsers, new TreeSet<>(Arrays.asList(idItemList)));
     }
 }

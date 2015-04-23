@@ -31,7 +31,7 @@ import java.util.TreeSet;
  *
  * @version 25-Noviembre-2013
  */
-public class HybridAlternatingListRS extends HybridRecommender<HybridRecommenderSystemModel> {
+public class HybridAlternatingListRS extends HybridRecommender<HybridRecommendationModel> {
 
     private static final long serialVersionUID = -3387516993124229948L;
 
@@ -55,7 +55,7 @@ public class HybridAlternatingListRS extends HybridRecommender<HybridRecommender
     }
 
     @Override
-    public HybridRecommenderSystemModel build(DatasetLoader<? extends Rating> datasetLoader) throws CannotLoadRatingsDataset, CannotLoadContentDataset, CannotLoadUsersDataset {
+    public HybridRecommendationModel build(DatasetLoader<? extends Rating> datasetLoader) throws CannotLoadRatingsDataset, CannotLoadContentDataset, CannotLoadUsersDataset {
         RecommenderSystem<Object> firstTechnique = (RecommenderSystem<Object>) getParameterValue(FIRST_TECHNIQUE);
         RecommenderSystemBuildingProgressListener firstTechniqueListener = new RecommenderSystemBuildingProgressListener() {
             @Override
@@ -76,11 +76,11 @@ public class HybridAlternatingListRS extends HybridRecommender<HybridRecommender
         secondTechnique.addBuildingProgressListener(secondTechniqueListener);
         Object secondTechniqueModel = secondTechnique.build(datasetLoader);
 
-        return new HybridRecommenderSystemModel(firstTechniqueModel, secondTechniqueModel);
+        return new HybridRecommendationModel(firstTechniqueModel, secondTechniqueModel);
     }
 
     @Override
-    public Collection<Recommendation> recommendOnly(DatasetLoader<? extends Rating> datasetLoader, HybridRecommenderSystemModel model, Integer idUser, java.util.Set<Integer> idItemList) throws UserNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset, ItemNotFound, NotEnoughtUserInformation {
+    public Collection<Recommendation> recommendOnly(DatasetLoader<? extends Rating> datasetLoader, HybridRecommendationModel model, Integer idUser, java.util.Set<Integer> idItemList) throws UserNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset, ItemNotFound, NotEnoughtUserInformation {
 
         RecommenderSystem<Object> firstTechnique = (RecommenderSystem<Object>) getParameterValue(FIRST_TECHNIQUE);
 

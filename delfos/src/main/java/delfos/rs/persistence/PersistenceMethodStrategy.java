@@ -12,8 +12,8 @@ import delfos.rs.GenericRecommenderSystem;
  */
 public class PersistenceMethodStrategy {
 
-    public static <RecommenderSystemModel> RecommenderSystemModel loadModel(GenericRecommenderSystem<RecommenderSystemModel> recommenderSystem, PersistenceMethod persistenceMethod, Collection<Integer> users, Collection<Integer> items) throws FailureInPersistence {
-        RecommenderSystemModel recommenderSystemModel = null;
+    public static <RecommendationModel> RecommendationModel loadModel(GenericRecommenderSystem<RecommendationModel> recommenderSystem, PersistenceMethod persistenceMethod, Collection<Integer> users, Collection<Integer> items) throws FailureInPersistence {
+        RecommendationModel RecommendationModel = null;
 
         boolean methodOK = false;
 
@@ -22,7 +22,7 @@ public class PersistenceMethodStrategy {
             DatabasePersistence databasePersistence = (DatabasePersistence) persistenceMethod;
 
             Global.showMessageTimestamped("Loading recommendation model from database");
-            recommenderSystemModel = recommenderSystem.loadModel(databasePersistence, users, items);
+            RecommendationModel = recommenderSystem.loadModel(databasePersistence, users, items);
             Global.showMessageTimestamped("Loaded recommendation model from database");
         }
 
@@ -31,7 +31,7 @@ public class PersistenceMethodStrategy {
             FilePersistence filePersistence = (FilePersistence) persistenceMethod;
 
             Global.showMessageTimestamped("Loading recommendation model from file");
-            recommenderSystemModel = recommenderSystem.loadModel(filePersistence, users, items);
+            RecommendationModel = recommenderSystem.loadModel(filePersistence, users, items);
             Global.showMessageTimestamped("Loaded recommendation model from file");
         }
 
@@ -39,10 +39,10 @@ public class PersistenceMethodStrategy {
             throw new IllegalStateException("Persistence method " + persistenceMethod.getName() + " not known.");
         }
 
-        return recommenderSystemModel;
+        return RecommendationModel;
     }
 
-    public static void saveModel(GenericRecommenderSystem recommenderSystem, PersistenceMethod persistenceMethod, Object recommenderSystemModel) throws FailureInPersistence {
+    public static void saveModel(GenericRecommenderSystem recommenderSystem, PersistenceMethod persistenceMethod, Object RecommendationModel) throws FailureInPersistence {
 
         boolean methodOK = false;
 
@@ -51,7 +51,7 @@ public class PersistenceMethodStrategy {
             DatabasePersistence databasePersistence = (DatabasePersistence) persistenceMethod;
 
             Global.showMessageTimestamped("Saving recommendation model in database");
-            recommenderSystem.saveModel(databasePersistence, recommenderSystemModel);
+            recommenderSystem.saveModel(databasePersistence, RecommendationModel);
             Global.showMessageTimestamped("Saved recommendation model in database");
         }
 
@@ -60,7 +60,7 @@ public class PersistenceMethodStrategy {
             FilePersistence filePersistence = (FilePersistence) persistenceMethod;
 
             Global.showMessageTimestamped("Saving recommendation model in file");
-            recommenderSystem.saveModel(filePersistence, recommenderSystemModel);
+            recommenderSystem.saveModel(filePersistence, RecommendationModel);
             Global.showMessageTimestamped("Saved recommendation model in file");
         }
 

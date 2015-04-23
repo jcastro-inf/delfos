@@ -180,12 +180,12 @@ public class DefaultGroupCaseStudy extends GroupCaseStudy {
                 DatasetLoader<? extends Rating> testDatasetLoader = pairsOfTrainTest[particionActual].getTestDatasetLoader();
 
                 long totalBuildTime;
-                Object groupRecommenderSystemModel;
+                Object groupRecommendationModel;
                 {
                     Chronometer c = new Chronometer();
-                    groupRecommenderSystemModel = groupRecommenderSystem.build(trainDatasetLoader);
-                    if (groupRecommenderSystemModel == null) {
-                        throw new IllegalStateException("The recommenderSystemModel cannot be null");
+                    groupRecommendationModel = groupRecommenderSystem.build(trainDatasetLoader);
+                    if (groupRecommendationModel == null) {
+                        throw new IllegalStateException("The RecommendationModel cannot be null");
                     }
 
                     long spent = c.getTotalElapsed();
@@ -206,7 +206,7 @@ public class DefaultGroupCaseStudy extends GroupCaseStudy {
                         taskRecommendGroup.add(new SingleGroupRecommendationTask(
                                 groupRecommenderSystem,
                                 groupRecommendationRequest.predictionPhaseDatasetLoader,
-                                groupRecommenderSystemModel,
+                                groupRecommendationModel,
                                 groupOfUsers,
                                 groupRecommendationRequest.itemsToPredict)
                         );
