@@ -293,15 +293,15 @@ public class DefaultCaseStudy extends CaseStudy implements ParameterListener {
                         }
                         Collection<Recommendation> unionResultados = new ArrayList<>();
 
-                        consultas.parallelStream().forEach((idItemList) -> {
+                        consultas.parallelStream().forEach((candidateItems) -> {
                             try {
                                 Map<Integer, Set<Integer>> predictionRatings = new TreeMap<>();
-                                predictionRatings.put(idUser, new TreeSet<>(idItemList));
+                                predictionRatings.put(idUser, new TreeSet<>(candidateItems));
                                 RatingsDataset<Rating> predictionRatingsDataset = ValidationDatasets.getInstance().createTrainingDataset((RatingsDataset<Rating>) datasetLoader.getRatingsDataset(), predictionRatings);
                                 DatasetLoader<Rating> predictionDatasetLoader = new DatasetLoaderGiven<>(
                                         datasetLoader,
                                         predictionRatingsDataset);
-                                multiThreadExecutionManager_SingleRecommendation.addTask(new SingleUserRecommendationTask(recommenderSystem, predictionDatasetLoader, model, idUser, idItemList));
+                                multiThreadExecutionManager_SingleRecommendation.addTask(new SingleUserRecommendationTask(recommenderSystem, predictionDatasetLoader, model, idUser, candidateItems));
                             } catch (UserNotFound ex) {
                                 ERROR_CODES.USER_NOT_FOUND.exit(ex);
                             } catch (ItemNotFound ex) {

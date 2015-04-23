@@ -175,9 +175,9 @@ public class GroupRecommenderSystem_fixedFilePersistence extends GroupRecommende
     }
 
     @Override
-    public Collection<Recommendation> recommendOnly(DatasetLoader<? extends Rating> datasetLoader, Object RecommendationModel, Object groupModel, GroupOfUsers groupOfUsers, java.util.Set<Integer> idItemList) throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset, NotEnoughtUserInformation {
+    public Collection<Recommendation> recommendOnly(DatasetLoader<? extends Rating> datasetLoader, Object RecommendationModel, Object groupModel, GroupOfUsers groupOfUsers, java.util.Set<Integer> candidateItems) throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset, NotEnoughtUserInformation {
         Collection<Recommendation> recommendations;
-        recommendations = getGroupRecommenderSystem().recommendOnly(datasetLoader, RecommendationModel, groupModel, groupOfUsers, idItemList);
+        recommendations = getGroupRecommenderSystem().recommendOnly(datasetLoader, RecommendationModel, groupModel, groupOfUsers, candidateItems);
         return recommendations;
     }
 

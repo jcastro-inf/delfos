@@ -51,19 +51,19 @@ public class MostPopularRS extends RecommenderSystemAdapter<Collection<Recommend
     }
 
     @Override
-    public Collection<Recommendation> recommendOnly(DatasetLoader<? extends Rating> datasetLoader, Collection<Recommendation> model, Integer idUser, java.util.Set<Integer> idItemList) throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset {
-        Collection<Recommendation> ret = new ArrayList<>(idItemList.size());
+    public Collection<Recommendation> recommendOnly(DatasetLoader<? extends Rating> datasetLoader, Collection<Recommendation> model, Integer idUser, java.util.Set<Integer> candidateItems) throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset {
+        Collection<Recommendation> ret = new ArrayList<>(candidateItems.size());
 
         Set<Integer> added = new TreeSet<>();
         for (Recommendation recommendation : model) {
-            if (idItemList.contains(recommendation.getIdItem())) {
+            if (candidateItems.contains(recommendation.getIdItem())) {
                 ret.add(new Recommendation(recommendation.getIdItem(), recommendation.getPreference()));
                 added.add(recommendation.getIdItem());
             }
         }
 
         //Para que la cobertura sea 1 en todos los casos.
-        Set<Integer> toAdd = new TreeSet<>(idItemList);
+        Set<Integer> toAdd = new TreeSet<>(candidateItems);
         toAdd.removeAll(added);
         for (int idItem : toAdd) {
             ret.add(new Recommendation(idItem, 0));

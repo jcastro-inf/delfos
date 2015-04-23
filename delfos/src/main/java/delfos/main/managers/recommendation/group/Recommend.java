@@ -82,23 +82,23 @@ public class Recommend implements CaseUseManager {
 
             Collection<Recommendation> recommendations = null;
 
-            Set<Integer> idItemList;
+            Set<Integer> candidateItems;
             try {
-                idItemList = candidatesSelector.candidateItems(datasetLoader, targetGroup);
+                candidateItems = candidatesSelector.candidateItems(datasetLoader, targetGroup);
             } catch (UserNotFound ex) {
                 ERROR_CODES.USER_NOT_FOUND.exit(ex);
                 throw new IllegalArgumentException(ex);
             }
 
             if (Global.isVerboseAnnoying()) {
-                Global.showMessage("List of candidate items for group " + targetGroup.getGroupMembers() + " size: " + idItemList.size() + "\n");
-                Global.showMessage("\t" + idItemList + "\n");
+                Global.showMessage("List of candidate items for group " + targetGroup.getGroupMembers() + " size: " + candidateItems.size() + "\n");
+                Global.showMessage("\t" + candidateItems + "\n");
             }
 
             Object RecommendationModel;
             try {
                 Global.showMessageTimestamped("Loading recommendation model");
-                RecommendationModel = PersistenceMethodStrategy.loadModel(groupRecommenderSystem, rsc.persistenceMethod, targetGroup.getGroupMembers(), idItemList);
+                RecommendationModel = PersistenceMethodStrategy.loadModel(groupRecommenderSystem, rsc.persistenceMethod, targetGroup.getGroupMembers(), candidateItems);
                 Global.showMessageTimestamped("Loaded recommendation model");
             } catch (FailureInPersistence ex) {
                 ERROR_CODES.FAILURE_IN_PERSISTENCE.exit(ex);
@@ -108,7 +108,7 @@ public class Recommend implements CaseUseManager {
             Object groupModel;
             try {
                 groupModel = groupRecommenderSystem.buildGroupModel(datasetLoader, RecommendationModel, targetGroup);
-                recommendations = groupRecommenderSystem.recommendOnly(datasetLoader, RecommendationModel, groupModel, targetGroup, idItemList);
+                recommendations = groupRecommenderSystem.recommendOnly(datasetLoader, RecommendationModel, groupModel, targetGroup, candidateItems);
             } catch (UserNotFound ex) {
                 ERROR_CODES.USER_NOT_FOUND.exit(ex);
                 throw new IllegalArgumentException(ex);

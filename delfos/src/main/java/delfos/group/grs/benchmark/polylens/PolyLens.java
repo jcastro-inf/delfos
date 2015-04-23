@@ -83,8 +83,8 @@ public class PolyLens extends GroupRecommenderSystemAdapter<SingleRecommendation
     }
 
     @Override
-    public Collection<Recommendation> recommendOnly(DatasetLoader<? extends Rating> datasetLoader, SingleRecommendationModel RecommendationModel, GroupOfUsers groupModel, GroupOfUsers groupOfUsers, java.util.Set<Integer> idItemList) throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset {
-        return aggregationOfIndividualRecommendations.recommendOnly(datasetLoader, RecommendationModel, groupModel, groupOfUsers, idItemList);
+    public Collection<Recommendation> recommendOnly(DatasetLoader<? extends Rating> datasetLoader, SingleRecommendationModel RecommendationModel, GroupOfUsers groupModel, GroupOfUsers groupOfUsers, java.util.Set<Integer> candidateItems) throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset {
+        return aggregationOfIndividualRecommendations.recommendOnly(datasetLoader, RecommendationModel, groupModel, groupOfUsers, candidateItems);
     }
 
 }

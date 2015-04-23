@@ -166,13 +166,13 @@ public class GroupRecommendationManager {
             Global.showMessage("\tUsers:   " + users.size() + "\n");
             Global.showMessage("\tItems:   " + items.size() + "\n");
             Global.showMessage("\tRatings: " + grsc.datasetLoader.getRatingsDataset().getNumRatings() + "\n");
-            Set<Integer> idItemList = new TreeSet<>();
-            idItemList.addAll(items);
+            Set<Integer> candidateItems = new TreeSet<>();
+            candidateItems.addAll(items);
 
             for (int idMember : group) {
-                idItemList.removeAll(datasetLoader.getRatingsDataset().getUserRated(idMember));
+                candidateItems.removeAll(datasetLoader.getRatingsDataset().getUserRated(idMember));
             }
-            idItemList = Collections.unmodifiableSet(idItemList);
+            candidateItems = Collections.unmodifiableSet(candidateItems);
 
             Object recommendationModel_grs = groupRecommenderSystem.loadModel(
                     grsFilePersistence,
@@ -181,7 +181,7 @@ public class GroupRecommendationManager {
 
             Object groupModel = groupRecommenderSystem.buildGroupModel(datasetLoader, recommendationModel_grs, group);
 
-            groupRecommendations = new ArrayList<>(groupRecommenderSystem.recommendOnly(datasetLoader, recommendationModel_grs, groupModel, group, idItemList));
+            groupRecommendations = new ArrayList<>(groupRecommenderSystem.recommendOnly(datasetLoader, recommendationModel_grs, groupModel, group, candidateItems));
             Collections.sort(groupRecommendations);
 
             Object recommendationModel_singleUser = recommenderSystem.loadModel(rsFilePersistence, users, items);
@@ -194,7 +194,7 @@ public class GroupRecommendationManager {
                         datasetLoader,
                         recommendationModel_singleUser,
                         idUser,
-                        idItemList));
+                        candidateItems));
             }
 
             MultiThreadExecutionManager<SingleUserRecommendationTask> multiThreadExecutionManager = new MultiThreadExecutionManager<>(

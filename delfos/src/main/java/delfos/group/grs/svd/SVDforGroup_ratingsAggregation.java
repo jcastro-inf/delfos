@@ -118,7 +118,7 @@ public class SVDforGroup_ratingsAggregation extends GroupRecommenderSystemAdapte
     }
 
     @Override
-    public Collection<Recommendation> recommendOnly(DatasetLoader<? extends Rating> datasetLoader, TryThisAtHomeSVDModel RecommendationModel, GroupSVDModel groupModel, GroupOfUsers groupOfUsers, java.util.Set<Integer> idItemList) throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset {
+    public Collection<Recommendation> recommendOnly(DatasetLoader<? extends Rating> datasetLoader, TryThisAtHomeSVDModel RecommendationModel, GroupSVDModel groupModel, GroupOfUsers groupOfUsers, java.util.Set<Integer> candidateItems) throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset {
 
         int idUser = -1;
         if (datasetLoader.getRatingsDataset().allUsers().contains(idUser)) {
@@ -126,6 +126,6 @@ public class SVDforGroup_ratingsAggregation extends GroupRecommenderSystemAdapte
         }
 
         TryThisAtHomeSVDModel extendedModel = TryThisAtHomeSVDModel.addUser(RecommendationModel, idUser, groupModel.getGroupFeatures());
-        return singleUserSR.recommendOnly(datasetLoader, extendedModel, idUser, idItemList);
+        return singleUserSR.recommendOnly(datasetLoader, extendedModel, idUser, candidateItems);
     }
 }

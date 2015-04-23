@@ -67,7 +67,7 @@ public class GroupRecommender_TestValidationProtocols extends GroupRecommenderSy
     }
 
     @Override
-    public Collection<Recommendation> recommendOnly(DatasetLoader<? extends Rating> datasetLoader, Object RecommendationModel, Object groupModel, GroupOfUsers groupOfUsers, java.util.Set<Integer> idItemList) throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset {
+    public Collection<Recommendation> recommendOnly(DatasetLoader<? extends Rating> datasetLoader, Object RecommendationModel, Object groupModel, GroupOfUsers groupOfUsers, java.util.Set<Integer> candidateItems) throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset {
 
         /*
          * Compruebo si alguna vez me piden recomendaciones que se conocian en
@@ -84,7 +84,7 @@ public class GroupRecommender_TestValidationProtocols extends GroupRecommenderSy
         for (int idUser : groupOfUsers.getGroupMembers()) {
             boolean error = false;
             Collection<Integer> userRated = datasetLoader.getRatingsDataset().getUserRated(idUser);
-            for (int idItem : idItemList) {
+            for (int idItem : candidateItems) {
                 if (userRated.contains(idItem)) {
                     Global.showWarning("El producto a predecir está en el dataset!!!!");
                     error = true;
@@ -102,7 +102,7 @@ public class GroupRecommender_TestValidationProtocols extends GroupRecommenderSy
         for (int idUser : groupOfUsers.getGroupMembers()) {
             boolean error = false;
             Collection<Integer> userRated = datasetsEnConstruccionModeloGrupo.get(groupOfUsers).getUserRated(idUser);
-            for (int idItem : idItemList) {
+            for (int idItem : candidateItems) {
                 if (userRated.contains(idItem)) {
                     Global.showWarning("El dataset de construcción del modelo de este grupo contiene el rating a predecir!!!!");
                     error = true;
@@ -120,7 +120,7 @@ public class GroupRecommender_TestValidationProtocols extends GroupRecommenderSy
         for (int idUser : groupOfUsers.getGroupMembers()) {
             boolean error = false;
             Collection<Integer> userRated = datasetEnBuild.getUserRated(idUser);
-            for (int idItem : idItemList) {
+            for (int idItem : candidateItems) {
                 if (userRated.contains(idItem)) {
                     Global.showWarning("El dataset de construcción del modelo general contiene el rating a predecir!!!!");
                     error = true;
@@ -144,7 +144,7 @@ public class GroupRecommender_TestValidationProtocols extends GroupRecommenderSy
         if (RecommendationModel instanceof RandomRecommendationModel) {
             RandomRecommendationModel randomRecommendationModel = (RandomRecommendationModel) RecommendationModel;
 
-            return randomGroupRecommender.recommendOnly(datasetLoader, randomRecommendationModel, groupOfUsers, groupOfUsers, idItemList);
+            return randomGroupRecommender.recommendOnly(datasetLoader, randomRecommendationModel, groupOfUsers, groupOfUsers, candidateItems);
         } else {
             throw new IllegalArgumentException("The model type is not the correct for this recommender.");
         }

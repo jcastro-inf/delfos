@@ -104,7 +104,7 @@ public class PenaltyGRS_Recommendations extends GroupRecommenderSystemAdapter<Si
     }
 
     @Override
-    public Collection<Recommendation> recommendOnly(DatasetLoader<? extends Rating> datasetLoader, SingleRecommendationModel RecommendationModel, GroupOfUsers groupModel, GroupOfUsers groupOfUsers, java.util.Set<Integer> idItemList) throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset {
+    public Collection<Recommendation> recommendOnly(DatasetLoader<? extends Rating> datasetLoader, SingleRecommendationModel RecommendationModel, GroupOfUsers groupModel, GroupOfUsers groupOfUsers, java.util.Set<Integer> candidateItems) throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset {
 
         PenaltyFunction penaltyFunction = (PenaltyFunction) getParameterValue(PENALTY);
         Grouper grouper = (Grouper) getParameterValue(ITEM_GROUPER);
@@ -115,7 +115,7 @@ public class PenaltyGRS_Recommendations extends GroupRecommenderSystemAdapter<Si
                         groupOfUsers.getGroupMembers(),
                         singleUserRecommender, datasetLoader,
                         RecommendationModel,
-                        idItemList);
+                        candidateItems);
 
         Map<Integer, Map<Integer, Number>> predictionsByMember = new TreeMap<>();
         recommendationsLists_byMember.keySet().stream().map((idUser) -> {

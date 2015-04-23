@@ -116,7 +116,7 @@ public class RSTest extends CollaborativeRecommender<RSTest_Model> {
     }
 
     @Override
-    public Collection<Recommendation> recommendOnly(DatasetLoader<? extends Rating> datasetLoader, RSTest_Model model, Integer idUser, java.util.Set<Integer> idItemList) throws UserNotFound {
+    public Collection<Recommendation> recommendOnly(DatasetLoader<? extends Rating> datasetLoader, RSTest_Model model, Integer idUser, java.util.Set<Integer> candidateItems) throws UserNotFound {
 
         if (Global.isVerboseAnnoying()) {
             Global.showMessageTimestamped(this.getAlias() + " --> Recommending for user '" + idUser + "'\n");
@@ -125,7 +125,7 @@ public class RSTest extends CollaborativeRecommender<RSTest_Model> {
         try {
             List<Neighbor> neighbors = getNeighbors(datasetLoader, idUser);
 
-            Collection<Recommendation> ret = recommendWithNeighbors(datasetLoader.getRatingsDataset(), idUser, neighbors, idItemList);
+            Collection<Recommendation> ret = recommendWithNeighbors(datasetLoader.getRatingsDataset(), idUser, neighbors, candidateItems);
             if (Global.isVerboseAnnoying()) {
                 Global.showMessage("Finished recommendations for user '" + idUser + "'\n");
             }
@@ -230,7 +230,7 @@ public class RSTest extends CollaborativeRecommender<RSTest_Model> {
      * @param ratingsDataset Conjunto de valoraciones.
      * @param idUser Id del usuario activo
      * @param vecinos Vecinos del usuario activo
-     * @param idItemList Lista de productos que se consideran recomendables, es
+     * @param candidateItems Lista de productos que se consideran recomendables, es
      * decir, que podrían ser recomendados si la predicción es alta
      * @return Lista de recomendaciones para el usuario, ordenadas por
      * valoracion predicha.
@@ -241,7 +241,7 @@ public class RSTest extends CollaborativeRecommender<RSTest_Model> {
             RatingsDataset<? extends Rating> ratingsDataset,
             Integer idUser,
             List<Neighbor> vecinos,
-            Collection<Integer> idItemList)
+            Collection<Integer> candidateItems)
             throws UserNotFound {
 
         PredictionTechnique predictionTechnique_ = (PredictionTechnique) getParameterValue(PREDICTION_TECHNIQUE);
@@ -251,7 +251,7 @@ public class RSTest extends CollaborativeRecommender<RSTest_Model> {
 
         int numVecinos = (Integer) getParameterValue(NEIGHBORHOOD_SIZE);
 
-        for (int idItem : idItemList) {
+        for (int idItem : candidateItems) {
             Collection<MatchRating> match = new LinkedList<>();
 
             int numNeighborsUsed = 0;

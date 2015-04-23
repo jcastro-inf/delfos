@@ -82,7 +82,7 @@ public class SVDFoldingIn
     }
 
     @Override
-    public Collection<Recommendation> recommendOnly(DatasetLoader<? extends Rating> datasetLoader, TryThisAtHomeSVDModel model, Integer idUser, java.util.Set<Integer> idItemList) throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset {
+    public Collection<Recommendation> recommendOnly(DatasetLoader<? extends Rating> datasetLoader, TryThisAtHomeSVDModel model, Integer idUser, java.util.Set<Integer> candidateItems) throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset {
 
         TryThisAtHomeSVDModel incrementedModel;
         if (model.getUsersIndex().containsKey(idUser)) {
@@ -91,7 +91,7 @@ public class SVDFoldingIn
             incrementedModel = incrementModelWithUserRatings(model, datasetLoader, idUser);
         }
 
-        return super.recommendOnly(datasetLoader, incrementedModel, idUser, idItemList);
+        return super.recommendOnly(datasetLoader, incrementedModel, idUser, candidateItems);
     }
 
     @Override

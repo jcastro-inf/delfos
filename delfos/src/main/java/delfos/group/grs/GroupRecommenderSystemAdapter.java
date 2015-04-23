@@ -39,7 +39,7 @@ public abstract class GroupRecommenderSystemAdapter<RecommendationModel, GroupMo
     }
 
     @Override
-    public Collection<Recommendation> recommendOnly(DatasetLoader<? extends Rating> datasetLoader, RecommendationModel RecommendationModel, GroupModel groupModel, GroupOfUsers groupOfUsers, Integer... idItemList) throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadRatingsDataset, CannotLoadContentDataset, NotEnoughtUserInformation {
-        return recommendOnly(datasetLoader, RecommendationModel, groupModel, groupOfUsers, new TreeSet<>(Arrays.asList(idItemList)));
+    public Collection<Recommendation> recommendOnly(DatasetLoader<? extends Rating> datasetLoader, RecommendationModel RecommendationModel, GroupModel groupModel, GroupOfUsers groupOfUsers, Integer... candidateItems) throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadRatingsDataset, CannotLoadContentDataset, NotEnoughtUserInformation {
+        return recommendOnly(datasetLoader, RecommendationModel, groupModel, groupOfUsers, new TreeSet<>(Arrays.asList(candidateItems)));
     }
 }

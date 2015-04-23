@@ -240,12 +240,12 @@ public class DefaultGroupCaseStudy extends GroupCaseStudy {
                         throw new IllegalStateException(getAlias() + " --> Cannot recommend to group a null recommendations, should be an empty list instead.");
                     }
 
-                    if (task.getIdItemList() == null) {
+                    if (task.getCandidateItems() == null) {
                         throw new IllegalStateException(getAlias() + " --> Cannot retrieve the group requests.");
                     }
 
                     recomendacionesPorGrupo.get(group).addAll(task.getRecommendations());
-                    solicitudesPorGrupo.get(group).addAll(task.getIdItemList());
+                    solicitudesPorGrupo.get(group).addAll(task.getCandidateItems());
 
                     totalGroupBuildTime += task.getBuildGroupModelTime();
                     totalGroupRecommendationTime += task.getRecommendationTime();

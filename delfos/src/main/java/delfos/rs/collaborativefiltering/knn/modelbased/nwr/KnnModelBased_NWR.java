@@ -145,7 +145,7 @@ public class KnnModelBased_NWR
 
     @Override
     public Collection<Recommendation> recommendOnly(
-            DatasetLoader<? extends Rating> datasetLoader, KnnModelBasedCFRSModel model, Integer idUser, java.util.Set<Integer> idItemList)
+            DatasetLoader<? extends Rating> datasetLoader, KnnModelBasedCFRSModel model, Integer idUser, java.util.Set<Integer> candidateItems)
             throws UserNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset, ItemNotFound {
 
         PredictionTechnique prediction = (PredictionTechnique) getParameterValue(KnnModelBasedCFRS.PREDICTION_TECHNIQUE);
@@ -159,7 +159,7 @@ public class KnnModelBased_NWR
         int neighborhoodSize = (Integer) getParameterValue(NEIGHBORHOOD_SIZE);
 
         int itemsWithProfile = 0;
-        for (int idItem : idItemList) {
+        for (int idItem : candidateItems) {
             List<MatchRating> matchRatings = new LinkedList<>();
             KnnModelItemProfile profile = model.getItemProfile(idItem);
 

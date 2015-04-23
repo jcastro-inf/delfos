@@ -28,7 +28,7 @@ public interface RecommenderSystem<RecommendationModel> extends GenericRecommend
      * Método para la realización de una recomendación al usuario <i>idUser</i>
      * en una ejecución de evaluación del sistema de recomendación. La lista de
      * películas que se pueden recomendar viene determinada por el parámetro
-     * <i>idItemList</i>, que generalmente vendrá determinado por un conjunto de
+     * <i>candidateItems</i>, que generalmente vendrá determinado por un conjunto de
      * test.
      *
      * <p>
@@ -43,7 +43,7 @@ public interface RecommenderSystem<RecommendationModel> extends GenericRecommend
      * recomendación.
      * @param model Modelo de recomendación que se usará en la recomendación.
      * @param idUser id del usuario para el que se realiza la recomendación
-     * @param idItemList Lista de productos que pueden ser recomendados al
+     * @param candidateItems Lista de productos que pueden ser recomendados al
      * usuario.
      * @return Lista de recomendaciones ordenada por la métrica que utiliza el
      * sistema de recomendación (similarity o predicted rating).
@@ -53,6 +53,6 @@ public interface RecommenderSystem<RecommendationModel> extends GenericRecommend
      * @throws NotEnoughtUserInformation
      */
     public Collection<Recommendation> recommendOnly(
-            DatasetLoader<? extends Rating> datasetLoader, RecommendationModel model, Integer idUser, Set<Integer> idItemList)
+            DatasetLoader<? extends Rating> datasetLoader, RecommendationModel model, Integer idUser, Set<Integer> candidateItems)
             throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset, NotEnoughtUserInformation;
 }

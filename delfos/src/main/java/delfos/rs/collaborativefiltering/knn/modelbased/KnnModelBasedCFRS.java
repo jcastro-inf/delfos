@@ -99,7 +99,7 @@ public class KnnModelBasedCFRS
 
     @Override
     public Collection<Recommendation> recommendOnly(
-            DatasetLoader<? extends Rating> datasetLoader, KnnModelBasedCFRSModel model, Integer idUser, java.util.Set<Integer> idItemList)
+            DatasetLoader<? extends Rating> datasetLoader, KnnModelBasedCFRSModel model, Integer idUser, java.util.Set<Integer> candidateItems)
             throws UserNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset, ItemNotFound {
 
         PredictionTechnique prediction = (PredictionTechnique) getParameterValue(KnnModelBasedCFRS.PREDICTION_TECHNIQUE);
@@ -107,7 +107,7 @@ public class KnnModelBasedCFRS
         Collection<Recommendation> recommendationList = new LinkedList<>();
         Map<Integer, ? extends Rating> userRated = datasetLoader.getRatingsDataset().getUserRatingsRated(idUser);
 
-        for (int idItem : idItemList) {
+        for (int idItem : candidateItems) {
             List<MatchRating> matchRatings = new LinkedList<>();
             KnnModelItemProfile profile = model.getItemProfile(idItem);
 

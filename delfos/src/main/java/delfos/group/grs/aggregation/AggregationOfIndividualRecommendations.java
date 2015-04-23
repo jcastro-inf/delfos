@@ -127,10 +127,10 @@ public class AggregationOfIndividualRecommendations extends GroupRecommenderSyst
     }
 
     @Override
-    public Collection<Recommendation> recommendOnly(DatasetLoader<? extends Rating> datasetLoader, SingleRecommendationModel RecommendationModel, GroupOfUsers groupModel, GroupOfUsers groupOfUsers, java.util.Set<Integer> idItemList) throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset {
+    public Collection<Recommendation> recommendOnly(DatasetLoader<? extends Rating> datasetLoader, SingleRecommendationModel RecommendationModel, GroupOfUsers groupModel, GroupOfUsers groupOfUsers, java.util.Set<Integer> candidateItems) throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset {
 
         RecommenderSystem singleUserRecommender = getSingleUserRecommender();
-        Map<Integer, Collection<Recommendation>> recommendationsLists_byMember = performSingleUserRecommendations(groupOfUsers.getGroupMembers(), singleUserRecommender, datasetLoader, RecommendationModel, idItemList);
+        Map<Integer, Collection<Recommendation>> recommendationsLists_byMember = performSingleUserRecommendations(groupOfUsers.getGroupMembers(), singleUserRecommender, datasetLoader, RecommendationModel, candidateItems);
 
         Collection<Recommendation> groupRecommendations = aggregateLists(getAggregationOperator(), recommendationsLists_byMember);
         return groupRecommendations;
@@ -169,7 +169,7 @@ public class AggregationOfIndividualRecommendations extends GroupRecommenderSyst
         return recommendations;
     }
 
-    public static Map<Integer, Collection<Recommendation>> performSingleUserRecommendations(Collection<Integer> users, RecommenderSystem singleUserRecommender, DatasetLoader<? extends Rating> datasetLoader, SingleRecommendationModel RecommendationModel, Set<Integer> idItemList) throws UserNotFound {
+    public static Map<Integer, Collection<Recommendation>> performSingleUserRecommendations(Collection<Integer> users, RecommenderSystem singleUserRecommender, DatasetLoader<? extends Rating> datasetLoader, SingleRecommendationModel RecommendationModel, Set<Integer> candidateItems) throws UserNotFound {
 
         List<SingleUserRecommendationTask> tasks = new LinkedList<>();
         for (int idUser : users) {
@@ -179,7 +179,7 @@ public class AggregationOfIndividualRecommendations extends GroupRecommenderSyst
                             datasetLoader,
                             RecommendationModel.getRecommendationModel(),
                             idUser,
-                            idItemList));
+                            candidateItems));
 
         }
         MultiThreadExecutionManager<SingleUserRecommendationTask> executionManager = new MultiThreadExecutionManager<>(

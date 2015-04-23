@@ -374,7 +374,7 @@ public class TryThisAtHomeSVD
     }
 
     @Override
-    public Collection<Recommendation> recommendOnly(DatasetLoader<? extends Rating> datasetLoader, TryThisAtHomeSVDModel model, Integer idUser, java.util.Set<Integer> idItemList) throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset {
+    public Collection<Recommendation> recommendOnly(DatasetLoader<? extends Rating> datasetLoader, TryThisAtHomeSVDModel model, Integer idUser, java.util.Set<Integer> candidateItems) throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset {
         if (model == null) {
             throw new IllegalArgumentException("SVD recommendation model is null.");
         }
@@ -394,8 +394,8 @@ public class TryThisAtHomeSVD
         final RatingsDataset<? extends Rating> ratingsDataset = datasetLoader.getRatingsDataset();
         boolean toRatingRange = (Boolean) getParameterValue(PREDICT_IN_RATING_RANGE);
 
-        ArrayList<Recommendation> ret = new ArrayList<>(idItemList.size());
-        for (int idItem : idItemList) {
+        ArrayList<Recommendation> ret = new ArrayList<>(candidateItems.size());
+        for (int idItem : candidateItems) {
             try {
                 Number prediction = privatePredictRating(ratingsDataset, model, idUser, idItem);
                 if (toRatingRange) {

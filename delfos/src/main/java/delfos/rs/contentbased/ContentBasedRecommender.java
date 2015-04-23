@@ -67,12 +67,12 @@ public abstract class ContentBasedRecommender<RecommendationModel, UserProfile> 
     protected abstract UserProfile makeUserProfile(int idUser, DatasetLoader<? extends Rating> datasetLoader, RecommendationModel model) throws CannotLoadRatingsDataset, CannotLoadContentDataset, UserNotFound, NotEnoughtUserInformation;
 
     @Override
-    public final Collection<Recommendation> recommendOnly(DatasetLoader<? extends Rating> datasetLoader, RecommendationModel model, Integer idUser, java.util.Set<Integer> idItemList) throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset, NotEnoughtUserInformation {
+    public final Collection<Recommendation> recommendOnly(DatasetLoader<? extends Rating> datasetLoader, RecommendationModel model, Integer idUser, java.util.Set<Integer> candidateItems) throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset, NotEnoughtUserInformation {
         UserProfile makeUserProfile;
 
         makeUserProfile = makeUserProfile(idUser, datasetLoader, model);
-        return recommendOnly(datasetLoader, model, makeUserProfile, idItemList);
+        return recommendOnly(datasetLoader, model, makeUserProfile, candidateItems);
     }
 
-    protected abstract Collection<Recommendation> recommendOnly(DatasetLoader<? extends Rating> datasetLoader, RecommendationModel model, UserProfile userProfile, Collection<Integer> idItemList) throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset;
+    protected abstract Collection<Recommendation> recommendOnly(DatasetLoader<? extends Rating> datasetLoader, RecommendationModel model, UserProfile userProfile, Collection<Integer> candidateItems) throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset;
 }

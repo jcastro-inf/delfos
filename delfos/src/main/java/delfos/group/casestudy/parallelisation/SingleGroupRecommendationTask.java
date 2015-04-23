@@ -21,19 +21,19 @@ public class SingleGroupRecommendationTask extends Task {
     private GroupRecommenderSystem groupRecommenderSystem;
     private DatasetLoader<? extends Rating> datasetLoader;
     private Object RecommendationModel;
-    private final Set<Integer> idItemList;
+    private final Set<Integer> candidateItems;
 
     private Collection<Recommendation> recommendations;
     private long buildGroupModelTime;
     private long recommendationTime;
 
     public SingleGroupRecommendationTask(GroupRecommenderSystem groupRecommenderSystem, DatasetLoader<? extends Rating> datasetLoader,
-            Object RecommendationModel, GroupOfUsers group, Set<Integer> idItemList) {
+            Object RecommendationModel, GroupOfUsers group, Set<Integer> candidateItems) {
         this.group = group;
         this.groupRecommenderSystem = groupRecommenderSystem;
         this.datasetLoader = datasetLoader;
         this.RecommendationModel = RecommendationModel;
-        this.idItemList = idItemList;
+        this.candidateItems = candidateItems;
     }
 
     @Override
@@ -41,7 +41,7 @@ public class SingleGroupRecommendationTask extends Task {
         StringBuilder str = new StringBuilder();
 
         str.append("group --------> ").append(group).append("\n");
-        str.append("idItemList ---> ").append(idItemList).append("\n");
+        str.append("candidateItems ---> ").append(candidateItems).append("\n");
         str.append("grs ----------> ").append(groupRecommenderSystem.getAlias()).append("\n");
         str.append("\t").append(groupRecommenderSystem.getNameWithParameters()).append("\n");
 
@@ -72,8 +72,8 @@ public class SingleGroupRecommendationTask extends Task {
         return RecommendationModel;
     }
 
-    public Set<Integer> getIdItemList() {
-        return Collections.unmodifiableSet(idItemList);
+    public Set<Integer> getCandidateItems() {
+        return Collections.unmodifiableSet(candidateItems);
     }
 
     protected void setResults(Collection<Recommendation> recommendations, long buildGroupModelTime, long recommendationTime) {

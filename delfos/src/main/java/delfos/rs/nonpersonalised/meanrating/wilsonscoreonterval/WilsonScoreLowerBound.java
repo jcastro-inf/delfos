@@ -101,12 +101,12 @@ public class WilsonScoreLowerBound extends NonPersonalisedRecommender<Collection
     }
 
     @Override
-    public Collection<Recommendation> recommendOnly(DatasetLoader<? extends Rating> datasetLoader, Collection<Recommendation> recommendationModel, Collection<Integer> idItemList) throws ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset {
+    public Collection<Recommendation> recommendOnly(DatasetLoader<? extends Rating> datasetLoader, Collection<Recommendation> recommendationModel, Collection<Integer> candidateItems) throws ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset {
         Collection<Recommendation> recommendations = new ArrayList<>();
 
-        Set<Integer> unpredicted = new TreeSet<>(idItemList);
+        Set<Integer> unpredicted = new TreeSet<>(candidateItems);
         recommendationModel.stream()
-                .filter((recommendation) -> (idItemList.contains(recommendation.getIdItem()))).map((recommendation) -> {
+                .filter((recommendation) -> (candidateItems.contains(recommendation.getIdItem()))).map((recommendation) -> {
                     recommendations.add(new Recommendation(recommendation.getIdItem(), recommendation.getPreference()));
                     return recommendation;
                 }).forEach((recommendation) -> {

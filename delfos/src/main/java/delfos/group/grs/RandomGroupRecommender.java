@@ -48,18 +48,18 @@ public class RandomGroupRecommender
 
     @Override
     public Collection<Recommendation> recommendOnly(
-            DatasetLoader<? extends Rating> datasetLoader, RandomRecommendationModel<GroupOfUsers> RecommendationModel, GroupOfUsers groupModel, GroupOfUsers groupOfUsers, java.util.Set<Integer> idItemList)
+            DatasetLoader<? extends Rating> datasetLoader, RandomRecommendationModel<GroupOfUsers> RecommendationModel, GroupOfUsers groupModel, GroupOfUsers groupOfUsers, java.util.Set<Integer> candidateItems)
             throws UserNotFound, CannotLoadRatingsDataset {
 
         if (RecommendationModel.getRandomFloat(groupOfUsers) > 0.999) {
             return Collections.EMPTY_LIST;
         } else {
-            final int numRecomendaciones = (int) (RecommendationModel.getRandomInt(groupOfUsers, idItemList.size()));
+            final int numRecomendaciones = (int) (RecommendationModel.getRandomInt(groupOfUsers, candidateItems.size()));
             final double min = datasetLoader.getRatingsDataset().getRatingsDomain().min().doubleValue();
             final double rango = datasetLoader.getRatingsDataset().getRatingsDomain().width().doubleValue();
 
             Collection<Recommendation> recommendationList = new ArrayList<>(numRecomendaciones);
-            ArrayList<Integer> toPredict = new ArrayList<>(idItemList);
+            ArrayList<Integer> toPredict = new ArrayList<>(candidateItems);
             for (int i = 0; i < numRecomendaciones; i++) {
                 int idItem = toPredict.remove(RecommendationModel.getRandomInt(groupOfUsers, toPredict.size()));
 

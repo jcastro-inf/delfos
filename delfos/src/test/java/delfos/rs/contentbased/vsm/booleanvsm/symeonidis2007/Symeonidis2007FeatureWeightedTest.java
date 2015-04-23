@@ -191,13 +191,13 @@ public class Symeonidis2007FeatureWeightedTest extends DelfosTest {
         DatasetLoader<? extends Rating> datasetLoader = new DatasetLoaderSymeonidisMock();
         Symeonidis2007FeatureWeighted instance = new Symeonidis2007FeatureWeighted();
         Symeonidis2007Model model = instance.build(datasetLoader);
-        Set<Integer> idItemList = new TreeSet<>();
-        idItemList.add(1);
-        idItemList.add(3);
-        idItemList.add(5);
+        Set<Integer> candidateItems = new TreeSet<>();
+        candidateItems.add(1);
+        candidateItems.add(3);
+        candidateItems.add(5);
 
         //Step2: Execution
-        List<Recommendation> sortedRecommendations = new ArrayList<>(instance.recommendOnly(datasetLoader, model, idUser, idItemList));
+        List<Recommendation> sortedRecommendations = new ArrayList<>(instance.recommendOnly(datasetLoader, model, idUser, candidateItems));
         Collections.sort(sortedRecommendations);
 
         //Step3: Results check

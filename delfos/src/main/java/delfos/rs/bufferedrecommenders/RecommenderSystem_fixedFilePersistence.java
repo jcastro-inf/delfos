@@ -176,10 +176,10 @@ public class RecommenderSystem_fixedFilePersistence<RecommendationModel> extends
     }
 
     @Override
-    public Collection<Recommendation> recommendOnly(DatasetLoader<? extends Rating> datasetLoader, RecommendationModel model, Integer idUser, java.util.Set<Integer> idItemList) throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset, NotEnoughtUserInformation {
+    public Collection<Recommendation> recommendOnly(DatasetLoader<? extends Rating> datasetLoader, RecommendationModel model, Integer idUser, java.util.Set<Integer> candidateItems) throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset, NotEnoughtUserInformation {
         Collection<Recommendation> recommendations;
 
-        recommendations = getRecommenderSystem().recommendOnly(datasetLoader, model, idUser, idItemList);
+        recommendations = getRecommenderSystem().recommendOnly(datasetLoader, model, idUser, candidateItems);
         return recommendations;
     }
 

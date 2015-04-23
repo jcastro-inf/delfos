@@ -18,16 +18,16 @@ public class AllCatalogItems extends RecommendationCandidatesSelector {
 
     @Override
     public Set<Integer> candidateItems(DatasetLoader<? extends Rating> datasetLoader, User user) {
-        Set<Integer> idItemList = new TreeSet<>();
+        Set<Integer> candidateItems = new TreeSet<>();
 
         if (datasetLoader instanceof ContentDatasetLoader) {
             ContentDatasetLoader contentDatasetLoader = (ContentDatasetLoader) datasetLoader;
-            idItemList.addAll(contentDatasetLoader.getContentDataset().getAvailableItems());
+            candidateItems.addAll(contentDatasetLoader.getContentDataset().getAvailableItems());
         } else {
-            idItemList.addAll(datasetLoader.getRatingsDataset().allRatedItems());
+            candidateItems.addAll(datasetLoader.getRatingsDataset().allRatedItems());
         }
 
-        return idItemList;
+        return candidateItems;
     }
 
     @Override

@@ -19,16 +19,16 @@ public class SingleUserRecommendationTask extends Task {
     private final Object model;
     private final int idUser;
     private final DatasetLoader<? extends Rating> datasetLoader;
-    private final Set<Integer> idItemList;
+    private final Set<Integer> candidateItems;
     private Collection<Recommendation> recommendationList = null;
     private final RecommenderSystem<? extends Object> recommenderSystem;
 
-    public SingleUserRecommendationTask(RecommenderSystem<? extends Object> recommenderSystem, DatasetLoader<? extends Rating> datasetLoader, Object model, int idUser, Set<Integer> idItemList) {
+    public SingleUserRecommendationTask(RecommenderSystem<? extends Object> recommenderSystem, DatasetLoader<? extends Rating> datasetLoader, Object model, int idUser, Set<Integer> candidateItems) {
         this.model = model;
         this.idUser = idUser;
         this.recommenderSystem = recommenderSystem;
         this.datasetLoader = datasetLoader;
-        this.idItemList = idItemList;
+        this.candidateItems = candidateItems;
     }
 
     @Override
@@ -36,15 +36,15 @@ public class SingleUserRecommendationTask extends Task {
         StringBuilder str = new StringBuilder();
 
         str.append("recommendTo --------> ").append(idUser).append("\n");
-        str.append("idItemList ---------> ").append(idItemList).append("\n");
+        str.append("candidateItems ---------> ").append(candidateItems).append("\n");
         str.append("recommenderSystem --> ").append(recommenderSystem.getAlias()).append("\n");
         str.append("\t").append(recommenderSystem.getNameWithParameters()).append("\n");
 
         return str.toString();
     }
 
-    public Set<Integer> getIdItemList() {
-        return Collections.unmodifiableSet(idItemList);
+    public Set<Integer> getCandidateItems() {
+        return Collections.unmodifiableSet(candidateItems);
     }
 
     public DatasetLoader<? extends Rating> getDatasetLoader() {

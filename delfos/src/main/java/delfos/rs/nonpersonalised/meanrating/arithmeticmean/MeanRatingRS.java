@@ -80,7 +80,7 @@ public class MeanRatingRS extends CollaborativeRecommender<MeanRatingRSModel> {
     }
 
     @Override
-    public Collection<Recommendation> recommendOnly(DatasetLoader<? extends Rating> datasetLoader, MeanRatingRSModel model, Integer idUser, java.util.Set<Integer> idItemList) throws UserNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset {
+    public Collection<Recommendation> recommendOnly(DatasetLoader<? extends Rating> datasetLoader, MeanRatingRSModel model, Integer idUser, java.util.Set<Integer> candidateItems) throws UserNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset {
 
         Collection<Recommendation> recom = new LinkedList<>();
         Iterator<MeanRating> iterator = model.getRangedMeanRatings().listIterator();
@@ -88,7 +88,7 @@ public class MeanRatingRS extends CollaborativeRecommender<MeanRatingRSModel> {
         int i = 0;
         while (iterator.hasNext()) {
             MeanRating next = iterator.next();
-            if (idItemList.contains(next.getIdItem())) {
+            if (candidateItems.contains(next.getIdItem())) {
                 recom.add(new Recommendation(next.getIdItem(), next.getPreference()));
             }
             i++;

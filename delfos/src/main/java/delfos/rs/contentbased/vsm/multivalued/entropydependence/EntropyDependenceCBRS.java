@@ -318,7 +318,7 @@ public class EntropyDependenceCBRS extends ContentBasedRecommender<EntropyDepend
     }
 
     @Override
-    protected Collection<Recommendation> recommendOnly(DatasetLoader<? extends Rating> datasetLoader, EntropyDependenceCBRSModel model, EntropyDependenceCBRSUserProfile userProfile, Collection<Integer> idItemList) throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset {
+    protected Collection<Recommendation> recommendOnly(DatasetLoader<? extends Rating> datasetLoader, EntropyDependenceCBRSModel model, EntropyDependenceCBRSUserProfile userProfile, Collection<Integer> candidateItems) throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset {
         final ContentDataset contentDataset;
         if (datasetLoader instanceof ContentDatasetLoader) {
             ContentDatasetLoader contentDatasetLoader = (ContentDatasetLoader) datasetLoader;
@@ -330,7 +330,7 @@ public class EntropyDependenceCBRS extends ContentBasedRecommender<EntropyDepend
         WeightedSimilarityMeasure similarity = (WeightedSimilarityMeasure) getParameterValue(SIMILARITY_MEASURE);
         Collection<Recommendation> recomendaciones = new ArrayList<>();
 
-        for (int idItem : idItemList) {
+        for (int idItem : candidateItems) {
             Item item;
             try {
                 item = contentDataset.get(idItem);
@@ -385,10 +385,10 @@ public class EntropyDependenceCBRS extends ContentBasedRecommender<EntropyDepend
 
         }
 
-        if (recomendaciones.size() != idItemList.size()) {
-            Global.showWarning("Se están devolviendo " + recomendaciones.size() + " de " + idItemList.size());
+        if (recomendaciones.size() != candidateItems.size()) {
+            Global.showWarning("Se están devolviendo " + recomendaciones.size() + " de " + candidateItems.size());
 
-            return recommendOnly(datasetLoader, model, userProfile, idItemList);
+            return recommendOnly(datasetLoader, model, userProfile, candidateItems);
         }
 
         return recomendaciones;

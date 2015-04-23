@@ -66,11 +66,11 @@ public class HybridUserItemTrustBased extends CollaborativeRecommender<HybridUse
     }
 
     @Override
-    public Collection<Recommendation> recommendOnly(DatasetLoader<? extends Rating> datasetLoader, HybridUserItemTrustBasedModel model, Integer idUser, java.util.Set<Integer> idItemList) throws UserNotFound, CannotLoadRatingsDataset {
+    public Collection<Recommendation> recommendOnly(DatasetLoader<? extends Rating> datasetLoader, HybridUserItemTrustBasedModel model, Integer idUser, java.util.Set<Integer> candidateItems) throws UserNotFound, CannotLoadRatingsDataset {
 
-        Collection<Recommendation> ret = new ArrayList<>(idItemList.size());
+        Collection<Recommendation> ret = new ArrayList<>(candidateItems.size());
 
-        for (int idItem : idItemList) {
+        for (int idItem : candidateItems) {
             try {
                 Number userPrediction = userPrediction(datasetLoader.getRatingsDataset(), model.getUserBasedTrustModuleModel(), idUser, idItem);
                 Number itemPrediction = itemPrediction(datasetLoader.getRatingsDataset(), model.getItemBasedTrustModuleModel(), idUser, idItem);

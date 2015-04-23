@@ -151,9 +151,9 @@ public class TryThisAtHomeSVDTest extends DelfosTest {
         TryThisAtHomeSVD tryThisAtHomeSVD = new TryThisAtHomeSVD(1, 400);
         TryThisAtHomeSVDModel tryThisAtHomeSVDModel = tryThisAtHomeSVD.build(datasetLoader);
 
-        Set<Integer> idItemList = new TreeSet<>();
-        idItemList.add(2);
-        idItemList.add(4);
+        Set<Integer> candidateItems = new TreeSet<>();
+        candidateItems.add(2);
+        candidateItems.add(4);
 
         System.out.println("Features learned USERS");
 
@@ -170,7 +170,7 @@ public class TryThisAtHomeSVDTest extends DelfosTest {
                     System.out.println("Item " + idItem + "--> " + tryThisAtHomeSVDModel.getItemFeatures(idItem));
                 });
 
-        Collection<Recommendation> recommendations = tryThisAtHomeSVD.recommendOnly(datasetLoader, tryThisAtHomeSVDModel, 3, idItemList);
+        Collection<Recommendation> recommendations = tryThisAtHomeSVD.recommendOnly(datasetLoader, tryThisAtHomeSVDModel, 3, candidateItems);
 
         List<Recommendation> sortedRecommendations = new ArrayList<>(recommendations);
         Collections.sort(sortedRecommendations);

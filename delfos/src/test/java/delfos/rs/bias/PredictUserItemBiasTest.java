@@ -40,12 +40,12 @@ public class PredictUserItemBiasTest {
         DatasetLoader<? extends Rating> datasetLoader = ConfiguredDatasetsFactory.getInstance().getDatasetLoader("ml-100k");
 
         User user = new User(45);
-        Set<Integer> idItemList = datasetLoader.getRatingsDataset().allRatedItems();
+        Set<Integer> candidateItems = datasetLoader.getRatingsDataset().allRatedItems();
         PredictUserItemBias bias = new PredictUserItemBias();
 
         Object model = bias.build(datasetLoader);
 
-        SingleUserRecommendations singleUserRecommendations = new SingleUserRecommendations(user, bias.recommendOnly(datasetLoader, model, user.getId(), idItemList));
+        SingleUserRecommendations singleUserRecommendations = new SingleUserRecommendations(user, bias.recommendOnly(datasetLoader, model, user.getId(), candidateItems));
 
         RatingsDataset rd = new RecommenderBasedDataset(datasetLoader);
 

@@ -92,7 +92,7 @@ public class RecommenderSystem_bufferedRecommendations extends RecommenderSystem
     }
 
     @Override
-    public Collection<Recommendation> recommendOnly(DatasetLoader<? extends Rating> datasetLoader, Object model, Integer idUser, java.util.Set<Integer> idItemList) throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset, NotEnoughtUserInformation {
+    public Collection<Recommendation> recommendOnly(DatasetLoader<? extends Rating> datasetLoader, Object model, Integer idUser, java.util.Set<Integer> candidateItems) throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset, NotEnoughtUserInformation {
         Map<Integer, ? extends Rating> userRatings = datasetLoader.getRatingsDataset().getUserRatingsRated(idUser);
 
         int hashCodeOfRatings = userRatings.hashCode();
@@ -104,7 +104,7 @@ public class RecommenderSystem_bufferedRecommendations extends RecommenderSystem
         Collection<Recommendation> recommendations;
 
         if (!file.exists()) {
-            recommendations = getRecommenderSystem().recommendOnly(datasetLoader, model, idUser, idItemList);
+            recommendations = getRecommenderSystem().recommendOnly(datasetLoader, model, idUser, candidateItems);
             try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(file))) {
                 oos.writeObject(userRatings);
                 oos.writeObject(recommendations);

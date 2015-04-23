@@ -131,11 +131,11 @@ public class GroupRecommenderSystemWithPostFilter extends GroupRecommenderSystem
     }
 
     @Override
-    public Collection<Recommendation> recommendOnly(DatasetLoader<? extends Rating> datasetLoader, SingleRecommendationModel RecommendationModel, GroupOfUsers groupModel, GroupOfUsers groupOfUsers, java.util.Set<Integer> idItemList) throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset {
+    public Collection<Recommendation> recommendOnly(DatasetLoader<? extends Rating> datasetLoader, SingleRecommendationModel RecommendationModel, GroupOfUsers groupModel, GroupOfUsers groupOfUsers, java.util.Set<Integer> candidateItems) throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset {
 
         List<SingleUserRecommendationTask> tasks = new LinkedList<SingleUserRecommendationTask>();
         for (int idUser : groupOfUsers) {
-            tasks.add(new SingleUserRecommendationTask(getRecommenderSystem(), datasetLoader, RecommendationModel.getRecommendationModel(), idUser, idItemList));
+            tasks.add(new SingleUserRecommendationTask(getRecommenderSystem(), datasetLoader, RecommendationModel.getRecommendationModel(), idUser, candidateItems));
         }
 
         MultiThreadExecutionManager<SingleUserRecommendationTask> executionManager = new MultiThreadExecutionManager<>(

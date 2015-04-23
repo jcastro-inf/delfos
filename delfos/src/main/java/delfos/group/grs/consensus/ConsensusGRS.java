@@ -174,10 +174,10 @@ public class ConsensusGRS extends GroupRecommenderSystemAdapter<SingleRecommenda
 
     @Override
     public Collection<Recommendation> recommendOnly(
-            DatasetLoader<? extends Rating> datasetLoader, SingleRecommendationModel RecommendationModel, GroupModelPseudoUser groupModel, GroupOfUsers groupOfUsers, java.util.Set<Integer> idItemList)
+            DatasetLoader<? extends Rating> datasetLoader, SingleRecommendationModel RecommendationModel, GroupModelPseudoUser groupModel, GroupOfUsers groupOfUsers, java.util.Set<Integer> candidateItems)
             throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset, NotEnoughtUserInformation {
 
-        GroupRecommendationsWithMembersRecommendations groupRecommendationsWithMembersRecommendations = recommendOnlyWithMembersRecommendations(datasetLoader, RecommendationModel, groupModel, groupOfUsers, idItemList);
+        GroupRecommendationsWithMembersRecommendations groupRecommendationsWithMembersRecommendations = recommendOnlyWithMembersRecommendations(datasetLoader, RecommendationModel, groupModel, groupOfUsers, candidateItems);
 
         return groupRecommendationsWithMembersRecommendations.getRecommendations();
 
@@ -188,7 +188,7 @@ public class ConsensusGRS extends GroupRecommenderSystemAdapter<SingleRecommenda
             SingleRecommendationModel RecommendationModel,
             GroupModelPseudoUser groupModel,
             GroupOfUsers groupOfUsers,
-            Set<Integer> idItemList)
+            Set<Integer> candidateItems)
             throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset, NotEnoughtUserInformation {
 
         final GroupRecommendationsSelector itemSelector = new BordaCount();
@@ -206,7 +206,7 @@ public class ConsensusGRS extends GroupRecommenderSystemAdapter<SingleRecommenda
 
         saveGroupInputDataAndRequests(
                 membersRatings,
-                idItemList
+                candidateItems
         );
 
         Map<Integer, Collection<Recommendation>> membersRecommendationsList
@@ -215,7 +215,7 @@ public class ConsensusGRS extends GroupRecommenderSystemAdapter<SingleRecommenda
                         singleUserRecommenderSystem,
                         datasetLoader,
                         RecommendationModel,
-                        idItemList);
+                        candidateItems);
 
         Collection<Recommendation> groupRecommendationsList = AggregationOfIndividualRecommendations.aggregateLists(aggregationOperator, membersRecommendationsList);
 
@@ -343,7 +343,7 @@ public class ConsensusGRS extends GroupRecommenderSystemAdapter<SingleRecommenda
 
     public <RatingType extends Rating> void saveGroupInputDataAndRequests(
             Map<Integer, Map<Integer, RatingType>> membersRatings,
-            Collection<Integer> idItemList) {
+            Collection<Integer> candidateItems) {
 
         File consensusInputFilesDirectory = (File) getParameterValue(CONSENSUS_INPUT_FILES_DIRECTORY);
         if (!consensusInputFilesDirectory.exists()) {
@@ -352,12 +352,12 @@ public class ConsensusGRS extends GroupRecommenderSystemAdapter<SingleRecommenda
 
         HashCodeBuilder hashBuilder = new HashCodeBuilder(37, 11);
         hashBuilder.append(membersRatings);
-        hashBuilder.append(idItemList);
+        hashBuilder.append(candidateItems);
         File groupPredictionRequestsFile = new File(
                 consensusInputFilesDirectory.getAbsolutePath() + File.separator
                 + membersRatings.keySet() + "_groupDataAndRequests.xml");
 
-        ConsensusOfIndividualRecommendationsToXML.writeRecommendationMembersRatingsXML(membersRatings, idItemList, groupPredictionRequestsFile);
+        ConsensusOfIndividualRecommendationsToXML.writeRecommendationMembersRatingsXML(membersRatings, candidateItems, groupPredictionRequestsFile);
     }
 
     @Override

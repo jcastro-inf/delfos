@@ -86,13 +86,13 @@ public class ContentWeightCollaborative extends HybridRecommender<HybridRecommen
     }
 
     @Override
-    public Collection<Recommendation> recommendOnly(DatasetLoader<? extends Rating> datasetLoader, HybridRecommendationModel model, Integer idUser, java.util.Set<Integer> idItemList) throws UserNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset, ItemNotFound, NotEnoughtUserInformation {
+    public Collection<Recommendation> recommendOnly(DatasetLoader<? extends Rating> datasetLoader, HybridRecommendationModel model, Integer idUser, java.util.Set<Integer> candidateItems) throws UserNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset, ItemNotFound, NotEnoughtUserInformation {
 
         ContentBasedRecommender<Object, Object> contentBasedAlgorithm = (ContentBasedRecommender<Object, Object>) getParameterValue(CONTENT_BASED_TECHNIQUE);
         CollaborativeRecommender<Object> collaborativeFilteringTechnique = (CollaborativeRecommender<Object>) getParameterValue(COLLABORATIVE_TECHNIQUE);
 
-        Collection<Recommendation> content = contentBasedAlgorithm.recommendOnly(datasetLoader, model.getModel(0), idUser, idItemList);
-        Collection<Recommendation> collaborative = collaborativeFilteringTechnique.recommendOnly(datasetLoader, model.getModel(1), idUser, idItemList);
+        Collection<Recommendation> content = contentBasedAlgorithm.recommendOnly(datasetLoader, model.getModel(0), idUser, candidateItems);
+        Collection<Recommendation> collaborative = collaborativeFilteringTechnique.recommendOnly(datasetLoader, model.getModel(1), idUser, candidateItems);
 
         return joinRecommendationLists(content, collaborative);
     }

@@ -61,11 +61,11 @@ public class RandomRecommender extends CollaborativeRecommender<RandomRecommenda
     }
 
     @Override
-    public Collection<Recommendation> recommendOnly(DatasetLoader<? extends Rating> datasetLoader, RandomRecommendationModel<Integer> model, Integer idUser, java.util.Set<Integer> idItemList) throws UserNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset {
+    public Collection<Recommendation> recommendOnly(DatasetLoader<? extends Rating> datasetLoader, RandomRecommendationModel<Integer> model, Integer idUser, java.util.Set<Integer> candidateItems) throws UserNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset {
         LinkedList<Recommendation> recom = new LinkedList<>();
 
         int i = 0;
-        for (int idItem : idItemList) {
+        for (int idItem : candidateItems) {
             recom.add(new Recommendation(idItem, model.predict(idUser, idItem)));
             i++;
         }

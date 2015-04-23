@@ -294,7 +294,7 @@ public final class AggregationOfIndividualRatings_itemWeighted
 
     @Override
     public Collection<Recommendation> recommendOnly(
-            DatasetLoader<? extends Rating> datasetLoader, SingleRecommendationModel RecommendationModel, GroupModelWithExplanation<GroupModelPseudoUser_itemWeighted, ? extends Object> groupModel, GroupOfUsers groupOfUsers, java.util.Set<Integer> idItemList)
+            DatasetLoader<? extends Rating> datasetLoader, SingleRecommendationModel RecommendationModel, GroupModelWithExplanation<GroupModelPseudoUser_itemWeighted, ? extends Object> groupModel, GroupOfUsers groupOfUsers, java.util.Set<Integer> candidateItems)
             throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset, NotEnoughtUserInformation {
 
         //Recojo los parámetros en variables
@@ -303,7 +303,7 @@ public final class AggregationOfIndividualRatings_itemWeighted
         if (recommenderSystem instanceof KnnMemoryBasedNWR_itemWeighted) {
             Map<Integer, Number> groupRatings_Number = groupModel.getGroupModel().getRatings();
             Map<Integer, Double> itemWeights = groupModel.getGroupModel().getItemWeights();
-            Collection<Recommendation> groupRecom = recommendWithRatingsAndWeights(datasetLoader, recommenderSystem, RecommendationModel, groupRatings_Number, itemWeights, idItemList);
+            Collection<Recommendation> groupRecom = recommendWithRatingsAndWeights(datasetLoader, recommenderSystem, RecommendationModel, groupRatings_Number, itemWeights, candidateItems);
             return groupRecom;
         } else {
             throw new IllegalStateException("Cannot use this GRS with a " + recommenderSystem.getAlias() + ", must be a " + KnnMemoryBasedNWR_itemWeighted.class);
@@ -365,7 +365,7 @@ public final class AggregationOfIndividualRatings_itemWeighted
             SingleRecommendationModel RecommendationModel,
             Map<Integer, Number> groupRatings,
             Map<Integer, Double> itemWeights,
-            Collection<Integer> idItemList) throws ItemNotFound, NotEnoughtUserInformation, UserNotFound, CannotLoadContentDataset, CannotLoadRatingsDataset {
+            Collection<Integer> candidateItems) throws ItemNotFound, NotEnoughtUserInformation, UserNotFound, CannotLoadContentDataset, CannotLoadRatingsDataset {
 
         Map<Integer, Rating> groupRatings_Ratings = DatasetUtilities.getUserMap_Rating(-1, groupRatings);
         PseudoUserRatingsDataset<Rating> ratingsDataset_withPseudoUser = new PseudoUserRatingsDataset<>(
@@ -385,7 +385,7 @@ public final class AggregationOfIndividualRatings_itemWeighted
                     (KnnMemoryModel) RecommendationModel.getRecommendationModel(),
                     idGroup,
                     itemWeights,
-                    idItemList);
+                    candidateItems);
         } else {
             throw new IllegalStateException("Cannot use this GRS with a " + recommenderSystem.getAlias() + ", must be a " + KnnMemoryBasedNWR_itemWeighted.class);
         }

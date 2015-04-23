@@ -36,7 +36,7 @@ public class SingleGroupRecommendation implements SingleTaskExecute<SingleGroupR
                     task.getRecommendationModel(),
                     groupModel,
                     task.getGroup(),
-                    task.getIdItemList());
+                    task.getCandidateItems());
             recommendationTime = chronometer.getTotalElapsed();
 
         } catch (UserNotFound | CannotLoadRatingsDataset | CannotLoadContentDataset | ItemNotFound | NotEnoughtUserInformation ex) {

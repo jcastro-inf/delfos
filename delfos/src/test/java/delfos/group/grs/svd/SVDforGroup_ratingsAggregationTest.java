@@ -38,13 +38,13 @@ public class SVDforGroup_ratingsAggregationTest {
         GroupOfUsers group = new GroupOfUsers(1, 2, 3);
         GroupSVDModel groupModel = grs.buildGroupModel(randomDataset, RecommendationModel, group);
 
-        Set<Integer> idItemList = new TreeSet<>();
+        Set<Integer> candidateItems = new TreeSet<>();
         for (int idUser : group) {
-            idItemList.addAll(randomDataset.getRatingsDataset().getUserRated(idUser));
+            candidateItems.addAll(randomDataset.getRatingsDataset().getUserRated(idUser));
         }
-        Collection<Recommendation> recommendOnly = grs.recommendOnly(randomDataset, RecommendationModel, groupModel, group, idItemList);
+        Collection<Recommendation> recommendOnly = grs.recommendOnly(randomDataset, RecommendationModel, groupModel, group, candidateItems);
 
-        Global.showMessage(DatasetPrinter.printCompactRatingTable(randomDataset.getRatingsDataset(), group.getGroupMembers(), idItemList));
+        Global.showMessage(DatasetPrinter.printCompactRatingTable(randomDataset.getRatingsDataset(), group.getGroupMembers(), candidateItems));
 
         RecommendationsOutputStandardRaw output = new RecommendationsOutputStandardRaw();
         output.writeRecommendations(new GroupRecommendations(group, recommendOnly, RecommendationComputationDetails.EMPTY_DETAILS));

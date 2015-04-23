@@ -170,7 +170,7 @@ public class GroupRecommenderSystemWithPreFilter extends GroupRecommenderSystemA
 
     @Override
     public Collection<Recommendation> recommendOnly(
-            DatasetLoader<? extends Rating> datasetLoader, Object RecommendationModel, GroupModelWithExplanation<GroupModelRatingsPreFilter, ? extends Object> groupModelWithExplanation, GroupOfUsers groupOfUsers, java.util.Set<Integer> idItemList)
+            DatasetLoader<? extends Rating> datasetLoader, Object RecommendationModel, GroupModelWithExplanation<GroupModelRatingsPreFilter, ? extends Object> groupModelWithExplanation, GroupOfUsers groupOfUsers, java.util.Set<Integer> candidateItems)
             throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset, NotEnoughtUserInformation {
 
         Object innerGRSGroupModel = groupModelWithExplanation.getGroupModel().getInnerGRSGroupModel();
@@ -194,7 +194,7 @@ public class GroupRecommenderSystemWithPreFilter extends GroupRecommenderSystemA
                     RecommendationModel,
                     innerGRSGroupModel,
                     new GroupOfUsers(pseudoMembers.keySet()),
-                    idItemList);
+                    candidateItems);
             return recommendations;
         } catch (UserNotFound ex) {
             throw new UserNotFound(pseudoMembers.get(ex.getIdUser()), ex);

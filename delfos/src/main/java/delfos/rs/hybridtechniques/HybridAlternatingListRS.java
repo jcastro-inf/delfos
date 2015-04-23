@@ -80,14 +80,14 @@ public class HybridAlternatingListRS extends HybridRecommender<HybridRecommendat
     }
 
     @Override
-    public Collection<Recommendation> recommendOnly(DatasetLoader<? extends Rating> datasetLoader, HybridRecommendationModel model, Integer idUser, java.util.Set<Integer> idItemList) throws UserNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset, ItemNotFound, NotEnoughtUserInformation {
+    public Collection<Recommendation> recommendOnly(DatasetLoader<? extends Rating> datasetLoader, HybridRecommendationModel model, Integer idUser, java.util.Set<Integer> candidateItems) throws UserNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset, ItemNotFound, NotEnoughtUserInformation {
 
         RecommenderSystem<Object> firstTechnique = (RecommenderSystem<Object>) getParameterValue(FIRST_TECHNIQUE);
 
         RecommenderSystem<Object> secondTechnique = (RecommenderSystem<Object>) getParameterValue(SECOND_TECHNIQUE);
 
-        Collection<Recommendation> firstTechniqueList = firstTechnique.recommendOnly(datasetLoader, model.getModel(0), idUser, idItemList);
-        Collection<Recommendation> secondTechniqueList = secondTechnique.recommendOnly(datasetLoader, model.getModel(1), idUser, idItemList);
+        Collection<Recommendation> firstTechniqueList = firstTechnique.recommendOnly(datasetLoader, model.getModel(0), idUser, candidateItems);
+        Collection<Recommendation> secondTechniqueList = secondTechnique.recommendOnly(datasetLoader, model.getModel(1), idUser, candidateItems);
 
         return joinRecommendationLists(firstTechniqueList, secondTechniqueList);
     }

@@ -142,13 +142,13 @@ public class AggregationOfIndividualRatings
 
     @Override
     public Collection<Recommendation> recommendOnly(
-            DatasetLoader<? extends Rating> datasetLoader, SingleRecommendationModel RecommendationModel, GroupModelWithExplanation<GroupModelPseudoUser, ? extends Object> groupModel, GroupOfUsers groupOfUsers, java.util.Set<Integer> idItemList)
+            DatasetLoader<? extends Rating> datasetLoader, SingleRecommendationModel RecommendationModel, GroupModelWithExplanation<GroupModelPseudoUser, ? extends Object> groupModel, GroupOfUsers groupOfUsers, java.util.Set<Integer> candidateItems)
             throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset, NotEnoughtUserInformation {
 
         //Recojo los parámetros en variables
         RecommenderSystem recommenderSystem = getSingleUserRecommender();
         Map<Integer, Number> groupRatings_Number = groupModel.getGroupModel().getRatings();
-        Collection<Recommendation> groupRecom = recommendWithGroupRatings(datasetLoader, recommenderSystem, RecommendationModel, groupRatings_Number, idItemList);
+        Collection<Recommendation> groupRecom = recommendWithGroupRatings(datasetLoader, recommenderSystem, RecommendationModel, groupRatings_Number, candidateItems);
 
         return groupRecom;
     }
@@ -251,7 +251,7 @@ public class AggregationOfIndividualRatings
             DatasetLoader<? extends Rating> datasetLoader,
             RecommenderSystem recommenderSystem,
             SingleRecommendationModel RecommendationModel,
-            Map<Integer, Number> groupRatings, Set<Integer> idItemList) throws ItemNotFound, NotEnoughtUserInformation, UserNotFound, CannotLoadContentDataset, CannotLoadRatingsDataset {
+            Map<Integer, Number> groupRatings, Set<Integer> candidateItems) throws ItemNotFound, NotEnoughtUserInformation, UserNotFound, CannotLoadContentDataset, CannotLoadRatingsDataset {
 
         Map<Integer, Rating> groupRatings_Ratings = DatasetUtilities.getUserMap_Rating(-1, groupRatings);
         PseudoUserRatingsDataset<Rating> ratingsDataset_withPseudoUser = new PseudoUserRatingsDataset<>(
@@ -266,7 +266,7 @@ public class AggregationOfIndividualRatings
                 new DatasetLoaderGiven(datasetLoader, ratingsDataset_withPseudoUser),
                 RecommendationModel.getRecommendationModel(),
                 idGroup,
-                idItemList);
+                candidateItems);
         return groupRecom;
     }
 }
