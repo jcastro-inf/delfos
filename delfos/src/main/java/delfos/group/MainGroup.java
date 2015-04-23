@@ -64,7 +64,7 @@ public class MainGroup {
 
         if (consoleParameters.isDefined("-executeGroupXML")) {
             try {
-                String xmlExperimentsFolder = consoleParameters.getValue("-executeGroupXML");
+                String xmlExperimentsDirectory = consoleParameters.getValue("-executeGroupXML");
 
                 final int NUM_EJECUCIONES;
                 {
@@ -89,7 +89,7 @@ public class MainGroup {
                 }
 
                 consoleParameters.printUnusedParameters(System.err);
-                xmlExperimentsExecution(xmlExperimentsFolder, xmlExperimentsFolder + File.separator + "dataset" + File.separator, NUM_EJECUCIONES, SEED);
+                xmlExperimentsExecution(xmlExperimentsDirectory, xmlExperimentsDirectory + File.separator + "dataset" + File.separator, NUM_EJECUCIONES, SEED);
             } catch (UndefinedParameterException ex) {
                 consoleParameters.printUnusedParameters(System.err);
             }
@@ -186,19 +186,19 @@ public class MainGroup {
                 SEED = num;
             }
 
-            final String experimentsFolder;
+            final String experimentsDirectory;
             {
-                String experimentsFolder_aux;
+                String experimentsDirectory_aux;
                 try {
-                    experimentsFolder_aux = consoleParameters.getValue("-experimentsFolder");
+                    experimentsDirectory_aux = consoleParameters.getValue("-experimentsDirectory");
                 } catch (UndefinedParameterException ex) {
-                    experimentsFolder_aux = "experiments-grs";
+                    experimentsDirectory_aux = "experiments-grs";
                 }
-                experimentsFolder = experimentsFolder_aux;
+                experimentsDirectory = experimentsDirectory_aux;
             }
 
             consoleParameters.printUnusedParameters(System.err);
-            groupLevelCaseStudy(SEED, NUM_GROUPS, SIZE_OF_GROUPS, experimentsFolder);
+            groupLevelCaseStudy(SEED, NUM_GROUPS, SIZE_OF_GROUPS, experimentsDirectory);
             return true;
         }
 
@@ -227,7 +227,7 @@ public class MainGroup {
                 SIZE_OF_GROUPS,
                 SEED);
 
-        filterCaseStudy.setFolder(new File("experiments" + File.separator).getAbsolutePath());
+        filterCaseStudy.setDirectory(new File("experiments" + File.separator).getAbsolutePath());
         try {
             filterCaseStudy.execute();
         } catch (UserNotFound ex) {
@@ -246,11 +246,11 @@ public class MainGroup {
         defaultExecution.execute();
     }
 
-    private static void xmlExperimentsExecution(String experimentsFolder, String datasetFolder, int numExecutions, long seed) {
+    private static void xmlExperimentsExecution(String experimentsDirectory, String datasetDirectory, int numExecutions, long seed) {
         try {
             GroupXMLexperimentsExecution execution = new GroupXMLexperimentsExecution(
-                    experimentsFolder,
-                    datasetFolder,
+                    experimentsDirectory,
+                    datasetDirectory,
                     numExecutions,
                     seed);
             execution.execute();
@@ -266,15 +266,15 @@ public class MainGroup {
         throw new UnsupportedOperationException("Not implemented the help for this command.");
     }
 
-    private static void groupLevelCaseStudy(long seed, int numGroups, int sizeOfGroups, String experimentsFolder) {
+    private static void groupLevelCaseStudy(long seed, int numGroups, int sizeOfGroups, String experimentsDirectory) {
 
         try {
             GroupLevelCaseStudy_parallel groupLevelCaseStudy = new GroupLevelCaseStudy_parallel();
 
-            File datasetDirectory = new File(experimentsFolder + File.separator + "dataset" + File.separator);
+            File datasetDirectory = new File(experimentsDirectory + File.separator + "dataset" + File.separator);
             DatasetLoader<? extends Rating> datasetLoader = FilterCaseStudy.getDatasets(datasetDirectory).get(0);
 
-            File grsDirectory = new File(experimentsFolder + File.separator);
+            File grsDirectory = new File(experimentsDirectory + File.separator);
             ArrayList<GroupRecommenderSystem> recommenders = FilterCaseStudy.getRecommenders(grsDirectory);
 
             ArrayList<GroupMeasure> groupMeasures = new ArrayList<>();

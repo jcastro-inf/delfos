@@ -36,7 +36,7 @@ import delfos.group.experiment.validation.predictionvalidation.GroupPredictionPr
 public class GroupCaseStudy_SingleTaskExecute implements SingleTaskExecute<ExecuteGroupCaseStudy_Task> {
 
     private void executeCaseStudy(
-            File experimentsFolder,
+            File experimentsDirectory,
             String caseName,
             GroupCaseStudyConfiguration caseStudyConfiguration,
             DatasetLoader<? extends Rating> datasetLoader,
@@ -77,7 +77,7 @@ public class GroupCaseStudy_SingleTaskExecute implements SingleTaskExecute<Execu
 
         File fileToSaveResults = new File(caseName);
 
-        fileToSaveResults = FileUtilities.addPrefix(fileToSaveResults, experimentsFolder + File.separator + "results" + File.separator);
+        fileToSaveResults = FileUtilities.addPrefix(fileToSaveResults, experimentsDirectory + File.separator + "results" + File.separator);
 
         File excelFile = FileUtilities.changeExtension(fileToSaveResults, "xls");
         File xmlFile = FileUtilities.changeExtension(fileToSaveResults, "xml");
@@ -91,7 +91,7 @@ public class GroupCaseStudy_SingleTaskExecute implements SingleTaskExecute<Execu
     public void executeSingleTask(ExecuteGroupCaseStudy_Task task) {
         try {
             executeCaseStudy(
-                    task.getExperimentsFolder(),
+                    task.getExperimentsDirectory(),
                     task.getCaseName(),
                     task.getCaseStudyConfiguration(),
                     task.getDatasetLoader(),

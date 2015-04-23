@@ -40,14 +40,14 @@ public class ExperimentKnnMultiPearson {
     @Test
     public void generateCaseXML() {
 
-        String folderName = "experiments" + File.separator + ExperimentKnnMultiPearson.class.getSimpleName() + File.separator;
-        File folder = new File(folderName);
-        File datasetFolder = new File(folderName + "dataset" + File.separator);
-        if (folder.exists()) {
-            FileUtilities.deleteDirectoryRecursive(folder);
+        String directoryName = "experiments" + File.separator + ExperimentKnnMultiPearson.class.getSimpleName() + File.separator;
+        File directory = new File(directoryName);
+        File datasetDirectory = new File(directoryName + "dataset" + File.separator);
+        if (directory.exists()) {
+            FileUtilities.deleteDirectoryRecursive(directory);
         }
-        FileUtilities.createDirectoryPath(folder);
-        FileUtilities.createDirectoryPath(datasetFolder);
+        FileUtilities.createDirectoryPath(directory);
+        FileUtilities.createDirectoryPath(datasetDirectory);
 
         final DatasetLoader<? extends Rating> datasetLoader = new RandomDatasetLoader();
         final Collection<EvaluationMeasure> evaluationMeasures
@@ -69,7 +69,7 @@ public class ExperimentKnnMultiPearson {
 
             CaseStudy.setSeedValue(seed);
             String fileName = recommenderSystem.getAlias() + ".xml";
-            File file = new File(folder + File.separator + fileName);
+            File file = new File(directory + File.separator + fileName);
             CaseStudyXML.saveCaseDescription(CaseStudy, file.getAbsolutePath());
         }
 
@@ -79,7 +79,7 @@ public class ExperimentKnnMultiPearson {
                     new ConfiguredDatasetLoader("ml-100k")
             );
 
-            File file = new File(folder + File.separator + "dataset" + File.separator + "ml-100k.xml");
+            File file = new File(directory + File.separator + "dataset" + File.separator + "ml-100k.xml");
             CaseStudyXML.saveCaseDescription(caseStudy, file.getAbsolutePath());
         }
     }

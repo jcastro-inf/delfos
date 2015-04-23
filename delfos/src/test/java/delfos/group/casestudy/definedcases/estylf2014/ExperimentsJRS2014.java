@@ -51,14 +51,14 @@ public class ExperimentsJRS2014 {
     @Test
     public void generateCaseXML() {
 
-        String folderName = "experiments" + File.separator + "jrs2014" + File.separator;
-        File folder = new File(folderName);
-        if (folder.exists()) {
-            FileUtilities.deleteDirectoryRecursive(folder);
+        String directoryName = "experiments" + File.separator + "jrs2014" + File.separator;
+        File directory = new File(directoryName);
+        if (directory.exists()) {
+            FileUtilities.deleteDirectoryRecursive(directory);
         }
-        folder.mkdirs();
-        File datasetFolder = new File(folderName + "dataset" + File.separator);
-        datasetFolder.mkdirs();
+        directory.mkdirs();
+        File datasetDirectory = new File(directoryName + "dataset" + File.separator);
+        datasetDirectory.mkdirs();
 
         final int numGroups = 5;
         final int[] groupSizeArray = {5};
@@ -91,7 +91,7 @@ public class ExperimentsJRS2014 {
 
                     groupCaseStudy.setSeedValue(seed);
                     String fileName = groupRecommenderSystem.getAlias() + "_groupSize-" + groupSize + ".xml";
-                    File file = new File(folder + File.separator + fileName);
+                    File file = new File(directory + File.separator + fileName);
                     GroupCaseStudyXML.saveCaseDescription(groupCaseStudy, file.getAbsolutePath());
                 }
             }
@@ -106,7 +106,7 @@ public class ExperimentsJRS2014 {
                     GroupEvaluationMeasuresFactory.getInstance().getAllClasses(),
                     new RelevanceCriteria(), 1);
 
-            File file = new File(folder + File.separator + "dataset" + File.separator + "ml-100k.xml");
+            File file = new File(directory + File.separator + "dataset" + File.separator + "ml-100k.xml");
             GroupCaseStudyXML.saveCaseDescription(groupCaseStudy, file.getAbsolutePath());
         }
     }

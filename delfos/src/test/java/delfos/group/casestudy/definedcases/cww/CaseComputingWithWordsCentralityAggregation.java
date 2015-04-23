@@ -37,12 +37,12 @@ public class CaseComputingWithWordsCentralityAggregation {
     @Test
     public void generateCaseXML() {
 
-        String folderName = "experiments" + File.separator + "grs-cww-centrality" + File.separator;
-        File datasetFolder = new File(folderName + File.separator + "dataset");
-        File folder = new File(folderName);
+        String directoryName = "experiments" + File.separator + "grs-cww-centrality" + File.separator;
+        File datasetDirectory = new File(directoryName + File.separator + "dataset");
+        File directory = new File(directoryName);
 
-        FileUtilities.deleteDirectoryRecursive(folder);
-        FileUtilities.createDirectoryPath(datasetFolder);
+        FileUtilities.deleteDirectoryRecursive(directory);
+        FileUtilities.createDirectoryPath(datasetDirectory);
 
         final int numGroups = 9;
         final int[] groupSizeArray = {5, 10, 15, 20, 30, 40, 50, 100};
@@ -61,7 +61,7 @@ public class CaseComputingWithWordsCentralityAggregation {
             for (GroupRecommenderSystem<? extends Object, ? extends Object> groupRecommenderSystem : getGRS()) {
                 GroupCaseStudy groupCaseStudy = new DefaultGroupCaseStudy(datasetLoader, groupRecommenderSystem, groupFormationTechnique, groupValidationTechniqueValue, groupPredictionProtocol, evaluationMeasures, criteria, numEjecuciones);
                 String fileName = groupRecommenderSystem.getAlias() + "_group-" + groupSize + ".xml";
-                File file = new File(folder + File.separator + fileName);
+                File file = new File(directory + File.separator + fileName);
                 GroupCaseStudyXML.saveCaseDescription(groupCaseStudy, file.getAbsolutePath());
             }
         }

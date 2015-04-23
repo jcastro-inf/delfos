@@ -30,7 +30,7 @@ import delfos.rs.RecommenderSystem;
 public class CaseStudy_SingleTaskExecute implements SingleTaskExecute<ExecuteCaseStudy_Task> {
 
     private void executeCaseStudy(
-            File experimentsFolder,
+            File experimentsDirectory,
             String caseName,
             CaseStudyConfiguration caseStudyConfiguration,
             DatasetLoader<? extends Rating> datasetLoader,
@@ -66,7 +66,7 @@ public class CaseStudy_SingleTaskExecute implements SingleTaskExecute<ExecuteCas
 
         File fileToSaveResults = new File(caseName);
 
-        fileToSaveResults = FileUtilities.addPrefix(fileToSaveResults, experimentsFolder + File.separator + "results" + File.separator);
+        fileToSaveResults = FileUtilities.addPrefix(fileToSaveResults, experimentsDirectory + File.separator + "results" + File.separator);
 
         File excelFile = FileUtilities.changeExtension(fileToSaveResults, "xls");
         File xmlFile = FileUtilities.changeExtension(fileToSaveResults, "xml");
@@ -80,7 +80,7 @@ public class CaseStudy_SingleTaskExecute implements SingleTaskExecute<ExecuteCas
     public void executeSingleTask(ExecuteCaseStudy_Task task) {
         try {
             executeCaseStudy(
-                    task.getExperimentsFolder(),
+                    task.getExperimentsDirectory(),
                     task.getCaseName(),
                     task.getCaseStudyConfiguration(),
                     task.getDatasetLoader(),

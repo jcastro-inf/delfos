@@ -1,6 +1,6 @@
 package delfos;
 
-import static delfos.Constants.CONFIGURATION_FOLDER;
+import static delfos.Constants.CONFIGURATION_DIRECTORY;
 import delfos.common.Global;
 import delfos.common.parameters.ParameterOwnerAdapter;
 import delfos.common.parameters.ParameterOwnerType;
@@ -43,7 +43,7 @@ public class Path extends ParameterOwnerAdapter {
      * Nombre del archivo donde se guardan los valores de configuración de las
      * rutas por defecto de la biblioteca de recomendación.
      */
-    public static final File CONFIGURATION_FILE_NAME = new File(CONFIGURATION_FOLDER.getPath() + File.separator + "path.config");
+    public static final File CONFIGURATION_FILE_NAME = new File(CONFIGURATION_DIRECTORY.getPath() + File.separator + "path.config");
     private static final long serialVersionUID = 1L;
     private static Path instance;
 
@@ -52,14 +52,14 @@ public class Path extends ParameterOwnerAdapter {
      */
     private static void init() {
 
-        if (!CONFIGURATION_FOLDER.exists()) {
-            boolean mkdir = CONFIGURATION_FOLDER.mkdir();
+        if (!CONFIGURATION_DIRECTORY.exists()) {
+            boolean mkdir = CONFIGURATION_DIRECTORY.mkdir();
             if (!mkdir) {
-                IOException ex = new IOException("Cannot create '" + CONFIGURATION_FOLDER.getAbsolutePath() + "' folder");
+                IOException ex = new IOException("Cannot create '" + CONFIGURATION_DIRECTORY.getAbsolutePath() + "' directory");
                 ERROR_CODES.CANNOT_WRITE_LIBRARY_CONFIG_FILE.exit(ex);
             }
         } else {
-            Global.showMessage("Configuration folder exists. (" + CONFIGURATION_FOLDER.getAbsolutePath() + ")\n");
+            Global.showMessage("Configuration directory exists. (" + CONFIGURATION_DIRECTORY.getAbsolutePath() + ")\n");
         }
 
         if (instance == null) {
@@ -164,7 +164,7 @@ public class Path extends ParameterOwnerAdapter {
         if (!f.exists()) {
             throw new IllegalArgumentException("Specified file not exists '" + datasetDirectory + "'");
         } else if (!f.isDirectory()) {
-            throw new IllegalArgumentException("Specified string is not a folder'" + datasetDirectory + "'");
+            throw new IllegalArgumentException("Specified string is not a directory'" + datasetDirectory + "'");
         } else {
             instance.datasetDirectory = datasetDirectory;
         }
@@ -246,7 +246,7 @@ public class Path extends ParameterOwnerAdapter {
         final Semaphore s = new Semaphore(0);
 
         //Obtener los datos mediante un cuadro de diálogo sencillo en swing.
-        final JFrame dialogo = new JFrame("Select dataset folder");
+        final JFrame dialogo = new JFrame("Select dataset directory");
         JLabel textoDescriptivo = new JLabel("Directory of datasets");
         final JTextField textoRuta = new JTextField("Set a directory");
         JButton botonBuscarDirectorio = new JButton("...");

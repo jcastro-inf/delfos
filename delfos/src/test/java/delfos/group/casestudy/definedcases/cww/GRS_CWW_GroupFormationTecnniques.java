@@ -42,8 +42,8 @@ public class GRS_CWW_GroupFormationTecnniques extends DelfosTest {
     public void makeCasesAndExecuteLocaly() {
         Global.setNoVerbose();
 
-        String experimentBaseFolderString = "experiments" + File.separator + this.getClass().getSimpleName() + File.separator;
-        File experimentBaseFolder = new File(experimentBaseFolderString);
+        String experimentBaseDirectoryString = "experiments" + File.separator + this.getClass().getSimpleName() + File.separator;
+        File experimentBaseDirectory = new File(experimentBaseDirectoryString);
 
         GroupRecommenderSystem groupRecommenderSystem = new SVDforGroup_ratingsAggregation();
         DatasetLoader datasetLoader = new ConfiguredDatasetLoader("ml-100k");
@@ -51,7 +51,7 @@ public class GRS_CWW_GroupFormationTecnniques extends DelfosTest {
         List<GroupCaseStudy> groupCaseStudies = getGroupCaseStudies(datasetLoader, groupRecommenderSystem);
 
         TuringPreparator turingPreparator = new TuringPreparator();
-        turingPreparator.prepareGroupExperiment(experimentBaseFolder, groupCaseStudies, datasetLoader);
+        turingPreparator.prepareGroupExperiment(experimentBaseDirectory, groupCaseStudies, datasetLoader);
 //        for (GroupCaseStudy groupCaseStudy : groupCaseStudies) {
 //            try {
 //                groupCaseStudy.execute();

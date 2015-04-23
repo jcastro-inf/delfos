@@ -45,14 +45,14 @@ public class ExperimentsISKE2014 {
     @Test
     public void generateCaseXML() {
 
-        String folderName = "experiments" + File.separator + "ISKE2014" + File.separator;
-        File folder = new File(folderName);
-        if (folder.exists()) {
-            FileUtilities.deleteDirectoryRecursive(folder);
+        String directoryName = "experiments" + File.separator + "ISKE2014" + File.separator;
+        File directory = new File(directoryName);
+        if (directory.exists()) {
+            FileUtilities.deleteDirectoryRecursive(directory);
         }
-        folder.mkdirs();
-        File datasetFolder = new File(folderName + "dataset" + File.separator);
-        datasetFolder.mkdirs();
+        directory.mkdirs();
+        File datasetDirectory = new File(directoryName + "dataset" + File.separator);
+        datasetDirectory.mkdirs();
 
         final int numGroups = 100;
         final int[] groupSizeArray = {3, 5, 7, 9};
@@ -83,7 +83,7 @@ public class ExperimentsISKE2014 {
                             numEjecuciones);
                     groupCaseStudy.setSeedValue(seed);
                     String fileName = groupRecommenderSystem.getAlias() + "_groupSize-" + groupSize + ".xml";
-                    File file = new File(folder + File.separator + fileName);
+                    File file = new File(directory + File.separator + fileName);
                     GroupCaseStudyXML.saveCaseDescription(groupCaseStudy, file.getAbsolutePath());
                     i++;
                 }
@@ -99,7 +99,7 @@ public class ExperimentsISKE2014 {
                     GroupEvaluationMeasuresFactory.getInstance().getAllClasses(),
                     new RelevanceCriteria(), 1);
 
-            File file = new File(folder + File.separator + "dataset" + File.separator + "ml-100k.xml");
+            File file = new File(directory + File.separator + "dataset" + File.separator + "ml-100k.xml");
             GroupCaseStudyXML.saveCaseDescription(groupCaseStudy, file.getAbsolutePath());
         }
 

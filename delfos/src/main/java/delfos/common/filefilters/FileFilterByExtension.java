@@ -13,7 +13,7 @@ import java.io.FileFilter;
  */
 public class FileFilterByExtension implements FileFilter {
 
-    private final boolean listFolders;
+    private final boolean listDirectorys;
 
     private final String[] extensionsAllowed;
 
@@ -26,7 +26,7 @@ public class FileFilterByExtension implements FileFilter {
         this(true, _extension);
     }
 
-    public FileFilterByExtension(boolean listFolders, String... _extension) {
+    public FileFilterByExtension(boolean listDirectorys, String... _extension) {
         if (_extension == null) {
             throw new IllegalArgumentException("The extension vector cannot be null");
         }
@@ -38,7 +38,7 @@ public class FileFilterByExtension implements FileFilter {
                 throw new IllegalArgumentException("The extension is null (index=" + i + ").");
             }
         }
-        this.listFolders = listFolders;
+        this.listDirectorys = listDirectorys;
         this.extensionsAllowed = _extension;
     }
 
@@ -54,7 +54,7 @@ public class FileFilterByExtension implements FileFilter {
             extension = "";
         }
 
-        if (f.isDirectory() && listFolders) {
+        if (f.isDirectory() && listDirectorys) {
             return true;
         }
         for (String extensionAllowed : extensionsAllowed) {

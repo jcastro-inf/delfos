@@ -14,7 +14,7 @@ import delfos.group.casestudy.GroupCaseStudy;
  */
 public interface ExperimentPreparator {
 
-    public void prepareExperiment(File folder, List<CaseStudy> caseStudies, DatasetLoader< ? extends Rating> datasetLoader);
+    public void prepareExperiment(File directory, List<CaseStudy> caseStudies, DatasetLoader< ? extends Rating> datasetLoader);
 
-    public void prepareGroupExperiment(File experimentBaseFolder, List<GroupCaseStudy> groupCaseStudies, DatasetLoader<? extends Rating>... datasetLoader);
+    public void prepareGroupExperiment(File experimentBaseDirectory, List<GroupCaseStudy> groupCaseStudies, DatasetLoader<? extends Rating>... datasetLoader);
 }

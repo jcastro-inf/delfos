@@ -26,7 +26,7 @@ import java.util.TreeMap;
  */
 public class SwingGUIConfigurationFile {
 
-    private static final File f = new File(Constants.CONFIGURATION_FOLDER.getPath() + File.separator + "swing-gui.config");
+    private static final File f = new File(Constants.CONFIGURATION_DIRECTORY.getPath() + File.separator + "swing-gui.config");
     private static Map<String, String> cache;
 
     static {

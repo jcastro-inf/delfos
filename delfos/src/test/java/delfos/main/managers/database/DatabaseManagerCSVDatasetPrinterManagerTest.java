@@ -19,7 +19,7 @@ public class DatabaseManagerCSVDatasetPrinterManagerTest extends DelfosTest {
     /**
      * Directorio en el que se almacenan los ficheros temporales.
      */
-    private final static String manageDataset_folder
+    private final static String manageDataset_directory
             = TestConstants.TEST_DATA_DIRECTORY
             + DatabaseManagerCSVDatasetPrinterManagerTest.class.getSimpleName() + File.separator;
     /**
@@ -27,21 +27,21 @@ public class DatabaseManagerCSVDatasetPrinterManagerTest extends DelfosTest {
      * la biblioteca.
      */
     private final static File manageDatasetConfigFile = new File(
-            manageDataset_folder
+            manageDataset_directory
             + DatabaseManagerCSVDatasetPrinterManagerTest.class.getSimpleName() + "_Configuration.xml");
 
     private final static File ratingsFile = new File(
-            manageDataset_folder + "changeableRatings.csv");
+            manageDataset_directory + "changeableRatings.csv");
     private final static File contentFile = new File(
-            manageDataset_folder + "changeableContent.csv");
+            manageDataset_directory + "changeableContent.csv");
     private final static File usersFile = new File(
-            manageDataset_folder + "changeableUsers.csv");
+            manageDataset_directory + "changeableUsers.csv");
 
     @Before
     public void setUp() {
-        File folderFile_ManageDataset = new File(manageDataset_folder);
+        File directoryFile_ManageDataset = new File(manageDataset_directory);
 
-        FileUtilities.cleanDirectory(folderFile_ManageDataset);
+        FileUtilities.cleanDirectory(directoryFile_ManageDataset);
 
         ChangeableCSVFileDatasetLoader datasetLoader_ManageDataset = new ChangeableCSVFileDatasetLoader(
                 ratingsFile.getPath(),
