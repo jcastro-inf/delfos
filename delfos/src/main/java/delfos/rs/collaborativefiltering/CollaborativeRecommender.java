@@ -3,6 +3,7 @@ package delfos.rs.collaborativefiltering;
 import delfos.common.Global;
 import delfos.common.exceptions.dataset.CannotLoadContentDataset;
 import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
+import delfos.common.exceptions.dataset.CannotLoadUsersDataset;
 import delfos.common.exceptions.dataset.items.ItemNotFound;
 import delfos.common.exceptions.dataset.users.UserNotFound;
 import delfos.common.exceptions.ratings.NotEnoughtUserInformation;
@@ -14,16 +15,15 @@ import java.util.Collection;
 import java.util.TreeSet;
 
 /**
- * Clase de la que deben heredar todos los sistemas de recomendación que estén
- * basados en la predicción de las valoraciones.
+ * Interface of a collaborative recommender. Collaborative recommenders are, by
+ * definition, rating predictors. Therefore the preference of the
+ * recommendations must be given on the ratingsDomain of the dataset.
  *
  * <p>
  * <p>
- * <b>IMPORTANTE</b>Las clases que hereden de {@link CollaborativeRecommender}
- * deben llamar siempre al constructor por defecto de esta clase en sus
- * constructores, utilizando la sentencia super();. En caso de que no se
- * implemente de esta manera, el correcto comportamiento del sistema no está
- * garantizado.
+ * Classes that inhterit {@link CollaborativeRecommender} must call this class
+ * default constructor (super) on every constructor that they implement.
+ * Otherwise, the correct behaviour is not guaranteed.
  *
  * @author Jorge Castro Gallardo (Universidad de Jaén, Sinbad2)
  *
@@ -55,6 +55,11 @@ public abstract class CollaborativeRecommender<RecommendationModel>
     public final boolean isRatingPredictorRS() {
         return true;
     }
+
+    @Override
+    public abstract RecommendationModel build(
+            DatasetLoader<? extends Rating> datasetLoader)
+            throws CannotLoadRatingsDataset, CannotLoadContentDataset, CannotLoadUsersDataset;
 
     /**
      * Transforma una predicción del sistema de recomendación en una predicción

@@ -13,8 +13,8 @@ import java.util.Collection;
 import java.util.Set;
 
 /**
- * Sistema de recomendación básico, con recomendación de productos a usuarios
- * individuales.
+ * Interface of a single-user recommender system, which recommends items to
+ * users. This interface provides the recommendation method.
  *
  * @author Jorge Castro Gallardo (Universidad de Jaén, Sinbad2)
  * @version 1.0 08-Mar-2013
@@ -28,8 +28,8 @@ public interface RecommenderSystem<RecommendationModel> extends GenericRecommend
      * Método para la realización de una recomendación al usuario <i>idUser</i>
      * en una ejecución de evaluación del sistema de recomendación. La lista de
      * películas que se pueden recomendar viene determinada por el parámetro
-     * <i>candidateItems</i>, que generalmente vendrá determinado por un conjunto de
-     * test.
+     * <i>candidateItems</i>, que generalmente vendrá determinado por un
+     * conjunto de test.
      *
      * <p>
      * <p>
@@ -39,8 +39,7 @@ public interface RecommenderSystem<RecommendationModel> extends GenericRecommend
      * {@link NotEnoughtItemInformation}, para indicar que no pudo generar su
      * correspondiente perfil.
      *
-     * @param datasetLoader Establece el dataset que se usará en la
-     * recomendación.
+     * @param dataset Establece el dataset que se usará en la recomendación.
      * @param model Modelo de recomendación que se usará en la recomendación.
      * @param idUser id del usuario para el que se realiza la recomendación
      * @param candidateItems Lista de productos que pueden ser recomendados al
@@ -53,6 +52,9 @@ public interface RecommenderSystem<RecommendationModel> extends GenericRecommend
      * @throws NotEnoughtUserInformation
      */
     public Collection<Recommendation> recommendOnly(
-            DatasetLoader<? extends Rating> datasetLoader, RecommendationModel model, Integer idUser, Set<Integer> candidateItems)
+            DatasetLoader<? extends Rating> dataset,
+            RecommendationModel model,
+            Integer idUser,
+            Set<Integer> candidateItems)
             throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset, NotEnoughtUserInformation;
 }

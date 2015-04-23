@@ -89,7 +89,7 @@ public class InterestLMSPredictor extends RecommenderSystemAdapter<InterestLMSPr
                 Item item = contentDataset.get(idItem);
 
                 Number ratingValue = rating.ratingValue;
-                Number minusOneToOneValue = domain.convertToDomain(ratingValue, minusOneToOne);
+                Number minusOneToOneValue = domain.convertToDecimalDomain(ratingValue, minusOneToOne);
 
                 predictorModel.enterFeedback(idUser, item, minusOneToOneValue.floatValue());
             } catch (EntityNotFound ex) {

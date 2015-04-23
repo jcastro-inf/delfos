@@ -1,15 +1,15 @@
 package delfos.rs;
 
-import java.util.Collection;
-import delfos.dataset.basic.rating.Rating;
-import delfos.dataset.basic.loader.types.DatasetLoader;
-import delfos.rs.persistence.DatabasePersistence;
-import delfos.rs.persistence.FailureInPersistence;
-import delfos.rs.persistence.FilePersistence;
 import delfos.common.exceptions.dataset.CannotLoadContentDataset;
 import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
 import delfos.common.exceptions.dataset.CannotLoadUsersDataset;
 import delfos.common.parameters.ParameterOwner;
+import delfos.dataset.basic.loader.types.DatasetLoader;
+import delfos.dataset.basic.rating.Rating;
+import delfos.rs.persistence.DatabasePersistence;
+import delfos.rs.persistence.FailureInPersistence;
+import delfos.rs.persistence.FilePersistence;
+import java.util.Collection;
 
 /**
  * Interfaz que implementa cualquier sistema de recomendación, ya sea de
@@ -23,7 +23,8 @@ import delfos.common.parameters.ParameterOwner;
  * @version 2.0 26-Mayo-2013 Ahora los datasets se pasan por parámetro en cada
  * método.
  */
-public interface GenericRecommenderSystem<RecommendationModel> extends ParameterOwner {
+public interface GenericRecommenderSystem<RecommendationModel>
+        extends ParameterOwner {
 
     /**
      * Añade un listener para que sea notificado del progreso de la construcción
