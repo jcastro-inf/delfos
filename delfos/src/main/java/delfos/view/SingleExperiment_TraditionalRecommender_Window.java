@@ -1,5 +1,28 @@
 package delfos.view;
 
+import delfos.common.Chronometer;
+import delfos.common.DateCollapse;
+import delfos.common.parameters.ParameterOwner;
+import delfos.common.parameters.view.EditParameterDialog;
+import delfos.configuration.scopes.SwingGUIConfiguration;
+import delfos.dataset.basic.loader.types.DatasetLoader;
+import delfos.dataset.basic.rating.Rating;
+import delfos.dataset.basic.rating.RelevanceCriteria;
+import delfos.experiment.ExperimentListener;
+import delfos.experiment.ExperimentProgress;
+import delfos.experiment.casestudy.CaseStudy;
+import delfos.experiment.casestudy.defaultcase.DefaultCaseStudy;
+import delfos.experiment.validation.predictionprotocol.PredictionProtocol;
+import delfos.experiment.validation.validationtechnique.ValidationTechnique;
+import delfos.factories.DatasetLoadersFactory;
+import delfos.factories.EvaluationMeasuresFactory;
+import delfos.factories.PredictionProtocolFactory;
+import delfos.factories.RecommenderSystemsFactory;
+import delfos.factories.ValidationTechniquesFactory;
+import delfos.io.xml.casestudy.CaseStudyXML;
+import delfos.results.evaluationmeasures.EvaluationMeasure;
+import delfos.rs.RecommenderSystem;
+import delfos.view.results.ResultsDialog;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
@@ -32,29 +55,6 @@ import javax.swing.JSpinner;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingConstants;
 import javax.swing.filechooser.FileNameExtensionFilter;
-import delfos.Path;
-import delfos.common.Chronometer;
-import delfos.common.DateCollapse;
-import delfos.common.parameters.ParameterOwner;
-import delfos.common.parameters.view.EditParameterDialog;
-import delfos.dataset.basic.rating.Rating;
-import delfos.dataset.basic.rating.RelevanceCriteria;
-import delfos.dataset.basic.loader.types.DatasetLoader;
-import delfos.experiment.ExperimentListener;
-import delfos.experiment.ExperimentProgress;
-import delfos.experiment.casestudy.CaseStudy;
-import delfos.experiment.casestudy.defaultcase.DefaultCaseStudy;
-import delfos.factories.DatasetLoadersFactory;
-import delfos.factories.EvaluationMeasuresFactory;
-import delfos.factories.PredictionProtocolFactory;
-import delfos.factories.RecommenderSystemsFactory;
-import delfos.factories.ValidationTechniquesFactory;
-import delfos.io.xml.casestudy.CaseStudyXML;
-import delfos.experiment.validation.predictionprotocol.PredictionProtocol;
-import delfos.experiment.validation.validationtechnique.ValidationTechnique;
-import delfos.results.evaluationmeasures.EvaluationMeasure;
-import delfos.rs.RecommenderSystem;
-import delfos.view.results.ResultsDialog;
 
 /**
  * Clase que encapsula el funcionamiento de la interfaz destinada a la
@@ -379,7 +379,7 @@ public class SingleExperiment_TraditionalRecommender_Window extends JFrame imple
                 (ActionEvent e) -> {
                     JFileChooser chooser = new JFileChooser();
                     chooser.setDialogTitle("Save result to XML");
-                    chooser.setCurrentDirectory(Path.getPath());
+                    chooser.setCurrentDirectory(SwingGUIConfiguration.getInstance().getCurrentDirectory());
 
                     String[] extensions = {CaseStudyXML.RESULT_EXTENSION};
                     chooser.setFileFilter(new FileNameExtensionFilter("Extensible Markup Language", extensions));
@@ -390,7 +390,8 @@ public class SingleExperiment_TraditionalRecommender_Window extends JFrame imple
                         if (opcion == JFileChooser.APPROVE_OPTION) {
                             File selected = chooser.getSelectedFile();
                             String nombre = selected.getAbsolutePath();
-                            Path.setPath(selected);
+                            SwingGUIConfiguration.getInstance().setCurrentDirectory(selected);
+
                             if (!nombre.toLowerCase().endsWith("." + CaseStudyXML.RESULT_EXTENSION)) {
                                 // Add correct extension
                                 nombre += "." + CaseStudyXML.RESULT_EXTENSION;

@@ -7,7 +7,6 @@ import delfos.view.InitialFrame;
 import delfos.view.SwingGUI;
 import delfos.view.recommendation.RecommendationWindow;
 import java.io.File;
-import java.io.IOException;
 import java.util.Locale;
 import org.jdom2.output.Format;
 
@@ -171,22 +170,13 @@ public class Constants {
      */
     public static void initLibraryGeneralParameters(ConsoleParameters consoleParameters) {
 
+        Locale.setDefault(Locale.ENGLISH);
+
         if (consoleParameters.isDefined(LIBRARY_CONFIGURATION_DIRECTORY)) {
             String configDirectory = consoleParameters.getValue(LIBRARY_CONFIGURATION_DIRECTORY);
-            ConfigurationManager.CONFIGURATION_DIRECTORY = new File(configDirectory + File.separator);
+            ConfigurationManager.setConfigurationDirectory(new File(configDirectory + File.separator));
         }
-
-        if (!ConfigurationManager.CONFIGURATION_DIRECTORY.exists()) {
-            boolean mkdir = ConfigurationManager.CONFIGURATION_DIRECTORY.mkdirs();
-            if (!mkdir) {
-                IOException ex = new IOException("Cannot create '" + ConfigurationManager.CONFIGURATION_DIRECTORY.getAbsolutePath() + "' directory");
-                ERROR_CODES.CANNOT_WRITE_LIBRARY_CONFIG_FILE.exit(ex);
-            }
-        } else {
-            Global.showMessage("Configuration directory exists. (" + ConfigurationManager.CONFIGURATION_DIRECTORY.getAbsolutePath() + ")\n");
-        }
-
-        Locale.setDefault(Locale.ENGLISH);
+        ConfigurationManager.createConfigurationDirectory();
 
         if (consoleParameters.isDefined(THREAD_VERBOSE) || consoleParameters.isDefined(THREAD_VERBOSE_SHORT)) {
             Global.setThreadVerbose(true);

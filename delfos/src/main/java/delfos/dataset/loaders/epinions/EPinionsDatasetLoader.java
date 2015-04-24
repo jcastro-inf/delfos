@@ -1,20 +1,19 @@
 package delfos.dataset.loaders.epinions;
 
-import java.io.File;
-import java.io.IOException;
-import delfos.dataset.basic.loader.types.DatasetLoaderAbstract;
-import delfos.dataset.basic.loader.types.ContentDatasetLoader;
-import delfos.dataset.basic.loader.types.TrustDatasetLoader;
-import delfos.Path;
 import delfos.common.exceptions.dataset.CannotLoadContentDataset;
 import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
 import delfos.common.exceptions.dataset.CannotLoadTrustDataset;
 import delfos.common.parameters.Parameter;
 import delfos.common.parameters.restriction.DirectoryParameter;
+import delfos.dataset.basic.loader.types.ContentDatasetLoader;
+import delfos.dataset.basic.loader.types.DatasetLoaderAbstract;
+import delfos.dataset.basic.loader.types.TrustDatasetLoader;
+import java.io.File;
+import java.io.IOException;
 
 /**
  *
-* @author Jorge Castro Gallardo
+ * @author Jorge Castro Gallardo
  *
  * @version 10-dic-2013
  */
@@ -27,8 +26,7 @@ public class EPinionsDatasetLoader extends DatasetLoaderAbstract implements Cont
     private EPinionsTrustDataset trustDataset = null;
 
     static {
-        String directory = Path.getDatasetDirectory();
-        File epinionsDatasetDirectory = new File(directory + File.separator + "epinions" + File.separator);
+        File epinionsDatasetDirectory = new File("." + File.separator + "datasets" + File.separator + "epinions" + File.separator);
         EPINIONS_DATASET_DIRECTORY = new Parameter("EPINIONS_DATASET_DIRECTORY", new DirectoryParameter(epinionsDatasetDirectory));
     }
 

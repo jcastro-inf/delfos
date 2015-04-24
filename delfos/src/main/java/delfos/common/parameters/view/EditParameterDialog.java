@@ -1,5 +1,21 @@
 package delfos.common.parameters.view;
 
+import delfos.common.Global;
+import delfos.common.parameters.Parameter;
+import delfos.common.parameters.ParameterOwner;
+import delfos.common.parameters.restriction.BooleanParameter;
+import delfos.common.parameters.restriction.DatasetLoaderParameterRestriction;
+import delfos.common.parameters.restriction.DirectoryParameter;
+import delfos.common.parameters.restriction.FileParameter;
+import delfos.common.parameters.restriction.FloatParameter;
+import delfos.common.parameters.restriction.IntegerParameter;
+import delfos.common.parameters.restriction.LongParameter;
+import delfos.common.parameters.restriction.ObjectParameter;
+import delfos.common.parameters.restriction.ParameterOwnerRestriction;
+import delfos.common.parameters.restriction.PasswordParameter;
+import delfos.common.parameters.restriction.RecommenderSystemParameterRestriction;
+import delfos.common.parameters.restriction.StringParameter;
+import delfos.configuration.scopes.SwingGUIConfiguration;
 import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.GridBagConstraints;
@@ -28,28 +44,12 @@ import javax.swing.SpinnerNumberModel;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.filechooser.FileFilter;
-import delfos.Path;
-import delfos.common.Global;
-import delfos.common.parameters.Parameter;
-import delfos.common.parameters.ParameterOwner;
-import delfos.common.parameters.restriction.BooleanParameter;
-import delfos.common.parameters.restriction.DatasetLoaderParameterRestriction;
-import delfos.common.parameters.restriction.DirectoryParameter;
-import delfos.common.parameters.restriction.FileParameter;
-import delfos.common.parameters.restriction.FloatParameter;
-import delfos.common.parameters.restriction.IntegerParameter;
-import delfos.common.parameters.restriction.LongParameter;
-import delfos.common.parameters.restriction.ObjectParameter;
-import delfos.common.parameters.restriction.ParameterOwnerRestriction;
-import delfos.common.parameters.restriction.PasswordParameter;
-import delfos.common.parameters.restriction.RecommenderSystemParameterRestriction;
-import delfos.common.parameters.restriction.StringParameter;
 
 /**
  * Clase que muestra los parámetros de un {@link ParameterOwner} y permite su
  * modificación mediante una interfaz swing
  *
-* @author Jorge Castro Gallardo
+ * @author Jorge Castro Gallardo
  *
  * @version 1.0 Unknown date.
  * @version 1.1 (18-02-2013)
@@ -230,8 +230,10 @@ public class EditParameterDialog extends JDialog {
                     public void actionPerformed(ActionEvent e) {
                         JFileChooser chooser = new JFileChooser();
                         chooser.setDialogTitle("Select " + p.getName() + " file");
-                        chooser.setCurrentDirectory(Path.getPath());
 
+                        File currentDirectory = SwingGUIConfiguration.getInstance().getCurrentDirectory();
+
+                        chooser.setCurrentDirectory(currentDirectory);
 
                         chooser.setFileFilter(new FileFilter() {
                             @Override
@@ -248,7 +250,7 @@ public class EditParameterDialog extends JDialog {
                         int opcion = chooser.showOpenDialog(EditParameterDialog.this);
 
                         if (opcion == JFileChooser.APPROVE_OPTION) {
-                            Path.setPath(chooser.getSelectedFile());
+                            SwingGUIConfiguration.getInstance().setCurrentDirectory(chooser.getSelectedFile());
                             botonElegirArchivo.setText(chooser.getSelectedFile().getName());
                             botonElegirArchivo.setToolTipText(chooser.getSelectedFile().getAbsolutePath());
                             EditParameterDialog.this.parametrosModificados.put(p, chooser.getSelectedFile());
@@ -262,7 +264,6 @@ public class EditParameterDialog extends JDialog {
             if (restriction instanceof ObjectParameter) {
                 ObjectParameter opr = (ObjectParameter) p.getRestriction();
                 Object[] allowed = opr.getAllowed();
-
 
                 constraints.fill = GridBagConstraints.HORIZONTAL;
                 constraints.weightx = 0.0;
@@ -317,8 +318,6 @@ public class EditParameterDialog extends JDialog {
                 widgetCreado = true;
             }
 
-
-
             if (restriction instanceof RecommenderSystemParameterRestriction) {
                 RecommenderSystemParameterRestriction popr = (RecommenderSystemParameterRestriction) p.getRestriction();
 
@@ -350,7 +349,6 @@ public class EditParameterDialog extends JDialog {
                     }
                 });
 
-
                 combo.setSelectedIndex(index);
                 innerPanel.add(combo, constraints);
 
@@ -381,7 +379,6 @@ public class EditParameterDialog extends JDialog {
                 });
                 innerPanel.add(parametros, constraints);
 
-
                 constraints.fill = GridBagConstraints.HORIZONTAL;
                 constraints.weightx = 0.0;
                 constraints.weighty = 0.0;
@@ -405,7 +402,6 @@ public class EditParameterDialog extends JDialog {
                 constraints.gridwidth = 1;
                 constraints.gridheight = 1;
                 constraints.insets = new Insets(3, 4, 3, 4);
-
 
                 JPanel innerPanel = new JPanel(new GridBagLayout());
                 Object[] allowed = dlpr.getAllowed();
@@ -453,7 +449,6 @@ public class EditParameterDialog extends JDialog {
                     }
                 });
                 innerPanel.add(parametros, constraints);
-
 
                 constraints.fill = GridBagConstraints.HORIZONTAL;
                 constraints.weightx = 0.0;
@@ -585,7 +580,6 @@ public class EditParameterDialog extends JDialog {
                     }
                 });
 
-
                 combo.setSelectedIndex(index);
                 innerPanel.add(combo, constraints);
 
@@ -616,7 +610,6 @@ public class EditParameterDialog extends JDialog {
                 });
                 innerPanel.add(parametros, constraints);
 
-
                 constraints.fill = GridBagConstraints.HORIZONTAL;
                 constraints.weightx = 0.0;
                 constraints.weighty = 0.0;
@@ -628,7 +621,6 @@ public class EditParameterDialog extends JDialog {
                 panel.add(innerPanel, constraints);
                 widgetCreado = true;
             }
-
 
             if (restriction instanceof DirectoryParameter) {
                 final DirectoryParameter fpr = (DirectoryParameter) p.getRestriction();
@@ -651,8 +643,7 @@ public class EditParameterDialog extends JDialog {
 
                         chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
                         chooser.setDialogTitle("Select directory as value of parameter " + p.getName() + " ");
-                        chooser.setCurrentDirectory(Path.getPath());
-
+                        chooser.setCurrentDirectory(SwingGUIConfiguration.getInstance().getCurrentDirectory());
 
                         chooser.setFileFilter(new FileFilter() {
                             @Override
@@ -669,7 +660,7 @@ public class EditParameterDialog extends JDialog {
                         int opcion = chooser.showOpenDialog(EditParameterDialog.this);
 
                         if (opcion == JFileChooser.APPROVE_OPTION) {
-                            Path.setPath(chooser.getSelectedFile());
+                            SwingGUIConfiguration.getInstance().setCurrentDirectory(chooser.getSelectedFile());
                             botonElegirArchivo.setText(chooser.getSelectedFile().getName());
                             botonElegirArchivo.setToolTipText(chooser.getSelectedFile().getAbsolutePath());
                             EditParameterDialog.this.parametrosModificados.put(p, chooser.getSelectedFile());
@@ -747,7 +738,6 @@ public class EditParameterDialog extends JDialog {
         constraints.gridwidth = 2;
         constraints.gridheight = 1;
         constraints.insets = new Insets(3, 4, 3, 4);
-
 
         JButton aceptar = new JButton("Done");
         aceptar.addActionListener(new ActionListener() {

@@ -1,15 +1,6 @@
 package delfos.dataset.loaders.epinions.trustlet;
 
 import com.google.common.io.LineReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.Map;
-import java.util.StringTokenizer;
-import delfos.Path;
 import delfos.common.Chronometer;
 import delfos.common.Global;
 import delfos.common.exceptions.dataset.CannotLoadContentDataset;
@@ -20,12 +11,16 @@ import delfos.common.exceptions.dataset.items.ItemAlreadyExists;
 import delfos.common.exceptions.dataset.users.UserAlreadyExists;
 import delfos.common.parameters.Parameter;
 import delfos.common.parameters.restriction.DirectoryParameter;
-import delfos.dataset.basic.item.ContentDataset;
-import delfos.dataset.basic.item.ContentDatasetDefault;
-import delfos.dataset.basic.item.Item;
 import delfos.dataset.basic.features.Feature;
 import delfos.dataset.basic.features.FeatureGenerator;
 import delfos.dataset.basic.features.FeatureType;
+import delfos.dataset.basic.item.ContentDataset;
+import delfos.dataset.basic.item.ContentDatasetDefault;
+import delfos.dataset.basic.item.Item;
+import delfos.dataset.basic.loader.types.ContentDatasetLoader;
+import delfos.dataset.basic.loader.types.DatasetLoaderAbstract;
+import delfos.dataset.basic.loader.types.TrustDatasetLoader;
+import delfos.dataset.basic.loader.types.UsersDatasetLoader;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RatingsDataset;
 import delfos.dataset.basic.trust.TrustDataset;
@@ -34,15 +29,19 @@ import delfos.dataset.basic.trust.TrustStatement;
 import delfos.dataset.basic.user.User;
 import delfos.dataset.basic.user.UsersDataset;
 import delfos.dataset.basic.user.UsersDatasetAdapter;
-import delfos.dataset.basic.loader.types.DatasetLoaderAbstract;
-import delfos.dataset.basic.loader.types.ContentDatasetLoader;
-import delfos.dataset.basic.loader.types.TrustDatasetLoader;
-import delfos.dataset.basic.loader.types.UsersDatasetLoader;
 import delfos.dataset.storage.memory.BothIndexRatingsDataset;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.Map;
+import java.util.StringTokenizer;
 
 /**
  *
-* @author Jorge Castro Gallardo
+ * @author Jorge Castro Gallardo
  *
  * @version 10-dic-2013
  */
@@ -56,8 +55,7 @@ public class EPinionsTrustlet extends DatasetLoaderAbstract<Rating> implements U
     private UsersDataset usersDataset = null;
 
     static {
-        String directory = Path.getDatasetDirectory();
-        File epinionsDatasetDirectory = new File(directory + File.separator + "epinions" + File.separator);
+        File epinionsDatasetDirectory = new File("." + File.separator + "datasets" + File.separator + "epinions" + File.separator);
         EPINIONS_TRUSTLET_DIRECTORY = new Parameter("EPINIONS_TRUSTLET_DIRECTORY", new DirectoryParameter(epinionsDatasetDirectory));
     }
 
