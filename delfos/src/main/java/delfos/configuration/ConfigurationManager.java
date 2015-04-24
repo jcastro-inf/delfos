@@ -32,7 +32,7 @@ public class ConfigurationManager {
             Global.showWarning("The home directory '" + userHome + "' does not exists.");
         }
 
-        CONFIGURATION_DIRECTORY = new File(userHome + File.separator + ".config" + File.separator + ".delfos" + File.separator);
+        CONFIGURATION_DIRECTORY = new File(userHome + File.separator + ".config" + File.separator + "delfos" + File.separator);
     }
 
     public static void setConfigurationDirectory(File configurationDirectory) {

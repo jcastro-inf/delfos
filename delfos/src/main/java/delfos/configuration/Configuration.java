@@ -3,9 +3,11 @@ package delfos.configuration;
 import delfos.Constants;
 import delfos.ERROR_CODES;
 import delfos.common.FileUtilities;
+import delfos.common.Global;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import org.jdom2.Document;
@@ -72,9 +74,13 @@ public abstract class Configuration {
     public String getProperty(String propertyName) {
         loadConfigurationScope();
 
-        List<String> path = Arrays.asList(propertyName.split("\\."));
+        List<String> path = new ArrayList<>(Arrays.asList(propertyName.split("\\.")));
 
-        Element targetElement = document.getRootElement().getChild(path.remove(0));
+        Element root = document.getRootElement();
+        if (root == null) {
+            throw new IllegalStateException("Root element cannot be null");
+        }
+        Element targetElement = root.getChild(path.remove(0));
 
         for (String node : path) {
             if (targetElement == null) {
@@ -93,7 +99,7 @@ public abstract class Configuration {
         return document;
     }
 
-    private void saveConfigurationScope() {
+    protected void saveConfigurationScope() {
 
         File configurationFile = ConfigurationManager.getConfigurationFile(this);
 
@@ -108,14 +114,21 @@ public abstract class Configuration {
 
     }
 
-    private void loadConfigurationScope() {
+    protected void loadConfigurationScope() {
         if (document == null) {
             File configurationFile = ConfigurationManager.getConfigurationFile(this);
             SAXBuilder builder = new SAXBuilder();
             try {
                 document = builder.build(configurationFile);
             } catch (JDOMException | IOException ex) {
-                ERROR_CODES.CANNOT_READ_LIBRARY_CONFIG_FILE.exit(ex);
+                Global.showWarning("Cannot load xml from " + configurationFile.getAbsolutePath());
+
+                if (configurationFile.exists()) {
+                    File erroneousFile = new File(configurationFile.getParentFile().getAbsolutePath() + "cannot-parse.xml");
+                    configurationFile.renameTo(erroneousFile);
+                }
+
+                document = new Document(new Element(scopeName));
             }
         }
     }

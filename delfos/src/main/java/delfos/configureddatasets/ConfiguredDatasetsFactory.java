@@ -1,9 +1,13 @@
 package delfos.configureddatasets;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.lang.management.ManagementFactory;
+import delfos.common.Global;
+import delfos.configuration.scopes.ConfiguredDatasets;
+import delfos.dataset.basic.loader.types.ContentDatasetLoader;
+import delfos.dataset.basic.loader.types.DatasetLoader;
+import delfos.dataset.basic.loader.types.TrustDatasetLoader;
+import delfos.dataset.basic.loader.types.UsersDatasetLoader;
+import delfos.dataset.basic.rating.Rating;
+import delfos.view.configureddatasets.NewConfiguredDatasetDialog;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -11,22 +15,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 import javax.swing.JFrame;
-import org.jdom2.Document;
-import org.jdom2.Element;
-import org.jdom2.JDOMException;
-import org.jdom2.input.SAXBuilder;
-import org.jdom2.output.XMLOutputter;
-import delfos.ERROR_CODES;
-import delfos.Constants;
-import delfos.common.Global;
-import delfos.configuration.ConfigurationManager;
-import delfos.dataset.basic.rating.Rating;
-import delfos.dataset.basic.loader.types.ContentDatasetLoader;
-import delfos.dataset.basic.loader.types.DatasetLoader;
-import delfos.dataset.basic.loader.types.TrustDatasetLoader;
-import delfos.dataset.basic.loader.types.UsersDatasetLoader;
-import delfos.io.xml.dataset.DatasetLoaderXML;
-import delfos.view.configureddatasets.NewConfiguredDatasetDialog;
 
 /**
  * Factoría que devuelve datasets ya creados, es decir, datasets que funcionan
@@ -38,24 +26,7 @@ import delfos.view.configureddatasets.NewConfiguredDatasetDialog;
  */
 public final class ConfiguredDatasetsFactory {
 
-    static {
-        String runtimeMXBean_name = ManagementFactory.getRuntimeMXBean().getName();
-
-        machineName = runtimeMXBean_name.substring(runtimeMXBean_name.indexOf("@") + 1);
-
-        System.out.println("runtimeMXBean_name: " + runtimeMXBean_name);
-    }
     private static ConfiguredDatasetsFactory instance;
-    private static final String machineName;
-
-    private static final File fileOfConfiguredDatasets
-            = new File(ConfigurationManager.CONFIGURATION_DIRECTORY.getPath() + File.separator + "configuredDatasets@" + machineName + ".xml");
-
-    public static final String CONFIGURED_DATASETS_ROOT_ELEMENT_NAME = "ConfiguredDatasets";
-
-    public static final String CONFIGURED_DATASET_ELEMENT_DESCRIPTION_ATTRIBUTE = "description";
-    public static final String CONFIGURED_DATASET_ELEMENT_NAME_ATTRIBUTE = "name";
-    public static final String CONFIGURED_DATASET_ELEMENT_NAME = "ConfiguredDataset";
 
     private final Map<String, ConfiguredDataset> datasetLoaders;
 
@@ -78,12 +49,12 @@ public final class ConfiguredDatasetsFactory {
 
     private ConfiguredDatasetsFactory() {
         datasetLoaders = new TreeMap<>();
-        loadDatasetLoaders();
     }
 
     public static ConfiguredDatasetsFactory getInstance() {
         if (instance == null) {
             instance = new ConfiguredDatasetsFactory();
+            ConfiguredDatasets.getInstance().loadConfiguredDatasets();
         }
         return instance;
     }
@@ -91,79 +62,6 @@ public final class ConfiguredDatasetsFactory {
     public void showCreateConfiguredDatasetDialog(JFrame frame) {
         NewConfiguredDatasetDialog configuredDatasetDialog = new NewConfiguredDatasetDialog(frame, true);
         configuredDatasetDialog.setVisible(true);
-    }
-
-    public synchronized void saveDatasetLoaders() {
-
-        Document doc = new Document();
-        Element root = new Element(CONFIGURED_DATASETS_ROOT_ELEMENT_NAME);
-
-        for (String idDatasetLoader : datasetLoaders.keySet()) {
-            Element thisDatasetLoader = new Element(CONFIGURED_DATASET_ELEMENT_NAME);
-            thisDatasetLoader.setAttribute(CONFIGURED_DATASET_ELEMENT_NAME_ATTRIBUTE, datasetLoaders.get(idDatasetLoader).getName());
-            thisDatasetLoader.setAttribute(CONFIGURED_DATASET_ELEMENT_DESCRIPTION_ATTRIBUTE, datasetLoaders.get(idDatasetLoader).getDescription());
-            Element datasetLoaderElement = DatasetLoaderXML.getElement(datasetLoaders.get(idDatasetLoader).getDatasetLoader());
-            thisDatasetLoader.addContent(datasetLoaderElement);
-            root.addContent(thisDatasetLoader);
-        }
-
-        doc.addContent(root);
-
-        XMLOutputter outputter = new XMLOutputter(Constants.getXMLFormat());
-
-        try (FileWriter fileWriter = new FileWriter(fileOfConfiguredDatasets)) {
-            outputter.output(doc, fileWriter);
-        } catch (IOException ex) {
-            ERROR_CODES.CANNOT_WRITE_CONFIGURED_DATASETS_FILE.exit(ex);
-        }
-    }
-
-    public synchronized void loadDatasetLoaders() {
-        if (!fileOfConfiguredDatasets.exists()) {
-            Global.showWarning("The configured datasets file for this machine does not exists-");
-            Global.showWarning("\tFile '" + fileOfConfiguredDatasets.getAbsolutePath() + "': not found.");
-            Global.showWarning("The configured datasets file for this machine does not exists.");
-            saveDatasetLoaders();
-        } else {
-            if (Global.isVerboseAnnoying()) {
-                Global.showMessage("Loading configured datasets from file '" + fileOfConfiguredDatasets.getAbsolutePath() + "'\n");
-            }
-            try {
-                SAXBuilder builder = new SAXBuilder();
-                Document doc = builder.build(fileOfConfiguredDatasets);
-
-                Element caseStudy = doc.getRootElement();
-                if (!caseStudy.getName().equals(CONFIGURED_DATASETS_ROOT_ELEMENT_NAME)) {
-                    IllegalArgumentException ex = new IllegalArgumentException("The XML does not contains the configured datasets.");
-                    ERROR_CODES.CANNOT_READ_CONFIGURED_DATASETS_FILE.exit(ex);
-                }
-
-                for (Element configuredDataset : caseStudy.getChildren(CONFIGURED_DATASET_ELEMENT_NAME)) {
-                    String name = configuredDataset.getAttributeValue(CONFIGURED_DATASET_ELEMENT_NAME_ATTRIBUTE);
-                    String description = configuredDataset.getAttributeValue(CONFIGURED_DATASET_ELEMENT_DESCRIPTION_ATTRIBUTE);
-                    Element datasetLoaderElement = configuredDataset.getChild(DatasetLoaderXML.ELEMENT_NAME);
-
-                    if (datasetLoaderElement == null) {
-                        IllegalStateException ex = new IllegalStateException("Cannot retrieve configured dataset loader '" + name + "'");
-                        ERROR_CODES.CANNOT_READ_CONFIGURED_DATASETS_FILE.exit(ex);
-                    }
-
-                    DatasetLoader<? extends Rating> datasetLoader = DatasetLoaderXML.getDatasetLoader(datasetLoaderElement);
-
-                    if (Global.isVerboseAnnoying()) {
-                        Global.showMessage("\tConfigured dataset '" + name + "' loaded.\n");
-                    }
-
-                    datasetLoaders.put(name, new ConfiguredDataset(name, description, datasetLoader));
-                }
-                if (datasetLoaders.isEmpty()) {
-                    Global.showWarning("No configured datasets found, check configuration file.");
-                }
-                notifyChange();
-            } catch (JDOMException | IOException ex) {
-                ERROR_CODES.CANNOT_READ_CONFIGURED_DATASETS_FILE.exit(ex);
-            }
-        }
     }
 
     public void addDatasetLoader(String name, String description, DatasetLoader<? extends Rating> datasetLoader) {
@@ -188,13 +86,31 @@ public final class ConfiguredDatasetsFactory {
             throw new IllegalArgumentException("The identifier '" + name + "' for datasets is in use.");
         } else {
             datasetLoaders.put(name, new ConfiguredDataset(name, description, datasetLoader));
-            saveDatasetLoaders();
             notifyChange();
         }
     }
 
+    public void removeDatasetLoader(String identifier) {
+        if (datasetLoaders.containsKey(identifier)) {
+            datasetLoaders.remove(identifier);
+        }
+        notifyChange();
+    }
+
     public DatasetLoader<? extends Rating> getDatasetLoader(String identifier) {
         return getDatasetLoader(identifier, DatasetLoader.class);
+    }
+
+    public String getDatasetLoaderDescription(String identifier) {
+        if (datasetLoaders.isEmpty()) {
+            Global.showWarning("No configured datasets found, check configuration file.");
+        }
+
+        if (datasetLoaders.containsKey(identifier)) {
+            return datasetLoaders.get(identifier).getDescription();
+        } else {
+            throw new IllegalArgumentException("Configured dataset with identifier '" + identifier + "' not defined.");
+        }
     }
 
     public <DatasetLoaderType> DatasetLoaderType getDatasetLoader(String identifier, Class<DatasetLoaderType> clase) {
@@ -231,5 +147,13 @@ public final class ConfiguredDatasetsFactory {
             ret.add(datasetLoader.getDatasetLoader());
         }
         return ret;
+    }
+
+    public Collection<ConfiguredDataset> getAllConfiguredDatasets() {
+        return datasetLoaders.values();
+    }
+
+    public void setAllConfiguredDatasets(Collection<ConfiguredDataset> configuredDatasets) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }

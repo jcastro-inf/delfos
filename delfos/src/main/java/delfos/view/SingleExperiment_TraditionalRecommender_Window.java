@@ -24,17 +24,15 @@ import delfos.results.evaluationmeasures.EvaluationMeasure;
 import delfos.rs.RecommenderSystem;
 import delfos.view.results.ResultsDialog;
 import java.awt.Component;
-import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
-import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 import java.io.File;
 import java.lang.management.ManagementFactory;
 import java.util.Collection;
@@ -100,34 +98,37 @@ public class SingleExperiment_TraditionalRecommender_Window extends JFrame imple
         initComponents();
 
         this.addWindowListener(new ComportamientoSubVentanas(initialFrame, this));
-        this.addWindowListener(new WindowAdapter() {
+
+        this.addComponentListener(new ComponentListener() {
             @Override
-            public void windowClosing(WindowEvent e) {
-                SwingGUIConfigurationFile.setProperty(anchoVentana, SingleExperiment_TraditionalRecommender_Window.this.getSize().width);
-                SwingGUIConfigurationFile.setProperty(altoVentana, SingleExperiment_TraditionalRecommender_Window.this.getSize().height);
-                SwingGUIConfigurationFile.saveFile();
+            public void componentResized(ComponentEvent e) {
+                saveWindowState();
+            }
+
+            @Override
+            public void componentMoved(ComponentEvent e) {
+                saveWindowState();
+            }
+
+            @Override
+            public void componentShown(ComponentEvent e) {
+                saveWindowState();
+            }
+
+            @Override
+            public void componentHidden(ComponentEvent e) {
+                saveWindowState();
+            }
+
+            public void saveWindowState() {
+                SwingGUIConfiguration.getInstance().saveSingleUserExperimentWindowProperties(
+                        SingleExperiment_TraditionalRecommender_Window.this);
+
             }
         });
+        this.pack();
 
-        if (SwingGUIConfigurationFile.exists()) {
-
-            String ancho = SwingGUIConfigurationFile.getPropertyValue(anchoVentana);
-            String alto = SwingGUIConfigurationFile.getPropertyValue(altoVentana);
-            if (ancho == null) {
-                ancho = Integer.toString(524);
-            }
-            if (alto == null) {
-                alto = Integer.toString(340);
-            }
-            this.setSize(Integer.parseInt(ancho), Integer.parseInt(alto));
-        } else {
-            this.setSize(524, 340);
-            SwingGUIConfigurationFile.saveFile();
-        }
-
-        Dimension d = Toolkit.getDefaultToolkit().getScreenSize();
-
-        this.setLocation((d.width - this.getWidth()) / 2, (d.height - this.getHeight()) / 2);
+        SwingGUIConfiguration.getInstance().loadSingleUserExperimentWindowProperties(this);
         this.toFront();
     }
 
