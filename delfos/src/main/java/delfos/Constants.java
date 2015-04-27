@@ -94,6 +94,10 @@ public class Constants {
     public static final int ERROR_RECOMMENDER_SYSTEM_DONT_IMPLEMENT_FILE_PERSISTENCE = 10;
 
     private static boolean printFullXML;
+    /**
+     * Nombre de esta biblioteca.
+     */
+    public static final String LIBRARY_NAME = "delfos";
 
     /**
      * Lanza la interfaz de recomendación, que permite ver qué recomendaciones

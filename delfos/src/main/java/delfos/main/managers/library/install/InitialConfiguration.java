@@ -6,13 +6,16 @@
 package delfos.main.managers.library.install;
 
 import delfos.ConsoleParameters;
+import delfos.Constants;
 import static delfos.Constants.LIBRARY_CONFIGURATION_DIRECTORY;
 import delfos.ERROR_CODES;
+import delfos.common.Global;
 import delfos.configuration.ConfigurationManager;
 import delfos.configuration.scopes.ConfiguredDatasets;
 import delfos.configureddatasets.ConfiguredDatasetsFactory;
 import delfos.dataset.loaders.movilens.ml100k.MovieLens100k;
 import delfos.main.managers.CaseUseManager;
+import delfos.main.managers.experiment.SingleUserExperimentGUI;
 import java.io.File;
 import java.io.FileNotFoundException;
 
@@ -41,6 +44,8 @@ public class InitialConfiguration implements CaseUseManager {
         if (!isRightManager(consoleParameters)) {
             throw new IllegalStateException("This is not the right manager for the command line '" + consoleParameters.printOriginalParameters());
         }
+
+        Global.showMessage("Performing initial configuration of '" + Constants.LIBRARY_NAME + "' library");
 
         File configuredDatasetsXML;
 
