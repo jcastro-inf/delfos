@@ -35,8 +35,8 @@ public class ParallelSVDTest extends DelfosTest {
 
 //        DatasetLoader<? extends Rating> datasetLoader = ConfiguredDatasetsFactory.getInstance().getDatasetLoader("ml-100k");
 //        parallelSVD.setParameterValue(ParallelSVD.LEARNING_RATE, 0.02);
-        parallelSVD.addBuildingProgressListener(new RecommenderSystemBuildingProgressListener_default(System.out, 0));
-        ParallelSVDModel recommendationModel = parallelSVD.build(datasetLoader);
+        parallelSVD.addRecommendationModelBuildingProgressListener(new RecommenderSystemBuildingProgressListener_default(System.out, 0));
+        ParallelSVDModel recommendationModel = parallelSVD.buildRecommendationModel(datasetLoader);
 
         {
             double predictRating = parallelSVD.predictRating(datasetLoader, recommendationModel, 1, 5).doubleValue();

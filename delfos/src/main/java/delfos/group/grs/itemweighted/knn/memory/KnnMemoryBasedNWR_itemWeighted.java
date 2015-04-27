@@ -98,13 +98,13 @@ public class KnnMemoryBasedNWR_itemWeighted extends KnnCollaborativeRecommender<
     }
 
     @Override
-    public KnnMemoryModel build(DatasetLoader<? extends Rating> datasetLoader) {
+    public KnnMemoryModel buildRecommendationModel(DatasetLoader<? extends Rating> datasetLoader) {
         //No se necesitan perfiles porque se examina la base de datos directamente
         return new KnnMemoryModel();
     }
 
     @Override
-    public Collection<Recommendation> recommendOnly(DatasetLoader<? extends Rating> datasetLoader, KnnMemoryModel model, Integer idUser, java.util.Set<Integer> idItemList) throws UserNotFound {
+    public Collection<Recommendation> recommendToUser(DatasetLoader<? extends Rating> datasetLoader, KnnMemoryModel model, Integer idUser, java.util.Set<Integer> candidateItems) throws UserNotFound {
 
         Map<Integer, Double> itemWeights = new TreeMap<>();
 
@@ -114,14 +114,14 @@ public class KnnMemoryBasedNWR_itemWeighted extends KnnCollaborativeRecommender<
             itemWeights.put(idItem, 1.0 / userRated.size());
         });
 
-        return recommendOnlyWithItemWeighting(datasetLoader, model, idUser, itemWeights, idItemList);
+        return recommendOnlyWithItemWeighting(datasetLoader, model, idUser, itemWeights, candidateItems);
     }
 
     public Collection<Recommendation> recommendOnlyWithItemWeighting(DatasetLoader<? extends Rating> datasetLoader,
             KnnMemoryModel model,
             Integer idUser,
             Map<Integer, Double> itemWeights,
-            Collection<Integer> idItemList) throws UserNotFound {
+            Collection<Integer> candidateItems) throws UserNotFound {
         if (Global.isVerboseAnnoying()) {
             Global.showMessage(new Date().toGMTString() + " --> Recommending for user '" + idUser + "'\n");
         }
@@ -130,7 +130,7 @@ public class KnnMemoryBasedNWR_itemWeighted extends KnnCollaborativeRecommender<
             List<Neighbor> neighbors;
             neighbors = getNeighbors(datasetLoader.getRatingsDataset(), idUser, itemWeights);
 
-            Collection<Recommendation> ret = recommendWithNeighbors(datasetLoader.getRatingsDataset(), idUser, neighbors, idItemList);
+            Collection<Recommendation> ret = recommendWithNeighbors(datasetLoader.getRatingsDataset(), idUser, neighbors, candidateItems);
             if (Global.isVerboseAnnoying()) {
                 Global.showMessage("Finished recommendations for user '" + idUser + "'\n");
             }
@@ -182,7 +182,7 @@ public class KnnMemoryBasedNWR_itemWeighted extends KnnCollaborativeRecommender<
             RatingsDataset<? extends Rating> ratingsDataset,
             Integer idUser,
             List<Neighbor> vecinos,
-            Collection<Integer> idItemList)
+            Collection<Integer> candidateItems)
             throws UserNotFound {
 
         PredictionTechnique predictionTechnique_ = (PredictionTechnique) getParameterValue(KnnMemoryBasedNWR_itemWeighted.PREDICTION_TECHNIQUE);
@@ -192,7 +192,7 @@ public class KnnMemoryBasedNWR_itemWeighted extends KnnCollaborativeRecommender<
 
         int numVecinos = (Integer) getParameterValue(NEIGHBORHOOD_SIZE);
 
-        for (int idItem : idItemList) {
+        for (int idItem : candidateItems) {
             Collection<MatchRating> match = new LinkedList<>();
 
             int numNeighborsUsed = 0;
@@ -227,12 +227,12 @@ public class KnnMemoryBasedNWR_itemWeighted extends KnnCollaborativeRecommender<
     }
 
     @Override
-    public KnnMemoryModel loadModel(DatabasePersistence databasePersistence, Collection<Integer> users, Collection<Integer> items) throws FailureInPersistence {
+    public KnnMemoryModel loadRecommendationModel(DatabasePersistence databasePersistence, Collection<Integer> users, Collection<Integer> items) throws FailureInPersistence {
         return new KnnMemoryModel();
     }
 
     @Override
-    public void saveModel(DatabasePersistence databasePersistence, KnnMemoryModel model) throws FailureInPersistence {
+    public void saveRecommendationModel(DatabasePersistence databasePersistence, KnnMemoryModel model) throws FailureInPersistence {
         //No hay modelo que guardar.
     }
 }

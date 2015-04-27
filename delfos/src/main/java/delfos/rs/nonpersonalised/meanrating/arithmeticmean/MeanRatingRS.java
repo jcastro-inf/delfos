@@ -49,7 +49,7 @@ public class MeanRatingRS extends CollaborativeRecommender<MeanRatingRSModel> {
     }
 
     @Override
-    public MeanRatingRSModel build(DatasetLoader<? extends Rating> datasetLoader) throws CannotLoadRatingsDataset, CannotLoadRatingsDataset {
+    public MeanRatingRSModel buildRecommendationModel(DatasetLoader<? extends Rating> datasetLoader) throws CannotLoadRatingsDataset, CannotLoadRatingsDataset {
         RatingsDataset<? extends Rating> ratingsDataset = datasetLoader.getRatingsDataset();
         Collection<Integer> allItems = ratingsDataset.allRatedItems();
 
@@ -80,7 +80,7 @@ public class MeanRatingRS extends CollaborativeRecommender<MeanRatingRSModel> {
     }
 
     @Override
-    public Collection<Recommendation> recommendOnly(DatasetLoader<? extends Rating> datasetLoader, MeanRatingRSModel model, Integer idUser, java.util.Set<Integer> idItemList) throws UserNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset {
+    public Collection<Recommendation> recommendToUser(DatasetLoader<? extends Rating> datasetLoader, MeanRatingRSModel model, Integer idUser, java.util.Set<Integer> candidateItems) throws UserNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset {
 
         Collection<Recommendation> recom = new LinkedList<>();
         Iterator<MeanRating> iterator = model.getRangedMeanRatings().listIterator();
@@ -88,7 +88,7 @@ public class MeanRatingRS extends CollaborativeRecommender<MeanRatingRSModel> {
         int i = 0;
         while (iterator.hasNext()) {
             MeanRating next = iterator.next();
-            if (idItemList.contains(next.getIdItem())) {
+            if (candidateItems.contains(next.getIdItem())) {
                 recom.add(new Recommendation(next.getIdItem(), next.getPreference()));
             }
             i++;
@@ -98,13 +98,13 @@ public class MeanRatingRS extends CollaborativeRecommender<MeanRatingRSModel> {
     }
 
     @Override
-    public MeanRatingRSModel loadModel(DatabasePersistence databasePersistence, Collection<Integer> users, Collection<Integer> items) throws FailureInPersistence {
+    public MeanRatingRSModel loadRecommendationModel(DatabasePersistence databasePersistence, Collection<Integer> users, Collection<Integer> items) throws FailureInPersistence {
         DAOMeanRatingProfile dAOMeanRatingProfile = new DAOMeanRatingProfile();
         return dAOMeanRatingProfile.loadModel(databasePersistence, users, items);
     }
 
     @Override
-    public void saveModel(DatabasePersistence databasePersistence, MeanRatingRSModel model) throws FailureInPersistence {
+    public void saveRecommendationModel(DatabasePersistence databasePersistence, MeanRatingRSModel model) throws FailureInPersistence {
         DAOMeanRatingProfile dAOMeanRatingProfile = new DAOMeanRatingProfile();
         dAOMeanRatingProfile.saveModel(databasePersistence, model);
     }

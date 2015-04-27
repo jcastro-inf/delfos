@@ -163,7 +163,7 @@ public class Symeonidis2007FeatureWeighted extends ContentBasedRecommender<Symeo
     }
 
     @Override
-    public Symeonidis2007Model build(DatasetLoader<? extends Rating> datasetLoader) throws CannotLoadRatingsDataset, CannotLoadContentDataset {
+    public Symeonidis2007Model buildRecommendationModel(DatasetLoader<? extends Rating> datasetLoader) throws CannotLoadRatingsDataset, CannotLoadContentDataset {
 
         final RatingsDataset<? extends Rating> ratingsDataset = datasetLoader.getRatingsDataset();
         final ContentDataset contentDataset;
@@ -277,7 +277,7 @@ public class Symeonidis2007FeatureWeighted extends ContentBasedRecommender<Symeo
     }
 
     @Override
-    protected Collection<Recommendation> recommendOnly(DatasetLoader<? extends Rating> datasetLoader, Symeonidis2007Model model, Symeonidis2007UserProfile userProfile, Collection<Integer> idItemList) throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset {
+    protected Collection<Recommendation> recommendOnly(DatasetLoader<? extends Rating> datasetLoader, Symeonidis2007Model model, Symeonidis2007UserProfile userProfile, Collection<Integer> candidateItems) throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset {
         final RatingsDataset<? extends Rating> ratingsDataset = datasetLoader.getRatingsDataset();
         final ContentDataset contentDataset;
         if (datasetLoader instanceof ContentDatasetLoader) {
@@ -297,7 +297,7 @@ public class Symeonidis2007FeatureWeighted extends ContentBasedRecommender<Symeo
             Collection<Integer> neighborRated = ratingsDataset.getUserRated(neighbor.getIdNeighbor());
             itemsNeighborhood.addAll(neighborRated);
         }
-        itemsNeighborhood.retainAll(idItemList);
+        itemsNeighborhood.retainAll(candidateItems);
 //Step 3: We get the features of each item: I1: {F2}, I3: {F2, F3}, I5: {F1, F2, F3}
 //Step 4: We ﬁnd their frequency in the neighborhood:fr(F1)=1, fr(F2)=3, fr(F3)=2
         MutableSparseVector featureFrequency = model.getBooleanFeaturesTransformation().newProfile();
@@ -317,7 +317,7 @@ public class Symeonidis2007FeatureWeighted extends ContentBasedRecommender<Symeo
 //Step 5: For each item, we add its features frequency ﬁnding its weight in the neighborhood: w(I1) = 3, w(I3) = 5, w(I5) = 6.
         Collection<Recommendation> recommendations = new ArrayList<>();
 
-        for (int idItem : idItemList) {
+        for (int idItem : candidateItems) {
             try {
                 double itemScore = 0;
                 Item item = contentDataset.get(idItem);

@@ -9,7 +9,7 @@ import java.util.TreeMap;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.RatingsDataset;
-import delfos.rs.nonpersonalised.randomrecommender.RandomRecommenderModel;
+import delfos.rs.nonpersonalised.randomrecommender.RandomRecommendationModel;
 import delfos.rs.recommendation.Recommendation;
 import delfos.common.exceptions.dataset.CannotLoadContentDataset;
 import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
@@ -50,14 +50,14 @@ public class GroupRecommender_TestValidationProtocols extends GroupRecommenderSy
     }
 
     @Override
-    public Object build(DatasetLoader<? extends Rating> datasetLoader) throws CannotLoadRatingsDataset {
+    public Object buildRecommendationModel(DatasetLoader<? extends Rating> datasetLoader) throws CannotLoadRatingsDataset {
         datasetEnBuild = datasetLoader.getRatingsDataset();
         Global.showMessage("Built.\n");
         return null;
     }
 
     @Override
-    public Object buildGroupModel(DatasetLoader<? extends Rating> datasetLoader, Object recommenderSystemModel, GroupOfUsers groupOfUsers) throws UserNotFound, CannotLoadRatingsDataset {
+    public Object buildGroupModel(DatasetLoader<? extends Rating> datasetLoader, Object RecommendationModel, GroupOfUsers groupOfUsers) throws UserNotFound, CannotLoadRatingsDataset {
         datasetsEnConstruccionModeloGrupo.put(
                 groupOfUsers,
                 datasetLoader.getRatingsDataset());
@@ -67,7 +67,7 @@ public class GroupRecommender_TestValidationProtocols extends GroupRecommenderSy
     }
 
     @Override
-    public Collection<Recommendation> recommendOnly(DatasetLoader<? extends Rating> datasetLoader, Object recommenderSystemModel, Object groupModel, GroupOfUsers groupOfUsers, java.util.Set<Integer> idItemList) throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset {
+    public Collection<Recommendation> recommendOnly(DatasetLoader<? extends Rating> datasetLoader, Object RecommendationModel, Object groupModel, GroupOfUsers groupOfUsers, java.util.Set<Integer> candidateItems) throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset {
 
         /*
          * Compruebo si alguna vez me piden recomendaciones que se conocian en
@@ -84,7 +84,7 @@ public class GroupRecommender_TestValidationProtocols extends GroupRecommenderSy
         for (int idUser : groupOfUsers.getGroupMembers()) {
             boolean error = false;
             Collection<Integer> userRated = datasetLoader.getRatingsDataset().getUserRated(idUser);
-            for (int idItem : idItemList) {
+            for (int idItem : candidateItems) {
                 if (userRated.contains(idItem)) {
                     Global.showWarning("El producto a predecir está en el dataset!!!!");
                     error = true;
@@ -102,7 +102,7 @@ public class GroupRecommender_TestValidationProtocols extends GroupRecommenderSy
         for (int idUser : groupOfUsers.getGroupMembers()) {
             boolean error = false;
             Collection<Integer> userRated = datasetsEnConstruccionModeloGrupo.get(groupOfUsers).getUserRated(idUser);
-            for (int idItem : idItemList) {
+            for (int idItem : candidateItems) {
                 if (userRated.contains(idItem)) {
                     Global.showWarning("El dataset de construcción del modelo de este grupo contiene el rating a predecir!!!!");
                     error = true;
@@ -120,7 +120,7 @@ public class GroupRecommender_TestValidationProtocols extends GroupRecommenderSy
         for (int idUser : groupOfUsers.getGroupMembers()) {
             boolean error = false;
             Collection<Integer> userRated = datasetEnBuild.getUserRated(idUser);
-            for (int idItem : idItemList) {
+            for (int idItem : candidateItems) {
                 if (userRated.contains(idItem)) {
                     Global.showWarning("El dataset de construcción del modelo general contiene el rating a predecir!!!!");
                     error = true;
@@ -141,10 +141,10 @@ public class GroupRecommender_TestValidationProtocols extends GroupRecommenderSy
         //Finalmente recomiendo
         datasetsEnConstruccionModeloGrupo.remove(groupOfUsers);
 
-        if (recommenderSystemModel instanceof RandomRecommenderModel) {
-            RandomRecommenderModel randomRecommenderModel = (RandomRecommenderModel) recommenderSystemModel;
+        if (RecommendationModel instanceof RandomRecommendationModel) {
+            RandomRecommendationModel randomRecommendationModel = (RandomRecommendationModel) RecommendationModel;
 
-            return randomGroupRecommender.recommendOnly(datasetLoader, randomRecommenderModel, groupOfUsers, groupOfUsers, idItemList);
+            return randomGroupRecommender.recommendOnly(datasetLoader, randomRecommendationModel, groupOfUsers, groupOfUsers, candidateItems);
         } else {
             throw new IllegalArgumentException("The model type is not the correct for this recommender.");
         }

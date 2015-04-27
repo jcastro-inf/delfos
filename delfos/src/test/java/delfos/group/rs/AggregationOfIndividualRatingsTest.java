@@ -12,7 +12,7 @@ import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RatingsDataset;
 import delfos.dataset.loaders.csv.CSVfileDatasetLoader;
 import delfos.group.groupsofusers.GroupOfUsers;
-import delfos.group.grs.SingleRecommenderSystemModel;
+import delfos.group.grs.SingleRecommendationModel;
 import delfos.group.grs.aggregation.AggregationOfIndividualRatings;
 import delfos.group.grs.aggregation.GroupModelPseudoUser;
 import delfos.group.grs.recommendations.GroupRecommendations;
@@ -83,8 +83,8 @@ public class AggregationOfIndividualRatingsTest {
 
         AggregationOfIndividualRatings grs = new AggregationOfIndividualRatings(traditionalRecommenderSystem, new Mean());
 
-        grs.addBuildingProgressListener(new RecommenderSystemBuildingProgressListener_default(System.out, 5000));
-        SingleRecommenderSystemModel recommenderSystemModel = grs.build(datasetLoader);
+        grs.addRecommendationModelBuildingProgressListener(new RecommenderSystemBuildingProgressListener_default(System.out, 5000));
+        SingleRecommendationModel RecommendationModel = grs.buildRecommendationModel(datasetLoader);
 
         Set<Integer> notRated = new TreeSet<>(ratingsDataset.allRatedItems());
 
@@ -94,8 +94,8 @@ public class AggregationOfIndividualRatingsTest {
 
         GroupOfUsers group = new GroupOfUsers(15743, 24357, 162779);
 
-        GroupModelWithExplanation<GroupModelPseudoUser, ? extends Object> groupModel = grs.buildGroupModel(datasetLoader, recommenderSystemModel, group);
-        Collection<Recommendation> recommendOnly = grs.recommendOnly(datasetLoader, recommenderSystemModel, groupModel, group, notRated);
+        GroupModelWithExplanation<GroupModelPseudoUser, ? extends Object> groupModel = grs.buildGroupModel(datasetLoader, RecommendationModel, group);
+        Collection<Recommendation> recommendOnly = grs.recommendOnly(datasetLoader, RecommendationModel, groupModel, group, notRated);
 
         RecommendationsOutputStandardRaw output = new RecommendationsOutputStandardRaw();
         output.writeRecommendations(new GroupRecommendations(group, recommendOnly, RecommendationComputationDetails.EMPTY_DETAILS));
@@ -104,7 +104,7 @@ public class AggregationOfIndividualRatingsTest {
             // 4697 -> 4.300307
             int idItem = 4697;
             double prediction = 4.300307;
-            Collection<Recommendation> predictionList = grs.recommendOnly(datasetLoader, recommenderSystemModel, groupModel, group, idItem);
+            Collection<Recommendation> predictionList = grs.recommendOnly(datasetLoader, RecommendationModel, groupModel, group, idItem);
             Assert.assertEquals(1, predictionList.size());
             Assert.assertEquals(idItem, predictionList.iterator().next().getIdItem());
             Assert.assertEquals(prediction, predictionList.iterator().next().getPreference().doubleValue(), 0.0001);
@@ -114,7 +114,7 @@ public class AggregationOfIndividualRatingsTest {
             // 10082 -> 2.50053
             int idItem = 10082;
             double prediction = 2.50053;
-            Collection<Recommendation> predictionList = grs.recommendOnly(datasetLoader, recommenderSystemModel, groupModel, group, idItem);
+            Collection<Recommendation> predictionList = grs.recommendOnly(datasetLoader, RecommendationModel, groupModel, group, idItem);
             Assert.assertEquals(1, predictionList.size());
             Assert.assertEquals(idItem, predictionList.iterator().next().getIdItem());
             Assert.assertEquals(prediction, predictionList.iterator().next().getPreference().doubleValue(), 0.0001);

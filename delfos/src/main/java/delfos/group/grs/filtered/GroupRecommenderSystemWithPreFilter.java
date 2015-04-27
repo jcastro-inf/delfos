@@ -29,7 +29,7 @@ import delfos.group.grs.aggregation.AggregationOfIndividualRatings;
 import delfos.group.grs.aggregation.GroupModelRatingsPreFilter;
 import delfos.group.grs.filtered.filters.GroupRatingsFilter;
 import delfos.group.grs.filtered.filters.OutliersRatingsFilter;
-import delfos.rs.RecommenderSystemBuildingProgressListener;
+import delfos.rs.RecommendationModelBuildingProgressListener;
 import delfos.rs.collaborativefiltering.knn.modelbased.KnnModelBasedCFRS;
 import delfos.rs.explanation.GroupModelWithExplanation;
 import delfos.rs.explanation.NestedExplanation;
@@ -69,7 +69,7 @@ public class GroupRecommenderSystemWithPreFilter extends GroupRecommenderSystemA
         ParameterListener keepMaintainRecommender = new ParameterListener() {
             private GroupRecommenderSystem grs = null;
 
-            private RecommenderSystemBuildingProgressListener bpl
+            private RecommendationModelBuildingProgressListener bpl
                     = (String actualJob, int percent, long remainingTime) -> {
                         fireBuildingProgressChangedEvent(actualJob, percent, remainingTime);
                     };
@@ -78,14 +78,14 @@ public class GroupRecommenderSystemWithPreFilter extends GroupRecommenderSystemA
             public void parameterChanged() {
                 if (grs == null) {
                     grs = GroupRecommenderSystemWithPreFilter.this.getGroupRecommenderSystem();
-                    grs.addBuildingProgressListener(bpl);
+                    grs.addRecommendationModelBuildingProgressListener(bpl);
                 }
                 if (getGroupRecommenderSystem() == grs) {
                     //Es el mismo, no hacer nada.
                 } else {
-                    grs.removeBuildingProgressListener(bpl);
+                    grs.removeRecommendationModelBuildingProgressListener(bpl);
                     grs = getGroupRecommenderSystem();
-                    grs.addBuildingProgressListener(bpl);
+                    grs.addRecommendationModelBuildingProgressListener(bpl);
                 }
             }
         };
@@ -106,18 +106,18 @@ public class GroupRecommenderSystemWithPreFilter extends GroupRecommenderSystemA
     }
 
     @Override
-    public Object build(DatasetLoader<? extends Rating> datasetLoader) throws CannotLoadRatingsDataset, CannotLoadContentDataset {
-        RecommenderSystemBuildingProgressListener buildListener = this::fireBuildingProgressChangedEvent;
+    public Object buildRecommendationModel(DatasetLoader<? extends Rating> datasetLoader) throws CannotLoadRatingsDataset, CannotLoadContentDataset {
+        RecommendationModelBuildingProgressListener buildListener = this::fireBuildingProgressChangedEvent;
 
-        getGroupRecommenderSystem().addBuildingProgressListener(buildListener);
-        Object build = getGroupRecommenderSystem().build(datasetLoader);
-        getGroupRecommenderSystem().removeBuildingProgressListener(buildListener);
+        getGroupRecommenderSystem().addRecommendationModelBuildingProgressListener(buildListener);
+        Object build = getGroupRecommenderSystem().buildRecommendationModel(datasetLoader);
+        getGroupRecommenderSystem().removeRecommendationModelBuildingProgressListener(buildListener);
 
         return build;
     }
 
     @Override
-    public GroupModelWithExplanation<GroupModelRatingsPreFilter, ? extends Object> buildGroupModel(DatasetLoader<? extends Rating> datasetLoader, Object recommenderSystemModel, GroupOfUsers groupOfUsers) throws UserNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset, NotEnoughtUserInformation {
+    public GroupModelWithExplanation<GroupModelRatingsPreFilter, ? extends Object> buildGroupModel(DatasetLoader<? extends Rating> datasetLoader, Object RecommendationModel, GroupOfUsers groupOfUsers) throws UserNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset, NotEnoughtUserInformation {
         Map<Integer, Map<Integer, Rating>> filteredRatings = getGroupRatingsFilter().getFilteredRatings(datasetLoader.getRatingsDataset(), groupOfUsers);
 
         checkFilteredRatings(datasetLoader, groupOfUsers, filteredRatings);
@@ -140,7 +140,7 @@ public class GroupRecommenderSystemWithPreFilter extends GroupRecommenderSystemA
 
         Object innerGRSGroupModel = getGroupRecommenderSystem().buildGroupModel(
                 new DatasetLoaderGiven(datasetLoader, modifiedDataset),
-                recommenderSystemModel,
+                RecommendationModel,
                 new GroupOfUsers(pseudoMembers.keySet()));
 
         final Object explanation;
@@ -170,7 +170,7 @@ public class GroupRecommenderSystemWithPreFilter extends GroupRecommenderSystemA
 
     @Override
     public Collection<Recommendation> recommendOnly(
-            DatasetLoader<? extends Rating> datasetLoader, Object recommenderSystemModel, GroupModelWithExplanation<GroupModelRatingsPreFilter, ? extends Object> groupModelWithExplanation, GroupOfUsers groupOfUsers, java.util.Set<Integer> idItemList)
+            DatasetLoader<? extends Rating> datasetLoader, Object RecommendationModel, GroupModelWithExplanation<GroupModelRatingsPreFilter, ? extends Object> groupModelWithExplanation, GroupOfUsers groupOfUsers, java.util.Set<Integer> candidateItems)
             throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset, NotEnoughtUserInformation {
 
         Object innerGRSGroupModel = groupModelWithExplanation.getGroupModel().getInnerGRSGroupModel();
@@ -191,10 +191,10 @@ public class GroupRecommenderSystemWithPreFilter extends GroupRecommenderSystemA
         try {
             Collection<Recommendation> recommendations = getGroupRecommenderSystem().recommendOnly(
                     new DatasetLoaderGiven(datasetLoader, modifiedDataset),
-                    recommenderSystemModel,
+                    RecommendationModel,
                     innerGRSGroupModel,
                     new GroupOfUsers(pseudoMembers.keySet()),
-                    idItemList);
+                    candidateItems);
             return recommendations;
         } catch (UserNotFound ex) {
             throw new UserNotFound(pseudoMembers.get(ex.getIdUser()), ex);

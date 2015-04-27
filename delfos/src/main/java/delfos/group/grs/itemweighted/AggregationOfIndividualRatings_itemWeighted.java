@@ -36,12 +36,12 @@ import delfos.dataset.util.DatasetUtilities;
 import delfos.group.groupsofusers.GroupOfUsers;
 import delfos.group.grs.GroupRecommenderSystem;
 import delfos.group.grs.GroupRecommenderSystemAdapter;
-import delfos.group.grs.SingleRecommenderSystemModel;
+import delfos.group.grs.SingleRecommendationModel;
 import delfos.group.grs.itemweighted.knn.memory.KnnMemoryBasedNWR_itemWeighted;
 import delfos.group.grs.itemweighted.measures.GroupItemWeight;
 import delfos.group.grs.itemweighted.measures.StandardDeviationWeights;
 import delfos.rs.RecommenderSystem;
-import delfos.rs.RecommenderSystemBuildingProgressListener;
+import delfos.rs.RecommendationModelBuildingProgressListener;
 import delfos.rs.bufferedrecommenders.RecommenderSystem_fixedFilePersistence;
 import delfos.rs.collaborativefiltering.knn.memorybased.KnnMemoryModel;
 import delfos.rs.collaborativefiltering.svd.TryThisAtHomeSVD;
@@ -51,7 +51,7 @@ import delfos.rs.persistence.FilePersistence;
 import delfos.rs.recommendation.Recommendation;
 
 public final class AggregationOfIndividualRatings_itemWeighted
-        extends GroupRecommenderSystemAdapter<SingleRecommenderSystemModel, GroupModelWithExplanation<GroupModelPseudoUser_itemWeighted, ? extends Object>> {
+        extends GroupRecommenderSystemAdapter<SingleRecommendationModel, GroupModelWithExplanation<GroupModelPseudoUser_itemWeighted, ? extends Object>> {
 
     private static final long serialVersionUID = 1L;
 
@@ -192,24 +192,24 @@ public final class AggregationOfIndividualRatings_itemWeighted
     }
 
     @Override
-    public SingleRecommenderSystemModel build(DatasetLoader<? extends Rating> datasetLoader) throws CannotLoadRatingsDataset, CannotLoadContentDataset {
+    public SingleRecommendationModel buildRecommendationModel(DatasetLoader<? extends Rating> datasetLoader) throws CannotLoadRatingsDataset, CannotLoadContentDataset {
 
-        RecommenderSystemBuildingProgressListener buildListener = this::fireBuildingProgressChangedEvent;
-        getSingleUserRecommender().addBuildingProgressListener(buildListener);
-        Object singleUserRecommendationModel = getSingleUserRecommender().build(datasetLoader);
-        getSingleUserRecommender().removeBuildingProgressListener(buildListener);
+        RecommendationModelBuildingProgressListener buildListener = this::fireBuildingProgressChangedEvent;
+        getSingleUserRecommender().addRecommendationModelBuildingProgressListener(buildListener);
+        Object singleUserRecommendationModel = getSingleUserRecommender().buildRecommendationModel(datasetLoader);
+        getSingleUserRecommender().removeRecommendationModelBuildingProgressListener(buildListener);
 
         if (isCompletePreferences()) {
             RecommenderSystem completePreferencesRS = getCompletePreferencesRS();
-            completePreferencesRS.addBuildingProgressListener(buildListener);
-            completePreferencesRS.build(datasetLoader);
-            completePreferencesRS.removeBuildingProgressListener(buildListener);
+            completePreferencesRS.addRecommendationModelBuildingProgressListener(buildListener);
+            completePreferencesRS.buildRecommendationModel(datasetLoader);
+            completePreferencesRS.removeRecommendationModelBuildingProgressListener(buildListener);
         }
-        return new SingleRecommenderSystemModel(singleUserRecommendationModel);
+        return new SingleRecommendationModel(singleUserRecommendationModel);
     }
 
     @Override
-    public GroupModelWithExplanation<GroupModelPseudoUser_itemWeighted, ? extends Object> buildGroupModel(DatasetLoader<? extends Rating> datasetLoader, SingleRecommenderSystemModel recommenderSystemModel, GroupOfUsers groupOfUsers) throws UserNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset, NotEnoughtUserInformation {
+    public GroupModelWithExplanation<GroupModelPseudoUser_itemWeighted, ? extends Object> buildGroupModel(DatasetLoader<? extends Rating> datasetLoader, SingleRecommendationModel RecommendationModel, GroupOfUsers groupOfUsers) throws UserNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset, NotEnoughtUserInformation {
 
         GroupModelWithExplanation<GroupModelPseudoUser_itemWeighted, ? extends Object> groupModelWithExplanation;
         AggregationOperator aggregationOperator = getAggregationOperator();
@@ -242,7 +242,7 @@ public final class AggregationOfIndividualRatings_itemWeighted
     }
 
     public static RatingsDataset<Rating> completeRatings(GroupRecommenderSystem grs, RecommenderSystem_fixedFilePersistence rs, GroupOfUsers groupOfUsers, DatasetLoader<? extends Rating> datasetLoader, RelevanceCriteria relevanceCriteria) throws CannotLoadRatingsDataset, UserNotFound {
-        Object recommendationModel = rs.build(datasetLoader);
+        Object recommendationModel = rs.buildRecommendationModel(datasetLoader);
 
         Map<Integer, Map<Integer, Number>> membersRatings = DatasetUtilities.getMembersRatings_byUser(groupOfUsers, datasetLoader);
         Set<Integer> itemUnion = DatasetUtilities.transformIndexedByUsersToIndexedByItems_Map(membersRatings).keySet();
@@ -255,7 +255,7 @@ public final class AggregationOfIndividualRatings_itemWeighted
 
             Collection<Recommendation> recommendOnly;
             try {
-                recommendOnly = rs.recommendOnly(datasetLoader, recommendationModel, idUser, toPredict);
+                recommendOnly = rs.recommendToUser(datasetLoader, recommendationModel, idUser, toPredict);
             } catch (ItemNotFound | CannotLoadContentDataset | NotEnoughtUserInformation ex) {
                 ERROR_CODES.UNDEFINED_ERROR.exit(ex);
                 throw new IllegalStateException("arg");
@@ -294,7 +294,7 @@ public final class AggregationOfIndividualRatings_itemWeighted
 
     @Override
     public Collection<Recommendation> recommendOnly(
-            DatasetLoader<? extends Rating> datasetLoader, SingleRecommenderSystemModel recommenderSystemModel, GroupModelWithExplanation<GroupModelPseudoUser_itemWeighted, ? extends Object> groupModel, GroupOfUsers groupOfUsers, java.util.Set<Integer> idItemList)
+            DatasetLoader<? extends Rating> datasetLoader, SingleRecommendationModel RecommendationModel, GroupModelWithExplanation<GroupModelPseudoUser_itemWeighted, ? extends Object> groupModel, GroupOfUsers groupOfUsers, java.util.Set<Integer> candidateItems)
             throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset, NotEnoughtUserInformation {
 
         //Recojo los parámetros en variables
@@ -303,7 +303,7 @@ public final class AggregationOfIndividualRatings_itemWeighted
         if (recommenderSystem instanceof KnnMemoryBasedNWR_itemWeighted) {
             Map<Integer, Number> groupRatings_Number = groupModel.getGroupModel().getRatings();
             Map<Integer, Double> itemWeights = groupModel.getGroupModel().getItemWeights();
-            Collection<Recommendation> groupRecom = recommendWithRatingsAndWeights(datasetLoader, recommenderSystem, recommenderSystemModel, groupRatings_Number, itemWeights, idItemList);
+            Collection<Recommendation> groupRecom = recommendWithRatingsAndWeights(datasetLoader, recommenderSystem, RecommendationModel, groupRatings_Number, itemWeights, candidateItems);
             return groupRecom;
         } else {
             throw new IllegalStateException("Cannot use this GRS with a " + recommenderSystem.getAlias() + ", must be a " + KnnMemoryBasedNWR_itemWeighted.class);
@@ -362,10 +362,10 @@ public final class AggregationOfIndividualRatings_itemWeighted
     public static Collection<Recommendation> recommendWithRatingsAndWeights(
             DatasetLoader<? extends Rating> datasetLoader,
             RecommenderSystem recommenderSystem,
-            SingleRecommenderSystemModel recommenderSystemModel,
+            SingleRecommendationModel RecommendationModel,
             Map<Integer, Number> groupRatings,
             Map<Integer, Double> itemWeights,
-            Collection<Integer> idItemList) throws ItemNotFound, NotEnoughtUserInformation, UserNotFound, CannotLoadContentDataset, CannotLoadRatingsDataset {
+            Collection<Integer> candidateItems) throws ItemNotFound, NotEnoughtUserInformation, UserNotFound, CannotLoadContentDataset, CannotLoadRatingsDataset {
 
         Map<Integer, Rating> groupRatings_Ratings = DatasetUtilities.getUserMap_Rating(-1, groupRatings);
         PseudoUserRatingsDataset<Rating> ratingsDataset_withPseudoUser = new PseudoUserRatingsDataset<>(
@@ -382,10 +382,10 @@ public final class AggregationOfIndividualRatings_itemWeighted
 
             groupRecom = knnMemoryBasedNWR_NaturalNoise.recommendOnlyWithItemWeighting(
                     new DatasetLoaderGiven(datasetLoader, ratingsDataset_withPseudoUser),
-                    (KnnMemoryModel) recommenderSystemModel.getRecommenderSystemModel(),
+                    (KnnMemoryModel) RecommendationModel.getRecommendationModel(),
                     idGroup,
                     itemWeights,
-                    idItemList);
+                    candidateItems);
         } else {
             throw new IllegalStateException("Cannot use this GRS with a " + recommenderSystem.getAlias() + ", must be a " + KnnMemoryBasedNWR_itemWeighted.class);
         }

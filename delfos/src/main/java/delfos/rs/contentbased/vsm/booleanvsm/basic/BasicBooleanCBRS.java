@@ -68,7 +68,7 @@ public class BasicBooleanCBRS extends ContentBasedRecommender<BasicBooleanCBRSMo
     }
 
     @Override
-    public BasicBooleanCBRSModel build(DatasetLoader<? extends Rating> datasetLoader) throws CannotLoadRatingsDataset, CannotLoadContentDataset {
+    public BasicBooleanCBRSModel buildRecommendationModel(DatasetLoader<? extends Rating> datasetLoader) throws CannotLoadRatingsDataset, CannotLoadContentDataset {
 
         final ContentDataset contentDataset;
         if (datasetLoader instanceof ContentDatasetLoader) {
@@ -108,7 +108,7 @@ public class BasicBooleanCBRS extends ContentBasedRecommender<BasicBooleanCBRSMo
     protected Collection<Recommendation> recommendOnly(DatasetLoader<? extends Rating> datasetLoader,
             BasicBooleanCBRSModel model,
             SparseVector userProfile,
-            Collection<Integer> idItemList)
+            Collection<Integer> candidateItems)
             throws UserNotFound, ItemNotFound,
             CannotLoadRatingsDataset, CannotLoadContentDataset {
         if (model == null) {
@@ -119,7 +119,7 @@ public class BasicBooleanCBRS extends ContentBasedRecommender<BasicBooleanCBRSMo
         Collection<Recommendation> recomendaciones = new ArrayList<>();
 
         List<Float> userVectorProfile = model.booleanFeaturesTransformation.getFloatVector(userProfile);
-        for (int idItem : idItemList) {
+        for (int idItem : candidateItems) {
             List<Float> itemVectorProfile = model.getBooleanFeaturesTransformation().getFloatVector(model.get(idItem));
             float sim;
             try {

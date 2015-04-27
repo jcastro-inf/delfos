@@ -92,7 +92,7 @@ public class EntropyDependenceCBRS extends ContentBasedRecommender<EntropyDepend
     }
 
     @Override
-    public EntropyDependenceCBRSModel build(DatasetLoader<? extends Rating> datasetLoader) throws CannotLoadContentDataset {
+    public EntropyDependenceCBRSModel buildRecommendationModel(DatasetLoader<? extends Rating> datasetLoader) throws CannotLoadContentDataset {
 
         Global.showMessage(new Date().toString() + "\tBuilding model");
 
@@ -318,7 +318,7 @@ public class EntropyDependenceCBRS extends ContentBasedRecommender<EntropyDepend
     }
 
     @Override
-    protected Collection<Recommendation> recommendOnly(DatasetLoader<? extends Rating> datasetLoader, EntropyDependenceCBRSModel model, EntropyDependenceCBRSUserProfile userProfile, Collection<Integer> idItemList) throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset {
+    protected Collection<Recommendation> recommendOnly(DatasetLoader<? extends Rating> datasetLoader, EntropyDependenceCBRSModel model, EntropyDependenceCBRSUserProfile userProfile, Collection<Integer> candidateItems) throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset {
         final ContentDataset contentDataset;
         if (datasetLoader instanceof ContentDatasetLoader) {
             ContentDatasetLoader contentDatasetLoader = (ContentDatasetLoader) datasetLoader;
@@ -330,7 +330,7 @@ public class EntropyDependenceCBRS extends ContentBasedRecommender<EntropyDepend
         WeightedSimilarityMeasure similarity = (WeightedSimilarityMeasure) getParameterValue(SIMILARITY_MEASURE);
         Collection<Recommendation> recomendaciones = new ArrayList<>();
 
-        for (int idItem : idItemList) {
+        for (int idItem : candidateItems) {
             Item item;
             try {
                 item = contentDataset.get(idItem);
@@ -385,17 +385,17 @@ public class EntropyDependenceCBRS extends ContentBasedRecommender<EntropyDepend
 
         }
 
-        if (recomendaciones.size() != idItemList.size()) {
-            Global.showWarning("Se están devolviendo " + recomendaciones.size() + " de " + idItemList.size());
+        if (recomendaciones.size() != candidateItems.size()) {
+            Global.showWarning("Se están devolviendo " + recomendaciones.size() + " de " + candidateItems.size());
 
-            return recommendOnly(datasetLoader, model, userProfile, idItemList);
+            return recommendOnly(datasetLoader, model, userProfile, candidateItems);
         }
 
         return recomendaciones;
     }
 
     @Override
-    public void saveModel(DatabasePersistence databasePersistence, EntropyDependenceCBRSModel model) throws FailureInPersistence {
+    public void saveRecommendationModel(DatabasePersistence databasePersistence, EntropyDependenceCBRSModel model) throws FailureInPersistence {
         DAOEntropyDependenceCBRSModel dao = new DAOEntropyDependenceCBRSModel();
         try {
             dao.saveModel(databasePersistence, model);
@@ -408,7 +408,7 @@ public class EntropyDependenceCBRS extends ContentBasedRecommender<EntropyDepend
     }
 
     @Override
-    public EntropyDependenceCBRSModel loadModel(DatabasePersistence databasePersistence, Collection<Integer> users, Collection<Integer> items) throws FailureInPersistence {
+    public EntropyDependenceCBRSModel loadRecommendationModel(DatabasePersistence databasePersistence, Collection<Integer> users, Collection<Integer> items) throws FailureInPersistence {
         DAOEntropyDependenceCBRSModel dao = new DAOEntropyDependenceCBRSModel();
         return dao.loadModel(databasePersistence, users, items);
     }

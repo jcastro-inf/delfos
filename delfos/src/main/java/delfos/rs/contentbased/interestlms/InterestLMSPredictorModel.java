@@ -73,7 +73,7 @@ public class InterestLMSPredictorModel implements Serializable {
     protected float predict(int idUser, Item item) {
 
         float prediction = predictMinusOneToOne(idUser, item);
-        float predictionInDatasetRange = minusOneToOneDomain.convertToDomain(prediction, ratingDatasetDomain).floatValue();
+        float predictionInDatasetRange = minusOneToOneDomain.convertToDecimalDomain(prediction, ratingDatasetDomain).floatValue();
         return predictionInDatasetRange;
     }
 

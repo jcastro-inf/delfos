@@ -101,11 +101,11 @@ public class ConsensusOfIndividualRecommendationsToXML {
     public static final String RECOMMENDATION_INPUT_MEMBER_RATINGS_ID_ITEM_ATTRIBUTE_NAME = "idItem";
     public static final String RECOMMENDATION_INPUT_MEMBER_RATINGS_RATING_VALUE_ATTRIBUTE_NAME = "ratingValue";
 
-    public static final String RECOMMENDATION_INPUT_ID_ITEM_LIST_ELEMENT_NAME = "IdItemList";
+    public static final String RECOMMENDATION_INPUT_ID_ITEM_LIST_ELEMENT_NAME = "CandidateItems";
     public static final String RECOMMENDATION_INPUT_ITEM_REQUEST_ELEMENT_NAME = "ItemRequested";
     public static final String RECOMMENDATION_INPUT_ITEM_REQUEST_ID_ITEM_ATTRIBUTE_NAME = "idItem";
 
-    public static <RatingType extends Rating> void writeRecommendationMembersRatingsXML(Map<Integer, Map<Integer, RatingType>> membersRatings, Collection<Integer> idItemList, File groupPredictionRequestsFile) {
+    public static <RatingType extends Rating> void writeRecommendationMembersRatingsXML(Map<Integer, Map<Integer, RatingType>> membersRatings, Collection<Integer> candidateItems, File groupPredictionRequestsFile) {
 
         Element root = new Element(RECOMMENDATION_INPUT_ROOT_ELEMENT_NAME);
 
@@ -127,13 +127,13 @@ public class ConsensusOfIndividualRecommendationsToXML {
         }
         root.addContent(membersRatingsElement);
 
-        Element idItemListElement = new Element(RECOMMENDATION_INPUT_ID_ITEM_LIST_ELEMENT_NAME);
-        for (int idItemRequested : idItemList) {
+        Element candidateItemsElement = new Element(RECOMMENDATION_INPUT_ID_ITEM_LIST_ELEMENT_NAME);
+        for (int idItemRequested : candidateItems) {
             Element itemRequestedElement = new Element(RECOMMENDATION_INPUT_ITEM_REQUEST_ELEMENT_NAME);
             itemRequestedElement.setAttribute(RECOMMENDATION_INPUT_ITEM_REQUEST_ID_ITEM_ATTRIBUTE_NAME, Integer.toString(idItemRequested));
-            idItemListElement.addContent(itemRequestedElement);
+            candidateItemsElement.addContent(itemRequestedElement);
         }
-        root.addContent(idItemListElement);
+        root.addContent(candidateItemsElement);
 
         Document doc = new Document();
         doc.addContent(root);

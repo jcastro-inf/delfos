@@ -36,7 +36,7 @@ public class MeanRatingGRS extends GroupRecommenderSystemAdapter<MeanRatingRSMod
     }
 
     @Override
-    public MeanRatingRSModel build(DatasetLoader<? extends Rating> datasetLoader) throws CannotLoadRatingsDataset, CannotLoadContentDataset {
+    public MeanRatingRSModel buildRecommendationModel(DatasetLoader<? extends Rating> datasetLoader) throws CannotLoadRatingsDataset, CannotLoadContentDataset {
 
         Set<Integer> allItems = new TreeSet(datasetLoader.getRatingsDataset().allRatedItems());
         List<MeanRating> meanRatings = new ArrayList<>(allItems.size());
@@ -64,16 +64,16 @@ public class MeanRatingGRS extends GroupRecommenderSystemAdapter<MeanRatingRSMod
     }
 
     @Override
-    public GroupOfUsers buildGroupModel(DatasetLoader<? extends Rating> datasetLoader, MeanRatingRSModel recommenderSystemModel, GroupOfUsers groupOfUsers) throws UserNotFound {
+    public GroupOfUsers buildGroupModel(DatasetLoader<? extends Rating> datasetLoader, MeanRatingRSModel RecommendationModel, GroupOfUsers groupOfUsers) throws UserNotFound {
         return new GroupOfUsers(groupOfUsers.getGroupMembers());
     }
 
     @Override
-    public Collection<Recommendation> recommendOnly(DatasetLoader<? extends Rating> datasetLoader, MeanRatingRSModel recommenderSystemModel, GroupOfUsers groupModel, GroupOfUsers groupOfUsers, java.util.Set<Integer> idItemList) throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadRatingsDataset {
-        List<MeanRating> media = recommenderSystemModel.getRangedMeanRatings();
-        Collection<Recommendation> recommendationList = new ArrayList<>(idItemList.size());
+    public Collection<Recommendation> recommendOnly(DatasetLoader<? extends Rating> datasetLoader, MeanRatingRSModel RecommendationModel, GroupOfUsers groupModel, GroupOfUsers groupOfUsers, java.util.Set<Integer> candidateItems) throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadRatingsDataset {
+        List<MeanRating> media = RecommendationModel.getRangedMeanRatings();
+        Collection<Recommendation> recommendationList = new ArrayList<>(candidateItems.size());
         for (MeanRating meanRating : media) {
-            if (idItemList.contains(meanRating.getIdItem())) {
+            if (candidateItems.contains(meanRating.getIdItem())) {
                 float ratingMedio = meanRating.getPreference().floatValue();
                 recommendationList.add(new Recommendation(meanRating.getIdItem(), ratingMedio));
             }

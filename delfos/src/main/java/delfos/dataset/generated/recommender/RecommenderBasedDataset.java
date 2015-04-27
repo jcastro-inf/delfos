@@ -43,7 +43,7 @@ public class RecommenderBasedDataset extends RatingsDatasetAdapter<Rating> {
         super();
         this.datasetLoader = datasetLoader;
         this.recommenderSystem = recommenderSystem;
-        this.model = recommenderSystem.build(datasetLoader);
+        this.model = recommenderSystem.buildRecommendationModel(datasetLoader);
     }
 
     @Override
@@ -87,7 +87,7 @@ public class RecommenderBasedDataset extends RatingsDatasetAdapter<Rating> {
     public Map<Integer, Rating> getUserRatingsRated(Integer idUser) throws UserNotFound {
         try {
             Map<Integer, Rating> ret = new TreeMap<>();
-            Collection<Recommendation> recommendations = recommenderSystem.recommendOnly(datasetLoader, model, idUser, allRatedItems());
+            Collection<Recommendation> recommendations = recommenderSystem.recommendToUser(datasetLoader, model, idUser, allRatedItems());
 
             for (Recommendation r : recommendations) {
                 ret.put(r.getIdItem(), new Rating(idUser, r.getIdItem(), r.getPreference()));

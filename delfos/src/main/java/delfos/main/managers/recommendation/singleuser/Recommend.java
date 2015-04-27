@@ -130,23 +130,23 @@ public class Recommend implements CaseUseManager {
                 throw new IllegalArgumentException(ex);
             }
 
-            Set<Integer> idItemList;
+            Set<Integer> candidateItems;
             try {
-                idItemList = rsc.recommendationCandidatesSelector.candidateItems(datasetLoader, new User(idUser));
+                candidateItems = rsc.recommendationCandidatesSelector.candidateItems(datasetLoader, new User(idUser));
             } catch (UserNotFound ex) {
                 ERROR_CODES.USER_NOT_FOUND.exit(ex);
                 throw new IllegalArgumentException(ex);
             }
 
             if (Global.isVerboseAnnoying()) {
-                Global.showMessage("List of candidate items for user " + idUser + " size: " + idItemList.size() + "\n");
-                Global.showMessage("\t" + idItemList + "\n");
+                Global.showMessage("List of candidate items for user " + idUser + " size: " + candidateItems.size() + "\n");
+                Global.showMessage("\t" + candidateItems + "\n");
             }
 
-            Object recommenderSystemModel;
+            Object RecommendationModel;
             try {
                 Global.showMessageTimestamped("Computing recommendations");
-                recommenderSystemModel = PersistenceMethodStrategy.loadModel(recommender, rsc.persistenceMethod, Arrays.asList(idUser), idItemList);
+                RecommendationModel = PersistenceMethodStrategy.loadModel(recommender, rsc.persistenceMethod, Arrays.asList(idUser), candidateItems);
                 Global.showMessageTimestamped("Computed recommendations");
             } catch (FailureInPersistence ex) {
                 ERROR_CODES.FAILURE_IN_PERSISTENCE.exit(ex);
@@ -154,7 +154,7 @@ public class Recommend implements CaseUseManager {
             }
 
             try {
-                recommendations = recommender.recommendOnly(datasetLoader, recommenderSystemModel, idUser, idItemList);
+                recommendations = recommender.recommendToUser(datasetLoader, RecommendationModel, idUser, candidateItems);
             } catch (UserNotFound ex) {
                 ERROR_CODES.USER_NOT_FOUND.exit(ex);
                 throw new IllegalArgumentException(ex);

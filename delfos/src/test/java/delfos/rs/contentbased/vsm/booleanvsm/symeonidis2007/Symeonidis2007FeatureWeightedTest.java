@@ -78,7 +78,7 @@ public class Symeonidis2007FeatureWeightedTest extends DelfosTest {
         Symeonidis2007FeatureWeighted instance = new Symeonidis2007FeatureWeighted();
 
         //Step2: Execution
-        Symeonidis2007Model model = instance.build(datasetLoader);
+        Symeonidis2007Model model = instance.buildRecommendationModel(datasetLoader);
 
         //Step3: Results check
         {
@@ -165,7 +165,7 @@ public class Symeonidis2007FeatureWeightedTest extends DelfosTest {
         final int idUser = 2;
         DatasetLoader<? extends Rating> datasetLoader = new DatasetLoaderSymeonidisMock();
         Symeonidis2007FeatureWeighted instance = new Symeonidis2007FeatureWeighted();
-        Symeonidis2007Model model = instance.build(datasetLoader);
+        Symeonidis2007Model model = instance.buildRecommendationModel(datasetLoader);
         Symeonidis2007UserProfile userProfile = instance.makeUserProfile(idUser, datasetLoader, model);
 
         //Step2: Execution
@@ -190,14 +190,14 @@ public class Symeonidis2007FeatureWeightedTest extends DelfosTest {
         final int idUser = 2;
         DatasetLoader<? extends Rating> datasetLoader = new DatasetLoaderSymeonidisMock();
         Symeonidis2007FeatureWeighted instance = new Symeonidis2007FeatureWeighted();
-        Symeonidis2007Model model = instance.build(datasetLoader);
-        Set<Integer> idItemList = new TreeSet<>();
-        idItemList.add(1);
-        idItemList.add(3);
-        idItemList.add(5);
+        Symeonidis2007Model model = instance.buildRecommendationModel(datasetLoader);
+        Set<Integer> candidateItems = new TreeSet<>();
+        candidateItems.add(1);
+        candidateItems.add(3);
+        candidateItems.add(5);
 
         //Step2: Execution
-        List<Recommendation> sortedRecommendations = new ArrayList<>(instance.recommendOnly(datasetLoader, model, idUser, idItemList));
+        List<Recommendation> sortedRecommendations = new ArrayList<>(instance.recommendToUser(datasetLoader, model, idUser, candidateItems));
         Collections.sort(sortedRecommendations);
 
         //Step3: Results check

@@ -21,7 +21,7 @@ import delfos.common.parameters.restriction.RecommenderSystemParameterRestrictio
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.rs.RecommenderSystem;
-import delfos.rs.RecommenderSystemBuildingProgressListener;
+import delfos.rs.RecommendationModelBuildingProgressListener;
 import delfos.rs.collaborativefiltering.CollaborativeRecommender;
 import delfos.rs.collaborativefiltering.knn.memorybased.KnnMemoryBasedCFRS;
 import delfos.rs.contentbased.ContentBasedRecommender;
@@ -37,7 +37,7 @@ import delfos.rs.recommendation.Recommendation;
  * @version 1.1 21-Jan-2013
  * @version 1.0 Unknow date
  */
-public class ContentWeightCollaborative extends HybridRecommender<HybridRecommenderSystemModel> {
+public class ContentWeightCollaborative extends HybridRecommender<HybridRecommendationModel> {
 
     private static final long serialVersionUID = -3387516993124229948L;
 
@@ -66,33 +66,33 @@ public class ContentWeightCollaborative extends HybridRecommender<HybridRecommen
     }
 
     @Override
-    public HybridRecommenderSystemModel build(DatasetLoader<? extends Rating> datasetLoader) throws CannotLoadRatingsDataset, CannotLoadContentDataset, CannotLoadUsersDataset {
+    public HybridRecommendationModel buildRecommendationModel(DatasetLoader<? extends Rating> datasetLoader) throws CannotLoadRatingsDataset, CannotLoadContentDataset, CannotLoadUsersDataset {
         ContentBasedRecommender<Object, Object> contentBasedAlgorithm = (ContentBasedRecommender<Object, Object>) getParameterValue(CONTENT_BASED_TECHNIQUE);
 
-        RecommenderSystemBuildingProgressListener contentBasedListener = (String actualJob, int percent, long remainingSeconds) -> {
+        RecommendationModelBuildingProgressListener contentBasedListener = (String actualJob, int percent, long remainingSeconds) -> {
             ContentWeightCollaborative.this.fireBuildingProgressChangedEvent(actualJob, percent / 2, -1);
         };
-        contentBasedAlgorithm.addBuildingProgressListener(contentBasedListener);
-        Object contentBasedModel = contentBasedAlgorithm.build(datasetLoader);
+        contentBasedAlgorithm.addRecommendationModelBuildingProgressListener(contentBasedListener);
+        Object contentBasedModel = contentBasedAlgorithm.buildRecommendationModel(datasetLoader);
 
         CollaborativeRecommender collaborativeFilteringTechnique = (CollaborativeRecommender) getParameterValue(COLLABORATIVE_TECHNIQUE);
-        RecommenderSystemBuildingProgressListener collaborativeListener = (String actualJob, int percent, long remainingSeconds) -> {
+        RecommendationModelBuildingProgressListener collaborativeListener = (String actualJob, int percent, long remainingSeconds) -> {
             ContentWeightCollaborative.this.fireBuildingProgressChangedEvent(actualJob, percent / 2 + 50, -1);
         };
-        collaborativeFilteringTechnique.addBuildingProgressListener(collaborativeListener);
-        Object collaborativeModel = collaborativeFilteringTechnique.build(datasetLoader);
+        collaborativeFilteringTechnique.addRecommendationModelBuildingProgressListener(collaborativeListener);
+        Object collaborativeModel = collaborativeFilteringTechnique.buildRecommendationModel(datasetLoader);
 
-        return new HybridRecommenderSystemModel(contentBasedModel, collaborativeModel);
+        return new HybridRecommendationModel(contentBasedModel, collaborativeModel);
     }
 
     @Override
-    public Collection<Recommendation> recommendOnly(DatasetLoader<? extends Rating> datasetLoader, HybridRecommenderSystemModel model, Integer idUser, java.util.Set<Integer> idItemList) throws UserNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset, ItemNotFound, NotEnoughtUserInformation {
+    public Collection<Recommendation> recommendToUser(DatasetLoader<? extends Rating> datasetLoader, HybridRecommendationModel model, Integer idUser, java.util.Set<Integer> candidateItems) throws UserNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset, ItemNotFound, NotEnoughtUserInformation {
 
         ContentBasedRecommender<Object, Object> contentBasedAlgorithm = (ContentBasedRecommender<Object, Object>) getParameterValue(CONTENT_BASED_TECHNIQUE);
         CollaborativeRecommender<Object> collaborativeFilteringTechnique = (CollaborativeRecommender<Object>) getParameterValue(COLLABORATIVE_TECHNIQUE);
 
-        Collection<Recommendation> content = contentBasedAlgorithm.recommendOnly(datasetLoader, model.getModel(0), idUser, idItemList);
-        Collection<Recommendation> collaborative = collaborativeFilteringTechnique.recommendOnly(datasetLoader, model.getModel(1), idUser, idItemList);
+        Collection<Recommendation> content = contentBasedAlgorithm.recommendToUser(datasetLoader, model.getModel(0), idUser, candidateItems);
+        Collection<Recommendation> collaborative = collaborativeFilteringTechnique.recommendToUser(datasetLoader, model.getModel(1), idUser, candidateItems);
 
         return joinRecommendationLists(content, collaborative);
     }

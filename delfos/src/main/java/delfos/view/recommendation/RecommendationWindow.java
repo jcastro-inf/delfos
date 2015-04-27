@@ -238,13 +238,13 @@ public class RecommendationWindow extends JFrame {
 
                     @Override
                     protected Void doInBackground() {
-                        rs.addBuildingProgressListener((String actualJob, int percent, long remainingTime1) -> {
+                        rs.addRecommendationModelBuildingProgressListener((String actualJob, int percent, long remainingTime1) -> {
                             progressBar.setValue(percent * 2);
                             progressMessage.setText(actualJob);
                         });
 
                         try {
-                            rs.build(datasetLoader);
+                            rs.buildRecommendationModel(datasetLoader);
                             correcto = true;
                         } catch (CannotLoadRatingsDataset | CannotLoadContentDataset | CannotLoadUsersDataset ex) {
                             Logger.getLogger(RecommendationWindow.class.getName()).log(Level.SEVERE, null, ex);
@@ -311,8 +311,8 @@ public class RecommendationWindow extends JFrame {
                 noValoradas.removeAll(datasetLoader.getRatingsDataset().getUserRated(idUser));
                 recommendationsJTableModel.setContentDataset(contentDataset);
 
-                Object model = recommenderSystem.build(datasetLoader);
-                Collection<Recommendation> recommendations = recommenderSystem.recommendOnly(datasetLoader, model, idUser, noValoradas);
+                Object model = recommenderSystem.buildRecommendationModel(datasetLoader);
+                Collection<Recommendation> recommendations = recommenderSystem.recommendToUser(datasetLoader, model, idUser, noValoradas);
                 RecommendationWindow.this.recommendationsJTableModel.setRecomendaciones(recommendations);
             } catch (CannotLoadRatingsDataset ex) {
                 ERROR_CODES.CANNOT_LOAD_RATINGS_DATASET.exit(ex);

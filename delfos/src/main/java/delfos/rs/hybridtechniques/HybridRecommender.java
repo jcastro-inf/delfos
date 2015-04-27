@@ -13,9 +13,9 @@ import delfos.rs.RecommenderSystemAdapter;
  *
  * @version 1.1 21-Jan-2013
  * @version 1.0 Unknow date
- * @param <RecommenderSystemModel>
+ * @param <RecommendationModel>
  */
-public abstract class HybridRecommender<RecommenderSystemModel> extends RecommenderSystemAdapter<RecommenderSystemModel> {
+public abstract class HybridRecommender<RecommendationModel> extends RecommenderSystemAdapter<RecommendationModel> {
 
     /**
      * Devuelve los sistemas de recomendación que hibrida este sistema.

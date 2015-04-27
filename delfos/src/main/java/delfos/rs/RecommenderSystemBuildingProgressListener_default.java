@@ -13,7 +13,7 @@ import delfos.common.DateCollapse;
  * @author Jorge Castro Gallardo (Universidad de Jaén, Sinbad2)
  * @version 1.0 23-Jan-2013
  */
-public class RecommenderSystemBuildingProgressListener_default implements RecommenderSystemBuildingProgressListener {
+public class RecommenderSystemBuildingProgressListener_default implements RecommendationModelBuildingProgressListener {
 
     /**
      * Cronómetro para controlar el tiempo entre escrituras.

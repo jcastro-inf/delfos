@@ -27,16 +27,16 @@ public class SingleGroupRecommendation implements SingleTaskExecute<SingleGroupR
         try {
 
             Chronometer chronometer = new Chronometer();
-            Object groupModel = task.getGroupRecommenderSystem().buildGroupModel(task.getDatasetLoader(), task.getRecommenderSystemModel(), task.getGroup());
+            Object groupModel = task.getGroupRecommenderSystem().buildGroupModel(task.getDatasetLoader(), task.getRecommendationModel(), task.getGroup());
             buildTime = chronometer.getTotalElapsed();
 
             chronometer.reset();
             recommendations = task.getGroupRecommenderSystem().recommendOnly(
                     task.getDatasetLoader(),
-                    task.getRecommenderSystemModel(),
+                    task.getRecommendationModel(),
                     groupModel,
                     task.getGroup(),
-                    task.getIdItemList());
+                    task.getCandidateItems());
             recommendationTime = chronometer.getTotalElapsed();
 
         } catch (UserNotFound | CannotLoadRatingsDataset | CannotLoadContentDataset | ItemNotFound | NotEnoughtUserInformation ex) {

@@ -16,7 +16,7 @@ import java.util.TreeMap;
  * @version 1.0 30-Julio-2013
  * @param <Key> Tipo de clave para cada usuario.
  */
-public class RandomRecommenderModel<Key> implements Serializable {
+public class RandomRecommendationModel<Key> implements Serializable {
 
     private static final long serialVersionUID = 107L;
     private final long seed;
@@ -24,14 +24,14 @@ public class RandomRecommenderModel<Key> implements Serializable {
     private final float maxRating;
     private final Map<Key, Random> generadores;
 
-    private RandomRecommenderModel() {
+    private RandomRecommendationModel() {
         seed = 0;
         this.minRating = 1;
         this.maxRating = 5;
         generadores = Collections.synchronizedMap(new TreeMap<Key, Random>());
     }
 
-    public RandomRecommenderModel(long seed, Number minRating, Number maxRating) {
+    public RandomRecommendationModel(long seed, Number minRating, Number maxRating) {
         this.seed = seed;
         this.minRating = minRating.floatValue();
         this.maxRating = maxRating.floatValue();

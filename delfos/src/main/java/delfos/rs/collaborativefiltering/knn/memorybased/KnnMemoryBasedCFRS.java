@@ -98,18 +98,18 @@ public class KnnMemoryBasedCFRS extends KnnCollaborativeRecommender<KnnMemoryMod
     }
 
     @Override
-    public KnnMemoryModel build(DatasetLoader<? extends Rating> datasetLoader) {
+    public KnnMemoryModel buildRecommendationModel(DatasetLoader<? extends Rating> datasetLoader) {
         //No se necesitan perfiles porque se examina la base de datos directamente
         return new KnnMemoryModel();
     }
 
     @Override
-    public Collection<Recommendation> recommendOnly(DatasetLoader<? extends Rating> datasetLoader, KnnMemoryModel model, Integer idUser, java.util.Set<Integer> idItemList) throws UserNotFound {
+    public Collection<Recommendation> recommendToUser(DatasetLoader<? extends Rating> datasetLoader, KnnMemoryModel model, Integer idUser, java.util.Set<Integer> candidateItems) throws UserNotFound {
         try {
             List<Neighbor> neighbors;
             RatingsDataset<? extends Rating> ratingsDataset = datasetLoader.getRatingsDataset();
             neighbors = getNeighbors(ratingsDataset, idUser);
-            Collection<Recommendation> ret = recommendWithNeighbors(datasetLoader.getRatingsDataset(), idUser, neighbors, idItemList);
+            Collection<Recommendation> ret = recommendWithNeighbors(datasetLoader.getRatingsDataset(), idUser, neighbors, candidateItems);
             return ret;
         } catch (CannotLoadRatingsDataset ex) {
             throw new IllegalArgumentException(ex);
@@ -177,14 +177,14 @@ public class KnnMemoryBasedCFRS extends KnnCollaborativeRecommender<KnnMemoryMod
      * @param ratingsDataset Conjunto de valoraciones.
      * @param idUser Id del usuario activo
      * @param vecinos Vecinos del usuario activo
-     * @param idItemList Lista de productos que se consideran recomendables, es
+     * @param candidateItems Lista de productos que se consideran recomendables, es
      * decir, que podrían ser recomendados si la predicción es alta
      * @return Lista de recomendaciones para el usuario, ordenadas por
      * valoracion predicha.
      * @throws UserNotFound Si el usuario activo o alguno de los vecinos
      * indicados no se encuentra en el dataset.
      */
-    public Collection<Recommendation> recommendWithNeighbors(RatingsDataset<? extends Rating> ratingsDataset, Integer idUser, List<Neighbor> vecinos, Collection<Integer> idItemList) throws UserNotFound {
+    public Collection<Recommendation> recommendWithNeighbors(RatingsDataset<? extends Rating> ratingsDataset, Integer idUser, List<Neighbor> vecinos, Collection<Integer> candidateItems) throws UserNotFound {
         PredictionTechnique predictionTechnique_ = (PredictionTechnique) getParameterValue(KnnMemoryBasedCFRS.PREDICTION_TECHNIQUE);
 
         //Predicción de la valoración
@@ -194,7 +194,7 @@ public class KnnMemoryBasedCFRS extends KnnCollaborativeRecommender<KnnMemoryMod
             ratingsVecinos.put(ss.getIdNeighbor(), ratingsDataset.getUserRatingsRated(ss.getIdNeighbor()));
         }
 
-        for (int idItem : idItemList) {
+        for (int idItem : candidateItems) {
             Collection<MatchRating> match = new LinkedList<>();
             for (Neighbor ss : vecinos) {
                 Rating rating = ratingsVecinos.get(ss.getIdNeighbor()).get(idItem);
@@ -217,12 +217,12 @@ public class KnnMemoryBasedCFRS extends KnnCollaborativeRecommender<KnnMemoryMod
     }
 
     @Override
-    public KnnMemoryModel loadModel(DatabasePersistence databasePersistence, Collection<Integer> users, Collection<Integer> items) throws FailureInPersistence {
+    public KnnMemoryModel loadRecommendationModel(DatabasePersistence databasePersistence, Collection<Integer> users, Collection<Integer> items) throws FailureInPersistence {
         return new KnnMemoryModel();
     }
 
     @Override
-    public void saveModel(DatabasePersistence databasePersistence, KnnMemoryModel model) throws FailureInPersistence {
+    public void saveRecommendationModel(DatabasePersistence databasePersistence, KnnMemoryModel model) throws FailureInPersistence {
         //No hay modelo que guardar.
     }
 }

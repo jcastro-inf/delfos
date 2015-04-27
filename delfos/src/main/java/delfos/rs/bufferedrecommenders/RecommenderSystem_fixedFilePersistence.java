@@ -21,7 +21,7 @@ import delfos.dataset.basic.loader.types.ContentDatasetLoader;
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.rs.RecommenderSystem;
 import delfos.rs.RecommenderSystemAdapter;
-import delfos.rs.RecommenderSystemBuildingProgressListener;
+import delfos.rs.RecommendationModelBuildingProgressListener;
 import delfos.rs.collaborativefiltering.knn.modelbased.KnnModelBasedCFRS;
 import delfos.rs.persistence.FailureInPersistence;
 import delfos.rs.persistence.FilePersistence;
@@ -34,9 +34,9 @@ import delfos.rs.recommendation.Recommendation;
  *
  * @author Jorge Castro Gallardo (Sinbad2,Universidad de Jaén)
  * @version 1.0 17-Jun-2013
- * @param <RecommenderSystemModel> Modelo de recomendación
+ * @param <RecommendationModel> Modelo de recomendación
  */
-public class RecommenderSystem_fixedFilePersistence<RecommenderSystemModel> extends RecommenderSystemAdapter<RecommenderSystemModel> {
+public class RecommenderSystem_fixedFilePersistence<RecommendationModel> extends RecommenderSystemAdapter<RecommendationModel> {
 
     private static final long serialVersionUID = 1L;
     /**
@@ -91,14 +91,14 @@ public class RecommenderSystem_fixedFilePersistence<RecommenderSystemModel> exte
         addParameter(persistenceFileType);
     }
 
-    public <RecommenderSystemModel extends Object> RecommenderSystem_fixedFilePersistence(RecommenderSystem<RecommenderSystemModel> rs) {
+    public <RecommendationModel extends Object> RecommenderSystem_fixedFilePersistence(RecommenderSystem<RecommendationModel> rs) {
         this(rs, new FilePersistence(
                 "recommendation-model-" + rs.getAlias().toLowerCase(),
                 "data",
                 new File("buffered-recommendation-models" + File.separator + "recommendation-model.data").getAbsoluteFile().getParentFile()));
     }
 
-    public <RecommenderSystemModel extends Object> RecommenderSystem_fixedFilePersistence(RecommenderSystem<RecommenderSystemModel> rs, FilePersistence filePersistence) {
+    public <RecommendationModel extends Object> RecommenderSystem_fixedFilePersistence(RecommenderSystem<RecommendationModel> rs, FilePersistence filePersistence) {
         this();
 
         if (rs == null) {
@@ -116,15 +116,15 @@ public class RecommenderSystem_fixedFilePersistence<RecommenderSystemModel> exte
         setParameterValue(persistenceFileSuffix, filePersistence.getSuffix() + rs.getAlias().toLowerCase());
         setParameterValue(persistenceFileType, filePersistence.getExtension());
 
-        getRecommenderSystem().addBuildingProgressListener(this::fireBuildingProgressChangedEvent);
+        getRecommenderSystem().addRecommendationModelBuildingProgressListener(this::fireBuildingProgressChangedEvent);
     }
 
     @Override
-    public RecommenderSystemModel build(DatasetLoader<? extends Rating> datasetLoader) throws CannotLoadRatingsDataset, CannotLoadContentDataset, CannotLoadUsersDataset {
+    public RecommendationModel buildRecommendationModel(DatasetLoader<? extends Rating> datasetLoader) throws CannotLoadRatingsDataset, CannotLoadContentDataset, CannotLoadUsersDataset {
 
         synchronized (exMut) {
 
-            RecommenderSystemModel model;
+            RecommendationModel model;
 
             int ratingsDatasetHashCode = datasetLoader.getRatingsDataset().hashCode();
             String datasetLoaderAlias = datasetLoader.getAlias();
@@ -141,32 +141,32 @@ public class RecommenderSystem_fixedFilePersistence<RecommenderSystemModel> exte
             }
 
             try {
-                RecommenderSystemModel loadedModel = (RecommenderSystemModel) getRecommenderSystem().loadModel(
+                RecommendationModel loadedModel = (RecommendationModel) getRecommenderSystem().loadRecommendationModel(
                         filePersistenceWithHashSuffix,
                         datasetLoader.getRatingsDataset().allUsers(),
                         allItems);
                 Global.showMessageTimestamped("Loaded model from file '" + filePersistenceWithHashSuffix.getCompleteFileName() + "'");
                 model = loadedModel;
             } catch (FailureInPersistence ex) {
-                RecommenderSystemBuildingProgressListener listener = this::fireBuildingProgressChangedEvent;
+                RecommendationModelBuildingProgressListener listener = this::fireBuildingProgressChangedEvent;
 
                 Global.showWarning("Recommendation model not found: " + filePersistenceWithHashSuffix.getCompleteFileName() + "\n");
                 Global.showWarning("REASON");
                 Global.showWarning(ex);
                 Global.showWarning("\tThe recommender system model needs to be constructed.\n");
-                getRecommenderSystem().addBuildingProgressListener(listener);
+                getRecommenderSystem().addRecommendationModelBuildingProgressListener(listener);
                 try {
-                    RecommenderSystemModel computedModel = (RecommenderSystemModel) getRecommenderSystem().build(datasetLoader);
+                    RecommendationModel computedModel = (RecommendationModel) getRecommenderSystem().buildRecommendationModel(datasetLoader);
                     model = computedModel;
-                    getRecommenderSystem().saveModel(filePersistenceWithHashSuffix, computedModel);
+                    getRecommenderSystem().saveRecommendationModel(filePersistenceWithHashSuffix, computedModel);
                 } catch (FailureInPersistence ex1) {
                     ERROR_CODES.FAILURE_IN_PERSISTENCE.exit(ex1);
                     model = null;
                 }
-                getRecommenderSystem().removeBuildingProgressListener(listener);
+                getRecommenderSystem().removeRecommendationModelBuildingProgressListener(listener);
             }
 
-            return (RecommenderSystemModel) model;
+            return (RecommendationModel) model;
         }
     }
 
@@ -176,10 +176,10 @@ public class RecommenderSystem_fixedFilePersistence<RecommenderSystemModel> exte
     }
 
     @Override
-    public Collection<Recommendation> recommendOnly(DatasetLoader<? extends Rating> datasetLoader, RecommenderSystemModel model, Integer idUser, java.util.Set<Integer> idItemList) throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset, NotEnoughtUserInformation {
+    public Collection<Recommendation> recommendToUser(DatasetLoader<? extends Rating> datasetLoader, RecommendationModel model, Integer idUser, java.util.Set<Integer> candidateItems) throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset, NotEnoughtUserInformation {
         Collection<Recommendation> recommendations;
 
-        recommendations = getRecommenderSystem().recommendOnly(datasetLoader, model, idUser, idItemList);
+        recommendations = getRecommenderSystem().recommendToUser(datasetLoader, model, idUser, candidateItems);
         return recommendations;
     }
 

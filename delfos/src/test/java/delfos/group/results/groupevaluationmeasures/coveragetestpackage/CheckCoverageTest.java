@@ -75,13 +75,13 @@ public class CheckCoverageTest {
         groupFormationTechnique.shuffle(datasetLoader);
 
         try {
-            Object grsModel = grs.loadModel(filePersistence, datasetLoader.getRatingsDataset().allUsers(), datasetLoader.getContentDataset().allID());
+            Object grsModel = grs.loadRecommendationModel(filePersistence, datasetLoader.getRatingsDataset().allUsers(), datasetLoader.getContentDataset().allID());
         } catch (Exception ex) {
             Global.showError(ex);
             Global.showWarning("\n\nHay que generar el modelo \n");
-            grs.addBuildingProgressListener(new RecommenderSystemBuildingProgressListener_default(System.out, 5000));
-            Object build = grs.build(datasetLoader);
-            grs.saveModel(filePersistence, build);
+            grs.addRecommendationModelBuildingProgressListener(new RecommenderSystemBuildingProgressListener_default(System.out, 5000));
+            Object build = grs.buildRecommendationModel(datasetLoader);
+            grs.saveRecommendationModel(filePersistence, build);
         }
     }
 

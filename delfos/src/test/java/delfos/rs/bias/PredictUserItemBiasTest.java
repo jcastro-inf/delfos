@@ -40,12 +40,12 @@ public class PredictUserItemBiasTest {
         DatasetLoader<? extends Rating> datasetLoader = ConfiguredDatasetsFactory.getInstance().getDatasetLoader("ml-100k");
 
         User user = new User(45);
-        Set<Integer> idItemList = datasetLoader.getRatingsDataset().allRatedItems();
+        Set<Integer> candidateItems = datasetLoader.getRatingsDataset().allRatedItems();
         PredictUserItemBias bias = new PredictUserItemBias();
 
-        Object model = bias.build(datasetLoader);
+        Object model = bias.buildRecommendationModel(datasetLoader);
 
-        SingleUserRecommendations singleUserRecommendations = new SingleUserRecommendations(user, bias.recommendOnly(datasetLoader, model, user.getId(), idItemList));
+        SingleUserRecommendations singleUserRecommendations = new SingleUserRecommendations(user, bias.recommendToUser(datasetLoader, model, user.getId(), candidateItems));
 
         RatingsDataset rd = new RecommenderBasedDataset(datasetLoader);
 
@@ -63,7 +63,7 @@ public class PredictUserItemBiasTest {
         DatasetLoader<? extends Rating> datasetLoader = ConfiguredDatasetsFactory.getInstance().getDatasetLoader("ml-100k");
 
         PredictUserItemBias bias = new PredictUserItemBias();
-        Object model = bias.build(datasetLoader);
+        Object model = bias.buildRecommendationModel(datasetLoader);
 
         HistogramNumbersSmart histogramMAE = new HistogramNumbersSmart(0, datasetLoader.getRatingsDataset().getRatingsDomain().width().doubleValue(), 0.05);
         HistogramNumbersSmart histogramCoverage = new HistogramNumbersSmart(0, 1, 0.05);
@@ -71,7 +71,7 @@ public class PredictUserItemBiasTest {
         List<SingleUserRecommendations> allRecommendations = new ArrayList<>(datasetLoader.getRatingsDataset().allUsers().size());
         for (int idUser : datasetLoader.getRatingsDataset().allUsers()) {
             User user = new User(idUser);
-            Collection<Recommendation> recommendations = bias.recommendOnly(datasetLoader, model, idUser, datasetLoader.getRatingsDataset().getUserRated(idUser));
+            Collection<Recommendation> recommendations = bias.recommendToUser(datasetLoader, model, idUser, datasetLoader.getRatingsDataset().getUserRated(idUser));
             final SingleUserRecommendations singleUserRecommendations = new SingleUserRecommendations(new User(idUser), recommendations);
             allRecommendations.add(singleUserRecommendations);
             final Map<Integer, ? extends Rating> userRatingsRated = datasetLoader.getRatingsDataset().getUserRatingsRated(user.getId());

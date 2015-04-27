@@ -27,13 +27,13 @@ import delfos.dataset.util.DatasetPrinterDeprecated;
 import delfos.dataset.util.DatasetUtilities;
 import delfos.group.groupsofusers.GroupOfUsers;
 import delfos.group.grs.GroupRecommenderSystemAdapter;
-import delfos.group.grs.SingleRecommenderSystemModel;
+import delfos.group.grs.SingleRecommendationModel;
 import delfos.group.grs.aggregation.GroupModelPseudoUser;
 import delfos.group.grs.itemweighted.AggregationOfIndividualRatings_itemWeighted;
 import delfos.group.grs.penalty.grouper.Grouper;
 import delfos.group.grs.penalty.grouper.GrouperByIdItem;
 import delfos.rs.RecommenderSystem;
-import delfos.rs.RecommenderSystemBuildingProgressListener;
+import delfos.rs.RecommendationModelBuildingProgressListener;
 import delfos.rs.bufferedrecommenders.RecommenderSystem_fixedFilePersistence;
 import delfos.rs.collaborativefiltering.svd.SVDFoldingIn;
 import delfos.rs.collaborativefiltering.svd.TryThisAtHomeSVD;
@@ -47,7 +47,7 @@ import delfos.rs.recommendation.Recommendation;
  *
  * @version 2-julio-2014
  */
-public class PenaltyGRS_Ratings extends GroupRecommenderSystemAdapter<SingleRecommenderSystemModel, GroupModelPseudoUser> {
+public class PenaltyGRS_Ratings extends GroupRecommenderSystemAdapter<SingleRecommendationModel, GroupModelPseudoUser> {
 
     private static final long serialVersionUID = 1L;
     /**
@@ -138,24 +138,24 @@ public class PenaltyGRS_Ratings extends GroupRecommenderSystemAdapter<SingleReco
     }
 
     @Override
-    public SingleRecommenderSystemModel build(DatasetLoader<? extends Rating> datasetLoader) throws CannotLoadRatingsDataset, CannotLoadContentDataset {
+    public SingleRecommendationModel buildRecommendationModel(DatasetLoader<? extends Rating> datasetLoader) throws CannotLoadRatingsDataset, CannotLoadContentDataset {
 
-        RecommenderSystemBuildingProgressListener buildListener = (String actualJob, int percent, long remainingTime) -> {
+        RecommendationModelBuildingProgressListener buildListener = (String actualJob, int percent, long remainingTime) -> {
             fireBuildingProgressChangedEvent(actualJob, percent, remainingTime);
         };
 
         if (isCompleteUngivenPreferences()) {
-            knnUser.build(datasetLoader);
+            knnUser.buildRecommendationModel(datasetLoader);
         }
 
-        getSingleUserRecommender().addBuildingProgressListener(buildListener);
-        Object build = getSingleUserRecommender().build(datasetLoader);
-        getSingleUserRecommender().removeBuildingProgressListener(buildListener);
-        return new SingleRecommenderSystemModel(build);
+        getSingleUserRecommender().addRecommendationModelBuildingProgressListener(buildListener);
+        Object build = getSingleUserRecommender().buildRecommendationModel(datasetLoader);
+        getSingleUserRecommender().removeRecommendationModelBuildingProgressListener(buildListener);
+        return new SingleRecommendationModel(build);
     }
 
     @Override
-    public GroupModelPseudoUser buildGroupModel(DatasetLoader<? extends Rating> datasetLoader, SingleRecommenderSystemModel recommenderSystemModel, GroupOfUsers groupOfUsers) throws UserNotFound, CannotLoadRatingsDataset {
+    public GroupModelPseudoUser buildGroupModel(DatasetLoader<? extends Rating> datasetLoader, SingleRecommendationModel RecommendationModel, GroupOfUsers groupOfUsers) throws UserNotFound, CannotLoadRatingsDataset {
 
         PenaltyFunction penaltyFunction = (PenaltyFunction) getParameterValue(PENALTY);
         Grouper itemGrouper = (Grouper) getParameterValue(ITEM_GROUPER);
@@ -185,7 +185,7 @@ public class PenaltyGRS_Ratings extends GroupRecommenderSystemAdapter<SingleReco
 
     @Override
     public Collection<Recommendation> recommendOnly(
-            DatasetLoader<? extends Rating> datasetLoader, SingleRecommenderSystemModel recommenderSystemModel, GroupModelPseudoUser groupModel, GroupOfUsers groupOfUsers, java.util.Set<Integer> idItemList)
+            DatasetLoader<? extends Rating> datasetLoader, SingleRecommendationModel RecommendationModel, GroupModelPseudoUser groupModel, GroupOfUsers groupOfUsers, java.util.Set<Integer> candidateItems)
             throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset, NotEnoughtUserInformation {
 
         RecommenderSystem recommenderSystem = getSingleUserRecommender();
@@ -203,11 +203,11 @@ public class PenaltyGRS_Ratings extends GroupRecommenderSystemAdapter<SingleReco
 
         Collection<Recommendation> groupRecomendations;
 
-        groupRecomendations = recommenderSystem.recommendOnly(
+        groupRecomendations = recommenderSystem.recommendToUser(
                 new DatasetLoaderGiven(datasetLoader, ratingsDataset_withPseudoUser),
-                recommenderSystemModel.getRecommenderSystemModel(),
+                RecommendationModel.getRecommendationModel(),
                 idGroup,
-                idItemList);
+                candidateItems);
 
         return groupRecomendations;
     }

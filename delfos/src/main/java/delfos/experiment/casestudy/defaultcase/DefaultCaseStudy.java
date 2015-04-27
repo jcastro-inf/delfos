@@ -55,11 +55,11 @@ import java.util.logging.Logger;
  * Clase encargada de realizar las ejecuciones de los sistemas de recomendación
  * tradicionales, es decir, single user, recomendando conjuntos de productos a
  * un usuario utilizando datos de usuario, datos de productos y valoraciones. Se
- * encarga realizar el proceso completo de prueba de un sistema de
- * recomendación: invoca al método de validación, invocar al metodo build del
- * sistema de recomendación, realiza la petición de recomendaciones y recoge los
- * resultados, almacenando el tiempo de ejecución y llamando a las métricas de
- * evaluación.
+ encarga realizar el proceso completo de prueba de un sistema de
+ recomendación: invoca al método de validación, invocar al metodo buildRecommendationModel del
+ sistema de recomendación, realiza la petición de recomendaciones y recoge los
+ resultados, almacenando el tiempo de ejecución y llamando a las métricas de
+ evaluación.
  *
  * @author Jorge Castro Gallardo
  * @version 1.0 (19 Octubre 2011)
@@ -218,7 +218,7 @@ public class DefaultCaseStudy extends CaseStudy implements ParameterListener {
          */
         setRunning(true);
         executionProgressFireEvent("Starting", 0, -1);
-        recommenderSystem.addBuildingProgressListener(this);
+        recommenderSystem.addRecommendationModelBuildingProgressListener(this);
 
         ValidationTechniqueProgressListener validationListener = (String message, int percent) -> {
             DefaultCaseStudy.this.executionProgressFireEvent(message, percent, -1);
@@ -259,7 +259,7 @@ public class DefaultCaseStudy extends CaseStudy implements ParameterListener {
                 long initTime = System.currentTimeMillis();
 
                 executionProgressFireEvent(getAlias() + "Building recommendation model", 0, -1);
-                final Object model = recommenderSystem.build(pairsValidation[_conjuntoActual].getTrainingDatasetLoader());
+                final Object model = recommenderSystem.buildRecommendationModel(pairsValidation[_conjuntoActual].getTrainingDatasetLoader());
 
                 setBuildTime(_ejecucionActual, _conjuntoActual, System.currentTimeMillis() - initTime);
 
@@ -293,15 +293,15 @@ public class DefaultCaseStudy extends CaseStudy implements ParameterListener {
                         }
                         Collection<Recommendation> unionResultados = new ArrayList<>();
 
-                        consultas.parallelStream().forEach((idItemList) -> {
+                        consultas.parallelStream().forEach((candidateItems) -> {
                             try {
                                 Map<Integer, Set<Integer>> predictionRatings = new TreeMap<>();
-                                predictionRatings.put(idUser, new TreeSet<>(idItemList));
+                                predictionRatings.put(idUser, new TreeSet<>(candidateItems));
                                 RatingsDataset<Rating> predictionRatingsDataset = ValidationDatasets.getInstance().createTrainingDataset((RatingsDataset<Rating>) datasetLoader.getRatingsDataset(), predictionRatings);
                                 DatasetLoader<Rating> predictionDatasetLoader = new DatasetLoaderGiven<>(
                                         datasetLoader,
                                         predictionRatingsDataset);
-                                multiThreadExecutionManager_SingleRecommendation.addTask(new SingleUserRecommendationTask(recommenderSystem, predictionDatasetLoader, model, idUser, idItemList));
+                                multiThreadExecutionManager_SingleRecommendation.addTask(new SingleUserRecommendationTask(recommenderSystem, predictionDatasetLoader, model, idUser, candidateItems));
                             } catch (UserNotFound ex) {
                                 ERROR_CODES.USER_NOT_FOUND.exit(ex);
                             } catch (ItemNotFound ex) {
@@ -385,7 +385,7 @@ public class DefaultCaseStudy extends CaseStudy implements ParameterListener {
             executionsResult[task.ejecucion][task.particion] = task.executionsResult;
         });
 
-        recommenderSystem.removeBuildingProgressListener(this);
+        recommenderSystem.removeRecommendationModelBuildingProgressListener(this);
         validationTechnique.removeListener(validationListener);
 
         executionProgressFireEvent(getAlias() + " --> Recommendation process", 100, -1);

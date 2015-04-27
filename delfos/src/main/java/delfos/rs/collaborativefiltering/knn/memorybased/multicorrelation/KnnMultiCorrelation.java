@@ -96,13 +96,13 @@ public class KnnMultiCorrelation extends CollaborativeRecommender<KnnMultiCorrel
     }
 
     @Override
-    public KnnMultiCorrelation_Model build(DatasetLoader<? extends Rating> datasetLoader) {
+    public KnnMultiCorrelation_Model buildRecommendationModel(DatasetLoader<? extends Rating> datasetLoader) {
         //No se necesitan perfiles porque se examina la base de datos directamente
         return new KnnMultiCorrelation_Model();
     }
 
     @Override
-    public Collection<Recommendation> recommendOnly(DatasetLoader<? extends Rating> datasetLoader, KnnMultiCorrelation_Model model, Integer idUser, java.util.Set<Integer> idItemList) throws UserNotFound {
+    public Collection<Recommendation> recommendToUser(DatasetLoader<? extends Rating> datasetLoader, KnnMultiCorrelation_Model model, Integer idUser, java.util.Set<Integer> candidateItems) throws UserNotFound {
 
         if (Global.isVerboseAnnoying()) {
             Global.showMessage(new Date().toGMTString() + " --> Recommending for user '" + idUser + "'\n");
@@ -111,7 +111,7 @@ public class KnnMultiCorrelation extends CollaborativeRecommender<KnnMultiCorrel
         try {
             List<Neighbor> neighbors = getNeighbors(datasetLoader, idUser);
 
-            Collection<Recommendation> ret = recommendWithNeighbors(datasetLoader.getRatingsDataset(), idUser, neighbors, idItemList);
+            Collection<Recommendation> ret = recommendWithNeighbors(datasetLoader.getRatingsDataset(), idUser, neighbors, candidateItems);
             if (Global.isVerboseAnnoying()) {
                 Global.showMessage("Finished recommendations for user '" + idUser + "'\n");
             }
@@ -171,7 +171,7 @@ public class KnnMultiCorrelation extends CollaborativeRecommender<KnnMultiCorrel
      * @param ratingsDataset Conjunto de valoraciones.
      * @param idUser Id del usuario activo
      * @param vecinos Vecinos del usuario activo
-     * @param idItemList Lista de productos que se consideran recomendables, es
+     * @param candidateItems Lista de productos que se consideran recomendables, es
      * decir, que podrían ser recomendados si la predicción es alta
      * @return Lista de recomendaciones para el usuario, ordenadas por
      * valoracion predicha.
@@ -182,7 +182,7 @@ public class KnnMultiCorrelation extends CollaborativeRecommender<KnnMultiCorrel
             RatingsDataset<? extends Rating> ratingsDataset,
             Integer idUser,
             List<Neighbor> vecinos,
-            Collection<Integer> idItemList)
+            Collection<Integer> candidateItems)
             throws UserNotFound {
 
         PredictionTechnique predictionTechnique_ = (PredictionTechnique) getParameterValue(KnnCollaborativeRecommender.PREDICTION_TECHNIQUE);
@@ -192,7 +192,7 @@ public class KnnMultiCorrelation extends CollaborativeRecommender<KnnMultiCorrel
 
         int numVecinos = (Integer) getParameterValue(KnnCollaborativeRecommender.NEIGHBORHOOD_SIZE);
 
-        for (int idItem : idItemList) {
+        for (int idItem : candidateItems) {
             Collection<MatchRating> match = new LinkedList<>();
 
             int numNeighborsUsed = 0;
@@ -227,12 +227,12 @@ public class KnnMultiCorrelation extends CollaborativeRecommender<KnnMultiCorrel
     }
 
     @Override
-    public KnnMultiCorrelation_Model loadModel(DatabasePersistence databasePersistence, Collection<Integer> users, Collection<Integer> items) throws FailureInPersistence {
+    public KnnMultiCorrelation_Model loadRecommendationModel(DatabasePersistence databasePersistence, Collection<Integer> users, Collection<Integer> items) throws FailureInPersistence {
         return new KnnMultiCorrelation_Model();
     }
 
     @Override
-    public void saveModel(DatabasePersistence databasePersistence, KnnMultiCorrelation_Model model) throws FailureInPersistence {
+    public void saveRecommendationModel(DatabasePersistence databasePersistence, KnnMultiCorrelation_Model model) throws FailureInPersistence {
         //No hay modelo que guardar.
 
     }

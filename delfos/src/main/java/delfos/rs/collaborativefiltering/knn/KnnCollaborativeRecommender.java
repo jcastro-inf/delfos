@@ -11,8 +11,8 @@ import delfos.rs.collaborativefiltering.predictiontechniques.WeightedSum;
 import delfos.similaritymeasures.CollaborativeSimilarityMeasure;
 import delfos.similaritymeasures.PearsonCorrelationCoefficient;
 
-public abstract class KnnCollaborativeRecommender<RecommenderSystemModel>
-        extends CollaborativeRecommender<RecommenderSystemModel> {
+public abstract class KnnCollaborativeRecommender<RecommendationModel>
+        extends CollaborativeRecommender<RecommendationModel> {
 
     /**
      * Parámetro para almacenar el número de vecinos que se tienen en cuenta

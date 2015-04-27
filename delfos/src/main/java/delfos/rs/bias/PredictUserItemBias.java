@@ -29,20 +29,20 @@ public class PredictUserItemBias extends CollaborativeRecommender<Object> {
     }
 
     @Override
-    public Object build(DatasetLoader<? extends Rating> datasetLoader) throws CannotLoadRatingsDataset, CannotLoadContentDataset, CannotLoadUsersDataset {
+    public Object buildRecommendationModel(DatasetLoader<? extends Rating> datasetLoader) throws CannotLoadRatingsDataset, CannotLoadContentDataset, CannotLoadUsersDataset {
         return datasetLoader.getRatingsDataset().getMeanRating();
     }
 
     @Override
-    public Collection<Recommendation> recommendOnly(DatasetLoader<? extends Rating> datasetLoader, Object model, Integer idUser, java.util.Set<Integer> idItemList) throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset, NotEnoughtUserInformation {
+    public Collection<Recommendation> recommendToUser(DatasetLoader<? extends Rating> datasetLoader, Object model, Integer idUser, java.util.Set<Integer> candidateItems) throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset, NotEnoughtUserInformation {
 
-        Collection<Recommendation> recommendations = new ArrayList<>(idItemList.size());
+        Collection<Recommendation> recommendations = new ArrayList<>(candidateItems.size());
 
         RatingsDataset<? extends Rating> ratingsDataset = datasetLoader.getRatingsDataset();
         double generalBias = ((Number) model).doubleValue();
         double userBias = getUserBias(ratingsDataset, idUser);
 
-        for (int idItem : idItemList) {
+        for (int idItem : candidateItems) {
             double itemBias = getItemBias(ratingsDataset, idUser);
             recommendations.add(new Recommendation(idItem, generalBias + userBias + itemBias));
         }

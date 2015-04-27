@@ -20,20 +20,20 @@ public class SingleGroupRecommendationTask extends Task {
     private final GroupOfUsers group;
     private GroupRecommenderSystem groupRecommenderSystem;
     private DatasetLoader<? extends Rating> datasetLoader;
-    private Object recommenderSystemModel;
-    private final Set<Integer> idItemList;
+    private Object RecommendationModel;
+    private final Set<Integer> candidateItems;
 
     private Collection<Recommendation> recommendations;
     private long buildGroupModelTime;
     private long recommendationTime;
 
     public SingleGroupRecommendationTask(GroupRecommenderSystem groupRecommenderSystem, DatasetLoader<? extends Rating> datasetLoader,
-            Object recommenderSystemModel, GroupOfUsers group, Set<Integer> idItemList) {
+            Object RecommendationModel, GroupOfUsers group, Set<Integer> candidateItems) {
         this.group = group;
         this.groupRecommenderSystem = groupRecommenderSystem;
         this.datasetLoader = datasetLoader;
-        this.recommenderSystemModel = recommenderSystemModel;
-        this.idItemList = idItemList;
+        this.RecommendationModel = RecommendationModel;
+        this.candidateItems = candidateItems;
     }
 
     @Override
@@ -41,7 +41,7 @@ public class SingleGroupRecommendationTask extends Task {
         StringBuilder str = new StringBuilder();
 
         str.append("group --------> ").append(group).append("\n");
-        str.append("idItemList ---> ").append(idItemList).append("\n");
+        str.append("candidateItems ---> ").append(candidateItems).append("\n");
         str.append("grs ----------> ").append(groupRecommenderSystem.getAlias()).append("\n");
         str.append("\t").append(groupRecommenderSystem.getNameWithParameters()).append("\n");
 
@@ -68,12 +68,12 @@ public class SingleGroupRecommendationTask extends Task {
         return datasetLoader;
     }
 
-    public Object getRecommenderSystemModel() {
-        return recommenderSystemModel;
+    public Object getRecommendationModel() {
+        return RecommendationModel;
     }
 
-    public Set<Integer> getIdItemList() {
-        return Collections.unmodifiableSet(idItemList);
+    public Set<Integer> getCandidateItems() {
+        return Collections.unmodifiableSet(candidateItems);
     }
 
     protected void setResults(Collection<Recommendation> recommendations, long buildGroupModelTime, long recommendationTime) {
@@ -82,7 +82,7 @@ public class SingleGroupRecommendationTask extends Task {
         this.recommendationTime = recommendationTime;
         groupRecommenderSystem = null;
         datasetLoader = null;
-        recommenderSystemModel = null;
+        RecommendationModel = null;
     }
 
     public Collection<Recommendation> getRecommendations() {

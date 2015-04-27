@@ -96,7 +96,7 @@ public class KnnMemoryBasedCFRSTest extends DelfosTest {
     }
 
     /**
-     * Test of build method, of class KnnMemoryBasedCFRS.
+     * Test of buildRecommendationModel method, of class KnnMemoryBasedCFRS.
      */
     @Test
     public void testBasicWithPearson() throws CannotLoadRatingsDataset, UserNotFound {
@@ -112,7 +112,7 @@ public class KnnMemoryBasedCFRSTest extends DelfosTest {
     }
 
     /**
-     * Test of build method, of class KnnMemoryBasedCFRS.
+     * Test of buildRecommendationModel method, of class KnnMemoryBasedCFRS.
      */
     @Test
     public void testBasicWithCosine() throws CannotLoadRatingsDataset, UserNotFound {
