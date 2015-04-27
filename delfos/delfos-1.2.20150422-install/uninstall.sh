@@ -4,7 +4,7 @@ DELFOS_PATH="/usr/lib/delfos"
 DELFOS_BIN="/usr/bin/delfos"
 
 sudo rm $DELFOS_BIN -v
-sudo rm -rf $DELFOS_PATH/delfos -v
+sudo rm -rvf $DELFOS_PATH/delfos
 
 echo "Uninstall completed successfully"
 
