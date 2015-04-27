@@ -13,8 +13,7 @@ chmod +x delfos
 mv delfos /usr/bin/delfos
 
 if [ ! -f /usr/bin/delfos ]
-then 
-	rm delfos
+then
 	echo "This installer needs the right permissions to create the executable in /usr/bin/"
 fi
 
