@@ -49,7 +49,7 @@ public class ConfiguredDatasets extends Configuration {
 
     @Override
     protected void saveConfigurationScope() {
-        saveConfiguredDatasets(ConfiguredDatasetsFactory.getInstance().getAllConfiguredDatasets());
+        saveConfiguredDatasets();
     }
 
     @Override
@@ -59,12 +59,12 @@ public class ConfiguredDatasets extends Configuration {
         ConfiguredDatasetsFactory.getInstance().setAllConfiguredDatasets(configuredDatasets);
     }
 
-    public synchronized void saveConfiguredDatasets(Collection<ConfiguredDataset> configuredDatasets) {
+    public synchronized void saveConfiguredDatasets() {
 
         Document doc = new Document();
         Element root = new Element(CONFIGURED_DATASETS_ROOT_ELEMENT_NAME);
 
-        for (ConfiguredDataset configuredDataset : configuredDatasets) {
+        for (ConfiguredDataset configuredDataset : ConfiguredDatasetsFactory.getInstance().getAllConfiguredDatasets()) {
             Element thisDatasetLoader = new Element(CONFIGURED_DATASET_ELEMENT_NAME);
 
             thisDatasetLoader.setAttribute(CONFIGURED_DATASET_ELEMENT_NAME_ATTRIBUTE,
