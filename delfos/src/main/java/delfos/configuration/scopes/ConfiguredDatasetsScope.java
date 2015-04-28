@@ -3,8 +3,8 @@ package delfos.configuration.scopes;
 import delfos.Constants;
 import delfos.ERROR_CODES;
 import delfos.common.Global;
-import delfos.configuration.Configuration;
 import delfos.configuration.ConfigurationManager;
+import delfos.configuration.ConfigurationScope;
 import delfos.configureddatasets.ConfiguredDataset;
 import delfos.configureddatasets.ConfiguredDatasetsFactory;
 import delfos.dataset.basic.loader.types.DatasetLoader;
@@ -25,9 +25,9 @@ import org.jdom2.output.XMLOutputter;
  *
  * @author jcastro
  */
-public class ConfiguredDatasets extends Configuration {
+public class ConfiguredDatasetsScope extends ConfigurationScope {
 
-    private static final ConfiguredDatasets instance;
+    private static final ConfiguredDatasetsScope instance;
 
     public static final String CONFIGURED_DATASETS_ROOT_ELEMENT_NAME = "ConfiguredDatasets";
 
@@ -36,14 +36,14 @@ public class ConfiguredDatasets extends Configuration {
     public static final String CONFIGURED_DATASET_ELEMENT_NAME = "ConfiguredDataset";
 
     static {
-        instance = new ConfiguredDatasets();
+        instance = new ConfiguredDatasetsScope();
     }
 
-    public static ConfiguredDatasets getInstance() {
+    public static ConfiguredDatasetsScope getInstance() {
         return instance;
     }
 
-    public ConfiguredDatasets() {
+    public ConfiguredDatasetsScope() {
         super("configured-datasets");
     }
 
@@ -53,9 +53,8 @@ public class ConfiguredDatasets extends Configuration {
     }
 
     @Override
-    protected void loadConfigurationScope() {
+    public void loadConfigurationScope() {
         Collection<ConfiguredDataset> configuredDatasets = loadConfiguredDatasets();
-
         ConfiguredDatasetsFactory.getInstance().setAllConfiguredDatasets(configuredDatasets);
     }
 
@@ -92,7 +91,7 @@ public class ConfiguredDatasets extends Configuration {
         }
     }
 
-    public synchronized Collection<ConfiguredDataset> loadConfiguredDatasets() {
+    private synchronized Collection<ConfiguredDataset> loadConfiguredDatasets() {
         File fileOfConfiguredDatasets = ConfigurationManager.getConfigurationFile(this);
 
         Collection<ConfiguredDataset> configuredDatasets = new ArrayList<>();
@@ -141,6 +140,7 @@ public class ConfiguredDatasets extends Configuration {
                 ERROR_CODES.CANNOT_READ_CONFIGURED_DATASETS_FILE.exit(ex);
             }
         }
+
         return configuredDatasets;
     }
 

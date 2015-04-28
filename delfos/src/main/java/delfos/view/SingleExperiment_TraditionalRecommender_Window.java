@@ -4,7 +4,7 @@ import delfos.common.Chronometer;
 import delfos.common.DateCollapse;
 import delfos.common.parameters.ParameterOwner;
 import delfos.common.parameters.view.EditParameterDialog;
-import delfos.configuration.scopes.SwingGUIConfiguration;
+import delfos.configuration.scopes.SwingGUIScope;
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RelevanceCriteria;
@@ -121,14 +121,14 @@ public class SingleExperiment_TraditionalRecommender_Window extends JFrame imple
             }
 
             public void saveWindowState() {
-                SwingGUIConfiguration.getInstance().saveSingleUserExperimentWindowProperties(
+                SwingGUIScope.getInstance().saveSingleUserExperimentWindowProperties(
                         SingleExperiment_TraditionalRecommender_Window.this);
 
             }
         });
         this.pack();
 
-        SwingGUIConfiguration.getInstance().loadSingleUserExperimentWindowProperties(this);
+        SwingGUIScope.getInstance().loadSingleUserExperimentWindowProperties(this);
         this.toFront();
     }
 
@@ -376,11 +376,10 @@ public class SingleExperiment_TraditionalRecommender_Window extends JFrame imple
         guardarResultado.setEnabled(false);
         ret.add(guardarResultado, constraints);
 
-        this.guardarResultado.addActionListener(
-                (ActionEvent e) -> {
+        this.guardarResultado.addActionListener((ActionEvent e) -> {
                     JFileChooser chooser = new JFileChooser();
                     chooser.setDialogTitle("Save result to XML");
-                    chooser.setCurrentDirectory(SwingGUIConfiguration.getInstance().getCurrentDirectory());
+                    chooser.setCurrentDirectory(SwingGUIScope.getInstance().getCurrentDirectory());
 
                     String[] extensions = {CaseStudyXML.RESULT_EXTENSION};
                     chooser.setFileFilter(new FileNameExtensionFilter("Extensible Markup Language", extensions));
@@ -391,7 +390,7 @@ public class SingleExperiment_TraditionalRecommender_Window extends JFrame imple
                         if (opcion == JFileChooser.APPROVE_OPTION) {
                             File selected = chooser.getSelectedFile();
                             String nombre = selected.getAbsolutePath();
-                            SwingGUIConfiguration.getInstance().setCurrentDirectory(selected);
+                            SwingGUIScope.getInstance().setCurrentDirectory(selected);
 
                             if (!nombre.toLowerCase().endsWith("." + CaseStudyXML.RESULT_EXTENSION)) {
                                 // Add correct extension

@@ -1,10 +1,5 @@
 package delfos.main.managers.recommendation.singleuser;
 
-import delfos.main.managers.recommendation.singleuser.Recommend;
-import delfos.main.managers.recommendation.singleuser.BuildRecommendationModel;
-import java.io.File;
-import org.junit.Before;
-import org.junit.Test;
 import delfos.ConsoleParameters;
 import delfos.common.FileUtilities;
 import delfos.configfile.rs.single.RecommenderSystemConfigurationFileParser;
@@ -20,6 +15,9 @@ import delfos.rs.collaborativefiltering.knn.memorybased.nwr.KnnMemoryBasedNWR;
 import delfos.rs.output.RecommendationsOutputStandardRaw;
 import delfos.rs.output.sort.SortBy;
 import delfos.rs.persistence.FilePersistence;
+import java.io.File;
+import org.junit.Before;
+import org.junit.Test;
 
 /**
  *

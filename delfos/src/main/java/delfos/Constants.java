@@ -23,6 +23,12 @@ import org.jdom2.output.Format;
  */
 public class Constants {
 
+    public static class EnvironmentVariables {
+
+        public static final String HOME = "HOME";
+        public static final String DELFOS_LIB = "DELFOS_LIB";
+    }
+
     /**
      * Parameter to specify the location of the directory that contains the
      * configurations xml files.
@@ -180,7 +186,7 @@ public class Constants {
             String configDirectory = consoleParameters.getValue(LIBRARY_CONFIGURATION_DIRECTORY);
             ConfigurationManager.setConfigurationDirectory(new File(configDirectory + File.separator));
         }
-        ConfigurationManager.createConfigurationDirectory();
+        ConfigurationManager.createConfigurationDirectoryPathIfNotExists();
 
         if (consoleParameters.isDefined(THREAD_VERBOSE) || consoleParameters.isDefined(THREAD_VERBOSE_SHORT)) {
             Global.setThreadVerbose(true);

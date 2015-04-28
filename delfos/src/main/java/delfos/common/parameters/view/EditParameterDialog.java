@@ -15,7 +15,7 @@ import delfos.common.parameters.restriction.ParameterOwnerRestriction;
 import delfos.common.parameters.restriction.PasswordParameter;
 import delfos.common.parameters.restriction.RecommenderSystemParameterRestriction;
 import delfos.common.parameters.restriction.StringParameter;
-import delfos.configuration.scopes.SwingGUIConfiguration;
+import delfos.configuration.scopes.SwingGUIScope;
 import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.GridBagConstraints;
@@ -231,7 +231,7 @@ public class EditParameterDialog extends JDialog {
                         JFileChooser chooser = new JFileChooser();
                         chooser.setDialogTitle("Select " + p.getName() + " file");
 
-                        File currentDirectory = SwingGUIConfiguration.getInstance().getCurrentDirectory();
+                        File currentDirectory = SwingGUIScope.getInstance().getCurrentDirectory();
 
                         chooser.setCurrentDirectory(currentDirectory);
 
@@ -250,7 +250,7 @@ public class EditParameterDialog extends JDialog {
                         int opcion = chooser.showOpenDialog(EditParameterDialog.this);
 
                         if (opcion == JFileChooser.APPROVE_OPTION) {
-                            SwingGUIConfiguration.getInstance().setCurrentDirectory(chooser.getSelectedFile());
+                            SwingGUIScope.getInstance().setCurrentDirectory(chooser.getSelectedFile());
                             botonElegirArchivo.setText(chooser.getSelectedFile().getName());
                             botonElegirArchivo.setToolTipText(chooser.getSelectedFile().getAbsolutePath());
                             EditParameterDialog.this.parametrosModificados.put(p, chooser.getSelectedFile());
@@ -643,7 +643,7 @@ public class EditParameterDialog extends JDialog {
 
                         chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
                         chooser.setDialogTitle("Select directory as value of parameter " + p.getName() + " ");
-                        chooser.setCurrentDirectory(SwingGUIConfiguration.getInstance().getCurrentDirectory());
+                        chooser.setCurrentDirectory(SwingGUIScope.getInstance().getCurrentDirectory());
 
                         chooser.setFileFilter(new FileFilter() {
                             @Override
@@ -660,7 +660,7 @@ public class EditParameterDialog extends JDialog {
                         int opcion = chooser.showOpenDialog(EditParameterDialog.this);
 
                         if (opcion == JFileChooser.APPROVE_OPTION) {
-                            SwingGUIConfiguration.getInstance().setCurrentDirectory(chooser.getSelectedFile());
+                            SwingGUIScope.getInstance().setCurrentDirectory(chooser.getSelectedFile());
                             botonElegirArchivo.setText(chooser.getSelectedFile().getName());
                             botonElegirArchivo.setToolTipText(chooser.getSelectedFile().getAbsolutePath());
                             EditParameterDialog.this.parametrosModificados.put(p, chooser.getSelectedFile());

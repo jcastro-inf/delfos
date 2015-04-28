@@ -1,6 +1,6 @@
 package delfos.configuration.scopes;
 
-import delfos.configuration.Configuration;
+import delfos.configuration.ConfigurationScope;
 import java.io.File;
 import javax.swing.JFrame;
 
@@ -8,24 +8,24 @@ import javax.swing.JFrame;
  *
  * @author jcastro
  */
-public class SwingGUIConfiguration extends Configuration {
+public class SwingGUIScope extends ConfigurationScope {
 
     public static final String singleUserExperimentWindow_sizeWidth = "SingleUser.Experiment.Window.Dimension.Width";
     public static final String singleUserExperimentWindow_sizeHeight = "SingleUser.Experiment.Window.Dimension.Height";
     public static final String singleUserExperimentWindow_locationX = "SingleUser.Experiment.Window.Position.X";
     public static final String singleUserExperimentWindow_locationY = "SingleUser.Experiment.Window.Position.Y";
 
-    private static SwingGUIConfiguration instance;
+    private static SwingGUIScope instance;
 
-    public static SwingGUIConfiguration getInstance() {
+    public static SwingGUIScope getInstance() {
         if (instance == null) {
-            instance = new SwingGUIConfiguration();
+            instance = new SwingGUIScope();
         }
 
         return instance;
     }
 
-    public SwingGUIConfiguration() {
+    public SwingGUIScope() {
         super("swing-gui");
     }
 

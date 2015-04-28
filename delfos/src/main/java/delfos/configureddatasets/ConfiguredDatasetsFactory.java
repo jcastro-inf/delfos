@@ -1,7 +1,11 @@
 package delfos.configureddatasets;
 
 import delfos.common.Global;
-import delfos.configuration.scopes.ConfiguredDatasets;
+import delfos.common.exceptions.dataset.CannotLoadContentDataset;
+import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
+import delfos.common.exceptions.dataset.CannotLoadTrustDataset;
+import delfos.common.exceptions.dataset.CannotLoadUsersDataset;
+import delfos.configuration.scopes.ConfiguredDatasetsScope;
 import delfos.dataset.basic.loader.types.ContentDatasetLoader;
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.loader.types.TrustDatasetLoader;
@@ -41,10 +45,14 @@ public final class ConfiguredDatasetsFactory {
         listeners.remove(listener);
     }
 
-    private void notifyChange() {
-        listeners.stream().forEach((listener) -> {
+    /**
+     * Function to notify all listeners that there are changes in the list of
+     * configured datasets.
+     */
+    private void notifyConfiguredDatasetsChanged() {
+        for (ConfiguredDatasetsListener listener : listeners) {
             listener.configuredDatasetsChanged();
-        });
+        }
     }
 
     private ConfiguredDatasetsFactory() {
@@ -54,7 +62,7 @@ public final class ConfiguredDatasetsFactory {
     public static ConfiguredDatasetsFactory getInstance() {
         if (instance == null) {
             instance = new ConfiguredDatasetsFactory();
-            ConfiguredDatasets.getInstance().loadConfiguredDatasets();
+            ConfiguredDatasetsScope.getInstance().loadConfigurationScope();
         }
         return instance;
     }
@@ -66,6 +74,12 @@ public final class ConfiguredDatasetsFactory {
 
     public void addDatasetLoader(String name, String description, DatasetLoader<? extends Rating> datasetLoader) {
 
+        addDatasetLoaderNoNotifyChanges(name, description, datasetLoader);
+
+        notifyConfiguredDatasetsChanged();
+    }
+
+    private void addDatasetLoaderNoNotifyChanges(String name, String description, DatasetLoader<? extends Rating> datasetLoader) throws CannotLoadUsersDataset, IllegalArgumentException, CannotLoadRatingsDataset, CannotLoadTrustDataset, CannotLoadContentDataset {
         //Compruebo que el dataset funciona.
         datasetLoader.getRatingsDataset();
         if (datasetLoader instanceof ContentDatasetLoader) {
@@ -82,19 +96,22 @@ public final class ConfiguredDatasetsFactory {
             TrustDatasetLoader trustDatasetLoader = (TrustDatasetLoader) datasetLoader;
             trustDatasetLoader.getTrustDataset();
         }
+
         if (datasetLoaders.containsKey(name)) {
-            throw new IllegalArgumentException("The identifier '" + name + "' for datasets is in use.");
+            if (!datasetLoaders.get(name).getDatasetLoader().equals(datasetLoader)) {
+                throw new IllegalArgumentException("The identifier '" + name + "' for datasets is already in use.");
+            }
         } else {
             datasetLoaders.put(name, new ConfiguredDataset(name, description, datasetLoader));
-            notifyChange();
         }
+
     }
 
     public void removeDatasetLoader(String identifier) {
         if (datasetLoaders.containsKey(identifier)) {
             datasetLoaders.remove(identifier);
         }
-        notifyChange();
+        notifyConfiguredDatasetsChanged();
     }
 
     public DatasetLoader<? extends Rating> getDatasetLoader(String identifier) {
@@ -154,6 +171,12 @@ public final class ConfiguredDatasetsFactory {
     }
 
     public void setAllConfiguredDatasets(Collection<ConfiguredDataset> configuredDatasets) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+
+        datasetLoaders.clear();
+        for (ConfiguredDataset configuredDataset : configuredDatasets) {
+            addDatasetLoaderNoNotifyChanges(configuredDataset.getName(), configuredDataset.getDescription(), configuredDataset.getDatasetLoader());
+        }
+
+        notifyConfiguredDatasetsChanged();
     }
 }

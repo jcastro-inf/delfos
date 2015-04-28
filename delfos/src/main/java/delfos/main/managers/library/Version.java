@@ -1,5 +1,9 @@
 package delfos.main.managers.library;
 
+import delfos.ConsoleParameters;
+import delfos.Constants;
+import delfos.main.Main;
+import delfos.main.managers.CaseUseManager;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
@@ -8,14 +12,11 @@ import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
-import delfos.ConsoleParameters;
-import delfos.main.Main;
-import delfos.main.managers.CaseUseManager;
 
 /**
  *
  * @version 21-oct-2014
-* @author Jorge Castro Gallardo
+ * @author Jorge Castro Gallardo
  */
 public class Version implements CaseUseManager {
 
@@ -42,6 +43,12 @@ public class Version implements CaseUseManager {
     public void manageCaseUse(ConsoleParameters consoleParameters) {
         String versionfinal = getVersionfinal(Main.class);
         System.out.println("Compile timestamp: " + versionfinal);
+        System.out.println(Constants.LIBRARY_NAME + " environment variables:");
+        System.out.println("\t" + Constants.LIBRARY_NAME + " environment variables:");
+        System.out.println(Constants.LIBRARY_NAME + " environment variables:");
+        System.out.println(Constants.LIBRARY_NAME + " environment variables:");
+        System.out.println(Constants.LIBRARY_NAME + " environment variables:");
+
     }
 
     public static String getVersionfinal(Class classe) {

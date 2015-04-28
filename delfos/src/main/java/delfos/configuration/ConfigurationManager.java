@@ -1,7 +1,10 @@
 package delfos.configuration;
 
+import delfos.Constants;
 import delfos.ERROR_CODES;
 import delfos.common.Global;
+import delfos.configuration.scopes.ConfiguredDatasetsScope;
+import delfos.configuration.scopes.SwingGUIScope;
 import java.io.File;
 import java.io.IOException;
 
@@ -22,7 +25,7 @@ public class ConfigurationManager {
     private static final String CONFIGURATION_FILE_EXTENSION = ".xml";
 
     static {
-        String userHome = System.getenv("HOME");
+        String userHome = System.getenv(Constants.EnvironmentVariables.HOME);
 
         if (userHome == null || userHome.isEmpty()) {
             throw new IllegalStateException("Please, set the $HOME environment variable.");
@@ -41,8 +44,12 @@ public class ConfigurationManager {
 
         CONFIGURATION_DIRECTORY = configurationDirectory;
 
-        createConfigurationDirectory();
-
+        if (configurationDirectory.exists()) {
+            ConfiguredDatasetsScope.getInstance().loadConfigurationScope();
+            SwingGUIScope.getInstance().loadConfigurationScope();
+        } else {
+            createConfigurationDirectoryPathIfNotExists();
+        }
     }
 
     public static void checkConfigurationDirectory(File configurationDirectory) {
@@ -54,7 +61,7 @@ public class ConfigurationManager {
         }
     }
 
-    public static void createConfigurationDirectory() {
+    public static void createConfigurationDirectoryPathIfNotExists() {
         if (!CONFIGURATION_DIRECTORY.exists()) {
             boolean mkdirs = ConfigurationManager.CONFIGURATION_DIRECTORY.mkdirs();
             if (!mkdirs) {
@@ -73,7 +80,7 @@ public class ConfigurationManager {
      * @param configurationScope Scope to retrieve its configuration file.
      * @return File pointing to a xml file that has the configuration.
      */
-    public static File getConfigurationFile(Configuration configurationScope) {
+    public static File getConfigurationFile(ConfigurationScope configurationScope) {
 
         File configurationFile = new File(CONFIGURATION_DIRECTORY.getAbsolutePath()
                 + File.separator + configurationScope.getScopeName() + CONFIGURATION_FILE_EXTENSION);

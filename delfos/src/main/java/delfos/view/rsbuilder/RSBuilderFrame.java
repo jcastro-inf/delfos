@@ -3,7 +3,7 @@ package delfos.view.rsbuilder;
 import delfos.common.Global;
 import delfos.common.parameters.view.EditParameterDialog;
 import delfos.configfile.rs.single.RecommenderSystemConfigurationFileParser;
-import delfos.configuration.scopes.SwingGUIConfiguration;
+import delfos.configuration.scopes.SwingGUIScope;
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RelevanceCriteria;
@@ -381,12 +381,12 @@ public class RSBuilderFrame extends Frame {
      */
     private void saveConfig(boolean build) {
 
-        JFileChooser jfc = new JFileChooser(SwingGUIConfiguration.getInstance().getCurrentDirectory());
+        JFileChooser jfc = new JFileChooser(SwingGUIScope.getInstance().getCurrentDirectory());
         jfc.setFileFilter(new FileNameExtensionFilter("Recommender System Configuration (XML)", "xml"));
         jfc.setDialogTitle("Save recommender system configuration XML file");
         int option = jfc.showSaveDialog(RSBuilderFrame.this);
         if (option == JFileChooser.APPROVE_OPTION) {
-            SwingGUIConfiguration.getInstance().setCurrentDirectory(jfc.getSelectedFile());
+            SwingGUIScope.getInstance().setCurrentDirectory(jfc.getSelectedFile());
             configFile = jfc.getSelectedFile().getAbsolutePath();
             if (configFile.endsWith("." + RecommenderSystemConfigurationFileParser.CONFIGURATION_EXTENSION)) {
                 configFile = configFile.substring(0, configFile.lastIndexOf("." + RecommenderSystemConfigurationFileParser.CONFIGURATION_EXTENSION));

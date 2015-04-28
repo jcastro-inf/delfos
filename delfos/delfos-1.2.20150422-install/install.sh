@@ -15,8 +15,8 @@ java -jar $DELFOS_JAR -config $DELFOS_CONFIG $@' > delfos
 chmod +x delfos
 
 #Copy library binaries
-sudo mkdir $DELFOS_PATH
-sudo cp -rv ./* $DELFOS_PATH/
+sudo mkdir $DELFOS_LIB
+sudo cp -rv . $DELFOS_LIB
 
 #Make delfos command available
 sudo mv ./delfos $DELFOS_BIN -v
@@ -29,5 +29,5 @@ then
 fi
 
 #Generate the initial configuration of the library
-delfos --initial-config
+delfos --initial-config -v -datasets-dir $DELFOS_LIB/datasets
 

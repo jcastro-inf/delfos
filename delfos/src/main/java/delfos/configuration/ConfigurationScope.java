@@ -20,13 +20,13 @@ import org.jdom2.output.XMLOutputter;
  *
  * @author jcastro
  */
-public abstract class Configuration {
+public abstract class ConfigurationScope {
 
     private final String scopeName;
 
     private Document document = null;
 
-    public Configuration(String scopeName) {
+    public ConfigurationScope(String scopeName) {
         this.scopeName = scopeName;
     }
 
