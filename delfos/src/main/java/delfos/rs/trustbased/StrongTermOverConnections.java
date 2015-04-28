@@ -22,7 +22,7 @@ public class StrongTermOverConnections<Node> extends WeightedGraphAdapter<Node> 
 
         if (Global.isVerboseAnnoying()) {
             String printWeightedGraph = DatasetPrinter.printWeightedGraph(source);
-            Global.showMessage(printWeightedGraph);
+            Global.showInfoMessage(printWeightedGraph);
         }
         FuzzyLabel strong = FuzzyLabel.createAscendentLabel(aStrong, bStrong);
         allNodes.addAll(source.allNodes());
@@ -44,7 +44,7 @@ public class StrongTermOverConnections<Node> extends WeightedGraphAdapter<Node> 
 
         if (Global.isVerboseAnnoying()) {
             String printNormalisedGraph = DatasetPrinter.printWeightedGraph(this);
-            Global.showMessage(printNormalisedGraph);
+            Global.showInfoMessage(printNormalisedGraph);
         }
 
     }

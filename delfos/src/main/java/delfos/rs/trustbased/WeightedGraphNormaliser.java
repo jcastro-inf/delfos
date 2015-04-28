@@ -21,7 +21,7 @@ public class WeightedGraphNormaliser<Node> extends WeightedGraphAdapter<Node> {
 
         if (Global.isVerboseAnnoying()) {
             String printWeightedGraph = DatasetPrinter.printWeightedGraph(source);
-            Global.showMessage(printWeightedGraph);
+            Global.showInfoMessage(printWeightedGraph);
         }
 
         double min = Double.POSITIVE_INFINITY;
@@ -39,12 +39,12 @@ public class WeightedGraphNormaliser<Node> extends WeightedGraphAdapter<Node> {
             }
         }
 
-        Global.showMessage("min = " + min);
-        Global.showMessage("max = " + max);
+        Global.showInfoMessage("min = " + min);
+        Global.showInfoMessage("max = " + max);
 
         if (Global.isVerboseAnnoying()) {
-            Global.showMessage("Original range       [" + min + "," + max + "]\n");
-            Global.showMessage("Normalising based on [0.0," + max + "]\n");
+            Global.showInfoMessage("Original range       [" + min + "," + max + "]\n");
+            Global.showInfoMessage("Normalising based on [0.0," + max + "]\n");
         }
         min = 0;
         if (max == 1 && min == 0) {
@@ -72,7 +72,7 @@ public class WeightedGraphNormaliser<Node> extends WeightedGraphAdapter<Node> {
 
         if (Global.isVerboseAnnoying()) {
             String printNormalisedGraph = DatasetPrinter.printWeightedGraph(normalisedGraph);
-            Global.showMessage(printNormalisedGraph);
+            Global.showInfoMessage(printNormalisedGraph);
         }
 
     }

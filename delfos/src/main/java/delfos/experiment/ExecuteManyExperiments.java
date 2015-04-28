@@ -121,7 +121,7 @@ public class ExecuteManyExperiments {
 
     private void execute() throws CannotLoadRatingsDataset, CannotLoadContentDataset, UserNotFound, ItemNotFound {
 
-        Global.showMessage("SEED OF THIS EXPERIMENT = " + SEED + "\n");
+        Global.showInfoMessage("SEED OF THIS EXPERIMENT = " + SEED + "\n");
 
         ArrayList<CaseStudyConfiguration> caseStudyConfigurations;
         if (inputDirectory != null) {
@@ -151,7 +151,7 @@ public class ExecuteManyExperiments {
                     caseStudy.execute();
                     CaseStudyXML.saveCaseResults(caseStudy, caseStudy.getRecommenderSystem().getAlias(), defaultFileName);
 
-                    Global.showMessage("================ FIN Sistema " + i + " de " + caseStudyConfigurations.size() + "=================== \n");
+                    Global.showInfoMessage("================ FIN Sistema " + i + " de " + caseStudyConfigurations.size() + "=================== \n");
                     i++;
                 }
             }

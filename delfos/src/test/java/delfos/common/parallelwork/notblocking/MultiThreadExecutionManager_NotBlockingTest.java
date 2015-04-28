@@ -23,7 +23,7 @@ public class MultiThreadExecutionManager_NotBlockingTest extends DelfosTest {
     @Test
     public void testNoTasks() {
         final String methodName = "testNoTasks";
-        Global.showMessage(methodName + "\n");
+        Global.showInfoMessage(methodName + "\n");
         MultiThreadExecutionManager_NotBlocking<MockTask> multiThread = new MultiThreadExecutionManager_NotBlocking<>(
                 methodName,
                 MockSingleTaskExecutor.class);
@@ -34,13 +34,13 @@ public class MultiThreadExecutionManager_NotBlockingTest extends DelfosTest {
         } catch (InterruptedException ex) {
             fail("No interruption allowed");
         }
-        Global.showMessage(methodName + " finished\n");
+        Global.showInfoMessage(methodName + " finished\n");
     }
 
     @Test
     public void testLongTask() {
         final String methodName = "testLongTask";
-        Global.showMessage(methodName + "\n");
+        Global.showInfoMessage(methodName + "\n");
         MultiThreadExecutionManager_NotBlocking<MockTask> multiThread = new MultiThreadExecutionManager_NotBlocking<>(
                 methodName,
                 MockSingleTaskExecutor.class);
@@ -52,13 +52,13 @@ public class MultiThreadExecutionManager_NotBlockingTest extends DelfosTest {
         } catch (InterruptedException ex) {
             fail("No interruption allowed");
         }
-        Global.showMessage(methodName + " Finished\n");
+        Global.showInfoMessage(methodName + " Finished\n");
     }
 
     @Test
     public void testShortTask() {
         final String methodName = "testShortTask";
-        Global.showMessage(methodName + "\n");
+        Global.showInfoMessage(methodName + "\n");
         MultiThreadExecutionManager_NotBlocking<MockTask> multiThread = new MultiThreadExecutionManager_NotBlocking<>(
                 methodName,
                 MockSingleTaskExecutor.class);
@@ -70,13 +70,13 @@ public class MultiThreadExecutionManager_NotBlockingTest extends DelfosTest {
         } catch (InterruptedException ex) {
             fail("No interruption allowed");
         }
-        Global.showMessage(methodName + " Finished\n");
+        Global.showInfoMessage(methodName + " Finished\n");
     }
 
     @Test
     public void testLongTasks() {
         final String methodName = "testLongTasks";
-        Global.showMessage(methodName + "\n");
+        Global.showInfoMessage(methodName + "\n");
         MultiThreadExecutionManager_NotBlocking<MockTask> multiThread = new MultiThreadExecutionManager_NotBlocking<>(
                 methodName,
                 MockSingleTaskExecutor.class);
@@ -93,13 +93,13 @@ public class MultiThreadExecutionManager_NotBlockingTest extends DelfosTest {
         } catch (InterruptedException ex) {
             fail("No interruption allowed");
         }
-        Global.showMessage(methodName + " Finished\n");
+        Global.showInfoMessage(methodName + " Finished\n");
     }
 
     @Test
     public void testLongTaskWithSleep() {
         final String methodName = "testLongTaskWithSleep";
-        Global.showMessage(methodName + "\n");
+        Global.showInfoMessage(methodName + "\n");
         MultiThreadExecutionManager_NotBlocking<MockTask> multiThread = new MultiThreadExecutionManager_NotBlocking<>(
                 methodName,
                 MockSingleTaskExecutor.class);
@@ -130,40 +130,40 @@ public class MultiThreadExecutionManager_NotBlockingTest extends DelfosTest {
         multiThread.addTask(new MockTask(300));
 
         try {
-            Global.showMessage("Sleeping for 500ms\n");
+            Global.showInfoMessage("Sleeping for 500ms\n");
             Thread.sleep(500);
         } catch (InterruptedException ex) {
             Global.showError(ex);
         }
-        Global.showMessage("main thread runing again\n");
+        Global.showInfoMessage("main thread runing again\n");
         try {
             multiThread.waitUntilFinished();
         } catch (InterruptedException ex) {
             fail("No interruption allowed");
         }
         assertEquals("The number of finished tasks must be equal to the number of generated tasks", 16, multiThread.getAllFinishedTasks().size());
-        Global.showMessage(methodName + " Finished\n");
+        Global.showInfoMessage(methodName + " Finished\n");
 
     }
 
     @Test
     public void testLongTaskWithSleepBeforeAdd() throws InterruptedException {
         final String methodName = "testLongTaskWithSleepBeforeAdd";
-        Global.showMessage(methodName + "\n");
+        Global.showInfoMessage(methodName + "\n");
         MultiThreadExecutionManager_NotBlocking<MockTask> multiThread = new MultiThreadExecutionManager_NotBlocking<>(
                 methodName,
                 MockSingleTaskExecutor.class);
         multiThread.runInBackground();
 
-        Global.showMessage("Sleeping for 5000ms\n");
+        Global.showInfoMessage("Sleeping for 5000ms\n");
         Thread.sleep(5000);
 
         multiThread.addTask(new MockTask(300));
 
-        Global.showMessage("Sleeping for 500ms\n");
+        Global.showInfoMessage("Sleeping for 500ms\n");
         Thread.sleep(500);
 
-        Global.showMessage(methodName + "main thread runing again\n");
+        Global.showInfoMessage(methodName + "main thread runing again\n");
         try {
             multiThread.waitUntilFinished();
         } catch (InterruptedException ex) {
@@ -172,13 +172,13 @@ public class MultiThreadExecutionManager_NotBlockingTest extends DelfosTest {
 
         assertEquals("The number of finished tasks must be equal to the number of generated tasks", 1, multiThread.getAllFinishedTasks().size());
 
-        Global.showMessage(methodName + " Finished\n");
+        Global.showInfoMessage(methodName + " Finished\n");
     }
 
     @Test
     public void testManyTasks() throws InterruptedException {
         final String methodName = "testManyTasks";
-        Global.showMessage(methodName + "\n");
+        Global.showInfoMessage(methodName + "\n");
         MultiThreadExecutionManager_NotBlocking<MockTask> multiThread = new MultiThreadExecutionManager_NotBlocking<>(
                 methodName,
                 MockSingleTaskExecutor.class);
@@ -211,7 +211,7 @@ public class MultiThreadExecutionManager_NotBlockingTest extends DelfosTest {
 
         assertEquals("The number of finished tasks must be equal to the number of generated tasks", numTasks, multiThread.getAllFinishedTasks().size());
 
-        Global.showMessage(methodName + " Finished\n");
+        Global.showInfoMessage(methodName + " Finished\n");
     }
 
 }

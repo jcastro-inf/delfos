@@ -31,7 +31,7 @@ public class EjecutadorPropagacionConfianzaEntreDosUsuarios implements SingleTas
         } else {
             //Propagate trust to complete this connection.
             if (Global.isVerboseAnnoying()) {
-                Global.showMessage("Propagating trust between user " + idSourceUser + " and user " + idTargetUser + "\n");
+                Global.showInfoMessage("Propagating trust between user " + idSourceUser + " and user " + idTargetUser + "\n");
             }
 
             Set<Integer> adyacentesAAmbos = new TreeSet<Integer>(usersTrust.get(idSourceUser).keySet());

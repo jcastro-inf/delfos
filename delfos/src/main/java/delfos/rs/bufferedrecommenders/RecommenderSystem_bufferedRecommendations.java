@@ -134,7 +134,7 @@ public class RecommenderSystem_bufferedRecommendations extends RecommenderSystem
                 recommendations = (Collection<Recommendation>) ois.readObject();
 
                 if (Global.isVerboseAnnoying()) {
-                    Global.showMessage("The recommendations have been loaded: \n" + recommendations.toString() + "\n");
+                    Global.showInfoMessage("The recommendations have been loaded: \n" + recommendations.toString() + "\n");
                 }
             } catch (ClassNotFoundException ex) {
                 ERROR_CODES.DEPENDENCY_NOT_FOUND.exit(ex);

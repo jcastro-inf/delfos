@@ -1,5 +1,15 @@
 package delfos.dataset.memory.validationdatasets;
 
+import delfos.ERROR_CODES;
+import delfos.common.exceptions.dataset.users.UserNotFound;
+import delfos.constants.DelfosTest;
+import delfos.dataset.basic.loader.types.DatasetLoader;
+import delfos.dataset.basic.rating.Rating;
+import delfos.dataset.basic.rating.RatingsDataset;
+import delfos.dataset.generated.random.RandomRatingsDatasetFactory;
+import delfos.dataset.storage.memory.BothIndexRatingsDataset;
+import delfos.dataset.storage.validationdatasets.TrainingRatingsDataset;
+import delfos.dataset.storage.validationdatasets.ValidationDatasets;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -10,17 +20,6 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 import org.junit.Assert;
 import org.junit.Test;
-import delfos.ERROR_CODES;
-import delfos.common.Global;
-import delfos.common.exceptions.dataset.users.UserNotFound;
-import delfos.constants.DelfosTest;
-import delfos.dataset.basic.rating.Rating;
-import delfos.dataset.basic.rating.RatingsDataset;
-import delfos.dataset.generated.random.RandomRatingsDatasetFactory;
-import delfos.dataset.basic.loader.types.DatasetLoader;
-import delfos.dataset.storage.memory.BothIndexRatingsDataset;
-import delfos.dataset.storage.validationdatasets.TrainingRatingsDataset;
-import delfos.dataset.storage.validationdatasets.ValidationDatasets;
 
 /**
  * Test para probar la clase {@link TrainingRatingsDataset}.
@@ -150,7 +149,6 @@ public class TrainingRatingsDatasetTest extends DelfosTest {
      */
     @Test
     public void testNumberOfRatings() throws Exception {
-        Global.setVerbose();
 
         Random random = new Random(0);
         //Dataset Completo

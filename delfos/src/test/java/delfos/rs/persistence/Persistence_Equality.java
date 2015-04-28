@@ -1,6 +1,5 @@
 package delfos.rs.persistence;
 
-import delfos.common.Global;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RatingsDataset;
 import delfos.dataset.basic.user.User;
@@ -42,7 +41,6 @@ public class Persistence_Equality {
     @Test
 
     public void testPersistenceRecommendationsAreEqual() throws Exception {
-        Global.setVerbose();
 
         for (RecommenderSystem recommenderSystem : RecommenderSystemsFactory.getInstance().getAllClasses(RecommenderSystem.class)) {
 

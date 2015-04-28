@@ -66,7 +66,7 @@ public class Factory<TypeForCreation extends ParameterOwner> {
         if (!allClasses.containsKey(clase.getSimpleName())) {
             allClasses.put(clase.getSimpleName(), clase);
         } else {
-            if (Global.isVerbose()) {
+            if (Global.isInfoPrinted()) {
                 Global.showWarning("The class " + clase.getName() + " was already known by the factory (" + this.getClass().getSimpleName() + ")");
             }
         }

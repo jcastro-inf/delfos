@@ -133,14 +133,14 @@ public class ChangeableMySQLDatasetLoader extends ChangeableDatasetLoaderAbstrac
             String _prefix = (String) getParameterValue(CONNECTION_CONFIGURATION_PREFIX);
 
             if (Global.isVerboseAnnoying()) {
-                Global.showMessage(ChangeableMySQLDatasetLoader.class + ": Making database connection with properties:\n");
+                Global.showInfoMessage(ChangeableMySQLDatasetLoader.class + ": Making database connection with properties:\n");
 
-                Global.showMessage("\tUser -----------> " + _user + "\n");
-                Global.showMessage("\tPass -----------> " + _pass + "\n");
-                Global.showMessage("\tDatabase Name --> " + _databaseName + "\n");
-                Global.showMessage("\tServer Name ----> " + _serverName + "\n");
-                Global.showMessage("\tPort -----------> " + _port + "\n");
-                Global.showMessage("\tPrefix ---------> " + _prefix + "\n");
+                Global.showInfoMessage("\tUser -----------> " + _user + "\n");
+                Global.showInfoMessage("\tPass -----------> " + _pass + "\n");
+                Global.showInfoMessage("\tDatabase Name --> " + _databaseName + "\n");
+                Global.showInfoMessage("\tServer Name ----> " + _serverName + "\n");
+                Global.showInfoMessage("\tPort -----------> " + _port + "\n");
+                Global.showInfoMessage("\tPrefix ---------> " + _prefix + "\n");
             }
 
             return new MySQLConnection(_user, _pass, _databaseName, _serverName, _port, _prefix);
@@ -174,16 +174,16 @@ public class ChangeableMySQLDatasetLoader extends ChangeableDatasetLoaderAbstrac
 
             try {
                 if (Global.isVerboseAnnoying()) {
-                    Global.showMessage(ChangeableMySQLDatasetLoader.class + ": Loading content dataset with properties\n");
+                    Global.showInfoMessage(ChangeableMySQLDatasetLoader.class + ": Loading content dataset with properties\n");
 
-                    Global.showMessage("\tFeatures table name --> " + getContentDefinitionTable_name() + "\n");
-                    Global.showMessage("\t      feature id -----> " + getContentDefinitionTable_FeatureIdField() + "\n");
-                    Global.showMessage("\t      feature name ---> " + getContentDefinitionTable_FeatureNameField() + "\n");
-                    Global.showMessage("\t      feature type ---> " + getContentDefinitionTable_FeatureTypeField() + "\n");
-                    Global.showMessage("\tItem table name-------> " + getProductsTable_name() + "\n");
-                    Global.showMessage("\t      item id --------> " + getProductsTable_ItemIDField() + "\n");
-                    Global.showMessage("\t      item name ------> " + getProductsTable_NameField() + "\n");
-                    Global.showMessage("\t      item avail.? ---> " + getProductsTable_AvailabilityField() + "\n");
+                    Global.showInfoMessage("\tFeatures table name --> " + getContentDefinitionTable_name() + "\n");
+                    Global.showInfoMessage("\t      feature id -----> " + getContentDefinitionTable_FeatureIdField() + "\n");
+                    Global.showInfoMessage("\t      feature name ---> " + getContentDefinitionTable_FeatureNameField() + "\n");
+                    Global.showInfoMessage("\t      feature type ---> " + getContentDefinitionTable_FeatureTypeField() + "\n");
+                    Global.showInfoMessage("\tItem table name-------> " + getProductsTable_name() + "\n");
+                    Global.showInfoMessage("\t      item id --------> " + getProductsTable_ItemIDField() + "\n");
+                    Global.showInfoMessage("\t      item name ------> " + getProductsTable_NameField() + "\n");
+                    Global.showInfoMessage("\t      item avail.? ---> " + getProductsTable_AvailabilityField() + "\n");
                 }
 
                 contentDataset = new ChangeableMySQLContentDataset(
@@ -260,7 +260,7 @@ public class ChangeableMySQLDatasetLoader extends ChangeableDatasetLoaderAbstrac
 
             statement.execute("Commit;");
 
-            Global.showMessage("Tables dropped.");
+            Global.showInfoMessage("Tables dropped.");
 
         } catch (SQLException ex) {
             throw new IllegalArgumentException(ex);

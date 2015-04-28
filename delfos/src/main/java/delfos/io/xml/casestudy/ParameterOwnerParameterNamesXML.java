@@ -34,7 +34,7 @@ public class ParameterOwnerParameterNamesXML {
 
             if (parameter.getRestriction() instanceof ParameterOwnerRestriction) {
                 //TODO: Aquí había un throw new IllegalArgumentException("arg");, averiguar por qué y si está bien quitarlo directamente
-                Global.showMessage(parameterOwner.getAlias() + " --> " + parameter.getName() + "(" + parameter.getRestriction().getName() + ")\n");
+                Global.showInfoMessage(parameterOwner.getAlias() + " --> " + parameter.getName() + "(" + parameter.getRestriction().getName() + ")\n");
             }
 
             ret.add(parameterOwner.getName() + "." + parameter.getName());

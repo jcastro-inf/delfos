@@ -103,7 +103,7 @@ public class ConfiguredDatasetsScope extends ConfigurationScope {
             saveConfigurationScope();
         } else {
             if (Global.isVerboseAnnoying()) {
-                Global.showMessage("Loading configured datasets from file '" + fileOfConfiguredDatasets.getAbsolutePath() + "'\n");
+                Global.showInfoMessage("Loading configured datasets from file '" + fileOfConfiguredDatasets.getAbsolutePath() + "'\n");
             }
             try {
                 SAXBuilder builder = new SAXBuilder();
@@ -128,7 +128,7 @@ public class ConfiguredDatasetsScope extends ConfigurationScope {
                     DatasetLoader<? extends Rating> datasetLoader = DatasetLoaderXML.getDatasetLoader(datasetLoaderElement);
 
                     if (Global.isVerboseAnnoying()) {
-                        Global.showMessage("\tConfigured dataset '" + name + "' loaded.\n");
+                        Global.showInfoMessage("\tConfigured dataset '" + name + "' loaded.\n");
                     }
 
                     configuredDatasets.add(new ConfiguredDataset(name, description, datasetLoader));

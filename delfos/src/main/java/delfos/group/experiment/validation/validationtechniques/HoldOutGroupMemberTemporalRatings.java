@@ -125,20 +125,20 @@ public class HoldOutGroupMemberTemporalRatings extends GroupValidationTechnique 
                     allUsers.addAll(g.getGroupMembers());
                 }
 
-                Global.showMessage("Dataset de training.\n");
+                Global.showInfoMessage("Dataset de training.\n");
                 String printTrainingSet = DatasetPrinter.printCompactRatingTable(
                         ret[0].train,
                         allUsers,
                         datasetLoader.getRatingsDataset().allRatedItems());
 
-                Global.showMessage(printTrainingSet);
+                Global.showInfoMessage(printTrainingSet);
 
-                Global.showMessage("Dataset de test.\n");
+                Global.showInfoMessage("Dataset de test.\n");
                 String printTestSet = DatasetPrinter.printCompactRatingTable(
                         ret[0].test,
                         allUsers,
                         datasetLoader.getRatingsDataset().allRatedItems());
-                Global.showMessage(printTestSet);
+                Global.showInfoMessage(printTestSet);
             }
         } catch (UserNotFound ex) {
             ERROR_CODES.USER_NOT_FOUND.exit(ex);

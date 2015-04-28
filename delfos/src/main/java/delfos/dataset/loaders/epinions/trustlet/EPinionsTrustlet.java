@@ -212,7 +212,7 @@ public class EPinionsTrustlet extends DatasetLoaderAbstract<Rating> implements U
                     }
 
                     if (i % 100000 == 0) {
-                        Global.showMessage("Loading EPinions content --> " + i + " items " + c.printPartialElapsed() + " / " + c.printTotalElapsed() + "\n");
+                        Global.showInfoMessage("Loading EPinions content --> " + i + " items " + c.printPartialElapsed() + " / " + c.printTotalElapsed() + "\n");
                         c.setPartialEllapsedCheckpoint();
                     }
 

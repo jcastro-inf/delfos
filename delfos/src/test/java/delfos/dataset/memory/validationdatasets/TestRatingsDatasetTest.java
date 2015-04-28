@@ -1,5 +1,17 @@
 package delfos.dataset.memory.validationdatasets;
 
+import delfos.ERROR_CODES;
+import delfos.common.exceptions.dataset.items.ItemNotFound;
+import delfos.common.exceptions.dataset.users.UserNotFound;
+import delfos.common.test.RatingsDatasetTest;
+import delfos.constants.DelfosTest;
+import delfos.dataset.basic.rating.Rating;
+import delfos.dataset.basic.rating.RatingsDataset;
+import delfos.dataset.generated.random.RandomRatingsDatasetFactory;
+import delfos.dataset.storage.memory.BothIndexRatingsDataset;
+import delfos.dataset.storage.validationdatasets.TestRatingsDataset;
+import delfos.dataset.storage.validationdatasets.ValidationDatasets;
+import delfos.dataset.util.DatasetPrinter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -14,19 +26,6 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import delfos.ERROR_CODES;
-import delfos.common.Global;
-import delfos.common.exceptions.dataset.items.ItemNotFound;
-import delfos.common.exceptions.dataset.users.UserNotFound;
-import delfos.common.test.RatingsDatasetTest;
-import delfos.constants.DelfosTest;
-import delfos.dataset.basic.rating.Rating;
-import delfos.dataset.basic.rating.RatingsDataset;
-import delfos.dataset.generated.random.RandomRatingsDatasetFactory;
-import delfos.dataset.storage.memory.BothIndexRatingsDataset;
-import delfos.dataset.storage.validationdatasets.TestRatingsDataset;
-import delfos.dataset.storage.validationdatasets.ValidationDatasets;
-import delfos.dataset.util.DatasetPrinter;
 
 /**
  * Test para probar la clase {@link TestRatingsDataset}.
@@ -168,7 +167,6 @@ public class TestRatingsDatasetTest extends DelfosTest {
 
     @Test
     public void testNumberOfRatings() throws UserNotFound, ItemNotFound {
-        Global.setVerbose();
 
         Random random = new Random(0);
         //Dataset Completo
@@ -248,8 +246,6 @@ public class TestRatingsDatasetTest extends DelfosTest {
 
     @Test
     public void testDataset() throws Exception {
-
-        Global.setVerbose();
 
         Random random = new Random(0);
         //Dataset Completo

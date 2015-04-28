@@ -45,7 +45,7 @@ public class Tweak2Weights extends GroupItemWeight {
 
         Map<Integer, Number> itemWeights = stddev_results.get(WEIGHTS);
 
-        if (Global.isVerbose()) {
+        if (Global.isInfoPrinted()) {
             Map<Integer, Map<Integer, Number>> ratingsAndWeight = new TreeMap<>();
             ratingsAndWeight.putAll(membersRatings);
             ratingsAndWeight.put(1111, stddev_results.get(STDEV));

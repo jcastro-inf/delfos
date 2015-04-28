@@ -240,7 +240,7 @@ public class DefaultCaseStudy extends CaseStudy implements ParameterListener {
 
             setNextSeedToSeedHolders(getSeedValue() + loopCount);
 
-            Global.showMessage(getAlias() + "validation.shuffle()\n");
+            Global.showInfoMessage(getAlias() + "validation.shuffle()\n");
             executionProgressFireEvent(getAlias() + "Performing validation split", 0, -1);
 
             PairOfTrainTestRatingsDataset[] pairsValidation = validationTechnique.shuffle(datasetLoader);
@@ -249,7 +249,7 @@ public class DefaultCaseStudy extends CaseStudy implements ParameterListener {
                 initStructures(executionNumber, pairsValidation.length);
             }
 
-            Global.showMessage(getAlias() + "validation.shuffle() -- > Finished\n");
+            Global.showInfoMessage(getAlias() + "validation.shuffle() -- > Finished\n");
 
             for (_conjuntoActual = 0; _conjuntoActual < pairsValidation.length; _conjuntoActual++) {
 
@@ -263,7 +263,7 @@ public class DefaultCaseStudy extends CaseStudy implements ParameterListener {
 
                 setBuildTime(_ejecucionActual, _conjuntoActual, System.currentTimeMillis() - initTime);
 
-                Global.showMessage("----------------------- End of Build ----------------------------------" + "\n");
+                Global.showInfoMessage("----------------------- End of Build ----------------------------------" + "\n");
                 this.executionProgressFireEvent(getAlias() + " --> Recommendation process", 50, -1);
 
                 Collection<Integer> thisDatasetUsers = pairsValidation[_conjuntoActual].test.allUsers();
@@ -389,7 +389,7 @@ public class DefaultCaseStudy extends CaseStudy implements ParameterListener {
         validationTechnique.removeListener(validationListener);
 
         executionProgressFireEvent(getAlias() + " --> Recommendation process", 100, -1);
-        Global.showMessage("Case study finished\n");
+        Global.showInfoMessage("Case study finished\n");
         setRunning(false);
         setFinished();
         setErrors(false);
@@ -701,15 +701,15 @@ public class DefaultCaseStudy extends CaseStudy implements ParameterListener {
         if (recommenderSystem instanceof SeedHolder) {
             SeedHolder seedHolder = (SeedHolder) recommenderSystem;
             seedHolder.setSeedValue(seedValue);
-            Global.showMessage("Reset RecommenderSystem seed to " + seedHolder.getSeedValue() + "\n");
+            Global.showInfoMessage("Reset RecommenderSystem seed to " + seedHolder.getSeedValue() + "\n");
 
         }
 
         validationTechnique.setSeedValue(seedValue);
-        Global.showMessage("Reset groupValidationTechnique seed to " + validationTechnique.getSeedValue() + "\n");
+        Global.showInfoMessage("Reset groupValidationTechnique seed to " + validationTechnique.getSeedValue() + "\n");
 
         predictionProtocolTechnique.setSeedValue(seedValue);
-        Global.showMessage("Reset groupPredictionProtocol seed to " + predictionProtocolTechnique.getSeedValue() + "\n");
+        Global.showInfoMessage("Reset groupPredictionProtocol seed to " + predictionProtocolTechnique.getSeedValue() + "\n");
     }
 
     /**

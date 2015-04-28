@@ -100,7 +100,7 @@ public class AreaUnderROC extends EvaluationMeasure {
 
         //Inicialmente supone que todos son no recomendados
         if (Global.isVerboseAnnoying()) {
-            Global.showMessage("ROC with length " + 0 + " of " + maxLength + ".");
+            Global.showInfoMessage("ROC with length " + 0 + " of " + maxLength + ".");
         }
         for (List<Boolean> recom : resultados) {
             for (Boolean recom1 : recom) {
@@ -113,7 +113,7 @@ public class AreaUnderROC extends EvaluationMeasure {
             count++;
             if (allUsers.size() > 11 && (count % (allUsers.size() / 10.0) == 0)) {
                 if (Global.isVerboseAnnoying()) {
-                    Global.showMessage(" " + count * 100 / allUsers.size() + "% of users analysed.\n");
+                    Global.showInfoMessage(" " + count * 100 / allUsers.size() + "% of users analysed.\n");
                 }
             }
         }
@@ -125,7 +125,7 @@ public class AreaUnderROC extends EvaluationMeasure {
         c.reset();
         for (int kActual = 1; kActual < maxLength; kActual++) {
             if (Global.isVerboseAnnoying()) {
-                Global.showMessage("ROC with length " + kActual + " of " + maxLength + ".");
+                Global.showInfoMessage("ROC with length " + kActual + " of " + maxLength + ".");
             }
 
 //            count = 0;
@@ -143,15 +143,15 @@ public class AreaUnderROC extends EvaluationMeasure {
             //calculada la matriz de confusión para longitud kActual
             matrices.add(new ConfusionMatrix(falsePositive, falseNegative, truePositive, trueNegative));
             if (Global.isVerboseAnnoying()) {
-                Global.showMessage(" in " + c.printPartialElapsed() + "\n");
+                Global.showInfoMessage(" in " + c.printPartialElapsed() + "\n");
             }
         }
 
         ConfusionMatricesCurve curve = new ConfusionMatricesCurve(matrices.toArray(new ConfusionMatrix[1]));
 
         if (Global.isVerboseAnnoying()) {
-            Global.showMessage("------------- Receiver Operator Characteristic --------------" + "\n");
-            Global.showMessage(curve.toString() + "\n");
+            Global.showInfoMessage("------------- Receiver Operator Characteristic --------------" + "\n");
+            Global.showInfoMessage(curve.toString() + "\n");
         }
 
         float areaUnderROC = curve.getAreaPRSpace();

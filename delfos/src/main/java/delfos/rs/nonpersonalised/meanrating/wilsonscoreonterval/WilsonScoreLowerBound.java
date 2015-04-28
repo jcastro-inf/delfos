@@ -86,7 +86,7 @@ public class WilsonScoreLowerBound extends NonPersonalisedRecommender<Collection
 
                 recommendationModel1.add(new Recommendation(idItem, preference));
             } catch (ItemNotFound ex) {
-                Global.showMessage("No information about item " + idItem + ", cannot build its model.");
+                Global.showInfoMessage("No information about item " + idItem + ", cannot build its model.");
             }
 
         }

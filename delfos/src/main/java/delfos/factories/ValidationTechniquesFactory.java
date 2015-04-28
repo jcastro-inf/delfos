@@ -27,7 +27,7 @@ public class ValidationTechniquesFactory extends Factory<ValidationTechnique> {
     }
 
     static {
-        Global.showMessage("Validation techniques loaded\n");
+        Global.showInfoMessage("Validation techniques loaded\n");
         instance = new ValidationTechniquesFactory();
         instance.addClass(NoPartitions.class);
         instance.addClass(HoldOut_Ratings.class);

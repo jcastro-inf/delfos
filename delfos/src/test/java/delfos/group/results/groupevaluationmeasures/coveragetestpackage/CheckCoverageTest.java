@@ -1,8 +1,5 @@
 package delfos.group.results.groupevaluationmeasures.coveragetestpackage;
 
-import java.io.File;
-import java.util.Collection;
-import org.junit.Test;
 import delfos.common.DateCollapse;
 import delfos.common.Global;
 import delfos.common.exceptions.dataset.CannotLoadContentDataset;
@@ -12,10 +9,13 @@ import delfos.common.exceptions.dataset.users.UserNotFound;
 import delfos.dataset.loaders.csv.CSVfileDatasetLoader;
 import delfos.dataset.util.DatasetPrinterDeprecated;
 import delfos.experiment.ExperimentListerner_default;
-import delfos.experiment.casestudy.ExecutionProgressListener;
 import delfos.experiment.casestudy.ExecutionProgressListener_default;
 import delfos.group.casestudy.GroupCaseStudy;
 import delfos.group.casestudy.defaultcase.DefaultGroupCaseStudy;
+import delfos.group.experiment.validation.groupformation.GivenGroups;
+import delfos.group.experiment.validation.groupformation.GroupFormationTechnique;
+import delfos.group.experiment.validation.predictionvalidation.NoPredictionProtocol;
+import delfos.group.experiment.validation.validationtechniques.HoldOutGroupRatedItems;
 import delfos.group.factories.GroupEvaluationMeasuresFactory;
 import delfos.group.groupsofusers.GroupOfUsers;
 import delfos.group.grs.aggregation.AggregationOfIndividualRatings;
@@ -25,14 +25,13 @@ import delfos.group.grs.filtered.filters.OutliersRatingsFilter;
 import delfos.group.grs.persistence.GroupRecommenderSystem_fixedFilePersistence;
 import delfos.group.io.xml.casestudy.GroupCaseStudyXML;
 import delfos.group.results.groupevaluationmeasures.GroupEvaluationMeasure;
-import delfos.group.experiment.validation.validationtechniques.HoldOutGroupRatedItems;
-import delfos.group.experiment.validation.groupformation.GivenGroups;
-import delfos.group.experiment.validation.groupformation.GroupFormationTechnique;
-import delfos.group.experiment.validation.predictionvalidation.NoPredictionProtocol;
 import delfos.rs.RecommenderSystemBuildingProgressListener_default;
 import delfos.rs.collaborativefiltering.knn.modelbased.KnnModelBasedCFRS;
 import delfos.rs.persistence.FailureInPersistence;
 import delfos.rs.persistence.FilePersistence;
+import java.io.File;
+import java.util.Collection;
+import org.junit.Test;
 
 /**
  * Test para comprobar la cobertura. Ahora mismo se utiliza como un main, pero
@@ -61,7 +60,7 @@ public class CheckCoverageTest {
 
     //@BeforeClass
     public static void setUpClass() throws FailureInPersistence, CannotLoadContentDataset, CannotLoadRatingsDataset {
-        Global.setVerbose();
+
         datasetLoader = new CSVfileDatasetLoader("datasets" + File.separator + "SSII - ratings9.csv", "datasets" + File.separator + "SSII - peliculas.csv");
 
         DatasetPrinterDeprecated.printGeneralInformation(datasetLoader.getRatingsDataset());
@@ -87,7 +86,6 @@ public class CheckCoverageTest {
 
     //@Test
     public void testWithFilter() throws CannotLoadContentDataset, CannotLoadRatingsDataset, UserNotFound, UserNotFound, ItemNotFound {
-        Global.setVerbose();
 
         GroupRecommenderSystem_fixedFilePersistence rs = new GroupRecommenderSystem_fixedFilePersistence(new GroupRecommenderSystemWithPreFilter(
                 new AggregationOfIndividualRatings(new KnnModelBasedCFRS()),
@@ -111,14 +109,11 @@ public class CheckCoverageTest {
         caseStudy.execute();
 
         GroupCaseStudyXML.saveCaseResults(caseStudy, prefix, defaultFileName);
-        Global.showMessage("================ FIN CON FILTRO=================== \n");
+        Global.showInfoMessage("================ FIN CON FILTRO=================== \n");
     }
 
-    //@Test
     public void testWithoutFilter() throws CannotLoadContentDataset, CannotLoadRatingsDataset, UserNotFound, UserNotFound, ItemNotFound {
-        Global.setVerbose();
-
-        Global.showMessage("================ INIT SIN FILTRO =================== \n");
+        Global.showInfoMessage("================ INIT SIN FILTRO =================== \n");
 
         GroupRecommenderSystem_fixedFilePersistence rs = new GroupRecommenderSystem_fixedFilePersistence(new GroupRecommenderSystemWithPreFilter(
                 new AggregationOfIndividualRatings(new KnnModelBasedCFRS()),
@@ -135,11 +130,8 @@ public class CheckCoverageTest {
         caseStudy.addExperimentListener(new ExperimentListerner_default(System.out, 10000));
         caseStudy.addExecutionProgressListener(new ExecutionProgressListener_default(System.out, 10000));
 
-        caseStudy.addExecutionProgressListener(new ExecutionProgressListener() {
-            @Override
-            public void executionProgressChanged(String proceso, int percent, long remainingMiliSeconds) {
-                System.out.println(proceso + " --> " + percent + "% (" + DateCollapse.collapse(remainingMiliSeconds) + ")");
-            }
+        caseStudy.addExecutionProgressListener((String proceso, int percent, long remainingMiliSeconds) -> {
+            System.out.println(proceso + " --> " + percent + "% (" + DateCollapse.collapse(remainingMiliSeconds) + ")");
         });
 
         String defaultFileName = GroupCaseStudyXML.getDefaultFileName(caseStudy);
@@ -150,6 +142,6 @@ public class CheckCoverageTest {
 
         GroupCaseStudyXML.saveCaseResults(caseStudy, prefix, defaultFileName);
 
-        Global.showMessage("================ FIN SIN FILTRO=================== \n");
+        Global.showInfoMessage("================ FIN SIN FILTRO=================== \n");
     }
 }

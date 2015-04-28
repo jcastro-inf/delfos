@@ -55,7 +55,7 @@ public class ConfigurationManager {
     public static void checkConfigurationDirectory(File configurationDirectory) {
 
         if (!configurationDirectory.exists()) {
-            Global.showMessage("The configuration directory '" + configurationDirectory + "' does not exists. Creating.");
+            Global.showInfoMessage("The configuration directory '" + configurationDirectory + "' does not exists. Creating.");
         } else if (!configurationDirectory.isDirectory()) {
             throw new IllegalArgumentException("The file '" + configurationDirectory + "' is not a directory, cannot be the configuration directory");
         }

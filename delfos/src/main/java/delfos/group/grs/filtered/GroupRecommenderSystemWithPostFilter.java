@@ -180,9 +180,9 @@ public class GroupRecommenderSystemWithPostFilter extends GroupRecommenderSystem
             all.put(99999999, aggregateListFiltered);
 
             if (Global.isVerboseAnnoying()) {
-                Global.showMessage("=============== DEBUG of post filter =========");
+                Global.showInfoMessage("=============== DEBUG of post filter =========");
                 DatasetPrinterDeprecated.printCompactRatingTable(all);
-                Global.showMessage("==============================================");
+                Global.showInfoMessage("==============================================");
             }
         }
 

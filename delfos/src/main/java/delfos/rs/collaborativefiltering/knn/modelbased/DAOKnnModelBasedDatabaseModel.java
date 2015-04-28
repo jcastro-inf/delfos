@@ -125,7 +125,7 @@ public class DAOKnnModelBasedDatabaseModel {
 
                 st.executeUpdate(consulta);
 
-                Global.showMessage("Saving profile --> " + (i * 100) / model.getNumProfiles() + "%\n");
+                Global.showInfoMessage("Saving profile --> " + (i * 100) / model.getNumProfiles() + "%\n");
                 i++;
             }
             st.close();

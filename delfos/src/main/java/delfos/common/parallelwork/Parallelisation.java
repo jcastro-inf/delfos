@@ -61,10 +61,10 @@ public final class Parallelisation {
             }
 
             limitNumThreads = numCPU;
-            Global.showMessage("The number of available active threads has been set to " + limitNumThreads + "\n");
+            Global.showInfoMessage("The number of available active threads has been set to " + limitNumThreads + "\n");
 
             if (limitNumThreads > Runtime.getRuntime().availableProcessors()) {
-                Global.showMessage("The number of threads is greater than the number of available processors!! ( " + limitNumThreads + " > " + Runtime.getRuntime().availableProcessors() + " )");
+                Global.showInfoMessage("The number of threads is greater than the number of available processors!! ( " + limitNumThreads + " > " + Runtime.getRuntime().availableProcessors() + " )");
             }
         }
     }

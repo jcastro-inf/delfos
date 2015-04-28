@@ -83,7 +83,7 @@ public class DatabaseManagerMySQLTest extends DelfosTest {
 
             statement.execute("Commit;");
 
-            Global.showMessage("Tables dropped.\n");
+            Global.showInfoMessage("Tables dropped.\n");
 
         }
     }

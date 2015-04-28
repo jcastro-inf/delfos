@@ -105,7 +105,7 @@ public class KnnMultiCorrelation extends CollaborativeRecommender<KnnMultiCorrel
     public Collection<Recommendation> recommendToUser(DatasetLoader<? extends Rating> datasetLoader, KnnMultiCorrelation_Model model, Integer idUser, java.util.Set<Integer> candidateItems) throws UserNotFound {
 
         if (Global.isVerboseAnnoying()) {
-            Global.showMessage(new Date().toGMTString() + " --> Recommending for user '" + idUser + "'\n");
+            Global.showInfoMessage(new Date().toGMTString() + " --> Recommending for user '" + idUser + "'\n");
         }
 
         try {
@@ -113,7 +113,7 @@ public class KnnMultiCorrelation extends CollaborativeRecommender<KnnMultiCorrel
 
             Collection<Recommendation> ret = recommendWithNeighbors(datasetLoader.getRatingsDataset(), idUser, neighbors, candidateItems);
             if (Global.isVerboseAnnoying()) {
-                Global.showMessage("Finished recommendations for user '" + idUser + "'\n");
+                Global.showInfoMessage("Finished recommendations for user '" + idUser + "'\n");
             }
             return ret;
         } catch (CannotLoadRatingsDataset ex) {

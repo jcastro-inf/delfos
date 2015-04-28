@@ -74,8 +74,6 @@ public class AggregationOfIndividualRatingsTest {
 
     @Test
     public void testWholeProccess() throws UserNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset, ItemNotFound, NotEnoughtUserInformation {
-        Global.setVerbose();
-
         final RatingsDataset<? extends Rating> ratingsDataset = datasetLoader.getRatingsDataset();
         final ContentDataset contentDataset = datasetLoader.getContentDataset();
 

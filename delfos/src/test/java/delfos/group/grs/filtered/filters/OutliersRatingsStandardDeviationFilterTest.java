@@ -1,24 +1,22 @@
 package delfos.group.grs.filtered.filters;
 
-import delfos.group.grs.filtered.filters.OutliersRatingsStandardDeviationFilter;
+import delfos.ERROR_CODES;
+import delfos.common.Global;
+import delfos.common.exceptions.dataset.users.UserNotFound;
+import delfos.configureddatasets.ConfiguredDatasetsFactory;
+import delfos.dataset.basic.loader.types.DatasetLoader;
+import delfos.dataset.basic.rating.Rating;
+import delfos.dataset.basic.rating.RatingsDataset;
+import delfos.dataset.generated.random.RandomDatasetLoader;
+import delfos.dataset.storage.memory.BothIndexRatingsDataset;
+import delfos.dataset.util.DatasetPrinterDeprecated;
+import delfos.dataset.util.DatasetUtilities;
+import delfos.group.groupsofusers.GroupOfUsers;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.TreeSet;
 import static org.junit.Assert.assertNotNull;
 import org.junit.Test;
-import delfos.ERROR_CODES;
-import delfos.common.Global;
-import delfos.common.exceptions.dataset.users.UserNotFound;
-import delfos.configureddatasets.ConfiguredDatasetsFactory;
-import delfos.dataset.basic.rating.Rating;
-import delfos.dataset.basic.rating.RatingsDataset;
-import delfos.dataset.generated.random.RandomDatasetLoader;
-import delfos.dataset.basic.loader.types.DatasetLoader;
-import delfos.dataset.storage.memory.BothIndexRatingsDataset;
-import delfos.dataset.util.DatasetPrinterDeprecated;
-import delfos.dataset.util.DatasetUtilities;
-import delfos.group.groupsofusers.GroupOfUsers;
-import delfos.group.groupsofusers.GroupOfUsers;
 
 /**
  *
@@ -31,10 +29,6 @@ public class OutliersRatingsStandardDeviationFilterTest {
 
     @Test
     public void testGetFilteredRatingsComplete5u10i() {
-        System.out.println("getFilteredRatings");
-
-        Global.setVerboseAnnoying();
-        System.out.println("");
 
         DatasetLoader<? extends Rating> datasetLoader = ConfiguredDatasetsFactory.getInstance().getDatasetLoader("complete-5u-10i");
         RatingsDataset<? extends Rating> ratingsDataset = datasetLoader.getRatingsDataset();
@@ -52,25 +46,21 @@ public class OutliersRatingsStandardDeviationFilterTest {
                 ERROR_CODES.USER_NOT_FOUND.exit(ex);
             }
         }
-        Global.showMessage("Original ratings of group\n");
+        Global.showInfoMessage("Original ratings of group\n");
         DatasetPrinterDeprecated.printCompactRatingTable(new BothIndexRatingsDataset(groupRatings), group.getGroupMembers(), items);
 
         Map<Integer, Map<Integer, Rating>> filteredRatings = instance.getFilteredRatings(ratingsDataset, group);
         assertNotNull(filteredRatings);
 
-        Global.showMessage("Original ratings of group\n");
+        Global.showInfoMessage("Original ratings of group\n");
         DatasetPrinterDeprecated.printCompactRatingTable(new BothIndexRatingsDataset(groupRatings), group.getGroupMembers(), items);
 
-        Global.showMessage("Filtered ratings of group\n");
+        Global.showInfoMessage("Filtered ratings of group\n");
         DatasetPrinterDeprecated.printCompactRatingTable(DatasetUtilities.getMapOfMaps_Number(filteredRatings), group.getGroupMembers(), items);
     }
 
     @Test
     public void testGetFilteredRatingsRandomDataset() {
-        System.out.println("getFilteredRatings");
-
-        Global.setVerboseAnnoying();
-        System.out.println("");
 
         RandomDatasetLoader datasetLoader = new RandomDatasetLoader(10, 10, 0.8);
         datasetLoader.setSeedValue(0);
@@ -90,16 +80,16 @@ public class OutliersRatingsStandardDeviationFilterTest {
                 ERROR_CODES.USER_NOT_FOUND.exit(ex);
             }
         }
-        Global.showMessage("Original ratings of group\n");
+        Global.showInfoMessage("Original ratings of group\n");
         DatasetPrinterDeprecated.printCompactRatingTable(new BothIndexRatingsDataset(groupRatings), group.getGroupMembers(), items);
 
         Map<Integer, Map<Integer, Rating>> filteredRatings = instance.getFilteredRatings(ratingsDataset, group);
         assertNotNull(filteredRatings);
 
-        Global.showMessage("Original ratings of group\n");
+        Global.showInfoMessage("Original ratings of group\n");
         DatasetPrinterDeprecated.printCompactRatingTable(new BothIndexRatingsDataset(groupRatings), group.getGroupMembers(), items);
 
-        Global.showMessage("Filtered ratings of group\n");
+        Global.showInfoMessage("Filtered ratings of group\n");
         DatasetPrinterDeprecated.printCompactRatingTable(DatasetUtilities.getMapOfMaps_Number(filteredRatings), group.getGroupMembers(), items);
     }
 }
