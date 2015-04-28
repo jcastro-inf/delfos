@@ -17,3 +17,6 @@
 /delfos/test-set/
 
 *~
+
+#Ignore compiled files everywhere
+*.jar
