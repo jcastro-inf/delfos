@@ -1,5 +1,24 @@
 package delfos.view.rsbuilder;
 
+import delfos.common.Global;
+import delfos.common.parameters.view.EditParameterDialog;
+import delfos.configfile.rs.single.RecommenderSystemConfigurationFileParser;
+import delfos.configuration.scopes.SwingGUIScope;
+import delfos.dataset.basic.loader.types.DatasetLoader;
+import delfos.dataset.basic.rating.Rating;
+import delfos.dataset.basic.rating.RelevanceCriteria;
+import delfos.factories.DatasetLoadersFactory;
+import delfos.factories.RecommendationCandidatesSelectorFactory;
+import delfos.factories.RecommendationsOutputMethodFactory;
+import delfos.factories.RecommenderSystemsFactory;
+import delfos.recommendationcandidates.RecommendationCandidatesSelector;
+import delfos.rs.GenericRecommenderSystem;
+import delfos.rs.RecommendationModelBuildingProgressListener;
+import delfos.rs.RecommenderSystemBuildingProgressListener_default;
+import delfos.rs.output.RecommendationsOutputMethod;
+import delfos.rs.persistence.DatabasePersistence;
+import delfos.rs.persistence.FilePersistence;
+import delfos.rs.persistence.PersistenceMethod;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Frame;
@@ -29,25 +48,6 @@ import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingConstants;
 import javax.swing.SwingWorker;
 import javax.swing.filechooser.FileNameExtensionFilter;
-import delfos.Path;
-import delfos.common.Global;
-import delfos.common.parameters.view.EditParameterDialog;
-import delfos.configfile.rs.single.RecommenderSystemConfigurationFileParser;
-import delfos.dataset.basic.rating.Rating;
-import delfos.dataset.basic.rating.RelevanceCriteria;
-import delfos.dataset.basic.loader.types.DatasetLoader;
-import delfos.factories.DatasetLoadersFactory;
-import delfos.factories.RecommendationCandidatesSelectorFactory;
-import delfos.factories.RecommendationsOutputMethodFactory;
-import delfos.factories.RecommenderSystemsFactory;
-import delfos.recommendationcandidates.RecommendationCandidatesSelector;
-import delfos.rs.GenericRecommenderSystem;
-import delfos.rs.RecommendationModelBuildingProgressListener;
-import delfos.rs.RecommenderSystemBuildingProgressListener_default;
-import delfos.rs.output.RecommendationsOutputMethod;
-import delfos.rs.persistence.DatabasePersistence;
-import delfos.rs.persistence.FilePersistence;
-import delfos.rs.persistence.PersistenceMethod;
 
 /**
  * Ventana para elegir los parámetros de un sistema de recomendación
@@ -380,12 +380,13 @@ public class RSBuilderFrame extends Frame {
      * este momento o no.
      */
     private void saveConfig(boolean build) {
-        JFileChooser jfc = new JFileChooser(Path.getPath());
+
+        JFileChooser jfc = new JFileChooser(SwingGUIScope.getInstance().getCurrentDirectory());
         jfc.setFileFilter(new FileNameExtensionFilter("Recommender System Configuration (XML)", "xml"));
         jfc.setDialogTitle("Save recommender system configuration XML file");
         int option = jfc.showSaveDialog(RSBuilderFrame.this);
         if (option == JFileChooser.APPROVE_OPTION) {
-            Path.setPath(jfc.getSelectedFile());
+            SwingGUIScope.getInstance().setCurrentDirectory(jfc.getSelectedFile());
             configFile = jfc.getSelectedFile().getAbsolutePath();
             if (configFile.endsWith("." + RecommenderSystemConfigurationFileParser.CONFIGURATION_EXTENSION)) {
                 configFile = configFile.substring(0, configFile.lastIndexOf("." + RecommenderSystemConfigurationFileParser.CONFIGURATION_EXTENSION));

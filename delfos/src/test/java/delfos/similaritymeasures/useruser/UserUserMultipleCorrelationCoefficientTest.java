@@ -123,15 +123,15 @@ public class UserUserMultipleCorrelationCoefficientTest {
 
         HistogramNumbersSmart histogramPccMulti = new HistogramNumbersSmart(.1);
 
-        File folder = new File(TestConstants.TEST_DATA_DIRECTORY + this.getClass().getSimpleName());
-        FileUtilities.deleteDirectoryRecursive(folder);
-        folder.mkdirs();
+        File directory = new File(TestConstants.TEST_DATA_DIRECTORY + this.getClass().getSimpleName());
+        FileUtilities.deleteDirectoryRecursive(directory);
+        directory.mkdirs();
 
         Chronometer chronometer = new Chronometer();
 
         String headerLine = "idTargeUser\tidNeighborUser\tidFriendOfNeighborUser\tpccMulti\tsim(a,b)\tsim(a,c)\tsim(b,c)\n";
 
-        try (FileWriter stdOutput = new FileWriter(folder + File.separator + "metodico.txt")) {
+        try (FileWriter stdOutput = new FileWriter(directory + File.separator + "metodico.txt")) {
 
             stdOutput.write(headerLine);
 
@@ -170,15 +170,15 @@ public class UserUserMultipleCorrelationCoefficientTest {
 
         HistogramNumbersSmart histogramPccMulti = new HistogramNumbersSmart(.1);
 
-        File folder = new File(TestConstants.TEST_DATA_DIRECTORY + this.getClass().getSimpleName());
-        FileUtilities.deleteDirectoryRecursive(folder);
-        folder.mkdirs();
+        File directory = new File(TestConstants.TEST_DATA_DIRECTORY + this.getClass().getSimpleName());
+        FileUtilities.deleteDirectoryRecursive(directory);
+        directory.mkdirs();
 
         Chronometer chronometer = new Chronometer();
 
         String headerLine = "idTargeUser\tidNeighborUser\tidFriendOfNeighborUser\tpccMulti\tsim(a,b)\tsim(a,c)\tsim(b,c)\n";
 
-        try (FileWriter stdOutput = new FileWriter(folder + File.separator + "std.txt"); FileWriter errOutput = new FileWriter(folder + File.separator + "err.txt"); FileWriter errExplainedOutput = new FileWriter(folder + File.separator + "err-explained.txt")) {
+        try (FileWriter stdOutput = new FileWriter(directory + File.separator + "std.txt"); FileWriter errOutput = new FileWriter(directory + File.separator + "err.txt"); FileWriter errExplainedOutput = new FileWriter(directory + File.separator + "err-explained.txt")) {
 
             stdOutput.write(headerLine);
             errOutput.write(headerLine);

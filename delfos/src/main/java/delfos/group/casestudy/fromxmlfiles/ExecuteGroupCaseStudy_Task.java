@@ -26,7 +26,7 @@ import delfos.group.results.groupevaluationmeasures.GroupEvaluationMeasure;
  */
 public class ExecuteGroupCaseStudy_Task extends Task {
 
-    private final File experimentsFolder;
+    private final File experimentsDirectory;
     private final String caseName;
     private final GroupCaseStudyConfiguration groupCaseStudyConfiguration;
     private final DatasetLoader<? extends Rating> datasetLoader;
@@ -35,7 +35,7 @@ public class ExecuteGroupCaseStudy_Task extends Task {
     private final long seed;
 
     public ExecuteGroupCaseStudy_Task(
-            File experimentsFolder,
+            File experimentsDirectory,
             String caseName,
             GroupCaseStudyConfiguration groupCaseStudyConfiguration,
             DatasetLoader<? extends Rating> datasetLoader,
@@ -43,7 +43,7 @@ public class ExecuteGroupCaseStudy_Task extends Task {
             int numExecutions,
             long seed) {
 
-        this.experimentsFolder = experimentsFolder;
+        this.experimentsDirectory = experimentsDirectory;
         this.caseName = caseName;
         this.groupCaseStudyConfiguration = groupCaseStudyConfiguration;
         this.datasetLoader = datasetLoader;
@@ -78,8 +78,8 @@ public class ExecuteGroupCaseStudy_Task extends Task {
         return datasetLoader;
     }
 
-    public File getExperimentsFolder() {
-        return experimentsFolder;
+    public File getExperimentsDirectory() {
+        return experimentsDirectory;
     }
 
     public Collection<GroupEvaluationMeasure> getGroupEvaluationMeasures() {

@@ -48,32 +48,32 @@ import delfos.similaritymeasures.CosineCoefficient;
 public class PenaltyGRSCaseStudy {
 
     public File cleanCaseStudyDirectories() {
-        String folderName = "experiments" + File.separator
+        String directoryName = "experiments" + File.separator
                 + this.getClass().getSimpleName() + File.separator;
-        File folder = new File(folderName);
-        if (folder.exists()) {
-            FileUtilities.deleteDirectoryRecursive(folder);
+        File directory = new File(directoryName);
+        if (directory.exists()) {
+            FileUtilities.deleteDirectoryRecursive(directory);
         }
-        FileUtilities.createDirectoryPath(folder);
-        return folder;
+        FileUtilities.createDirectoryPath(directory);
+        return directory;
     }
 
     @Test
     public void generateCaseXML() {
 
-        File folder = cleanCaseStudyDirectories();
+        File directory = cleanCaseStudyDirectories();
 
         List<GroupCaseStudy> groupCaseStudies = createPenaltyGroupCaseStudies();
 
         TuringPreparator turingPreparator = new TuringPreparator();
 
         turingPreparator.prepareGroupExperiment(
-                folder,
+                directory,
                 groupCaseStudies,
                 new ConfiguredDatasetLoader("ml-100k")
         );
 
-        //TuringPreparator.executeAllExperimentsInDirectory(folder);
+        //TuringPreparator.executeAllExperimentsInDirectory(directory);
     }
 
     public List<GroupCaseStudy> createPenaltyGroupCaseStudies() {

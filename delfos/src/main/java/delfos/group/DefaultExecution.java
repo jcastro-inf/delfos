@@ -166,8 +166,8 @@ public class DefaultExecution {
 //        ret.put("jester-3", jester3);
 //
 //        DatasetLoader<? extends Rating> movielens = new CSVfileDatasetLoader();
-//        movielens.setParameterValue(CSVfileDatasetLoader.RATINGS_FILE, new File(Path.getDatasetFolder() + File.separator + "movilens" + File.separator + "movi_ratings.csv"));
-//        movielens.setParameterValue(CSVfileDatasetLoader.CONTENT_FILE, new File(Path.getDatasetFolder() + File.separator + "movilens" + File.separator + "movi_peliculas.csv"));
+//        movielens.setParameterValue(CSVfileDatasetLoader.RATINGS_FILE, new File(Path.getDatasetDirectory() + File.separator + "movilens" + File.separator + "movi_ratings.csv"));
+//        movielens.setParameterValue(CSVfileDatasetLoader.CONTENT_FILE, new File(Path.getDatasetDirectory() + File.separator + "movilens" + File.separator + "movi_peliculas.csv"));
 //        ret.put("movielens", movielens);
         return ret;
     }

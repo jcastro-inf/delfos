@@ -56,16 +56,16 @@ public class ExecuteManyExperiments {
         init();
     }
 
-    private static ArrayList<CaseStudyConfiguration> getExperiments(File folder) {
+    private static ArrayList<CaseStudyConfiguration> getExperiments(File directory) {
         ArrayList<CaseStudyConfiguration> caseStudyConfigurationsList = new ArrayList<>();
 
-        if (!folder.exists()) {
-            throw new IllegalArgumentException("The file " + folder.getAbsolutePath() + " does not exists.");
+        if (!directory.exists()) {
+            throw new IllegalArgumentException("The file " + directory.getAbsolutePath() + " does not exists.");
         }
-        if (!folder.isDirectory()) {
-            throw new IllegalArgumentException("The file " + folder.getAbsolutePath() + " is not a directory.");
+        if (!directory.isDirectory()) {
+            throw new IllegalArgumentException("The file " + directory.getAbsolutePath() + " is not a directory.");
         }
-        File[] listOfFiles = folder.listFiles(
+        File[] listOfFiles = directory.listFiles(
                 (File pathname) -> pathname.getName().endsWith(".xml"));
 
         Collections.sort(Arrays.asList(listOfFiles));
@@ -89,15 +89,15 @@ public class ExecuteManyExperiments {
         return caseStudyConfigurationsList;
     }
 
-    private static ArrayList<DatasetLoader<? extends Rating>> getDatasets(File folder) {
+    private static ArrayList<DatasetLoader<? extends Rating>> getDatasets(File directory) {
         ArrayList<DatasetLoader<? extends Rating>> ret = new ArrayList<>();
-        if (!folder.exists()) {
-            throw new IllegalArgumentException("The file " + folder.getAbsolutePath() + " does not exists.");
+        if (!directory.exists()) {
+            throw new IllegalArgumentException("The file " + directory.getAbsolutePath() + " does not exists.");
         }
-        if (!folder.isDirectory()) {
-            throw new IllegalArgumentException("The file " + folder.getAbsolutePath() + " is not a directory.");
+        if (!directory.isDirectory()) {
+            throw new IllegalArgumentException("The file " + directory.getAbsolutePath() + " is not a directory.");
         }
-        File[] listOfFiles = folder.listFiles(
+        File[] listOfFiles = directory.listFiles(
                 (File pathname) -> pathname.getName().endsWith(".xml"));
 
         for (File configurationFile : listOfFiles) {

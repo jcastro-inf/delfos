@@ -45,10 +45,10 @@ public class MultiPearson_RSTest {
     @Test
     public void generateCaseXML() {
 
-        String experimentBaseFolderString = "experiments" + File.separator + MultiPearson_RSTest.class.getSimpleName() + File.separator;
-        File experimentBaseFolder = new File(experimentBaseFolderString);
+        String experimentBaseDirectoryString = "experiments" + File.separator + MultiPearson_RSTest.class.getSimpleName() + File.separator;
+        File experimentBaseDirectory = new File(experimentBaseDirectoryString);
 
-        FileUtilities.cleanDirectory(experimentBaseFolder);
+        FileUtilities.cleanDirectory(experimentBaseDirectory);
 
         final DatasetLoader<? extends Rating> datasetLoader = new RandomDatasetLoader();
         final int numEjecuciones = 1;
@@ -75,7 +75,7 @@ public class MultiPearson_RSTest {
         }
 
         TuringPreparator turingPreparator = new TuringPreparator();
-        turingPreparator.prepareExperiment(experimentBaseFolder, cases, new ConfiguredDatasetLoader("ml-100k"));
+        turingPreparator.prepareExperiment(experimentBaseDirectory, cases, new ConfiguredDatasetLoader("ml-100k"));
     }
 
     private static Iterable<RecommenderSystem> getRS() {

@@ -23,7 +23,7 @@ import delfos.main.Main;
 public class TuringPreparator implements ExperimentPreparator {
 
     @Override
-    public void prepareExperiment(File experimentBaseFolder, List<CaseStudy> caseStudies, DatasetLoader<? extends Rating> datasetLoader) {
+    public void prepareExperiment(File experimentBaseDirectory, List<CaseStudy> caseStudies, DatasetLoader<? extends Rating> datasetLoader) {
 
         int i = 0;
         for (CaseStudy caseStudy : caseStudies) {
@@ -32,15 +32,15 @@ public class TuringPreparator implements ExperimentPreparator {
             DecimalFormat format = new DecimalFormat("000");
 
             String experimentNumber = format.format(i++);
-            String thisIterationFolder = caseStudy.getAlias();
+            String thisIterationDirectory = caseStudy.getAlias();
 
-            //Clean folder
-            File finalFolderRS = new File(experimentBaseFolder + File.separator + thisIterationFolder);
-            File finalFolderDataset = new File(finalFolderRS + File.separator + "dataset");
-            FileUtilities.deleteDirectoryRecursive(finalFolderDataset);
-            finalFolderDataset.mkdirs();
+            //Clean directory
+            File finalDirectoryRS = new File(experimentBaseDirectory + File.separator + thisIterationDirectory);
+            File finalDirectoryDataset = new File(finalDirectoryRS + File.separator + "dataset");
+            FileUtilities.deleteDirectoryRecursive(finalDirectoryDataset);
+            finalDirectoryDataset.mkdirs();
 
-            File rsConfigFile = new File(finalFolderRS + File.separator + fileName);
+            File rsConfigFile = new File(finalDirectoryRS + File.separator + fileName);
             CaseStudyXML.saveCaseDescription(caseStudy, rsConfigFile.getAbsolutePath());
 
             //generateDatasetFile
@@ -49,7 +49,7 @@ public class TuringPreparator implements ExperimentPreparator {
                         datasetLoader
                 );
 
-                File datasetConfigFile = new File(finalFolderDataset + File.separator + datasetLoaderCaseStudy.getAlias() + ".xml");
+                File datasetConfigFile = new File(finalDirectoryDataset + File.separator + datasetLoaderCaseStudy.getAlias() + ".xml");
                 CaseStudyXML.saveCaseDescription(datasetLoaderCaseStudy, datasetConfigFile.getAbsolutePath());
             }
         }
@@ -57,7 +57,7 @@ public class TuringPreparator implements ExperimentPreparator {
 
     @Override
     public void prepareGroupExperiment(
-            File experimentBaseFolder,
+            File experimentBaseDirectory,
             List<GroupCaseStudy> groupCaseStudies,
             DatasetLoader<? extends Rating>... datasetLoaders) {
 
@@ -70,16 +70,16 @@ public class TuringPreparator implements ExperimentPreparator {
                 DecimalFormat format = new DecimalFormat("000");
 
                 String experimentNumber = format.format(i++);
-//                String thisIterationFolder = "experiment_" + experimentNumber;
-                String thisIterationFolder = "[" + datasetLoader.getAlias() + "]" + "_" + groupCaseStudy.getAlias();
+//                String thisIterationDirectory = "experiment_" + experimentNumber;
+                String thisIterationDirectory = "[" + datasetLoader.getAlias() + "]" + "_" + groupCaseStudy.getAlias();
 
-                //Clean folder
-                File finalFolderRS = new File(experimentBaseFolder + File.separator + thisIterationFolder);
-                File finalFolderDataset = new File(finalFolderRS + File.separator + "dataset");
-                FileUtilities.deleteDirectoryRecursive(finalFolderDataset);
-                finalFolderDataset.mkdirs();
+                //Clean directory
+                File finalDirectoryRS = new File(experimentBaseDirectory + File.separator + thisIterationDirectory);
+                File finalDirectoryDataset = new File(finalDirectoryRS + File.separator + "dataset");
+                FileUtilities.deleteDirectoryRecursive(finalDirectoryDataset);
+                finalDirectoryDataset.mkdirs();
 
-                File rsConfigFile = new File(finalFolderRS + File.separator + fileName);
+                File rsConfigFile = new File(finalDirectoryRS + File.separator + fileName);
                 GroupCaseStudyXML.saveCaseDescription(groupCaseStudy, rsConfigFile.getAbsolutePath());
 
                 //generateDatasetFile
@@ -88,7 +88,7 @@ public class TuringPreparator implements ExperimentPreparator {
                             datasetLoader
                     );
 
-                    File datasetConfigFile = new File(finalFolderDataset + File.separator + datasetLoaderCaseStudy.getAlias() + ".xml");
+                    File datasetConfigFile = new File(finalDirectoryDataset + File.separator + datasetLoaderCaseStudy.getAlias() + ".xml");
                     GroupCaseStudyXML.saveCaseDescription(datasetLoaderCaseStudy, datasetConfigFile.getAbsolutePath());
                 }
             }

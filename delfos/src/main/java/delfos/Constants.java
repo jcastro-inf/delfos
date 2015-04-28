@@ -2,11 +2,11 @@ package delfos;
 
 import delfos.common.Global;
 import delfos.common.parallelwork.Parallelisation;
+import delfos.configuration.ConfigurationManager;
 import delfos.view.InitialFrame;
 import delfos.view.SwingGUI;
 import delfos.view.recommendation.RecommendationWindow;
 import java.io.File;
-import java.io.IOException;
 import java.util.Locale;
 import org.jdom2.output.Format;
 
@@ -23,10 +23,17 @@ import org.jdom2.output.Format;
  */
 public class Constants {
 
+    public static class EnvironmentVariables {
+
+        public static final String HOME = "HOME";
+        public static final String DELFOS_LIB = "DELFOS_LIB";
+    }
+
     /**
-     * Directorio dentro del que sólo se guardan archivos de configuración.
+     * Parameter to specify the location of the directory that contains the
+     * configurations xml files.
      */
-    public static final File CONFIGURATION_FOLDER = new File("." + File.separator + ".config");
+    public static final String LIBRARY_CONFIGURATION_DIRECTORY = "-config";
 
     /**
      * Flag para indicar que no se desea obtener los mensajes de warning.
@@ -93,6 +100,10 @@ public class Constants {
     public static final int ERROR_RECOMMENDER_SYSTEM_DONT_IMPLEMENT_FILE_PERSISTENCE = 10;
 
     private static boolean printFullXML;
+    /**
+     * Nombre de esta biblioteca.
+     */
+    public static final String LIBRARY_NAME = "delfos";
 
     /**
      * Lanza la interfaz de recomendación, que permite ver qué recomendaciones
@@ -167,19 +178,15 @@ public class Constants {
      *
      * @param consoleParameters
      */
-    public static void start(ConsoleParameters consoleParameters) {
-
-        if (!CONFIGURATION_FOLDER.exists()) {
-            boolean mkdir = CONFIGURATION_FOLDER.mkdir();
-            if (!mkdir) {
-                IOException ex = new IOException("Cannot create '" + CONFIGURATION_FOLDER.getAbsolutePath() + "' folder");
-                ERROR_CODES.CANNOT_WRITE_LIBRARY_CONFIG_FILE.exit(ex);
-            }
-        } else {
-            Global.showMessage("Configuration folder exists. (" + CONFIGURATION_FOLDER.getAbsolutePath() + ")\n");
-        }
+    public static void initLibraryGeneralParameters(ConsoleParameters consoleParameters) {
 
         Locale.setDefault(Locale.ENGLISH);
+
+        if (consoleParameters.isDefined(LIBRARY_CONFIGURATION_DIRECTORY)) {
+            String configDirectory = consoleParameters.getValue(LIBRARY_CONFIGURATION_DIRECTORY);
+            ConfigurationManager.setConfigurationDirectory(new File(configDirectory + File.separator));
+        }
+        ConfigurationManager.createConfigurationDirectoryPathIfNotExists();
 
         if (consoleParameters.isDefined(THREAD_VERBOSE) || consoleParameters.isDefined(THREAD_VERBOSE_SHORT)) {
             Global.setThreadVerbose(true);

@@ -1,6 +1,7 @@
 package delfos.main.managers.experiment;
 
 import delfos.ConsoleParameters;
+import delfos.Constants;
 import delfos.common.Global;
 import delfos.main.managers.CaseUseManager;
 import delfos.view.SwingGUI;
@@ -8,14 +9,9 @@ import delfos.view.SwingGUI;
 /**
  *
  * @version 21-oct-2014
-* @author Jorge Castro Gallardo
+ * @author Jorge Castro Gallardo
  */
 public class SingleUserExperimentGUI implements CaseUseManager {
-
-    /**
-     * Nombre del jar de esta biblioteca.
-     */
-    public final static String JAR_NAME = "delfos.jar";
 
     /**
      * Argumento para indicar a la biblioteca que se debe utilizará para
@@ -43,7 +39,7 @@ public class SingleUserExperimentGUI implements CaseUseManager {
 
     @Override
     public void manageCaseUse(ConsoleParameters consoleParameters) {
-        Global.showMessage(JAR_NAME + " Using Experimentation GUI\n");
+        Global.showMessage(Constants.LIBRARY_NAME + " Using Experimentation GUI\n");
         SwingGUI.initEvaluationGUI();
     }
 
@@ -54,7 +50,7 @@ public class SingleUserExperimentGUI implements CaseUseManager {
         }
         System.out.print("\tEXPERIMENTATION\n");
         System.out.print("\t\t" + EXPERIMENT_GUI_ARGUMENT + ": The option " + EXPERIMENT_GUI_ARGUMENT + " is used to indicate that "
-                + "you want to use " + JAR_NAME + " with GUI\n");
+                + "you want to use " + Constants.LIBRARY_NAME + " with GUI\n");
         System.out.print("\t\n");
         return null;
     }

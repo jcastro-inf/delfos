@@ -1,10 +1,9 @@
 package delfos.main.managers;
 
-import delfos.main.managers.CaseUseManager;
-import java.util.List;
-import org.junit.Assert;
 import delfos.ConsoleParameters;
 import delfos.main.Main;
+import java.util.List;
+import org.junit.Assert;
 
 /**
  *

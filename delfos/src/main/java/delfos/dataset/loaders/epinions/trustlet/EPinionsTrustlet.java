@@ -1,15 +1,6 @@
 package delfos.dataset.loaders.epinions.trustlet;
 
 import com.google.common.io.LineReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.Map;
-import java.util.StringTokenizer;
-import delfos.Path;
 import delfos.common.Chronometer;
 import delfos.common.Global;
 import delfos.common.exceptions.dataset.CannotLoadContentDataset;
@@ -20,12 +11,16 @@ import delfos.common.exceptions.dataset.items.ItemAlreadyExists;
 import delfos.common.exceptions.dataset.users.UserAlreadyExists;
 import delfos.common.parameters.Parameter;
 import delfos.common.parameters.restriction.DirectoryParameter;
-import delfos.dataset.basic.item.ContentDataset;
-import delfos.dataset.basic.item.ContentDatasetDefault;
-import delfos.dataset.basic.item.Item;
 import delfos.dataset.basic.features.Feature;
 import delfos.dataset.basic.features.FeatureGenerator;
 import delfos.dataset.basic.features.FeatureType;
+import delfos.dataset.basic.item.ContentDataset;
+import delfos.dataset.basic.item.ContentDatasetDefault;
+import delfos.dataset.basic.item.Item;
+import delfos.dataset.basic.loader.types.ContentDatasetLoader;
+import delfos.dataset.basic.loader.types.DatasetLoaderAbstract;
+import delfos.dataset.basic.loader.types.TrustDatasetLoader;
+import delfos.dataset.basic.loader.types.UsersDatasetLoader;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RatingsDataset;
 import delfos.dataset.basic.trust.TrustDataset;
@@ -34,21 +29,25 @@ import delfos.dataset.basic.trust.TrustStatement;
 import delfos.dataset.basic.user.User;
 import delfos.dataset.basic.user.UsersDataset;
 import delfos.dataset.basic.user.UsersDatasetAdapter;
-import delfos.dataset.basic.loader.types.DatasetLoaderAbstract;
-import delfos.dataset.basic.loader.types.ContentDatasetLoader;
-import delfos.dataset.basic.loader.types.TrustDatasetLoader;
-import delfos.dataset.basic.loader.types.UsersDatasetLoader;
 import delfos.dataset.storage.memory.BothIndexRatingsDataset;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.Map;
+import java.util.StringTokenizer;
 
 /**
  *
-* @author Jorge Castro Gallardo
+ * @author Jorge Castro Gallardo
  *
  * @version 10-dic-2013
  */
 public class EPinionsTrustlet extends DatasetLoaderAbstract<Rating> implements UsersDatasetLoader, ContentDatasetLoader, TrustDatasetLoader {
 
-    public static final Parameter EPINIONS_TRUSTLET_FOLDER;
+    public static final Parameter EPINIONS_TRUSTLET_DIRECTORY;
 
     private RatingsDataset<Rating> ratingsDataset = null;
     private ContentDataset contentDataset = null;
@@ -56,13 +55,12 @@ public class EPinionsTrustlet extends DatasetLoaderAbstract<Rating> implements U
     private UsersDataset usersDataset = null;
 
     static {
-        String folder = Path.getDatasetDirectory();
-        File epinionsDatasetFolder = new File(folder + File.separator + "epinions" + File.separator);
-        EPINIONS_TRUSTLET_FOLDER = new Parameter("EPINIONS_TRUSTLET_FOLDER", new DirectoryParameter(epinionsDatasetFolder));
+        File epinionsDatasetDirectory = new File("." + File.separator + "datasets" + File.separator + "epinions" + File.separator);
+        EPINIONS_TRUSTLET_DIRECTORY = new Parameter("EPINIONS_TRUSTLET_DIRECTORY", new DirectoryParameter(epinionsDatasetDirectory));
     }
 
     public EPinionsTrustlet() {
-        addParameter(EPINIONS_TRUSTLET_FOLDER);
+        addParameter(EPINIONS_TRUSTLET_DIRECTORY);
 
         addParammeterListener(() -> {
             ratingsDataset = null;
@@ -72,13 +70,13 @@ public class EPinionsTrustlet extends DatasetLoaderAbstract<Rating> implements U
         });
     }
 
-    private File getFolder() {
-        return (File) getParameterValue(EPINIONS_TRUSTLET_FOLDER);
+    private File getDirectory() {
+        return (File) getParameterValue(EPINIONS_TRUSTLET_DIRECTORY);
     }
 
     private void loadDataset() {
         if (ratingsDataset == null) {
-            String folder = getFolder().getAbsolutePath();
+            String directory = getDirectory().getAbsolutePath();
 
             Map<Long, Integer> idUsers = new HashMap<>();
             Map<Long, Integer> idItems = new HashMap<>();
@@ -88,7 +86,7 @@ public class EPinionsTrustlet extends DatasetLoaderAbstract<Rating> implements U
             try {
                 //graphBuilder.addFriendshipRelations(trustFile);
 
-                String trustFile = folder + File.separator + "user_rating.txt";
+                String trustFile = directory + File.separator + "user_rating.txt";
                 Collection<TrustStatement> trustStatements = new LinkedList<>();
                 LineReader lineReader = new LineReader(new FileReader(trustFile));
 
@@ -130,7 +128,7 @@ public class EPinionsTrustlet extends DatasetLoaderAbstract<Rating> implements U
             }
 
             try {
-                String contentFile = folder + File.separator + "mc.txt";
+                String contentFile = directory + File.separator + "mc.txt";
                 //graphBuilder.addAuthorRelations(contentFile);
                 FeatureGenerator featureGenerator = new FeatureGenerator();
                 Feature authorFeature = featureGenerator.createFeature("author", FeatureType.Nominal);
@@ -229,7 +227,7 @@ public class EPinionsTrustlet extends DatasetLoaderAbstract<Rating> implements U
             }
 
             try {
-                String ratingsFile = folder + File.separator + "rating.txt";
+                String ratingsFile = directory + File.separator + "rating.txt";
                 //graphBuilder.addRatingRelations(ratingPath);
                 Collection<Rating> ratings = new LinkedList<>();
 
@@ -292,8 +290,8 @@ public class EPinionsTrustlet extends DatasetLoaderAbstract<Rating> implements U
         return ratingsDataset;
     }
 
-    public File getDatasetFolder() {
-        return (File) getParameterValue(EPINIONS_TRUSTLET_FOLDER);
+    public File getDatasetDirectory() {
+        return (File) getParameterValue(EPINIONS_TRUSTLET_DIRECTORY);
     }
 
     @Override

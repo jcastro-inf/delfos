@@ -1,11 +1,12 @@
 package delfos.common.parameters;
 
+import delfos.common.Global;
+import delfos.common.parameters.restriction.CannotParseParameterValue;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.Objects;
 import java.util.TreeMap;
-import delfos.common.Global;
-import delfos.common.parameters.restriction.CannotParseParameterValue;
 
 /**
  * Clase que define el comportamiento de cualquier objeto al que se le puedan
@@ -309,5 +310,33 @@ public abstract class ParameterOwnerAdapter implements ParameterOwner {
      */
     public static int compare(ParameterOwner o1, ParameterOwner o2) {
         return o1.getNameWithParameters().compareTo(o2.getNameWithParameters());
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (!(obj instanceof ParameterOwner)) {
+            return false;
+        } else {
+            ParameterOwner parameterOwner = (ParameterOwner) obj;
+
+            return equalsIgnoreAlias(parameterOwner);
+        }
+    }
+
+    private boolean equalsIgnoreAlias(ParameterOwner parameterOwner) {
+        String regex = ALIAS.getName() + "=([^\\s]+)";
+
+        String myNameWithParameters = this.getNameWithParameters().replaceAll(regex, "");
+        String otherNameWithParameters = parameterOwner.getNameWithParameters().replaceAll(regex, "");
+
+        boolean equals = myNameWithParameters.equals(otherNameWithParameters);
+        return equals;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 5;
+        hash = 13 * hash + Objects.hashCode(this.parameterValues);
+        return hash;
     }
 }

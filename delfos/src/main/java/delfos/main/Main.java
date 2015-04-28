@@ -1,10 +1,8 @@
 package delfos.main;
 
-import java.util.ArrayList;
-import java.util.List;
 import delfos.ConsoleParameters;
-import delfos.ERROR_CODES;
 import delfos.Constants;
+import delfos.ERROR_CODES;
 import delfos.common.Chronometer;
 import delfos.common.Global;
 import delfos.main.exceptions.ManyCaseUseManagersActivatedException;
@@ -12,6 +10,8 @@ import delfos.main.exceptions.NoCaseUseManagersActivatedException;
 import delfos.main.managers.CaseUseManager;
 import delfos.main.managers.database.DatabaseManager;
 import delfos.main.managers.library.Help;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Clase que define el punto de entrada de la biblioteca de recomendación cuando
@@ -31,7 +31,7 @@ public class Main {
         c.reset();
 
         ConsoleParameters consoleParameters = ConsoleParameters.parseArguments(args);
-        Constants.start(consoleParameters);
+        Constants.initLibraryGeneralParameters(consoleParameters);
         Global.showMessage("Starting\n");
 
         List<CaseUseManager> caseUseManagers = getAllCaseUseManagers();
@@ -91,6 +91,8 @@ public class Main {
         caseUseManagers.add(delfos.main.managers.database.helpers.CreateDefaultManageDatabaseCSV.getInstance());
         caseUseManagers.add(delfos.main.managers.database.helpers.CreateDefaultManageDatabaseMySQL.getInstance());
         caseUseManagers.add(delfos.main.managers.recommendation.nonpersonalised.helpers.CreateDefaultNonPersonalisedRecommender.getInstance());
+
+        caseUseManagers.add(delfos.main.managers.library.install.InitialConfiguration.getInstance());
 
         return caseUseManagers;
     }
