@@ -4,10 +4,6 @@ import delfos.common.parameters.ParameterOwnerAdapter;
 import delfos.common.parameters.ParameterOwnerType;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RelevanceCriteria;
-import delfos.dataset.basic.loader.types.ContentDatasetLoader;
-import delfos.dataset.basic.loader.types.DatasetLoader;
-import delfos.dataset.basic.loader.types.TrustDatasetLoader;
-import delfos.dataset.basic.loader.types.UsersDatasetLoader;
 
 /**
  * Establece las operaciones que un <code>DatasetLoader</code> debe implementar.

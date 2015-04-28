@@ -1,8 +1,8 @@
 package delfos.common.parameters;
 
-import java.io.Serializable;
 import delfos.common.parameters.restriction.CannotParseParameterValue;
 import delfos.common.parameters.restriction.ParameterRestriction;
+import java.io.Serializable;
 
 /**
  * Parámetro de uno de los algoritmos de la biblioteca. Se utiliza por la clase
@@ -10,7 +10,7 @@ import delfos.common.parameters.restriction.ParameterRestriction;
  * restricción que compruebe que su valor es válido (satisface la restricción)
  * en todo momento.
  *
-* @author Jorge Castro Gallardo
+ * @author Jorge Castro Gallardo
  *
  * @version 1.0 Unknown date
  * @version 1.1 (21-02-2013)
@@ -133,8 +133,7 @@ public class Parameter implements Comparable<Parameter>, Serializable {
      *
      * @return Objeto asociado a la cadena, null si no se puede transformar a un
      * valor acorde con la restricción.
-     * @throws
-     * delfos.common.parameters.restriction.CannotParseParameterValue
+     * @throws delfos.common.parameters.restriction.CannotParseParameterValue
      */
     public Object parseString(String stringParameterValue) throws CannotParseParameterValue {
         try {
@@ -180,4 +179,5 @@ public class Parameter implements Comparable<Parameter>, Serializable {
             return description;
         }
     }
+
 }
