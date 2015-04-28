@@ -39,7 +39,7 @@ public class InitialConfiguration implements CaseUseManager {
             throw new IllegalStateException("This is not the right manager for the command line '" + consoleParameters.printOriginalParameters());
         }
 
-        Global.showMessage("Performing initial configuration of '" + Constants.LIBRARY_NAME + "' library");
+        Global.showMessage("Initial configuration of '" + Constants.LIBRARY_NAME + "' library\n");
 
         File configuredDatasetsXML;
 
@@ -69,18 +69,26 @@ public class InitialConfiguration implements CaseUseManager {
         String name = "ml-100k";
         String description = "MovieLens 100 thousands ratings.";
 
-        String datasetDirectory = System.getenv("DELFOS_PATH");
-        if (datasetDirectory == null) {
-            datasetDirectory = configuredDatasetsDirectory.getParentFile().getParentFile().getAbsolutePath() + File.separator + "datasets";
+        File datasetDirectory;
+        if (System.getenv("DELFOS_LIB") == null) {
+            datasetDirectory = new File(configuredDatasetsDirectory.getParentFile().getParentFile().getAbsolutePath()
+                    + File.separator + "datasets");
+        } else {
+            datasetDirectory = new File(System.getenv("DELFOS_LIB"));
         }
 
-        if (!new File(datasetDirectory).exists()) {
-            ERROR_CODES.CANNOT_LOAD_RATINGS_DATASET.exit(new FileNotFoundException("Cannot find directory '" + new File(datasetDirectory).getAbsolutePath() + "' of the initial datasets."));
+        Global.showMessage("Configure datasets from directory '" + datasetDirectory + "'\n");
+
+        if (!datasetDirectory.exists()) {
+            ERROR_CODES.CANNOT_LOAD_RATINGS_DATASET.exit(new FileNotFoundException("Cannot find directory '" + datasetDirectory.getAbsolutePath() + "' of the initial datasets."));
         }
 
-        File ml100kDirectory = new File(datasetDirectory + File.separator + "ml-100k");
+        File ml100kDirectory = new File(datasetDirectory.getAbsolutePath()
+                + File.separator + "ml-100k");
+
+        Global.showMessage("Searching 'ml-100k' dataset in directory '" + ml100kDirectory.getAbsolutePath() + "'\n");
         if (!ml100kDirectory.exists()) {
-            ERROR_CODES.CANNOT_LOAD_RATINGS_DATASET.exit(new FileNotFoundException("Cannot find directory '" + new File(datasetDirectory).getAbsolutePath() + "' of the ml-100k dataset."));
+            ERROR_CODES.CANNOT_LOAD_RATINGS_DATASET.exit(new FileNotFoundException("Cannot find directory '" + datasetDirectory.getAbsolutePath() + "' of the ml-100k dataset."));
         }
 
         ConfiguredDatasetsFactory.getInstance().addDatasetLoader(
@@ -89,6 +97,8 @@ public class InitialConfiguration implements CaseUseManager {
                 new MovieLens100k(ml100kDirectory)
         );
         ConfiguredDatasets.getInstance().saveConfiguredDatasets();
+        Global.showMessage("Configured datasets were saved in '"
+                + ConfiguredDatasets.getInstance().getConfigurationFile() + "'\n");
 
     }
 

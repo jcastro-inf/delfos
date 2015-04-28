@@ -132,4 +132,8 @@ public abstract class Configuration {
             }
         }
     }
+
+    public File getConfigurationFile() {
+        return ConfigurationManager.getConfigurationFile(this);
+    }
 }
