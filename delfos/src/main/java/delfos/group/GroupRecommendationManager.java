@@ -63,7 +63,7 @@ public class GroupRecommendationManager {
             topN = Integer.parseInt(consoleParameters.getValue(TOP_N_VALUE));
         } else {
             topN = 4;
-            Global.showMessage("Using default value for topN: '" + topN + "'\n");
+            Global.showInfoMessage("Using default value for topN: '" + topN + "'\n");
         }
 
         if (consoleParameters.isDefined(GRS_CONFIG_FILE_PARAMETER)) {
@@ -105,13 +105,13 @@ public class GroupRecommendationManager {
 
         boolean correctOption = false;
         if (consoleParameters.isDefined(BUILD_MODEL_PARAMETER)) {
-            Global.showMessage("Building model for grs described in file '" + configFile_grs.getAbsolutePath() + "'\n");
+            Global.showInfoMessage("Building model for grs described in file '" + configFile_grs.getAbsolutePath() + "'\n");
 
             Object recommendationModel = groupRecommenderSystem.buildRecommendationModel(datasetLoader);
 
             groupRecommenderSystem.saveRecommendationModel(grsFilePersistence, recommendationModel);
 
-            Global.showMessage("Building model for rs described in file '" + configFile_rs.getAbsolutePath() + "'\n");
+            Global.showInfoMessage("Building model for rs described in file '" + configFile_rs.getAbsolutePath() + "'\n");
             Object recommendationModel_singleUser = recommenderSystem.buildRecommendationModel(datasetLoader);
 
             recommenderSystem.saveRecommendationModel(rsFilePersistence, recommendationModel_singleUser);
@@ -120,7 +120,7 @@ public class GroupRecommendationManager {
         }
 
         if (consoleParameters.isDefined(GROUP_MEMBERS_PARAMETER)) {
-            Global.showMessage("Recommending for grs described in file '" + configFile_grs.getAbsolutePath() + "'\n");
+            Global.showInfoMessage("Recommending for grs described in file '" + configFile_grs.getAbsolutePath() + "'\n");
 
             List<Recommendation> groupRecommendations;
             Map<Integer, Collection<Recommendation>> singleUserRecommendations = new TreeMap<>();
@@ -135,7 +135,7 @@ public class GroupRecommendationManager {
                     return false;
                 }
 
-                Global.showMessage("Group of users " + list + "\n");
+                Global.showInfoMessage("Group of users " + list + "\n");
 
                 List<Integer> groupMembers = new ArrayList<>();
                 for (String idUser : list) {
@@ -162,10 +162,10 @@ public class GroupRecommendationManager {
                 users = datasetLoader.getRatingsDataset().allUsers();
             }
 
-            Global.showMessage("Dataset:\n");
-            Global.showMessage("\tUsers:   " + users.size() + "\n");
-            Global.showMessage("\tItems:   " + items.size() + "\n");
-            Global.showMessage("\tRatings: " + grsc.datasetLoader.getRatingsDataset().getNumRatings() + "\n");
+            Global.showInfoMessage("Dataset:\n");
+            Global.showInfoMessage("\tUsers:   " + users.size() + "\n");
+            Global.showInfoMessage("\tItems:   " + items.size() + "\n");
+            Global.showInfoMessage("\tRatings: " + grsc.datasetLoader.getRatingsDataset().getNumRatings() + "\n");
             Set<Integer> candidateItems = new TreeSet<>();
             candidateItems.addAll(items);
 
@@ -242,7 +242,7 @@ public class GroupRecommendationManager {
                     }
                 }
 
-                Global.showMessage("Finished intersection of recommendations.\n");
+                Global.showInfoMessage("Finished intersection of recommendations.\n");
             }
 
             {
@@ -268,7 +268,7 @@ public class GroupRecommendationManager {
                     }
                 }
 
-                Global.showMessage("Finished topN selection of recommendations.\n");
+                Global.showInfoMessage("Finished topN selection of recommendations.\n");
 
             }
             File outputFile = new File("consensus_" + group.toString() + ".xml");

@@ -1,17 +1,15 @@
 package delfos.group.groupsofusers.measuresovergroups;
 
-import delfos.group.groupsofusers.measuresovergroups.FuzzyCliqueMeasure;
-import org.junit.Test;
 import delfos.common.Global;
 import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
+import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RatingsDataset;
 import delfos.dataset.generated.random.RandomDatasetLoader;
-import delfos.dataset.basic.loader.types.DatasetLoader;
-import delfos.group.groupsofusers.GroupOfUsers;
 import delfos.group.groupsofusers.GroupOfUsers;
 import delfos.rs.trustbased.WeightedGraphAdapter;
 import delfos.rs.trustbased.implicittrustcomputation.ShambourLu_UserBasedImplicitTrustComputation;
+import org.junit.Test;
 
 /**
  * Test para evaluar el cálculo de la medida de cohesión del grupo a través de
@@ -30,9 +28,6 @@ public class FuzzyCliqueMeasureTest {
      */
     @Test
     public void testGetMeasure() throws CannotLoadRatingsDataset {
-
-        Global.setVerbose();
-        System.out.println("getMeasure");
 
         DatasetLoader<? extends Rating> datasetLoader = new RandomDatasetLoader(5, 5, 0.2);
         RatingsDataset<? extends Rating> ratingsDataset = datasetLoader.getRatingsDataset();
@@ -55,10 +50,9 @@ public class FuzzyCliqueMeasureTest {
 
                     double result = fuzzyClique.getMeasure(datasetLoader, group);
 
-                    Global.showMessage("Group " + group + " has a clique value of " + result + "\n");
+                    Global.showInfoMessage("Group " + group + " has a clique value of " + result + "\n");
                 }
             }
         }
-        Global.showMessage("Fin.\n");
     }
 }

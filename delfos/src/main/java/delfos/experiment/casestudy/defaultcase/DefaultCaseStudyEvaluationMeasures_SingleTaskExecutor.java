@@ -32,7 +32,7 @@ public class DefaultCaseStudyEvaluationMeasures_SingleTaskExecutor
         task.evaluationMeasures = null;
         task.testSet = null;
 
-        Global.showMessage("Finished task " + task.toString() + "\n");
+        Global.showInfoMessage("Finished task " + task.toString() + "\n");
     }
 
 }

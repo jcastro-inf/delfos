@@ -58,7 +58,7 @@ public class LearningToOrderThings {
                 }
             }
             
-            Global.showMessage("Quedan "+V.size()+" elementos\n");
+            Global.showInfoMessage("Quedan "+V.size()+" elementos\n");
         }
         return ret;
     }
@@ -115,7 +115,7 @@ public class LearningToOrderThings {
                 throw new UnsupportedOperationException("the element t is not in the list");
             }
             heuristic = heuristic(V, preff);
-            Global.showMessage("Quedan "+V.size()+" elementos\n");
+            Global.showInfoMessage("Quedan "+V.size()+" elementos\n");
         }
         return ret;
     }

@@ -111,7 +111,7 @@ public class Jester extends DatasetLoaderAbstract {
 
                 nullRatings.removeAllOccurrences(new Float(99));
                 if (!nullRatings.isEmpty()) {
-                    Global.showMessage(nullRatings.printContent());
+                    Global.showInfoMessage(nullRatings.printContent());
                 }
                 Feature[] features = new Feature[0];
                 Object[] values = new Object[0];

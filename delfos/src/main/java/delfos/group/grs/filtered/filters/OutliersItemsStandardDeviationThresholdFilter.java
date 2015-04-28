@@ -64,14 +64,14 @@ public class OutliersItemsStandardDeviationThresholdFilter extends GroupRatingsF
         });
 
         if (Global.isVerboseAnnoying()) {
-            Global.showMessage("Initial\t" + itemsSortedByStandardDeviation + "\n");
+            Global.showInfoMessage("Initial\t" + itemsSortedByStandardDeviation + "\n");
         }
 
         Collections.sort(itemsSortedByStandardDeviation);
         Collections.reverse(itemsSortedByStandardDeviation);
 
         if (Global.isVerboseAnnoying()) {
-            Global.showMessage("Sorted\t" + itemsSortedByStandardDeviation + "\n");
+            Global.showInfoMessage("Sorted\t" + itemsSortedByStandardDeviation + "\n");
         }
 
         List<Integer> itemsRemaining = new ArrayList<>();

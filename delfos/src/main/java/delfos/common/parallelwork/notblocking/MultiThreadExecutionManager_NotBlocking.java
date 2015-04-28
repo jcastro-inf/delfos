@@ -123,13 +123,13 @@ public class MultiThreadExecutionManager_NotBlocking<TaskType extends Task> impl
                             if (listOfTasks_Finished.size() == numTasksAdded) {
                                 break;
                             } else {
-                                //Global.showMessage(taskName + " todas las tareas están asignadas, pero no ejecutadas\n");
+                                //Global.showInfoMessage(taskName + " todas las tareas están asignadas, pero no ejecutadas\n");
                             }
                         } else {
-                            //Global.showMessage(taskName + " quedan tareas sin asignar.\n");
+                            //Global.showInfoMessage(taskName + " quedan tareas sin asignar.\n");
                         }
                     } else {
-                        //Global.showMessage(taskName + " aun no ha sido bloqueado.\n");
+                        //Global.showInfoMessage(taskName + " aun no ha sido bloqueado.\n");
                     }
                 }
             }

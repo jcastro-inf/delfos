@@ -108,9 +108,9 @@ public class UsersDatasetToMySQL {
                 }
                 insert.append(");");
 
-                Global.showMessage("===================\n");
-                Global.showMessage(insert + "\n");
-                Global.showMessage("===================\n");
+                Global.showInfoMessage("===================\n");
+                Global.showInfoMessage(insert + "\n");
+                Global.showInfoMessage("===================\n");
                 statement.executeUpdate(insert.toString());
             }
         }

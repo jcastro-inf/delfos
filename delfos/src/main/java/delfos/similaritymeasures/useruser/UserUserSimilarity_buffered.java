@@ -132,7 +132,7 @@ public class UserUserSimilarity_buffered extends SimilarityMeasureAdapter implem
                 similarity = (Double) ois.readObject();
 
 //                if (Global.isVerboseAnnoying()) {
-//                    Global.showMessage("The similarity has been loaded: \n" + similarity + "\n");
+//                    Global.showInfoMessage("The similarity has been loaded: \n" + similarity + "\n");
 //                }
             } catch (ClassNotFoundException ex) {
                 ERROR_CODES.DEPENDENCY_NOT_FOUND.exit(ex);

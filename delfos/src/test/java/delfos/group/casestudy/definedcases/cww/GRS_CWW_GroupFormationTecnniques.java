@@ -1,30 +1,29 @@
 package delfos.group.casestudy.definedcases.cww;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import org.junit.Test;
-import delfos.common.Global;
 import delfos.configureddatasets.ConfiguredDatasetLoader;
 import delfos.constants.DelfosTest;
-import delfos.dataset.basic.rating.RelevanceCriteria;
 import delfos.dataset.basic.loader.types.DatasetLoader;
+import delfos.dataset.basic.rating.RelevanceCriteria;
 import delfos.experiment.casestudy.cluster.TuringPreparator;
 import delfos.group.casestudy.GroupCaseStudy;
 import delfos.group.casestudy.defaultcase.DefaultGroupCaseStudy;
-import delfos.group.factories.GroupEvaluationMeasuresFactory;
-import delfos.group.grs.GroupRecommenderSystem;
-import delfos.group.grs.svd.SVDforGroup_ratingsAggregation;
-import delfos.group.results.groupevaluationmeasures.GroupEvaluationMeasure;
-import delfos.group.experiment.validation.validationtechniques.CrossFoldValidation_Ratings;
-import delfos.group.experiment.validation.validationtechniques.GroupValidationTechnique;
 import delfos.group.experiment.validation.groupformation.FixedGroupSize_OnlyNGroups;
 import delfos.group.experiment.validation.groupformation.GroupFormationTechnique;
 import delfos.group.experiment.validation.groupformation.SimilarMembers;
 import delfos.group.experiment.validation.groupformation.SimilarMembers_except;
 import delfos.group.experiment.validation.predictionvalidation.GroupPredictionProtocol;
 import delfos.group.experiment.validation.predictionvalidation.NoPredictionProtocol;
+import delfos.group.experiment.validation.validationtechniques.CrossFoldValidation_Ratings;
+import delfos.group.experiment.validation.validationtechniques.GroupValidationTechnique;
+import delfos.group.factories.GroupEvaluationMeasuresFactory;
+import delfos.group.grs.GroupRecommenderSystem;
+import delfos.group.grs.svd.SVDforGroup_ratingsAggregation;
+import delfos.group.results.groupevaluationmeasures.GroupEvaluationMeasure;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import org.junit.Test;
 
 /**
  * Para comprobar como afecta la generación del grupo al performance del mismo
@@ -40,7 +39,6 @@ public class GRS_CWW_GroupFormationTecnniques extends DelfosTest {
 
     @Test
     public void makeCasesAndExecuteLocaly() {
-        Global.setNoVerbose();
 
         String experimentBaseDirectoryString = "experiments" + File.separator + this.getClass().getSimpleName() + File.separator;
         File experimentBaseDirectory = new File(experimentBaseDirectoryString);

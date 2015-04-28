@@ -144,7 +144,7 @@ public class CrossFoldValidation_Items extends GroupValidationTechnique {
             for (int idPartition = 0; idPartition < getNumberOfSplits(); idPartition++) {
                 Set<Integer> testItems = itemsTestSets.get(idPartition);
                 if (Global.isVerboseAnnoying()) {
-                    Global.showMessage(testItems + "\n");
+                    Global.showInfoMessage(testItems + "\n");
                 }
 
                 for (GroupOfUsers group : groupsOfUsers) {
@@ -172,25 +172,25 @@ public class CrossFoldValidation_Items extends GroupValidationTechnique {
 
                 if (Global.isVerboseAnnoying()) {
 
-                    Global.showMessage("==================================================== \n");
+                    Global.showInfoMessage("==================================================== \n");
 
                     Set<Integer> allUsers = new TreeSet<>();
                     for (GroupOfUsers g : groupsOfUsers) {
                         allUsers.addAll(g.getGroupMembers());
                     }
 
-                    Global.showMessage("Dataset de training " + idPartition + ".\n");
+                    Global.showInfoMessage("Dataset de training " + idPartition + ".\n");
                     DatasetPrinterDeprecated.printCompactRatingTable(
                             ret[idPartition].train,
                             allUsers,
                             allItems);
 
-                    Global.showMessage("Dataset de test " + idPartition + ".\n");
+                    Global.showInfoMessage("Dataset de test " + idPartition + ".\n");
                     DatasetPrinterDeprecated.printCompactRatingTable(
                             ret[idPartition].test,
                             allUsers,
                             allItems);
-                    Global.showMessage("==================================================== \n");
+                    Global.showInfoMessage("==================================================== \n");
                 }
             } catch (UserNotFound ex) {
                 ERROR_CODES.USER_NOT_FOUND.exit(ex);

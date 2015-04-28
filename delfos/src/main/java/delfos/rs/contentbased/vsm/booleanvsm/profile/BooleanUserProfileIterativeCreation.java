@@ -239,7 +239,7 @@ public class BooleanUserProfileIterativeCreation implements BooleanUserProfile, 
             for (Object featureValue : getValuedFeatureValues(feature)) {
                 if (this.getFeatureValueValue(feature, featureValue) == 0) {
                     _profileValues.get(feature).remove(featureValue);
-                    Global.showMessage("DEL: " + feature + "-->" + featureValue);
+                    Global.showInfoMessage("DEL: " + feature + "-->" + featureValue);
                 }
             }
         }

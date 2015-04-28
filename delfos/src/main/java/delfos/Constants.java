@@ -26,7 +26,6 @@ public class Constants {
     public static class EnvironmentVariables {
 
         public static final String HOME = "HOME";
-        public static final String DELFOS_LIB = "DELFOS_LIB";
     }
 
     /**
@@ -38,7 +37,7 @@ public class Constants {
     /**
      * Flag para indicar que no se desea obtener los mensajes de warning.
      */
-    public static final String HIDE_WARNINGS = "-hideWarnings";
+    public static final String WARNINGS = "--warning";
     /**
      * Flag que indica que se deben mostrar mensajes de los procesos que se
      * ejecutan.
@@ -188,24 +187,8 @@ public class Constants {
         }
         ConfigurationManager.createConfigurationDirectoryPathIfNotExists();
 
-        if (consoleParameters.isDefined(THREAD_VERBOSE) || consoleParameters.isDefined(THREAD_VERBOSE_SHORT)) {
-            Global.setThreadVerbose(true);
-        }
-
-        if (consoleParameters.isDefined(VERBOSE) || consoleParameters.isDefined(VERBOSE_SHORT)) {
-            Global.setVerbose();
-        }
-
-        if (consoleParameters.isDefined(VERBOSE_ANNOYING)) {
-            Global.setVerboseAnnoying();
-        }
-
-        if (consoleParameters.isDefined(HIDE_WARNINGS)) {
-            Global.setShowWarnings(false);
-        }
-        if (consoleParameters.isDefined(HIDE_ERRORS)) {
-            Global.setShowErrors(false);
-        }
+        Global.MessageLevel printMessageLevel = Global.MessageLevel.getPrintMessageLevel(consoleParameters);
+        Global.setMessageLevel(printMessageLevel);
 
         if (consoleParameters.isDefined(DOUBLE_PRINT)) {
             Global.setDoublePrint(true);
@@ -261,11 +244,9 @@ public class Constants {
      * depuración. Se debe activar antes de los test Junit.
      */
     public static void setJUnitTestMode() {
-        Global.setVerbose();
         Global.setDoublePrint(false);
         setExitOnFail(false);
-        Global.setShowErrors(true);
-        Global.setShowWarnings(true);
+        Global.setMessageLevel(Global.MessageLevel.INFO);
         Global.setDefaultAnswerYes(true);
     }
 

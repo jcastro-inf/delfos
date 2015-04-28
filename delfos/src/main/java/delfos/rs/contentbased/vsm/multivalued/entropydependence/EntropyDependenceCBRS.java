@@ -94,7 +94,7 @@ public class EntropyDependenceCBRS extends ContentBasedRecommender<EntropyDepend
     @Override
     public EntropyDependenceCBRSModel buildRecommendationModel(DatasetLoader<? extends Rating> datasetLoader) throws CannotLoadContentDataset {
 
-        Global.showMessage(new Date().toString() + "\tBuilding model");
+        Global.showInfoMessage(new Date().toString() + "\tBuilding model");
 
         final ContentDataset contentDataset;
         if (datasetLoader instanceof ContentDatasetLoader) {
@@ -133,7 +133,7 @@ public class EntropyDependenceCBRS extends ContentBasedRecommender<EntropyDepend
                 entropia += freq * (Math.log(freq) / Math.log(2));
             }
             entropia = -entropia;
-            Global.showMessage("entropia de " + feature + " = " + entropia + "\n");
+            Global.showInfoMessage("entropia de " + feature + " = " + entropia + "\n");
             entropias.put(feature, entropia);
             normaEntropias += entropia;
         }
@@ -142,7 +142,7 @@ public class EntropyDependenceCBRS extends ContentBasedRecommender<EntropyDepend
         for (Feature c : contentDataset.getFeatures()) {
             float entropia = entropias.get(c).floatValue();
             entropia = entropia / normaEntropias;
-            Global.showMessage("entropia normalizada de " + c + " = " + entropia + "\n");
+            Global.showInfoMessage("entropia normalizada de " + c + " = " + entropia + "\n");
             entropias.put(c, entropia);
         }
 
@@ -166,7 +166,7 @@ public class EntropyDependenceCBRS extends ContentBasedRecommender<EntropyDepend
             fireBuildingProgressChangedEvent("Item profiles creation", (int) ((i * 100) / contentDataset.size()), -1);
         }
 
-        Global.showMessage(new Date().toString() + "\tModel built");
+        Global.showInfoMessage(new Date().toString() + "\tModel built");
         return new EntropyDependenceCBRSModel(itemProfiles, entropias);
     }
 
@@ -361,7 +361,7 @@ public class EntropyDependenceCBRS extends ContentBasedRecommender<EntropyDepend
                         arrayItem.add(1.0f);
                         arrayUser.add(0.0f);
                     } else {
-                        Global.showMessage("la caracteristica " + feature + " no está en el perfil del usuario.\n");
+                        Global.showInfoMessage("la caracteristica " + feature + " no está en el perfil del usuario.\n");
                         throw new IllegalArgumentException("The feature " + feature + " with type " + feature.getType() + "is not defined in the user " + userProfile.getId() + " profile");
                     }
                 }

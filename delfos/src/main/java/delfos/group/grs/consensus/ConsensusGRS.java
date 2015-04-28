@@ -445,7 +445,7 @@ public class ConsensusGRS extends GroupRecommenderSystemAdapter<SingleRecommenda
         }
 
         if (Global.isVerboseAnnoying()) {
-            Global.showMessage("Found " + queue.size() + " consensus files");
+            Global.showInfoMessage("Found " + queue.size() + " consensus files");
         }
 
         while (!queue.isEmpty()) {

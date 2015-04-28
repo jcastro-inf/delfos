@@ -57,7 +57,7 @@ public class ItemAverageAdjustment extends PredictionTechnique {
         if (Global.isVerboseAnnoying()) {
             str.append("Predicción ").append(prediccion).append("\n");
             str.append("====================================================\n");
-            Global.showMessage(str.toString());
+            Global.showInfoMessage(str.toString());
         }
         if (Float.isInfinite(prediccion)) {
             throw new CouldNotPredictRating("Prediction is infinite");

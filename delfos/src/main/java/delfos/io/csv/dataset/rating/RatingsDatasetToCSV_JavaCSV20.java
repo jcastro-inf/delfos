@@ -76,7 +76,7 @@ public class RatingsDatasetToCSV_JavaCSV20 implements RatingsDatasetToCSV {
     @Override
     public Collection<Rating> readRatingsDataset(File ratingsFile) throws CannotLoadRatingsDataset, FileNotFoundException {
 
-        Global.showMessage("Loading ratings dataset from " + ratingsFile.getAbsolutePath() + "\n");
+        Global.showInfoMessage("Loading ratings dataset from " + ratingsFile.getAbsolutePath() + "\n");
         String ratingsCSV = ratingsFile.getAbsolutePath();
 
         Collection<Rating> ratings = new ArrayList<>();
@@ -84,7 +84,7 @@ public class RatingsDatasetToCSV_JavaCSV20 implements RatingsDatasetToCSV {
         CsvReader reader = new CsvReader(
                 new FileInputStream(ratingsCSV),
                 Charset.forName("UTF-8"));
-        Global.showMessage("Loading CSV file" + "\n");
+        Global.showInfoMessage("Loading CSV file" + "\n");
         reader.setDelimiter(',');
 
         try {
@@ -105,7 +105,7 @@ public class RatingsDatasetToCSV_JavaCSV20 implements RatingsDatasetToCSV {
                     ratings.add(new Rating(idUser, idItem, rating));
 
                     if (i % 1000000 == 0 && i != 0) {
-                        Global.showMessage("Loading CSV --> " + i / 1000000 + " millions ratings " + c.printPartialElapsed() + " / " + c.printTotalElapsed() + "\n");
+                        Global.showInfoMessage("Loading CSV --> " + i / 1000000 + " millions ratings " + c.printPartialElapsed() + " / " + c.printTotalElapsed() + "\n");
                         c.setPartialEllapsedCheckpoint();
                     }
 

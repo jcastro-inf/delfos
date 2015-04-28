@@ -75,7 +75,7 @@ public class CrossFoldValidation_Users extends ValidationTechnique {
 
         Set<Integer> allItems = new TreeSet<>(datasetLoader.getRatingsDataset().allRatedItems());
 
-        Global.showMessage("Original dataset #users " + datasetLoader.getRatingsDataset().allUsers().size() + "\n");
+        Global.showInfoMessage("Original dataset #users " + datasetLoader.getRatingsDataset().allUsers().size() + "\n");
         for (int i = 0; i < numSplits; i++) {
             Set<Integer> usuariosEnTraining = new TreeSet<>(datasetLoader.getRatingsDataset().allUsers());
             usuariosEnTraining.removeAll(usersTest[i]);
@@ -90,9 +90,9 @@ public class CrossFoldValidation_Users extends ValidationTechnique {
 
             ret[i] = new PairOfTrainTestRatingsDataset(datasetLoader, training, test);
 
-            Global.showMessage("------------------  " + i + "  ------------------\n");
-            Global.showMessage("Training dataset #users " + training.allUsers().size() + "\n");
-            Global.showMessage("Test dataset #users     " + test.allUsers().size() + "\n");
+            Global.showInfoMessage("------------------  " + i + "  ------------------\n");
+            Global.showInfoMessage("Training dataset #users " + training.allUsers().size() + "\n");
+            Global.showInfoMessage("Test dataset #users     " + test.allUsers().size() + "\n");
         }
         progressChanged("Validation.shuffle() finished", 100);
         return ret;

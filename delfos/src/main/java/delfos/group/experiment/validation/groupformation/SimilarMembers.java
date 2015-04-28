@@ -172,7 +172,7 @@ public class SimilarMembers extends GroupFormationTechnique {
                 double similarity = neighborSelected.getSimilarity();
 
                 if (Global.isVerboseAnnoying()) {
-                    Global.showMessage("Selected user " + idUser + ", similarity of " + similarity + " --> Group: " + usersGrupoActual + "\n");
+                    Global.showInfoMessage("Selected user " + idUser + ", similarity of " + similarity + " --> Group: " + usersGrupoActual + "\n");
                 }
 
                 boolean removed = usersRemainToSelect.remove(idUser);

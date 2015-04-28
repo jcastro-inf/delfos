@@ -240,7 +240,7 @@ public class DefaultContentDatasetToCSV implements ContentDatasetToCSV {
                     Item item = null;
                     if (latitude != null && longitude != null) {
                         DecimalFormat threeDec = new DecimalFormat("0.00000000000000000000", new DecimalFormatSymbols(Locale.ENGLISH));
-                        Global.showMessage("lat:" + threeDec.format(latitude) + "\tlng: " + threeDec.format(longitude) + "\t\t" + idItem + ": " + name + "\n");
+                        Global.showInfoMessage("lat:" + threeDec.format(latitude) + "\tlng: " + threeDec.format(longitude) + "\t\t" + idItem + ": " + name + "\n");
                         item = new Item(idItem, name, itemFeatures.toArray(new Feature[0]), itemFeatureValues.toArray(), latitude, longitude);
                     } else {
                         if (latitude == null && longitude == null) {

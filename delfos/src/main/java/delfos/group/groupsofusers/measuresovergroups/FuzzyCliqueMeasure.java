@@ -167,7 +167,7 @@ public class FuzzyCliqueMeasure extends GroupMeasureAdapter {
 
         double valueOfC2 = 1 - maxInnerValueOfC2;
 
-        Global.showMessage("C1 = " + valueOfC1 + "\tC2 = " + valueOfC2 + "\n");
+        Global.showInfoMessage("C1 = " + valueOfC1 + "\tC2 = " + valueOfC2 + "\n");
 
         double degreeToWhichGroupIsAClique = conjunctionOperator(valueOfC1, valueOfC2);
 
@@ -201,7 +201,7 @@ public class FuzzyCliqueMeasure extends GroupMeasureAdapter {
             }
         }
 
-        // Global.showMessage("Distancia " + relativeLength + " --> " + ret);
+        // Global.showInfoMessage("Distancia " + relativeLength + " --> " + ret);
         return ret;
     }
 

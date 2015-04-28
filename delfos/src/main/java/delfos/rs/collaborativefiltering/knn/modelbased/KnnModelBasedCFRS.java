@@ -122,7 +122,7 @@ public class KnnModelBasedCFRS
                 if (rating != null) {
                     matchRatings.add(new MatchRating(RecommendationEntity.USER, idUser, idItemNeighbor, rating.ratingValue, similarity));
                     if (Global.isVerboseAnnoying()) {
-                        Global.showMessage(idItemNeighbor + "\the prediction is\t" + rating + "\n");
+                        Global.showInfoMessage(idItemNeighbor + "\the prediction is\t" + rating + "\n");
                     }
                 }
             }

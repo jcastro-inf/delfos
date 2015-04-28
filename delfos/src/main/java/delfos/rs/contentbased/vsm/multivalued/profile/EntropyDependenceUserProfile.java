@@ -134,7 +134,7 @@ public class EntropyDependenceUserProfile extends BasicMultivaluedUserProfile {
             }
 
             if (_weights.get(f) > 1.00001 || _weights.get(f) < 0) {
-                Global.showMessage("La característica " + f.getName() + " tiene como intra " + _weights.get(f) + "\n");
+                Global.showInfoMessage("La característica " + f.getName() + " tiene como intra " + _weights.get(f) + "\n");
             }
         }
     }

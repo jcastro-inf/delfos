@@ -171,7 +171,7 @@ public class EPinionsRatingsDataset implements RatingsDataset<EPinionsRating> {
             linea = br.readLine();
 
             if (i % 100000 == 0) {
-                Global.showMessage("Loading EPinions ratings --> " + i + " ratings " + c.printPartialElapsed() + " / " + c.printTotalElapsed() + "\n");
+                Global.showInfoMessage("Loading EPinions ratings --> " + i + " ratings " + c.printPartialElapsed() + " / " + c.printTotalElapsed() + "\n");
                 c.setPartialEllapsedCheckpoint();
             }
 

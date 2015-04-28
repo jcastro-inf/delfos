@@ -145,7 +145,7 @@ public class ParallelSVD
             Chronometer chronometerBetweenIterations = new Chronometer();
             MeanIterative meanTimeToIterate = new MeanIterative();
 
-            Global.showMessage("Feature\tIteration\tMAE\tdiffMae\titerTime\ttotalTime\tremainingTime\n");
+            Global.showInfoMessage("Feature\tIteration\tMAE\tdiffMae\titerTime\ttotalTime\tremainingTime\n");
             for (int feature = 0; feature < parameters.numFeatures; feature++) {
                 for (int iteration = 0; iteration < parameters.numIterationsPerFeature; iteration++) {
 
@@ -154,9 +154,9 @@ public class ParallelSVD
                     int percentCompleted = computeTaskCompletionPercent(parameters, feature, iteration);
                     long remainingTime = computeTaskRemainingTime(parameters, feature, iteration, meanTimeToIterate.getMean());
 
-                    if (Global.isVerbose()) {
+                    if (Global.isInfoPrinted()) {
                         double mae = computeMAEofModelInTraining(datasetLoader, parallelSVDModel, feature);
-                        Global.showMessage(""
+                        Global.showInfoMessage(""
                                 + feature + "\t"
                                 + iteration + "\t"
                                 + String.format("%.8f", mae) + "\t"
@@ -182,18 +182,18 @@ public class ParallelSVD
 
         if (Global.isVerboseAnnoying()) {
 
-            Global.showMessage("=======================================\n");
-            Global.showMessage("User features:\n");
+            Global.showInfoMessage("=======================================\n");
+            Global.showInfoMessage("User features:\n");
             ratingsDataset.allUsers().stream().forEach((idUser) -> {
-                Global.showMessage("User " + idUser + " \t" + model.getUserFeatures(idUser).toString() + "\n");
+                Global.showInfoMessage("User " + idUser + " \t" + model.getUserFeatures(idUser).toString() + "\n");
             });
-            Global.showMessage("---------------------------------------\n");
-            Global.showMessage("Item features:\n");
+            Global.showInfoMessage("---------------------------------------\n");
+            Global.showInfoMessage("Item features:\n");
 
             ratingsDataset.allRatedItems().stream().forEach((idItem) -> {
-                Global.showMessage("Item " + idItem + " \t" + model.getItemFeatures(idItem).toString() + "\n");
+                Global.showInfoMessage("Item " + idItem + " \t" + model.getItemFeatures(idItem).toString() + "\n");
             });
-            Global.showMessage("=======================================\n");
+            Global.showInfoMessage("=======================================\n");
         }
 
         return model;

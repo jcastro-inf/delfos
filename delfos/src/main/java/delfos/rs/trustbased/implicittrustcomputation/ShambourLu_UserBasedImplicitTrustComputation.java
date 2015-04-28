@@ -75,12 +75,12 @@ public class ShambourLu_UserBasedImplicitTrustComputation extends WeightedGraphC
         final RatingsDataset<? extends Rating> ratingsDataset = datasetLoader.getRatingsDataset();
         printPartialResults = ratingsDataset.allRatedItems().size() <= 100 && ratingsDataset.allUsers().size() <= 28;
 
-        if (!Global.isVerbose()) {
+        if (!Global.isInfoPrinted()) {
             printPartialResults = false;
         }
 
         if (printPartialResults) {
-            Global.showMessage("Dataset de training \n");
+            Global.showInfoMessage("Dataset de training \n");
             DatasetPrinterDeprecated.printCompactRatingTable(ratingsDataset);
         }
 
@@ -186,25 +186,25 @@ public class ShambourLu_UserBasedImplicitTrustComputation extends WeightedGraphC
                 fireProgressChanged("User-Based trust", (int) ((i * 100.0f) / users.size()), -1);
 
                 if (Global.isVerboseAnnoying()) {
-                    Global.showMessage(new Date().toString() + ": User-based trust " + ((i * 100.0f) / users.size()) + "%\n");
+                    Global.showInfoMessage(new Date().toString() + ": User-based trust " + ((i * 100.0f) / users.size()) + "%\n");
                 }
                 i++;
             }
         }
         if (printPartialResults) {
-            Global.showMessage("MSD table \n");
+            Global.showInfoMessage("MSD table \n");
             DatasetPrinterDeprecated.printCompactUserUserTable(MSD, users);
 
-            Global.showMessage("============================================================================= \n");
-            Global.showMessage("UT-Step1 0.4: Jaccard\n");
-            Global.showMessage("============================================================================= \n");
+            Global.showInfoMessage("============================================================================= \n");
+            Global.showInfoMessage("UT-Step1 0.4: Jaccard\n");
+            Global.showInfoMessage("============================================================================= \n");
 
-            Global.showMessage("Jaccard table \n");
+            Global.showInfoMessage("Jaccard table \n");
             DatasetPrinterDeprecated.printCompactUserUserTable(UJaccard, users);
 
-            Global.showMessage("============================================================================= \n");
-            Global.showMessage("UT-Step1 - A: Trust derivation\n");
-            Global.showMessage("============================================================================= \n");
+            Global.showInfoMessage("============================================================================= \n");
+            Global.showInfoMessage("UT-Step1 - A: Trust derivation\n");
+            Global.showInfoMessage("============================================================================= \n");
         }
 
         TreeMap<Integer, Map<Integer, Number>> usersTrust = new TreeMap<Integer, Map<Integer, Number>>();
@@ -226,12 +226,12 @@ public class ShambourLu_UserBasedImplicitTrustComputation extends WeightedGraphC
         MSD.clear();
 
         if (printPartialResults) {
-            Global.showMessage("Trust derivation matrix.\n");
+            Global.showInfoMessage("Trust derivation matrix.\n");
             DatasetPrinterDeprecated.printCompactUserUserTable(usersTrust, users);
 
-            Global.showMessage("============================================================================= \n");
-            Global.showMessage("UT-Step1 - B: Trust Propagation\n");
-            Global.showMessage("============================================================================= \n");
+            Global.showInfoMessage("============================================================================= \n");
+            Global.showInfoMessage("UT-Step1 - B: Trust Propagation\n");
+            Global.showInfoMessage("============================================================================= \n");
         }
 
         if (propagate == false) {
@@ -257,7 +257,7 @@ public class ShambourLu_UserBasedImplicitTrustComputation extends WeightedGraphC
                         }
                         //Propagate trust to complete this connection.
                         if (printPartialResults) {
-                            Global.showMessage("Propagating trust between user " + idSourceUser + " and user " + idTargetUser + "\n");
+                            Global.showInfoMessage("Propagating trust between user " + idSourceUser + " and user " + idTargetUser + "\n");
                         }
 
                         Set<Integer> adyacentesAAmbos = new TreeSet<Integer>(usersTrust.get(idSourceUser).keySet());
@@ -309,7 +309,7 @@ public class ShambourLu_UserBasedImplicitTrustComputation extends WeightedGraphC
                             double PTrustAB = numerador / denominador;
                             propagatedTrusts.get(idSourceUser).put(idTargetUser, PTrustAB);
                             if (printPartialResults) {
-                                Global.showMessage("Propagated trust between user " + idSourceUser + " and user " + idTargetUser + " --> " + PTrustAB + " (" + (int) ((i * 100f) / numTrustValuesThatNeedToBePropagated) + "%)\n");
+                                Global.showInfoMessage("Propagated trust between user " + idSourceUser + " and user " + idTargetUser + " --> " + PTrustAB + " (" + (int) ((i * 100f) / numTrustValuesThatNeedToBePropagated) + "%)\n");
                             }
                         }
                         fireProgressChanged("User trust propagation", (int) ((i * 100f) / numTrustValuesThatNeedToBePropagated), -1);
@@ -328,7 +328,7 @@ public class ShambourLu_UserBasedImplicitTrustComputation extends WeightedGraphC
         }
 
         if (printPartialResults) {
-            Global.showMessage("Trust propagation matrix.\n");
+            Global.showInfoMessage("Trust propagation matrix.\n");
             DatasetPrinterDeprecated.printCompactUserUserTable(usersTrust, users);
         }
 

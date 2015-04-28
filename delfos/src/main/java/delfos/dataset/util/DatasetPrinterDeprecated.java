@@ -38,22 +38,22 @@ public class DatasetPrinterDeprecated {
 
         //Escribo la cabecera
         {
-            Global.showMessage("|\t|");
+            Global.showInfoMessage("|\t|");
             for (int idUser : users) {
-                Global.showMessage("U_" + idUser + "\t|");
+                Global.showInfoMessage("U_" + idUser + "\t|");
             }
-            Global.showMessage("\n");
+            Global.showInfoMessage("\n");
 
-            Global.showMessage("+-------+");
+            Global.showInfoMessage("+-------+");
             for (int idUsers : users) {
-                Global.showMessage("-------+");
+                Global.showInfoMessage("-------+");
             }
-            Global.showMessage("\n");
+            Global.showInfoMessage("\n");
         }
 
         //Escribo cada línea
         for (int idUser : users) {
-            Global.showMessage("|U_" + idUser + "\t|");
+            Global.showInfoMessage("|U_" + idUser + "\t|");
             for (int idUser2 : users) {
                 try {
                     if (!values.containsKey(idUser)) {
@@ -63,21 +63,21 @@ public class DatasetPrinterDeprecated {
                             throw new UserNotFound(idUser);
                         }
                         Number value = values.get(idUser).get(idUser2);
-                        Global.showMessage("" + NumberRounder.round(value, numDecimals) + "\t|");
+                        Global.showInfoMessage("" + NumberRounder.round(value, numDecimals) + "\t|");
                     }
                 } catch (UserNotFound ex) {
-                    Global.showMessage(" - \t|");
+                    Global.showInfoMessage(" - \t|");
                 }
             }
-            Global.showMessage("\n");
+            Global.showInfoMessage("\n");
         }
 
         //Cierro la tabla
-        Global.showMessage("+-------+");
+        Global.showInfoMessage("+-------+");
         for (int idItem : users) {
-            Global.showMessage("-------+");
+            Global.showInfoMessage("-------+");
         }
-        Global.showMessage("\n");
+        Global.showInfoMessage("\n");
     }
 
     /**
@@ -91,21 +91,21 @@ public class DatasetPrinterDeprecated {
 
         //Escribo la cabecera
         {
-            Global.showMessage("|\t|Value\t|\n");
-            Global.showMessage("+-------+-------+\n");
+            Global.showInfoMessage("|\t|Value\t|\n");
+            Global.showInfoMessage("+-------+-------+\n");
         }
 
         //Escribo cada línea
         for (int idUser : users) {
-            Global.showMessage("|U_" + idUser + "\t|");
+            Global.showInfoMessage("|U_" + idUser + "\t|");
 
             Number value = values.get(idUser);
-            Global.showMessage("" + NumberRounder.round(value, numDecimals) + "\t|\n");
+            Global.showInfoMessage("" + NumberRounder.round(value, numDecimals) + "\t|\n");
         }
 
         //Cierro la tabla
         {
-            Global.showMessage("+-------+-------+\n");
+            Global.showInfoMessage("+-------+-------+\n");
         }
     }
 
@@ -116,19 +116,19 @@ public class DatasetPrinterDeprecated {
      */
     public static void printNeighborsUsers(Map<Integer, Set<Neighbor>> neighbors) {
 
-        Global.showMessage("User\t|\tNeighbors\n");
-        Global.showMessage("+-------+-------+\n");
+        Global.showInfoMessage("User\t|\tNeighbors\n");
+        Global.showInfoMessage("+-------+-------+\n");
 
         for (int idUser : neighbors.keySet()) {
 
-            Global.showMessage("|U_" + idUser + "\t|");
+            Global.showInfoMessage("|U_" + idUser + "\t|");
             for (Neighbor n : neighbors.get(idUser)) {
-                Global.showMessage("U_" + n.getIdNeighbor() + " -> [" + NumberRounder.round(n.getSimilarity(), numDecimals) + "]\t|");
+                Global.showInfoMessage("U_" + n.getIdNeighbor() + " -> [" + NumberRounder.round(n.getSimilarity(), numDecimals) + "]\t|");
             }
-            Global.showMessage("\n");
+            Global.showInfoMessage("\n");
         }
 
-        Global.showMessage("+-------+-------+\n");
+        Global.showInfoMessage("+-------+-------+\n");
     }
 
     /**
@@ -138,19 +138,19 @@ public class DatasetPrinterDeprecated {
      */
     public static void printNeighborsItems(Map<Integer, Collection<Neighbor>> neighbors) {
 
-        Global.showMessage("Item\t|\tNeighbors\n");
-        Global.showMessage("+-------+-------+\n");
+        Global.showInfoMessage("Item\t|\tNeighbors\n");
+        Global.showInfoMessage("+-------+-------+\n");
 
         for (int idItem : neighbors.keySet()) {
 
-            Global.showMessage("|I_" + idItem + "\t|");
+            Global.showInfoMessage("|I_" + idItem + "\t|");
             for (Neighbor n : neighbors.get(idItem)) {
-                Global.showMessage("I_" + n.getIdNeighbor() + " -> [" + NumberRounder.round(n.getSimilarity(), numDecimals) + "]\t|");
+                Global.showInfoMessage("I_" + n.getIdNeighbor() + " -> [" + NumberRounder.round(n.getSimilarity(), numDecimals) + "]\t|");
             }
-            Global.showMessage("\n");
+            Global.showInfoMessage("\n");
         }
 
-        Global.showMessage("+-------+-------+\n");
+        Global.showInfoMessage("+-------+-------+\n");
     }
 
     /**
@@ -159,9 +159,9 @@ public class DatasetPrinterDeprecated {
      * {@link delfos.util.DatasetPrinter}
      */
     public static void printGeneralInformation(RatingsDataset<? extends Rating> ratingsDataset) {
-        Global.showMessage("El dataset tiene " + ratingsDataset.allUsers().size() + " usuarios\n");
-        Global.showMessage("El dataset tiene " + ratingsDataset.allRatedItems().size() + " productos valorados\n");
-        Global.showMessage("El dataset tiene " + ratingsDataset.getNumRatings() + " registros\n");
+        Global.showInfoMessage("El dataset tiene " + ratingsDataset.allUsers().size() + " usuarios\n");
+        Global.showInfoMessage("El dataset tiene " + ratingsDataset.allRatedItems().size() + " productos valorados\n");
+        Global.showInfoMessage("El dataset tiene " + ratingsDataset.getNumRatings() + " registros\n");
     }
 
     /**
@@ -183,36 +183,36 @@ public class DatasetPrinterDeprecated {
 
         //Escribo la cabecera
         {
-            Global.showMessage("|\t|");
+            Global.showInfoMessage("|\t|");
             for (Object node : users) {
-                Global.showMessage("Node_" + node.toString() + "\t|");
+                Global.showInfoMessage("Node_" + node.toString() + "\t|");
             }
-            Global.showMessage("\n");
+            Global.showInfoMessage("\n");
 
-            Global.showMessage("+-------+");
+            Global.showInfoMessage("+-------+");
             for (Object node : users) {
-                Global.showMessage("-------+");
+                Global.showInfoMessage("-------+");
             }
-            Global.showMessage("\n");
+            Global.showInfoMessage("\n");
         }
 
         //Escribo cada línea
         for (Integer idUser : users) {
-            Global.showMessage("|Node_" + idUser.toString() + "\t|");
+            Global.showInfoMessage("|Node_" + idUser.toString() + "\t|");
             for (Integer idUser2 : users) {
 
                 Number value = weightedGraph.connection(idUser, idUser2);
-                Global.showMessage("" + NumberRounder.round(value, numDecimals) + "\t|");
+                Global.showInfoMessage("" + NumberRounder.round(value, numDecimals) + "\t|");
             }
-            Global.showMessage("\n");
+            Global.showInfoMessage("\n");
         }
 
         //Cierro la tabla
-        Global.showMessage("+-------+");
+        Global.showInfoMessage("+-------+");
         for (Object node : users) {
-            Global.showMessage("-------+");
+            Global.showInfoMessage("-------+");
         }
-        Global.showMessage("\n");
+        Global.showInfoMessage("\n");
     }
 
     private DatasetPrinterDeprecated() {
@@ -239,46 +239,46 @@ public class DatasetPrinterDeprecated {
     public static void printFancyRatingTable(RatingsDataset<? extends Rating> ratingsDataset, Collection<Integer> users, Collection<Integer> items) {
         //Escribo la cabecera
         {
-            Global.showMessage("|\t\t|");
+            Global.showInfoMessage("|\t\t|");
             for (int idItem : items) {
-                Global.showMessage("\tI_" + idItem + "\t|");
+                Global.showInfoMessage("\tI_" + idItem + "\t|");
             }
-            Global.showMessage("\n");
+            Global.showInfoMessage("\n");
 
-            Global.showMessage("+---------------+");
+            Global.showInfoMessage("+---------------+");
             for (int idItem : items) {
-                Global.showMessage("---------------+");
+                Global.showInfoMessage("---------------+");
             }
-            Global.showMessage("\n");
+            Global.showInfoMessage("\n");
         }
 
         //Escribo cada línea
         for (int idUser : users) {
-            Global.showMessage("|\tU_" + idUser + "\t|");
+            Global.showInfoMessage("|\tU_" + idUser + "\t|");
             for (int idItem : items) {
                 try {
                     Rating rating = ratingsDataset.getRating(idUser, idItem);
                     if (rating == null) {
-                        Global.showMessage("\t - \t|");
+                        Global.showInfoMessage("\t - \t|");
                     } else {
 
-                        Global.showMessage("\t" + NumberRounder.round(rating.ratingValue, numDecimals) + "\t|");
+                        Global.showInfoMessage("\t" + NumberRounder.round(rating.ratingValue, numDecimals) + "\t|");
                     }
                 } catch (UserNotFound ex) {
-                    Global.showMessage("\t - \t|");
+                    Global.showInfoMessage("\t - \t|");
                 } catch (ItemNotFound ex) {
-                    Global.showMessage("\t - \t|");
+                    Global.showInfoMessage("\t - \t|");
                 }
             }
-            Global.showMessage("\n");
+            Global.showInfoMessage("\n");
         }
 
         //Cierro la tabla
-        Global.showMessage("+---------------+");
+        Global.showInfoMessage("+---------------+");
         for (int idItem : items) {
-            Global.showMessage("---------------+");
+            Global.showInfoMessage("---------------+");
         }
-        Global.showMessage("\n");
+        Global.showInfoMessage("\n");
     }
 
     /**
@@ -360,47 +360,47 @@ public class DatasetPrinterDeprecated {
     public static void printCompactRatingTable(RatingsDataset<? extends Rating> ratingsDataset, Collection<Integer> users, Collection<Integer> items) {
         //Escribo la cabecera
         {
-            Global.showMessage("|\t|");
+            Global.showInfoMessage("|\t|");
             for (int idItem : items) {
-                Global.showMessage("I_" + idItem + "\t|");
+                Global.showInfoMessage("I_" + idItem + "\t|");
             }
-            Global.showMessage("\n");
+            Global.showInfoMessage("\n");
 
-            Global.showMessage("+-------+");
+            Global.showInfoMessage("+-------+");
             for (int idItem : items) {
-                Global.showMessage("-------+");
+                Global.showInfoMessage("-------+");
             }
-            Global.showMessage("\n");
+            Global.showInfoMessage("\n");
         }
 
         //Escribo cada línea
         for (int idUser : users) {
-            Global.showMessage("|U_" + idUser + "\t|");
+            Global.showInfoMessage("|U_" + idUser + "\t|");
             for (int idItem : items) {
                 try {
                     Rating rating = ratingsDataset.getRating(idUser, idItem);
                     if (rating == null) {
-                        Global.showMessage(" - \t|");
+                        Global.showInfoMessage(" - \t|");
                     } else {
 
-                        Global.showMessage("" + NumberRounder.round(rating.ratingValue, numDecimals) + "\t|");
+                        Global.showInfoMessage("" + NumberRounder.round(rating.ratingValue, numDecimals) + "\t|");
                     }
                 } catch (UserNotFound ex) {
-                    Global.showMessage(" - \t|");
+                    Global.showInfoMessage(" - \t|");
                 } catch (ItemNotFound ex) {
-                    Global.showMessage(" - \t|");
+                    Global.showInfoMessage(" - \t|");
                 }
 
             }
-            Global.showMessage("\n");
+            Global.showInfoMessage("\n");
         }
 
         //Cierro la tabla
-        Global.showMessage("+-------+");
+        Global.showInfoMessage("+-------+");
         for (int idItem : items) {
-            Global.showMessage("-------+");
+            Global.showInfoMessage("-------+");
         }
-        Global.showMessage("\n");
+        Global.showInfoMessage("\n");
     }
 
 }

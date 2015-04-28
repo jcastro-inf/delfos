@@ -193,9 +193,9 @@ public class SVDFoldingIn
             newModel = new TryThisAtHomeSVDModel(newUsersFeatures, newUsersIndex, newItemsFeatures, newItemsIndex);
         }
 
-        Global.showMessage("ThisUserFeatures: " + thisUserFeatures.toString() + "\n");
+        Global.showInfoMessage("ThisUserFeatures: " + thisUserFeatures.toString() + "\n");
         MeanIterative tiempoCiclo = new MeanIterative(20);
-        Global.showMessage("Feature\tIteration\tMAE\tThe error has improved" + "\n");
+        Global.showInfoMessage("Feature\tIteration\tMAE\tThe error has improved" + "\n");
 
         double maeAnterior = 0;
         for (int indexFeature = 0; indexFeature < numFeatures; indexFeature++) {
@@ -252,7 +252,7 @@ public class SVDFoldingIn
 
                 tiempoCiclo.addValue(diff);
 
-                Global.showMessage(indexFeature + "\t" + iteration + "\t" + String.format("%.8f", meanAbsoluteError.getMean()) + "\t" + String.format("%.8f", (maeAnterior - meanAbsoluteError.getMean())) + " time: " + DateCollapse.collapse(diff) + "\n");
+                Global.showInfoMessage(indexFeature + "\t" + iteration + "\t" + String.format("%.8f", meanAbsoluteError.getMean()) + "\t" + String.format("%.8f", (maeAnterior - meanAbsoluteError.getMean())) + " time: " + DateCollapse.collapse(diff) + "\n");
                 maeAnterior = meanAbsoluteError.getMean();
                 int totalIteraciones = numFeatures * numIterationsPerFeature;
                 int iterActual = indexFeature * numIterationsPerFeature + iteration + 1;
@@ -261,7 +261,7 @@ public class SVDFoldingIn
                 fireBuildingProgressChangedEvent("training values", ((indexFeature * numIterationsPerFeature + (iteration + 1)) * 90 / (numFeatures * numIterationsPerFeature)) + 10, tiempoRestante);
             }
         }
-        Global.showMessage("Incremented model user features: " + newModel.getAllUserFeatures().get(newModel.getUsersIndex().get(idUser)).toString() + "\n");
+        Global.showInfoMessage("Incremented model user features: " + newModel.getAllUserFeatures().get(newModel.getUsersIndex().get(idUser)).toString() + "\n");
         return newModel;
     }
 }

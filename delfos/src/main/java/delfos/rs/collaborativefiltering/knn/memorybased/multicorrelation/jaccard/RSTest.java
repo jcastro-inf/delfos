@@ -127,7 +127,7 @@ public class RSTest extends CollaborativeRecommender<RSTest_Model> {
 
             Collection<Recommendation> ret = recommendWithNeighbors(datasetLoader.getRatingsDataset(), idUser, neighbors, candidateItems);
             if (Global.isVerboseAnnoying()) {
-                Global.showMessage("Finished recommendations for user '" + idUser + "'\n");
+                Global.showInfoMessage("Finished recommendations for user '" + idUser + "'\n");
             }
             return ret;
         } catch (CannotLoadRatingsDataset ex) {
