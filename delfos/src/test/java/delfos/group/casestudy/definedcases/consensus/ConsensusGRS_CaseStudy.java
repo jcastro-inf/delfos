@@ -57,11 +57,11 @@ public class ConsensusGRS_CaseStudy {
 
     @Before
     public void before() {
-        final File persistenceFolder = new File(CONSENSUS_GRS_INPUT_DIRECTORY);
+        final File persistenceDirectory = new File(CONSENSUS_GRS_INPUT_DIRECTORY);
 
-        FileUtilities.deleteDirectoryRecursive(persistenceFolder);
+        FileUtilities.deleteDirectoryRecursive(persistenceDirectory);
 
-        persistenceFolder.mkdirs();
+        persistenceDirectory.mkdirs();
         new File(CONSENSUS_GRS_INPUT_DATA_DIRECTORY).mkdirs();
     }
 

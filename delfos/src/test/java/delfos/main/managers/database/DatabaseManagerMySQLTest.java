@@ -25,13 +25,13 @@ public class DatabaseManagerMySQLTest extends DelfosTest {
     /**
      * Directorio en el que se almacenan los ficheros temporales.
      */
-    private final static String manageDataset_folder = TestConstants.TEST_DATA_DIRECTORY
+    private final static String manageDataset_directory = TestConstants.TEST_DATA_DIRECTORY
             + DatabaseManagerMySQLTest.class.getSimpleName() + File.separator;
     /**
      * Nombre del fichero que almacena la configuración del dataset manejado por
      * la biblioteca.
      */
-    private final static File manageDatasetConfigFile = new File(manageDataset_folder + "mysqlDatasetConfiguration.xml");
+    private final static File manageDatasetConfigFile = new File(manageDataset_directory + "mysqlDatasetConfiguration.xml");
     private static MySQLConnection mySQLConnection;
 
     private void initConnection() {
@@ -91,9 +91,9 @@ public class DatabaseManagerMySQLTest extends DelfosTest {
     @Before
     public void setUp() throws SQLException {
 
-        File folderFile = new File(manageDataset_folder);
+        File directoryFile = new File(manageDataset_directory);
 
-        FileUtilities.cleanDirectory(folderFile);
+        FileUtilities.cleanDirectory(directoryFile);
 
         initConnection();
         checkDatabase();

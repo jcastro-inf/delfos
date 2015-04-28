@@ -17,3 +17,8 @@
 /delfos/test-set/
 
 *~
+
+#Ignore compiled files everywhere
+*.jar
+
+/delfos/delfos-1.2.20150422-install/.config/

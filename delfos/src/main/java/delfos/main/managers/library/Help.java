@@ -1,11 +1,11 @@
 package delfos.main.managers.library;
 
-import java.util.List;
 import delfos.ConsoleParameters;
 import delfos.common.Global;
 import delfos.main.Main;
 import delfos.main.exceptions.ManyCaseUseManagersActivatedException;
 import delfos.main.managers.CaseUseManager;
+import java.util.List;
 
 /**
  *
@@ -42,7 +42,6 @@ public class Help {
             case 1:
                 final CaseUseManager selectedCaseUseManager = suitableCaseUseManagers.get(0);
                 Global.showMessage("Requested help for " + selectedCaseUseManager);
-
                 System.out.println(selectedCaseUseManager.getUserFriendlyHelpForThisCaseUse());
                 break;
             default:

@@ -1,27 +1,25 @@
 package delfos.dataset.loaders.jester;
 
+import delfos.common.Global;
+import delfos.common.datastructures.MultiSet;
+import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
+import delfos.common.parameters.Parameter;
+import delfos.common.parameters.restriction.BooleanParameter;
+import delfos.common.parameters.restriction.ObjectParameter;
+import delfos.dataset.basic.features.Feature;
+import delfos.dataset.basic.item.ContentDataset;
+import delfos.dataset.basic.item.ContentDatasetDefault;
+import delfos.dataset.basic.item.Item;
+import delfos.dataset.basic.loader.types.DatasetLoaderAbstract;
+import delfos.dataset.basic.rating.Rating;
+import delfos.dataset.basic.rating.RatingsDataset;
+import delfos.dataset.basic.rating.RelevanceCriteria;
+import delfos.dataset.storage.memory.BothIndexRatingsDataset;
+import delfos.dataset.storage.memory.DefaultMemoryRatingsDataset_UserIndexed;
 import java.io.File;
 import java.util.ArrayList;
 import jxl.Sheet;
 import jxl.Workbook;
-import delfos.dataset.basic.item.ContentDataset;
-import delfos.dataset.basic.item.ContentDatasetDefault;
-import delfos.dataset.basic.item.Item;
-import delfos.dataset.basic.features.Feature;
-import delfos.dataset.basic.rating.Rating;
-import delfos.dataset.basic.rating.RatingsDataset;
-import delfos.dataset.basic.rating.RelevanceCriteria;
-import delfos.dataset.basic.loader.types.DatasetLoaderAbstract;
-import delfos.dataset.storage.memory.BothIndexRatingsDataset;
-import delfos.dataset.storage.memory.DefaultMemoryRatingsDataset_UserIndexed;
-import delfos.Path;
-import delfos.common.datastructures.MultiSet;
-import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
-import delfos.common.Global;
-import delfos.common.parameters.Parameter;
-import delfos.common.parameters.ParameterListener;
-import delfos.common.parameters.restriction.BooleanParameter;
-import delfos.common.parameters.restriction.ObjectParameter;
 
 /**
  * Implementa el cargador del dataset Jester, que toma los datos de los archivos
@@ -29,7 +27,7 @@ import delfos.common.parameters.restriction.ObjectParameter;
  * información sobre el contenido de los items, por lo que se genera un dataset
  * de contenido al cargar el dataset de ratings.
  *
-* @author Jorge Castro Gallardo
+ * @author Jorge Castro Gallardo
  */
 public class Jester extends DatasetLoaderAbstract {
 
@@ -43,9 +41,9 @@ public class Jester extends DatasetLoaderAbstract {
 
     static {
         EXTENSION = ".xls";
-        VERSION_1 = Path.getDatasetDirectory() + File.separator + "Jester" + File.separator + "jester-data-1" + EXTENSION;
-        VERSION_2 = Path.getDatasetDirectory() + File.separator + "Jester" + File.separator + "jester-data-2" + EXTENSION;
-        VERSION_3 = Path.getDatasetDirectory() + File.separator + "Jester" + File.separator + "jester-data-3" + EXTENSION;
+        VERSION_1 = "." + File.separator + "datasets" + File.separator + "Jester" + File.separator + "jester-data-1" + EXTENSION;
+        VERSION_2 = "." + File.separator + "datasets" + File.separator + "Jester" + File.separator + "jester-data-2" + EXTENSION;
+        VERSION_3 = "." + File.separator + "datasets" + File.separator + "Jester" + File.separator + "jester-data-3" + EXTENSION;
 
         Object[] values = new Object[3];
         values[0] = VERSION_1;
@@ -60,12 +58,9 @@ public class Jester extends DatasetLoaderAbstract {
     public Jester() {
         addParameter(memoryEfficient);
         addParameter(DATASET_VERSION_PARAMETER);
-        addParammeterListener(new ParameterListener() {
-            @Override
-            public void parameterChanged() {
-                rd = null;
-                cd = null;
-            }
+        addParammeterListener(() -> {
+            rd = null;
+            cd = null;
         });
     }
 

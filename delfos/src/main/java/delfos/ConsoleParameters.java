@@ -1,5 +1,6 @@
 package delfos;
 
+import delfos.common.Global;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -8,7 +9,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
-import delfos.common.Global;
 
 /**
  * Guarda los parámetros definidos en una estructura para que sean fácilmente
@@ -53,7 +53,7 @@ public class ConsoleParameters {
      * @param console Vector de cadenas con los parámetros de la línea de
      * comandos
      */
-    public ConsoleParameters(String[] console) {
+    public ConsoleParameters(String... console) {
         this.parametersValues = new TreeMap<>();
         this.parametersUsed = new TreeMap<>();
         this.consoleRawParameters = console;

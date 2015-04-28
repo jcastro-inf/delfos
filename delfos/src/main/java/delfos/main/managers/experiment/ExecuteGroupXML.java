@@ -42,7 +42,7 @@ public class ExecuteGroupXML implements CaseUseManager {
     @Override
     public void manageCaseUse(ConsoleParameters consoleParameters) {
         try {
-            String xmlExperimentsFolder = consoleParameters.getValue("-executeGroupXML");
+            String xmlExperimentsDirectory = consoleParameters.getValue("-executeGroupXML");
 
             final int NUM_EJECUCIONES;
             {
@@ -67,7 +67,7 @@ public class ExecuteGroupXML implements CaseUseManager {
             }
 
             consoleParameters.printUnusedParameters(System.err);
-            xmlExperimentsExecution(xmlExperimentsFolder, xmlExperimentsFolder + File.separator + "dataset" + File.separator, NUM_EJECUCIONES, SEED);
+            xmlExperimentsExecution(xmlExperimentsDirectory, xmlExperimentsDirectory + File.separator + "dataset" + File.separator, NUM_EJECUCIONES, SEED);
         } catch (UndefinedParameterException ex) {
             consoleParameters.printUnusedParameters(System.err);
         }
@@ -78,11 +78,11 @@ public class ExecuteGroupXML implements CaseUseManager {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
-    private static void xmlExperimentsExecution(String experimentsFolder, String datasetFolder, int numExecutions, long seed) {
+    private static void xmlExperimentsExecution(String experimentsDirectory, String datasetDirectory, int numExecutions, long seed) {
         try {
             GroupXMLexperimentsExecution execution = new GroupXMLexperimentsExecution(
-                    experimentsFolder,
-                    datasetFolder,
+                    experimentsDirectory,
+                    datasetDirectory,
                     numExecutions,
                     seed);
             execution.execute();

@@ -48,7 +48,7 @@ public class FilterCaseStudy implements Runnable {
     private final int NUM_GROUPS;
     private final int SIZE_OF_GROUPS;
     private final long SEED;
-    private String folder = null;
+    private String directory = null;
 
     public FilterCaseStudy(
             int NUM_EJECUCIONES,
@@ -77,8 +77,8 @@ public class FilterCaseStudy implements Runnable {
         Global.showMessage("SEED OF THIS EXPERIMENT = " + SEED + "\n");
 
         ArrayList<GroupRecommenderSystem> grsList;
-        if (folder != null) {
-            grsList = getRecommenders(new File(folder));
+        if (directory != null) {
+            grsList = getRecommenders(new File(directory));
         } else {
             grsList = getRecommenders();
         }
@@ -118,15 +118,15 @@ public class FilterCaseStudy implements Runnable {
         return grsList;
     }
 
-    public static ArrayList<GroupRecommenderSystem> getRecommenders(File folder) {
+    public static ArrayList<GroupRecommenderSystem> getRecommenders(File directory) {
         ArrayList<GroupRecommenderSystem> grsList = new ArrayList<>();
-        if (!folder.exists()) {
-            throw new IllegalArgumentException("The file " + folder.getAbsolutePath() + " does not exists.");
+        if (!directory.exists()) {
+            throw new IllegalArgumentException("The file " + directory.getAbsolutePath() + " does not exists.");
         }
-        if (!folder.isDirectory()) {
-            throw new IllegalArgumentException("The file " + folder.getAbsolutePath() + " is not a directory.");
+        if (!directory.isDirectory()) {
+            throw new IllegalArgumentException("The file " + directory.getAbsolutePath() + " is not a directory.");
         }
-        File[] listOfFiles = folder.listFiles((File pathname) -> pathname.getName().endsWith(".xml"));
+        File[] listOfFiles = directory.listFiles((File pathname) -> pathname.getName().endsWith(".xml"));
 
         {
             Collections.sort(Arrays.asList(listOfFiles));
@@ -153,15 +153,15 @@ public class FilterCaseStudy implements Runnable {
         return grsList;
     }
 
-    public static ArrayList<DatasetLoader> getDatasets(File folder) {
+    public static ArrayList<DatasetLoader> getDatasets(File directory) {
         ArrayList<DatasetLoader> ret = new ArrayList<>();
-        if (!folder.exists()) {
-            throw new IllegalArgumentException("The file " + folder.getAbsolutePath() + " does not exists.");
+        if (!directory.exists()) {
+            throw new IllegalArgumentException("The file " + directory.getAbsolutePath() + " does not exists.");
         }
-        if (!folder.isDirectory()) {
-            throw new IllegalArgumentException("The file " + folder.getAbsolutePath() + " is not a directory.");
+        if (!directory.isDirectory()) {
+            throw new IllegalArgumentException("The file " + directory.getAbsolutePath() + " is not a directory.");
         }
-        File[] listOfFiles = folder.listFiles((File pathname) -> pathname.getName().endsWith(".xml"));
+        File[] listOfFiles = directory.listFiles((File pathname) -> pathname.getName().endsWith(".xml"));
 
         for (File configurationFile : listOfFiles) {
             try {
@@ -176,8 +176,8 @@ public class FilterCaseStudy implements Runnable {
         return ret;
     }
 
-    void setFolder(String folder) {
-        this.folder = folder;
+    void setDirectory(String directory) {
+        this.directory = directory;
     }
 
     @Override

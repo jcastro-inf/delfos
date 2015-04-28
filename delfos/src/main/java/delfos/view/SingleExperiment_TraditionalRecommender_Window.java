@@ -1,17 +1,38 @@
 package delfos.view;
 
+import delfos.common.Chronometer;
+import delfos.common.DateCollapse;
+import delfos.common.parameters.ParameterOwner;
+import delfos.common.parameters.view.EditParameterDialog;
+import delfos.configuration.scopes.SwingGUIScope;
+import delfos.dataset.basic.loader.types.DatasetLoader;
+import delfos.dataset.basic.rating.Rating;
+import delfos.dataset.basic.rating.RelevanceCriteria;
+import delfos.experiment.ExperimentListener;
+import delfos.experiment.ExperimentProgress;
+import delfos.experiment.casestudy.CaseStudy;
+import delfos.experiment.casestudy.defaultcase.DefaultCaseStudy;
+import delfos.experiment.validation.predictionprotocol.PredictionProtocol;
+import delfos.experiment.validation.validationtechnique.ValidationTechnique;
+import delfos.factories.DatasetLoadersFactory;
+import delfos.factories.EvaluationMeasuresFactory;
+import delfos.factories.PredictionProtocolFactory;
+import delfos.factories.RecommenderSystemsFactory;
+import delfos.factories.ValidationTechniquesFactory;
+import delfos.io.xml.casestudy.CaseStudyXML;
+import delfos.results.evaluationmeasures.EvaluationMeasure;
+import delfos.rs.RecommenderSystem;
+import delfos.view.results.ResultsDialog;
 import java.awt.Component;
-import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
-import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 import java.io.File;
 import java.lang.management.ManagementFactory;
 import java.util.Collection;
@@ -32,29 +53,6 @@ import javax.swing.JSpinner;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingConstants;
 import javax.swing.filechooser.FileNameExtensionFilter;
-import delfos.Path;
-import delfos.common.Chronometer;
-import delfos.common.DateCollapse;
-import delfos.common.parameters.ParameterOwner;
-import delfos.common.parameters.view.EditParameterDialog;
-import delfos.dataset.basic.rating.Rating;
-import delfos.dataset.basic.rating.RelevanceCriteria;
-import delfos.dataset.basic.loader.types.DatasetLoader;
-import delfos.experiment.ExperimentListener;
-import delfos.experiment.ExperimentProgress;
-import delfos.experiment.casestudy.CaseStudy;
-import delfos.experiment.casestudy.defaultcase.DefaultCaseStudy;
-import delfos.factories.DatasetLoadersFactory;
-import delfos.factories.EvaluationMeasuresFactory;
-import delfos.factories.PredictionProtocolFactory;
-import delfos.factories.RecommenderSystemsFactory;
-import delfos.factories.ValidationTechniquesFactory;
-import delfos.io.xml.casestudy.CaseStudyXML;
-import delfos.experiment.validation.predictionprotocol.PredictionProtocol;
-import delfos.experiment.validation.validationtechnique.ValidationTechnique;
-import delfos.results.evaluationmeasures.EvaluationMeasure;
-import delfos.rs.RecommenderSystem;
-import delfos.view.results.ResultsDialog;
 
 /**
  * Clase que encapsula el funcionamiento de la interfaz destinada a la
@@ -100,34 +98,37 @@ public class SingleExperiment_TraditionalRecommender_Window extends JFrame imple
         initComponents();
 
         this.addWindowListener(new ComportamientoSubVentanas(initialFrame, this));
-        this.addWindowListener(new WindowAdapter() {
+
+        this.addComponentListener(new ComponentListener() {
             @Override
-            public void windowClosing(WindowEvent e) {
-                SwingGUIConfigurationFile.setProperty(anchoVentana, SingleExperiment_TraditionalRecommender_Window.this.getSize().width);
-                SwingGUIConfigurationFile.setProperty(altoVentana, SingleExperiment_TraditionalRecommender_Window.this.getSize().height);
-                SwingGUIConfigurationFile.saveFile();
+            public void componentResized(ComponentEvent e) {
+                saveWindowState();
+            }
+
+            @Override
+            public void componentMoved(ComponentEvent e) {
+                saveWindowState();
+            }
+
+            @Override
+            public void componentShown(ComponentEvent e) {
+                saveWindowState();
+            }
+
+            @Override
+            public void componentHidden(ComponentEvent e) {
+                saveWindowState();
+            }
+
+            public void saveWindowState() {
+                SwingGUIScope.getInstance().saveSingleUserExperimentWindowProperties(
+                        SingleExperiment_TraditionalRecommender_Window.this);
+
             }
         });
+        this.pack();
 
-        if (SwingGUIConfigurationFile.exists()) {
-
-            String ancho = SwingGUIConfigurationFile.getPropertyValue(anchoVentana);
-            String alto = SwingGUIConfigurationFile.getPropertyValue(altoVentana);
-            if (ancho == null) {
-                ancho = Integer.toString(524);
-            }
-            if (alto == null) {
-                alto = Integer.toString(340);
-            }
-            this.setSize(Integer.parseInt(ancho), Integer.parseInt(alto));
-        } else {
-            this.setSize(524, 340);
-            SwingGUIConfigurationFile.saveFile();
-        }
-
-        Dimension d = Toolkit.getDefaultToolkit().getScreenSize();
-
-        this.setLocation((d.width - this.getWidth()) / 2, (d.height - this.getHeight()) / 2);
+        SwingGUIScope.getInstance().loadSingleUserExperimentWindowProperties(this);
         this.toFront();
     }
 
@@ -375,11 +376,10 @@ public class SingleExperiment_TraditionalRecommender_Window extends JFrame imple
         guardarResultado.setEnabled(false);
         ret.add(guardarResultado, constraints);
 
-        this.guardarResultado.addActionListener(
-                (ActionEvent e) -> {
+        this.guardarResultado.addActionListener((ActionEvent e) -> {
                     JFileChooser chooser = new JFileChooser();
                     chooser.setDialogTitle("Save result to XML");
-                    chooser.setCurrentDirectory(Path.getPath());
+                    chooser.setCurrentDirectory(SwingGUIScope.getInstance().getCurrentDirectory());
 
                     String[] extensions = {CaseStudyXML.RESULT_EXTENSION};
                     chooser.setFileFilter(new FileNameExtensionFilter("Extensible Markup Language", extensions));
@@ -390,7 +390,8 @@ public class SingleExperiment_TraditionalRecommender_Window extends JFrame imple
                         if (opcion == JFileChooser.APPROVE_OPTION) {
                             File selected = chooser.getSelectedFile();
                             String nombre = selected.getAbsolutePath();
-                            Path.setPath(selected);
+                            SwingGUIScope.getInstance().setCurrentDirectory(selected);
+
                             if (!nombre.toLowerCase().endsWith("." + CaseStudyXML.RESULT_EXTENSION)) {
                                 // Add correct extension
                                 nombre += "." + CaseStudyXML.RESULT_EXTENSION;

@@ -1,5 +1,28 @@
 package delfos.dataset.loaders.movilens.ml100k;
 
+import delfos.common.exceptions.dataset.CannotLoadContentDataset;
+import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
+import delfos.common.exceptions.dataset.CannotLoadUsersDataset;
+import delfos.common.exceptions.dataset.items.ItemAlreadyExists;
+import delfos.common.exceptions.dataset.users.UserAlreadyExists;
+import delfos.common.parameters.Parameter;
+import delfos.common.parameters.restriction.DirectoryParameter;
+import delfos.common.parameters.restriction.IntegerParameter;
+import delfos.dataset.basic.features.Feature;
+import delfos.dataset.basic.features.FeatureGenerator;
+import delfos.dataset.basic.features.FeatureType;
+import delfos.dataset.basic.item.ContentDataset;
+import delfos.dataset.basic.item.ContentDatasetDefault;
+import delfos.dataset.basic.item.Item;
+import delfos.dataset.basic.loader.types.CompleteDatasetLoaderAbstract;
+import delfos.dataset.basic.rating.Rating;
+import delfos.dataset.basic.rating.RatingWithTimestamp;
+import delfos.dataset.basic.rating.RatingsDataset;
+import delfos.dataset.basic.rating.RelevanceCriteria;
+import delfos.dataset.basic.user.User;
+import delfos.dataset.basic.user.UsersDataset;
+import delfos.dataset.basic.user.UsersDatasetAdapter;
+import delfos.dataset.storage.memory.BothIndexRatingsDataset;
 import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.File;
@@ -18,35 +41,11 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import delfos.common.exceptions.dataset.CannotLoadContentDataset;
-import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
-import delfos.common.exceptions.dataset.CannotLoadUsersDataset;
-import delfos.common.exceptions.dataset.items.ItemAlreadyExists;
-import delfos.common.exceptions.dataset.users.UserAlreadyExists;
-import delfos.common.parameters.Parameter;
-import delfos.common.parameters.ParameterListener;
-import delfos.common.parameters.restriction.DirectoryParameter;
-import delfos.common.parameters.restriction.IntegerParameter;
-import delfos.dataset.basic.item.ContentDataset;
-import delfos.dataset.basic.item.ContentDatasetDefault;
-import delfos.dataset.basic.item.Item;
-import delfos.dataset.basic.features.Feature;
-import delfos.dataset.basic.features.FeatureGenerator;
-import delfos.dataset.basic.features.FeatureType;
-import delfos.dataset.basic.rating.Rating;
-import delfos.dataset.basic.rating.RatingWithTimestamp;
-import delfos.dataset.basic.rating.RatingsDataset;
-import delfos.dataset.basic.rating.RelevanceCriteria;
-import delfos.dataset.basic.user.User;
-import delfos.dataset.basic.user.UsersDataset;
-import delfos.dataset.basic.user.UsersDatasetAdapter;
-import delfos.dataset.basic.loader.types.CompleteDatasetLoaderAbstract;
-import delfos.dataset.storage.memory.BothIndexRatingsDataset;
 
 /**
  * Dataset loader para cargar los datasets de MovieLens llamados ml-100k.
  *
-* @author Jorge Castro Gallardo
+ * @author Jorge Castro Gallardo
  *
  * @version 24-Julio-2013
  */
@@ -70,13 +69,10 @@ public class MovieLens100k extends CompleteDatasetLoaderAbstract<Rating> {
         addParameter(DirectoryOfDataset);
         addParameter(Index_init_genres);
 
-        addParammeterListener(new ParameterListener() {
-            @Override
-            public void parameterChanged() {
-                rd = null;
-                cd = null;
-                ud = null;
-            }
+        addParammeterListener(() -> {
+            rd = null;
+            cd = null;
+            ud = null;
         });
     }
 
