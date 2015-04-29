@@ -7,7 +7,7 @@ import delfos.common.Chronometer;
 import delfos.common.Global;
 import delfos.main.exceptions.ManyCaseUseActivatedException;
 import delfos.main.exceptions.NoCaseUseActivatedException;
-import delfos.main.managers.CaseUseModeManager;
+import delfos.main.managers.CaseUseMode;
 import delfos.main.managers.database.DatabaseManager;
 import delfos.main.managers.library.Help;
 import java.util.ArrayList;
@@ -34,9 +34,9 @@ public class Main {
         Constants.initLibraryGeneralParameters(consoleParameters);
         Global.showInfoMessage("Starting\n");
 
-        List<CaseUseModeManager> caseUses = getAllCaseUse();
+        List<CaseUseMode> caseUses = getAllCaseUse();
 
-        List<CaseUseModeManager> suitableCaseUse = getSuitableCaseUse(
+        List<CaseUseMode> suitableCaseUse = getSuitableCaseUse(
                 caseUses,
                 consoleParameters);
 
@@ -65,8 +65,8 @@ public class Main {
         }
     }
 
-    public static List<CaseUseModeManager> getAllCaseUse() {
-        ArrayList<CaseUseModeManager> caseUse = new ArrayList<>();
+    public static List<CaseUseMode> getAllCaseUse() {
+        ArrayList<CaseUseMode> caseUse = new ArrayList<>();
 
         caseUse.add(DatabaseManager.getInstance());
 
@@ -94,11 +94,11 @@ public class Main {
         return caseUse;
     }
 
-    public static List<CaseUseModeManager> getSuitableCaseUse(List<CaseUseModeManager> caseUse, ConsoleParameters consoleParameters) {
-        List<CaseUseModeManager> suitableCaseUse = new ArrayList<>();
+    public static List<CaseUseMode> getSuitableCaseUse(List<CaseUseMode> caseUse, ConsoleParameters consoleParameters) {
+        List<CaseUseMode> suitableCaseUse = new ArrayList<>();
 
         try {
-            for (CaseUseModeManager caseUseManager : caseUse) {
+            for (CaseUseMode caseUseManager : caseUse) {
 
                 try {
                     if (caseUseManager.isRightManager(consoleParameters)) {
@@ -130,7 +130,7 @@ public class Main {
         Global.showWarning(message.toString());
     }
 
-    public static void manyCaseUseActivated(ConsoleParameters consoleParameters, List<CaseUseModeManager> suitableCaseUse) {
+    public static void manyCaseUseActivated(ConsoleParameters consoleParameters, List<CaseUseMode> suitableCaseUse) {
         StringBuilder message = new StringBuilder();
 
         message.append("\n========== COMMAND LINE MODES CONFLICT =========================\n");

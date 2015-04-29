@@ -6,7 +6,7 @@ import delfos.UndefinedParameterException;
 import delfos.common.exceptions.dataset.CannotLoadContentDataset;
 import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
 import delfos.group.casestudy.fromxmlfiles.GroupXMLexperimentsExecution;
-import delfos.main.managers.CaseUseModeManager;
+import delfos.main.managers.CaseUseMode;
 import java.io.File;
 
 /**
@@ -14,7 +14,7 @@ import java.io.File;
  * @version 21-oct-2014
  * @author Jorge Castro Gallardo
  */
-public class ExecuteGroupXML extends CaseUseModeManager {
+public class ExecuteGroupXML extends CaseUseMode {
 
     /**
      * Parámetro de la linea de comandos para especificar que se muestre la

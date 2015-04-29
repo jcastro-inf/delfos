@@ -1,16 +1,17 @@
 package delfos.main.managers.recommendation.group;
 
-import delfos.ConsoleParameters;
-import delfos.common.Global;
-import delfos.main.managers.CaseUseModeManager;
+import delfos.main.managers.CaseUseModeWithSubManagers;
+import delfos.main.managers.CaseUseSubManager;
 import delfos.main.managers.recommendation.ArgumentsRecommendation;
+import java.util.ArrayList;
+import java.util.Collection;
 
 /**
  *
  * @version 22-oct-2014
  * @author Jorge Castro Gallardo
  */
-public class GroupRecommendation extends CaseUseModeManager {
+public class GroupRecommendation extends CaseUseModeWithSubManagers {
 
     /**
      * Parámetro de la linea de comandos para usar el modo non-personalised.
@@ -28,18 +29,6 @@ public class GroupRecommendation extends CaseUseModeManager {
 
     public static GroupRecommendation getInstance() {
         return instance;
-    }
-
-    @Override
-    public void manageCaseUse(ConsoleParameters consoleParameters) {
-        if (Recommend.getInstance().isRightManager(consoleParameters)) {
-            Recommend.getInstance().manageCaseUse(consoleParameters);
-        } else if (BuildRecommendationModel.getInstance().isRightManager(consoleParameters)) {
-            BuildRecommendationModel.getInstance().manageCaseUse(consoleParameters);
-        } else {
-            Global.show(getUserFriendlyHelpForThisCaseUse());
-        }
-
     }
 
     @Override
@@ -73,6 +62,16 @@ public class GroupRecommendation extends CaseUseModeManager {
         str.append("\t\n");
 
         return str.toString();
+    }
+
+    @Override
+    public Collection<CaseUseSubManager> getAllCaseUseSubManagers() {
+        ArrayList<CaseUseSubManager> allCaseUseModeSubManagers = new ArrayList<>();
+
+        allCaseUseModeSubManagers.add(BuildRecommendationModel.getInstance());
+        allCaseUseModeSubManagers.add(Recommend.getInstance());
+
+        return allCaseUseModeSubManagers;
     }
 
 }

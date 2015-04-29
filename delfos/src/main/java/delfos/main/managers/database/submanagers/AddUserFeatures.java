@@ -20,7 +20,7 @@ import java.util.TreeMap;
  *
  * @author jcastro
  */
-public class AddUserFeatures implements DatabaseManagerCaseUseManager {
+public class AddUserFeatures extends DatabaseCaseUseSubManager {
 
     /**
      * Parámetro para especificar que se use el modo de añadir características a
@@ -135,10 +135,5 @@ public class AddUserFeatures implements DatabaseManagerCaseUseManager {
             ERROR_CODES.USER_NOT_FOUND.exit(ex);
             throw new IllegalStateException(ex);
         }
-    }
-
-    @Override
-    public String getUserFriendlyHelpForThisCaseUse() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }

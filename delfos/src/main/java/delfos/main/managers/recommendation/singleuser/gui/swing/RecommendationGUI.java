@@ -1,7 +1,7 @@
 package delfos.main.managers.recommendation.singleuser.gui.swing;
 
 import delfos.ConsoleParameters;
-import delfos.main.managers.CaseUseModeManager;
+import delfos.main.managers.CaseUseMode;
 import delfos.view.SwingGUI;
 
 /**
@@ -9,7 +9,7 @@ import delfos.view.SwingGUI;
  * @version 21-oct-2014
  * @author Jorge Castro Gallardo
  */
-public class RecommendationGUI extends CaseUseModeManager {
+public class RecommendationGUI extends CaseUseMode {
 
     /**
      * Parámetro de la linea de comandos para especificar que se muestre la

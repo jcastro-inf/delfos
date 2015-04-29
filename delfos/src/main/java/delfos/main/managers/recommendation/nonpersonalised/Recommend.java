@@ -11,7 +11,7 @@ import delfos.configfile.rs.single.RecommenderSystemConfiguration;
 import delfos.configfile.rs.single.RecommenderSystemConfigurationFileParser;
 import delfos.dataset.basic.loader.types.ContentDatasetLoader;
 import delfos.dataset.basic.user.User;
-import delfos.main.managers.CaseUseModeSubManager;
+import delfos.main.managers.CaseUseSubManager;
 import delfos.main.managers.recommendation.ArgumentsRecommendation;
 import delfos.main.managers.recommendation.singleuser.SingleUserRecommendation;
 import delfos.rs.nonpersonalised.NonPersonalisedRecommender;
@@ -27,7 +27,7 @@ import java.util.Collection;
  * @version 22-oct-2014
  * @author Jorge Castro Gallardo
  */
-class Recommend extends CaseUseModeSubManager {
+class Recommend extends CaseUseSubManager {
 
     public static Recommend getInstance() {
         return Holder.INSTANCE;

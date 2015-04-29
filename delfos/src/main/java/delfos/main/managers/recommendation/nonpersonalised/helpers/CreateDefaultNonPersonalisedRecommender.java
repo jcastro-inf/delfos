@@ -4,7 +4,7 @@ import delfos.ConsoleParameters;
 import delfos.configfile.rs.single.RecommenderSystemConfigurationFileParser;
 import delfos.configureddatasets.ConfiguredDatasetLoader;
 import delfos.dataset.basic.loader.types.DatasetLoader;
-import delfos.main.managers.CaseUseModeManager;
+import delfos.main.managers.CaseUseMode;
 import delfos.recommendationcandidates.OnlyNewItems;
 import delfos.rs.nonpersonalised.NonPersonalisedRecommender;
 import delfos.rs.nonpersonalised.meanrating.wilsonscoreonterval.WilsonScoreLowerBound;
@@ -16,7 +16,7 @@ import delfos.rs.persistence.FilePersistence;
  *
  * @author jcastro
  */
-public class CreateDefaultNonPersonalisedRecommender extends CaseUseModeManager {
+public class CreateDefaultNonPersonalisedRecommender extends CaseUseMode {
 
     private static final CreateDefaultNonPersonalisedRecommender instance = new CreateDefaultNonPersonalisedRecommender();
 

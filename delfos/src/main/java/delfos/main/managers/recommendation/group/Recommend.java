@@ -15,7 +15,7 @@ import delfos.dataset.basic.rating.Rating;
 import delfos.group.groupsofusers.GroupOfUsers;
 import delfos.group.grs.GroupRecommenderSystem;
 import delfos.group.grs.recommendations.GroupRecommendations;
-import delfos.main.managers.CaseUseModeSubManager;
+import delfos.main.managers.CaseUseSubManager;
 import delfos.main.managers.recommendation.ArgumentsRecommendation;
 import static delfos.main.managers.recommendation.group.GroupRecommendation.GROUP_MODE;
 import static delfos.main.managers.recommendation.group.GroupRecommendation.TARGET_GROUP;
@@ -36,7 +36,7 @@ import java.util.Set;
  * @version 20-oct-2014
  * @author Jorge Castro Gallardo
  */
-class Recommend extends CaseUseModeSubManager {
+class Recommend extends CaseUseSubManager {
 
     public static Recommend getInstance() {
         return Holder.INSTANCE;

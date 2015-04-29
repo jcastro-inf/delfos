@@ -39,8 +39,6 @@ public class ArgumentsNonPersonalisedTest extends DelfosTest {
 
     @Test
     public void test_NonPersonalised_BuildRecommendationModel_manageCaseUse() throws Exception {
-        System.out.println("test_NonPersonalised_BuildRecommendationModel_manageCaseUse");
-
         createConfigurationFile();
 
         ConsoleParameters consoleParameters = ArgumentsNonPersonalisedTestSuite.buildRecommendationModel(NON_PERSONALISED_RS_CONFIG_XML);
@@ -54,8 +52,6 @@ public class ArgumentsNonPersonalisedTest extends DelfosTest {
 
     @Test
     public void test_NonPersonalised_Recommend_manageCaseUse() throws Exception {
-        System.out.println("test_NonPersonalised_Recommend_manageCaseUse");
-
         test_NonPersonalised_BuildRecommendationModel_manageCaseUse();
 
         ConsoleParameters consoleParameters = ArgumentsNonPersonalisedTestSuite.recommendAnonymous(NON_PERSONALISED_RS_CONFIG_XML);
@@ -69,8 +65,6 @@ public class ArgumentsNonPersonalisedTest extends DelfosTest {
 
     @Test
     public void test_NonPersonalised_BuildRecommendationModel_callFromCommandLine() throws Exception {
-        System.out.println("test_NonPersonalised_BuildRecommendationModel_callFromCommandLine");
-
         createConfigurationFile();
 
         ConsoleParameters consoleParameters = ArgumentsNonPersonalisedTestSuite.buildRecommendationModel(NON_PERSONALISED_RS_CONFIG_XML);
@@ -81,7 +75,6 @@ public class ArgumentsNonPersonalisedTest extends DelfosTest {
 
     @Test
     public void test_NonPersonalised_Recommend_callFromCommandLine() throws Exception {
-        System.out.println("test_NonPersonalised_Recommend_callFromCommandLine");
 
         createConfigurationFile();
         test_NonPersonalised_BuildRecommendationModel_callFromCommandLine();
@@ -94,8 +87,6 @@ public class ArgumentsNonPersonalisedTest extends DelfosTest {
 
     @Test
     public void test_NonPersonalised_RecommendToGivenUser_callFromCommandLine() throws Exception {
-        System.out.println("test_NonPersonalised_RecommendToGivenUser_callFromCommandLine");
-
         int idUser = 23;
 
         createConfigurationFile();
@@ -108,7 +99,6 @@ public class ArgumentsNonPersonalisedTest extends DelfosTest {
     }
 
     private void createConfigurationFile() {
-
         DatasetLoader<? extends Rating> datasetLoader = ConfiguredDatasetsFactory.getInstance().getDatasetLoader("ml-100k");
 
         NonPersonalisedRecommender<? extends Object> nonPersonalisedRecommender = new WilsonScoreLowerBound();

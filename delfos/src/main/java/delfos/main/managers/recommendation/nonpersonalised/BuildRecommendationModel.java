@@ -10,7 +10,7 @@ import delfos.configfile.rs.single.RecommenderSystemConfiguration;
 import delfos.configfile.rs.single.RecommenderSystemConfigurationFileParser;
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
-import delfos.main.managers.CaseUseModeSubManager;
+import delfos.main.managers.CaseUseSubManager;
 import delfos.main.managers.recommendation.ArgumentsRecommendation;
 import delfos.rs.nonpersonalised.NonPersonalisedRecommender;
 import delfos.rs.persistence.FailureInPersistence;
@@ -21,7 +21,7 @@ import delfos.rs.persistence.PersistenceMethodStrategy;
  * @version 20-oct-2014
  * @author Jorge Castro Gallardo
  */
-public class BuildRecommendationModel extends CaseUseModeSubManager {
+public class BuildRecommendationModel extends CaseUseSubManager {
 
     public static BuildRecommendationModel getInstance() {
         return Holder.INSTANCE;
@@ -33,7 +33,7 @@ public class BuildRecommendationModel extends CaseUseModeSubManager {
     }
 
     private BuildRecommendationModel() {
-        super(null);
+        super(NonPersonalisedRecommendation.getInstance());
     }
 
     @Override

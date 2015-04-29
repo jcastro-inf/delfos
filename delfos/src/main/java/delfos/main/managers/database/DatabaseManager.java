@@ -9,33 +9,32 @@ import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
 import delfos.configfile.rs.single.ChangeableDatasetConfiguration;
 import delfos.configfile.rs.single.ChangeableDatasetConfigurationFileParser;
 import delfos.dataset.changeable.ChangeableDatasetLoader;
-import delfos.main.exceptions.ManyCaseUseActivatedException;
-import delfos.main.exceptions.NoCaseUseActivatedException;
-import delfos.main.managers.CaseUseModeManager;
+import delfos.main.managers.CaseUseModeWithSubManagers;
+import delfos.main.managers.CaseUseSubManager;
 import delfos.main.managers.database.submanagers.AddItem;
 import delfos.main.managers.database.submanagers.AddItemFeatures;
 import delfos.main.managers.database.submanagers.AddRating;
 import delfos.main.managers.database.submanagers.AddUser;
 import delfos.main.managers.database.submanagers.AddUserFeatures;
-import delfos.main.managers.database.submanagers.DatabaseManagerCaseUseManager;
 import delfos.main.managers.database.submanagers.DatasetPrinterManager;
 import delfos.main.managers.database.submanagers.InitDatabase;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
-import java.util.List;
+import java.util.Collection;
 import org.jdom2.JDOMException;
 
 /**
  *
  * @author Jorge Castro Gallardo
  */
-public class DatabaseManager extends CaseUseModeManager {
+public class DatabaseManager extends CaseUseModeWithSubManagers {
 
     /**
      * Parametro para especificar que la biblioteca funcione en modo de
      * administración de la base de datos de ratings.
      */
+    @Deprecated
     public static final String MANAGE_RATING_DATABASE_OLD = "-manageRatingDatabase";
     /**
      * Parametro para especificar que la biblioteca funcione en modo de
@@ -43,7 +42,22 @@ public class DatabaseManager extends CaseUseModeManager {
      */
     public static final String MANAGE_RATING_DATABASE = "-manage-database";
 
+    private static final DatabaseManager instance = new DatabaseManager();
+
+    public static DatabaseManager getInstance() {
+        return instance;
+    }
+
     private DatabaseManager() {
+    }
+
+    @Override
+    public boolean isRightManager(ConsoleParameters consoleParameters) {
+        if (super.isRightManager(consoleParameters)) {
+            return true;
+        }
+
+        return consoleParameters.deprecatedParameter_isDefined(MANAGE_RATING_DATABASE_OLD, MANAGE_RATING_DATABASE);
     }
 
     @Override
@@ -51,59 +65,9 @@ public class DatabaseManager extends CaseUseModeManager {
         return MANAGE_RATING_DATABASE;
     }
 
-    public static DatabaseManager getInstance() {
-        return ManageRatingDatabaseHolder.INSTANCE;
-    }
-
-    private static class ManageRatingDatabaseHolder {
-
-        private static final DatabaseManager INSTANCE = new DatabaseManager();
-    }
-
     @Override
-    public boolean isRightManager(ConsoleParameters consoleParameters) {
-
-        boolean isThisCaseRight = consoleParameters.deprecatedParameter_isDefined(MANAGE_RATING_DATABASE_OLD, MANAGE_RATING_DATABASE);
-
-        if (isThisCaseRight) {
-            List<DatabaseManagerCaseUseManager> suitables = getSuitableCaseUseManagers(consoleParameters);
-            if (suitables.size() == 1) {
-                return true;
-            } else if (suitables.isEmpty()) {
-                return false;
-            } else {
-                throw new ManyCaseUseActivatedException(consoleParameters, suitables);
-            }
-        } else {
-            return false;
-        }
-    }
-
-    @Override
-    public void manageCaseUse(ConsoleParameters consoleParameters) {
-        if (Global.isVerboseAnnoying()) {
-            Global.showInfoMessage("MODE: Manage rating database\n");
-        }
-
-        List<DatabaseManagerCaseUseManager> suitableCaseUseManagers = getSuitableCaseUseManagers(consoleParameters);
-
-        switch (suitableCaseUseManagers.size()) {
-            case 0:
-                noCaseUseManagersActivated(consoleParameters);
-                throw new NoCaseUseActivatedException(consoleParameters);
-            case 1:
-                ChangeableDatasetLoader changeableDatasetLoader = extractChangeableDatasetHandler(consoleParameters);
-                suitableCaseUseManagers.get(0).manageCaseUse(consoleParameters, changeableDatasetLoader);
-                changeableDatasetLoader.commitChangesInPersistence();
-                break;
-            default:
-                manyCaseUseManagersActivated(consoleParameters, suitableCaseUseManagers);
-                throw new ManyCaseUseActivatedException(consoleParameters, suitableCaseUseManagers);
-        }
-    }
-
-    public static List<DatabaseManagerCaseUseManager> getAllCaseUseManagers() {
-        ArrayList<DatabaseManagerCaseUseManager> caseUseManagers = new ArrayList<>();
+    public Collection<CaseUseSubManager> getAllCaseUseSubManagers() {
+        ArrayList<CaseUseSubManager> caseUseManagers = new ArrayList<>();
 
         caseUseManagers.add(InitDatabase.getInstance());
 
@@ -118,30 +82,6 @@ public class DatabaseManager extends CaseUseModeManager {
         caseUseManagers.add(DatasetPrinterManager.getInstance());
 
         return caseUseManagers;
-    }
-
-    public static List<DatabaseManagerCaseUseManager> getSuitableCaseUseManagers(ConsoleParameters consoleParameters) {
-        List<DatabaseManagerCaseUseManager> suitableCaseUse = new ArrayList<>();
-
-        try {
-            for (DatabaseManagerCaseUseManager caseUseManager : getAllCaseUseManagers()) {
-                try {
-                    if (caseUseManager.isRightManager(consoleParameters)) {
-                        suitableCaseUse.add(caseUseManager);
-                    }
-                } catch (Throwable ex) {
-                    System.out.println(ex.getMessage());
-                    ex.printStackTrace(System.out);
-                    ERROR_CODES.UNDEFINED_ERROR.exit(ex);
-                }
-            }
-        } catch (Throwable ex) {
-            System.out.println(ex.getMessage());
-            ex.printStackTrace(System.out);
-            ERROR_CODES.UNDEFINED_ERROR.exit(ex);
-        }
-
-        return suitableCaseUse;
     }
 
     public static ChangeableDatasetLoader extractChangeableDatasetHandler(ConsoleParameters consoleParameters) throws RuntimeException {
@@ -232,30 +172,4 @@ public class DatabaseManager extends CaseUseModeManager {
         return str.toString();
     }
 
-    public static void noCaseUseManagersActivated(ConsoleParameters consoleParameters) {
-
-        StringBuilder message = new StringBuilder();
-
-        message.append("Unrecognized command line : ");
-        message.append(consoleParameters.printOriginalParameters());
-        message.append("\n");
-
-        Global.showWarning(message.toString());
-    }
-
-    public static void manyCaseUseManagersActivated(ConsoleParameters consoleParameters, List<DatabaseManagerCaseUseManager> suitableCaseUseManagers) {
-        StringBuilder message = new StringBuilder();
-
-        message.append("========== COMMAND LINE MODES CONFLICT =========================");
-        message.append("Conflict on command line parameters: many case use managers activated.\n");
-        message.append("Command line arguments\n");
-        message.append("\t").append(consoleParameters.printOriginalParameters()).append("\n");
-        message.append("CaseUseManagers activated:\n");
-        suitableCaseUseManagers.stream().forEach((caseUseManager) -> {
-            message.append("\t").append(caseUseManager.getClass().getName()).append("\n");
-        });
-        message.append("================================================================");
-
-        Global.showWarning(message.toString());
-    }
 }

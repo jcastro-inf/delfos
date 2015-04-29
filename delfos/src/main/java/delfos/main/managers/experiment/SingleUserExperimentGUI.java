@@ -3,7 +3,7 @@ package delfos.main.managers.experiment;
 import delfos.ConsoleParameters;
 import delfos.Constants;
 import delfos.common.Global;
-import delfos.main.managers.CaseUseModeManager;
+import delfos.main.managers.CaseUseMode;
 import delfos.view.SwingGUI;
 
 /**
@@ -11,7 +11,7 @@ import delfos.view.SwingGUI;
  * @version 21-oct-2014
  * @author Jorge Castro Gallardo
  */
-public class SingleUserExperimentGUI extends CaseUseModeManager {
+public class SingleUserExperimentGUI extends CaseUseMode {
 
     /**
      * Argumento para indicar a la biblioteca que se debe utilizará para

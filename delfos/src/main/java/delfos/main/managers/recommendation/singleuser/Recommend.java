@@ -17,7 +17,7 @@ import delfos.dataset.basic.loader.types.ContentDatasetLoader;
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.user.User;
-import delfos.main.managers.CaseUseModeSubManager;
+import delfos.main.managers.CaseUseSubManager;
 import static delfos.main.managers.recommendation.ArgumentsRecommendation.RECOMMEND;
 import static delfos.main.managers.recommendation.ArgumentsRecommendation.RECOMMEND_SHORT;
 import static delfos.main.managers.recommendation.ArgumentsRecommendation.extractConfigurationFile;
@@ -39,7 +39,7 @@ import java.util.Set;
  * @version 20-oct-2014
  * @author Jorge Castro Gallardo
  */
-class Recommend extends CaseUseModeSubManager {
+class Recommend extends CaseUseSubManager {
 
     /**
      * Parámetro de la linea de comandos para especificar a qué usuario se desea

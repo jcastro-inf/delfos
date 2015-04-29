@@ -4,13 +4,13 @@ import delfos.ConsoleParameters;
 import delfos.configfile.rs.single.ChangeableDatasetConfigurationFileParser;
 import delfos.dataset.changeable.ChangeableDatasetLoader;
 import delfos.dataset.loaders.csv.changeable.ChangeableCSVFileDatasetLoader;
-import delfos.main.managers.CaseUseModeManager;
+import delfos.main.managers.CaseUseMode;
 
 /**
  *
  * @author jcastro
  */
-public class CreateDefaultManageDatabaseCSV extends CaseUseModeManager {
+public class CreateDefaultManageDatabaseCSV extends CaseUseMode {
 
     private static final CreateDefaultManageDatabaseCSV instance = new CreateDefaultManageDatabaseCSV();
 

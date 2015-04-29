@@ -1,14 +1,14 @@
 package delfos.main.managers.database.old;
 
-import java.io.File;
-import static org.junit.Assert.assertTrue;
-import org.junit.Before;
-import org.junit.Test;
 import delfos.common.FileUtilities;
 import delfos.configfile.rs.single.ChangeableDatasetConfigurationFileParser;
 import delfos.constants.DelfosTest;
 import delfos.constants.TestConstants;
 import delfos.dataset.loaders.csv.changeable.ChangeableCSVFileDatasetLoader;
+import java.io.File;
+import static org.junit.Assert.assertTrue;
+import org.junit.Before;
+import org.junit.Test;
 
 /**
  *
@@ -58,9 +58,9 @@ public class DatabaseManagerOldParametersTest extends DelfosTest {
     public void testManageDataset_CSV_DatabaseInitialisation() throws Exception {
 
         DatabaseManagerOldParametersTestSuite.initDatabase(manageDatasetConfigFile);
-        assertTrue("The ratings file does not exists", ratingsFile.exists());
-        assertTrue("The content file does not exists", contentFile.exists());
-        assertTrue("The users file does not exists", usersFile.exists());
+        assertTrue("The ratings file '" + ratingsFile.getAbsolutePath() + "' does not exists", ratingsFile.exists());
+        assertTrue("The content file '" + contentFile.getAbsolutePath() + "' does not exists", contentFile.exists());
+        assertTrue("The users '" + usersFile.getAbsolutePath() + "' file does not exists", usersFile.exists());
     }
 
     @Test

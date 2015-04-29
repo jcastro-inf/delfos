@@ -3,7 +3,7 @@ package delfos.main.managers.library;
 import delfos.ConsoleParameters;
 import delfos.Constants;
 import delfos.main.Main;
-import delfos.main.managers.CaseUseModeManager;
+import delfos.main.managers.CaseUseMode;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
@@ -18,7 +18,7 @@ import java.util.jar.JarFile;
  * @version 21-oct-2014
  * @author Jorge Castro Gallardo
  */
-public class Version extends CaseUseModeManager {
+public class Version extends CaseUseMode {
 
     public static final String PRINT_VERSION_PARAMETER = "-version";
 

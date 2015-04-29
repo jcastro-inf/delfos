@@ -4,7 +4,7 @@ import delfos.ConsoleParameters;
 import delfos.common.Global;
 import delfos.main.Main;
 import delfos.main.exceptions.ManyCaseUseActivatedException;
-import delfos.main.managers.CaseUseModeManager;
+import delfos.main.managers.CaseUseMode;
 import java.util.List;
 
 /**
@@ -34,13 +34,13 @@ public class Help {
     }
 
     public void manageCaseUse(ConsoleParameters consoleParameters) {
-        List<CaseUseModeManager> suitableCaseUseManagers = Main.getSuitableCaseUse(Main.getAllCaseUse(), consoleParameters);
+        List<CaseUseMode> suitableCaseUseManagers = Main.getSuitableCaseUse(Main.getAllCaseUse(), consoleParameters);
 
         switch (suitableCaseUseManagers.size()) {
             case 0:
                 throw new UnsupportedOperationException("A generic help of this library should be provided");
             case 1:
-                final CaseUseModeManager selectedCaseUseManager = suitableCaseUseManagers.get(0);
+                final CaseUseMode selectedCaseUseManager = suitableCaseUseManagers.get(0);
                 Global.showInfoMessage("Requested help for " + selectedCaseUseManager);
                 System.out.println(selectedCaseUseManager.getUserFriendlyHelpForThisCaseUse());
                 break;

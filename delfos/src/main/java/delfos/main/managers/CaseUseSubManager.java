@@ -9,11 +9,11 @@ import delfos.ConsoleParameters;
  * @version 21-oct-2014
  * @author Jorge Castro Gallardo
  */
-public abstract class CaseUseModeSubManager {
+public abstract class CaseUseSubManager {
 
-    private final CaseUseModeManager parent;
+    private final CaseUseModeWithSubManagers parent;
 
-    public CaseUseModeSubManager(CaseUseModeManager parent) {
+    public CaseUseSubManager(CaseUseModeWithSubManagers parent) {
         this.parent = parent;
     }
 
@@ -33,7 +33,7 @@ public abstract class CaseUseModeSubManager {
      */
     public abstract void manageCaseUse(ConsoleParameters consoleParameters);
 
-    public CaseUseModeManager getParent() {
+    public CaseUseModeWithSubManagers getParent() {
         return parent;
     }
 }

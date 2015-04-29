@@ -4,13 +4,13 @@ import delfos.ConsoleParameters;
 import delfos.configfile.rs.single.ChangeableDatasetConfigurationFileParser;
 import delfos.dataset.changeable.ChangeableDatasetLoader;
 import delfos.dataset.loaders.database.mysql.changeable.ChangeableMySQLDatasetLoader;
-import delfos.main.managers.CaseUseModeManager;
+import delfos.main.managers.CaseUseMode;
 
 /**
  *
  * @author jcastro
  */
-public class CreateDefaultManageDatabaseMySQL extends CaseUseModeManager {
+public class CreateDefaultManageDatabaseMySQL extends CaseUseMode {
 
     private static final CreateDefaultManageDatabaseMySQL instance = new CreateDefaultManageDatabaseMySQL();
 

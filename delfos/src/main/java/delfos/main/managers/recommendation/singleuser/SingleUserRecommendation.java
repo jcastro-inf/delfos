@@ -1,17 +1,19 @@
 package delfos.main.managers.recommendation.singleuser;
 
-import delfos.ConsoleParameters;
-import delfos.main.managers.CaseUseModeManager;
+import delfos.main.managers.CaseUseModeWithSubManagers;
+import delfos.main.managers.CaseUseSubManager;
 import static delfos.main.managers.recommendation.ArgumentsRecommendation.BUILD_RECOMMENDATION_MODEL;
 import static delfos.main.managers.recommendation.ArgumentsRecommendation.RECOMMENDER_SYSTEM_CONFIGURATION_FILE;
 import static delfos.main.managers.recommendation.singleuser.Recommend.USER_COMMAND_LINE_PARAMETER;
+import java.util.ArrayList;
+import java.util.Collection;
 
 /**
  *
  * @version 22-oct-2014
  * @author Jorge Castro Gallardo
  */
-public class SingleUserRecommendation extends CaseUseModeManager {
+public class SingleUserRecommendation extends CaseUseModeWithSubManagers {
 
     private static final SingleUserRecommendation instance = new SingleUserRecommendation();
 
@@ -38,18 +40,23 @@ public class SingleUserRecommendation extends CaseUseModeManager {
     }
 
     @Override
-    public void manageCaseUse(ConsoleParameters consoleParameters) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
     public String getUserFriendlyHelpForThisCaseUse() {
         return SINGLE_USER_MODE;
     }
 
     @Override
+    public Collection<CaseUseSubManager> getAllCaseUseSubManagers() {
+        ArrayList<CaseUseSubManager> allCaseUseModeSubManagers = new ArrayList<>();
+
+        allCaseUseModeSubManagers.add(BuildRecommendationModel.getInstance());
+        allCaseUseModeSubManagers.add(Recommend.getInstance());
+
+        return allCaseUseModeSubManagers;
+    }
+
+    @Override
     public String getModeParameter() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return SINGLE_USER_MODE;
     }
 
     private String getUserFriendlyHelpForThisCaseUse_RecommendMode() {

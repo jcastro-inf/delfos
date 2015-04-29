@@ -9,7 +9,7 @@ import delfos.ConsoleParameters;
  *
  * @author Jorge Castro Gallardo.
  */
-public abstract class CaseUseModeManager {
+public abstract class CaseUseMode {
 
     /**
      * Returns the parameter that activates this manager. It is a mandatory

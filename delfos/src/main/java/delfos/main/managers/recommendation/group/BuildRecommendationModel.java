@@ -8,7 +8,7 @@ import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
 import delfos.common.exceptions.dataset.CannotLoadUsersDataset;
 import delfos.configfile.rs.single.RecommenderSystemConfiguration;
 import delfos.configfile.rs.single.RecommenderSystemConfigurationFileParser;
-import delfos.main.managers.CaseUseModeSubManager;
+import delfos.main.managers.CaseUseSubManager;
 import delfos.main.managers.recommendation.ArgumentsRecommendation;
 import delfos.rs.GenericRecommenderSystem;
 import delfos.rs.persistence.FailureInPersistence;
@@ -20,7 +20,7 @@ import java.io.File;
  *
  * @author Jorge Castro Gallardo
  */
-class BuildRecommendationModel extends CaseUseModeSubManager {
+class BuildRecommendationModel extends CaseUseSubManager {
 
     public static BuildRecommendationModel getInstance() {
         return Holder.INSTANCE;

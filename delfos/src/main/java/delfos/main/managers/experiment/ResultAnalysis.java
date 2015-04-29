@@ -1,7 +1,7 @@
 package delfos.main.managers.experiment;
 
 import delfos.ConsoleParameters;
-import delfos.main.managers.CaseUseModeManager;
+import delfos.main.managers.CaseUseMode;
 import delfos.view.resultanalysis.ResultAnalysisFrame;
 
 /**
@@ -9,8 +9,9 @@ import delfos.view.resultanalysis.ResultAnalysisFrame;
  * @version 21-oct-2014
  * @author Jorge Castro Gallardo
  */
-public class ResultAnalysis extends CaseUseModeManager {
+public class ResultAnalysis extends CaseUseMode {
 
+    @Deprecated
     private static final String RESULT_ANALYSIS_GUI_OLD = "-resultAnalysisGUI";
 
     private static final String RESULT_ANALYSIS_GUI = "--result-analysis-gui";

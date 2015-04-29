@@ -12,12 +12,13 @@ import delfos.dataset.changeable.ChangeableDatasetLoader;
  *
  * @author jcastro
  */
-public class AddUser implements DatabaseManagerCaseUseManager {
+public class AddUser extends DatabaseCaseUseSubManager {
 
     /**
      * Parametro para especificar que la biblioteca añada un usuario a la base
      * de datos que está siendo administrada.
      */
+    @Deprecated
     public static final String MANAGE_RATING_DATABASE_ADD_USER_OLD = "-addUser";
     /**
      * Parametro para especificar que la biblioteca añada un usuario a la base
@@ -59,10 +60,5 @@ public class AddUser implements DatabaseManagerCaseUseManager {
             ERROR_CODES.MANAGE_RATING_DATABASE_USER_ALREADY_EXISTS.exit(ex);
             throw new IllegalArgumentException(ex);
         }
-    }
-
-    @Override
-    public String getUserFriendlyHelpForThisCaseUse() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }
