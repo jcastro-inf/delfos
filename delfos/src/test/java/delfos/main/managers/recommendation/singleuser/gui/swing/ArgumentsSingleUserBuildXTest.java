@@ -1,16 +1,12 @@
 package delfos.main.managers.recommendation.singleuser.gui.swing;
 
-import delfos.main.managers.recommendation.singleuser.gui.swing.BuildConfigurationFileGUI;
-import java.io.File;
-import org.junit.Before;
-import org.junit.Test;
 import delfos.ConsoleParameters;
 import delfos.common.FileUtilities;
 import delfos.configfile.rs.single.RecommenderSystemConfigurationFileParser;
 import delfos.configureddatasets.ConfiguredDatasetsFactory;
 import delfos.constants.DelfosTest;
-import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.loader.types.DatasetLoader;
+import delfos.dataset.basic.rating.Rating;
 import delfos.main.managers.CaseUseManagerTest;
 import delfos.recommendationcandidates.OnlyNewItems;
 import delfos.rs.RecommenderSystem;
@@ -18,6 +14,9 @@ import delfos.rs.collaborativefiltering.knn.memorybased.nwr.KnnMemoryBasedNWR;
 import delfos.rs.output.RecommendationsOutputStandardRaw;
 import delfos.rs.output.sort.SortBy;
 import delfos.rs.persistence.FilePersistence;
+import java.io.File;
+import org.junit.Before;
+import org.junit.Test;
 
 /**
  *
@@ -63,13 +62,12 @@ public class ArgumentsSingleUserBuildXTest extends DelfosTest {
         System.out.println("test_SingleUser_BuildRecommendationModel_manageCaseUse");
 
         createConfigurationFile();
-        String[] consoleArguments = {
-            "-config-file",
-            SINGLE_USER_RS_CONFIG_XML,
-            "-single-user-build-x"
-        };
-
-        CaseUseManagerTest.testCaseUse(BuildConfigurationFileGUI.getInstance(), consoleArguments);
+        ConsoleParameters consoleParameters = new ConsoleParameters(
+                "-config-file",
+                SINGLE_USER_RS_CONFIG_XML,
+                "-single-user-build-x"
+        );
+        CaseUseManagerTest.testCaseUse(BuildConfigurationFileGUI.getInstance(), consoleParameters);
     }
 
     private void createConfigurationFile() {

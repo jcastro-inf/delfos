@@ -15,8 +15,7 @@ import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RatingsDataset;
 import delfos.dataset.basic.user.User;
 import delfos.main.Main;
-import delfos.main.managers.recommendation.singleuser.BuildRecommendationModel;
-import delfos.main.managers.recommendation.singleuser.Recommend;
+import delfos.main.managers.recommendation.singleuser.SingleUserRecommendation;
 import delfos.recommendationcandidates.OnlyNewItems;
 import delfos.recommendationcandidates.RecommendationCandidatesSelector;
 import delfos.rs.output.RecommendationsOutputStandardRaw;
@@ -97,13 +96,13 @@ public class TryThisAtHomeSVDTest extends DelfosTest {
                 datasetLoader,
                 new FilePersistence(recommenderSystem.getName(), "dat", new File(TEST_DIRECTORY)), new OnlyNewItems(), new RecommendationsOutputStandardRaw(5));
 
-        BuildRecommendationModel.buildRecommendationModel(configFile);
+        SingleUserRecommendation.buildRecommendationModel(configFile);
         System.out.println("Built recommendation model with '" + recommenderSystem);
 
         Arrays.asList(users)
                 .parallelStream()
                 .forEach((idUser) -> {
-                    Recommend.recommendToUser(configFile, idUser);
+                    SingleUserRecommendation.recommendToUser(configFile, idUser);
                 });
 
         System.out.println("Recommended with '" + recommenderSystem + "' to " + datasetLoader.getRatingsDataset().allUsers().size() + " users");

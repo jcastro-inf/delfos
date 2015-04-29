@@ -1,0 +1,32 @@
+package delfos.main.managers.database.submanagers;
+
+import delfos.ConsoleParameters;
+import delfos.dataset.changeable.ChangeableDatasetLoader;
+
+/**
+ *
+ * @version 21-oct-2014
+ * @author Jorge Castro Gallardo
+ */
+public interface DatabaseManagerCaseUseManager {
+
+    /**
+     * Comprueba si este es el manager correcto para la linea de comandos
+     * especificada.
+     *
+     * @param consoleParameters Parámetros de la línea de comandos.
+     * @return true si es el manager adecuado.
+     */
+    public boolean isRightManager(ConsoleParameters consoleParameters);
+
+    /**
+     * Ejecuta las tareas necesarias de este caso de uso.
+     *
+     * @param consoleParameters Parámetros de la línea de comandos.
+     * @param changeableDatasetLoader changeable dataset loader.
+     */
+    public void manageCaseUse(ConsoleParameters consoleParameters, ChangeableDatasetLoader changeableDatasetLoader);
+
+    public String getUserFriendlyHelpForThisCaseUse();
+
+}

@@ -1,10 +1,5 @@
 package delfos.rs.persistence;
 
-import delfos.rs.persistence.FilePersistence;
-import java.io.File;
-import java.util.List;
-import org.junit.BeforeClass;
-import org.junit.Test;
 import delfos.common.Chronometer;
 import delfos.common.FileUtilities;
 import delfos.common.exceptions.dataset.CannotLoadContentDataset;
@@ -13,20 +8,23 @@ import delfos.configfile.rs.single.RecommenderSystemConfigurationFileParser;
 import delfos.constants.DelfosTest;
 import delfos.constants.TestConstants;
 import delfos.databaseconnections.MySQLConnection;
+import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.user.User;
 import delfos.dataset.loaders.database.mysql.MySQLDatabaseDatasetLoader_Default;
-import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.factories.RecommenderSystemsFactory;
 import delfos.io.database.mysql.dataset.ContentDatasetToMySQL;
 import delfos.io.database.mysql.dataset.RatingDatasetToMySQL;
 import delfos.io.database.mysql.dataset.UsersDatasetToMySQL;
-import delfos.main.managers.recommendation.singleuser.BuildRecommendationModel;
-import delfos.main.managers.recommendation.singleuser.Recommend;
+import delfos.main.managers.recommendation.singleuser.SingleUserRecommendation;
 import delfos.recommendationcandidates.OnlyNewItems;
 import delfos.rs.RecommenderSystem;
 import delfos.rs.collaborativefiltering.Recommender_DatasetProperties;
 import delfos.rs.output.RecommendationsOutputFileXML;
+import java.io.File;
+import java.util.List;
+import org.junit.BeforeClass;
+import org.junit.Test;
 
 /**
  * En esta clase se implementa un test que comprueba el correcto funcionamiento
@@ -108,7 +106,7 @@ public class DatabasePersistenceTest extends DelfosTest {
                     recommendationsOutput);
 
             Chronometer c = new Chronometer();
-            BuildRecommendationModel.buildRecommendationModel(configFile);
+            SingleUserRecommendation.buildRecommendationModel(configFile);
             System.out.println("Built model of '" + recommenderSystem + "' in " + c.printTotalElapsed());
 
             c.reset();
@@ -116,7 +114,7 @@ public class DatabasePersistenceTest extends DelfosTest {
                     .allUsers()
                     .stream()
                     .forEach((idUser) -> {
-                        Recommend.recommendToUser(configFile, idUser);
+                        SingleUserRecommendation.recommendToUser(configFile, idUser);
                     });
 
             System.out.print("Recommended with '" + recommenderSystem + "' to " + datasetLoader.getRatingsDataset().allUsers().size() + " in " + c.printTotalElapsed() + "\n");

@@ -74,7 +74,7 @@ public class ArgumentsSingleUserRecommendationTest extends DelfosTest {
 
         };
 
-        CaseUseManagerTest.testCaseUse(Recommend.getInstance(), new ConsoleParameters(consoleArguments));
+        CaseUseManagerTest.testCaseUseSubManager(Recommend.getInstance(), new ConsoleParameters(consoleArguments));
 
         Recommend.getInstance()
                 .manageCaseUse(new ConsoleParameters(consoleArguments));
@@ -85,14 +85,14 @@ public class ArgumentsSingleUserRecommendationTest extends DelfosTest {
         System.out.println("test_SingleUser_BuildRecommendationModel_manageCaseUse");
 
         createConfigurationFile();
-        String[] consoleArguments = {
-            "--single-user",
-            "--build",
-            "-config-file", SINGLE_USER_RS_CONFIG_XML
-        };
+        ConsoleParameters consoleParameters = new ConsoleParameters(
+                "--single-user",
+                "--build",
+                "-config-file", SINGLE_USER_RS_CONFIG_XML
+        );
 
-        CaseUseManagerTest.testCaseUse(BuildRecommendationModel.getInstance(), consoleArguments);
-        Main.mainWithExceptions(consoleArguments);
+        CaseUseManagerTest.testCaseUseSubManager(BuildRecommendationModel.getInstance(), consoleParameters);
+        Main.mainWithExceptions(consoleParameters);
     }
 
     @Test
@@ -103,16 +103,15 @@ public class ArgumentsSingleUserRecommendationTest extends DelfosTest {
 
         test_SingleUser_BuildRecommendationModel_manageCaseUse();
 
-        String[] consoleArguments = {
-            "--single-user",
-            "--recommend",
-            "-u", "1",
-            "-config-file", SINGLE_USER_RS_CONFIG_XML
+        ConsoleParameters consoleParameters = new ConsoleParameters(
+                "--single-user",
+                "--recommend",
+                "-u", "1",
+                "-config-file", SINGLE_USER_RS_CONFIG_XML
+        );
 
-        };
-
-        CaseUseManagerTest.testCaseUse(Recommend.getInstance(), consoleArguments);
-        Main.mainWithExceptions(consoleArguments);
+        CaseUseManagerTest.testCaseUseSubManager(Recommend.getInstance(), consoleParameters);
+        Main.mainWithExceptions(consoleParameters);
     }
 
     private void createConfigurationFile() {

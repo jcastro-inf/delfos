@@ -1,11 +1,5 @@
 package delfos.main.managers.recommendation.nonpersonalised;
 
-import delfos.main.managers.recommendation.nonpersonalised.Recommend;
-import delfos.main.managers.recommendation.nonpersonalised.BuildRecommendationModel;
-import java.io.File;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
 import delfos.ConsoleParameters;
 import delfos.common.FileUtilities;
 import delfos.configfile.rs.single.RecommenderSystemConfigurationFileParser;
@@ -21,6 +15,10 @@ import delfos.rs.nonpersonalised.meanrating.wilsonscoreonterval.WilsonScoreLower
 import delfos.rs.output.RecommendationsOutputStandardRaw;
 import delfos.rs.output.sort.SortBy;
 import delfos.rs.persistence.FilePersistence;
+import java.io.File;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
 
 /**
  *
@@ -77,7 +75,7 @@ public class ArgumentsNonPersonalisedTest extends DelfosTest {
 
         ConsoleParameters consoleParameters = ArgumentsNonPersonalisedTestSuite.buildRecommendationModel(NON_PERSONALISED_RS_CONFIG_XML);
 
-        CaseUseManagerTest.testCaseUse(BuildRecommendationModel.getInstance(), consoleParameters);
+        CaseUseManagerTest.testCaseUseSubManager(BuildRecommendationModel.getInstance(), consoleParameters);
         Main.mainWithExceptions(consoleParameters);
     }
 
@@ -90,7 +88,7 @@ public class ArgumentsNonPersonalisedTest extends DelfosTest {
 
         ConsoleParameters consoleParameters = ArgumentsNonPersonalisedTestSuite.recommendAnonymous(NON_PERSONALISED_RS_CONFIG_XML);
 
-        CaseUseManagerTest.testCaseUse(Recommend.getInstance(), consoleParameters);
+        CaseUseManagerTest.testCaseUseSubManager(Recommend.getInstance(), consoleParameters);
         Main.mainWithExceptions(consoleParameters);
     }
 
@@ -105,7 +103,7 @@ public class ArgumentsNonPersonalisedTest extends DelfosTest {
 
         ConsoleParameters consoleParameters = ArgumentsNonPersonalisedTestSuite.recommendToUser(NON_PERSONALISED_RS_CONFIG_XML, idUser);
 
-        CaseUseManagerTest.testCaseUse(Recommend.getInstance(), consoleParameters);
+        CaseUseManagerTest.testCaseUseSubManager(Recommend.getInstance(), consoleParameters);
         Main.mainWithExceptions(consoleParameters);
     }
 
