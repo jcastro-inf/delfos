@@ -6,10 +6,7 @@ import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
 import delfos.common.exceptions.dataset.CannotLoadTrustDataset;
 import delfos.common.exceptions.dataset.CannotLoadUsersDataset;
 import delfos.configuration.scopes.ConfiguredDatasetsScope;
-import delfos.dataset.basic.loader.types.ContentDatasetLoader;
 import delfos.dataset.basic.loader.types.DatasetLoader;
-import delfos.dataset.basic.loader.types.TrustDatasetLoader;
-import delfos.dataset.basic.loader.types.UsersDatasetLoader;
 import delfos.dataset.basic.rating.Rating;
 import delfos.view.configureddatasets.NewConfiguredDatasetDialog;
 import java.util.ArrayList;
@@ -80,23 +77,6 @@ public final class ConfiguredDatasetsFactory {
     }
 
     private void addDatasetLoaderNoNotifyChanges(String name, String description, DatasetLoader<? extends Rating> datasetLoader) throws CannotLoadUsersDataset, IllegalArgumentException, CannotLoadRatingsDataset, CannotLoadTrustDataset, CannotLoadContentDataset {
-        //Compruebo que el dataset funciona.
-        datasetLoader.getRatingsDataset();
-        if (datasetLoader instanceof ContentDatasetLoader) {
-            ContentDatasetLoader contentDatasetLoader = (ContentDatasetLoader) datasetLoader;
-            contentDatasetLoader.getContentDataset();
-        }
-
-        if (datasetLoader instanceof UsersDatasetLoader) {
-            UsersDatasetLoader usersDatasetLoader = (UsersDatasetLoader) datasetLoader;
-            usersDatasetLoader.getUsersDataset();
-        }
-
-        if (datasetLoader instanceof TrustDatasetLoader) {
-            TrustDatasetLoader trustDatasetLoader = (TrustDatasetLoader) datasetLoader;
-            trustDatasetLoader.getTrustDataset();
-        }
-
         if (datasetLoaders.containsKey(name)) {
             if (!datasetLoaders.get(name).getDatasetLoader().equals(datasetLoader)) {
                 throw new IllegalArgumentException("The identifier '" + name + "' for datasets is already in use.");
@@ -104,7 +84,6 @@ public final class ConfiguredDatasetsFactory {
         } else {
             datasetLoaders.put(name, new ConfiguredDataset(name, description, datasetLoader));
         }
-
     }
 
     public void removeDatasetLoader(String identifier) {

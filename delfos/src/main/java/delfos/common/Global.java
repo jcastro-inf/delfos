@@ -83,7 +83,7 @@ public class Global {
      * @param warningMessage Mensaje a mostrar
      */
     public static void showThreadMessage(String warningMessage) {
-        if (verbose.isPrinted(MessageLevel.THREAD)) {
+        if (messageLevelPrinted.isPrinted(MessageLevel.THREAD)) {
             System.err.println("\tTHREAD: " + warningMessage);
 
             if (doublePrint) {
@@ -98,7 +98,7 @@ public class Global {
      * @param message Mensaje a mostrar
      */
     public static void showThreadMessageTimestamped(String message) {
-        if (verbose.isPrinted(MessageLevel.THREAD)) {
+        if (messageLevelPrinted.isPrinted(MessageLevel.THREAD)) {
             String timestampedMessage = addTimestampToMessage(message);
             showThreadMessage(timestampedMessage);
         }
@@ -162,16 +162,21 @@ public class Global {
          */
         THREAD(3);
 
-        int verboseLevel;
+        int level;
         String[] commandLineFlags;
 
         private MessageLevel(int verboseLevel, String... commandLineFlags) {
-            this.verboseLevel = verboseLevel;
+            this.level = verboseLevel;
             this.commandLineFlags = commandLineFlags;
         }
 
+        @Override
+        public String toString() {
+            return name() + "(" + level + ")";
+        }
+
         public boolean isPrinted(MessageLevel messageLevel) {
-            return this.verboseLevel >= messageLevel.verboseLevel;
+            return this.level >= messageLevel.level;
         }
 
         public String[] getCommandLineFlags() {
@@ -204,7 +209,7 @@ public class Global {
      * Indica si se deben mostrar mensajes o no. Los algoritmos indican en qué
      * punto están en cada momento. Por defecto no se muestran.
      */
-    private static MessageLevel verbose = MessageLevel.MESSAGE;
+    private static MessageLevel messageLevelPrinted = MessageLevel.MESSAGE;
 
     private static boolean doublePrint = false;
 
@@ -214,7 +219,7 @@ public class Global {
      * @param message Mensaje a mostrar
      */
     public static void showInfoMessage(String message) {
-        if (verbose.isPrinted(MessageLevel.MESSAGE)) {
+        if (messageLevelPrinted.isPrinted(MessageLevel.MESSAGE)) {
             System.out.print(message);
             if (doublePrint) {
                 System.err.println(message);
@@ -229,7 +234,7 @@ public class Global {
      * @param ex Excepción con la información del error.
      */
     public static void showError(Throwable ex) {
-        if (verbose.isPrinted(MessageLevel.ERROR)) {
+        if (messageLevelPrinted.isPrinted(MessageLevel.ERROR)) {
             ex.printStackTrace(System.err);
 
             if (doublePrint) {
@@ -244,7 +249,7 @@ public class Global {
      * @param warningMessage Mensaje a mostrar
      */
     public static void showWarning(String warningMessage) {
-        if (verbose.isPrinted(MessageLevel.WARNING)) {
+        if (messageLevelPrinted.isPrinted(MessageLevel.WARNING)) {
             System.err.println("WARNING: " + warningMessage);
 
             if (doublePrint) {
@@ -260,7 +265,7 @@ public class Global {
      * @param ex Excepción con la información de la advertencia.
      */
     public static void showWarning(Throwable ex) {
-        if (verbose.isPrinted(MessageLevel.WARNING)) {
+        if (messageLevelPrinted.isPrinted(MessageLevel.WARNING)) {
             ex.printStackTrace(System.err);
 
             if (doublePrint) {
@@ -275,15 +280,15 @@ public class Global {
      * @return true si se deben imprimir mensajes.
      */
     public static boolean isInfoPrinted() {
-        return verbose.isPrinted(MessageLevel.INFO);
+        return messageLevelPrinted.isPrinted(MessageLevel.INFO);
     }
 
     public static boolean isVerboseAnnoying() {
-        return verbose.isPrinted(MessageLevel.ANNOYING_INFO);
+        return messageLevelPrinted.isPrinted(MessageLevel.ANNOYING_INFO);
     }
 
     public static void setMessageLevel(MessageLevel messageLevel) {
-        verbose = messageLevel;
+        messageLevelPrinted = messageLevel;
     }
 
     /**
