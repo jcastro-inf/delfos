@@ -140,33 +140,34 @@ public class Global {
         /**
          * Prints errors only.
          */
-        ERROR(-2),
+        ERROR(-2, "--verbose-errors", "--ve"),
         /**
          * Prints errors and warnings.
          */
-        WARNING(-1),
+        WARNING(-1, "--verbose-warnings", "--vw"),
         /**
          * Prints errors, warnings and messages.
          */
-        MESSAGE(0),
+        MESSAGE(0, "--verbose-normal"),
         /**
          * Imprime solo mensajes generales e informativos.
          */
-        INFO(1),
+        INFO(1, "--verbose", "--v"),
         /**
          * Imprime todos los mensajes.
          */
-        ANNOYING_INFO(2),
+        ANNOYING_INFO(2, "--verbose-all", "--v2"),
         /**
          * Imprime todos los mensajes y los de hebra.
          */
-        THREAD(3);
+        THREAD(3, "--verbose-thread");
 
         int level;
         String[] commandLineFlags;
 
         private MessageLevel(int verboseLevel, String... commandLineFlags) {
             this.level = verboseLevel;
+
             this.commandLineFlags = commandLineFlags;
         }
 
@@ -184,6 +185,11 @@ public class Global {
         }
 
         public boolean isFlagPresent(ConsoleParameters consoleParameters) {
+            for (String commandLineFlag : commandLineFlags) {
+                if (consoleParameters.isDefined(commandLineFlag)) {
+                    return true;
+                }
+            }
             return false;
         }
 

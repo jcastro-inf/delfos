@@ -31,7 +31,6 @@ public class Main {
 
         ConsoleParameters consoleParameters = ConsoleParameters.parseArguments(args);
         Constants.initLibraryGeneralParameters(consoleParameters);
-        Global.showInfoMessage("Starting\n");
 
         List<CaseUseMode> caseUses = getAllCaseUse();
 
