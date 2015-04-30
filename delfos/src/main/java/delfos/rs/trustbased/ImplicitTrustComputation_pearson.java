@@ -42,12 +42,12 @@ public class ImplicitTrustComputation_pearson {
 
         printPartialResults = ratingsDataset.allRatedItems().size() <= 100 && ratingsDataset.allUsers().size() <= 28;
 
-        if (!Global.isVerbose()) {
+        if (!Global.isInfoPrinted()) {
             printPartialResults = false;
         }
 
         if (printPartialResults) {
-            Global.showMessage("Dataset de training \n");
+            Global.showInfoMessage("Dataset de training \n");
             DatasetPrinterDeprecated.printCompactRatingTable(ratingsDataset);
         }
 
@@ -98,7 +98,7 @@ public class ImplicitTrustComputation_pearson {
         }
 
         if (printPartialResults) {
-            Global.showMessage("Pearson to [0,1] table \n");
+            Global.showInfoMessage("Pearson to [0,1] table \n");
             DatasetPrinterDeprecated.printCompactUserUserTable(pearson, users);
         }
 

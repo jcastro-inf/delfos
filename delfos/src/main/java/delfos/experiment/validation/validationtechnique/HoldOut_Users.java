@@ -74,7 +74,7 @@ public class HoldOut_Users extends ValidationTechnique {
 
         Set<Integer> allItems = new TreeSet<>(datasetLoader.getRatingsDataset().allRatedItems());
 
-        Global.showMessage("Original dataset #users " + datasetLoader.getRatingsDataset().allUsers().size() + "\n");
+        Global.showInfoMessage("Original dataset #users " + datasetLoader.getRatingsDataset().allUsers().size() + "\n");
 
         Set<Integer> usuariosEnTraining = new TreeSet<>(datasetLoader.getRatingsDataset().allUsers());
         usuariosEnTraining.removeAll(usersInTest);
@@ -89,8 +89,8 @@ public class HoldOut_Users extends ValidationTechnique {
 
         ret[0] = new PairOfTrainTestRatingsDataset(datasetLoader, training, test);
 
-        Global.showMessage("Training dataset #users " + training.allUsers().size() + "\n");
-        Global.showMessage("Test dataset #users     " + test.allUsers().size() + "\n");
+        Global.showInfoMessage("Training dataset #users " + training.allUsers().size() + "\n");
+        Global.showInfoMessage("Test dataset #users     " + test.allUsers().size() + "\n");
 
         progressChanged("Validation.shuffle() finished", 100);
         return ret;

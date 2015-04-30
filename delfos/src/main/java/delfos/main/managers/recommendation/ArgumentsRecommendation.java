@@ -33,7 +33,7 @@ public class ArgumentsRecommendation {
             configurationFile = DEFAULT_RECOMMENDER_SYSTEM_CONFIGURATION_FILE;
         }
 
-        Global.showMessage("Using configuration file '" + new File(configurationFile).getAbsolutePath() + "'");
+        Global.showInfoMessage("Using configuration file '" + new File(configurationFile).getAbsolutePath() + "'");
 
         if (!new File(configurationFile).exists()) {
             Global.showWarning("Configuration file not found: '" + configurationFile + "'\n");

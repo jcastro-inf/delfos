@@ -1,11 +1,5 @@
 package delfos.main.managers.database.submanagers;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeSet;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import delfos.ConsoleParameters;
 import delfos.ERROR_CODES;
 import delfos.UndefinedParameterException;
@@ -20,12 +14,18 @@ import delfos.dataset.basic.user.User;
 import delfos.dataset.changeable.ChangeableDatasetLoader;
 import delfos.dataset.util.DatasetPrinter;
 import delfos.main.managers.database.DatabaseManager;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeSet;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
  * @author jcastro
  */
-public class DatasetPrinterManager implements DatabaseManagerCaseUseManager {
+public class DatasetPrinterManager extends DatabaseCaseUseSubManager {
 
     @Deprecated
     public static final String PRINT_USER_SET_OLD = "-userSet";
@@ -190,11 +190,6 @@ public class DatasetPrinterManager implements DatabaseManagerCaseUseManager {
             }
         }
         System.out.println("==============================================================");
-    }
-
-    @Override
-    public String getUserFriendlyHelpForThisCaseUse() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     private void printRatingsTable(ChangeableDatasetLoader changeableDatasetLoader) {

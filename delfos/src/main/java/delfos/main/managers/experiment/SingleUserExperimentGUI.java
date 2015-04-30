@@ -3,7 +3,7 @@ package delfos.main.managers.experiment;
 import delfos.ConsoleParameters;
 import delfos.Constants;
 import delfos.common.Global;
-import delfos.main.managers.CaseUseManager;
+import delfos.main.managers.CaseUseMode;
 import delfos.view.SwingGUI;
 
 /**
@@ -11,7 +11,7 @@ import delfos.view.SwingGUI;
  * @version 21-oct-2014
  * @author Jorge Castro Gallardo
  */
-public class SingleUserExperimentGUI implements CaseUseManager {
+public class SingleUserExperimentGUI extends CaseUseMode {
 
     /**
      * Argumento para indicar a la biblioteca que se debe utilizará para
@@ -24,6 +24,11 @@ public class SingleUserExperimentGUI implements CaseUseManager {
         return SingleUserExperimentGUIHolder.INSTANCE;
     }
 
+    @Override
+    public String getModeParameter() {
+        return EXPERIMENT_GUI_ARGUMENT;
+    }
+
     private static class SingleUserExperimentGUIHolder {
 
         private static final SingleUserExperimentGUI INSTANCE = new SingleUserExperimentGUI();
@@ -33,13 +38,8 @@ public class SingleUserExperimentGUI implements CaseUseManager {
     }
 
     @Override
-    public boolean isRightManager(ConsoleParameters consoleParameters) {
-        return consoleParameters.isDefined(EXPERIMENT_GUI_ARGUMENT);
-    }
-
-    @Override
     public void manageCaseUse(ConsoleParameters consoleParameters) {
-        Global.showMessage(Constants.LIBRARY_NAME + " Using Experimentation GUI\n");
+        Global.showInfoMessage(Constants.LIBRARY_NAME + " Using Experimentation GUI\n");
         SwingGUI.initEvaluationGUI();
     }
 

@@ -132,13 +132,13 @@ public class HoldOutGroupRatedItems extends GroupValidationTechnique {
                     allUsers.addAll(g.getGroupMembers());
                 }
 
-                Global.showMessage("Dataset de training.\n");
+                Global.showInfoMessage("Dataset de training.\n");
                 DatasetPrinterDeprecated.printCompactRatingTable(
                         ret[0].train,
                         allUsers,
                         allRatedItems_this);
 
-                Global.showMessage("Dataset de test.\n");
+                Global.showInfoMessage("Dataset de test.\n");
                 DatasetPrinterDeprecated.printCompactRatingTable(
                         ret[0].test,
                         allUsers,
@@ -174,7 +174,7 @@ public class HoldOutGroupRatedItems extends GroupValidationTechnique {
                         throw new IllegalArgumentException("The user '" + idUser + "' in group " + groupOfUsers + " is not in the rating dataset (User doesn't have ratings.");
                     }
                 }
-                Global.showMessage("Ratings of group " + groupOfUsers + ".\n");
+                Global.showInfoMessage("Ratings of group " + groupOfUsers + ".\n");
 
                 DatasetPrinterDeprecated.printCompactRatingTable(DatasetOperations.convertRatingsToNumber(groupRatings), groupOfUsers.getGroupMembers(), allRatedItems_thisGroup);
             }

@@ -57,7 +57,7 @@ public class ConfusionMatricesCurveTest extends DelfosTest {
     @Test
     public void testPairOfGetElementAndGetCurve() throws UnrecognizedElementException {
 
-        Global.showMessage("testPairOfGetElementAndGetCurve\n");
+        Global.showInfoMessage("testPairOfGetElementAndGetCurve\n");
         long[] seeds = {045656, 984591, 545640, 455668, 163931};
         int[] sizes = {2, 500, 1000, 2000};
 
@@ -107,7 +107,7 @@ public class ConfusionMatricesCurveTest extends DelfosTest {
 
                     if (error) {
                         if (iae.getMessage().startsWith("All recommendations")) {
-                            Global.showMessage("if(size == " + size + " && seed == " + seed + "){error = false;}\n");
+                            Global.showInfoMessage("if(size == " + size + " && seed == " + seed + "){error = false;}\n");
                         } else {
                             throw iae;
                         }
@@ -123,7 +123,7 @@ public class ConfusionMatricesCurveTest extends DelfosTest {
     @Test(expected = IllegalArgumentException.class)
     public void testAllPositives() {
 
-        Global.showMessage("testAllPositives\n");
+        Global.showInfoMessage("testAllPositives\n");
         /* El problema se produce porque solo hay ejemplos de una clase(positiva
          o negativa), pero debe haber variedad para que la curva sea correcta*/
 
@@ -141,7 +141,7 @@ public class ConfusionMatricesCurveTest extends DelfosTest {
      */
     @Test(expected = IllegalArgumentException.class)
     public void testAllNegatives() {
-        Global.showMessage("testAllNegatives\n");
+        Global.showInfoMessage("testAllNegatives\n");
         int numExamples = 10;
         List<Boolean> r = new ArrayList<Boolean>(numExamples);
         while (r.size() < numExamples) {
@@ -157,7 +157,7 @@ public class ConfusionMatricesCurveTest extends DelfosTest {
      */
     @Test
     public void testAllPositivesButOne() {
-        Global.showMessage("testAllPositivesButOne\n");
+        Global.showInfoMessage("testAllPositivesButOne\n");
         int numExamples = 10;
         List<Boolean> r = new ArrayList<Boolean>(numExamples);
         while (r.size() < numExamples - 1) {
@@ -176,7 +176,7 @@ public class ConfusionMatricesCurveTest extends DelfosTest {
      */
     @Test
     public void testAllNegativesButOne() {
-        Global.showMessage("testAllNegativesButOne\n");
+        Global.showInfoMessage("testAllNegativesButOne\n");
         int numExamples = 10;
         List<Boolean> r = new ArrayList<Boolean>(numExamples);
         while (r.size() < numExamples - 1) {
@@ -195,7 +195,7 @@ public class ConfusionMatricesCurveTest extends DelfosTest {
      */
     @Test
     public void testAreaIsZeroPointFive() {
-        Global.showMessage("testAreaIsZeroPointFive\n");
+        Global.showInfoMessage("testAreaIsZeroPointFive\n");
         int numElements = 999;
 
         List<Boolean> recomm_1 = new ArrayList<Boolean>(numElements);
@@ -204,7 +204,7 @@ public class ConfusionMatricesCurveTest extends DelfosTest {
         }
         ConfusionMatricesCurve curve1 = new ConfusionMatricesCurve(recomm_1);
         float areaUnderROC1 = curve1.getAreaUnderROC();
-        Global.showMessage("Area = " + areaUnderROC1 + "\n");
+        Global.showInfoMessage("Area = " + areaUnderROC1 + "\n");
         Assert.assertEquals(0.5, areaUnderROC1, 0.001);
 
 
@@ -215,7 +215,7 @@ public class ConfusionMatricesCurveTest extends DelfosTest {
         }
         ConfusionMatricesCurve curve2 = new ConfusionMatricesCurve(recomm_2);
         float areaUnderROC2 = curve2.getAreaUnderROC();
-        Global.showMessage("Area = " + areaUnderROC2 + "\n");
+        Global.showInfoMessage("Area = " + areaUnderROC2 + "\n");
         Assert.assertEquals(0.5, areaUnderROC2, 0.001);
     }
 
@@ -276,7 +276,7 @@ public class ConfusionMatricesCurveTest extends DelfosTest {
             ConfusionMatricesCurve implementedAggregation = ConfusionMatricesCurve.mergeCurves(listaCurvas);
 
 
-            Global.showMessage(hardCodedAggregation.printCurve() + "\n");
+            Global.showInfoMessage(hardCodedAggregation.printCurve() + "\n");
 
             Assert.assertEquals(
                     hardCodedAggregation.getAreaUnderROC(),

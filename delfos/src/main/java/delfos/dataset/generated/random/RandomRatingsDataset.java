@@ -107,7 +107,7 @@ public class RandomRatingsDataset extends ParameterOwnerAdapter implements Ratin
                 numGeneratedRatingWithTimestamps++;
                 int percent = (int) ((numGeneratedRatingWithTimestamps / (float) generateRatingWithTimestamps) * 100);
                 if (percent != valorAnterior) {
-                    Global.showMessage(percent + "% generation of ratings dataset.\n");
+                    Global.showInfoMessage(percent + "% generation of ratings dataset.\n");
                     valorAnterior = percent;
                 }
             }

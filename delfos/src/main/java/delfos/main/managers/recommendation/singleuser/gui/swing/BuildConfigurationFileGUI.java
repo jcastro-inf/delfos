@@ -1,7 +1,7 @@
 package delfos.main.managers.recommendation.singleuser.gui.swing;
 
 import delfos.ConsoleParameters;
-import delfos.main.managers.CaseUseManager;
+import delfos.main.managers.CaseUseMode;
 import delfos.main.managers.recommendation.ArgumentsRecommendation;
 import delfos.view.SwingGUI;
 
@@ -10,7 +10,7 @@ import delfos.view.SwingGUI;
  * @version 21-oct-2014
  * @author Jorge Castro Gallardo
  */
-public class BuildConfigurationFileGUI implements CaseUseManager {
+public class BuildConfigurationFileGUI extends CaseUseMode {
 
     /**
      * Parámetro de la linea de comandos para crear el modelo de un sistema de
@@ -18,8 +18,13 @@ public class BuildConfigurationFileGUI implements CaseUseManager {
      */
     public static final String BUILDX_COMMAND_LINE_PARAMETER = "-single-user-build-x";
 
-    public static CaseUseManager getInstance() {
+    public static BuildConfigurationFileGUI getInstance() {
         return BuildRecommenderSystemConfigurationFileHolder.INSTANCE;
+    }
+
+    @Override
+    public String getModeParameter() {
+        return BUILDX_COMMAND_LINE_PARAMETER;
     }
 
     private static class BuildRecommenderSystemConfigurationFileHolder {
@@ -28,11 +33,6 @@ public class BuildConfigurationFileGUI implements CaseUseManager {
     }
 
     public BuildConfigurationFileGUI() {
-    }
-
-    @Override
-    public boolean isRightManager(ConsoleParameters consoleParameters) {
-        return consoleParameters.isDefined(BUILDX_COMMAND_LINE_PARAMETER);
     }
 
     @Override

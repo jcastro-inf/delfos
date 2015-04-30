@@ -176,7 +176,7 @@ public class KnnModelBased_NWR
                 if (rating != null) {
                     matchRatings.add(new MatchRating(RecommendationEntity.USER, idUser, idItemNeighbor, rating, similarity));
                     if (Global.isVerboseAnnoying()) {
-                        Global.showMessage(idItemNeighbor + "\the prediction is\t" + rating + "\n");
+                        Global.showInfoMessage(idItemNeighbor + "\the prediction is\t" + rating + "\n");
                     }
                 }
 

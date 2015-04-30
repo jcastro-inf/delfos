@@ -193,9 +193,9 @@ public class DefaultGroupCaseStudy extends GroupCaseStudy {
                     totalBuildTime = spent;
                 }
 
-                Global.showMessage("----------------------- End of Build ----------------------------------" + "\n");
+                Global.showInfoMessage("----------------------- End of Build ----------------------------------" + "\n");
 
-                Global.showMessage("---------------- Init of group recommendation -------------------------" + "\n");
+                Global.showInfoMessage("---------------- Init of group recommendation -------------------------" + "\n");
                 long totalGroupBuildTime = 0;
                 long totalGroupRecommendationTime = 0;
 
@@ -560,17 +560,17 @@ public class DefaultGroupCaseStudy extends GroupCaseStudy {
         if (groupRecommenderSystem instanceof SeedHolder) {
             SeedHolder seedHolder = (SeedHolder) groupRecommenderSystem;
             seedHolder.setSeedValue(seedValue);
-            Global.showMessage("Reset GRS seed to " + seedHolder.getSeedValue() + "\n");
+            Global.showInfoMessage("Reset GRS seed to " + seedHolder.getSeedValue() + "\n");
 
         }
 
         groupFormationTechnique.setSeedValue(seedValue);
-        Global.showMessage("Reset groupFormationTechnique seed to " + groupFormationTechnique.getSeedValue() + "\n");
+        Global.showInfoMessage("Reset groupFormationTechnique seed to " + groupFormationTechnique.getSeedValue() + "\n");
 
         groupValidationTechnique.setSeedValue(seedValue);
-        Global.showMessage("Reset groupValidationTechnique seed to " + groupValidationTechnique.getSeedValue() + "\n");
+        Global.showInfoMessage("Reset groupValidationTechnique seed to " + groupValidationTechnique.getSeedValue() + "\n");
 
         groupPredictionProtocol.setSeedValue(seedValue);
-        Global.showMessage("Reset groupPredictionProtocol seed to " + groupPredictionProtocol.getSeedValue() + "\n");
+        Global.showInfoMessage("Reset groupPredictionProtocol seed to " + groupPredictionProtocol.getSeedValue() + "\n");
     }
 }

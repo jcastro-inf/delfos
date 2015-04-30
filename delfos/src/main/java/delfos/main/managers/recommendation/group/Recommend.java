@@ -15,8 +15,10 @@ import delfos.dataset.basic.rating.Rating;
 import delfos.group.groupsofusers.GroupOfUsers;
 import delfos.group.grs.GroupRecommenderSystem;
 import delfos.group.grs.recommendations.GroupRecommendations;
-import delfos.main.managers.CaseUseManager;
+import delfos.main.managers.CaseUseSubManager;
 import delfos.main.managers.recommendation.ArgumentsRecommendation;
+import static delfos.main.managers.recommendation.group.GroupRecommendation.GROUP_MODE;
+import static delfos.main.managers.recommendation.group.GroupRecommendation.TARGET_GROUP;
 import delfos.recommendationcandidates.RecommendationCandidatesSelector;
 import delfos.rs.persistence.FailureInPersistence;
 import delfos.rs.persistence.PersistenceMethodStrategy;
@@ -34,7 +36,7 @@ import java.util.Set;
  * @version 20-oct-2014
  * @author Jorge Castro Gallardo
  */
-public class Recommend implements CaseUseManager {
+class Recommend extends CaseUseSubManager {
 
     public static Recommend getInstance() {
         return Holder.INSTANCE;
@@ -46,12 +48,13 @@ public class Recommend implements CaseUseManager {
     }
 
     private Recommend() {
+        super(GroupRecommendation.getInstance());
     }
 
     @Override
     public boolean isRightManager(ConsoleParameters consoleParameters) {
-        return consoleParameters.isDefined(ArgumentsGroupRecommendation.GROUP_MODE)
-                && consoleParameters.isDefined(ArgumentsGroupRecommendation.TARGET_GROUP);
+        return consoleParameters.isDefined(GROUP_MODE)
+                && consoleParameters.isDefined(TARGET_GROUP);
     }
 
     @Override
@@ -91,8 +94,8 @@ public class Recommend implements CaseUseManager {
             }
 
             if (Global.isVerboseAnnoying()) {
-                Global.showMessage("List of candidate items for group " + targetGroup.getGroupMembers() + " size: " + candidateItems.size() + "\n");
-                Global.showMessage("\t" + candidateItems + "\n");
+                Global.showInfoMessage("List of candidate items for group " + targetGroup.getGroupMembers() + " size: " + candidateItems.size() + "\n");
+                Global.showInfoMessage("\t" + candidateItems + "\n");
             }
 
             Object RecommendationModel;
@@ -125,8 +128,8 @@ public class Recommend implements CaseUseManager {
                 if (recommendations.isEmpty()) {
                     Global.showWarning("Recommendation list for group '" + targetGroup + "' is empty, check for causes.");
                 } else {
-                    Global.showMessage("Recommendation list for group '" + targetGroup + "' of size " + recommendations.size() + "\n");
-                    Global.showMessage("\t" + recommendations.toString() + "\n");
+                    Global.showInfoMessage("Recommendation list for group '" + targetGroup + "' of size " + recommendations.size() + "\n");
+                    Global.showInfoMessage("\t" + recommendations.toString() + "\n");
                 }
             }
 
@@ -156,23 +159,14 @@ public class Recommend implements CaseUseManager {
         }
     }
 
-    @Override
-    public String getUserFriendlyHelpForThisCaseUse() {
-        if (1 == 1) {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-        } else {
-            return null;
-        }
-    }
-
     private static GroupOfUsers extractTargetGroup(ConsoleParameters consoleParameters) {
 
         List<String> groupMembers;
 
         try {
-            groupMembers = consoleParameters.getValues(ArgumentsGroupRecommendation.TARGET_GROUP);
+            groupMembers = consoleParameters.getValues(GroupRecommendation.TARGET_GROUP);
         } catch (UndefinedParameterException ex) {
-            Global.showWarning("Target group members must be specified through parameter '" + ArgumentsGroupRecommendation.TARGET_GROUP + "' values\n");
+            Global.showWarning("Target group members must be specified through parameter '" + GroupRecommendation.TARGET_GROUP + "' values\n");
             ERROR_CODES.GROUP_NOT_DEFINED.exit(ex);
             throw ex;
         }

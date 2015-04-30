@@ -1,18 +1,13 @@
 package delfos.main.managers.recommendation.group;
 
-import delfos.main.managers.recommendation.group.BuildRecommendationModel;
-import delfos.main.managers.recommendation.group.Recommend;
-import java.io.File;
-import org.junit.Before;
-import org.junit.Test;
 import delfos.ConsoleParameters;
 import delfos.common.FileUtilities;
 import delfos.common.aggregationoperators.Mean;
 import delfos.configfile.rs.single.RecommenderSystemConfigurationFileParser;
 import delfos.configureddatasets.ConfiguredDatasetsFactory;
 import delfos.constants.DelfosTest;
-import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.loader.types.DatasetLoader;
+import delfos.dataset.basic.rating.Rating;
 import delfos.group.grs.GroupRecommenderSystem;
 import delfos.group.grs.aggregation.AggregationOfIndividualRatings;
 import delfos.main.Main;
@@ -22,6 +17,9 @@ import delfos.rs.collaborativefiltering.knn.memorybased.nwr.KnnMemoryBasedNWR;
 import delfos.rs.output.RecommendationsOutputStandardRaw;
 import delfos.rs.output.sort.SortBy;
 import delfos.rs.persistence.FilePersistence;
+import java.io.File;
+import org.junit.Before;
+import org.junit.Test;
 
 /**
  *
@@ -110,15 +108,15 @@ public class ArgumentsGroupRecommendationTest extends DelfosTest {
         System.out.println("test_Group_BuildRecommendationModel_manageCaseUse");
 
         createConfigurationFile();
-        String[] consoleArguments = {
-            "-group-recommendation",
-            "--build",
-            "-config-file",
-            GROUP_RECOMMENDER_SYSTEM_CONFIG_XML
-        };
+        ConsoleParameters consoleParameters = new ConsoleParameters(
+                "-group-recommendation",
+                "--build",
+                "-config-file",
+                GROUP_RECOMMENDER_SYSTEM_CONFIG_XML
+        );
 
-        CaseUseManagerTest.testCaseUse(BuildRecommendationModel.getInstance(), consoleArguments);
-        Main.mainWithExceptions(consoleArguments);
+        CaseUseManagerTest.testCaseUseSubManager(BuildRecommendationModel.getInstance(), consoleParameters);
+        Main.mainWithExceptions(consoleParameters);
     }
 
     @Test
@@ -129,17 +127,16 @@ public class ArgumentsGroupRecommendationTest extends DelfosTest {
 
         test_Group_BuildRecommendationModel_manageCaseUse();
 
-        String[] consoleArguments = {
-            "-group-recommendation",
-            "-group-members",
-            "1", "65", "89", "54", "256",
-            "-config-file",
-            GROUP_RECOMMENDER_SYSTEM_CONFIG_XML
+        ConsoleParameters consoleParameters = new ConsoleParameters(
+                "-group-recommendation",
+                "-group-members",
+                "1", "65", "89", "54", "256",
+                "-config-file",
+                GROUP_RECOMMENDER_SYSTEM_CONFIG_XML
+        );
 
-        };
-
-        CaseUseManagerTest.testCaseUse(Recommend.getInstance(), consoleArguments);
-        Main.mainWithExceptions(consoleArguments);
+        CaseUseManagerTest.testCaseUseSubManager(Recommend.getInstance(), consoleParameters);
+        Main.mainWithExceptions(consoleParameters);
     }
 
     private void createConfigurationFile() {

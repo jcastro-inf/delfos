@@ -170,7 +170,7 @@ public class ChangeableMySQLUsersDataset implements ChangeableUsersDataset, Coll
             String clearFeaturesTable = "delete from " + userFeaturesTable_nameWithPrefix() + ";";
             int clearFeaturesTableResult = statement.executeUpdate(clearFeaturesTable);
             if (clearFeaturesTableResult != 0) {
-                Global.showMessage("Features table '" + userFeaturesTable_nameWithPrefix() + "' cleared due to new user features (" + clearFeaturesTableResult + " rows deleted).\n");
+                Global.showInfoMessage("Features table '" + userFeaturesTable_nameWithPrefix() + "' cleared due to new user features (" + clearFeaturesTableResult + " rows deleted).\n");
             }
 
             for (int i = 0; i < features.length; i++) {
@@ -272,7 +272,7 @@ public class ChangeableMySQLUsersDataset implements ChangeableUsersDataset, Coll
             String deleteUser = "delete from " + getProductsTable_nameWithPrefix() + " where " + usersTable_UserIDField + " = " + user.getId() + ";";
             int deleteUserResult = statement.executeUpdate(deleteUser);
             if (deleteUserResult != 0) {
-                Global.showMessage("User " + user.getName() + " (id=" + user.getId() + ") deleted from table " + getProductsTable_nameWithPrefix() + "\n");
+                Global.showInfoMessage("User " + user.getName() + " (id=" + user.getId() + ") deleted from table " + getProductsTable_nameWithPrefix() + "\n");
             }
 
             //Insert de cada user.
@@ -299,7 +299,7 @@ public class ChangeableMySQLUsersDataset implements ChangeableUsersDataset, Coll
             insertUser.append(");");
             int insertUserResult = statement.executeUpdate(insertUser.toString());
             if (insertUserResult != 0) {
-                Global.showMessage("User " + user.getName() + " (id=" + user.getId() + ") inserted into table " + getProductsTable_nameWithPrefix() + "\n");
+                Global.showInfoMessage("User " + user.getName() + " (id=" + user.getId() + ") inserted into table " + getProductsTable_nameWithPrefix() + "\n");
             }
         }
     }

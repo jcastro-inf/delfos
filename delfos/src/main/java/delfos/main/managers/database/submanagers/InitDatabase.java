@@ -8,7 +8,7 @@ import delfos.dataset.changeable.ChangeableDatasetLoader;
  *
  * @author jcastro
  */
-public class InitDatabase implements DatabaseManagerCaseUseManager {
+public class InitDatabase extends DatabaseCaseUseSubManager {
 
     public static final InitDatabase instance = new InitDatabase();
 
@@ -35,18 +35,12 @@ public class InitDatabase implements DatabaseManagerCaseUseManager {
     @Override
     public void manageCaseUse(ConsoleParameters consoleParameters, ChangeableDatasetLoader changeableDatasetLoader) {
         if (Global.isVerboseAnnoying()) {
-            Global.showMessage("Starting database.\n");
+            Global.showInfoMessage("Starting database.\n");
         }
         changeableDatasetLoader.initStructures();
 
         if (Global.isVerboseAnnoying()) {
-            Global.showMessage("Database started.\n");
+            Global.showInfoMessage("Database started.\n");
         }
     }
-
-    @Override
-    public String getUserFriendlyHelpForThisCaseUse() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
 }

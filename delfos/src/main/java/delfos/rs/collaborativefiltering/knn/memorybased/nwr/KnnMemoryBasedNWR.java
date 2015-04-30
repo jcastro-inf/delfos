@@ -128,7 +128,7 @@ public class KnnMemoryBasedNWR extends KnnCollaborativeRecommender<KnnMemoryMode
     @Override
     public Collection<Recommendation> recommendToUser(DatasetLoader<? extends Rating> datasetLoader, KnnMemoryModel model, Integer idUser, java.util.Set<Integer> candidateItems) throws UserNotFound {
         if (Global.isVerboseAnnoying()) {
-            Global.showMessage(new Date().toGMTString() + " --> Recommending for user '" + idUser + "'\n");
+            Global.showInfoMessage(new Date().toGMTString() + " --> Recommending for user '" + idUser + "'\n");
         }
 
         try {
@@ -137,7 +137,7 @@ public class KnnMemoryBasedNWR extends KnnCollaborativeRecommender<KnnMemoryMode
 
             Collection<Recommendation> ret = recommendWithNeighbors(datasetLoader.getRatingsDataset(), idUser, neighbors, candidateItems);
             if (Global.isVerboseAnnoying()) {
-                Global.showMessage("Finished recommendations for user '" + idUser + "'\n");
+                Global.showInfoMessage("Finished recommendations for user '" + idUser + "'\n");
             }
             return ret;
         } catch (CannotLoadRatingsDataset ex) {

@@ -56,7 +56,7 @@ public class UserReductor_holdOut extends DatasetSampler implements ContentDatas
         TreeSet<Integer> allowedUsers = new TreeSet<>();
         float percentage = (Float) getParameterValue(usersPercentage);
         int numUsuarios = (int) (users.length * percentage);
-        Global.showMessage("Using " + numUsuarios + " users: " + "\n");
+        Global.showInfoMessage("Using " + numUsuarios + " users: " + "\n");
         for (int i = 0; i < numUsuarios; i++) {
             int indexUser = randomGenerator.nextInt(users.length);
             while (users[indexUser] == null) {
@@ -72,7 +72,7 @@ public class UserReductor_holdOut extends DatasetSampler implements ContentDatas
             sb.append(idUser).append(",");
         }
         sb.setCharAt(sb.length() - 1, ']');
-        Global.showMessage(sb.toString() + "\n");
+        Global.showInfoMessage(sb.toString() + "\n");
 
         ratingsDataset = new UserReductor_allowedUsers(loader.getRatingsDataset(), allowedUsers);
     }

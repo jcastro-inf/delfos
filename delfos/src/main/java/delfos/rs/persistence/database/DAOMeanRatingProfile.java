@@ -96,7 +96,7 @@ public class DAOMeanRatingProfile implements RecommendationModelDatabasePersiste
             for (MeanRating mr : meanProfile) {
                 String statementString = "INSERT INTO " + PROFILE_TABLE + "(" + ID_COLUMN_NAME + "," + PREFERENCE_COLUMN_NAME + ") "
                         + "VALUES (" + mr.getIdItem() + "," + mr.getPreference().floatValue() + ");";
-                Global.showMessage(statementString + "\n");
+                Global.showInfoMessage(statementString + "\n");
                 statement.executeUpdate(statementString);
             }
         } catch (Exception ex) {

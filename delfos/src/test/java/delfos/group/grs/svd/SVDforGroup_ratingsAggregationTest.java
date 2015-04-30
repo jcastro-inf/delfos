@@ -27,7 +27,6 @@ public class SVDforGroup_ratingsAggregationTest {
     @Test
     public void testWithSomeUsers() throws Exception {
 
-        Global.setVerbose();
         RandomDatasetLoader randomDataset = new RandomDatasetLoader(50, 100, 0.5);
 
         SVDforGroup_ratingsAggregation grs = new SVDforGroup_ratingsAggregation();
@@ -44,7 +43,7 @@ public class SVDforGroup_ratingsAggregationTest {
         }
         Collection<Recommendation> recommendOnly = grs.recommendOnly(randomDataset, RecommendationModel, groupModel, group, candidateItems);
 
-        Global.showMessage(DatasetPrinter.printCompactRatingTable(randomDataset.getRatingsDataset(), group.getGroupMembers(), candidateItems));
+        Global.showInfoMessage(DatasetPrinter.printCompactRatingTable(randomDataset.getRatingsDataset(), group.getGroupMembers(), candidateItems));
 
         RecommendationsOutputStandardRaw output = new RecommendationsOutputStandardRaw();
         output.writeRecommendations(new GroupRecommendations(group, recommendOnly, RecommendationComputationDetails.EMPTY_DETAILS));

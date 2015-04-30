@@ -168,8 +168,8 @@ public class DAOTryThisAtHomeDatabaseModel implements RecommendationModelDatabas
 
                     }
                     sentence.setCharAt(sentence.length() - 1, ';');
-                    Global.showMessage("================================================\n");
-                    Global.showMessage(sentence.toString() + "\n");
+                    Global.showInfoMessage("================================================\n");
+                    Global.showInfoMessage(sentence.toString() + "\n");
                     st.executeUpdate(sentence.toString());
                 }
             }
@@ -196,8 +196,8 @@ public class DAOTryThisAtHomeDatabaseModel implements RecommendationModelDatabas
                         sentence.append("),");
                     }
                     sentence.setCharAt(sentence.length() - 1, ';');
-                    Global.showMessage("================================================\n");
-                    Global.showMessage(sentence.toString() + "\n");
+                    Global.showInfoMessage("================================================\n");
+                    Global.showInfoMessage(sentence.toString() + "\n");
                     st.executeUpdate(sentence.toString());
                 }
             }

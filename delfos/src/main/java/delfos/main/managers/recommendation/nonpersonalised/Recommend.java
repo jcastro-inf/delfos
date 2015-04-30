@@ -1,7 +1,5 @@
 package delfos.main.managers.recommendation.nonpersonalised;
 
-import java.util.Collection;
-import java.util.List;
 import delfos.ConsoleParameters;
 import delfos.ERROR_CODES;
 import delfos.common.Chronometer;
@@ -11,24 +9,25 @@ import delfos.common.exceptions.dataset.items.ItemNotFound;
 import delfos.common.exceptions.dataset.users.UserNotFound;
 import delfos.configfile.rs.single.RecommenderSystemConfiguration;
 import delfos.configfile.rs.single.RecommenderSystemConfigurationFileParser;
-import delfos.dataset.basic.user.User;
 import delfos.dataset.basic.loader.types.ContentDatasetLoader;
-import delfos.main.managers.CaseUseManager;
+import delfos.dataset.basic.user.User;
+import delfos.main.managers.CaseUseSubManager;
 import delfos.main.managers.recommendation.ArgumentsRecommendation;
-import delfos.main.managers.recommendation.singleuser.ArgumentsSingleUserRecommendation;
+import delfos.main.managers.recommendation.singleuser.SingleUserRecommendation;
 import delfos.rs.nonpersonalised.NonPersonalisedRecommender;
 import delfos.rs.persistence.FailureInPersistence;
 import delfos.rs.persistence.PersistenceMethodStrategy;
 import delfos.rs.recommendation.Recommendation;
 import delfos.rs.recommendation.RecommendationComputationDetails;
 import delfos.rs.recommendation.SingleUserRecommendations;
+import java.util.Collection;
 
 /**
  *
  * @version 22-oct-2014
  * @author Jorge Castro Gallardo
  */
-public class Recommend implements CaseUseManager {
+class Recommend extends CaseUseSubManager {
 
     public static Recommend getInstance() {
         return Holder.INSTANCE;
@@ -40,11 +39,12 @@ public class Recommend implements CaseUseManager {
     }
 
     private Recommend() {
+        super(NonPersonalisedRecommendation.getInstance());
     }
 
     @Override
     public boolean isRightManager(ConsoleParameters consoleParameters) {
-        return consoleParameters.isDefined(ArgumentsNonPersonalised.NON_PERSONALISED_MODE)
+        return consoleParameters.isDefined(NonPersonalisedRecommendation.NON_PERSONALISED_MODE)
                 && consoleParameters.isDefined(ArgumentsRecommendation.RECOMMEND);
     }
 
@@ -54,8 +54,8 @@ public class Recommend implements CaseUseManager {
         String configurationFile = ArgumentsRecommendation.extractConfigurationFile(consoleParameters);
 
         User user;
-        if (consoleParameters.isDefined(ArgumentsSingleUserRecommendation.TARGET_USER)) {
-            String idUser = consoleParameters.getValue(ArgumentsSingleUserRecommendation.TARGET_USER);
+        if (consoleParameters.isDefined(SingleUserRecommendation.TARGET_USER)) {
+            String idUser = consoleParameters.getValue(SingleUserRecommendation.TARGET_USER);
             user = new User(Integer.parseInt(idUser));
         } else {
             user = User.ANONYMOUS_USER;
@@ -102,10 +102,5 @@ public class Recommend implements CaseUseManager {
             IllegalStateException ise = new IllegalStateException(rsc.recommenderSystem.getAlias() + " is not a non-personalised recommender system (Must implement " + NonPersonalisedRecommender.class);
             ERROR_CODES.NOT_A_RECOMMENDER_SYSTEM.exit(ise);
         }
-    }
-
-    @Override
-    public String getUserFriendlyHelpForThisCaseUse() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }

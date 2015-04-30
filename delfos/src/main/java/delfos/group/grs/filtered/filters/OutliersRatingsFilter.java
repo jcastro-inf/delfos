@@ -206,7 +206,7 @@ public class OutliersRatingsFilter extends GroupRatingsFilter {
                 deletePriority.get(idUser).put(idItem, difference.diff);
             }
 
-            Global.showMessage("Rating elimination priority table.\n");
+            Global.showInfoMessage("Rating elimination priority table.\n");
             DatasetPrinterDeprecated.printCompactRatingTable(deletePriority);
         }
 
@@ -226,20 +226,20 @@ public class OutliersRatingsFilter extends GroupRatingsFilter {
                 if (difference.diff > getDiffThreshold() && eliminados < borrarMax) {
                     //Este rating no se devuelve, porque es muy distinto de la media.
                     if (Global.isVerboseAnnoying()) {
-                        Global.showMessage("Eliminado ==> " + difference + "\n");
+                        Global.showInfoMessage("Eliminado ==> " + difference + "\n");
                     }
                     eliminados++;
                 } else {
                     //Este rating se devuelve.
                     if (Global.isVerboseAnnoying()) {
-                        Global.showMessage("Devuelto ---> " + difference + "\n");
+                        Global.showInfoMessage("Devuelto ---> " + difference + "\n");
                     }
                     ratingsToReturn.get(idUser).put(idItem, difference.originalRating);
                 }
             } else {
                 //No es posible borrarlo, devolverlo.
                 if (Global.isVerboseAnnoying()) {
-                    Global.showMessage("Devuelto ---> " + difference + "\n");
+                    Global.showInfoMessage("Devuelto ---> " + difference + "\n");
                 }
                 ratingsToReturn.get(idUser).put(idItem, difference.originalRating);
             }
@@ -249,7 +249,7 @@ public class OutliersRatingsFilter extends GroupRatingsFilter {
         float totalPercent = (eliminados * 100.0f) / totalRatingsGrupo;
 
         if (Global.isVerboseAnnoying()) {
-            Global.showMessage(
+            Global.showInfoMessage(
                     "Ratings del grupo " + originalSet.keySet() + " eliminados: "
                     + eliminados + " de " + totalRatingsGrupo
                     + " (P: " + NumberRounder.round(partialPercent, 2)

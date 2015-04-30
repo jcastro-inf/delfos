@@ -60,10 +60,10 @@ public class FilterCaseStudy implements Runnable {
         this.SIZE_OF_GROUPS = SIZE_OF_GROUPS;
         this.SEED = SEED;
 
-        Global.showMessage("Ejecuciones    " + NUM_EJECUCIONES + "\n");
-        Global.showMessage("Grupos         " + NUM_GROUPS + "\n");
-        Global.showMessage("Tamaño grupos  " + SIZE_OF_GROUPS + "\n");
-        Global.showMessage("Semilla        " + SEED + "\n");
+        Global.showInfoMessage("Ejecuciones    " + NUM_EJECUCIONES + "\n");
+        Global.showInfoMessage("Grupos         " + NUM_GROUPS + "\n");
+        Global.showInfoMessage("Tamaño grupos  " + SIZE_OF_GROUPS + "\n");
+        Global.showInfoMessage("Semilla        " + SEED + "\n");
         init();
     }
 
@@ -74,7 +74,7 @@ public class FilterCaseStudy implements Runnable {
 
     public void execute() throws CannotLoadRatingsDataset, CannotLoadContentDataset, UserNotFound, ItemNotFound {
 
-        Global.showMessage("SEED OF THIS EXPERIMENT = " + SEED + "\n");
+        Global.showInfoMessage("SEED OF THIS EXPERIMENT = " + SEED + "\n");
 
         ArrayList<GroupRecommenderSystem> grsList;
         if (directory != null) {
@@ -104,7 +104,7 @@ public class FilterCaseStudy implements Runnable {
                 caseStudy.execute();
                 GroupCaseStudyXML.saveCaseResults(caseStudy, caseStudy.getGroupRecommenderSystem().getAlias(), defaultFileName);
 
-                Global.showMessage("================ FIN Sistema " + i + " de " + grsList.size() + "=================== \n");
+                Global.showInfoMessage("================ FIN Sistema " + i + " de " + grsList.size() + "=================== \n");
                 i++;
             }
         }

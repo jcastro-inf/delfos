@@ -255,7 +255,7 @@ public class TfIdfCBRS extends ContentBasedRecommender<TfIdfCBRSModel, TfIdfCBRS
             List<Float> userWeights = model.getBooleanFeaturesTransformation().getFloatWeightsVector(userProfile);
 
             if (Global.isVerboseAnnoying()) {
-                Global.showMessage("========================================\n"
+                Global.showInfoMessage("========================================\n"
                         + itemVector + "\n"
                         + userVector + "\n"
                         + userWeights + "\n");

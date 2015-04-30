@@ -101,14 +101,14 @@ public class FixedGraph<Node> extends WeightedGraphCalculation<Node> {
                     WeightedGraphAdapter<Node> weightedGraph = loadGraph(getFileName());
                     models.put(datasetLoader, weightedGraph);
                 } catch (FailureInPersistence ex) {
-                    Global.showMessage(new Date().toString() + ": Building graph.\n");
+                    Global.showInfoMessage(new Date().toString() + ": Building graph.\n");
                     getWeightedGraphCalculation().addProgressListener(listener);
                     WeightedGraphAdapter<Node> weightedGraph = getWeightedGraphCalculation().computeTrustValues(datasetLoader);
                     getWeightedGraphCalculation().removeProgressListener(listener);
                     models.put(datasetLoader, weightedGraph);
-                    Global.showMessage(new Date().toString() + ": Graph built.\n");
+                    Global.showInfoMessage(new Date().toString() + ": Graph built.\n");
                     saveGraph(getFileName(), weightedGraph);
-                    Global.showMessage(new Date().toString() + ": Graph saved in file " + getFileName() + "\n");
+                    Global.showInfoMessage(new Date().toString() + ": Graph saved in file " + getFileName() + "\n");
                 }
             }
             return models.get(datasetLoader);

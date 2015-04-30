@@ -8,9 +8,9 @@ import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
 import delfos.common.exceptions.dataset.CannotLoadUsersDataset;
 import delfos.configfile.rs.single.RecommenderSystemConfiguration;
 import delfos.configfile.rs.single.RecommenderSystemConfigurationFileParser;
-import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.loader.types.DatasetLoader;
-import delfos.main.managers.CaseUseManager;
+import delfos.dataset.basic.rating.Rating;
+import delfos.main.managers.CaseUseSubManager;
 import delfos.main.managers.recommendation.ArgumentsRecommendation;
 import delfos.rs.nonpersonalised.NonPersonalisedRecommender;
 import delfos.rs.persistence.FailureInPersistence;
@@ -19,9 +19,9 @@ import delfos.rs.persistence.PersistenceMethodStrategy;
 /**
  *
  * @version 20-oct-2014
-* @author Jorge Castro Gallardo
+ * @author Jorge Castro Gallardo
  */
-public class BuildRecommendationModel implements CaseUseManager {
+public class BuildRecommendationModel extends CaseUseSubManager {
 
     public static BuildRecommendationModel getInstance() {
         return Holder.INSTANCE;
@@ -33,11 +33,12 @@ public class BuildRecommendationModel implements CaseUseManager {
     }
 
     private BuildRecommendationModel() {
+        super(NonPersonalisedRecommendation.getInstance());
     }
 
     @Override
     public boolean isRightManager(ConsoleParameters consoleParameters) {
-        return consoleParameters.isDefined(ArgumentsNonPersonalised.NON_PERSONALISED_MODE)
+        return consoleParameters.isDefined(NonPersonalisedRecommendation.NON_PERSONALISED_MODE)
                 && consoleParameters.isDefined(ArgumentsRecommendation.BUILD_RECOMMENDATION_MODEL);
     }
 
@@ -57,7 +58,10 @@ public class BuildRecommendationModel implements CaseUseManager {
         }
     }
 
-    private Object buildRecommendationModel(NonPersonalisedRecommender<? extends Object> nonPersonalisedRecommender, DatasetLoader<? extends Rating> datasetLoader) {
+    private Object buildRecommendationModel(
+            NonPersonalisedRecommender<? extends Object> nonPersonalisedRecommender,
+            DatasetLoader<? extends Rating> datasetLoader) {
+
         Object recomenderSystemModel = null;
         try {
             Global.showMessageTimestamped("Building recommendation model.");
@@ -84,26 +88,6 @@ public class BuildRecommendationModel implements CaseUseManager {
         } catch (FailureInPersistence ex) {
             ERROR_CODES.FAILURE_IN_PERSISTENCE.exit(ex);
         }
-    }
-
-    @Override
-    public String getUserFriendlyHelpForThisCaseUse() {
-        StringBuilder str = new StringBuilder();
-        str.append("\tNON PERSONALISED RECOMMENDER SYSTEM USAGE\n");
-        str.append("\t\t" + ArgumentsRecommendation.BUILD_RECOMMENDATION_MODEL);
-        str.append(": This option is used to build the model using a ");
-        str.append("CONFIGFILE defined by parameter ");
-        str.append("\t\t" + ArgumentsRecommendation.RECOMMENDER_SYSTEM_CONFIGURATION_FILE);
-        str.append(". If the config file is not specified, search config.xml ");
-        str.append("in the current directory.\n\n");
-
-        str.append("\t" + ArgumentsRecommendation.RECOMMENDER_SYSTEM_CONFIGURATION_FILE);
-        str.append(" [CONFIGFILE]: The optional parameter ");
-        str.append(ArgumentsRecommendation.RECOMMENDER_SYSTEM_CONFIGURATION_FILE);
-        str.append(" indicates the path to the recommender system configuration file.\n");
-        str.append("\t\n");
-
-        return str.toString();
     }
 
     public String getSynopsis() {

@@ -209,7 +209,7 @@ public class RecommenderSystemConfigurationFileParser {
                 recommdendationsOutputMethod = RecommdendationsOutputMethodXML.getRecommdendationsOutputMethod(recommdendationsOutputMethodElement);
             }
             if (Global.isVerboseAnnoying()) {
-                Global.showMessage("Recommendation output method loaded: " + recommdendationsOutputMethod.getNameWithParameters() + "\n");
+                Global.showInfoMessage("Recommendation output method loaded: " + recommdendationsOutputMethod.getNameWithParameters() + "\n");
             }
         }
 
@@ -225,7 +225,7 @@ public class RecommenderSystemConfigurationFileParser {
                 recommendationCandidatesSelector = RecommendationCandidatesSelectorXML.getRecommendationsCandidatesSelector(recommendationCandidatesSelectorElement);
             }
             if (Global.isVerboseAnnoying()) {
-                Global.showMessage("Recommendation output method loaded: " + recommdendationsOutputMethod.getNameWithParameters() + "\n");
+                Global.showInfoMessage("Recommendation output method loaded: " + recommdendationsOutputMethod.getNameWithParameters() + "\n");
             }
         }
 

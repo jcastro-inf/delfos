@@ -189,7 +189,7 @@ public class ChangeableMySQLContentDataset implements ChangeableContentDataset, 
             String clearFeaturesTable = "delete from " + getContentDefinitionTable_name() + ";";
             int clearFeaturesTableResult = statement.executeUpdate(clearFeaturesTable);
             if (clearFeaturesTableResult != 0) {
-                Global.showMessage("Features table '" + getContentDefinitionTable_name() + "' cleared due to new item features (" + clearFeaturesTableResult + " rows deleted).\n");
+                Global.showInfoMessage("Features table '" + getContentDefinitionTable_name() + "' cleared due to new item features (" + clearFeaturesTableResult + " rows deleted).\n");
             }
 
             for (int i = 0; i < features.length; i++) {
@@ -317,7 +317,7 @@ public class ChangeableMySQLContentDataset implements ChangeableContentDataset, 
             String deleteProduct = "delete from " + getProductsTable_name() + " where " + productsTable_ItemIDField + " = " + item.getId() + ";";
             int deleteProductResult = statement.executeUpdate(deleteProduct);
             if (deleteProductResult != 0) {
-                Global.showMessage("Product " + item.getId() + " deleted from table " + getProductsTable_name() + "\n");
+                Global.showInfoMessage("Product " + item.getId() + " deleted from table " + getProductsTable_name() + "\n");
             }
 
             //Insert de cada item.
@@ -344,7 +344,7 @@ public class ChangeableMySQLContentDataset implements ChangeableContentDataset, 
             insertItem.append(");");
             int insertItemResult = statement.executeUpdate(insertItem.toString());
             if (insertItemResult != 0) {
-                Global.showMessage("Product " + item.getId() + " inserted into table " + getProductsTable_name() + "\n");
+                Global.showInfoMessage("Product " + item.getId() + " inserted into table " + getProductsTable_name() + "\n");
             }
         }
     }
@@ -358,9 +358,9 @@ public class ChangeableMySQLContentDataset implements ChangeableContentDataset, 
                     + " from " + getContentDefinitionTable_name() + ";";
 
             if (Global.isVerboseAnnoying()) {
-                Global.showMessage("Reading content dataset:\n");
+                Global.showInfoMessage("Reading content dataset:\n");
 
-                Global.showMessage("\tReading features: " + selectFeatures + "\n");
+                Global.showInfoMessage("\tReading features: " + selectFeatures + "\n");
             }
 
             ResultSet result = statement.executeQuery(selectFeatures);
@@ -389,7 +389,7 @@ public class ChangeableMySQLContentDataset implements ChangeableContentDataset, 
             selectItems.append(" From ").append(getProductsTable_name());
 
             if (Global.isVerboseAnnoying()) {
-                Global.showMessage("\tReading items: " + selectItems.toString() + "\n");
+                Global.showInfoMessage("\tReading items: " + selectItems.toString() + "\n");
             }
 
             ResultSet selectItemResult = statement.executeQuery(selectItems.toString());
@@ -423,7 +423,7 @@ public class ChangeableMySQLContentDataset implements ChangeableContentDataset, 
             }
 
             if (Global.isVerboseAnnoying()) {
-                Global.showMessage("Items readed : " + items.size() + "\n");
+                Global.showInfoMessage("Items readed : " + items.size() + "\n");
             }
             try {
                 contentDataset = new ContentDatasetDefault(items);

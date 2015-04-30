@@ -67,13 +67,13 @@ public class MySQLConnection implements DatabaseConection {
      */
     public MySQLConnection(String user, String pass, String databaseName, String serverName, int port, String prefix) throws ClassNotFoundException, SQLException {
         if (Global.isVerboseAnnoying()) {
-            Global.showMessage(MySQLConnection.class + ": Making database connection with properties:\n");
-            Global.showMessage("\tUser -----------> " + user + "\n");
-            Global.showMessage("\tPass -----------> " + pass + "\n");
-            Global.showMessage("\tDatabase Name --> " + databaseName + "\n");
-            Global.showMessage("\tServer Name ----> " + serverName + "\n");
-            Global.showMessage("\tPort -----------> " + port + "\n");
-            Global.showMessage("\tPrefix ---------> " + prefix + "\n");
+            Global.showInfoMessage(MySQLConnection.class + ": Making database connection with properties:\n");
+            Global.showInfoMessage("\tUser -----------> " + user + "\n");
+            Global.showInfoMessage("\tPass -----------> " + pass + "\n");
+            Global.showInfoMessage("\tDatabase Name --> " + databaseName + "\n");
+            Global.showInfoMessage("\tServer Name ----> " + serverName + "\n");
+            Global.showInfoMessage("\tPort -----------> " + port + "\n");
+            Global.showInfoMessage("\tPrefix ---------> " + prefix + "\n");
         }
 
         this.user = user;

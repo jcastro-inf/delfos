@@ -101,11 +101,11 @@ public abstract class CollaborativeRecommender<RecommendationModel>
     public Number predictRating(DatasetLoader<? extends Rating> datasetLoader, RecommendationModel model, int idUser, int idItem)
             throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset, NotEnoughtUserInformation {
         if (Global.isVerboseAnnoying()) {
-            Global.showMessage("Predicting rating of user " + idUser + " over item " + idItem + "\n");
+            Global.showInfoMessage("Predicting rating of user " + idUser + " over item " + idItem + "\n");
             try {
-                Global.showMessage("Valoración real " + datasetLoader.getRatingsDataset().getRating(idUser, idItem) + "\n");
-                Global.showMessage("Media user " + datasetLoader.getRatingsDataset().getMeanRatingUser(idUser) + "\n");
-                Global.showMessage("Media item " + datasetLoader.getRatingsDataset().getMeanRatingItem(idItem) + "\n");
+                Global.showInfoMessage("Valoración real " + datasetLoader.getRatingsDataset().getRating(idUser, idItem) + "\n");
+                Global.showInfoMessage("Media user " + datasetLoader.getRatingsDataset().getMeanRatingUser(idUser) + "\n");
+                Global.showInfoMessage("Media item " + datasetLoader.getRatingsDataset().getMeanRatingItem(idItem) + "\n");
             } catch (CannotLoadRatingsDataset ex) {
                 throw new IllegalStateException(ex);
             }
@@ -117,13 +117,13 @@ public abstract class CollaborativeRecommender<RecommendationModel>
         Collection<Recommendation> recommendOnly = recommendToUser(datasetLoader, model, idUser, items);
         if (recommendOnly.isEmpty()) {
             if (Global.isVerboseAnnoying()) {
-                Global.showMessage("Prediction of rating of user " + idUser + " over item " + idItem + " can't be predicted\n");
+                Global.showInfoMessage("Prediction of rating of user " + idUser + " over item " + idItem + " can't be predicted\n");
             }
             return null;
         } else {
             double prediction = recommendOnly.iterator().next().getPreference().doubleValue();
             if (Global.isVerboseAnnoying()) {
-                Global.showMessage("Prediction of rating of user " + idUser + " over item " + idItem + " ---> " + prediction + "\n");
+                Global.showInfoMessage("Prediction of rating of user " + idUser + " over item " + idItem + " ---> " + prediction + "\n");
             }
             return prediction;
         }

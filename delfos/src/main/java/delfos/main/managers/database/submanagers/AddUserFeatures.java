@@ -20,7 +20,7 @@ import java.util.TreeMap;
  *
  * @author jcastro
  */
-public class AddUserFeatures implements DatabaseManagerCaseUseManager {
+public class AddUserFeatures extends DatabaseCaseUseSubManager {
 
     /**
      * Parámetro para especificar que se use el modo de añadir características a
@@ -121,7 +121,7 @@ public class AddUserFeatures implements DatabaseManagerCaseUseManager {
             if (newName == null) {
                 newName = user.getName();
             } else {
-                Global.showMessage("User id=" + idUser + " oldName='" + user.getName() + "'  newName='" + newName + "'.\n");
+                Global.showInfoMessage("User id=" + idUser + " oldName='" + user.getName() + "'  newName='" + newName + "'.\n");
             }
 
             changeableDatasetLoader.getChangeableUsersDataset().addUser(new User(user.getId(), newName, newEntityFeatures));
@@ -135,10 +135,5 @@ public class AddUserFeatures implements DatabaseManagerCaseUseManager {
             ERROR_CODES.USER_NOT_FOUND.exit(ex);
             throw new IllegalStateException(ex);
         }
-    }
-
-    @Override
-    public String getUserFriendlyHelpForThisCaseUse() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }

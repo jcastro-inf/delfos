@@ -4,13 +4,13 @@ import delfos.ConsoleParameters;
 import delfos.configfile.rs.single.ChangeableDatasetConfigurationFileParser;
 import delfos.dataset.changeable.ChangeableDatasetLoader;
 import delfos.dataset.loaders.csv.changeable.ChangeableCSVFileDatasetLoader;
-import delfos.main.managers.CaseUseManager;
+import delfos.main.managers.CaseUseMode;
 
 /**
  *
  * @author jcastro
  */
-public class CreateDefaultManageDatabaseCSV implements CaseUseManager {
+public class CreateDefaultManageDatabaseCSV extends CaseUseMode {
 
     private static final CreateDefaultManageDatabaseCSV instance = new CreateDefaultManageDatabaseCSV();
 
@@ -18,11 +18,11 @@ public class CreateDefaultManageDatabaseCSV implements CaseUseManager {
         return instance;
     }
 
-    public static final String PARAMETER = "--create-default-manage-database-csv";
+    public static final String MODE_PARAMETER = "--create-default-manage-database-csv";
 
     @Override
-    public boolean isRightManager(ConsoleParameters consoleParameters) {
-        return consoleParameters.isDefined(PARAMETER);
+    public String getModeParameter() {
+        return MODE_PARAMETER;
     }
 
     @Override
@@ -39,7 +39,7 @@ public class CreateDefaultManageDatabaseCSV implements CaseUseManager {
 
     @Override
     public String getUserFriendlyHelpForThisCaseUse() {
-        return PARAMETER + " creates a default csv-based dataset.";
+        return MODE_PARAMETER + " creates a default csv-based dataset.";
     }
 
 }

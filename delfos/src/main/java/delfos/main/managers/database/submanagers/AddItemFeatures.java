@@ -1,8 +1,5 @@
 package delfos.main.managers.database.submanagers;
 
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
 import delfos.ConsoleParameters;
 import delfos.ERROR_CODES;
 import delfos.UndefinedParameterException;
@@ -14,12 +11,15 @@ import delfos.common.exceptions.dataset.items.ItemNotFound;
 import delfos.dataset.basic.features.Feature;
 import delfos.dataset.basic.item.Item;
 import delfos.dataset.changeable.ChangeableDatasetLoader;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 /**
  *
  * @author jcastro
  */
-public class AddItemFeatures implements DatabaseManagerCaseUseManager {
+public class AddItemFeatures extends DatabaseCaseUseSubManager {
 
     /**
      * Parámetro para especificar que se use el modo de añadir características a
@@ -120,7 +120,7 @@ public class AddItemFeatures implements DatabaseManagerCaseUseManager {
             if (newName == null) {
                 newName = item.getName();
             } else {
-                Global.showMessage("Item id=" + idItem + " oldName='" + item.getName() + "'  newName='" + newName + "'.\n");
+                Global.showInfoMessage("Item id=" + idItem + " oldName='" + item.getName() + "'  newName='" + newName + "'.\n");
             }
 
             changeableDatasetLoader.getChangeableContentDataset().addItem(new Item(item.getId(), newName, newEntityFeatures));
@@ -137,10 +137,5 @@ public class AddItemFeatures implements DatabaseManagerCaseUseManager {
             ERROR_CODES.ITEM_NOT_FOUND.exit(ex);
             throw new IllegalStateException(ex);
         }
-    }
-
-    @Override
-    public String getUserFriendlyHelpForThisCaseUse() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }

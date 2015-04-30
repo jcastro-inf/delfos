@@ -72,7 +72,7 @@ public class InitialFrame extends JFrame {
                 InitialFrame.this.setVisible(false);
                 mw.setVisible(true);
                 mw.toFront();
-                Global.showMessage("Interface built in " + (System.currentTimeMillis() - time) + " ms\n");
+                Global.showInfoMessage("Interface built in " + (System.currentTimeMillis() - time) + " ms\n");
             }
         });
         add(colaborativo, constraints);

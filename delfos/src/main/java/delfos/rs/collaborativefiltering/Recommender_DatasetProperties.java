@@ -33,10 +33,10 @@ public class Recommender_DatasetProperties extends CollaborativeRecommender<Numb
     public Number buildRecommendationModel(DatasetLoader<? extends Rating> datasetLoader) throws CannotLoadRatingsDataset {
         this.copyOfTrainingDataset = new BothIndexRatingsDataset(datasetLoader.getRatingsDataset());
 
-        Global.showMessage("Showing statistics about the dataset\n");
-        Global.showMessage("Num ratings " + datasetLoader.getRatingsDataset().getNumRatings() + "\n");
-        Global.showMessage("Num users   " + datasetLoader.getRatingsDataset().allUsers().size() + "\n");
-        Global.showMessage("Num items   " + datasetLoader.getRatingsDataset().allRatedItems().size() + "\n");
+        Global.showInfoMessage("Showing statistics about the dataset\n");
+        Global.showInfoMessage("Num ratings " + datasetLoader.getRatingsDataset().getNumRatings() + "\n");
+        Global.showInfoMessage("Num users   " + datasetLoader.getRatingsDataset().allUsers().size() + "\n");
+        Global.showInfoMessage("Num items   " + datasetLoader.getRatingsDataset().allRatedItems().size() + "\n");
 
         Map<Integer, Integer> usersRatingsNum = new TreeMap<>();
         Map<Integer, Integer> itemsRatingsNum = new TreeMap<>();
@@ -83,29 +83,29 @@ public class Recommender_DatasetProperties extends CollaborativeRecommender<Numb
 
         }
 
-        Global.showMessage("\n\nhistograma usuarios\n");
+        Global.showInfoMessage("\n\nhistograma usuarios\n");
         for (int numRatings : userHistogram.keySet()) {
-            Global.showMessage("\tUsers with " + numRatings + " ratings\t----->" + userHistogram.get(numRatings) + "\n");
+            Global.showInfoMessage("\tUsers with " + numRatings + " ratings\t----->" + userHistogram.get(numRatings) + "\n");
         }
-        Global.showMessage("\n\n");
-        Global.showMessage("\n\nhistograma productos\n");
+        Global.showInfoMessage("\n\n");
+        Global.showInfoMessage("\n\nhistograma productos\n");
         for (int numRatings : itemHistogram.keySet()) {
-            Global.showMessage("\tItems with " + numRatings + " ratings\t----->" + itemHistogram.get(numRatings) + "\n");
+            Global.showInfoMessage("\tItems with " + numRatings + " ratings\t----->" + itemHistogram.get(numRatings) + "\n");
         }
 
         if (Global.isVerboseAnnoying()) {
-            Global.showMessage("Histograms in tab separated values format: \n\n");
-            Global.showMessage("NumRatings\tNumUsers\n");
+            Global.showInfoMessage("Histograms in tab separated values format: \n\n");
+            Global.showInfoMessage("NumRatings\tNumUsers\n");
             for (int numRatings : userHistogram.keySet()) {
-                Global.showMessage(numRatings + "\t" + userHistogram.get(numRatings) + "\n");
+                Global.showInfoMessage(numRatings + "\t" + userHistogram.get(numRatings) + "\n");
             }
-            Global.showMessage("\n");
+            Global.showInfoMessage("\n");
 
-            Global.showMessage("NumRatings\tNumItems\n");
+            Global.showInfoMessage("NumRatings\tNumItems\n");
             for (int numRatings : itemHistogram.keySet()) {
-                Global.showMessage(numRatings + "\t" + itemHistogram.get(numRatings) + "\n");
+                Global.showInfoMessage(numRatings + "\t" + itemHistogram.get(numRatings) + "\n");
             }
-            Global.showMessage("\n");
+            Global.showInfoMessage("\n");
         }
 
         return 3;

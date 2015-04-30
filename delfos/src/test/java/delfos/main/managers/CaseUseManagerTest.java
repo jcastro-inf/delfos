@@ -11,29 +11,35 @@ import org.junit.Assert;
  */
 public class CaseUseManagerTest {
 
-    public static void testCaseUse(CaseUseManager caseUseManager, String[] consoleArguments) {
-        testCaseUse(caseUseManager, new ConsoleParameters(consoleArguments));
+    public CaseUseManagerTest() {
     }
 
-    public static void testCaseUse(CaseUseManager caseUseManager, ConsoleParameters consoleParameters) {
+    public static void testCaseUse(CaseUseMode caseUseManager, ConsoleParameters consoleParameters) {
 
         boolean rightManager = caseUseManager.isRightManager(consoleParameters);
         Assert.assertTrue(caseUseManager + " should have been triggered for command line '" + consoleParameters.printOriginalParameters() + "'", rightManager);
-        List<CaseUseManager> caseUseManagers = Main.getAllCaseUseManagers();
-        Assert.assertTrue(caseUseManager.getClass() + " not in Main.getAllCaseUseManagers() method", caseUseManagers.contains(caseUseManager));
-        List<CaseUseManager> triggeredCaseUseManagers = Main.getSuitableCaseUseManagers(caseUseManagers, consoleParameters);
-        Assert.assertFalse("No case use activated for command line " + consoleParameters.printOriginalParameters(), triggeredCaseUseManagers.isEmpty());
+        List<CaseUseMode> caseUse = Main.getAllCaseUse();
+        Assert.assertTrue(caseUseManager.getClass() + " not in Main.getAllCaseUse() method", caseUse.contains(caseUseManager));
+        List<CaseUseMode> triggeredCaseUse = Main.getSuitableCaseUse(caseUse, consoleParameters);
+        Assert.assertFalse("No case use activated for command line " + consoleParameters.printOriginalParameters(), triggeredCaseUse.isEmpty());
         Assert.assertTrue(
                 "More than one case use manager activated for command line "
                 + consoleParameters.printOriginalParameters() + "\n"
-                + "Cases activated: " + triggeredCaseUseManagers.toString(),
-                triggeredCaseUseManagers.size() == 1
+                + "Cases activated: " + triggeredCaseUse.toString(),
+                triggeredCaseUse.size() == 1
         );
 
-        Assert.assertEquals("Expected case use '" + caseUseManager + "', while the triggered was '" + triggeredCaseUseManagers.get(0) + "'", caseUseManager, triggeredCaseUseManagers.get(0));
+        Assert.assertEquals("Expected case use '" + caseUseManager + "', while the triggered was '" + triggeredCaseUse.get(0) + "'", caseUseManager, triggeredCaseUse.get(0));
     }
 
-    public CaseUseManagerTest() {
+    public static void testCaseUseSubManager(CaseUseSubManager caseUseSubManager, ConsoleParameters consoleParameters) {
+
+        boolean rightManager = caseUseSubManager.isRightManager(consoleParameters);
+        Assert.assertTrue(caseUseSubManager + " should have been triggered for command line '" + consoleParameters.printOriginalParameters() + "'", rightManager);
+
+        CaseUseSubManager triggeredCaseUse = caseUseSubManager.getParent().getSuitableCaseUseSubManager(consoleParameters);
+
+        Assert.assertEquals("Expected case use '" + caseUseSubManager + "', while the triggered was '" + triggeredCaseUse + "'", caseUseSubManager, triggeredCaseUse);
     }
 
 }

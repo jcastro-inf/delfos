@@ -1,12 +1,5 @@
 package delfos.group.experiment.validation.validationtechniques;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-import java.util.Set;
-import java.util.TreeMap;
-import java.util.TreeSet;
 import delfos.ERROR_CODES;
 import delfos.common.Global;
 import delfos.common.exceptions.dataset.CannotLoadContentDataset;
@@ -15,13 +8,20 @@ import delfos.common.exceptions.dataset.items.ItemNotFound;
 import delfos.common.exceptions.dataset.users.UserNotFound;
 import delfos.common.parameters.Parameter;
 import delfos.common.parameters.restriction.IntegerParameter;
-import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.loader.types.ContentDatasetLoader;
 import delfos.dataset.basic.loader.types.DatasetLoader;
+import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.storage.validationdatasets.PairOfTrainTestRatingsDataset;
 import delfos.dataset.storage.validationdatasets.ValidationDatasets;
 import delfos.dataset.util.DatasetPrinterDeprecated;
 import delfos.group.groupsofusers.GroupOfUsers;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
+import java.util.Set;
+import java.util.TreeMap;
+import java.util.TreeSet;
 
 /**
  * Validación cruzada para sistemas de recomendación a grupos. Esta validación
@@ -156,7 +156,7 @@ public class CrossFoldValidation_Ratings extends GroupValidationTechnique {
                         ValidationDatasets.getInstance().createTrainingDataset(datasetLoader.getRatingsDataset(), finalTestSets.get(idPartition)),
                         ValidationDatasets.getInstance().createTestDataset(datasetLoader.getRatingsDataset(), finalTestSets.get(idPartition)));
 
-                if (Global.isPrintDatasets()) {
+                if (Global.isVerboseAnnoying()) {
 
                     Set<Integer> allItems;
                     if (datasetLoader instanceof ContentDatasetLoader) {
@@ -166,23 +166,23 @@ public class CrossFoldValidation_Ratings extends GroupValidationTechnique {
                         allItems = new TreeSet<>(datasetLoader.getRatingsDataset().allRatedItems());
                     }
 
-                    Global.showMessage("==================================================== \n");
+                    Global.showInfoMessage("==================================================== \n");
 
                     Set<Integer> allUsers = new TreeSet<>(datasetLoader.getRatingsDataset().allUsers());
                     System.out.println("");
 
-                    Global.showMessage("Dataset de training " + idPartition + ".\n");
+                    Global.showInfoMessage("Dataset de training " + idPartition + ".\n");
                     DatasetPrinterDeprecated.printCompactRatingTable(
                             ret[idPartition].train,
                             allUsers,
                             allItems);
 
-                    Global.showMessage("Dataset de test " + idPartition + ".\n");
+                    Global.showInfoMessage("Dataset de test " + idPartition + ".\n");
                     DatasetPrinterDeprecated.printCompactRatingTable(
                             ret[idPartition].test,
                             allUsers,
                             allItems);
-                    Global.showMessage("==================================================== \n");
+                    Global.showInfoMessage("==================================================== \n");
                 }
             } catch (UserNotFound ex) {
                 ERROR_CODES.USER_NOT_FOUND.exit(ex);

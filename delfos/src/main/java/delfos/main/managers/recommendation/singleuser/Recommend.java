@@ -17,12 +17,11 @@ import delfos.dataset.basic.loader.types.ContentDatasetLoader;
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.user.User;
-import delfos.main.managers.CaseUseManager;
+import delfos.main.managers.CaseUseSubManager;
 import static delfos.main.managers.recommendation.ArgumentsRecommendation.RECOMMEND;
-import static delfos.main.managers.recommendation.ArgumentsRecommendation.RECOMMENDER_SYSTEM_CONFIGURATION_FILE;
 import static delfos.main.managers.recommendation.ArgumentsRecommendation.RECOMMEND_SHORT;
 import static delfos.main.managers.recommendation.ArgumentsRecommendation.extractConfigurationFile;
-import static delfos.main.managers.recommendation.singleuser.ArgumentsSingleUserRecommendation.SINGLE_USER_MODE;
+import static delfos.main.managers.recommendation.singleuser.SingleUserRecommendation.SINGLE_USER_MODE;
 import delfos.rs.RecommenderSystem;
 import delfos.rs.persistence.FailureInPersistence;
 import delfos.rs.persistence.PersistenceMethodStrategy;
@@ -40,7 +39,7 @@ import java.util.Set;
  * @version 20-oct-2014
  * @author Jorge Castro Gallardo
  */
-public class Recommend implements CaseUseManager {
+class Recommend extends CaseUseSubManager {
 
     /**
      * Parámetro de la linea de comandos para especificar a qué usuario se desea
@@ -58,6 +57,7 @@ public class Recommend implements CaseUseManager {
     }
 
     private Recommend() {
+        super(SingleUserRecommendation.getInstance());
     }
 
     public boolean isSingleUserRecommendationCaseUse(ConsoleParameters consoleParameters) {
@@ -139,8 +139,8 @@ public class Recommend implements CaseUseManager {
             }
 
             if (Global.isVerboseAnnoying()) {
-                Global.showMessage("List of candidate items for user " + idUser + " size: " + candidateItems.size() + "\n");
-                Global.showMessage("\t" + candidateItems + "\n");
+                Global.showInfoMessage("List of candidate items for user " + idUser + " size: " + candidateItems.size() + "\n");
+                Global.showInfoMessage("\t" + candidateItems + "\n");
             }
 
             Object RecommendationModel;
@@ -171,8 +171,8 @@ public class Recommend implements CaseUseManager {
                 if (recommendations.isEmpty()) {
                     Global.showWarning("Recommendation list for user '" + idUser + "' is empty, check for causes.");
                 } else {
-                    Global.showMessage("Recommendation list for user '" + idUser + "' of size " + recommendations.size() + "\n");
-                    Global.showMessage("\t" + recommendations.toString() + "\n");
+                    Global.showInfoMessage("Recommendation list for user '" + idUser + "' of size " + recommendations.size() + "\n");
+                    Global.showInfoMessage("\t" + recommendations.toString() + "\n");
                 }
             }
 
@@ -191,21 +191,4 @@ public class Recommend implements CaseUseManager {
         }
     }
 
-    @Override
-    public String getUserFriendlyHelpForThisCaseUse() {
-        StringBuilder ret = new StringBuilder();
-
-        ret.append("MANDATORY ARGUMENTS\n");
-        ret.append("\t" + USER_COMMAND_LINE_PARAMETER + " ID_USER: Used in ");
-        ret.append(SINGLE_USER_MODE).append(" ");
-        ret.append("mode to indicate the target user. The recommender system ");
-        ret.append("specified in the CONFIGFILE is used to return a list of ");
-        ret.append("the most relevant items for the active user (the user with ");
-        ret.append("id=ID_USER) \n");
-
-        ret.append("OPTIONAL ARGUMENTS\n");
-        ret.append("\t " + RECOMMENDER_SYSTEM_CONFIGURATION_FILE);
-
-        return ret.toString();
-    }
 }

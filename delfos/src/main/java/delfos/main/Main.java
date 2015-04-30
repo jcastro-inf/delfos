@@ -5,9 +5,9 @@ import delfos.Constants;
 import delfos.ERROR_CODES;
 import delfos.common.Chronometer;
 import delfos.common.Global;
-import delfos.main.exceptions.ManyCaseUseManagersActivatedException;
-import delfos.main.exceptions.NoCaseUseManagersActivatedException;
-import delfos.main.managers.CaseUseManager;
+import delfos.main.exceptions.ManyCaseUseActivatedException;
+import delfos.main.exceptions.NoCaseUseActivatedException;
+import delfos.main.managers.CaseUseMode;
 import delfos.main.managers.database.DatabaseManager;
 import delfos.main.managers.library.Help;
 import java.util.ArrayList;
@@ -26,33 +26,32 @@ public class Main {
     }
 
     public static void mainWithExceptions(String[] args) {
-
         Chronometer c = new Chronometer();
         c.reset();
 
         ConsoleParameters consoleParameters = ConsoleParameters.parseArguments(args);
         Constants.initLibraryGeneralParameters(consoleParameters);
-        Global.showMessage("Starting\n");
+        Global.showInfoMessage("Starting\n");
 
-        List<CaseUseManager> caseUseManagers = getAllCaseUseManagers();
+        List<CaseUseMode> caseUses = getAllCaseUse();
 
-        List<CaseUseManager> suitableCaseUseManagers = getSuitableCaseUseManagers(
-                caseUseManagers,
+        List<CaseUseMode> suitableCaseUse = getSuitableCaseUse(
+                caseUses,
                 consoleParameters);
 
         if (Help.getInstance().isRightManager(consoleParameters)) {
             Help.getInstance().manageCaseUse(consoleParameters);
         } else {
-            switch (suitableCaseUseManagers.size()) {
+            switch (suitableCaseUse.size()) {
                 case 0:
-                    noCaseUseManagersActivated(consoleParameters);
-                    throw new NoCaseUseManagersActivatedException(consoleParameters);
+                    noCaseUseActivated(consoleParameters);
+                    throw new NoCaseUseActivatedException(consoleParameters);
                 case 1:
-                    suitableCaseUseManagers.get(0).manageCaseUse(consoleParameters);
+                    suitableCaseUse.get(0).manageCaseUse(consoleParameters);
                     break;
                 default:
-                    manyCaseUseManagersActivated(consoleParameters, suitableCaseUseManagers);
-                    throw new ManyCaseUseManagersActivatedException(consoleParameters, suitableCaseUseManagers);
+                    manyCaseUseActivated(consoleParameters, suitableCaseUse);
+                    throw new ManyCaseUseActivatedException(consoleParameters, suitableCaseUse);
             }
         }
     }
@@ -60,52 +59,49 @@ public class Main {
     public static void main(String[] args) {
         try {
             mainWithExceptions(args);
-        } catch (NoCaseUseManagersActivatedException | ManyCaseUseManagersActivatedException ex) {
+        } catch (NoCaseUseActivatedException | ManyCaseUseActivatedException ex) {
 
         }
     }
 
-    public static List<CaseUseManager> getAllCaseUseManagers() {
-        ArrayList<CaseUseManager> caseUseManagers = new ArrayList<>();
+    public static List<CaseUseMode> getAllCaseUse() {
+        ArrayList<CaseUseMode> caseUse = new ArrayList<>();
 
-        caseUseManagers.add(DatabaseManager.getInstance());
+        caseUse.add(DatabaseManager.getInstance());
 
-        caseUseManagers.add(delfos.main.managers.experiment.ResultAnalysis.getInstance());
-        caseUseManagers.add(delfos.main.managers.experiment.SingleUserExperimentGUI.getInstance());
+        caseUse.add(delfos.main.managers.experiment.ResultAnalysis.getInstance());
+        caseUse.add(delfos.main.managers.experiment.SingleUserExperimentGUI.getInstance());
 
-        caseUseManagers.add(delfos.main.managers.library.Version.getInstance());
+        caseUse.add(delfos.main.managers.library.Version.getInstance());
 
-        caseUseManagers.add(delfos.main.managers.recommendation.singleuser.BuildRecommendationModel.getInstance());
-        caseUseManagers.add(delfos.main.managers.recommendation.singleuser.Recommend.getInstance());
-        caseUseManagers.add(delfos.main.managers.recommendation.singleuser.gui.swing.BuildConfigurationFileGUI.getInstance());
-        caseUseManagers.add(delfos.main.managers.recommendation.singleuser.gui.swing.RecommendationGUI.getInstance());
+        caseUse.add(delfos.main.managers.recommendation.singleuser.SingleUserRecommendation.getInstance());
+        caseUse.add(delfos.main.managers.recommendation.singleuser.gui.swing.BuildConfigurationFileGUI.getInstance());
+        caseUse.add(delfos.main.managers.recommendation.singleuser.gui.swing.RecommendationGUI.getInstance());
 
-        caseUseManagers.add(delfos.main.managers.recommendation.nonpersonalised.BuildRecommendationModel.getInstance());
-        caseUseManagers.add(delfos.main.managers.recommendation.nonpersonalised.Recommend.getInstance());
+        caseUse.add(delfos.main.managers.recommendation.nonpersonalised.NonPersonalisedRecommendation.getInstance());
 
-        caseUseManagers.add(delfos.main.managers.recommendation.group.BuildRecommendationModel.getInstance());
-        caseUseManagers.add(delfos.main.managers.recommendation.group.Recommend.getInstance());
+        caseUse.add(delfos.main.managers.recommendation.group.GroupRecommendation.getInstance());
 
-        caseUseManagers.add(delfos.main.managers.experiment.ExecuteGroupXML.getInstance());
+        caseUse.add(delfos.main.managers.experiment.ExecuteGroupXML.getInstance());
 
-        caseUseManagers.add(delfos.main.managers.database.helpers.CreateDefaultManageDatabaseCSV.getInstance());
-        caseUseManagers.add(delfos.main.managers.database.helpers.CreateDefaultManageDatabaseMySQL.getInstance());
-        caseUseManagers.add(delfos.main.managers.recommendation.nonpersonalised.helpers.CreateDefaultNonPersonalisedRecommender.getInstance());
+        caseUse.add(delfos.main.managers.database.helpers.CreateDefaultManageDatabaseCSV.getInstance());
+        caseUse.add(delfos.main.managers.database.helpers.CreateDefaultManageDatabaseMySQL.getInstance());
+        caseUse.add(delfos.main.managers.recommendation.nonpersonalised.helpers.CreateDefaultNonPersonalisedRecommender.getInstance());
 
-        caseUseManagers.add(delfos.main.managers.library.install.InitialConfiguration.getInstance());
+        caseUse.add(delfos.main.managers.library.install.InitialConfiguration.getInstance());
 
-        return caseUseManagers;
+        return caseUse;
     }
 
-    public static List<CaseUseManager> getSuitableCaseUseManagers(List<CaseUseManager> caseUseManagers, ConsoleParameters consoleParameters) {
-        List<CaseUseManager> suitableCaseUseManagers = new ArrayList<>();
+    public static List<CaseUseMode> getSuitableCaseUse(List<CaseUseMode> caseUse, ConsoleParameters consoleParameters) {
+        List<CaseUseMode> suitableCaseUse = new ArrayList<>();
 
         try {
-            for (CaseUseManager caseUseManager : caseUseManagers) {
+            for (CaseUseMode caseUseManager : caseUse) {
 
                 try {
                     if (caseUseManager.isRightManager(consoleParameters)) {
-                        suitableCaseUseManagers.add(caseUseManager);
+                        suitableCaseUse.add(caseUseManager);
                     }
                 } catch (Throwable ex) {
                     System.out.println(ex.getMessage());
@@ -119,11 +115,10 @@ public class Main {
             ERROR_CODES.UNDEFINED_ERROR.exit(ex);
         }
 
-        return suitableCaseUseManagers;
+        return suitableCaseUse;
     }
 
-    public static void noCaseUseManagersActivated(ConsoleParameters consoleParameters) {
-
+    public static void noCaseUseActivated(ConsoleParameters consoleParameters) {
         StringBuilder message = new StringBuilder();
 
         message.append("\n\tUnrecognized command line : ");
@@ -133,15 +128,15 @@ public class Main {
         Global.showWarning(message.toString());
     }
 
-    public static void manyCaseUseManagersActivated(ConsoleParameters consoleParameters, List<CaseUseManager> suitableCaseUseManagers) {
+    public static void manyCaseUseActivated(ConsoleParameters consoleParameters, List<CaseUseMode> suitableCaseUse) {
         StringBuilder message = new StringBuilder();
 
         message.append("\n========== COMMAND LINE MODES CONFLICT =========================\n");
-        message.append("Conflict on command line parameters: many case use managers activated.\n");
+        message.append("Conflict on command line parameters: many case use activated.\n");
         message.append("Command line arguments\n");
         message.append("\t").append(consoleParameters.printOriginalParameters()).append("\n");
-        message.append("CaseUseManagers activated:\n");
-        suitableCaseUseManagers.stream().forEach((caseUseManager) -> {
+        message.append("CaseUse activated:\n");
+        suitableCaseUse.stream().forEach((caseUseManager) -> {
             message.append("\t").append(caseUseManager.getClass().getName()).append("\n");
         });
         message.append("================================================================");

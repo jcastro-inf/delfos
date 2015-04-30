@@ -12,7 +12,7 @@ import delfos.dataset.changeable.ChangeableDatasetLoader;
  *
  * @author jcastro
  */
-public class AddItem implements DatabaseManagerCaseUseManager {
+public class AddItem extends DatabaseCaseUseSubManager {
 
     /**
      * Parametro para especificar que la biblioteca añada un producto a la base
@@ -61,10 +61,4 @@ public class AddItem implements DatabaseManagerCaseUseManager {
             throw new IllegalArgumentException(ex);
         }
     }
-
-    @Override
-    public String getUserFriendlyHelpForThisCaseUse() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
 }

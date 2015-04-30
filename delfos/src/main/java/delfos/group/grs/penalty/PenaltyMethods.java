@@ -101,17 +101,17 @@ public class PenaltyMethods {
             membersRatingsByUser.remove(idItem);
         });
 
-        if (Global.isVerbose()) {
-            Global.showMessage("And the best aggregation for:\n");
+        if (Global.isInfoPrinted()) {
+            Global.showInfoMessage("And the best aggregation for:\n");
             String datasetTable = DatasetPrinter.printCompactRatingTable(membersRatingsByUser);
 
             String datasetTablePlusTabs = "\t".concat(datasetTable).replaceAll("\n", "\n\t");
 
             datasetTablePlusTabs = datasetTablePlusTabs.substring(0, datasetTablePlusTabs.length() - 1);
 
-            Global.showMessage(datasetTablePlusTabs);
-            Global.showMessage(bestAggregationVector.toString() + "\n");
-            Global.showMessage(penaltyAggregatedRatings.toString() + "\n");
+            Global.showInfoMessage(datasetTablePlusTabs);
+            Global.showInfoMessage(bestAggregationVector.toString() + "\n");
+            Global.showInfoMessage(penaltyAggregatedRatings.toString() + "\n");
         }
 
         return penaltyAggregatedRatings;

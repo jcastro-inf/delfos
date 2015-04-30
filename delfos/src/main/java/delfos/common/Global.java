@@ -1,6 +1,6 @@
 package delfos.common;
 
-import delfos.Constants;
+import delfos.ConsoleParameters;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -15,8 +15,6 @@ import java.util.Date;
  * @version 1.0 (03/01/2013)
  */
 public class Global {
-
-    private static boolean threadVerbose = false;
 
     public static boolean isPrintDatasets() {
         return false;
@@ -80,27 +78,12 @@ public class Global {
     }
 
     /**
-     * Se controla en linea de comandos con el flag
-     * {@link Constants#THREAD_VERBOSE}
-     *
-     * @param threadVerbose
-     */
-    public static void setThreadVerbose(boolean threadVerbose) {
-        Global.threadVerbose = threadVerbose;
-        if (!Global.isVerbose()) {
-            System.out.println("Verbose mode not set, setting to true.");
-            Global.setVerbose();
-
-        }
-    }
-
-    /**
      * Muestra la cadena indicada como parámetro en la salida de error.
      *
      * @param warningMessage Mensaje a mostrar
      */
     public static void showThreadMessage(String warningMessage) {
-        if (Global.threadVerbose) {
+        if (messageLevelPrinted.isPrinted(MessageLevel.THREAD)) {
             System.err.println("\tTHREAD: " + warningMessage);
 
             if (doublePrint) {
@@ -115,7 +98,7 @@ public class Global {
      * @param message Mensaje a mostrar
      */
     public static void showThreadMessageTimestamped(String message) {
-        if (Global.threadVerbose) {
+        if (messageLevelPrinted.isPrinted(MessageLevel.THREAD)) {
             String timestampedMessage = addTimestampToMessage(message);
             showThreadMessage(timestampedMessage);
         }
@@ -133,7 +116,7 @@ public class Global {
     }
 
     public static void showMessageTimestamped(String message) {
-        Global.showMessage(addTimestampToMessage(message));
+        Global.showInfoMessage(addTimestampToMessage(message));
     }
 
     public static void showThreadMessageAnnoying(String message) {
@@ -148,33 +131,86 @@ public class Global {
         }
     }
 
-    enum VerboseLevel {
+    public static void show(String message) {
+        System.out.print(message);
+    }
 
-        NONE(),
+    public enum MessageLevel {
+
         /**
-         * Imprime solo mensajes generales.
+         * Prints errors only.
          */
-        GENERAL(),
+        ERROR(-2),
+        /**
+         * Prints errors and warnings.
+         */
+        WARNING(-1),
+        /**
+         * Prints errors, warnings and messages.
+         */
+        MESSAGE(0),
+        /**
+         * Imprime solo mensajes generales e informativos.
+         */
+        INFO(1),
         /**
          * Imprime todos los mensajes.
          */
-        ANNOYING();
+        ANNOYING_INFO(2),
+        /**
+         * Imprime todos los mensajes y los de hebra.
+         */
+        THREAD(3);
+
+        int level;
+        String[] commandLineFlags;
+
+        private MessageLevel(int verboseLevel, String... commandLineFlags) {
+            this.level = verboseLevel;
+            this.commandLineFlags = commandLineFlags;
+        }
+
+        @Override
+        public String toString() {
+            return name() + "(" + level + ")";
+        }
+
+        public boolean isPrinted(MessageLevel messageLevel) {
+            return this.level >= messageLevel.level;
+        }
+
+        public String[] getCommandLineFlags() {
+            return commandLineFlags;
+        }
+
+        public boolean isFlagPresent(ConsoleParameters consoleParameters) {
+            return false;
+        }
+
+        public static MessageLevel getPrintMessageLevel(ConsoleParameters consoleParameters) {
+            if (THREAD.isFlagPresent(consoleParameters)) {
+                return THREAD;
+            } else if (ANNOYING_INFO.isFlagPresent(consoleParameters)) {
+                return ANNOYING_INFO;
+            } else if (INFO.isFlagPresent(consoleParameters)) {
+                return INFO;
+            } else if (MESSAGE.isFlagPresent(consoleParameters)) {
+                return MESSAGE;
+            } else if (WARNING.isFlagPresent(consoleParameters)) {
+                return WARNING;
+            } else if (ERROR.isFlagPresent(consoleParameters)) {
+                return ERROR;
+            } else {
+                return MESSAGE;
+            }
+        }
     }
     /**
      * Indica si se deben mostrar mensajes o no. Los algoritmos indican en qué
      * punto están en cada momento. Por defecto no se muestran.
      */
-    private static VerboseLevel verbose = VerboseLevel.NONE;
-    /**
-     * Indica si se deben mostrar los mensajes de error. Por defecto están
-     * activos.
-     */
-    private static boolean showErrors = true;
-    /**
-     * Indica si se deben mostrar los mensajes de advertencia. Por defecto están
-     * activos.
-     */
-    private static boolean showWarnings = true;
+    private static MessageLevel messageLevelPrinted = MessageLevel.MESSAGE;
+
     private static boolean doublePrint = false;
 
     /**
@@ -182,8 +218,8 @@ public class Global {
      *
      * @param message Mensaje a mostrar
      */
-    public static void showMessage(String message) {
-        if (verbose != VerboseLevel.NONE) {
+    public static void showInfoMessage(String message) {
+        if (messageLevelPrinted.isPrinted(MessageLevel.MESSAGE)) {
             System.out.print(message);
             if (doublePrint) {
                 System.err.println(message);
@@ -198,7 +234,7 @@ public class Global {
      * @param ex Excepción con la información del error.
      */
     public static void showError(Throwable ex) {
-        if (showErrors) {
+        if (messageLevelPrinted.isPrinted(MessageLevel.ERROR)) {
             ex.printStackTrace(System.err);
 
             if (doublePrint) {
@@ -213,7 +249,7 @@ public class Global {
      * @param warningMessage Mensaje a mostrar
      */
     public static void showWarning(String warningMessage) {
-        if (showWarnings) {
+        if (messageLevelPrinted.isPrinted(MessageLevel.WARNING)) {
             System.err.println("WARNING: " + warningMessage);
 
             if (doublePrint) {
@@ -229,7 +265,7 @@ public class Global {
      * @param ex Excepción con la información de la advertencia.
      */
     public static void showWarning(Throwable ex) {
-        if (showWarnings) {
+        if (messageLevelPrinted.isPrinted(MessageLevel.WARNING)) {
             ex.printStackTrace(System.err);
 
             if (doublePrint) {
@@ -243,50 +279,16 @@ public class Global {
      *
      * @return true si se deben imprimir mensajes.
      */
-    public static boolean isVerbose() {
-        return verbose != VerboseLevel.NONE;
+    public static boolean isInfoPrinted() {
+        return messageLevelPrinted.isPrinted(MessageLevel.INFO);
     }
 
     public static boolean isVerboseAnnoying() {
-        return verbose == VerboseLevel.ANNOYING;
+        return messageLevelPrinted.isPrinted(MessageLevel.ANNOYING_INFO);
     }
 
-    /**
-     * Establece si se deben mostrar los mensajes comunes.
-     */
-    public static void setVerbose() {
-        verbose = VerboseLevel.GENERAL;
-        System.out.println("Verbose mode ON");
-    }
-
-    /**
-     * Establece si se deben mostrar los mensajes de advertencia.
-     *
-     * @param showWarnings Nuevo valor. True para mostrarlos, false para
-     * ocultarlos.
-     */
-    public static void setShowWarnings(boolean showWarnings) {
-        Global.showWarnings = showWarnings;
-    }
-
-    /**
-     * Establece si se deben mostrar los mensajes de error.
-     *
-     * @param showErrors Nuevo valor. True para mostrarlos, false para
-     * ocultarlos.
-     */
-    public static void setShowErrors(boolean showErrors) {
-        Global.showErrors = showErrors;
-    }
-
-    public static void setVerboseAnnoying() {
-        System.out.println("Verbose level: Annoying");
-        System.err.println("Verbose level: Annoying");
-        verbose = VerboseLevel.ANNOYING;
-    }
-
-    public static void setNoVerbose() {
-        verbose = VerboseLevel.NONE;
+    public static void setMessageLevel(MessageLevel messageLevel) {
+        messageLevelPrinted = messageLevel;
     }
 
     /**

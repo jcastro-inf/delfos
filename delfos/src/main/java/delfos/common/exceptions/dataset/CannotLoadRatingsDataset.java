@@ -3,7 +3,7 @@ package delfos.common.exceptions.dataset;
 /**
  * Excepción que se lanza cuando no se puede cargar el dataset de valoraciones.
  *
-* @author Jorge Castro Gallardo
+ * @author Jorge Castro Gallardo
  *
  * @version 1.0 Unknown date
  * @version 1.1 20-Mar-2103
@@ -31,4 +31,9 @@ public class CannotLoadRatingsDataset extends RuntimeException {
     public CannotLoadRatingsDataset(Throwable cause) {
         super(cause);
     }
+
+    public CannotLoadRatingsDataset(String message, Throwable cause) {
+        super(message, cause);
+    }
+
 }

@@ -159,7 +159,7 @@ public class KnnMemoryBasedCFRS extends KnnCollaborativeRecommender<KnnMemoryMod
 
         int neighborhoodSize_ = ((Number) getParameterValue(KnnMemoryBasedCFRS.NEIGHBORHOOD_SIZE)).intValue();
         if (ret.isEmpty()) {
-//            Global.showMessage("No se pudieron encontrar vecinos para el usuario "+idUser);
+//            Global.showInfoMessage("No se pudieron encontrar vecinos para el usuario "+idUser);
             ret = Collections.emptyList();
         } else {
             ret = ret.subList(0, Math.min(ret.size(), neighborhoodSize_));

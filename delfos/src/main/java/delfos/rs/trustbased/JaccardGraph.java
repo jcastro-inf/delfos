@@ -40,7 +40,7 @@ public class JaccardGraph extends WeightedGraphCalculation<Integer> {
         }
 
         if (printPartialResults) {
-            Global.showMessage("Dataset de training \n");
+            Global.showInfoMessage("Dataset de training \n");
             DatasetPrinterDeprecated.printCompactRatingTable(ratingsDataset);
         }
 

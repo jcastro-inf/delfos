@@ -249,7 +249,7 @@ public class Symeonidis2007FeatureWeighted extends ContentBasedRecommender<Symeo
                     double iufThisFeatureValue = Math.log10(u_div_uf);
 
                     if (Global.isVerboseAnnoying()) {
-                        Global.showMessage("Feature " + feature + " and value " + featureValue + " has an IUF of " + iufThisFeatureValue + "\n");
+                        Global.showInfoMessage("Feature " + feature + " and value " + featureValue + " has an IUF of " + iufThisFeatureValue + "\n");
                     }
                     iuf.set(idFeatureValue, iufThisFeatureValue);
                     fireBuildingProgressChangedEvent("IUF calculation", (int) ((float) i++ * 100 / booleanFeaturesTransformation.sizeOfAllFeatureValues()), -1);

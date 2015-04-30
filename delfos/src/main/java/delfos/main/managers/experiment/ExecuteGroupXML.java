@@ -1,26 +1,31 @@
 package delfos.main.managers.experiment;
 
-import java.io.File;
 import delfos.ConsoleParameters;
 import delfos.ERROR_CODES;
 import delfos.UndefinedParameterException;
 import delfos.common.exceptions.dataset.CannotLoadContentDataset;
 import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
 import delfos.group.casestudy.fromxmlfiles.GroupXMLexperimentsExecution;
-import delfos.main.managers.CaseUseManager;
+import delfos.main.managers.CaseUseMode;
+import java.io.File;
 
 /**
  *
  * @version 21-oct-2014
-* @author Jorge Castro Gallardo
+ * @author Jorge Castro Gallardo
  */
-public class ExecuteGroupXML implements CaseUseManager {
+public class ExecuteGroupXML extends CaseUseMode {
 
     /**
      * Parámetro de la linea de comandos para especificar que se muestre la
      * interfaz de recomendación.
      */
     public static final String EXECUTE_GROUP_XML = "-executeGroupXML";
+
+    @Override
+    public String getModeParameter() {
+        return EXECUTE_GROUP_XML;
+    }
 
     private static class Holder {
 
@@ -32,11 +37,6 @@ public class ExecuteGroupXML implements CaseUseManager {
     }
 
     public ExecuteGroupXML() {
-    }
-
-    @Override
-    public boolean isRightManager(ConsoleParameters consoleParameters) {
-        return consoleParameters.isDefined(EXECUTE_GROUP_XML);
     }
 
     @Override
@@ -71,11 +71,6 @@ public class ExecuteGroupXML implements CaseUseManager {
         } catch (UndefinedParameterException ex) {
             consoleParameters.printUnusedParameters(System.err);
         }
-    }
-
-    @Override
-    public String getUserFriendlyHelpForThisCaseUse() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     private static void xmlExperimentsExecution(String experimentsDirectory, String datasetDirectory, int numExecutions, long seed) {

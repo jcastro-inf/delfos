@@ -1,32 +1,30 @@
 package delfos.rs.persistence;
 
-import delfos.rs.persistence.FilePersistence;
-import java.io.File;
-import java.util.List;
-import org.junit.BeforeClass;
-import org.junit.Test;
 import delfos.common.Chronometer;
 import delfos.common.FileUtilities;
 import delfos.common.exceptions.dataset.CannotLoadContentDataset;
 import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
 import delfos.configfile.rs.single.RecommenderSystemConfigurationFileParser;
 import delfos.constants.DelfosTest;
-import delfos.dataset.basic.rating.Rating;
-import delfos.dataset.basic.rating.RatingsDataset;
-import delfos.dataset.basic.user.User;
-import delfos.dataset.loaders.csv.CSVfileDatasetLoader;
 import delfos.dataset.basic.loader.types.CompleteDatasetLoaderAbstract_withTrust;
 import delfos.dataset.basic.loader.types.ContentDatasetLoader;
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.loader.types.UsersDatasetLoader;
+import delfos.dataset.basic.rating.Rating;
+import delfos.dataset.basic.rating.RatingsDataset;
+import delfos.dataset.basic.user.User;
+import delfos.dataset.loaders.csv.CSVfileDatasetLoader;
 import delfos.factories.RecommenderSystemsFactory;
 import delfos.io.csv.dataset.DatasetToCSV;
-import delfos.main.managers.recommendation.singleuser.BuildRecommendationModel;
-import delfos.main.managers.recommendation.singleuser.Recommend;
+import delfos.main.managers.recommendation.singleuser.SingleUserRecommendation;
 import delfos.recommendationcandidates.OnlyNewItems;
 import delfos.rs.RecommenderSystem;
 import delfos.rs.collaborativefiltering.Recommender_DatasetProperties;
 import delfos.rs.output.RecommendationsOutputFileXML;
+import java.io.File;
+import java.util.List;
+import org.junit.BeforeClass;
+import org.junit.Test;
 
 /**
  * En esta clase se implementa un test que comprueba el correcto funcionamiento
@@ -103,13 +101,13 @@ public class FilePersistenceTest extends DelfosTest {
                     getRecommendationOutputFileXML(recommenderSystem));
 
             Chronometer chronometer = new Chronometer();
-            BuildRecommendationModel.buildRecommendationModel(configFile);
+            SingleUserRecommendation.buildRecommendationModel(configFile);
             System.out.println("Built model of '" + recommenderSystem + "' in " + chronometer.printTotalElapsed());
 
             RatingsDataset<? extends Rating> ratingsDataset = datasetLoader.getRatingsDataset();
             chronometer.reset();
             ratingsDataset.allUsers().stream().forEach((idUser) -> {
-                Recommend.recommendToUser(configFile, idUser);
+                SingleUserRecommendation.recommendToUser(configFile, idUser);
             });
             System.out.println("Recommended with '" + recommenderSystem + "' to " + datasetLoader.getRatingsDataset().allUsers().size() + " users in " + chronometer.printTotalElapsed());
 

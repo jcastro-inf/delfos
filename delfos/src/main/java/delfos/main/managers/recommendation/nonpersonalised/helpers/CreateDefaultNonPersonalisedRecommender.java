@@ -4,7 +4,7 @@ import delfos.ConsoleParameters;
 import delfos.configfile.rs.single.RecommenderSystemConfigurationFileParser;
 import delfos.configureddatasets.ConfiguredDatasetLoader;
 import delfos.dataset.basic.loader.types.DatasetLoader;
-import delfos.main.managers.CaseUseManager;
+import delfos.main.managers.CaseUseMode;
 import delfos.recommendationcandidates.OnlyNewItems;
 import delfos.rs.nonpersonalised.NonPersonalisedRecommender;
 import delfos.rs.nonpersonalised.meanrating.wilsonscoreonterval.WilsonScoreLowerBound;
@@ -16,7 +16,7 @@ import delfos.rs.persistence.FilePersistence;
  *
  * @author jcastro
  */
-public class CreateDefaultNonPersonalisedRecommender implements CaseUseManager {
+public class CreateDefaultNonPersonalisedRecommender extends CaseUseMode {
 
     private static final CreateDefaultNonPersonalisedRecommender instance = new CreateDefaultNonPersonalisedRecommender();
 
@@ -24,12 +24,7 @@ public class CreateDefaultNonPersonalisedRecommender implements CaseUseManager {
         return instance;
     }
 
-    public static final String PARAMETER = "--create-default-non-personalised-csv";
-
-    @Override
-    public boolean isRightManager(ConsoleParameters consoleParameters) {
-        return consoleParameters.isDefined(PARAMETER);
-    }
+    public static final String MODE_PARAMETER = "--create-default-non-personalised-csv";
 
     @Override
     public void manageCaseUse(ConsoleParameters consoleParameters) {
@@ -48,8 +43,8 @@ public class CreateDefaultNonPersonalisedRecommender implements CaseUseManager {
     }
 
     @Override
-    public String getUserFriendlyHelpForThisCaseUse() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public String getModeParameter() {
+        return MODE_PARAMETER;
     }
 
 }

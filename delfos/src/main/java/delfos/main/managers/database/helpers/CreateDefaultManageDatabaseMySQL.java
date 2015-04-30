@@ -4,13 +4,13 @@ import delfos.ConsoleParameters;
 import delfos.configfile.rs.single.ChangeableDatasetConfigurationFileParser;
 import delfos.dataset.changeable.ChangeableDatasetLoader;
 import delfos.dataset.loaders.database.mysql.changeable.ChangeableMySQLDatasetLoader;
-import delfos.main.managers.CaseUseManager;
+import delfos.main.managers.CaseUseMode;
 
 /**
  *
  * @author jcastro
  */
-public class CreateDefaultManageDatabaseMySQL implements CaseUseManager {
+public class CreateDefaultManageDatabaseMySQL extends CaseUseMode {
 
     private static final CreateDefaultManageDatabaseMySQL instance = new CreateDefaultManageDatabaseMySQL();
 
@@ -18,11 +18,11 @@ public class CreateDefaultManageDatabaseMySQL implements CaseUseManager {
         return instance;
     }
 
-    public static final String PARAMETER = "--create-default-manage-database-mysql";
+    public static final String MODE_PARAMETER = "--create-default-manage-database-mysql";
 
     @Override
-    public boolean isRightManager(ConsoleParameters consoleParameters) {
-        return consoleParameters.isDefined(PARAMETER);
+    public String getModeParameter() {
+        return MODE_PARAMETER;
     }
 
     @Override
@@ -36,7 +36,7 @@ public class CreateDefaultManageDatabaseMySQL implements CaseUseManager {
 
     @Override
     public String getUserFriendlyHelpForThisCaseUse() {
-        return PARAMETER + " creates a default mysql-based dataset.";
+        return MODE_PARAMETER + " creates a default mysql-based dataset.";
     }
 
 }

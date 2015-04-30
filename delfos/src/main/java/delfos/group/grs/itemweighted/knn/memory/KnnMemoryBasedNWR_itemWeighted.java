@@ -123,7 +123,7 @@ public class KnnMemoryBasedNWR_itemWeighted extends KnnCollaborativeRecommender<
             Map<Integer, Double> itemWeights,
             Collection<Integer> candidateItems) throws UserNotFound {
         if (Global.isVerboseAnnoying()) {
-            Global.showMessage(new Date().toGMTString() + " --> Recommending for user '" + idUser + "'\n");
+            Global.showInfoMessage(new Date().toGMTString() + " --> Recommending for user '" + idUser + "'\n");
         }
 
         try {
@@ -132,7 +132,7 @@ public class KnnMemoryBasedNWR_itemWeighted extends KnnCollaborativeRecommender<
 
             Collection<Recommendation> ret = recommendWithNeighbors(datasetLoader.getRatingsDataset(), idUser, neighbors, candidateItems);
             if (Global.isVerboseAnnoying()) {
-                Global.showMessage("Finished recommendations for user '" + idUser + "'\n");
+                Global.showInfoMessage("Finished recommendations for user '" + idUser + "'\n");
             }
             return ret;
         } catch (CannotLoadRatingsDataset ex) {

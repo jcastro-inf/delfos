@@ -1,11 +1,5 @@
 package delfos.main.managers.recommendation.nonpersonalised;
 
-import delfos.main.managers.recommendation.nonpersonalised.Recommend;
-import delfos.main.managers.recommendation.nonpersonalised.BuildRecommendationModel;
-import java.io.File;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
 import delfos.ConsoleParameters;
 import delfos.common.FileUtilities;
 import delfos.configfile.rs.single.RecommenderSystemConfigurationFileParser;
@@ -21,6 +15,10 @@ import delfos.rs.nonpersonalised.meanrating.wilsonscoreonterval.WilsonScoreLower
 import delfos.rs.output.RecommendationsOutputStandardRaw;
 import delfos.rs.output.sort.SortBy;
 import delfos.rs.persistence.FilePersistence;
+import java.io.File;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
 
 /**
  *
@@ -41,8 +39,6 @@ public class ArgumentsNonPersonalisedTest extends DelfosTest {
 
     @Test
     public void test_NonPersonalised_BuildRecommendationModel_manageCaseUse() throws Exception {
-        System.out.println("test_NonPersonalised_BuildRecommendationModel_manageCaseUse");
-
         createConfigurationFile();
 
         ConsoleParameters consoleParameters = ArgumentsNonPersonalisedTestSuite.buildRecommendationModel(NON_PERSONALISED_RS_CONFIG_XML);
@@ -56,8 +52,6 @@ public class ArgumentsNonPersonalisedTest extends DelfosTest {
 
     @Test
     public void test_NonPersonalised_Recommend_manageCaseUse() throws Exception {
-        System.out.println("test_NonPersonalised_Recommend_manageCaseUse");
-
         test_NonPersonalised_BuildRecommendationModel_manageCaseUse();
 
         ConsoleParameters consoleParameters = ArgumentsNonPersonalisedTestSuite.recommendAnonymous(NON_PERSONALISED_RS_CONFIG_XML);
@@ -71,33 +65,28 @@ public class ArgumentsNonPersonalisedTest extends DelfosTest {
 
     @Test
     public void test_NonPersonalised_BuildRecommendationModel_callFromCommandLine() throws Exception {
-        System.out.println("test_NonPersonalised_BuildRecommendationModel_callFromCommandLine");
-
         createConfigurationFile();
 
         ConsoleParameters consoleParameters = ArgumentsNonPersonalisedTestSuite.buildRecommendationModel(NON_PERSONALISED_RS_CONFIG_XML);
 
-        CaseUseManagerTest.testCaseUse(BuildRecommendationModel.getInstance(), consoleParameters);
+        CaseUseManagerTest.testCaseUseSubManager(BuildRecommendationModel.getInstance(), consoleParameters);
         Main.mainWithExceptions(consoleParameters);
     }
 
     @Test
     public void test_NonPersonalised_Recommend_callFromCommandLine() throws Exception {
-        System.out.println("test_NonPersonalised_Recommend_callFromCommandLine");
 
         createConfigurationFile();
         test_NonPersonalised_BuildRecommendationModel_callFromCommandLine();
 
         ConsoleParameters consoleParameters = ArgumentsNonPersonalisedTestSuite.recommendAnonymous(NON_PERSONALISED_RS_CONFIG_XML);
 
-        CaseUseManagerTest.testCaseUse(Recommend.getInstance(), consoleParameters);
+        CaseUseManagerTest.testCaseUseSubManager(Recommend.getInstance(), consoleParameters);
         Main.mainWithExceptions(consoleParameters);
     }
 
     @Test
     public void test_NonPersonalised_RecommendToGivenUser_callFromCommandLine() throws Exception {
-        System.out.println("test_NonPersonalised_RecommendToGivenUser_callFromCommandLine");
-
         int idUser = 23;
 
         createConfigurationFile();
@@ -105,12 +94,11 @@ public class ArgumentsNonPersonalisedTest extends DelfosTest {
 
         ConsoleParameters consoleParameters = ArgumentsNonPersonalisedTestSuite.recommendToUser(NON_PERSONALISED_RS_CONFIG_XML, idUser);
 
-        CaseUseManagerTest.testCaseUse(Recommend.getInstance(), consoleParameters);
+        CaseUseManagerTest.testCaseUseSubManager(Recommend.getInstance(), consoleParameters);
         Main.mainWithExceptions(consoleParameters);
     }
 
     private void createConfigurationFile() {
-
         DatasetLoader<? extends Rating> datasetLoader = ConfiguredDatasetsFactory.getInstance().getDatasetLoader("ml-100k");
 
         NonPersonalisedRecommender<? extends Object> nonPersonalisedRecommender = new WilsonScoreLowerBound();

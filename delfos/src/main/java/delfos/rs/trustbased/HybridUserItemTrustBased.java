@@ -79,11 +79,11 @@ public class HybridUserItemTrustBased extends CollaborativeRecommender<HybridUse
                     Number prediction = 0;
                     ret.add(new Recommendation(idItem, prediction));
                     if (Global.isVerboseAnnoying()) {
-                        Global.showMessage("==========================================================\n");
-                        Global.showMessage("User prediction for user " + idUser + ",\t item " + idItem + "\t  ---->  \t" + userPrediction + "\n");
-                        Global.showMessage("Item prediction for user " + idUser + ",\t item " + idItem + "\t  ---->  \t" + itemPrediction + "\n");
-                        Global.showMessage("Final prediction for user " + idUser + ",\t item " + idItem + "\t  ---->  \t" + prediction + "\n");
-                        Global.showMessage("==========================================================\n");
+                        Global.showInfoMessage("==========================================================\n");
+                        Global.showInfoMessage("User prediction for user " + idUser + ",\t item " + idItem + "\t  ---->  \t" + userPrediction + "\n");
+                        Global.showInfoMessage("Item prediction for user " + idUser + ",\t item " + idItem + "\t  ---->  \t" + itemPrediction + "\n");
+                        Global.showInfoMessage("Final prediction for user " + idUser + ",\t item " + idItem + "\t  ---->  \t" + prediction + "\n");
+                        Global.showInfoMessage("==========================================================\n");
                     }
                     continue;
                 }
@@ -91,11 +91,11 @@ public class HybridUserItemTrustBased extends CollaborativeRecommender<HybridUse
                     Number prediction = userPrediction;
                     ret.add(new Recommendation(idItem, prediction));
                     if (Global.isVerboseAnnoying()) {
-                        Global.showMessage("==========================================================\n");
-                        Global.showMessage("User prediction for user " + idUser + ",\t item " + idItem + "\t  ---->  \t" + userPrediction + "\n");
-                        Global.showMessage("Item prediction for user " + idUser + ",\t item " + idItem + "\t  ---->  \t" + itemPrediction + "\n");
-                        Global.showMessage("Final prediction for user " + idUser + ",\t item " + idItem + "\t  ---->  \t" + prediction + "\n");
-                        Global.showMessage("==========================================================\n");
+                        Global.showInfoMessage("==========================================================\n");
+                        Global.showInfoMessage("User prediction for user " + idUser + ",\t item " + idItem + "\t  ---->  \t" + userPrediction + "\n");
+                        Global.showInfoMessage("Item prediction for user " + idUser + ",\t item " + idItem + "\t  ---->  \t" + itemPrediction + "\n");
+                        Global.showInfoMessage("Final prediction for user " + idUser + ",\t item " + idItem + "\t  ---->  \t" + prediction + "\n");
+                        Global.showInfoMessage("==========================================================\n");
                     }
                     continue;
                 }
@@ -103,22 +103,22 @@ public class HybridUserItemTrustBased extends CollaborativeRecommender<HybridUse
                     Number prediction = itemPrediction;
                     ret.add(new Recommendation(idItem, prediction));
                     if (Global.isVerboseAnnoying()) {
-                        Global.showMessage("==========================================================\n");
-                        Global.showMessage("User prediction for user " + idUser + ",\t item " + idItem + "\t  ---->  \t" + userPrediction + "\n");
-                        Global.showMessage("Item prediction for user " + idUser + ",\t item " + idItem + "\t  ---->  \t" + itemPrediction + "\n");
-                        Global.showMessage("Final prediction for user " + idUser + ",\t item " + idItem + "\t  ---->  \t" + prediction + "\n");
-                        Global.showMessage("==========================================================\n");
+                        Global.showInfoMessage("==========================================================\n");
+                        Global.showInfoMessage("User prediction for user " + idUser + ",\t item " + idItem + "\t  ---->  \t" + userPrediction + "\n");
+                        Global.showInfoMessage("Item prediction for user " + idUser + ",\t item " + idItem + "\t  ---->  \t" + itemPrediction + "\n");
+                        Global.showInfoMessage("Final prediction for user " + idUser + ",\t item " + idItem + "\t  ---->  \t" + prediction + "\n");
+                        Global.showInfoMessage("==========================================================\n");
                     }
                     continue;
                 }
                 if (!userPrediction.equals(0) && !itemPrediction.equals(0)) {
                     Number prediction = (2 * userPrediction.doubleValue() * itemPrediction.doubleValue()) / (userPrediction.doubleValue() + itemPrediction.doubleValue());
                     if (Global.isVerboseAnnoying()) {
-                        Global.showMessage("==========================================================\n");
-                        Global.showMessage("User prediction for user " + idUser + ",\t item " + idItem + "\t  ---->  \t" + userPrediction + "\n");
-                        Global.showMessage("Item prediction for user " + idUser + ",\t item " + idItem + "\t  ---->  \t" + itemPrediction + "\n");
-                        Global.showMessage("Final prediction for user " + idUser + ",\t item " + idItem + "\t  ---->  \t" + prediction + "\n");
-                        Global.showMessage("==========================================================\n");
+                        Global.showInfoMessage("==========================================================\n");
+                        Global.showInfoMessage("User prediction for user " + idUser + ",\t item " + idItem + "\t  ---->  \t" + userPrediction + "\n");
+                        Global.showInfoMessage("Item prediction for user " + idUser + ",\t item " + idItem + "\t  ---->  \t" + itemPrediction + "\n");
+                        Global.showInfoMessage("Final prediction for user " + idUser + ",\t item " + idItem + "\t  ---->  \t" + prediction + "\n");
+                        Global.showInfoMessage("==========================================================\n");
                     }
                     ret.add(new Recommendation(idItem, prediction));
                 }
@@ -148,12 +148,12 @@ public class HybridUserItemTrustBased extends CollaborativeRecommender<HybridUse
             printPartialResults = true;
         }
 
-        if (!Global.isVerbose()) {
+        if (!Global.isInfoPrinted()) {
             printPartialResults = false;
         }
 
         if (printPartialResults) {
-            Global.showMessage("Dataset de training \n");
+            Global.showInfoMessage("Dataset de training \n");
             DatasetPrinterDeprecated.printCompactRatingTable(ratingsDataset);
         }
 
@@ -163,9 +163,9 @@ public class HybridUserItemTrustBased extends CollaborativeRecommender<HybridUse
         Map<Integer, Map<Integer, Number>> MSD = new TreeMap<>();
         Map<Integer, Map<Integer, Number>> UJaccard = new TreeMap<>();
 
-        Global.showMessage("============================================================================= \n");
-        Global.showMessage("UT-Step 2: User reputation computation.\n");
-        Global.showMessage("============================================================================= \n");
+        Global.showInfoMessage("============================================================================= \n");
+        Global.showInfoMessage("UT-Step 2: User reputation computation.\n");
+        Global.showInfoMessage("============================================================================= \n");
 
         TreeMap<Integer, Number> usersReputation = new TreeMap<>();
 
@@ -199,9 +199,9 @@ public class HybridUserItemTrustBased extends CollaborativeRecommender<HybridUse
             DatasetPrinterDeprecated.printOneColumnUserTable(usersReputation);
         }
 
-        Global.showMessage("============================================================================= \n");
-        Global.showMessage("UT-Step 3: Neighbour selection.\n");
-        Global.showMessage("============================================================================= \n");
+        Global.showInfoMessage("============================================================================= \n");
+        Global.showInfoMessage("UT-Step 3: Neighbour selection.\n");
+        Global.showInfoMessage("============================================================================= \n");
 
         TreeMap<Integer, Set<Neighbor>> usersNeighbours = new TreeMap<>();
         {
@@ -254,16 +254,16 @@ public class HybridUserItemTrustBased extends CollaborativeRecommender<HybridUse
             printPartialResults = true;
         }
 
-        if (!Global.isVerbose()) {
+        if (!Global.isInfoPrinted()) {
             printPartialResults = false;
         }
 
         List<Integer> users = new ArrayList<>(ratingsDataset.allUsers());
         List<Integer> items = new ArrayList<>(ratingsDataset.allRatedItems());
 
-        Global.showMessage("============================================================================= \n");
-        Global.showMessage("IT-Step 2: Item reputation computation.\n");
-        Global.showMessage("============================================================================= \n");
+        Global.showInfoMessage("============================================================================= \n");
+        Global.showInfoMessage("IT-Step 2: Item reputation computation.\n");
+        Global.showInfoMessage("============================================================================= \n");
 
         Map<Integer, Map<Integer, Number>> itemReputation = new TreeMap<>();
 
@@ -307,13 +307,13 @@ public class HybridUserItemTrustBased extends CollaborativeRecommender<HybridUse
         }
 
         if (printPartialResults) {
-            Global.showMessage("==================  Item reputation table ==========================  \n");
+            Global.showInfoMessage("==================  Item reputation table ==========================  \n");
             DatasetPrinterDeprecated.printCompactRatingTable(itemReputation);
         }
 
-        Global.showMessage("============================================================================= \n");
-        Global.showMessage("IT-Step 3: Item neighbour selection.\n");
-        Global.showMessage("============================================================================= \n");
+        Global.showInfoMessage("============================================================================= \n");
+        Global.showInfoMessage("IT-Step 3: Item neighbour selection.\n");
+        Global.showInfoMessage("============================================================================= \n");
 
         TreeMap<Integer, Collection<Neighbor>> itemsNeighbours = new TreeMap<>();
 
@@ -365,7 +365,7 @@ public class HybridUserItemTrustBased extends CollaborativeRecommender<HybridUse
 
             if (numVecinosUsados > getItemNeighborhoodSize()) {
                 if (Global.isVerboseAnnoying()) {
-                    Global.showMessage("Ya se han usado el número máximo de vecinos: " + getItemNeighborhoodSize());
+                    Global.showInfoMessage("Ya se han usado el número máximo de vecinos: " + getItemNeighborhoodSize());
                 }
                 break;
             }

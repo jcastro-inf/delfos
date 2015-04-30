@@ -35,8 +35,6 @@ public class HybridUserItemTrustBasedTest extends DelfosTest {
      */
     @Test
     public void paperTest() throws Exception {
-        Global.setVerbose();
-        Global.setVerboseAnnoying();
 
         DatasetLoader<? extends Rating> datasetLoader = new ImplicitTrustDataset();
         DatasetPrinterDeprecated.printCompactRatingTable(datasetLoader.getRatingsDataset());
@@ -63,10 +61,10 @@ public class HybridUserItemTrustBasedTest extends DelfosTest {
             }
         }
 
-        Global.showMessage("Original Ratings \n");
+        Global.showInfoMessage("Original Ratings \n");
         DatasetPrinterDeprecated.printCompactRatingTable(datasetLoader.getRatingsDataset());
 
-        Global.showMessage("Predicted Ratings \n");
+        Global.showInfoMessage("Predicted Ratings \n");
         DatasetPrinterDeprecated.printCompactRatingTable(finalPredictions);
 
         double delta = 0.01;

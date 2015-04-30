@@ -227,7 +227,7 @@ public class TryThisAtHomeSVD
         MeanIterative tiempoCiclo = new MeanIterative(20);
         fireBuildingProgressChangedEvent("training values", 0, -1);
 
-        Global.showMessage("Feature\tIteration\tMAE\tThe error has improved" + "\n");
+        Global.showInfoMessage("Feature\tIteration\tMAE\tThe error has improved" + "\n");
 
         /**
          * Modelo que se entrena a continuación.
@@ -286,7 +286,7 @@ public class TryThisAtHomeSVD
 
                 tiempoCiclo.addValue(diff);
 
-                Global.showMessage(indexFeature + "\t" + iteration + "\t" + String.format("%.8f", meanAbsoluteError.getMean()) + "\t" + String.format("%.8f", (maeAnterior - meanAbsoluteError.getMean())) + "\t time: " + DateCollapse.collapse(diff) + "\n");
+                Global.showInfoMessage(indexFeature + "\t" + iteration + "\t" + String.format("%.8f", meanAbsoluteError.getMean()) + "\t" + String.format("%.8f", (maeAnterior - meanAbsoluteError.getMean())) + "\t time: " + DateCollapse.collapse(diff) + "\n");
                 maeAnterior = meanAbsoluteError.getMean();
                 int totalIteraciones = numFeatures * numIterationsPerFeature;
                 int iterActual = indexFeature * numIterationsPerFeature + iteration + 1;
@@ -298,18 +298,18 @@ public class TryThisAtHomeSVD
 
         if (Global.isVerboseAnnoying()) {
 
-            Global.showMessage("=======================================\n");
-            Global.showMessage("User features:\n");
+            Global.showInfoMessage("=======================================\n");
+            Global.showInfoMessage("User features:\n");
             for (int idUser : ratingsDataset.allUsers()) {
-                Global.showMessage("User " + idUser + " \t" + model.getUserFeatures(idUser).toString() + "\n");
+                Global.showInfoMessage("User " + idUser + " \t" + model.getUserFeatures(idUser).toString() + "\n");
             }
-            Global.showMessage("---------------------------------------\n");
-            Global.showMessage("Item features:\n");
+            Global.showInfoMessage("---------------------------------------\n");
+            Global.showInfoMessage("Item features:\n");
 
             for (int idItem : ratingsDataset.allRatedItems()) {
-                Global.showMessage("Item " + idItem + " \t" + model.getItemFeatures(idItem).toString() + "\n");
+                Global.showInfoMessage("Item " + idItem + " \t" + model.getItemFeatures(idItem).toString() + "\n");
             }
-            Global.showMessage("=======================================\n");
+            Global.showInfoMessage("=======================================\n");
         }
 
         return model;

@@ -77,7 +77,7 @@ public class MovieLens1MillionRatingsDatasetToCSV {
 
     public Collection<RatingWithTimestamp> readRatingsDataset(File ratingsFile) throws CannotLoadRatingsDataset, FileNotFoundException {
 
-        Global.showMessage(
+        Global.showInfoMessage(
                 this.getClass().getSimpleName() + ": "
                 + "Loading ratings dataset from " + ratingsFile.getAbsolutePath() + " (no header)\n");
 
@@ -98,7 +98,7 @@ public class MovieLens1MillionRatingsDatasetToCSV {
                     ratings.add(new RatingWithTimestamp(idUser, idItem, rating, timestamp));
 
                     if (i % 1000000 == 0 && i != 0) {
-                        Global.showMessage("Loading  --> " + i / 1000000 + " millions ratings " + c.printPartialElapsed() + " / " + c.printTotalElapsed() + "\n");
+                        Global.showInfoMessage("Loading  --> " + i / 1000000 + " millions ratings " + c.printPartialElapsed() + " / " + c.printTotalElapsed() + "\n");
                         c.setPartialEllapsedCheckpoint();
                     }
 

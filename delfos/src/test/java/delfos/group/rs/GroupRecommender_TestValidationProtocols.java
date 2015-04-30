@@ -52,7 +52,7 @@ public class GroupRecommender_TestValidationProtocols extends GroupRecommenderSy
     @Override
     public Object buildRecommendationModel(DatasetLoader<? extends Rating> datasetLoader) throws CannotLoadRatingsDataset {
         datasetEnBuild = datasetLoader.getRatingsDataset();
-        Global.showMessage("Built.\n");
+        Global.showInfoMessage("Built.\n");
         return null;
     }
 
@@ -61,7 +61,7 @@ public class GroupRecommender_TestValidationProtocols extends GroupRecommenderSy
         datasetsEnConstruccionModeloGrupo.put(
                 groupOfUsers,
                 datasetLoader.getRatingsDataset());
-        Global.showMessage("BuiltGroupModel for group " + groupOfUsers.toString() + ".\n");
+        Global.showInfoMessage("BuiltGroupModel for group " + groupOfUsers.toString() + ".\n");
 
         return null;
     }
@@ -73,11 +73,11 @@ public class GroupRecommender_TestValidationProtocols extends GroupRecommenderSy
          * Compruebo si alguna vez me piden recomendaciones que se conocian en
          * la construcción del modelo general
          */
-        Global.showMessage("Recommended for group " + groupOfUsers.toString() + ".\n");
+        Global.showInfoMessage("Recommended for group " + groupOfUsers.toString() + ".\n");
 
         //Chequeo si el dataset es el mismo
         if (datasetEnBuild == datasetLoader.getRatingsDataset()) {
-            Global.showMessage("El dataset en build general y en recomendación es el mismo!\n");
+            Global.showInfoMessage("El dataset en build general y en recomendación es el mismo!\n");
         }
 
         //Compruebo si en el dataset actual se tienen las valoraciones a predecir

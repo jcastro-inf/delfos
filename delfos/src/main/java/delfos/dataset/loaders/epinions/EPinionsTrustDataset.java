@@ -74,7 +74,7 @@ public class EPinionsTrustDataset implements TrustDataset<EPinionsTrustStatement
 
             linea = br.readLine();
             if (i % 100000 == 0) {
-                Global.showMessage("Loading EPinions trust --> " + i + " trust statements " + c.printPartialElapsed() + " / " + c.printTotalElapsed() + "\n");
+                Global.showInfoMessage("Loading EPinions trust --> " + i + " trust statements " + c.printPartialElapsed() + " / " + c.printTotalElapsed() + "\n");
                 c.setPartialEllapsedCheckpoint();
             }
             i++;

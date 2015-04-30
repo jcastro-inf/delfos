@@ -210,7 +210,7 @@ public class CentralityWeightedAggregationGRS extends GroupRecommenderSystemAdap
         if (isNormaliseSocialNetworkConnections()) {
             userTrust = new WeightedGraphNormaliser<Integer>(userTrust);
             if (Global.isVerboseAnnoying()) {
-                Global.showMessage("Normalised graph\n");
+                Global.showInfoMessage("Normalised graph\n");
                 DatasetPrinterDeprecated.printWeightedGraph(userTrust);
             }
         }
@@ -218,7 +218,7 @@ public class CentralityWeightedAggregationGRS extends GroupRecommenderSystemAdap
         if (isStrongApply()) {
             userTrust = new StrongTermOverConnections(userTrust, getSTRONG_MIN(), getSTRONG_MAX());
             if (Global.isVerboseAnnoying()) {
-                Global.showMessage("Graph modified by Strong(" + getSTRONG_MIN() + "," + getSTRONG_MAX() + ")\n");
+                Global.showInfoMessage("Graph modified by Strong(" + getSTRONG_MIN() + "," + getSTRONG_MAX() + ")\n");
                 DatasetPrinterDeprecated.printWeightedGraph(userTrust);
             }
         }
