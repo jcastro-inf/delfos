@@ -10,9 +10,14 @@ import delfos.configuration.scopes.ConfiguredDatasetsScope;
 import delfos.configureddatasets.ConfiguredDatasetsFactory;
 import delfos.dataset.loaders.csv.CSVfileDatasetLoader;
 import delfos.dataset.loaders.movilens.ml100k.MovieLens100k;
+import delfos.dataset.loaders.movilens.ml1m.MovieLens1Million;
 import delfos.main.managers.CaseUseMode;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
 /**
  *
@@ -29,6 +34,7 @@ public class InitialConfiguration extends CaseUseMode {
 
     public static final String INITIAL_CONFIG_FLAG = "--initial-config";
     public static final String CONFIGURED_DATASETS_DIR = "-datasets-dir";
+    public static final String CONFIGURED_DATASETS_TO_INSTALL = "-datasets-to-install";
 
     @Override
     public void manageCaseUse(ConsoleParameters consoleParameters) {
@@ -42,6 +48,15 @@ public class InitialConfiguration extends CaseUseMode {
 
         String value = consoleParameters.getValue(LIBRARY_CONFIGURATION_DIRECTORY);
 
+        Set<String> datasetsToInstall = new TreeSet<>();
+        if (consoleParameters.isDefined(CONFIGURED_DATASETS_TO_INSTALL)) {
+            List<String> values = consoleParameters.getValues(CONFIGURED_DATASETS_TO_INSTALL);
+
+            datasetsToInstall.addAll(values);
+        } else {
+            datasetsToInstall.addAll(Arrays.asList("ml-100k", "complete-5u-10i", "ssii-partition9"));
+        }
+
         configuredDatasetsXML = new File(value);
 
         if (configuredDatasetsXML.exists() && !configuredDatasetsXML.isDirectory()) {
@@ -50,7 +65,7 @@ public class InitialConfiguration extends CaseUseMode {
         } else {
             ConfigurationManager.setConfigurationDirectory(configuredDatasetsXML);
             File datasetsDirectory = new File(consoleParameters.getValue(CONFIGURED_DATASETS_DIR));
-            createInitialConfiguredDatasetsXML(datasetsDirectory);
+            createInitialConfiguredDatasetsXML(datasetsDirectory, datasetsToInstall);
         }
     }
 
@@ -59,7 +74,7 @@ public class InitialConfiguration extends CaseUseMode {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
-    private void createInitialConfiguredDatasetsXML(File datasetsDirectory) {
+    private void createInitialConfiguredDatasetsXML(File datasetsDirectory, Set<String> datasetsToInstall) {
 
         Global.showInfoMessage("Configure datasets from directory '" + datasetsDirectory.getAbsolutePath() + "'\n");
 
@@ -67,9 +82,35 @@ public class InitialConfiguration extends CaseUseMode {
             ERROR_CODES.CANNOT_LOAD_RATINGS_DATASET.exit(new FileNotFoundException("Cannot find directory '" + datasetsDirectory.getAbsolutePath() + "' of the initial datasets."));
         }
 
-        addMovieLens100k(datasetsDirectory);
-        addComplete5u10i(datasetsDirectory);
-        addSSIIPartition9(datasetsDirectory);
+        if (datasetsToInstall.contains("ml-10m")) {
+            addMovieLens10m(datasetsDirectory);
+            datasetsToInstall.remove("ml-10m");
+        }
+        if (datasetsToInstall.contains("complete-5u-10i")) {
+            addComplete5u10i(datasetsDirectory);
+            datasetsToInstall.remove("complete-5u-10i");
+        }
+        if (datasetsToInstall.contains("ssii-partition9")) {
+            addSSIIPartition9(datasetsDirectory);
+            datasetsToInstall.remove("ssii-partition9");
+        }
+
+        if (datasetsToInstall.contains("ml-100k")) {
+            addMovieLens100k(datasetsDirectory);
+            datasetsToInstall.remove("ml-100k");
+        }
+
+        if (datasetsToInstall.contains("ml-1m")) {
+            addMovieLens1m(datasetsDirectory);
+            datasetsToInstall.remove("ml-1m");
+        }
+
+        if (!datasetsToInstall.isEmpty()) {
+            Global.showWarning("Unrecognised datasets specified on parameter " + CONFIGURED_DATASETS_TO_INSTALL);
+            datasetsToInstall.stream().forEach((dataset) -> {
+                Global.showWarning("\t\t" + dataset);
+            });
+        }
 
         ConfiguredDatasetsScope.getInstance().saveConfiguredDatasets();
         Global.showInfoMessage("Configured datasets were saved in '"
@@ -153,6 +194,35 @@ public class InitialConfiguration extends CaseUseMode {
                         contentDataset.getAbsolutePath()
                 )
         );
+    }
+
+    private void addMovieLens1m(File datasetsDirectory) {
+        String name = "ml-1m";
+        String description = "MovieLens one million ratings.";
+        File ml1mDirectory = new File(datasetsDirectory.getAbsolutePath()
+                + File.separator + name);
+
+        Global.showInfoMessage("Searching '"
+                + name + "' dataset in directory '"
+                + ml1mDirectory.getAbsolutePath() + "'\n");
+
+        if (!ml1mDirectory.exists()) {
+            String msg
+                    = "Cannot find directory '" + ml1mDirectory.getAbsolutePath()
+                    + "' of the '" + name + "' dataset.";
+
+            ERROR_CODES.CANNOT_LOAD_RATINGS_DATASET.exit(new FileNotFoundException(msg));
+        }
+
+        ConfiguredDatasetsFactory.getInstance().addDatasetLoader(
+                name,
+                description,
+                new MovieLens1Million(ml1mDirectory)
+        );
+    }
+
+    private void addMovieLens10m(File datasetsDirectory) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
 }
