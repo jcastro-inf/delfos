@@ -1,6 +1,11 @@
 package delfos.io.csv.dataset.rating;
 
 import com.csvreader.CsvReader;
+import delfos.common.Chronometer;
+import delfos.common.Global;
+import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
+import delfos.dataset.basic.rating.Rating;
+import delfos.dataset.basic.rating.RatingsDataset;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
@@ -10,11 +15,6 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collection;
-import delfos.common.Chronometer;
-import delfos.common.Global;
-import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
-import delfos.dataset.basic.rating.Rating;
-import delfos.dataset.basic.rating.RatingsDataset;
 
 /**
  * Clase para escribir un dataset de valoraciones a fichero csv.
@@ -89,8 +89,12 @@ public class RatingsDatasetToCSV_JavaCSV20 implements RatingsDatasetToCSV {
 
         try {
             reader.readHeaders();
-        } catch (IOException ex) {
-            throw new CannotLoadRatingsDataset(ex);
+            checkHeaders(reader.getHeaders());
+        } catch (CannotLoadRatingsDataset | IOException ex) {
+            throw new CannotLoadRatingsDataset(
+                    ex.getMessage() + "[File '" + ratingsFile.getAbsolutePath() + "']",
+                    ex
+            );
         }
 
         Chronometer c = new Chronometer();
@@ -122,4 +126,24 @@ public class RatingsDatasetToCSV_JavaCSV20 implements RatingsDatasetToCSV {
 
         return ratings;
     }
+
+    private void checkHeaders(String[] headers) {
+        checkHeaderPresent(headers, "idUser");
+        checkHeaderPresent(headers, "idItem");
+        checkHeaderPresent(headers, "rating");
+    }
+
+    private void checkHeaderPresent(String[] headers, String headerThatMustBePresent) {
+        boolean isHeaderPresent = false;
+        for (String header : headers) {
+            if (header.equals(headerThatMustBePresent)) {
+                isHeaderPresent = true;
+            }
+        }
+
+        if (!isHeaderPresent) {
+            throw new CannotLoadRatingsDataset("Header '" + headerThatMustBePresent + "' is not present");
+        }
+    }
+
 }

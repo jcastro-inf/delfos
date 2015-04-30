@@ -69,6 +69,7 @@ public class InitialConfiguration extends CaseUseMode {
 
         addMovieLens100k(datasetsDirectory);
         addComplete5u10i(datasetsDirectory);
+        addSSIIPartition9(datasetsDirectory);
 
         ConfiguredDatasetsScope.getInstance().saveConfiguredDatasets();
         Global.showInfoMessage("Configured datasets were saved in '"
@@ -124,6 +125,32 @@ public class InitialConfiguration extends CaseUseMode {
                         ratingsDataset.getAbsolutePath(),
                         contentDataset.getAbsolutePath(),
                         usersDataset.getAbsolutePath()
+                )
+        );
+    }
+
+    private void addSSIIPartition9(File datasetsDirectory) {
+
+        String name = "ssii-partition9";
+        String description = "Dataset made for the SSII lessons, partition number9";
+        File datasetDirectory = new File(datasetsDirectory.getAbsolutePath()
+                + File.separator + name);
+
+        Global.showInfoMessage("Searching '" + name + "' dataset in directory '" + datasetDirectory.getAbsolutePath() + "'\n");
+        if (!datasetDirectory.exists()) {
+            String msg = "Cannot find directory '" + datasetDirectory.getAbsolutePath() + "' of the " + name + "dataset.";
+            ERROR_CODES.CANNOT_LOAD_RATINGS_DATASET.exit(new FileNotFoundException(msg));
+        }
+
+        File ratingsDataset = new File(datasetDirectory + File.separator + "SSII - ratings9.csv");
+        File contentDataset = new File(datasetDirectory + File.separator + "SSII - movies.csv");
+
+        ConfiguredDatasetsFactory.getInstance().addDatasetLoader(
+                name,
+                description,
+                new CSVfileDatasetLoader(
+                        ratingsDataset.getAbsolutePath(),
+                        contentDataset.getAbsolutePath()
                 )
         );
     }

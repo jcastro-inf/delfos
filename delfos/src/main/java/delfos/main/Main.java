@@ -26,7 +26,6 @@ public class Main {
     }
 
     public static void mainWithExceptions(String[] args) {
-
         Chronometer c = new Chronometer();
         c.reset();
 
@@ -120,7 +119,6 @@ public class Main {
     }
 
     public static void noCaseUseActivated(ConsoleParameters consoleParameters) {
-
         StringBuilder message = new StringBuilder();
 
         message.append("\n\tUnrecognized command line : ");
