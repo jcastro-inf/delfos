@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -262,46 +261,6 @@ public class ConsoleParameters {
         } else {
             throw new IllegalArgumentException("The parameter '" + parameter + "' is not valid");
         }
-    }
-
-    public boolean deprecatedParameter_isDefined(String oldParameter, String parameter) {
-        if (this.isParameterDefined(oldParameter)) {
-            Global.showWarning("Using deprecated parameter " + oldParameter + ", use " + parameter + " instead.");
-        }
-
-        if (this.isParameterDefined(oldParameter) && this.isParameterDefined(parameter)) {
-            Global.showWarning("Use '" + parameter + "' parameter only. Do not use " + oldParameter);
-        }
-
-        return this.isParameterDefined(oldParameter) || this.isParameterDefined(parameter);
-    }
-
-    public String deprecatedParameter_getValue(String oldParameter, String parameter) {
-
-        if (this.isParameterDefined(parameter)) {
-            return this.getValue(parameter);
-        }
-        if (this.isParameterDefined(oldParameter)) {
-            return this.getValue(oldParameter);
-        }
-
-        throw new UndefinedParameterException(parameter + "(" + oldParameter + ")", parameter);
-    }
-
-    public List<String> deprecatedParameter_getValues(String oldParameter, String parameter) {
-
-        List<String> values = new LinkedList<>();
-        if (this.isParameterDefined(parameter)) {
-            values.addAll(this.getValues(parameter));
-        }
-        if (this.isParameterDefined(oldParameter)) {
-            values.addAll(this.getValues(oldParameter));
-        }
-
-        if (values.isEmpty()) {
-            throw new UndefinedParameterException(parameter + "(" + oldParameter + ")", parameter);
-        }
-        return values;
     }
 
     private void setUsed(String parameter) {

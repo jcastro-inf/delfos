@@ -38,8 +38,8 @@ public class BuildRecommendationModel extends CaseUseSubManager {
 
     @Override
     public boolean isRightManager(ConsoleParameters consoleParameters) {
-        return consoleParameters.isParameterDefined(NonPersonalisedRecommendation.NON_PERSONALISED_MODE)
-                && consoleParameters.isParameterDefined(ArgumentsRecommendation.BUILD_RECOMMENDATION_MODEL);
+        return consoleParameters.isFlagDefined(NonPersonalisedRecommendation.NON_PERSONALISED_MODE)
+                && consoleParameters.isFlagDefined(ArgumentsRecommendation.BUILD_RECOMMENDATION_MODEL);
     }
 
     @Override

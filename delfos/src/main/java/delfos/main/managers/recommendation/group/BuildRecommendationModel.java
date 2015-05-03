@@ -37,8 +37,8 @@ class BuildRecommendationModel extends CaseUseSubManager {
 
     @Override
     public boolean isRightManager(ConsoleParameters consoleParameters) {
-        return consoleParameters.isParameterDefined(GroupRecommendation.GROUP_MODE)
-                && consoleParameters.isParameterDefined(GroupRecommendation.BUILD_COMMAND_LINE_PARAMETER);
+        return consoleParameters.isFlagDefined(GroupRecommendation.GROUP_MODE)
+                && consoleParameters.isFlagDefined(GroupRecommendation.BUILD_COMMAND_LINE_PARAMETER);
     }
 
     @Override

@@ -109,7 +109,7 @@ public class ArgumentsGroupRecommendationTest extends DelfosTest {
 
         createConfigurationFile();
         ConsoleParameters consoleParameters = new ConsoleParameters(
-                "-group-recommendation",
+                "--group-recommendation",
                 "--build",
                 "-config-file",
                 GROUP_RECOMMENDER_SYSTEM_CONFIG_XML

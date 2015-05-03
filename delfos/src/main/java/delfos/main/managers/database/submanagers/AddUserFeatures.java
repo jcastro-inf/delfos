@@ -1,7 +1,6 @@
 package delfos.main.managers.database.submanagers;
 
 import delfos.ConsoleParameters;
-import delfos.Constants;
 import delfos.ERROR_CODES;
 import delfos.UndefinedParameterException;
 import delfos.common.Global;
@@ -12,6 +11,9 @@ import delfos.common.exceptions.dataset.users.UserNotFound;
 import delfos.dataset.basic.features.Feature;
 import delfos.dataset.basic.user.User;
 import delfos.dataset.changeable.ChangeableDatasetLoader;
+import static delfos.main.managers.database.DatabaseManager.ENTITY_NAME;
+import static delfos.main.managers.database.DatabaseManager.MANAGE_RATING_DATABASE_ADD_USER_FEATURES;
+import static delfos.main.managers.database.DatabaseManager.MANAGE_RATING_DATABASE_FEATURES;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -22,32 +24,6 @@ import java.util.TreeMap;
  */
 public class AddUserFeatures extends DatabaseCaseUseSubManager {
 
-    /**
-     * Parámetro para especificar que se use el modo de añadir características a
-     * un usuario.
-     */
-    @Deprecated
-    public static final String MANAGE_RATING_DATABASE_ADD_USER_FEATURES_OLD = "-addUserFeatures";
-    /**
-     * Parámetro para especificar que se use el modo de añadir características a
-     * un usuario.
-     */
-    public static final String MANAGE_RATING_DATABASE_ADD_USER_FEATURES = "-add-user-features";
-
-    /**
-     * Parámetro para especificar las características que se añaden en los modos
-     * {@link Constants#MANAGE_RATING_DATABASE_ADD_USER_FEATURES} y
-     * {@link Constants#MANAGE_RATING_DATABASE_ADD_ITEM_FEATURES}
-     */
-    public static final String MANAGE_RATING_DATABASE_FEATURES = "-features";
-    /**
-     * Cadena que denota el nombre de una entidad {@link EntityWithFeatures}.
-     * Por ejemplo, en una base de datos se utilizará esta cadena como la
-     * columna que contiene el nombre de cada producto. (usuario, producto,
-     * etc.).
-     */
-    public static final String ENTITY_NAME = "name";
-
     public static final AddUserFeatures instance = new AddUserFeatures();
 
     public static AddUserFeatures getInstance() {
@@ -56,7 +32,7 @@ public class AddUserFeatures extends DatabaseCaseUseSubManager {
 
     @Override
     public boolean isRightManager(ConsoleParameters consoleParameters) {
-        return consoleParameters.deprecatedParameter_isDefined(MANAGE_RATING_DATABASE_ADD_USER_FEATURES_OLD, MANAGE_RATING_DATABASE_ADD_USER_FEATURES);
+        return consoleParameters.isParameterDefined(MANAGE_RATING_DATABASE_ADD_USER_FEATURES);
     }
 
     @Override
@@ -64,7 +40,7 @@ public class AddUserFeatures extends DatabaseCaseUseSubManager {
 
         int idUser;
         try {
-            idUser = new Integer(consoleParameters.deprecatedParameter_getValue(MANAGE_RATING_DATABASE_ADD_USER_FEATURES_OLD, MANAGE_RATING_DATABASE_ADD_USER_FEATURES));
+            idUser = new Integer(consoleParameters.getValue(MANAGE_RATING_DATABASE_ADD_USER_FEATURES));
         } catch (NumberFormatException ex) {
             ERROR_CODES.USER_ID_NOT_RECOGNISED.exit(ex);
             throw new IllegalArgumentException(ex);

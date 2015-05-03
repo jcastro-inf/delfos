@@ -44,8 +44,8 @@ class Recommend extends CaseUseSubManager {
 
     @Override
     public boolean isRightManager(ConsoleParameters consoleParameters) {
-        return consoleParameters.isParameterDefined(NonPersonalisedRecommendation.NON_PERSONALISED_MODE)
-                && consoleParameters.isParameterDefined(ArgumentsRecommendation.RECOMMEND);
+        return consoleParameters.isFlagDefined(NonPersonalisedRecommendation.NON_PERSONALISED_MODE)
+                && consoleParameters.isFlagDefined(ArgumentsRecommendation.RECOMMEND);
     }
 
     @Override

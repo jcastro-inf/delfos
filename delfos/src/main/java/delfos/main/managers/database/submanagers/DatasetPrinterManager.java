@@ -27,14 +27,6 @@ import java.util.logging.Logger;
  */
 public class DatasetPrinterManager extends DatabaseCaseUseSubManager {
 
-    @Deprecated
-    public static final String PRINT_USER_SET_OLD = "-userSet";
-    @Deprecated
-    public static final String PRINT_ITEM_SET_OLD = "-itemSet";
-    @Deprecated
-    public static final String PRINT_USER_RATINGS_OLD = "-userRatings";
-    @Deprecated
-    public static final String PRINT_ITEM_RATINGS_OLD = "-itemRatings";
     public static final String PRINT_USER_SET = "--user-set";
     public static final String PRINT_ITEM_SET = "--item-set";
     public static final String PRINT_USER_RATINGS = "-user-ratings";
@@ -50,37 +42,34 @@ public class DatasetPrinterManager extends DatabaseCaseUseSubManager {
 
     @Override
     public boolean isRightManager(ConsoleParameters consoleParameters) {
-        if (consoleParameters.deprecatedParameter_isDefined(PRINT_USER_SET_OLD, PRINT_USER_SET)) {
+        if (consoleParameters.isFlagDefined(PRINT_USER_SET)) {
             return true;
         }
-        if (consoleParameters.deprecatedParameter_isDefined(PRINT_ITEM_SET_OLD, PRINT_ITEM_SET)) {
+        if (consoleParameters.isFlagDefined(PRINT_ITEM_SET)) {
             return true;
         }
-        if (consoleParameters.deprecatedParameter_isDefined(PRINT_USER_RATINGS_OLD, PRINT_USER_RATINGS)) {
+        if (consoleParameters.isFlagDefined(PRINT_USER_RATINGS)) {
             return true;
         }
-        if (consoleParameters.deprecatedParameter_isDefined(PRINT_ITEM_RATINGS_OLD, PRINT_ITEM_RATINGS)) {
+        if (consoleParameters.isFlagDefined(PRINT_ITEM_RATINGS)) {
             return true;
         }
 
-        if (consoleParameters.isParameterDefined(PRINT_RATINGS_TABLE)) {
-            return true;
-        }
-        return false;
+        return consoleParameters.isParameterDefined(PRINT_RATINGS_TABLE);
     }
 
     @Override
     public void manageCaseUse(ConsoleParameters consoleParameters, ChangeableDatasetLoader changeableDatasetLoader) {
-        if (consoleParameters.deprecatedParameter_isDefined(PRINT_USER_SET_OLD, PRINT_USER_SET)) {
+        if (consoleParameters.isFlagDefined(PRINT_USER_SET)) {
             printUserSet(changeableDatasetLoader);
         }
-        if (consoleParameters.deprecatedParameter_isDefined(PRINT_ITEM_SET_OLD, PRINT_ITEM_SET)) {
+        if (consoleParameters.isFlagDefined(PRINT_ITEM_SET)) {
             printItemSet(changeableDatasetLoader);
         }
-        if (consoleParameters.deprecatedParameter_isDefined(PRINT_USER_RATINGS_OLD, PRINT_USER_RATINGS)) {
+        if (consoleParameters.isFlagDefined(PRINT_USER_RATINGS)) {
 
             try {
-                List<String> idUserStrings = consoleParameters.deprecatedParameter_getValues(PRINT_USER_RATINGS_OLD, PRINT_USER_RATINGS);
+                List<String> idUserStrings = consoleParameters.getValues(PRINT_USER_RATINGS);
 
                 for (String idUserString : idUserStrings) {
                     int idUser = Integer.parseInt(idUserString);
@@ -91,9 +80,9 @@ public class DatasetPrinterManager extends DatabaseCaseUseSubManager {
             }
 
         }
-        if (consoleParameters.deprecatedParameter_isDefined(PRINT_ITEM_RATINGS_OLD, PRINT_ITEM_RATINGS)) {
+        if (consoleParameters.isFlagDefined(PRINT_ITEM_RATINGS)) {
             try {
-                List<String> idItemStrings = consoleParameters.deprecatedParameter_getValues(PRINT_ITEM_RATINGS_OLD, PRINT_ITEM_RATINGS);
+                List<String> idItemStrings = consoleParameters.getValues(PRINT_ITEM_RATINGS);
 
                 for (String idItemString : idItemStrings) {
                     int idItem = Integer.parseInt(idItemString);

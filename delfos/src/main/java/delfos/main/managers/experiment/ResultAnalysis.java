@@ -11,9 +11,6 @@ import delfos.view.resultanalysis.ResultAnalysisFrame;
  */
 public class ResultAnalysis extends CaseUseMode {
 
-    @Deprecated
-    private static final String RESULT_ANALYSIS_GUI_OLD = "-resultAnalysisGUI";
-
     private static final String RESULT_ANALYSIS_GUI = "--result-analysis-gui";
 
     private ResultAnalysis() {
@@ -28,15 +25,6 @@ public class ResultAnalysis extends CaseUseMode {
     @Override
     public String getModeParameter() {
         return RESULT_ANALYSIS_GUI;
-    }
-
-    @Override
-    public boolean isRightManager(ConsoleParameters consoleParameters) {
-
-        if (consoleParameters.deprecatedParameter_isDefined(RESULT_ANALYSIS_GUI_OLD, RESULT_ANALYSIS_GUI)) {
-            return true;
-        }
-        return consoleParameters.isParameterDefined(RESULT_ANALYSIS_GUI_OLD);
     }
 
     @Override
