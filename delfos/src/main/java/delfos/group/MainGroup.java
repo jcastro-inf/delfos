@@ -56,13 +56,13 @@ public class MainGroup {
         GroupRecommenderSystemsFactory.getInstance().copyInSingleUserRecommender();
         GroupRatingsFilterFactory.getInstance();
 
-        if (consoleParameters.isDefined("-default")) {
+        if (consoleParameters.isParameterDefined("-default")) {
             consoleParameters.printUnusedParameters(System.err);
             defaultBehaviour();
             return true;
         }
 
-        if (consoleParameters.isDefined("-executeGroupXML")) {
+        if (consoleParameters.isParameterDefined("-executeGroupXML")) {
             try {
                 String xmlExperimentsDirectory = consoleParameters.getValue("-executeGroupXML");
 
@@ -97,7 +97,7 @@ public class MainGroup {
             return true;
         }
 
-        if (consoleParameters.isDefined("-testFilter")) {
+        if (consoleParameters.isParameterDefined("-testFilter")) {
 
             final int NUM_EJECUCIONES, NUM_GROUPS, SIZE_OF_GROUPS;
             final long SEED;
@@ -151,7 +151,7 @@ public class MainGroup {
             return true;
         }
 
-        if (consoleParameters.isDefined("-groupLevelCaseStudy")) {
+        if (consoleParameters.isParameterDefined("-groupLevelCaseStudy")) {
 
             final int SIZE_OF_GROUPS;
             {
@@ -202,7 +202,7 @@ public class MainGroup {
             return true;
         }
 
-        if (consoleParameters.isDefined(GroupRecommendationManager.GRS_RECOMMENDATION_PARAMMETER)) {
+        if (consoleParameters.isParameterDefined(GroupRecommendationManager.GRS_RECOMMENDATION_PARAMMETER)) {
             try {
                 return GroupRecommendationManager.execute(consoleParameters);
             } catch (Exception ex) {

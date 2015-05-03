@@ -49,7 +49,7 @@ public class InitialConfiguration extends CaseUseMode {
         String value = consoleParameters.getValue(LIBRARY_CONFIGURATION_DIRECTORY);
 
         Set<String> datasetsToInstall = new TreeSet<>();
-        if (consoleParameters.isDefined(CONFIGURED_DATASETS_TO_INSTALL)) {
+        if (consoleParameters.isParameterDefined(CONFIGURED_DATASETS_TO_INSTALL)) {
             List<String> values = consoleParameters.getValues(CONFIGURED_DATASETS_TO_INSTALL);
 
             datasetsToInstall.addAll(values);

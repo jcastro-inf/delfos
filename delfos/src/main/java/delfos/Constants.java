@@ -181,7 +181,7 @@ public class Constants {
 
         Locale.setDefault(Locale.ENGLISH);
 
-        if (consoleParameters.isDefined(LIBRARY_CONFIGURATION_DIRECTORY)) {
+        if (consoleParameters.isParameterDefined(LIBRARY_CONFIGURATION_DIRECTORY)) {
             String configDirectory = consoleParameters.getValue(LIBRARY_CONFIGURATION_DIRECTORY);
             ConfigurationManager.setConfigurationDirectory(new File(configDirectory + File.separator));
         }
@@ -190,19 +190,19 @@ public class Constants {
         Global.MessageLevel printMessageLevel = Global.MessageLevel.getPrintMessageLevel(consoleParameters);
         Global.setMessageLevel(printMessageLevel);
 
-        if (consoleParameters.isDefined(DOUBLE_PRINT)) {
+        if (consoleParameters.isParameterDefined(DOUBLE_PRINT)) {
             Global.setDoublePrint(true);
         }
 
-        if (consoleParameters.isDefined(RAW_DATA)) {
+        if (consoleParameters.isParameterDefined(RAW_DATA)) {
             Constants.setRawResult(true);
         }
 
-        if (consoleParameters.isDefined(PRINT_FULL_XML)) {
+        if (consoleParameters.isParameterDefined(PRINT_FULL_XML)) {
             Constants.setPrintFullXML(true);
         }
 
-        if (consoleParameters.isDefined(MAX_CPUS)) {
+        if (consoleParameters.isParameterDefined(MAX_CPUS)) {
             String value = "0";
             try {
                 value = consoleParameters.getValue(MAX_CPUS);

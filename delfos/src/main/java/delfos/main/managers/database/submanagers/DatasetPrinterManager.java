@@ -63,7 +63,7 @@ public class DatasetPrinterManager extends DatabaseCaseUseSubManager {
             return true;
         }
 
-        if (consoleParameters.isDefined(PRINT_RATINGS_TABLE)) {
+        if (consoleParameters.isParameterDefined(PRINT_RATINGS_TABLE)) {
             return true;
         }
         return false;
@@ -104,7 +104,7 @@ public class DatasetPrinterManager extends DatabaseCaseUseSubManager {
             }
         }
 
-        if (consoleParameters.isDefined(PRINT_RATINGS_TABLE)) {
+        if (consoleParameters.isParameterDefined(PRINT_RATINGS_TABLE)) {
             printRatingsTable(changeableDatasetLoader);
         }
 

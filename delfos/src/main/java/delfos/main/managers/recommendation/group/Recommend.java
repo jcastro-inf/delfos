@@ -53,8 +53,8 @@ class Recommend extends CaseUseSubManager {
 
     @Override
     public boolean isRightManager(ConsoleParameters consoleParameters) {
-        return consoleParameters.isDefined(GROUP_MODE)
-                && consoleParameters.isDefined(TARGET_GROUP);
+        return consoleParameters.isParameterDefined(GROUP_MODE)
+                && consoleParameters.isParameterDefined(TARGET_GROUP);
     }
 
     @Override

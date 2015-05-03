@@ -30,7 +30,7 @@ public class Help {
     }
 
     public boolean isRightManager(ConsoleParameters consoleParameters) {
-        return consoleParameters.isDefined(PRINT_HELP) || consoleParameters.isDefined(PRINT_HELP_SHORT);
+        return consoleParameters.isParameterDefined(PRINT_HELP) || consoleParameters.isParameterDefined(PRINT_HELP_SHORT);
     }
 
     public void manageCaseUse(ConsoleParameters consoleParameters) {

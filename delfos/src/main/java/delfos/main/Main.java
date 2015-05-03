@@ -1,5 +1,6 @@
 package delfos.main;
 
+import delfos.CommandLineParametersError;
 import delfos.ConsoleParameters;
 import delfos.Constants;
 import delfos.ERROR_CODES;
@@ -15,7 +16,7 @@ import java.util.List;
 
 /**
  * Clase que define el punto de entrada de la biblioteca de recomendación cuando
- * se invoca como un programa aparte (java -jar <b>JAR_NAME</b>
+ * se invoca como un programa aparte (java -jar {@link Constants#LIBRARY_NAME})
  *
  * @author Jorge Castro Gallardo
  */
@@ -29,7 +30,15 @@ public class Main {
         Chronometer c = new Chronometer();
         c.reset();
 
-        ConsoleParameters consoleParameters = ConsoleParameters.parseArguments(args);
+        ConsoleParameters consoleParameters;
+        try {
+            consoleParameters = ConsoleParameters.parseArguments(args);
+        } catch (CommandLineParametersError ex) {
+            Global.show(ex.getUserFriendlyMsg());
+            Global.showWarning(ex.getMessage());
+            ERROR_CODES.COMMAND_LINE_PARAMETERS_ERROR.exit(ex);
+            throw new IllegalArgumentException(ex);
+        }
         Constants.initLibraryGeneralParameters(consoleParameters);
 
         List<CaseUseMode> caseUses = getAllCaseUse();

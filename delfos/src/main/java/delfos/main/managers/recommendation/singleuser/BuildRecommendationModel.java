@@ -40,8 +40,8 @@ class BuildRecommendationModel extends CaseUseSubManager {
 
     @Override
     public boolean isRightManager(ConsoleParameters consoleParameters) {
-        if (consoleParameters.isDefined(SingleUserRecommendation.SINGLE_USER_MODE)) {
-            return consoleParameters.isDefined(BUILD_RECOMMENDATION_MODEL_SHORT) || consoleParameters.isDefined(BUILD_RECOMMENDATION_MODEL);
+        if (consoleParameters.isParameterDefined(SingleUserRecommendation.SINGLE_USER_MODE)) {
+            return consoleParameters.isParameterDefined(BUILD_RECOMMENDATION_MODEL_SHORT) || consoleParameters.isParameterDefined(BUILD_RECOMMENDATION_MODEL);
         } else {
             return false;
         }

@@ -44,8 +44,8 @@ class Recommend extends CaseUseSubManager {
 
     @Override
     public boolean isRightManager(ConsoleParameters consoleParameters) {
-        return consoleParameters.isDefined(NonPersonalisedRecommendation.NON_PERSONALISED_MODE)
-                && consoleParameters.isDefined(ArgumentsRecommendation.RECOMMEND);
+        return consoleParameters.isParameterDefined(NonPersonalisedRecommendation.NON_PERSONALISED_MODE)
+                && consoleParameters.isParameterDefined(ArgumentsRecommendation.RECOMMEND);
     }
 
     @Override
@@ -54,7 +54,7 @@ class Recommend extends CaseUseSubManager {
         String configurationFile = ArgumentsRecommendation.extractConfigurationFile(consoleParameters);
 
         User user;
-        if (consoleParameters.isDefined(SingleUserRecommendation.TARGET_USER)) {
+        if (consoleParameters.isParameterDefined(SingleUserRecommendation.TARGET_USER)) {
             String idUser = consoleParameters.getValue(SingleUserRecommendation.TARGET_USER);
             user = new User(Integer.parseInt(idUser));
         } else {

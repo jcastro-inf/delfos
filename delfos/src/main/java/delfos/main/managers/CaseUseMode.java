@@ -29,7 +29,7 @@ public abstract class CaseUseMode {
      * @return true si es el manager adecuado.
      */
     public boolean isRightManager(ConsoleParameters consoleParameters) {
-        return consoleParameters.isDefined(getModeParameter());
+        return consoleParameters.isParameterDefined(getModeParameter());
     }
 
     /**

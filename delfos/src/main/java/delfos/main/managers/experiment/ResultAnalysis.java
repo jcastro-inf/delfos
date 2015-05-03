@@ -36,7 +36,7 @@ public class ResultAnalysis extends CaseUseMode {
         if (consoleParameters.deprecatedParameter_isDefined(RESULT_ANALYSIS_GUI_OLD, RESULT_ANALYSIS_GUI)) {
             return true;
         }
-        return consoleParameters.isDefined(RESULT_ANALYSIS_GUI_OLD);
+        return consoleParameters.isParameterDefined(RESULT_ANALYSIS_GUI_OLD);
     }
 
     @Override

@@ -1,9 +1,9 @@
 package delfos;
 
-import java.util.Map;
-import java.util.TreeMap;
 import delfos.common.parameters.ParameterOwner;
 import delfos.dataset.changeable.ChangeableDatasetLoaderAbstract;
+import java.util.Map;
+import java.util.TreeMap;
 
 /**
  * Enumerado con todos los códigos de error de salida de la biblioteca de
@@ -270,7 +270,8 @@ public enum ERROR_CODES {
     THREAD_INTERRUMPTED(9999994),
     PARAMETER_OWNER_ILLEGAL_PARAMETER_VALUE(9999995),
     PARAMETER_OWNER_NOT_HAVE_PARAMETER(9999996),
-    GROUP_NOT_DEFINED(239847789);
+    GROUP_NOT_DEFINED(239847789),
+    COMMAND_LINE_PARAMETERS_ERROR(123214);
 
     private static boolean isExitOnFail = true;
 
