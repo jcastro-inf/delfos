@@ -39,7 +39,7 @@ public class ArgumentsGroupRecommendationTest extends DelfosTest {
      * Nombre del fichero que almacena la configuración del dataset manejado por
      * la biblioteca.
      */
-    private final static String GROUP_RECOMMENDER_SYSTEM_CONFIG_XML = TEST_DIRECTORY + "groupRecommenderSystemConfiguration.xml";
+    private final static String GROUP_RECOMMENDER_SYSTEM_CONFIG_XML = TEST_DIRECTORY + "grs-config.xml";
 
     @Before
     public void beforeTest() {
@@ -48,8 +48,6 @@ public class ArgumentsGroupRecommendationTest extends DelfosTest {
 
     @Test
     public void test_Group_BuildRecommendationModel_manageCaseUse() throws Exception {
-        System.out.println("test_Group_BuildRecommendationModel_manageCaseUse");
-
         createConfigurationFile();
         String[] consoleArguments = {
             "--group-recommendation",
@@ -63,8 +61,6 @@ public class ArgumentsGroupRecommendationTest extends DelfosTest {
 
     @Test
     public void test_Group_Recommend_manageCaseUse() throws Exception {
-        System.out.println("test_Group_Recommend_manageCaseUse");
-
         createConfigurationFile();
 
         test_Group_BuildRecommendationModel_manageCaseUse();
@@ -84,8 +80,6 @@ public class ArgumentsGroupRecommendationTest extends DelfosTest {
 
     @Test(expected = NumberFormatException.class)
     public void test_Group_Recommend_manageCaseUse_illegalUserIdMustThrowNumberFormatException() throws Exception {
-        System.out.println("test_Group_Recommend_manageCaseUse");
-
         createConfigurationFile();
 
         test_Group_BuildRecommendationModel_manageCaseUse();

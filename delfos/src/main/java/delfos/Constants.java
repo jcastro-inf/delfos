@@ -38,38 +38,6 @@ public class Constants {
     public static final String LIBRARY_CONFIGURATION_DIRECTORY = "-config";
 
     /**
-     * Flag para indicar que no se desea obtener los mensajes de warning.
-     */
-    public static final String WARNINGS = "--warning";
-    /**
-     * Flag que indica que se deben mostrar mensajes de los procesos que se
-     * ejecutan.
-     */
-    public static final String VERBOSE = "-verbose";
-    /**
-     * Flag que indica que se deben mostrar mensajes de los procesos que se
-     * ejecutan.
-     */
-    public static final String VERBOSE_SHORT = "-v";
-    /**
-     * Flag que indica que se deben mostrar mensajes de creación de hebras.
-     */
-    public static final String THREAD_VERBOSE = "-threadVerbose";
-    /**
-     * Flag que indica que se deben mostrar mensajes de creación de hebras.
-     */
-    public static final String THREAD_VERBOSE_SHORT = "-tv";
-
-    /**
-     * Flag que indica que se deben mostrar todos los mensajes de los procesos
-     * que se ejecutan.
-     */
-    public static final String VERBOSE_ANNOYING = "-verbose2";
-    /**
-     * Flag para indicar que se ignoren los errores. No es recomendable usarlo.
-     */
-    public static final String HIDE_ERRORS = "-hideErrors";
-    /**
      * Flag para indicar los mensajes que se impriman se deben hacer por ambas
      * salidas: estándar y de error.
      */
@@ -95,16 +63,6 @@ public class Constants {
      * States the temporal directory used by the library.
      */
     static final String TEMP_DIRECTORY = "-temp-directory";
-    /**
-     * Valor de salida que la aplicacion lanza al terminar.
-     */
-    static int exitValue;
-
-    /**
-     * Código de error que se devuelve cuando el sistema de recomendación no
-     * implementa {@link RecommenderSystemWithFilePersitence}.
-     */
-    public static final int ERROR_RECOMMENDER_SYSTEM_DONT_IMPLEMENT_FILE_PERSISTENCE = 10;
 
     private static boolean printFullXML;
     /**
@@ -246,7 +204,7 @@ public class Constants {
     }
 
     public static void initBuildGUI() {
-        SwingGUI.initRSBuilderGUI("recommenderSystemConfiguration.xml");
+        SwingGUI.initRSBuilderGUI("rs-config.xml");
     }
 
     /**

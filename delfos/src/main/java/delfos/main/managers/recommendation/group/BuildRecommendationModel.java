@@ -15,6 +15,7 @@ import delfos.rs.persistence.FailureInPersistence;
 import delfos.rs.persistence.PersistenceMethodStrategy;
 import delfos.view.SwingGUI;
 import java.io.File;
+import java.io.FileNotFoundException;
 
 /**
  *
@@ -48,7 +49,9 @@ class BuildRecommendationModel extends CaseUseSubManager {
 
     public static void manageBuildRecommendationModel(ConsoleParameters consoleParameters) {
         String configurationFile = ArgumentsRecommendation.extractConfigurationFile(consoleParameters);
-
+        if (!new File(configurationFile).exists()) {
+            ERROR_CODES.CONFIG_FILE_NOT_EXISTS.exit(new FileNotFoundException("Configuration file '" + configurationFile + "' not found"));
+        }
         if (new File(configurationFile).exists()) {
             buildRecommendationModel(configurationFile);
         } else {

@@ -20,6 +20,8 @@ import delfos.rs.persistence.PersistenceMethodStrategy;
 import delfos.rs.recommendation.Recommendation;
 import delfos.rs.recommendation.RecommendationComputationDetails;
 import delfos.rs.recommendation.SingleUserRecommendations;
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.Collection;
 
 /**
@@ -52,7 +54,9 @@ class Recommend extends CaseUseSubManager {
     public void manageCaseUse(ConsoleParameters consoleParameters) {
 
         String configurationFile = ArgumentsRecommendation.extractConfigurationFile(consoleParameters);
-
+        if (!new File(configurationFile).exists()) {
+            ERROR_CODES.CONFIG_FILE_NOT_EXISTS.exit(new FileNotFoundException("Configuration file '" + configurationFile + "' not found"));
+        }
         User user;
         if (consoleParameters.isParameterDefined(SingleUserRecommendation.TARGET_USER)) {
             String idUser = consoleParameters.getValue(SingleUserRecommendation.TARGET_USER);

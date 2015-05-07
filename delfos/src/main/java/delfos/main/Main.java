@@ -91,6 +91,7 @@ public class Main {
         caseUse.add(delfos.main.managers.recommendation.group.GroupRecommendation.getInstance());
 
         caseUse.add(delfos.main.managers.experiment.ExecuteGroupXML.getInstance());
+        caseUse.add(delfos.main.managers.experiment.ExecuteXML.getInstance());
 
         caseUse.add(delfos.main.managers.database.helpers.CreateDefaultManageDatabaseCSV.getInstance());
         caseUse.add(delfos.main.managers.database.helpers.CreateDefaultManageDatabaseMySQL.getInstance());
@@ -129,9 +130,9 @@ public class Main {
     public static void noCaseUseActivated(ConsoleParameters consoleParameters) {
         StringBuilder message = new StringBuilder();
 
-        message.append("\n\tUnrecognized command line : ");
-        message.append(consoleParameters.printOriginalParameters());
-        message.append("\n");
+        message
+                .append("No mode specified (Unrecognized command line): ").append("\n")
+                .append("\t").append(consoleParameters.printOriginalParameters()).append("\n");
 
         Global.showWarning(message.toString());
     }

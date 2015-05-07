@@ -140,6 +140,9 @@ public class Global {
         /**
          * Prints errors only.
          */
+        /**
+         * Prints errors only.
+         */
         ERROR(-2, "--verbose-errors", "--ve"),
         /**
          * Prints errors and warnings.
@@ -152,15 +155,15 @@ public class Global {
         /**
          * Imprime solo mensajes generales e informativos.
          */
-        INFO(1, "--verbose", "--v"),
+        INFO(1, "--verbose"),
         /**
          * Imprime todos los mensajes.
          */
-        ANNOYING_INFO(2, "--verbose-all", "--v2"),
+        DEBUG(2, "--debug"),
         /**
          * Imprime todos los mensajes y los de hebra.
          */
-        THREAD(3, "--verbose-thread");
+        THREAD(3, "--debug-thread");
 
         int level;
         String[] commandLineFlags;
@@ -196,8 +199,8 @@ public class Global {
         public static MessageLevel getPrintMessageLevel(ConsoleParameters consoleParameters) {
             if (THREAD.isFlagPresent(consoleParameters)) {
                 return THREAD;
-            } else if (ANNOYING_INFO.isFlagPresent(consoleParameters)) {
-                return ANNOYING_INFO;
+            } else if (DEBUG.isFlagPresent(consoleParameters)) {
+                return DEBUG;
             } else if (INFO.isFlagPresent(consoleParameters)) {
                 return INFO;
             } else if (MESSAGE.isFlagPresent(consoleParameters)) {
@@ -289,8 +292,16 @@ public class Global {
         return messageLevelPrinted.isPrinted(MessageLevel.INFO);
     }
 
+    public static boolean isDoublePrint() {
+        return doublePrint;
+    }
+
+    public static boolean isDebugPrinted() {
+        return messageLevelPrinted.isPrinted(MessageLevel.DEBUG);
+    }
+
     public static boolean isVerboseAnnoying() {
-        return messageLevelPrinted.isPrinted(MessageLevel.ANNOYING_INFO);
+        return messageLevelPrinted.isPrinted(MessageLevel.DEBUG);
     }
 
     public static void setMessageLevel(MessageLevel messageLevel) {

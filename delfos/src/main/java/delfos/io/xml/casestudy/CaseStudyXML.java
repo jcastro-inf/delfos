@@ -1,25 +1,12 @@
 package delfos.io.xml.casestudy;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Locale;
-import java.util.Map;
-import java.util.TreeMap;
-import org.jdom2.Document;
-import org.jdom2.Element;
-import org.jdom2.JDOMException;
-import org.jdom2.input.SAXBuilder;
-import org.jdom2.output.XMLOutputter;
-import delfos.ERROR_CODES;
 import delfos.Constants;
+import delfos.ERROR_CODES;
 import delfos.common.FileUtilities;
 import delfos.common.Global;
+import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RelevanceCriteria;
-import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.experiment.casestudy.CaseStudy;
 import delfos.experiment.casestudy.CaseStudyConfiguration;
 import delfos.experiment.casestudy.CaseStudyResults;
@@ -34,6 +21,19 @@ import delfos.io.xml.validationtechnique.ValidationTechniqueXML;
 import delfos.results.MeasureResult;
 import delfos.results.evaluationmeasures.EvaluationMeasure;
 import delfos.rs.GenericRecommenderSystem;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
+import java.util.Map;
+import java.util.TreeMap;
+import org.jdom2.Document;
+import org.jdom2.Element;
+import org.jdom2.JDOMException;
+import org.jdom2.input.SAXBuilder;
+import org.jdom2.output.XMLOutputter;
 
 /**
  * Clase encargada de hacer la entrada/salida de los resultados de la ejeución
@@ -133,18 +133,20 @@ public class CaseStudyXML {
 
     public static void saveCaseResults(CaseStudy caseStudy) {
         Date date = new Date();
-        String format = "aux";
+        String dateBasedName = "aux";
         try {
             SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyyy-MM-dd HH.mm.ss", new Locale("es", "ES"));
-            format = sdf.format(date);
+            dateBasedName = sdf.format(date);
         } catch (Throwable ex) {
             Global.showWarning("Cannot get timestamp" + ex.getMessage() + "\n");
             Global.showError(ex);
         }
 
-        format = format + " seed=" + caseStudy.getSeedValue() + "." + CaseStudyXML.RESULT_EXTENSION;
+        dateBasedName = dateBasedName
+                + " seed=" + caseStudy.getSeedValue()
+                + "." + CaseStudyXML.RESULT_EXTENSION;
 
-        File tmp = new File(format);
+        File tmp = new File(Constants.getTempDirectory().getAbsolutePath() + File.separator + dateBasedName);
 
         CaseStudyXML.caseStudyToXMLFile(caseStudy, tmp);
     }
@@ -182,18 +184,20 @@ public class CaseStudyXML {
 
     public static String getDefaultFileName(CaseStudy caseStudy) {
         Date date = new Date();
-        String format = "aux";
+        String dateBasedName = "aux";
         try {
             SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyyy-MM-dd HH.mm.ss", new Locale("es", "ES"));
-            format = sdf.format(date);
+            dateBasedName = sdf.format(date);
         } catch (Exception ex) {
             Global.showWarning("Cannot get timestamp" + ex.getMessage() + "\n");
             Global.showError(ex);
         }
 
-        format = format + " seed=" + caseStudy.getSeedValue() + "." + CaseStudyXML.RESULT_EXTENSION;
+        dateBasedName = dateBasedName
+                + " seed=" + caseStudy.getSeedValue()
+                + "." + CaseStudyXML.RESULT_EXTENSION;
 
-        File f = new File(format);
+        File f = new File(Constants.getTempDirectory().getAbsolutePath() + File.separator + dateBasedName);
         return f.getAbsolutePath();
     }
 

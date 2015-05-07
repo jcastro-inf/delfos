@@ -30,7 +30,14 @@ public class SwingGUIScope extends ConfigurationScope {
     }
 
     public File getCurrentDirectory() {
-        return new File(this.getProperty("gui.defaults.currentDirectory"));
+        String currentDirectory = this.getProperty("gui.defaults.currentDirectory");
+
+        if (currentDirectory == null) {
+            setCurrentDirectory(new File("." + File.separator));
+            currentDirectory = this.getProperty("gui.defaults.currentDirectory");
+        }
+
+        return new File(currentDirectory);
     }
 
     public void setCurrentDirectory(File value) {
