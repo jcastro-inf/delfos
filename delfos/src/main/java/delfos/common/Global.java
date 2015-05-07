@@ -186,7 +186,7 @@ public class Global {
 
         public boolean isFlagPresent(ConsoleParameters consoleParameters) {
             for (String commandLineFlag : commandLineFlags) {
-                if (consoleParameters.isParameterDefined(commandLineFlag)) {
+                if (consoleParameters.isFlagDefined(commandLineFlag)) {
                     return true;
                 }
             }

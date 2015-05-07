@@ -20,7 +20,7 @@ import java.util.jar.JarFile;
  */
 public class Version extends CaseUseMode {
 
-    public static final String PRINT_VERSION_PARAMETER = "-version";
+    public static final String PRINT_VERSION_PARAMETER = "--version";
 
     public static Version getInstance() {
         return VersionHolder.INSTANCE;

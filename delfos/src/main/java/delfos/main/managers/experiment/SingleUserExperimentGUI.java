@@ -18,7 +18,7 @@ public class SingleUserExperimentGUI extends CaseUseMode {
      * experimentación. Por lo tanto, la bilioteca iniciará dicha interfaz si
      * este argumento se encuentra presente.
      */
-    public final static String EXPERIMENT_GUI_ARGUMENT = "-x";
+    public final static String EXPERIMENT_GUI_ARGUMENT = "--x";
 
     public static SingleUserExperimentGUI getInstance() {
         return SingleUserExperimentGUIHolder.INSTANCE;

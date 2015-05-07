@@ -20,7 +20,7 @@ public class ExecuteGroupXML extends CaseUseMode {
      * Parámetro de la linea de comandos para especificar que se muestre la
      * interfaz de recomendación.
      */
-    public static final String EXECUTE_GROUP_XML = "-executeGroupXML";
+    public static final String EXECUTE_GROUP_XML = "-execute-group-xml";
 
     @Override
     public String getModeParameter() {
@@ -42,7 +42,7 @@ public class ExecuteGroupXML extends CaseUseMode {
     @Override
     public void manageCaseUse(ConsoleParameters consoleParameters) {
         try {
-            String xmlExperimentsDirectory = consoleParameters.getValue("-executeGroupXML");
+            String xmlExperimentsDirectory = consoleParameters.getValue(ExecuteGroupXML.EXECUTE_GROUP_XML);
 
             final int NUM_EJECUCIONES;
             {

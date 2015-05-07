@@ -26,6 +26,7 @@ import delfos.group.groupsofusers.measuresovergroups.SumDistanceInGraph;
 import delfos.group.grs.GroupRecommenderSystem;
 import delfos.group.results.groupevaluationmeasures.GroupEvaluationMeasure;
 import delfos.group.results.groupevaluationmeasures.MAE;
+import delfos.main.managers.experiment.ExecuteGroupXML;
 import delfos.rs.trustbased.FixedGraph;
 import delfos.rs.trustbased.implicittrustcomputation.ShambourLu_UserBasedImplicitTrustComputation;
 import java.io.File;
@@ -62,9 +63,9 @@ public class MainGroup {
             return true;
         }
 
-        if (consoleParameters.isParameterDefined("-executeGroupXML")) {
+        if (consoleParameters.isParameterDefined(ExecuteGroupXML.EXECUTE_GROUP_XML)) {
             try {
-                String xmlExperimentsDirectory = consoleParameters.getValue("-executeGroupXML");
+                String xmlExperimentsDirectory = consoleParameters.getValue(ExecuteGroupXML.EXECUTE_GROUP_XML);
 
                 final int NUM_EJECUCIONES;
                 {

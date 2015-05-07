@@ -20,7 +20,7 @@ public class InitialConfigurationTest extends DelfosTest {
     public void testInitialConfigurationCaseUse() throws Exception {
         String delfosConfigurationDirectory = getTemporalDirectoryForTest().getAbsolutePath() + File.separator + ".config" + File.separator + "delfos";
 
-        ConsoleParameters consoleParameters = new ConsoleParameters(
+        ConsoleParameters consoleParameters = ConsoleParameters.parseArguments(
                 "--initial-config",
                 "-datasets-dir", "./delfos-1.2.20150422-install/datasets",
                 "-config", delfosConfigurationDirectory

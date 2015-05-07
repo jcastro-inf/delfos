@@ -58,7 +58,7 @@ public class ArgumentsGroupRecommendationTest extends DelfosTest {
             GROUP_RECOMMENDER_SYSTEM_CONFIG_XML
         };
 
-        BuildRecommendationModel.getInstance().manageCaseUse(new ConsoleParameters(consoleArguments));
+        BuildRecommendationModel.getInstance().manageCaseUse(ConsoleParameters.parseArguments(consoleArguments));
     }
 
     @Test
@@ -79,7 +79,7 @@ public class ArgumentsGroupRecommendationTest extends DelfosTest {
         };
 
         Recommend.getInstance()
-                .manageCaseUse(new ConsoleParameters(consoleArguments));
+                .manageCaseUse(ConsoleParameters.parseArguments(consoleArguments));
     }
 
     @Test(expected = NumberFormatException.class)
@@ -100,7 +100,7 @@ public class ArgumentsGroupRecommendationTest extends DelfosTest {
         };
 
         Recommend.getInstance()
-                .manageCaseUse(new ConsoleParameters(consoleArguments));
+                .manageCaseUse(ConsoleParameters.parseArguments(consoleArguments));
     }
 
     @Test
@@ -108,7 +108,7 @@ public class ArgumentsGroupRecommendationTest extends DelfosTest {
         System.out.println("test_Group_BuildRecommendationModel_manageCaseUse");
 
         createConfigurationFile();
-        ConsoleParameters consoleParameters = new ConsoleParameters(
+        ConsoleParameters consoleParameters = ConsoleParameters.parseArguments(
                 "--group-recommendation",
                 "--build",
                 "-config-file",
@@ -127,7 +127,7 @@ public class ArgumentsGroupRecommendationTest extends DelfosTest {
 
         test_Group_BuildRecommendationModel_manageCaseUse();
 
-        ConsoleParameters consoleParameters = new ConsoleParameters(
+        ConsoleParameters consoleParameters = ConsoleParameters.parseArguments(
                 "-group-recommendation",
                 "-group-members",
                 "1", "65", "89", "54", "256",

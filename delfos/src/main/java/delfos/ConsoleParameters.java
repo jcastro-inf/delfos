@@ -33,7 +33,7 @@ public class ConsoleParameters {
      * @throws delfos.CommandLineParametersError If a parameter has no values or
      * a flag has values.
      */
-    public static ConsoleParameters parseArguments(String[] args) throws CommandLineParametersError {
+    public static ConsoleParameters parseArguments(String... args) throws CommandLineParametersError {
         return new ConsoleParameters(args);
     }
 
@@ -60,7 +60,7 @@ public class ConsoleParameters {
      * comandos
      * @throws delfos.CommandLineParametersError
      */
-    public ConsoleParameters(String... console) throws CommandLineParametersError {
+    protected ConsoleParameters(String... console) throws CommandLineParametersError {
         this.parametersWithValues = new TreeMap<>();
         this.presentFlags = new TreeSet<>();
         this.unusedParameters = new TreeSet<>();
@@ -209,13 +209,17 @@ public class ConsoleParameters {
             return this.presentFlags.contains(flag);
         } else {
             isValidParameter(flag);
-            throw new IllegalArgumentException("The parameter '" + flag + "' is not valid");
+            throw new IllegalArgumentException("'" + flag + "' is not valid flag");
         }
     }
 
     public List<String> getValues(String parameter) throws UndefinedParameterException {
         if (!isValidParameter(parameter)) {
-            throw new IllegalArgumentException("The parameter '" + parameter + "' is not valid");
+            if (isValidFlag(parameter)) {
+                throw new IllegalArgumentException("'" + parameter + "' is not a flag!");
+            } else {
+                throw new IllegalArgumentException("'" + parameter + "' is not a valid parameter");
+            }
         } else if (isParameterDefined(parameter)) {
             setUsed(parameter);
             return parametersWithValues.get(parameter);

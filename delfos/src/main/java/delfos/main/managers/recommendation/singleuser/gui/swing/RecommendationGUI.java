@@ -15,7 +15,7 @@ public class RecommendationGUI extends CaseUseMode {
      * Parámetro de la linea de comandos para especificar que se muestre la
      * interfaz de recomendación.
      */
-    public static final String RECOMMENDATION_GUI_COMMAND_LINE_PARAMETER = "-recommendationGUI";
+    public static final String RECOMMENDATION_GUI_COMMAND_LINE_PARAMETER = "--recommendation-gui";
 
     private static class Holder {
 

@@ -16,7 +16,7 @@ public class BuildConfigurationFileGUI extends CaseUseMode {
      * Parámetro de la linea de comandos para crear el modelo de un sistema de
      * recomendación mediante interfaz gráfica de usuario en Swing.
      */
-    public static final String BUILDX_COMMAND_LINE_PARAMETER = "-single-user-build-x";
+    public static final String BUILDX_COMMAND_LINE_PARAMETER = "--single-user-build-x";
 
     public static BuildConfigurationFileGUI getInstance() {
         return BuildRecommenderSystemConfigurationFileHolder.INSTANCE;
