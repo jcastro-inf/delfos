@@ -16,15 +16,16 @@ import java.io.File;
  */
 public class ExecuteGroupXML extends CaseUseMode {
 
+    public static final String MODE_PARAMETER = "--execute-group-xml";
+
     /**
-     * Parámetro de la linea de comandos para especificar que se muestre la
-     * interfaz de recomendación.
+     * The directory that contains the group xml to be executed.
      */
-    public static final String EXECUTE_GROUP_XML = "-execute-group-xml";
+    public static final String EXECUTE_GROUP_XML_DIRECTORY = "-directory";
 
     @Override
     public String getModeParameter() {
-        return EXECUTE_GROUP_XML;
+        return MODE_PARAMETER;
     }
 
     private static class Holder {
@@ -42,7 +43,7 @@ public class ExecuteGroupXML extends CaseUseMode {
     @Override
     public void manageCaseUse(ConsoleParameters consoleParameters) {
         try {
-            String xmlExperimentsDirectory = consoleParameters.getValue(ExecuteGroupXML.EXECUTE_GROUP_XML);
+            String xmlExperimentsDirectory = consoleParameters.getValue(ExecuteGroupXML.MODE_PARAMETER);
 
             final int NUM_EJECUCIONES;
             {

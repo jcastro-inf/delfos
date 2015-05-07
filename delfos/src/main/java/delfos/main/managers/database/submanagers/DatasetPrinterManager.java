@@ -48,14 +48,14 @@ public class DatasetPrinterManager extends DatabaseCaseUseSubManager {
         if (consoleParameters.isFlagDefined(PRINT_ITEM_SET)) {
             return true;
         }
-        if (consoleParameters.isFlagDefined(PRINT_USER_RATINGS)) {
+        if (consoleParameters.isParameterDefined(PRINT_USER_RATINGS)) {
             return true;
         }
-        if (consoleParameters.isFlagDefined(PRINT_ITEM_RATINGS)) {
+        if (consoleParameters.isParameterDefined(PRINT_ITEM_RATINGS)) {
             return true;
         }
 
-        return consoleParameters.isParameterDefined(PRINT_RATINGS_TABLE);
+        return consoleParameters.isFlagDefined(PRINT_RATINGS_TABLE);
     }
 
     @Override
@@ -66,7 +66,7 @@ public class DatasetPrinterManager extends DatabaseCaseUseSubManager {
         if (consoleParameters.isFlagDefined(PRINT_ITEM_SET)) {
             printItemSet(changeableDatasetLoader);
         }
-        if (consoleParameters.isFlagDefined(PRINT_USER_RATINGS)) {
+        if (consoleParameters.isParameterDefined(PRINT_USER_RATINGS)) {
 
             try {
                 List<String> idUserStrings = consoleParameters.getValues(PRINT_USER_RATINGS);
@@ -80,7 +80,7 @@ public class DatasetPrinterManager extends DatabaseCaseUseSubManager {
             }
 
         }
-        if (consoleParameters.isFlagDefined(PRINT_ITEM_RATINGS)) {
+        if (consoleParameters.isParameterDefined(PRINT_ITEM_RATINGS)) {
             try {
                 List<String> idItemStrings = consoleParameters.getValues(PRINT_ITEM_RATINGS);
 
@@ -93,7 +93,7 @@ public class DatasetPrinterManager extends DatabaseCaseUseSubManager {
             }
         }
 
-        if (consoleParameters.isParameterDefined(PRINT_RATINGS_TABLE)) {
+        if (consoleParameters.isFlagDefined(PRINT_RATINGS_TABLE)) {
             printRatingsTable(changeableDatasetLoader);
         }
 

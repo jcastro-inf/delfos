@@ -15,7 +15,7 @@ import java.util.List;
 public class Help {
 
     public static final String PRINT_HELP = "--help";
-    public static final String PRINT_HELP_SHORT = "-h";
+    public static final String PRINT_HELP_SHORT = "--h";
 
     public static Help getInstance() {
         return HelpHolder.INSTANCE;
@@ -30,7 +30,7 @@ public class Help {
     }
 
     public boolean isRightManager(ConsoleParameters consoleParameters) {
-        return consoleParameters.isParameterDefined(PRINT_HELP) || consoleParameters.isParameterDefined(PRINT_HELP_SHORT);
+        return consoleParameters.isFlagDefined(PRINT_HELP) || consoleParameters.isFlagDefined(PRINT_HELP_SHORT);
     }
 
     public void manageCaseUse(ConsoleParameters consoleParameters) {

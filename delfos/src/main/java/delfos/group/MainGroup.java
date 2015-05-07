@@ -64,9 +64,9 @@ public class MainGroup {
             return true;
         }
 
-        if (consoleParameters.isParameterDefined(ExecuteGroupXML.EXECUTE_GROUP_XML)) {
+        if (consoleParameters.isParameterDefined(ExecuteGroupXML.MODE_PARAMETER)) {
             try {
-                String xmlExperimentsDirectory = consoleParameters.getValue(ExecuteGroupXML.EXECUTE_GROUP_XML);
+                String xmlExperimentsDirectory = consoleParameters.getValue(ExecuteGroupXML.MODE_PARAMETER);
 
                 final int NUM_EJECUCIONES;
                 {

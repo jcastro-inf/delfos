@@ -102,7 +102,7 @@ public class TuringPreparator implements ExperimentPreparator {
                 .forEach((singleExperimentDirectory) -> {
                     String[] args = {
                         "-seed", "77352653",
-                        ExecuteGroupXML.EXECUTE_GROUP_XML, singleExperimentDirectory.getPath(),
+                        ExecuteGroupXML.MODE_PARAMETER, singleExperimentDirectory.getPath(),
                         "-numExec", "1"};
                     Main.mainWithExceptions(args);
                 });
@@ -115,7 +115,7 @@ public class TuringPreparator implements ExperimentPreparator {
                 .forEach((singleExperimentDirectory) -> {
                     String[] args = {
                         "-seed", "77352653",
-                        ExecuteGroupXML.EXECUTE_GROUP_XML, singleExperimentDirectory.getPath(),
+                        ExecuteGroupXML.MODE_PARAMETER, singleExperimentDirectory.getPath(),
                         "-numExec", Integer.toString(numExec)
                     };
 
@@ -131,7 +131,7 @@ public class TuringPreparator implements ExperimentPreparator {
                 .forEach((singleExperimentDirectory) -> {
                     String[] args = {
                         "-seed", "77352653",
-                        ExecuteGroupXML.EXECUTE_GROUP_XML, singleExperimentDirectory.getPath(),
+                        ExecuteGroupXML.MODE_PARAMETER, singleExperimentDirectory.getPath(),
                         "-numExec", Integer.toString(numExec),
                         "-maxCPU", Integer.toString(maxCPU)};
 

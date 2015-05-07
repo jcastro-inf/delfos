@@ -52,7 +52,7 @@ public class ArgumentsGroupRecommendationTest extends DelfosTest {
 
         createConfigurationFile();
         String[] consoleArguments = {
-            "-group-recommendation",
+            "--group-recommendation",
             "--build",
             "-config-file",
             GROUP_RECOMMENDER_SYSTEM_CONFIG_XML
@@ -70,7 +70,7 @@ public class ArgumentsGroupRecommendationTest extends DelfosTest {
         test_Group_BuildRecommendationModel_manageCaseUse();
 
         String[] consoleArguments = {
-            "-group-recommendation",
+            "--group-recommendation",
             "-group-members",
             "1", "65", "89", "54", "256",
             "-config-file",
@@ -91,7 +91,7 @@ public class ArgumentsGroupRecommendationTest extends DelfosTest {
         test_Group_BuildRecommendationModel_manageCaseUse();
 
         String[] consoleArguments = {
-            "-group-recommendation",
+            "--group-recommendation",
             "-group-members",
             "65", "89", "ABC", "54", "256",
             "-config-file",
@@ -128,7 +128,7 @@ public class ArgumentsGroupRecommendationTest extends DelfosTest {
         test_Group_BuildRecommendationModel_manageCaseUse();
 
         ConsoleParameters consoleParameters = ConsoleParameters.parseArguments(
-                "-group-recommendation",
+                "--group-recommendation",
                 "-group-members",
                 "1", "65", "89", "54", "256",
                 "-config-file",

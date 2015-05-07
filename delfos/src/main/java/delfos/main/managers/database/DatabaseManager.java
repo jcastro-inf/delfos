@@ -34,8 +34,16 @@ public class DatabaseManager extends CaseUseModeWithSubManagers {
      * Parametro para especificar que la biblioteca funcione en modo de
      * administración de la base de datos de ratings.
      */
-    public static final String MANAGE_RATING_DATABASE = "--manage-database";
+    public static final String MODE_PARAMETER = "--manage-database";
 
+    /**
+     * Paramter to specify a different configuration file for the database.
+     */
+    public static final String MANAGE_RATING_DATABASE_CONFIG_XML = "-database-config";
+    /**
+     * Paramter to specify a different configuration file for the database.
+     */
+    public static final String MANAGE_RATING_DATABASE_DEFAULT_CONFIG_XML = "database-config.xml";
     /**
      * Parametro para especificar que se debe inicializar la base de datos.
      */
@@ -107,7 +115,7 @@ public class DatabaseManager extends CaseUseModeWithSubManagers {
 
     @Override
     public String getModeParameter() {
-        return MANAGE_RATING_DATABASE;
+        return MODE_PARAMETER;
     }
 
     @Override
@@ -132,11 +140,17 @@ public class DatabaseManager extends CaseUseModeWithSubManagers {
     public static ChangeableDatasetLoader extractChangeableDatasetHandler(ConsoleParameters consoleParameters) throws RuntimeException {
         try {
 
-            String configurationFile = consoleParameters.getValue(MANAGE_RATING_DATABASE);
+            File configurationFile;
+            if (consoleParameters.isParameterDefined(MANAGE_RATING_DATABASE_CONFIG_XML)) {
+                String configurationFileStr = consoleParameters.getValue(MANAGE_RATING_DATABASE_CONFIG_XML);
+                configurationFile = new File(configurationFileStr);
+            } else {
+                configurationFile = new File(MANAGE_RATING_DATABASE_DEFAULT_CONFIG_XML);
+            }
 
             //llamada a la clase que realiza el manejo de este caso de uso
             if (Global.isVerboseAnnoying()) {
-                Global.showInfoMessage("Loading config file: " + new File(configurationFile).getAbsolutePath() + "\n");
+                Global.showInfoMessage("Loading config file: " + configurationFile.getAbsolutePath() + "\n");
             }
 
             try {
@@ -174,14 +188,17 @@ public class DatabaseManager extends CaseUseModeWithSubManagers {
         str.append("\tRATINGS DATABASE MANAGEMENT\n");
 
         str.append("\t\n");
-        str.append("\t\t" + DatabaseManager.MANAGE_RATING_DATABASE
+        str.append("\t\t" + DatabaseManager.MODE_PARAMETER
+                + DatabaseManager.MANAGE_RATING_DATABASE_CONFIG_XML
                 + " [DATABASE_CONFIGURATION_FILE.xml]: This option is used "
                 + "to manage the database of ratings specified in "
                 + "[DATABASE_CONFIGURATION_FILE.xml] file\n");
         str.append("\t\n");
 
-        str.append("\t\t" + DatabaseManager.MANAGE_RATING_DATABASE
-                + " [DATABASE_CONFIGURATION_FILE.xml] " + DatabaseManager.MANAGE_RATING_DATABASE_INIT_DATABASE
+        str.append("\t\t" + DatabaseManager.MODE_PARAMETER
+                + DatabaseManager.MANAGE_RATING_DATABASE_CONFIG_XML
+                + " [DATABASE_CONFIGURATION_FILE.xml] "
+                + DatabaseManager.MANAGE_RATING_DATABASE_INIT_DATABASE
                 + ": This command initialises the "
                 + "database of ratings specified in "
                 + "[DATABASE_CONFIGURATION_FILE.xml] file. If the database "
@@ -189,21 +206,24 @@ public class DatabaseManager extends CaseUseModeWithSubManagers {
                 + "old data.\n");
         str.append("\t\n");
 
-        str.append("\t\t" + DatabaseManager.MANAGE_RATING_DATABASE
+        str.append("\t\t" + DatabaseManager.MODE_PARAMETER
+                + DatabaseManager.MANAGE_RATING_DATABASE_CONFIG_XML
                 + " [DATABASE_CONFIGURATION_FILE.xml] " + MANAGE_RATING_DATABASE_ADD_USER
                 + " [ID_USER]: This command adds the user [ID_USER] to the "
                 + "database of ratings specified in "
                 + "[DATABASE_CONFIGURATION_FILE.xml] file\n");
         str.append("\t\n");
 
-        str.append("\t\t" + DatabaseManager.MANAGE_RATING_DATABASE
+        str.append("\t\t" + DatabaseManager.MODE_PARAMETER
+                + DatabaseManager.MANAGE_RATING_DATABASE_CONFIG_XML
                 + " [DATABASE_CONFIGURATION_FILE.xml] " + MANAGE_RATING_DATABASE_ADD_ITEM
                 + " [ID_ITEM]: This command adds the item [ID_ITEM] to the "
                 + "database of ratings specified in "
                 + "[DATABASE_CONFIGURATION_FILE.xml] file\n");
         str.append("\t\n");
 
-        str.append("\t\t" + DatabaseManager.MANAGE_RATING_DATABASE
+        str.append("\t\t" + DatabaseManager.MODE_PARAMETER
+                + DatabaseManager.MANAGE_RATING_DATABASE_CONFIG_XML
                 + " [DATABASE_CONFIGURATION_FILE.xml] " + MANAGE_RATING_DATABASE_ADD_RATING + " "
                 + MANAGE_RATING_DATABASE_ID_USER + " [ID_USER] "
                 + MANAGE_RATING_DATABASE_ID_ITEM + " [ID_ITEM] "
