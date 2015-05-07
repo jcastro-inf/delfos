@@ -1,9 +1,6 @@
 package delfos.rs.bufferedrecommenders;
 
-import java.io.File;
-import java.util.Collection;
-import java.util.List;
-import java.util.TreeSet;
+import delfos.Constants;
 import delfos.ERROR_CODES;
 import delfos.common.Global;
 import delfos.common.exceptions.dataset.CannotLoadContentDataset;
@@ -16,16 +13,19 @@ import delfos.common.parameters.Parameter;
 import delfos.common.parameters.restriction.DirectoryParameter;
 import delfos.common.parameters.restriction.RecommenderSystemParameterRestriction;
 import delfos.common.parameters.restriction.StringParameter;
-import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.loader.types.ContentDatasetLoader;
 import delfos.dataset.basic.loader.types.DatasetLoader;
+import delfos.dataset.basic.rating.Rating;
+import delfos.rs.RecommendationModelBuildingProgressListener;
 import delfos.rs.RecommenderSystem;
 import delfos.rs.RecommenderSystemAdapter;
-import delfos.rs.RecommendationModelBuildingProgressListener;
 import delfos.rs.collaborativefiltering.knn.modelbased.KnnModelBasedCFRS;
 import delfos.rs.persistence.FailureInPersistence;
 import delfos.rs.persistence.FilePersistence;
 import delfos.rs.recommendation.Recommendation;
+import java.io.File;
+import java.util.Collection;
+import java.util.TreeSet;
 
 /**
  * Implementa un modificador a un sistema de recomendación para que siempre
@@ -68,7 +68,8 @@ public class RecommenderSystem_fixedFilePersistence<RecommendationModel> extends
      */
     public static final Parameter persistenceFileDirectory = new Parameter(
             "persistenceFileDirectory",
-            new DirectoryParameter(new File("buffered-recommendation-models" + File.separator + "recommendation-model.data").getAbsoluteFile().getParentFile()));
+            new DirectoryParameter(
+                    new File(Constants.getTempDirectory().getAbsolutePath() + "buffered-recommendation-models" + File.separator + "recommendation-model.data").getAbsoluteFile().getParentFile()));
     /**
      * Sistema de recomendación con persistencia en modelo para el que se fija
      * el modelo.
@@ -95,7 +96,7 @@ public class RecommenderSystem_fixedFilePersistence<RecommendationModel> extends
         this(rs, new FilePersistence(
                 "recommendation-model-" + rs.getAlias().toLowerCase(),
                 "data",
-                new File("buffered-recommendation-models" + File.separator + "recommendation-model.data").getAbsoluteFile().getParentFile()));
+                new File(Constants.getTempDirectory().getAbsolutePath() + "buffered-recommendation-models" + File.separator + "recommendation-model.data").getAbsoluteFile().getParentFile()));
     }
 
     public <RecommendationModel extends Object> RecommenderSystem_fixedFilePersistence(RecommenderSystem<RecommendationModel> rs, FilePersistence filePersistence) {

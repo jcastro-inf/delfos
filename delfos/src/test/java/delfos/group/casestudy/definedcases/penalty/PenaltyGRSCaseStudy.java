@@ -1,11 +1,6 @@
 package delfos.group.casestudy.definedcases.penalty;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.List;
-import org.junit.Test;
+import delfos.Constants;
 import delfos.common.FileUtilities;
 import delfos.common.aggregationoperators.MaximumValue;
 import delfos.common.aggregationoperators.Mean;
@@ -44,12 +39,21 @@ import delfos.rs.collaborativefiltering.svd.SVDFoldingIn;
 import delfos.rs.persistence.FilePersistence;
 import delfos.similaritymeasures.BasicSimilarityMeasure;
 import delfos.similaritymeasures.CosineCoefficient;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.LinkedList;
+import java.util.List;
+import org.junit.Test;
 
 public class PenaltyGRSCaseStudy {
 
     public File cleanCaseStudyDirectories() {
-        String directoryName = "experiments" + File.separator
+        String directoryName
+                = Constants.getTempDirectory().getAbsolutePath() + File.separator
+                + "experiments" + File.separator
                 + this.getClass().getSimpleName() + File.separator;
+
         File directory = new File(directoryName);
         if (directory.exists()) {
             FileUtilities.deleteDirectoryRecursive(directory);
@@ -137,7 +141,7 @@ public class PenaltyGRSCaseStudy {
     private RecommenderSystem getSVDFoldingIn_fixedRecommendationModel() {
         SVDFoldingIn sVDFoldingIn = new SVDFoldingIn();
         sVDFoldingIn.setSeedValue(987654321);
-        File recommendationModelDirectory = new File("test-temp" + File.separator + "svd-folding-in-model" + File.separator);
+        File recommendationModelDirectory = new File(Constants.getTempDirectory().getAbsolutePath() + File.separator + "svd-folding-in-model" + File.separator);
         FilePersistence filePersistence = new FilePersistence("svd-folding-in-model", "dat", recommendationModelDirectory);
         RecommenderSystem rsFixedModel = new RecommenderSystem_fixedFilePersistence(sVDFoldingIn, filePersistence);
         rsFixedModel.setAlias("SVD");

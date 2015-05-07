@@ -1,9 +1,6 @@
 package delfos.experiment;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
+import delfos.Constants;
 import delfos.common.FileUtilities;
 import delfos.common.Global;
 import delfos.common.exceptions.dataset.CannotLoadContentDataset;
@@ -12,13 +9,17 @@ import delfos.common.exceptions.dataset.items.ItemNotFound;
 import delfos.common.exceptions.dataset.users.UserNotFound;
 import delfos.configfile.rs.single.RecommenderSystemConfiguration;
 import delfos.configfile.rs.single.RecommenderSystemConfigurationFileParser;
-import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.loader.types.DatasetLoader;
+import delfos.dataset.basic.rating.Rating;
 import delfos.experiment.casestudy.CaseStudy;
 import delfos.experiment.casestudy.CaseStudyConfiguration;
 import delfos.experiment.casestudy.defaultcase.DefaultCaseStudy;
 import delfos.io.xml.casestudy.CaseStudyXML;
 import delfos.rs.RecommenderSystem;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 
 /**
  * Ejecuta todos los XML de caso de estudio que hay en el directorio indicado.
@@ -127,7 +128,7 @@ public class ExecuteManyExperiments {
         if (inputDirectory != null) {
             caseStudyConfigurations = getExperiments(new File(inputDirectory));
         } else {
-            caseStudyConfigurations = getExperiments(new File("." + File.separator + "experiments" + File.separator));
+            caseStudyConfigurations = getExperiments(new File(Constants.getTempDirectory().getAbsolutePath() + File.separator + "experiments" + File.separator));
         }
 
         int i = 1;

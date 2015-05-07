@@ -1,14 +1,6 @@
 package delfos.group.grs.itemweighted;
 
-import java.io.File;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeMap;
-import java.util.TreeSet;
+import delfos.Constants;
 import delfos.ERROR_CODES;
 import delfos.common.Global;
 import delfos.common.aggregationoperators.AggregationOperator;
@@ -23,13 +15,13 @@ import delfos.common.parameters.restriction.BooleanParameter;
 import delfos.common.parameters.restriction.FloatParameter;
 import delfos.common.parameters.restriction.ParameterOwnerRestriction;
 import delfos.common.parameters.restriction.RecommenderSystemParameterRestriction;
+import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RatingsDataset;
 import delfos.dataset.basic.rating.RelevanceCriteria;
-import delfos.dataset.loaders.given.DatasetLoaderGiven;
-import delfos.dataset.basic.loader.types.DatasetLoader;
-import delfos.dataset.storage.memory.BothIndexRatingsDataset;
 import delfos.dataset.generated.modifieddatasets.PseudoUserRatingsDataset;
+import delfos.dataset.loaders.given.DatasetLoaderGiven;
+import delfos.dataset.storage.memory.BothIndexRatingsDataset;
 import delfos.dataset.util.DatasetOperations;
 import delfos.dataset.util.DatasetPrinterDeprecated;
 import delfos.dataset.util.DatasetUtilities;
@@ -40,8 +32,8 @@ import delfos.group.grs.SingleRecommendationModel;
 import delfos.group.grs.itemweighted.knn.memory.KnnMemoryBasedNWR_itemWeighted;
 import delfos.group.grs.itemweighted.measures.GroupItemWeight;
 import delfos.group.grs.itemweighted.measures.StandardDeviationWeights;
-import delfos.rs.RecommenderSystem;
 import delfos.rs.RecommendationModelBuildingProgressListener;
+import delfos.rs.RecommenderSystem;
 import delfos.rs.bufferedrecommenders.RecommenderSystem_fixedFilePersistence;
 import delfos.rs.collaborativefiltering.knn.memorybased.KnnMemoryModel;
 import delfos.rs.collaborativefiltering.svd.TryThisAtHomeSVD;
@@ -49,6 +41,15 @@ import delfos.rs.explanation.GroupModelWithExplanation;
 import delfos.rs.nonpersonalised.meanrating.arithmeticmean.MeanRatingRS;
 import delfos.rs.persistence.FilePersistence;
 import delfos.rs.recommendation.Recommendation;
+import java.io.File;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
+import java.util.TreeSet;
 
 public final class AggregationOfIndividualRatings_itemWeighted
         extends GroupRecommenderSystemAdapter<SingleRecommendationModel, GroupModelWithExplanation<GroupModelPseudoUser_itemWeighted, ? extends Object>> {
@@ -85,7 +86,9 @@ public final class AggregationOfIndividualRatings_itemWeighted
             new RecommenderSystemParameterRestriction(
                     new RecommenderSystem_fixedFilePersistence<>(
                             new TryThisAtHomeSVD(10, 10),
-                            new FilePersistence("complete-preferences-rs-model", "data", new File("." + File.separator + "buffered-recommendation-models" + File.separator))),
+                            new FilePersistence(
+                                    "complete-preferences-rs-model", "data",
+                                    new File(Constants.getTempDirectory().getAbsolutePath() + File.separator + "buffered-recommendation-models" + File.separator))),
                     RecommenderSystem_fixedFilePersistence.class));
 
     private AggregationOperator oldAggregationOperator = new Mean();

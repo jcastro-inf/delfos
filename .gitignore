@@ -1,24 +1,18 @@
+# Compile output directory.
 /delfos/target/
-/delfos/test-temp/
-/delfos/experiments/
-/delfos/results/
+
+# Delfos temporary directory, used to store unsaved results and other files and directories that are safe to delete.
+/delfos/temp/
+
+# Delfos configuration directory, which holds differents configuration defined.
 /delfos/.config/
 
-#Directorio de bufer de las recomendaciones, utilizado para agilizar el cálculo de las recomendaciones.
-/delfos/bufferOfRecommendations/
+# Delfos directory to deploy in any linux machine
+/delfos/delfos-1.2.20150422-install/.config/
 
-#Directorio por defecto del que deben colgar los modelos de recomendación que se quieran almacenar en persistencia en fichero.
-/delfos/buffered-recommendation-models/
-
-#Este directorio debe colgar del anterior (./delfos/buffered-recommendation-models/), refactorizar.
-/delfos/svd-folding-in-model/
-
-#Directorio temporal para los ficheros generados durante la ejecución de los tests. Es totalmente seguro borrarlo.
-/delfos/test-set/
-
+# Nano (text editor) backups.
 *~
 
-#Ignore compiled files everywhere
+# Compiled and packed java sources.
 *.jar
 
-/delfos/delfos-1.2.20150422-install/.config/

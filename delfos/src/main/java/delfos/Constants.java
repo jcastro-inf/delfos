@@ -7,6 +7,7 @@ import delfos.view.InitialFrame;
 import delfos.view.SwingGUI;
 import delfos.view.recommendation.RecommendationWindow;
 import java.io.File;
+import java.nio.file.FileAlreadyExistsException;
 import java.util.Locale;
 import org.jdom2.output.Format;
 
@@ -22,6 +23,8 @@ import org.jdom2.output.Format;
  * @version 1.1 15/11/2012
  */
 public class Constants {
+
+    private static File tempDirectory = new File("." + File.separator + "temp");
 
     public static class EnvironmentVariables {
 
@@ -87,6 +90,11 @@ public class Constants {
      *
      */
     static final String MAX_CPUS = "-maxCPU";
+
+    /**
+     * States the temporal directory used by the library.
+     */
+    static final String TEMP_DIRECTORY = "-temp-directory";
     /**
      * Valor de salida que la aplicacion lanza al terminar.
      */
@@ -190,6 +198,18 @@ public class Constants {
         Global.MessageLevel printMessageLevel = Global.MessageLevel.getPrintMessageLevel(consoleParameters);
         Global.setMessageLevel(printMessageLevel);
 
+        if (consoleParameters.isParameterDefined(TEMP_DIRECTORY)) {
+            String tempDirectoryStr = consoleParameters.getValue(TEMP_DIRECTORY);
+            tempDirectory = new File(tempDirectoryStr);
+            if (!tempDirectory.exists()) {
+                tempDirectory.mkdirs();
+            } else if (!tempDirectory.isDirectory()) {
+                FileAlreadyExistsException faee = new FileAlreadyExistsException(
+                        "The temp directory '" + tempDirectory.getAbsolutePath() + "' exists and is a file");
+                ERROR_CODES.UNDEFINED_ERROR.exit(faee);
+            }
+        }
+
         if (consoleParameters.isParameterDefined(DOUBLE_PRINT)) {
             Global.setDoublePrint(true);
         }
@@ -256,6 +276,10 @@ public class Constants {
 
     public static boolean isPrintFullXML() {
         return printFullXML;
+    }
+
+    public static File getTempDirectory() {
+        return tempDirectory;
     }
 
 }

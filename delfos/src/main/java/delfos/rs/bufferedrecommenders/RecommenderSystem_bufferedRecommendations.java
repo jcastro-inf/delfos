@@ -1,5 +1,6 @@
 package delfos.rs.bufferedrecommenders;
 
+import delfos.Constants;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -8,7 +9,6 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.Collection;
-import java.util.List;
 import java.util.Map;
 import delfos.ERROR_CODES;
 import delfos.common.Global;
@@ -46,7 +46,7 @@ public class RecommenderSystem_bufferedRecommendations extends RecommenderSystem
      */
     public static final Parameter BUFFER_DIRECTORY = new Parameter(
             "persistenceFileDirectory",
-            new DirectoryParameter(new File("bufferOfRecommendations" + File.separator).getAbsoluteFile()));
+            new DirectoryParameter(new File(Constants.getTempDirectory().getAbsolutePath() + "bufferOfRecommendations" + File.separator).getAbsoluteFile()));
     /**
      * Sistema de recomendación con persistencia en modelo para el que se fija
      * el modelo.

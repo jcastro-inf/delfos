@@ -1,6 +1,7 @@
 package delfos.group;
 
 import delfos.ConsoleParameters;
+import delfos.Constants;
 import delfos.ERROR_CODES;
 import delfos.UndefinedParameterException;
 import delfos.common.exceptions.dataset.CannotLoadContentDataset;
@@ -228,7 +229,7 @@ public class MainGroup {
                 SIZE_OF_GROUPS,
                 SEED);
 
-        filterCaseStudy.setDirectory(new File("experiments" + File.separator).getAbsolutePath());
+        filterCaseStudy.setDirectory(new File(Constants.getTempDirectory().getAbsolutePath() + File.separator + "experiments" + File.separator).getAbsolutePath());
         try {
             filterCaseStudy.execute();
         } catch (UserNotFound ex) {

@@ -1,5 +1,6 @@
 package delfos.group.grs.penalty;
 
+import delfos.Constants;
 import delfos.common.aggregationoperators.penalty.functions.PenaltyWholeMatrix;
 import delfos.common.exceptions.dataset.CannotLoadContentDataset;
 import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
@@ -41,7 +42,7 @@ public class PenaltyGRS_RatingsTest extends DelfosTest {
 
         SVDFoldingIn sVDFoldingIn = new SVDFoldingIn();
         sVDFoldingIn.setSeedValue(987654321);
-        File recommendationModelDirectory = new File("test-temp" + File.separator + "svd-folding-in-model" + File.separator);
+        File recommendationModelDirectory = new File(Constants.getTempDirectory().getAbsolutePath() + File.separator + "svd-folding-in-model" + File.separator);
         FilePersistence filePersistence = new FilePersistence("svd-folding-in-model", "dat", recommendationModelDirectory);
 
         RecommenderSystem svdFixedModel = new RecommenderSystem_fixedFilePersistence(sVDFoldingIn, filePersistence);

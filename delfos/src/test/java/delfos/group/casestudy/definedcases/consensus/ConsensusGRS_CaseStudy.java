@@ -1,33 +1,34 @@
 package delfos.group.casestudy.definedcases.consensus;
 
+import delfos.Constants;
+import delfos.common.FileUtilities;
+import delfos.common.aggregationoperators.MinimumValue;
+import delfos.common.decimalnumbers.NumberRounder;
+import delfos.configureddatasets.ConfiguredDatasetsFactory;
+import delfos.dataset.basic.loader.types.DatasetLoader;
+import delfos.dataset.basic.rating.Rating;
+import delfos.dataset.basic.rating.RelevanceCriteria;
+import delfos.experiment.casestudy.cluster.TuringPreparator;
+import delfos.group.casestudy.GroupCaseStudy;
+import delfos.group.casestudy.defaultcase.DefaultGroupCaseStudy;
+import delfos.group.experiment.validation.groupformation.FixedGroupSize_OnlyNGroups;
+import delfos.group.experiment.validation.groupformation.GroupFormationTechnique;
+import delfos.group.experiment.validation.predictionvalidation.NoPredictionProtocol;
+import delfos.group.experiment.validation.validationtechniques.HoldOutGroupRatedItems;
+import delfos.group.factories.GroupEvaluationMeasuresFactory;
+import delfos.group.grs.consensus.ConsensusGRS;
+import delfos.group.grs.consensus.itemselector.TopNOfEach;
+import delfos.rs.RecommenderSystem;
+import delfos.rs.bufferedrecommenders.RecommenderSystem_fixedFilePersistence;
+import delfos.rs.collaborativefiltering.knn.memorybased.nwr.KnnMemoryBasedNWR;
+import delfos.rs.collaborativefiltering.svd.SVDFoldingIn;
+import delfos.rs.persistence.FilePersistence;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
-import delfos.common.FileUtilities;
-import delfos.common.aggregationoperators.MinimumValue;
-import delfos.common.decimalnumbers.NumberRounder;
-import delfos.configureddatasets.ConfiguredDatasetsFactory;
-import delfos.dataset.basic.rating.Rating;
-import delfos.dataset.basic.rating.RelevanceCriteria;
-import delfos.dataset.basic.loader.types.DatasetLoader;
-import delfos.experiment.casestudy.cluster.TuringPreparator;
-import delfos.group.casestudy.GroupCaseStudy;
-import delfos.group.casestudy.defaultcase.DefaultGroupCaseStudy;
-import delfos.group.factories.GroupEvaluationMeasuresFactory;
-import delfos.group.grs.consensus.ConsensusGRS;
-import delfos.group.grs.consensus.itemselector.TopNOfEach;
-import delfos.group.experiment.validation.validationtechniques.HoldOutGroupRatedItems;
-import delfos.group.experiment.validation.groupformation.FixedGroupSize_OnlyNGroups;
-import delfos.group.experiment.validation.groupformation.GroupFormationTechnique;
-import delfos.group.experiment.validation.predictionvalidation.NoPredictionProtocol;
-import delfos.rs.RecommenderSystem;
-import delfos.rs.bufferedrecommenders.RecommenderSystem_fixedFilePersistence;
-import delfos.rs.collaborativefiltering.knn.memorybased.nwr.KnnMemoryBasedNWR;
-import delfos.rs.collaborativefiltering.svd.SVDFoldingIn;
-import delfos.rs.persistence.FilePersistence;
 
 /**
  *
@@ -39,15 +40,18 @@ public class ConsensusGRS_CaseStudy {
     public ConsensusGRS_CaseStudy() {
     }
 
-    public static final String CONSENSUS_GRS_EXPERIMENT_DIRECTORY = "." + File.separator
+    public static final String CONSENSUS_GRS_EXPERIMENT_DIRECTORY
+            = Constants.getTempDirectory().getAbsolutePath() + File.separator
             + "experiments" + File.separator
             + "consensus-grs-experiments" + File.separator;
 
-    public static final String CONSENSUS_GRS_INPUT_DIRECTORY = "." + File.separator
+    public static final String CONSENSUS_GRS_INPUT_DIRECTORY
+            = Constants.getTempDirectory().getAbsolutePath() + File.separator
             + "experiments" + File.separator
             + "consensus-grs-input";
 
-    public static final String CONSENSUS_GRS_OUTPUT_DIRECTORY = "." + File.separator
+    public static final String CONSENSUS_GRS_OUTPUT_DIRECTORY
+            = Constants.getTempDirectory().getAbsolutePath() + File.separator
             + "experiments" + File.separator
             + "consensus-grs-output";
 

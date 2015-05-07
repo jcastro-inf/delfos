@@ -1,5 +1,6 @@
 package delfos.constants;
 
+import delfos.Constants;
 import java.io.File;
 
 /**
@@ -19,7 +20,7 @@ public class TestConstants {
     /**
      * Directorio en que se guardan todos los archivos generados para los tests.
      */
-    public static final String TEST_DATA_DIRECTORY = "." + File.separator + "test-temp" + File.separator;
+    public static final String TEST_DATA_DIRECTORY = Constants.getTempDirectory().getAbsolutePath() + File.separator + "test" + File.separator;
 
     static {
         new File(TEST_DATA_DIRECTORY).mkdir();

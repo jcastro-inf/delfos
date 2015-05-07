@@ -1,5 +1,6 @@
 package delfos;
 
+import delfos.common.Global;
 import delfos.common.parameters.ParameterOwner;
 import delfos.dataset.changeable.ChangeableDatasetLoaderAbstract;
 import java.util.Map;
@@ -320,16 +321,20 @@ public enum ERROR_CODES {
         System.out.flush();
         System.err.flush();
 
-        ex.printStackTrace(System.out);
+        System.err.println("Error exit code " + this.name() + ":" + exitValue);
+        System.err.println(ex.getMessage());
+        System.err.flush();
+        System.out.println("Error exit code " + this.name() + ":" + exitValue);
+        System.out.println(ex.getMessage());
         System.out.flush();
 
-        ex.printStackTrace(System.err);
-        System.err.flush();
+        if (Global.isInfoPrinted()) {
+            ex.printStackTrace(System.out);
+            System.out.flush();
 
-        System.err.print("Error exit code " + this.name() + ":" + exitValue + "\n");
-        System.err.flush();
-        System.out.print("Error exit code " + this.name() + ":" + exitValue + "\n");
-        System.out.flush();
+            ex.printStackTrace(System.err);
+            System.err.flush();
+        }
 
         if (isExitOnFail) {
             System.exit(exitValue);

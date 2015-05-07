@@ -1,29 +1,29 @@
 package delfos.casestudy.fromxmlfiles;
 
-import java.io.File;
-import java.util.Collection;
 import delfos.ERROR_CODES;
 import delfos.common.FileUtilities;
 import delfos.common.exceptions.dataset.CannotLoadContentDataset;
 import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
 import delfos.common.parallelwork.SingleTaskExecute;
+import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RelevanceCriteria;
-import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.experiment.ExperimentListerner_default;
 import delfos.experiment.casestudy.CaseStudy;
 import delfos.experiment.casestudy.CaseStudyConfiguration;
 import delfos.experiment.casestudy.defaultcase.DefaultCaseStudy;
-import delfos.io.excel.casestudy.CaseStudyExcel;
-import delfos.io.xml.casestudy.CaseStudyXML;
 import delfos.experiment.validation.predictionprotocol.PredictionProtocol;
 import delfos.experiment.validation.validationtechnique.ValidationTechnique;
+import delfos.io.excel.casestudy.CaseStudyExcel;
+import delfos.io.xml.casestudy.CaseStudyXML;
 import delfos.results.evaluationmeasures.EvaluationMeasure;
 import delfos.rs.RecommenderSystem;
+import java.io.File;
+import java.util.Collection;
 
 /**
  *
-* @author Jorge Castro Gallardo
+ * @author Jorge Castro Gallardo
  *
  * @version 27-ene-2014
  */
@@ -66,7 +66,9 @@ public class CaseStudy_SingleTaskExecute implements SingleTaskExecute<ExecuteCas
 
         File fileToSaveResults = new File(caseName);
 
-        fileToSaveResults = FileUtilities.addPrefix(fileToSaveResults, experimentsDirectory + File.separator + "results" + File.separator);
+        fileToSaveResults = FileUtilities.addPrefix(
+                fileToSaveResults,
+                experimentsDirectory + File.separator + "results" + File.separator);
 
         File excelFile = FileUtilities.changeExtension(fileToSaveResults, "xls");
         File xmlFile = FileUtilities.changeExtension(fileToSaveResults, "xml");

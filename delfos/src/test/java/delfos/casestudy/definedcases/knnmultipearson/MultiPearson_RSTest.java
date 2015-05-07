@@ -1,26 +1,20 @@
 package delfos.casestudy.definedcases.knnmultipearson;
 
-import java.io.File;
-import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.List;
-import org.junit.Test;
+import delfos.Constants;
 import delfos.common.FileUtilities;
 import delfos.configureddatasets.ConfiguredDatasetLoader;
+import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RelevanceCriteria;
 import delfos.dataset.generated.random.RandomDatasetLoader;
-import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.experiment.casestudy.CaseStudy;
 import delfos.experiment.casestudy.cluster.TuringPreparator;
 import delfos.experiment.casestudy.defaultcase.DefaultCaseStudy;
-import delfos.factories.EvaluationMeasuresFactory;
 import delfos.experiment.validation.predictionprotocol.NoPredictionProtocol;
 import delfos.experiment.validation.predictionprotocol.PredictionProtocol;
 import delfos.experiment.validation.validationtechnique.HoldOut_Ratings;
 import delfos.experiment.validation.validationtechnique.ValidationTechnique;
+import delfos.factories.EvaluationMeasuresFactory;
 import delfos.results.evaluationmeasures.EvaluationMeasure;
 import delfos.rs.RecommenderSystem;
 import delfos.rs.bufferedrecommenders.RecommenderSystem_bufferedRecommendations;
@@ -30,6 +24,13 @@ import delfos.similaritymeasures.PearsonCorrelationCoefficient;
 import delfos.similaritymeasures.useruser.RelevanceFactor;
 import delfos.similaritymeasures.useruser.UserUserMultipleCorrelationCoefficient;
 import delfos.similaritymeasures.useruser.UserUserSimilarityWrapper;
+import java.io.File;
+import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.LinkedList;
+import java.util.List;
+import org.junit.Test;
 
 /**
  * Crea los experimentos del congreso ISKE 2014 (dentro de flins).
@@ -45,7 +46,7 @@ public class MultiPearson_RSTest {
     @Test
     public void generateCaseXML() {
 
-        String experimentBaseDirectoryString = "experiments" + File.separator + MultiPearson_RSTest.class.getSimpleName() + File.separator;
+        String experimentBaseDirectoryString = Constants.getTempDirectory().getAbsolutePath() + "experiments" + File.separator + MultiPearson_RSTest.class.getSimpleName() + File.separator;
         File experimentBaseDirectory = new File(experimentBaseDirectoryString);
 
         FileUtilities.cleanDirectory(experimentBaseDirectory);
