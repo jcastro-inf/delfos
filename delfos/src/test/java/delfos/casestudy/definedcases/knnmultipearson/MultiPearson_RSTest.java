@@ -46,7 +46,7 @@ public class MultiPearson_RSTest {
     @Test
     public void generateCaseXML() {
 
-        String experimentBaseDirectoryString = Constants.getTempDirectory().getAbsolutePath() + "experiments" + File.separator + MultiPearson_RSTest.class.getSimpleName() + File.separator;
+        String experimentBaseDirectoryString = Constants.getTempDirectory().getAbsolutePath() + File.separator + "experiments" + File.separator + MultiPearson_RSTest.class.getSimpleName() + File.separator;
         File experimentBaseDirectory = new File(experimentBaseDirectoryString);
 
         FileUtilities.cleanDirectory(experimentBaseDirectory);

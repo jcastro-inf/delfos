@@ -230,13 +230,17 @@ public class CaseStudyAllBaselines {
         final int numIterPerFeature = 10;
         SVDFoldingIn svdFoldingIn = new SVDFoldingIn(numFeatures, numIterPerFeature);
 
+        File directory = new File(
+                Constants.getTempDirectory().getAbsoluteFile() + File.separator
+                + "svd-folding-in-recommendation-model" + File.separator);
+
         RecommenderSystem_fixedFilePersistence rs
                 = new RecommenderSystem_fixedFilePersistence(
                         svdFoldingIn,
                         new FilePersistence(
                                 "svd-folding-in-recommendation-model",
                                 "dat",
-                                new File("." + File.separator + "test-temp" + File.separator + "svd-folding-in-recommendation-model" + File.separator + "")
+                                directory
                         )
                 );
         rs.setAlias("SVD");
@@ -249,6 +253,7 @@ public class CaseStudyAllBaselines {
                 null,
                 50,
                 new WeightedSum());
+
         rs.setAlias("KnnUser");
         return rs;
     }
@@ -256,15 +261,19 @@ public class CaseStudyAllBaselines {
     private RecommenderSystem getKnnItemRecommender() {
         KnnModelBased_NWR knnItem = new KnnModelBased_NWR(new PearsonCorrelationCoefficient(), 30, 60, new WeightedSum());
 
+        File directory = new File(
+                Constants.getTempDirectory().getAbsoluteFile() + File.separator
+                + "knn-item-item-recommendation-model" + File.separator);
+
         RecommenderSystem_fixedFilePersistence rs
                 = new RecommenderSystem_fixedFilePersistence(
                         knnItem,
                         new FilePersistence(
                                 "knn-item-item-recommendation-model",
                                 "dat",
-                                new File("." + File.separator + "test-temp" + File.separator + "knn-item-item-recommendation-model/")
-                        )
+                                directory)
                 );
+
         rs.setAlias("KnnItem");
         return rs;
     }

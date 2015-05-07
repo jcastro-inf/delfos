@@ -69,7 +69,7 @@ public class RecommenderSystem_fixedFilePersistence<RecommendationModel> extends
     public static final Parameter persistenceFileDirectory = new Parameter(
             "persistenceFileDirectory",
             new DirectoryParameter(
-                    new File(Constants.getTempDirectory().getAbsolutePath() + "buffered-recommendation-models" + File.separator + "recommendation-model.data").getAbsoluteFile().getParentFile()));
+                    new File(Constants.getTempDirectory().getAbsolutePath() + File.separator + "buffered-recommendation-models" + File.separator + "recommendation-model.data").getAbsoluteFile().getParentFile()));
     /**
      * Sistema de recomendación con persistencia en modelo para el que se fija
      * el modelo.
@@ -96,7 +96,7 @@ public class RecommenderSystem_fixedFilePersistence<RecommendationModel> extends
         this(rs, new FilePersistence(
                 "recommendation-model-" + rs.getAlias().toLowerCase(),
                 "data",
-                new File(Constants.getTempDirectory().getAbsolutePath() + "buffered-recommendation-models" + File.separator + "recommendation-model.data").getAbsoluteFile().getParentFile()));
+                new File(Constants.getTempDirectory().getAbsolutePath() + File.separator + "buffered-recommendation-models" + File.separator + "recommendation-model.data").getAbsoluteFile().getParentFile()));
     }
 
     public <RecommendationModel extends Object> RecommenderSystem_fixedFilePersistence(RecommenderSystem<RecommendationModel> rs, FilePersistence filePersistence) {

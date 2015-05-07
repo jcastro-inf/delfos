@@ -69,7 +69,7 @@ public class FilterCaseStudy implements Runnable {
     }
 
     private void init() {
-        File datasetsDirectory = new File(Constants.getTempDirectory().getAbsolutePath() + "experiments" + File.separator + "dataset" + File.separator + "dumbFile.txt").getParentFile();
+        File datasetsDirectory = new File(Constants.getTempDirectory().getAbsolutePath() + File.separator + "experiments" + File.separator + "dataset" + File.separator + "dumbFile.txt").getParentFile();
         datasets = getDatasets(datasetsDirectory).toArray(new DatasetLoader[0]);
     }
 
