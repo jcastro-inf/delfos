@@ -1,11 +1,5 @@
 package delfos.rs.collaborativefiltering.svd;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Random;
-import java.util.TreeMap;
 import delfos.common.Chronometer;
 import delfos.common.DateCollapse;
 import delfos.common.Global;
@@ -20,17 +14,20 @@ import delfos.common.parameters.restriction.BooleanParameter;
 import delfos.common.parameters.restriction.FloatParameter;
 import delfos.common.parameters.restriction.IntegerParameter;
 import delfos.common.statisticalfuncions.MeanIterative;
+import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RatingsDataset;
-import delfos.dataset.basic.user.User;
-import delfos.dataset.basic.loader.types.DatasetLoader;
-import delfos.dataset.basic.loader.types.UsersDatasetLoader;
 import delfos.experiment.SeedHolder;
 import delfos.rs.collaborativefiltering.CollaborativeRecommender;
 import delfos.rs.persistence.DatabasePersistence;
 import delfos.rs.persistence.FailureInPersistence;
 import delfos.rs.persistence.database.DAOTryThisAtHomeDatabaseModel;
 import delfos.rs.recommendation.Recommendation;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Random;
+import java.util.TreeMap;
 
 /**
  * Sistema de recomendación descrito en
@@ -252,7 +249,7 @@ public class TryThisAtHomeSVD
                     double ratingValue = rating.ratingValue.doubleValue();
                     double error = 0;
                     try {
-                        predicted = privatePredictRating(datasetLoader.getRatingsDataset(), model, idUser, idItem);
+                        predicted = privatePredictRating(datasetLoader, model, idUser, idItem);
                         error = (ratingValue - predicted);
                     } catch (NotEnoughtUserInformation | NotEnoughtItemInformation | UserNotFound | ItemNotFound ex) {
                         throw new IllegalStateException(ex);
@@ -319,7 +316,7 @@ public class TryThisAtHomeSVD
      * Predice la valoración que el usuario daría sobre el producto utilizando
      * el modelo indicado.
      *
-     * @param ratingsDataset Dataset de valoraciones.
+     * @param datasetLoadder Dataset.
      * @param model Modelo de recomendación.
      * @param idUser Usuario para el que se predice la valoración
      * @param idItem Producto para el que se predice la valoración
@@ -333,7 +330,7 @@ public class TryThisAtHomeSVD
      * @throws delfos.common.exceptions.dataset.items.ItemNotFound
      */
     protected final double privatePredictRating(
-            RatingsDataset<? extends Rating> ratingsDataset,
+            DatasetLoader<? extends Rating> datasetLoadder,
             TryThisAtHomeSVDModel model,
             int idUser,
             int idItem) throws NotEnoughtUserInformation, NotEnoughtItemInformation, UserNotFound, ItemNotFound {
@@ -364,6 +361,7 @@ public class TryThisAtHomeSVD
         }
 
         if (isNormalised()) {
+            RatingsDataset<? extends Rating> ratingsDataset = datasetLoadder.getRatingsDataset();
             float meanRating = ratingsDataset.getMeanRating();
             float meanRatingUser = meanRating - ratingsDataset.getMeanRatingUser(idUser);
             float meanRatingItem = meanRating - ratingsDataset.getMeanRatingItem(idItem);
@@ -381,23 +379,15 @@ public class TryThisAtHomeSVD
 
         if (!model.getUsersIndex().containsKey(idUser)) {
             Global.showWarning("SVD recommendation model does not contains the user (" + idUser + "): Returning empty list.");
-
-            if (datasetLoader instanceof UsersDatasetLoader) {
-                UsersDatasetLoader usersDatasetLoader = (UsersDatasetLoader) datasetLoader;
-
-                User user = usersDatasetLoader.getUsersDataset().getUser(idUser);
-            }
-
             return new ArrayList<>();
         }
 
-        final RatingsDataset<? extends Rating> ratingsDataset = datasetLoader.getRatingsDataset();
         boolean toRatingRange = (Boolean) getParameterValue(PREDICT_IN_RATING_RANGE);
 
         ArrayList<Recommendation> ret = new ArrayList<>(candidateItems.size());
         for (int idItem : candidateItems) {
             try {
-                Number prediction = privatePredictRating(ratingsDataset, model, idUser, idItem);
+                Number prediction = privatePredictRating(datasetLoader, model, idUser, idItem);
                 if (toRatingRange) {
                     prediction = toRatingRange(datasetLoader, prediction);
                 }
