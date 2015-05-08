@@ -95,6 +95,8 @@ public class Main {
 
         caseUse.add(delfos.main.managers.database.helpers.CreateDefaultManageDatabaseCSV.getInstance());
         caseUse.add(delfos.main.managers.database.helpers.CreateDefaultManageDatabaseMySQL.getInstance());
+        caseUse.add(delfos.main.managers.database.helpers.InitDatabaseGUI.getInstance());
+
         caseUse.add(delfos.main.managers.recommendation.nonpersonalised.helpers.CreateDefaultNonPersonalisedRecommender.getInstance());
 
         caseUse.add(delfos.main.managers.library.install.InitialConfiguration.getInstance());

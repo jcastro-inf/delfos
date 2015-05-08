@@ -434,7 +434,6 @@ public class RSBuilderFrame extends Frame {
                                 buildingProgressChanged(actualJob, 0, -1);
                                 Object model = rs.buildRecommendationModel(loader);
                                 rs.saveRecommendationModel(databasePersistence, model);
-
                             } else {
                                 throw new IllegalStateException("The persistence technique is not recognised: " + persistenceTechnique.getName());
                             }

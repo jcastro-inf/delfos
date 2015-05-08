@@ -43,11 +43,15 @@ public class DatabaseManager extends CaseUseModeWithSubManagers {
     /**
      * Paramter to specify a different configuration file for the database.
      */
-    public static final String MANAGE_RATING_DATABASE_DEFAULT_CONFIG_XML = "database-config.xml";
+    public static final String MANAGE_RATING_DATABASE_DEFAULT_CONFIG_XML = "db-config.xml";
     /**
      * Parametro para especificar que se debe inicializar la base de datos.
      */
     public static final String MANAGE_RATING_DATABASE_INIT_DATABASE = "--init-database";
+    /**
+     * Starts a swing interface to define the database xml and initialisate it.
+     */
+    public static final String MANAGE_RATING_DATABASE_INIT_DATABASE_GUI = "--init-database-x";
 
     /**
      * Parametro para especificar que la biblioteca añada un usuario a la base

@@ -108,7 +108,7 @@ public class EditParameterDialog extends JDialog {
             this.remove(panel);
         }
 
-        parametrosModificados = new LinkedHashMap<Parameter, Object>();
+        parametrosModificados = new LinkedHashMap<>();
         panel = new JPanel(new GridBagLayout());
         GridBagConstraints constraints = new GridBagConstraints();
 
@@ -145,11 +145,8 @@ public class EditParameterDialog extends JDialog {
                 final JSpinner spinner = new JSpinner(new SpinnerNumberModel(value, min, max, step));
                 spinner.setSize(50, spinner.getSize().height);
                 spinner.setMaximumSize(new Dimension(500, spinner.getSize().height));
-                spinner.addChangeListener(new ChangeListener() {
-                    @Override
-                    public void stateChanged(ChangeEvent e) {
-                        EditParameterDialog.this.parametrosModificados.put(p, spinner.getValue());
-                    }
+                spinner.addChangeListener((ChangeEvent e) -> {
+                    EditParameterDialog.this.parametrosModificados.put(p, spinner.getValue());
                 });
                 panel.add(spinner, constraints);
                 widgetCreado = true;
@@ -274,11 +271,8 @@ public class EditParameterDialog extends JDialog {
                 constraints.gridheight = 1;
                 constraints.insets = new Insets(3, 4, 3, 4);
                 final JComboBox combo = new JComboBox(allowed);
-                combo.addActionListener(new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        EditParameterDialog.this.parametrosModificados.put(p, combo.getSelectedItem());
-                    }
+                combo.addActionListener((ActionEvent e) -> {
+                    EditParameterDialog.this.parametrosModificados.put(p, combo.getSelectedItem());
                 });
 
                 Object value = _parameterOwner.getParameterValue(p);
@@ -307,11 +301,8 @@ public class EditParameterDialog extends JDialog {
                 final JCheckBox check = new JCheckBox();
                 Boolean selected = (Boolean) _parameterOwner.getParameterValue(p);
                 check.setSelected(selected);
-                check.addActionListener(new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        EditParameterDialog.this.parametrosModificados.put(p, check.isSelected());
-                    }
+                check.addActionListener((e) -> {
+                    EditParameterDialog.this.parametrosModificados.put(p, check.isSelected());
                 });
 
                 panel.add(check, constraints);
