@@ -7,24 +7,13 @@ import delfos.common.exceptions.dataset.CannotLoadContentDataset;
 import delfos.common.exceptions.dataset.items.ItemAlreadyExists;
 import delfos.dataset.basic.item.Item;
 import delfos.dataset.changeable.ChangeableDatasetLoader;
+import static delfos.main.managers.database.DatabaseManager.MANAGE_RATING_DATABASE_ADD_ITEM;
 
 /**
  *
  * @author jcastro
  */
 public class AddItem extends DatabaseCaseUseSubManager {
-
-    /**
-     * Parametro para especificar que la biblioteca añada un producto a la base
-     * de datos que está siendo administrada.
-     */
-    @Deprecated
-    public static final String MANAGE_RATING_DATABASE_ADD_ITEM_OLD = "-addItem";
-    /**
-     * Parametro para especificar que la biblioteca añada un producto a la base
-     * de datos que está siendo administrada.
-     */
-    public static final String MANAGE_RATING_DATABASE_ADD_ITEM = "-add-item";
 
     public static final AddItem instance = new AddItem();
 
@@ -34,7 +23,7 @@ public class AddItem extends DatabaseCaseUseSubManager {
 
     @Override
     public boolean isRightManager(ConsoleParameters consoleParameters) {
-        return consoleParameters.deprecatedParameter_isDefined(MANAGE_RATING_DATABASE_ADD_ITEM_OLD, MANAGE_RATING_DATABASE_ADD_ITEM);
+        return consoleParameters.isParameterDefined(MANAGE_RATING_DATABASE_ADD_ITEM);
     }
 
     @Override
@@ -42,7 +31,7 @@ public class AddItem extends DatabaseCaseUseSubManager {
 
         try {
 
-            int idItem = new Integer(consoleParameters.deprecatedParameter_getValue(MANAGE_RATING_DATABASE_ADD_ITEM_OLD, MANAGE_RATING_DATABASE_ADD_ITEM));
+            int idItem = new Integer(consoleParameters.getValue(MANAGE_RATING_DATABASE_ADD_ITEM));
             if (changeableDatasetLoader.getContentDataset().getAllID().contains(idItem)) {
                 throw new ItemAlreadyExists(idItem);
             }

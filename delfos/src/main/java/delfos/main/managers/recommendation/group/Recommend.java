@@ -25,6 +25,7 @@ import delfos.rs.persistence.PersistenceMethodStrategy;
 import delfos.rs.recommendation.Recommendation;
 import delfos.rs.recommendation.RecommendationComputationDetails;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
@@ -53,8 +54,8 @@ class Recommend extends CaseUseSubManager {
 
     @Override
     public boolean isRightManager(ConsoleParameters consoleParameters) {
-        return consoleParameters.isDefined(GROUP_MODE)
-                && consoleParameters.isDefined(TARGET_GROUP);
+        return consoleParameters.isFlagDefined(GROUP_MODE)
+                && consoleParameters.isParameterDefined(TARGET_GROUP);
     }
 
     @Override
@@ -65,7 +66,9 @@ class Recommend extends CaseUseSubManager {
     public static void manageGroupRecommendation(ConsoleParameters consoleParameters) {
 
         String configurationFile = ArgumentsRecommendation.extractConfigurationFile(consoleParameters);
-
+        if (!new File(configurationFile).exists()) {
+            ERROR_CODES.CONFIG_FILE_NOT_EXISTS.exit(new FileNotFoundException("Configuration file '" + configurationFile + "' not found"));
+        }
         GroupOfUsers targetGroup = extractTargetGroup(consoleParameters);
 
         recommendToGroup(configurationFile, targetGroup);

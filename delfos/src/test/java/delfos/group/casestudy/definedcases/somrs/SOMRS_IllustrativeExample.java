@@ -1,5 +1,26 @@
 package delfos.group.casestudy.definedcases.somrs;
 
+import delfos.Constants;
+import delfos.common.Global;
+import delfos.common.aggregationoperators.MinimumValue;
+import delfos.common.exceptions.ratings.NotEnoughtUserInformation;
+import delfos.configureddatasets.ConfiguredDatasetsFactory;
+import delfos.dataset.basic.loader.types.DatasetLoader;
+import delfos.dataset.basic.rating.Rating;
+import delfos.group.experiment.validation.groupformation.GivenGroups;
+import delfos.group.experiment.validation.groupformation.GroupFormationTechnique;
+import delfos.group.groupsofusers.GroupOfUsers;
+import delfos.group.grs.SingleRecommendationModel;
+import delfos.group.grs.aggregation.GroupModelPseudoUser;
+import delfos.group.grs.consensus.ConsensusGRS;
+import delfos.group.grs.consensus.itemselector.TopNOfEach;
+import delfos.group.grs.recommendations.GroupRecommendationsWithMembersRecommendations;
+import delfos.recommendationcandidates.OnlyNewItems;
+import delfos.recommendationcandidates.RecommendationCandidatesSelector;
+import delfos.rs.RecommenderSystem;
+import delfos.rs.bufferedrecommenders.RecommenderSystem_fixedFilePersistence;
+import delfos.rs.collaborativefiltering.svd.SVDFoldingIn;
+import delfos.rs.persistence.FilePersistence;
 import java.io.File;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -8,26 +29,6 @@ import java.util.LinkedList;
 import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
-import delfos.common.Global;
-import delfos.common.aggregationoperators.MinimumValue;
-import delfos.common.exceptions.ratings.NotEnoughtUserInformation;
-import delfos.configureddatasets.ConfiguredDatasetsFactory;
-import delfos.dataset.basic.rating.Rating;
-import delfos.dataset.basic.loader.types.DatasetLoader;
-import delfos.group.groupsofusers.GroupOfUsers;
-import delfos.group.grs.SingleRecommendationModel;
-import delfos.group.grs.aggregation.GroupModelPseudoUser;
-import delfos.group.grs.consensus.ConsensusGRS;
-import delfos.group.grs.consensus.itemselector.TopNOfEach;
-import delfos.group.grs.recommendations.GroupRecommendationsWithMembersRecommendations;
-import delfos.group.experiment.validation.groupformation.GivenGroups;
-import delfos.group.experiment.validation.groupformation.GroupFormationTechnique;
-import delfos.recommendationcandidates.OnlyNewItems;
-import delfos.recommendationcandidates.RecommendationCandidatesSelector;
-import delfos.rs.RecommenderSystem;
-import delfos.rs.bufferedrecommenders.RecommenderSystem_fixedFilePersistence;
-import delfos.rs.collaborativefiltering.svd.SVDFoldingIn;
-import delfos.rs.persistence.FilePersistence;
 
 /**
  *
@@ -40,7 +41,7 @@ public class SOMRS_IllustrativeExample {
     }
 
     public static final String SOM_RS_DIRECTORY
-            = "." + File.separator
+            = Constants.getTempDirectory().getAbsolutePath() + File.separator
             + "experiments" + File.separator
             + "som-rs" + File.separator;
 

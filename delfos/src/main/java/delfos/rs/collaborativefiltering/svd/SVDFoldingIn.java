@@ -1,12 +1,5 @@
 package delfos.rs.collaborativefiltering.svd;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Random;
-import java.util.TreeMap;
 import delfos.ERROR_CODES;
 import delfos.common.Chronometer;
 import delfos.common.DateCollapse;
@@ -21,12 +14,18 @@ import delfos.common.parameters.Parameter;
 import delfos.common.parameters.restriction.FloatParameter;
 import delfos.common.parameters.restriction.IntegerParameter;
 import delfos.common.statisticalfuncions.MeanIterative;
+import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RatingsDataset;
-import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.rs.persistence.DatabasePersistence;
 import delfos.rs.persistence.FailureInPersistence;
 import delfos.rs.recommendation.Recommendation;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Random;
+import java.util.TreeMap;
 
 /**
  * Implementa el modelo de recomendación SVD al que añade la
@@ -213,7 +212,7 @@ public class SVDFoldingIn
                     Integer indexItem = newModel.getItemsIndex().get(idItem);
                     Double predicted;
                     try {
-                        predicted = privatePredictRating(datasetLoader.getRatingsDataset(), newModel, idUser, idItem);
+                        predicted = privatePredictRating(datasetLoader, newModel, idUser, idItem);
 
                         double error = (rating.ratingValue.doubleValue() - predicted);
                         meanAbsoluteError.addValue(Math.abs(error));

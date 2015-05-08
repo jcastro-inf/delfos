@@ -11,6 +11,9 @@ import delfos.common.exceptions.dataset.items.ItemNotFound;
 import delfos.dataset.basic.features.Feature;
 import delfos.dataset.basic.item.Item;
 import delfos.dataset.changeable.ChangeableDatasetLoader;
+import static delfos.main.managers.database.DatabaseManager.ENTITY_NAME;
+import static delfos.main.managers.database.DatabaseManager.MANAGE_RATING_DATABASE_ADD_ITEM_FEATURES;
+import static delfos.main.managers.database.DatabaseManager.MANAGE_RATING_DATABASE_FEATURES;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -21,31 +24,6 @@ import java.util.TreeMap;
  */
 public class AddItemFeatures extends DatabaseCaseUseSubManager {
 
-    /**
-     * Parámetro para especificar que se use el modo de añadir características a
-     * un producto.
-     */
-    @Deprecated
-    public static final String MANAGE_RATING_DATABASE_ADD_ITEM_FEATURES_OLD = "-addItemFeatures";
-    /**
-     * Parámetro para especificar que se use el modo de añadir características a
-     * un producto.
-     */
-    public static final String MANAGE_RATING_DATABASE_ADD_ITEM_FEATURES = "-add-item-features";
-
-    /**
-     * Parámetro para especificar las características que se añaden en los modos
-     * {@link AddUserFeatures} y {@link AddItemFeatures}.
-     */
-    public static final String MANAGE_RATING_DATABASE_FEATURES = "-features";
-    /**
-     * Cadena que denota el nombre de una entidad {@link EntityWithFeatures}.
-     * Por ejemplo, en una base de datos se utilizará esta cadena como la
-     * columna que contiene el nombre de cada producto. (usuario, producto,
-     * etc.).
-     */
-    public static final String ENTITY_NAME = "name";
-
     public static final AddItemFeatures instance = new AddItemFeatures();
 
     public static AddItemFeatures getInstance() {
@@ -54,7 +32,7 @@ public class AddItemFeatures extends DatabaseCaseUseSubManager {
 
     @Override
     public boolean isRightManager(ConsoleParameters consoleParameters) {
-        return consoleParameters.deprecatedParameter_isDefined(MANAGE_RATING_DATABASE_ADD_ITEM_FEATURES_OLD, MANAGE_RATING_DATABASE_ADD_ITEM_FEATURES);
+        return consoleParameters.isParameterDefined(MANAGE_RATING_DATABASE_ADD_ITEM_FEATURES);
     }
 
     @Override
@@ -62,7 +40,7 @@ public class AddItemFeatures extends DatabaseCaseUseSubManager {
 
         int idItem;
         try {
-            idItem = new Integer(consoleParameters.deprecatedParameter_getValue(MANAGE_RATING_DATABASE_ADD_ITEM_FEATURES_OLD, MANAGE_RATING_DATABASE_ADD_ITEM_FEATURES));
+            idItem = new Integer(consoleParameters.getValue(MANAGE_RATING_DATABASE_ADD_ITEM_FEATURES));
         } catch (NumberFormatException ex) {
             ERROR_CODES.ITEM_ID_NOT_RECOGNISED.exit(ex);
             throw new IllegalArgumentException(ex);

@@ -61,8 +61,9 @@ class Recommend extends CaseUseSubManager {
     }
 
     public boolean isSingleUserRecommendationCaseUse(ConsoleParameters consoleParameters) {
-        return consoleParameters.isDefined(SINGLE_USER_MODE)
-                && (consoleParameters.isDefined(RECOMMEND) || consoleParameters.isDefined(RECOMMEND_SHORT));
+        return consoleParameters.isFlagDefined(SINGLE_USER_MODE)
+                && (consoleParameters.isFlagDefined(RECOMMEND)
+                || consoleParameters.isFlagDefined(RECOMMEND_SHORT));
     }
 
     @Override

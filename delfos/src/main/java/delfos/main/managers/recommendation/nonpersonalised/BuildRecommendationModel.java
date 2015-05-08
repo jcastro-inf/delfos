@@ -15,6 +15,8 @@ import delfos.main.managers.recommendation.ArgumentsRecommendation;
 import delfos.rs.nonpersonalised.NonPersonalisedRecommender;
 import delfos.rs.persistence.FailureInPersistence;
 import delfos.rs.persistence.PersistenceMethodStrategy;
+import java.io.File;
+import java.io.FileNotFoundException;
 
 /**
  *
@@ -38,13 +40,17 @@ public class BuildRecommendationModel extends CaseUseSubManager {
 
     @Override
     public boolean isRightManager(ConsoleParameters consoleParameters) {
-        return consoleParameters.isDefined(NonPersonalisedRecommendation.NON_PERSONALISED_MODE)
-                && consoleParameters.isDefined(ArgumentsRecommendation.BUILD_RECOMMENDATION_MODEL);
+        return consoleParameters.isFlagDefined(NonPersonalisedRecommendation.NON_PERSONALISED_MODE)
+                && consoleParameters.isFlagDefined(ArgumentsRecommendation.BUILD_RECOMMENDATION_MODEL);
     }
 
     @Override
     public void manageCaseUse(ConsoleParameters consoleParameters) {
         String configurationFile = ArgumentsRecommendation.extractConfigurationFile(consoleParameters);
+
+        if (!new File(configurationFile).exists()) {
+            ERROR_CODES.CONFIG_FILE_NOT_EXISTS.exit(new FileNotFoundException("Configuration file '" + configurationFile + "' not found"));
+        }
 
         RecommenderSystemConfiguration rsc = RecommenderSystemConfigurationFileParser.loadConfigFile(configurationFile);
 

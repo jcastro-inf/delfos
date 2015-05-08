@@ -7,24 +7,13 @@ import delfos.common.exceptions.dataset.CannotLoadUsersDataset;
 import delfos.common.exceptions.dataset.users.UserAlreadyExists;
 import delfos.dataset.basic.user.User;
 import delfos.dataset.changeable.ChangeableDatasetLoader;
+import static delfos.main.managers.database.DatabaseManager.MANAGE_RATING_DATABASE_ADD_USER;
 
 /**
  *
  * @author jcastro
  */
 public class AddUser extends DatabaseCaseUseSubManager {
-
-    /**
-     * Parametro para especificar que la biblioteca añada un usuario a la base
-     * de datos que está siendo administrada.
-     */
-    @Deprecated
-    public static final String MANAGE_RATING_DATABASE_ADD_USER_OLD = "-addUser";
-    /**
-     * Parametro para especificar que la biblioteca añada un usuario a la base
-     * de datos que está siendo administrada.
-     */
-    public static final String MANAGE_RATING_DATABASE_ADD_USER = "-add-user";
 
     public static final AddUser instance = new AddUser();
 
@@ -34,7 +23,7 @@ public class AddUser extends DatabaseCaseUseSubManager {
 
     @Override
     public boolean isRightManager(ConsoleParameters consoleParameters) {
-        return consoleParameters.deprecatedParameter_isDefined(MANAGE_RATING_DATABASE_ADD_USER_OLD, MANAGE_RATING_DATABASE_ADD_USER);
+        return consoleParameters.isParameterDefined(MANAGE_RATING_DATABASE_ADD_USER);
     }
 
     @Override
@@ -42,7 +31,7 @@ public class AddUser extends DatabaseCaseUseSubManager {
 
         try {
 
-            int idUser = new Integer(consoleParameters.deprecatedParameter_getValue(MANAGE_RATING_DATABASE_ADD_USER_OLD, MANAGE_RATING_DATABASE_ADD_USER));
+            int idUser = new Integer(consoleParameters.getValue(MANAGE_RATING_DATABASE_ADD_USER));
             if (changeableDatasetLoader.getUsersDataset().getAllID().contains(idUser)) {
                 throw new UserAlreadyExists(idUser);
             }

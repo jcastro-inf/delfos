@@ -59,21 +59,21 @@ public class GroupRecommendationManager {
         File configFile_rs = new File("rsConfiguration.xml");
 
         int topN;
-        if (consoleParameters.isDefined(TOP_N_VALUE)) {
+        if (consoleParameters.isParameterDefined(TOP_N_VALUE)) {
             topN = Integer.parseInt(consoleParameters.getValue(TOP_N_VALUE));
         } else {
             topN = 4;
             Global.showInfoMessage("Using default value for topN: '" + topN + "'\n");
         }
 
-        if (consoleParameters.isDefined(GRS_CONFIG_FILE_PARAMETER)) {
+        if (consoleParameters.isParameterDefined(GRS_CONFIG_FILE_PARAMETER)) {
             String grsConfigFileString = consoleParameters.getValue(GRS_CONFIG_FILE_PARAMETER);
             configFile_grs = new File(grsConfigFileString);
         } else {
             Global.showWarning("Using default grs configFile: '" + configFile_grs.getAbsolutePath() + "'");
         }
 
-        if (consoleParameters.isDefined(RS_CONFIG_FILE_PARAMETER)) {
+        if (consoleParameters.isParameterDefined(RS_CONFIG_FILE_PARAMETER)) {
             String rsConfigFileString = consoleParameters.getValue(RS_CONFIG_FILE_PARAMETER);
             configFile_rs = new File(rsConfigFileString);
         } else {
@@ -104,7 +104,7 @@ public class GroupRecommendationManager {
         FilePersistence rsFilePersistence = (FilePersistence) rsc.persistenceMethod;
 
         boolean correctOption = false;
-        if (consoleParameters.isDefined(BUILD_MODEL_PARAMETER)) {
+        if (consoleParameters.isParameterDefined(BUILD_MODEL_PARAMETER)) {
             Global.showInfoMessage("Building model for grs described in file '" + configFile_grs.getAbsolutePath() + "'\n");
 
             Object recommendationModel = groupRecommenderSystem.buildRecommendationModel(datasetLoader);
@@ -119,7 +119,7 @@ public class GroupRecommendationManager {
             correctOption = true;
         }
 
-        if (consoleParameters.isDefined(GROUP_MEMBERS_PARAMETER)) {
+        if (consoleParameters.isParameterDefined(GROUP_MEMBERS_PARAMETER)) {
             Global.showInfoMessage("Recommending for grs described in file '" + configFile_grs.getAbsolutePath() + "'\n");
 
             List<Recommendation> groupRecommendations;
@@ -273,7 +273,7 @@ public class GroupRecommendationManager {
             }
             File outputFile = new File("consensus_" + group.toString() + ".xml");
 
-            if (consoleParameters.isDefined("-outputFile")) {
+            if (consoleParameters.isParameterDefined("-outputFile")) {
                 String outputFileString = consoleParameters.getValue("-outputFile");
                 outputFile = new File(outputFileString);
             } else {

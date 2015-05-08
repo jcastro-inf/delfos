@@ -1,6 +1,7 @@
 package delfos.main.managers;
 
 import delfos.ConsoleParameters;
+import delfos.common.Global;
 
 /**
  * Denotes a case use that is also a mode. A mode has a specific command line
@@ -29,7 +30,13 @@ public abstract class CaseUseMode {
      * @return true si es el manager adecuado.
      */
     public boolean isRightManager(ConsoleParameters consoleParameters) {
-        return consoleParameters.isDefined(getModeParameter());
+        try {
+            return consoleParameters.isFlagDefined(getModeParameter());
+        } catch (IllegalArgumentException ex) {
+            Global.showWarning(this.getClass().toString() + ": This class mode parameter is not a flag!");
+            Global.showError(ex);
+            throw ex;
+        }
     }
 
     /**

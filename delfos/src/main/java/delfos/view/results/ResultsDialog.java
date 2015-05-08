@@ -1,5 +1,8 @@
 package delfos.view.results;
 
+import delfos.experiment.casestudy.CaseStudy;
+import delfos.results.MeasureResult;
+import delfos.results.evaluationmeasures.EvaluationMeasure;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
@@ -11,9 +14,6 @@ import java.util.TreeMap;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-import delfos.experiment.casestudy.CaseStudy;
-import delfos.results.evaluationmeasures.EvaluationMeasure;
-import delfos.results.MeasureResult;
 
 /**
  * Clase utilizada para generar cuadros de diálogo con un resumen de los
@@ -36,12 +36,12 @@ public class ResultsDialog {
         JDialog dialog;
         Date d = new Date();
         DateFormat df = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
-        dialog = new JDialog(f, "Results " + df.format(d));
+        dialog = new JDialog(f, "Results of " + c.getAlias() + " at " + df.format(d));
 
         dialog.setLayout(new GridBagLayout());
         GridBagConstraints constraints = new GridBagConstraints();
 
-        Map<String, Number> mediaResultados = new TreeMap<String, Number>();
+        Map<String, Number> mediaResultados = new TreeMap<>();
 
         for (EvaluationMeasure em : c.getEvaluationMeasures()) {
             MeasureResult agregateResults = c.getMeasureResult(em);

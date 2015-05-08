@@ -1,5 +1,28 @@
 package delfos.group.io.xml.casestudy;
 
+import delfos.Constants;
+import delfos.ERROR_CODES;
+import delfos.common.FileUtilities;
+import delfos.common.Global;
+import delfos.dataset.basic.loader.types.DatasetLoader;
+import delfos.dataset.basic.rating.Rating;
+import delfos.dataset.basic.rating.RelevanceCriteria;
+import delfos.group.casestudy.GroupCaseStudy;
+import delfos.group.casestudy.GroupCaseStudyConfiguration;
+import delfos.group.experiment.validation.groupformation.GroupFormationTechnique;
+import delfos.group.experiment.validation.predictionvalidation.GroupPredictionProtocol;
+import delfos.group.experiment.validation.validationtechniques.GroupValidationTechnique;
+import delfos.group.grs.GroupRecommenderSystem;
+import delfos.group.io.xml.groupformationtechnique.GroupFormationTechniqueXML;
+import delfos.group.io.xml.grs.GroupRecommenderSystemXML;
+import delfos.group.io.xml.predictionprotocol.GroupPredictionProtocolXML;
+import delfos.group.io.xml.validationtechnique.GroupValidationTechniqueXML;
+import delfos.group.results.groupevaluationmeasures.GroupEvaluationMeasure;
+import delfos.group.results.groupevaluationmeasures.GroupMeasureResult;
+import delfos.io.xml.casestudy.CaseStudyXML;
+import static delfos.io.xml.casestudy.CaseStudyXML.CASE_ROOT_ELEMENT_NAME;
+import delfos.io.xml.dataset.DatasetLoaderXML;
+import delfos.io.xml.dataset.RelevanceCriteriaXML;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -11,35 +34,12 @@ import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import org.jdom2.input.SAXBuilder;
 import org.jdom2.output.XMLOutputter;
-import delfos.ERROR_CODES;
-import delfos.Constants;
-import delfos.common.FileUtilities;
-import delfos.common.Global;
-import delfos.dataset.basic.rating.Rating;
-import delfos.dataset.basic.rating.RelevanceCriteria;
-import delfos.dataset.basic.loader.types.DatasetLoader;
-import delfos.group.casestudy.GroupCaseStudy;
-import delfos.group.casestudy.GroupCaseStudyConfiguration;
-import delfos.group.grs.GroupRecommenderSystem;
-import delfos.group.io.xml.groupformationtechnique.GroupFormationTechniqueXML;
-import delfos.group.io.xml.predictionprotocol.GroupPredictionProtocolXML;
-import delfos.group.io.xml.grs.GroupRecommenderSystemXML;
-import delfos.group.io.xml.validationtechnique.GroupValidationTechniqueXML;
-import delfos.group.results.groupevaluationmeasures.GroupEvaluationMeasure;
-import delfos.group.results.groupevaluationmeasures.GroupMeasureResult;
-import delfos.group.experiment.validation.validationtechniques.GroupValidationTechnique;
-import delfos.group.experiment.validation.groupformation.GroupFormationTechnique;
-import delfos.group.experiment.validation.predictionvalidation.GroupPredictionProtocol;
-import delfos.io.xml.casestudy.CaseStudyXML;
-import static delfos.io.xml.casestudy.CaseStudyXML.CASE_ROOT_ELEMENT_NAME;
-import delfos.io.xml.dataset.DatasetLoaderXML;
-import delfos.io.xml.dataset.RelevanceCriteriaXML;
 
 /**
  * Clase encargada de hacer la entrada/salida de los resultados de la ejeución
  * de un caso de uso concreto.
  *
-* @author Jorge Castro Gallardo
+ * @author Jorge Castro Gallardo
  *
  * @version 1.0 Unknown date
  * @version 1.1 (3-Mayo-2013)
@@ -151,18 +151,18 @@ public class GroupCaseStudyXML {
 
     public static String getDefaultFileName(GroupCaseStudy caseStudyGroup) {
         Date date = new Date();
-        String format = "aux";
+        String dateBasedName = "aux";
         try {
             SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyyy-MM-dd HH.mm.ss", new Locale("es", "ES"));
-            format = sdf.format(date);
+            dateBasedName = sdf.format(date);
         } catch (Exception ex) {
             Global.showError(ex);
             Global.showWarning("Cannot get timestamp" + ex.getMessage() + "\n");
         }
 
-        format = format + " seed=" + caseStudyGroup.getSeedValue() + "." + CaseStudyXML.RESULT_EXTENSION;
+        dateBasedName = dateBasedName + " seed=" + caseStudyGroup.getSeedValue() + "." + CaseStudyXML.RESULT_EXTENSION;
 
-        File f = new File(format);
+        File f = new File(Constants.getTempDirectory().getAbsolutePath() + File.separator + dateBasedName);
         return f.getAbsolutePath();
     }
 

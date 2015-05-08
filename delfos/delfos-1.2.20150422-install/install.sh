@@ -15,7 +15,7 @@ java -jar $DELFOS_JAR -config $DELFOS_CONFIG $@' > delfos
 chmod +x delfos
 
 #Download an install large datasets
-datasetsSelected="-datasets-to-install";
+datasetsSelected="-datasets-to-install ml-100k";
 ml1mURL="http://files.grouplens.org/datasets/movielens/ml-1m.zip"
 
 installml1m (){
@@ -63,7 +63,7 @@ then
 fi
 
 #Generate the initial configuration of the library
-delfos --initial-config -v -datasets-dir $DELFOS_LIB/datasets $datasetsSelected
+delfos --initial-config -datasets-dir $DELFOS_LIB/datasets $datasetsSelected --debug
 
 echo "Cleaning the installation directory"
 if [ -d "datasets/ml-1m" ]

@@ -1,9 +1,10 @@
 package delfos;
 
-import java.util.Map;
-import java.util.TreeMap;
+import delfos.common.Global;
 import delfos.common.parameters.ParameterOwner;
 import delfos.dataset.changeable.ChangeableDatasetLoaderAbstract;
+import java.util.Map;
+import java.util.TreeMap;
 
 /**
  * Enumerado con todos los códigos de error de salida de la biblioteca de
@@ -15,6 +16,16 @@ import delfos.dataset.changeable.ChangeableDatasetLoaderAbstract;
  */
 public enum ERROR_CODES {
 
+    /**
+     * Código de error que se devuelve cuando no se conoce el motivo de fallo de
+     * la biblioteca. No está recomendado el uso de este código de error, ya que
+     * no describe el error que ha ocurrido.
+     */
+    /**
+     * Código de error que se devuelve cuando no se conoce el motivo de fallo de
+     * la biblioteca. No está recomendado el uso de este código de error, ya que
+     * no describe el error que ha ocurrido.
+     */
     /**
      * Código de error que se devuelve cuando no se conoce el motivo de fallo de
      * la biblioteca. No está recomendado el uso de este código de error, ya que
@@ -270,7 +281,8 @@ public enum ERROR_CODES {
     THREAD_INTERRUMPTED(9999994),
     PARAMETER_OWNER_ILLEGAL_PARAMETER_VALUE(9999995),
     PARAMETER_OWNER_NOT_HAVE_PARAMETER(9999996),
-    GROUP_NOT_DEFINED(239847789);
+    GROUP_NOT_DEFINED(239847789),
+    COMMAND_LINE_PARAMETERS_ERROR(123214), EXPERIMENT_DIRECTORY_ERROR(4132125);
 
     private static boolean isExitOnFail = true;
 
@@ -317,18 +329,26 @@ public enum ERROR_CODES {
 
     public void exit(Throwable ex) throws RuntimeException {
         System.out.flush();
-        System.err.flush();
-
-        ex.printStackTrace(System.out);
+        System.out.println(ex.getMessage());
+        System.out.println("\t\tError code " + this.name() + ":" + exitValue);
         System.out.flush();
 
-        ex.printStackTrace(System.err);
-        System.err.flush();
+        if (Global.isDoublePrint()) {
+            System.err.flush();
+            System.err.println(ex.getMessage());
+            System.err.println("Error code " + this.name() + ":" + exitValue);
+            System.err.flush();
+        }
 
-        System.err.print("Error exit code " + this.name() + ":" + exitValue + "\n");
-        System.err.flush();
-        System.out.print("Error exit code " + this.name() + ":" + exitValue + "\n");
-        System.out.flush();
+        if (Global.isDebugPrinted()) {
+            ex.printStackTrace(System.out);
+            System.out.flush();
+
+            if (Global.isDoublePrint()) {
+                ex.printStackTrace(System.err);
+                System.err.flush();
+            }
+        }
 
         if (isExitOnFail) {
             System.exit(exitValue);

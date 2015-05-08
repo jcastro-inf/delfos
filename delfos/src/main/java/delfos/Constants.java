@@ -7,6 +7,7 @@ import delfos.view.InitialFrame;
 import delfos.view.SwingGUI;
 import delfos.view.recommendation.RecommendationWindow;
 import java.io.File;
+import java.nio.file.FileAlreadyExistsException;
 import java.util.Locale;
 import org.jdom2.output.Format;
 
@@ -23,6 +24,8 @@ import org.jdom2.output.Format;
  */
 public class Constants {
 
+    private static File tempDirectory = new File("." + File.separator + "temp");
+
     public static class EnvironmentVariables {
 
         public static final String HOME = "HOME";
@@ -34,38 +37,6 @@ public class Constants {
      */
     public static final String LIBRARY_CONFIGURATION_DIRECTORY = "-config";
 
-    /**
-     * Flag para indicar que no se desea obtener los mensajes de warning.
-     */
-    public static final String WARNINGS = "--warning";
-    /**
-     * Flag que indica que se deben mostrar mensajes de los procesos que se
-     * ejecutan.
-     */
-    public static final String VERBOSE = "-verbose";
-    /**
-     * Flag que indica que se deben mostrar mensajes de los procesos que se
-     * ejecutan.
-     */
-    public static final String VERBOSE_SHORT = "-v";
-    /**
-     * Flag que indica que se deben mostrar mensajes de creación de hebras.
-     */
-    public static final String THREAD_VERBOSE = "-threadVerbose";
-    /**
-     * Flag que indica que se deben mostrar mensajes de creación de hebras.
-     */
-    public static final String THREAD_VERBOSE_SHORT = "-tv";
-
-    /**
-     * Flag que indica que se deben mostrar todos los mensajes de los procesos
-     * que se ejecutan.
-     */
-    public static final String VERBOSE_ANNOYING = "-verbose2";
-    /**
-     * Flag para indicar que se ignoren los errores. No es recomendable usarlo.
-     */
-    public static final String HIDE_ERRORS = "-hideErrors";
     /**
      * Flag para indicar los mensajes que se impriman se deben hacer por ambas
      * salidas: estándar y de error.
@@ -87,16 +58,11 @@ public class Constants {
      *
      */
     static final String MAX_CPUS = "-maxCPU";
-    /**
-     * Valor de salida que la aplicacion lanza al terminar.
-     */
-    static int exitValue;
 
     /**
-     * Código de error que se devuelve cuando el sistema de recomendación no
-     * implementa {@link RecommenderSystemWithFilePersitence}.
+     * States the temporal directory used by the library.
      */
-    public static final int ERROR_RECOMMENDER_SYSTEM_DONT_IMPLEMENT_FILE_PERSISTENCE = 10;
+    static final String TEMP_DIRECTORY = "-temp-directory";
 
     private static boolean printFullXML;
     /**
@@ -181,7 +147,7 @@ public class Constants {
 
         Locale.setDefault(Locale.ENGLISH);
 
-        if (consoleParameters.isDefined(LIBRARY_CONFIGURATION_DIRECTORY)) {
+        if (consoleParameters.isParameterDefined(LIBRARY_CONFIGURATION_DIRECTORY)) {
             String configDirectory = consoleParameters.getValue(LIBRARY_CONFIGURATION_DIRECTORY);
             ConfigurationManager.setConfigurationDirectory(new File(configDirectory + File.separator));
         }
@@ -190,19 +156,31 @@ public class Constants {
         Global.MessageLevel printMessageLevel = Global.MessageLevel.getPrintMessageLevel(consoleParameters);
         Global.setMessageLevel(printMessageLevel);
 
-        if (consoleParameters.isDefined(DOUBLE_PRINT)) {
+        if (consoleParameters.isParameterDefined(TEMP_DIRECTORY)) {
+            String tempDirectoryStr = consoleParameters.getValue(TEMP_DIRECTORY);
+            tempDirectory = new File(tempDirectoryStr);
+            if (!tempDirectory.exists()) {
+                tempDirectory.mkdirs();
+            } else if (!tempDirectory.isDirectory()) {
+                FileAlreadyExistsException faee = new FileAlreadyExistsException(
+                        "The temp directory '" + tempDirectory.getAbsolutePath() + "' exists and is a file");
+                ERROR_CODES.UNDEFINED_ERROR.exit(faee);
+            }
+        }
+
+        if (consoleParameters.isParameterDefined(DOUBLE_PRINT)) {
             Global.setDoublePrint(true);
         }
 
-        if (consoleParameters.isDefined(RAW_DATA)) {
+        if (consoleParameters.isParameterDefined(RAW_DATA)) {
             Constants.setRawResult(true);
         }
 
-        if (consoleParameters.isDefined(PRINT_FULL_XML)) {
+        if (consoleParameters.isParameterDefined(PRINT_FULL_XML)) {
             Constants.setPrintFullXML(true);
         }
 
-        if (consoleParameters.isDefined(MAX_CPUS)) {
+        if (consoleParameters.isParameterDefined(MAX_CPUS)) {
             String value = "0";
             try {
                 value = consoleParameters.getValue(MAX_CPUS);
@@ -226,7 +204,7 @@ public class Constants {
     }
 
     public static void initBuildGUI() {
-        SwingGUI.initRSBuilderGUI("recommenderSystemConfiguration.xml");
+        SwingGUI.initRSBuilderGUI("rs-config.xml");
     }
 
     /**
@@ -256,6 +234,10 @@ public class Constants {
 
     public static boolean isPrintFullXML() {
         return printFullXML;
+    }
+
+    public static File getTempDirectory() {
+        return tempDirectory;
     }
 
 }

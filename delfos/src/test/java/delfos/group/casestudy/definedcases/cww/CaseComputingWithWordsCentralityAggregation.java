@@ -1,29 +1,30 @@
 package delfos.group.casestudy.definedcases.cww;
 
-import java.io.File;
-import java.util.Collection;
-import java.util.LinkedList;
-import org.junit.Test;
+import delfos.Constants;
 import delfos.common.FileUtilities;
+import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RelevanceCriteria;
 import delfos.dataset.generated.random.RandomDatasetLoader;
-import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.group.casestudy.GroupCaseStudy;
 import delfos.group.casestudy.defaultcase.DefaultGroupCaseStudy;
+import delfos.group.experiment.validation.groupformation.FixedGroupSize_OnlyNGroups;
+import delfos.group.experiment.validation.groupformation.GroupFormationTechnique;
+import delfos.group.experiment.validation.predictionvalidation.GroupPredictionProtocol;
+import delfos.group.experiment.validation.predictionvalidation.NoPredictionProtocol;
+import delfos.group.experiment.validation.validationtechniques.GroupValidationTechnique;
+import delfos.group.experiment.validation.validationtechniques.HoldOutGroupRatedItems;
 import delfos.group.factories.GroupEvaluationMeasuresFactory;
 import delfos.group.grs.GroupRecommenderSystem;
 import delfos.group.grs.aggregation.AggregationOfIndividualRatings;
 import delfos.group.grs.cww.CentralityWeightedAggregationGRS;
 import delfos.group.io.xml.casestudy.GroupCaseStudyXML;
 import delfos.group.results.groupevaluationmeasures.GroupEvaluationMeasure;
-import delfos.group.experiment.validation.validationtechniques.GroupValidationTechnique;
-import delfos.group.experiment.validation.validationtechniques.HoldOutGroupRatedItems;
-import delfos.group.experiment.validation.groupformation.FixedGroupSize_OnlyNGroups;
-import delfos.group.experiment.validation.groupformation.GroupFormationTechnique;
-import delfos.group.experiment.validation.predictionvalidation.GroupPredictionProtocol;
-import delfos.group.experiment.validation.predictionvalidation.NoPredictionProtocol;
 import delfos.rs.collaborativefiltering.knn.memorybased.nwr.KnnMemoryBasedNWR;
+import java.io.File;
+import java.util.Collection;
+import java.util.LinkedList;
+import org.junit.Test;
 
 /**
  * Crea los experimentos del congreso FLINS 2014.
@@ -37,7 +38,11 @@ public class CaseComputingWithWordsCentralityAggregation {
     @Test
     public void generateCaseXML() {
 
-        String directoryName = "experiments" + File.separator + "grs-cww-centrality" + File.separator;
+        String directoryName
+                = Constants.getTempDirectory().getAbsolutePath() + File.separator
+                + "experiments" + File.separator
+                + "grs-cww-centrality" + File.separator;
+
         File datasetDirectory = new File(directoryName + File.separator + "dataset");
         File directory = new File(directoryName);
 

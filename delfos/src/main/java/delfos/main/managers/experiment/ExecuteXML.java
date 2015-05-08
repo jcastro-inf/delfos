@@ -14,16 +14,16 @@ import java.io.File;
  * @version 21-oct-2014
  * @author Jorge Castro Gallardo
  */
-public class ExecuteGroupXML extends CaseUseMode {
+public class ExecuteXML extends CaseUseMode {
 
-    public static final String MODE_PARAMETER = "--execute-group-xml";
+    public static final String MODE_PARAMETER = "--execute-xml";
 
     /**
      * The directory that contains the group xml to be executed.
      */
-    public static final String XML_DIRECTORY = ExecuteXML.XML_DIRECTORY;
-    private static final String SEED_PARAMETER = ExecuteXML.SEED_PARAMETER;
-    private static final String NUM_EXEC_PARAMETER = ExecuteXML.NUM_EXEC_PARAMETER;
+    public static final String XML_DIRECTORY = "-directory";
+    public static final String SEED_PARAMETER = "-seed";
+    public static final String NUM_EXEC_PARAMETER = "-num-exec";
 
     @Override
     public String getModeParameter() {
@@ -32,20 +32,20 @@ public class ExecuteGroupXML extends CaseUseMode {
 
     private static class Holder {
 
-        private static final ExecuteGroupXML INSTANCE = new ExecuteGroupXML();
+        private static final ExecuteXML INSTANCE = new ExecuteXML();
     }
 
-    public static ExecuteGroupXML getInstance() {
+    public static ExecuteXML getInstance() {
         return Holder.INSTANCE;
     }
 
-    private ExecuteGroupXML() {
+    private ExecuteXML() {
     }
 
     @Override
     public void manageCaseUse(ConsoleParameters consoleParameters) {
         try {
-            String xmlExperimentsDirectory = consoleParameters.getValue(ExecuteGroupXML.XML_DIRECTORY);
+            String xmlExperimentsDirectory = consoleParameters.getValue(ExecuteXML.XML_DIRECTORY);
 
             final int NUM_EJECUCIONES;
             {

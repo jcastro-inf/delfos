@@ -1,5 +1,6 @@
 package delfos.main;
 
+import delfos.CommandLineParametersError;
 import delfos.ConsoleParameters;
 import delfos.Constants;
 import delfos.ERROR_CODES;
@@ -15,7 +16,7 @@ import java.util.List;
 
 /**
  * Clase que define el punto de entrada de la biblioteca de recomendación cuando
- * se invoca como un programa aparte (java -jar <b>JAR_NAME</b>
+ * se invoca como un programa aparte (java -jar {@link Constants#LIBRARY_NAME})
  *
  * @author Jorge Castro Gallardo
  */
@@ -29,9 +30,16 @@ public class Main {
         Chronometer c = new Chronometer();
         c.reset();
 
-        ConsoleParameters consoleParameters = ConsoleParameters.parseArguments(args);
+        ConsoleParameters consoleParameters;
+        try {
+            consoleParameters = ConsoleParameters.parseArguments(args);
+        } catch (CommandLineParametersError ex) {
+            Global.show(ex.getUserFriendlyMsg());
+            Global.showWarning(ex.getMessage());
+            ERROR_CODES.COMMAND_LINE_PARAMETERS_ERROR.exit(ex);
+            throw new IllegalArgumentException(ex);
+        }
         Constants.initLibraryGeneralParameters(consoleParameters);
-        Global.showInfoMessage("Starting\n");
 
         List<CaseUseMode> caseUses = getAllCaseUse();
 
@@ -83,6 +91,7 @@ public class Main {
         caseUse.add(delfos.main.managers.recommendation.group.GroupRecommendation.getInstance());
 
         caseUse.add(delfos.main.managers.experiment.ExecuteGroupXML.getInstance());
+        caseUse.add(delfos.main.managers.experiment.ExecuteXML.getInstance());
 
         caseUse.add(delfos.main.managers.database.helpers.CreateDefaultManageDatabaseCSV.getInstance());
         caseUse.add(delfos.main.managers.database.helpers.CreateDefaultManageDatabaseMySQL.getInstance());
@@ -121,9 +130,9 @@ public class Main {
     public static void noCaseUseActivated(ConsoleParameters consoleParameters) {
         StringBuilder message = new StringBuilder();
 
-        message.append("\n\tUnrecognized command line : ");
-        message.append(consoleParameters.printOriginalParameters());
-        message.append("\n");
+        message
+                .append("No mode specified (Unrecognized command line): ").append("\n")
+                .append("\t").append(consoleParameters.printOriginalParameters()).append("\n");
 
         Global.showWarning(message.toString());
     }

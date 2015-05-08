@@ -1,13 +1,6 @@
 package delfos.group.casestudy.definedcases.baselines.all;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.List;
-import org.junit.Before;
-import org.junit.Test;
+import delfos.Constants;
 import delfos.common.FileUtilities;
 import delfos.common.aggregationoperators.AggregationOperator;
 import delfos.common.aggregationoperators.GeometricMean;
@@ -20,21 +13,21 @@ import delfos.common.aggregationoperators.RMSMean;
 import delfos.common.parallelwork.Parallelisation;
 import delfos.configureddatasets.ConfiguredDatasetLoader;
 import delfos.configureddatasets.ConfiguredDatasetsFactory;
+import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RelevanceCriteria;
-import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.experiment.casestudy.cluster.TuringPreparator;
 import delfos.group.casestudy.GroupCaseStudy;
 import delfos.group.casestudy.defaultcase.DefaultGroupCaseStudy;
+import delfos.group.experiment.validation.groupformation.FixedGroupSize_OnlyNGroups;
+import delfos.group.experiment.validation.groupformation.GroupFormationTechnique;
+import delfos.group.experiment.validation.predictionvalidation.NoPredictionProtocol;
+import delfos.group.experiment.validation.validationtechniques.HoldOutGroupMemberRatings;
+import delfos.group.experiment.validation.validationtechniques.HoldOutGroupRatedItems;
 import delfos.group.factories.GroupEvaluationMeasuresFactory;
 import delfos.group.grs.GroupRecommenderSystem;
 import delfos.group.grs.aggregation.AggregationOfIndividualRatings;
 import delfos.group.grs.aggregation.AggregationOfIndividualRecommendations;
-import delfos.group.experiment.validation.validationtechniques.HoldOutGroupMemberRatings;
-import delfos.group.experiment.validation.validationtechniques.HoldOutGroupRatedItems;
-import delfos.group.experiment.validation.groupformation.FixedGroupSize_OnlyNGroups;
-import delfos.group.experiment.validation.groupformation.GroupFormationTechnique;
-import delfos.group.experiment.validation.predictionvalidation.NoPredictionProtocol;
 import delfos.rs.RecommenderSystem;
 import delfos.rs.bufferedrecommenders.RecommenderSystem_fixedFilePersistence;
 import delfos.rs.collaborativefiltering.knn.memorybased.nwr.KnnMemoryBasedNWR;
@@ -43,6 +36,14 @@ import delfos.rs.collaborativefiltering.predictiontechniques.WeightedSum;
 import delfos.rs.collaborativefiltering.svd.SVDFoldingIn;
 import delfos.rs.persistence.FilePersistence;
 import delfos.similaritymeasures.PearsonCorrelationCoefficient;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.LinkedList;
+import java.util.List;
+import org.junit.Before;
+import org.junit.Test;
 
 /**
  * Caso de estudio que ejecuta y recopila todas las técnicas consideradas
@@ -56,7 +57,8 @@ public class CaseStudyAllBaselines {
     public CaseStudyAllBaselines() {
     }
 
-    public static final String EXPERIMENT_DIRECTORY = "." + File.separator
+    public static final String EXPERIMENT_DIRECTORY
+            = Constants.getTempDirectory().getAbsolutePath() + File.separator
             + "experiments" + File.separator
             + CaseStudyAllBaselines.class.getSimpleName() + File.separator;
 
@@ -228,13 +230,17 @@ public class CaseStudyAllBaselines {
         final int numIterPerFeature = 10;
         SVDFoldingIn svdFoldingIn = new SVDFoldingIn(numFeatures, numIterPerFeature);
 
+        File directory = new File(
+                Constants.getTempDirectory().getAbsoluteFile() + File.separator
+                + "svd-folding-in-recommendation-model" + File.separator);
+
         RecommenderSystem_fixedFilePersistence rs
                 = new RecommenderSystem_fixedFilePersistence(
                         svdFoldingIn,
                         new FilePersistence(
                                 "svd-folding-in-recommendation-model",
                                 "dat",
-                                new File("." + File.separator + "test-temp" + File.separator + "svd-folding-in-recommendation-model" + File.separator + "")
+                                directory
                         )
                 );
         rs.setAlias("SVD");
@@ -247,6 +253,7 @@ public class CaseStudyAllBaselines {
                 null,
                 50,
                 new WeightedSum());
+
         rs.setAlias("KnnUser");
         return rs;
     }
@@ -254,15 +261,19 @@ public class CaseStudyAllBaselines {
     private RecommenderSystem getKnnItemRecommender() {
         KnnModelBased_NWR knnItem = new KnnModelBased_NWR(new PearsonCorrelationCoefficient(), 30, 60, new WeightedSum());
 
+        File directory = new File(
+                Constants.getTempDirectory().getAbsoluteFile() + File.separator
+                + "knn-item-item-recommendation-model" + File.separator);
+
         RecommenderSystem_fixedFilePersistence rs
                 = new RecommenderSystem_fixedFilePersistence(
                         knnItem,
                         new FilePersistence(
                                 "knn-item-item-recommendation-model",
                                 "dat",
-                                new File("." + File.separator + "test-temp" + File.separator + "knn-item-item-recommendation-model/")
-                        )
+                                directory)
                 );
+
         rs.setAlias("KnnItem");
         return rs;
     }

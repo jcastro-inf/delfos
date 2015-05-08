@@ -1,6 +1,20 @@
 package delfos.group.casestudy.fromxmlfiles;
 
+import delfos.ERROR_CODES;
+import delfos.common.FileUtilities;
+import delfos.common.exceptions.dataset.CannotLoadContentDataset;
+import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
+import delfos.common.filefilters.FileFilterByExtension;
+import delfos.common.parallelwork.MultiThreadExecutionManager;
+import delfos.dataset.basic.loader.types.DatasetLoader;
+import delfos.dataset.basic.rating.Rating;
+import delfos.group.casestudy.GroupCaseStudyConfiguration;
+import delfos.group.factories.GroupEvaluationMeasuresFactory;
+import delfos.group.io.excel.casestudy.GroupCaseStudyExcel;
+import delfos.group.io.xml.casestudy.GroupCaseStudyXML;
+import delfos.group.results.groupevaluationmeasures.GroupEvaluationMeasure;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -10,24 +24,12 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import jxl.write.WriteException;
 import org.jdom2.JDOMException;
-import delfos.common.FileUtilities;
-import delfos.common.exceptions.dataset.CannotLoadContentDataset;
-import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
-import delfos.common.filefilters.FileFilterByExtension;
-import delfos.common.parallelwork.MultiThreadExecutionManager;
-import delfos.dataset.basic.rating.Rating;
-import delfos.dataset.basic.loader.types.DatasetLoader;
-import delfos.group.casestudy.GroupCaseStudyConfiguration;
-import delfos.group.factories.GroupEvaluationMeasuresFactory;
-import delfos.group.io.excel.casestudy.GroupCaseStudyExcel;
-import delfos.group.io.xml.casestudy.GroupCaseStudyXML;
-import delfos.group.results.groupevaluationmeasures.GroupEvaluationMeasure;
 
 /**
  * Ejecuta los experimentos que hay definidos en el directorio indicado, leyendo
  * los XML que existen para generar los casos de estudio.
  *
-* @author Jorge Castro Gallardo
+ * @author Jorge Castro Gallardo
  *
  * @version 1.0 14-May-2013
  */
@@ -42,18 +44,27 @@ public class GroupXMLexperimentsExecution {
         this.experimentsDirectory = experimentsDirectory;
 
         if (!new File(experimentsDirectory).exists()) {
-            throw new IllegalArgumentException("The file '" + experimentsDirectory + "' not exists [" + new File(experimentsDirectory).getAbsolutePath() + "]");
+            FileNotFoundException ex = new FileNotFoundException(
+                    "The directory '" + experimentsDirectory + "' not exists "
+                    + "[" + new File(experimentsDirectory).getAbsolutePath() + "]");
+
+            ERROR_CODES.EXPERIMENT_DIRECTORY_ERROR.exit(ex);
         }
         if (!new File(experimentsDirectory).isDirectory()) {
-            throw new IllegalArgumentException("The value '" + experimentsDirectory + "' not a directory [" + new File(experimentsDirectory).getAbsolutePath() + "]");
+            IllegalArgumentException ex = new IllegalArgumentException(
+                    "The path '" + experimentsDirectory + "' is not a directory "
+                    + "[" + new File(experimentsDirectory).getAbsolutePath() + "]");
+            ERROR_CODES.EXPERIMENT_DIRECTORY_ERROR.exit(ex);
         }
 
         if (!new File(datasetDirectory).exists()) {
-            throw new IllegalArgumentException("The file '" + datasetDirectory + "' not exists [" + new File(datasetDirectory).getAbsolutePath() + "]");
+            IllegalArgumentException ex = new IllegalArgumentException("The file '" + datasetDirectory + "' not exists [" + new File(datasetDirectory).getAbsolutePath() + "]");
+            ERROR_CODES.EXPERIMENT_DIRECTORY_ERROR.exit(ex);
         }
 
         if (!new File(datasetDirectory).isDirectory()) {
-            throw new IllegalArgumentException("The value '" + datasetDirectory + "' not a directory [" + new File(datasetDirectory).getAbsolutePath() + "]");
+            IllegalArgumentException ex = new IllegalArgumentException("The value '" + datasetDirectory + "' not a directory [" + new File(datasetDirectory).getAbsolutePath() + "]");
+            ERROR_CODES.EXPERIMENT_DIRECTORY_ERROR.exit(ex);
         }
         this.numExecutions = numExecutions;
         this.datasetsDirectory = datasetDirectory;

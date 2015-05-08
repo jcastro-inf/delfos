@@ -1,9 +1,6 @@
 package delfos.group.casestudy.definedcases.itemweighted;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
-import org.junit.Test;
+import delfos.Constants;
 import delfos.common.aggregationoperators.AggregationOperator;
 import delfos.common.aggregationoperators.MaximumValue;
 import delfos.common.aggregationoperators.Mean;
@@ -11,12 +8,16 @@ import delfos.common.aggregationoperators.MinimumValue;
 import delfos.common.aggregationoperators.RMSMean;
 import delfos.configureddatasets.ConfiguredDatasetLoader;
 import delfos.constants.DelfosTest;
+import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RelevanceCriteria;
-import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.experiment.casestudy.cluster.TuringPreparator;
 import delfos.group.casestudy.GroupCaseStudy;
 import delfos.group.casestudy.defaultcase.DefaultGroupCaseStudy;
+import delfos.group.experiment.validation.groupformation.FixedGroupSize_OnlyNGroups;
+import delfos.group.experiment.validation.groupformation.GroupFormationTechnique;
+import delfos.group.experiment.validation.predictionvalidation.NoPredictionProtocol;
+import delfos.group.experiment.validation.validationtechniques.HoldOutGroupRatedItems;
 import delfos.group.factories.GroupEvaluationMeasuresFactory;
 import delfos.group.grs.GroupRecommenderSystem;
 import delfos.group.grs.itemweighted.AggregationOfIndividualRatings_itemWeighted;
@@ -25,14 +26,14 @@ import delfos.group.grs.itemweighted.measures.GroupItemWeight;
 import delfos.group.grs.itemweighted.measures.NoWeight;
 import delfos.group.grs.itemweighted.measures.StandardDeviationWeights;
 import delfos.group.grs.itemweighted.measures.Tweak2Weights;
-import delfos.group.experiment.validation.validationtechniques.HoldOutGroupRatedItems;
-import delfos.group.experiment.validation.groupformation.FixedGroupSize_OnlyNGroups;
-import delfos.group.experiment.validation.groupformation.GroupFormationTechnique;
-import delfos.group.experiment.validation.predictionvalidation.NoPredictionProtocol;
 import delfos.rs.collaborativefiltering.predictiontechniques.PredictionTechnique;
 import delfos.rs.collaborativefiltering.predictiontechniques.WeightedSum;
 import delfos.similaritymeasures.CollaborativeSimilarityMeasure;
 import delfos.similaritymeasures.PearsonCorrelationCoefficient;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+import org.junit.Test;
 
 /**
  *
@@ -40,7 +41,8 @@ import delfos.similaritymeasures.PearsonCorrelationCoefficient;
  */
 public class GRSItemWeightedCaseStudy extends DelfosTest {
 
-    public static final String EXPERIMENT_DIRECTORY = "." + File.separator
+    public static final String EXPERIMENT_DIRECTORY
+            = Constants.getTempDirectory().getAbsolutePath() + File.separator
             + "experiments" + File.separator
             + GRSItemWeightedCaseStudy.class.getSimpleName() + File.separator;
 

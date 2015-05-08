@@ -1,23 +1,20 @@
 package delfos.casestudy.definedcases.knnmultipearson;
 
-import java.io.File;
-import java.util.Collection;
-import java.util.LinkedList;
-import org.junit.Test;
+import delfos.Constants;
 import delfos.common.FileUtilities;
 import delfos.configureddatasets.ConfiguredDatasetLoader;
+import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RelevanceCriteria;
 import delfos.dataset.generated.random.RandomDatasetLoader;
-import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.experiment.casestudy.CaseStudy;
 import delfos.experiment.casestudy.defaultcase.DefaultCaseStudy;
-import delfos.factories.EvaluationMeasuresFactory;
-import delfos.io.xml.casestudy.CaseStudyXML;
 import delfos.experiment.validation.predictionprotocol.NoPredictionProtocol;
 import delfos.experiment.validation.predictionprotocol.PredictionProtocol;
 import delfos.experiment.validation.validationtechnique.HoldOut_Ratings;
 import delfos.experiment.validation.validationtechnique.ValidationTechnique;
+import delfos.factories.EvaluationMeasuresFactory;
+import delfos.io.xml.casestudy.CaseStudyXML;
 import delfos.results.evaluationmeasures.EvaluationMeasure;
 import delfos.rs.RecommenderSystem;
 import delfos.rs.collaborativefiltering.knn.memorybased.multicorrelation.KnnMultiCorrelation;
@@ -27,6 +24,10 @@ import delfos.similaritymeasures.PearsonCorrelationCoefficient;
 import delfos.similaritymeasures.useruser.UserUserMultipleCorrelationCoefficient;
 import delfos.similaritymeasures.useruser.UserUserSimilarityWrapper;
 import delfos.similaritymeasures.useruser.UserUserSimilarityWrapper_relevanceFactor;
+import java.io.File;
+import java.util.Collection;
+import java.util.LinkedList;
+import org.junit.Test;
 
 /**
  *
@@ -40,7 +41,10 @@ public class ExperimentKnnMultiPearson {
     @Test
     public void generateCaseXML() {
 
-        String directoryName = "experiments" + File.separator + ExperimentKnnMultiPearson.class.getSimpleName() + File.separator;
+        String directoryName = Constants.getTempDirectory().getAbsolutePath() + File.separator
+                + "experiments" + File.separator
+                + ExperimentKnnMultiPearson.class.getSimpleName() + File.separator;
+
         File directory = new File(directoryName);
         File datasetDirectory = new File(directoryName + "dataset" + File.separator);
         if (directory.exists()) {

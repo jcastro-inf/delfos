@@ -20,6 +20,8 @@ import delfos.rs.persistence.PersistenceMethodStrategy;
 import delfos.rs.recommendation.Recommendation;
 import delfos.rs.recommendation.RecommendationComputationDetails;
 import delfos.rs.recommendation.SingleUserRecommendations;
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.Collection;
 
 /**
@@ -44,17 +46,19 @@ class Recommend extends CaseUseSubManager {
 
     @Override
     public boolean isRightManager(ConsoleParameters consoleParameters) {
-        return consoleParameters.isDefined(NonPersonalisedRecommendation.NON_PERSONALISED_MODE)
-                && consoleParameters.isDefined(ArgumentsRecommendation.RECOMMEND);
+        return consoleParameters.isFlagDefined(NonPersonalisedRecommendation.NON_PERSONALISED_MODE)
+                && consoleParameters.isFlagDefined(ArgumentsRecommendation.RECOMMEND);
     }
 
     @Override
     public void manageCaseUse(ConsoleParameters consoleParameters) {
 
         String configurationFile = ArgumentsRecommendation.extractConfigurationFile(consoleParameters);
-
+        if (!new File(configurationFile).exists()) {
+            ERROR_CODES.CONFIG_FILE_NOT_EXISTS.exit(new FileNotFoundException("Configuration file '" + configurationFile + "' not found"));
+        }
         User user;
-        if (consoleParameters.isDefined(SingleUserRecommendation.TARGET_USER)) {
+        if (consoleParameters.isParameterDefined(SingleUserRecommendation.TARGET_USER)) {
             String idUser = consoleParameters.getValue(SingleUserRecommendation.TARGET_USER);
             user = new User(Integer.parseInt(idUser));
         } else {

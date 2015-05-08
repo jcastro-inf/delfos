@@ -1,20 +1,22 @@
 package delfos.group.casestudy.definedcases.estylf2014;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.List;
-import org.junit.Test;
+import delfos.Constants;
 import delfos.common.FileUtilities;
 import delfos.common.aggregationoperators.Mean;
+import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RelevanceCriteria;
 import delfos.dataset.generated.random.RandomDatasetLoader;
 import delfos.dataset.loaders.movilens.ml100k.MovieLens100k;
-import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.group.casestudy.GroupCaseStudy;
 import delfos.group.casestudy.defaultcase.DefaultGroupCaseStudy;
+import delfos.group.experiment.validation.groupformation.FixedGroupSize_OnlyNGroups;
+import delfos.group.experiment.validation.groupformation.GroupFormationTechnique;
+import delfos.group.experiment.validation.predictionvalidation.GroupPredictionProtocol;
+import delfos.group.experiment.validation.predictionvalidation.NoPredictionProtocol;
+import delfos.group.experiment.validation.validationtechniques.GroupValidationTechnique;
+import delfos.group.experiment.validation.validationtechniques.HoldOutGroupRatedItems;
+import delfos.group.experiment.validation.validationtechniques.NoValidation;
 import delfos.group.factories.GroupEvaluationMeasuresFactory;
 import delfos.group.grs.GroupRecommenderSystem;
 import delfos.group.grs.RandomGroupRecommender;
@@ -24,18 +26,17 @@ import delfos.group.grs.cww.centrality.CentralityConceptDefinition;
 import delfos.group.grs.cww.centrality.CentralityConceptDefinitionFactory;
 import delfos.group.io.xml.casestudy.GroupCaseStudyXML;
 import delfos.group.results.groupevaluationmeasures.GroupEvaluationMeasure;
-import delfos.group.experiment.validation.validationtechniques.GroupValidationTechnique;
-import delfos.group.experiment.validation.validationtechniques.HoldOutGroupRatedItems;
-import delfos.group.experiment.validation.validationtechniques.NoValidation;
-import delfos.group.experiment.validation.groupformation.FixedGroupSize_OnlyNGroups;
-import delfos.group.experiment.validation.groupformation.GroupFormationTechnique;
-import delfos.group.experiment.validation.predictionvalidation.GroupPredictionProtocol;
-import delfos.group.experiment.validation.predictionvalidation.NoPredictionProtocol;
 import delfos.rs.RecommenderSystem;
 import delfos.rs.collaborativefiltering.knn.memorybased.KnnMemoryBasedCFRS;
 import delfos.rs.trustbased.PearsonCorrelationWithPenalty;
 import delfos.rs.trustbased.WeightedGraphCalculation;
 import delfos.rs.trustbased.implicittrustcomputation.ShambourLu_UserBasedImplicitTrustComputation;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.LinkedList;
+import java.util.List;
+import org.junit.Test;
 
 /**
  * Crea los experimentos del congreso ISKE 2014 (dentro de flins).
@@ -51,7 +52,11 @@ public class ExperimentsJRS2014 {
     @Test
     public void generateCaseXML() {
 
-        String directoryName = "experiments" + File.separator + "jrs2014" + File.separator;
+        String directoryName
+                = Constants.getTempDirectory().getAbsolutePath() + File.separator
+                + "experiments" + File.separator
+                + "jrs2014" + File.separator;
+
         File directory = new File(directoryName);
         if (directory.exists()) {
             FileUtilities.deleteDirectoryRecursive(directory);

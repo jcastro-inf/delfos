@@ -1,12 +1,6 @@
 package delfos.group;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import delfos.Constants;
 import delfos.common.Global;
 import delfos.common.aggregationoperators.MinimumValue;
 import delfos.common.exceptions.dataset.CannotLoadContentDataset;
@@ -15,23 +9,30 @@ import delfos.common.exceptions.dataset.items.ItemNotFound;
 import delfos.common.exceptions.dataset.users.UserNotFound;
 import delfos.configfile.rs.single.RecommenderSystemConfiguration;
 import delfos.configfile.rs.single.RecommenderSystemConfigurationFileParser;
-import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.loader.types.DatasetLoader;
+import delfos.dataset.basic.rating.Rating;
 import delfos.experiment.ExperimentListerner_default;
 import delfos.experiment.casestudy.ExecutionProgressListener_onlyChanges;
 import delfos.group.casestudy.GroupCaseStudy;
 import delfos.group.casestudy.defaultcase.DefaultGroupCaseStudy;
+import delfos.group.experiment.validation.groupformation.FixedGroupSize_OnlyNGroups;
+import delfos.group.experiment.validation.predictionvalidation.NoPredictionProtocol;
+import delfos.group.experiment.validation.validationtechniques.CrossFoldValidation_Items;
 import delfos.group.factories.GroupEvaluationMeasuresFactory;
 import delfos.group.grs.GroupRecommenderSystem;
 import delfos.group.grs.filtered.GroupRecommenderSystemWithPostFilter;
 import delfos.group.grs.filtered.filters.OutliersRatingsFilter;
 import delfos.group.io.xml.casestudy.GroupCaseStudyXML;
 import delfos.group.results.groupevaluationmeasures.GroupEvaluationMeasure;
-import delfos.group.experiment.validation.validationtechniques.CrossFoldValidation_Items;
-import delfos.group.experiment.validation.groupformation.FixedGroupSize_OnlyNGroups;
-import delfos.group.experiment.validation.predictionvalidation.NoPredictionProtocol;
 import delfos.rs.GenericRecommenderSystem;
 import delfos.rs.collaborativefiltering.knn.memorybased.KnnMemoryBasedCFRS;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -68,7 +69,7 @@ public class FilterCaseStudy implements Runnable {
     }
 
     private void init() {
-        File datasetsDirectory = new File("experiments" + File.separator + "dataset" + File.separator + "dumbFile.txt").getParentFile();
+        File datasetsDirectory = new File(Constants.getTempDirectory().getAbsolutePath() + File.separator + "experiments" + File.separator + "dataset" + File.separator + "dumbFile.txt").getParentFile();
         datasets = getDatasets(datasetsDirectory).toArray(new DatasetLoader[0]);
     }
 
