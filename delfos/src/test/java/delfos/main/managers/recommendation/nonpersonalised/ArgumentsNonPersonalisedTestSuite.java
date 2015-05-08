@@ -15,7 +15,7 @@ public class ArgumentsNonPersonalisedTestSuite {
         String[] consoleArguments = {
             "--non-personalised",
             "--build",
-            "-config-file", manageDatasetConfigFile.getAbsolutePath()
+            "-rs-config", manageDatasetConfigFile.getAbsolutePath()
         };
 
         return ConsoleParameters.parseArguments(consoleArguments);
@@ -25,7 +25,7 @@ public class ArgumentsNonPersonalisedTestSuite {
         String[] consoleArguments = {
             "--non-personalised",
             "--recommend",
-            "-config-file", manageDatasetConfigFile.getAbsolutePath()
+            "-rs-config", manageDatasetConfigFile.getAbsolutePath()
         };
 
         return ConsoleParameters.parseArguments(consoleArguments);
@@ -36,7 +36,7 @@ public class ArgumentsNonPersonalisedTestSuite {
             "--non-personalised",
             "--recommend",
             "-u", Integer.toString(idUser),
-            "-config-file", manageDatasetConfigFile.getAbsolutePath()
+            "-rs-config", manageDatasetConfigFile.getAbsolutePath()
         };
 
         return ConsoleParameters.parseArguments(consoleArguments);

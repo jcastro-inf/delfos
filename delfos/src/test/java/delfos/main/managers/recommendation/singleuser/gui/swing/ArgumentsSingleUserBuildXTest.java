@@ -49,7 +49,7 @@ public class ArgumentsSingleUserBuildXTest extends DelfosTest {
 
         createConfigurationFile();
         String[] consoleArguments = {
-            "-config-file",
+            "-rs-config",
             SINGLE_USER_RS_CONFIG_XML,
             "--single-user-build-x"
         };
@@ -63,7 +63,7 @@ public class ArgumentsSingleUserBuildXTest extends DelfosTest {
 
         createConfigurationFile();
         ConsoleParameters consoleParameters = ConsoleParameters.parseArguments(
-                "-config-file",
+                "-rs-config",
                 SINGLE_USER_RS_CONFIG_XML,
                 "--single-user-build-x"
         );
