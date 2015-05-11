@@ -52,7 +52,7 @@ public class ArgumentsGroupRecommendationTest extends DelfosTest {
         String[] consoleArguments = {
             "--group-recommendation",
             "--build",
-            "-config-file",
+            "-rs-config",
             GROUP_RECOMMENDER_SYSTEM_CONFIG_XML
         };
 
@@ -69,7 +69,7 @@ public class ArgumentsGroupRecommendationTest extends DelfosTest {
             "--group-recommendation",
             "-group-members",
             "1", "65", "89", "54", "256",
-            "-config-file",
+            "-rs-config",
             GROUP_RECOMMENDER_SYSTEM_CONFIG_XML
 
         };
@@ -88,7 +88,7 @@ public class ArgumentsGroupRecommendationTest extends DelfosTest {
             "--group-recommendation",
             "-group-members",
             "65", "89", "ABC", "54", "256",
-            "-config-file",
+            "-rs-config",
             GROUP_RECOMMENDER_SYSTEM_CONFIG_XML
 
         };
@@ -105,7 +105,7 @@ public class ArgumentsGroupRecommendationTest extends DelfosTest {
         ConsoleParameters consoleParameters = ConsoleParameters.parseArguments(
                 "--group-recommendation",
                 "--build",
-                "-config-file",
+                "-rs-config",
                 GROUP_RECOMMENDER_SYSTEM_CONFIG_XML
         );
 
@@ -125,7 +125,7 @@ public class ArgumentsGroupRecommendationTest extends DelfosTest {
                 "--group-recommendation",
                 "-group-members",
                 "1", "65", "89", "54", "256",
-                "-config-file",
+                "-rs-config",
                 GROUP_RECOMMENDER_SYSTEM_CONFIG_XML
         );
 

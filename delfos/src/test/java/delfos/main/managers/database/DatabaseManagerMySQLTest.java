@@ -1,12 +1,5 @@
 package delfos.main.managers.database;
 
-import java.io.File;
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.sql.Statement;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
 import delfos.common.FileUtilities;
 import delfos.common.Global;
 import delfos.configfile.rs.single.ChangeableDatasetConfigurationFileParser;
@@ -14,6 +7,14 @@ import delfos.constants.DelfosTest;
 import delfos.constants.TestConstants;
 import delfos.databaseconnections.MySQLConnection;
 import delfos.dataset.loaders.database.mysql.changeable.ChangeableMySQLDatasetLoader;
+import java.io.File;
+import java.io.IOException;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.Statement;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
 
 /**
  *
@@ -89,7 +90,7 @@ public class DatabaseManagerMySQLTest extends DelfosTest {
     }
 
     @Before
-    public void setUp() throws SQLException {
+    public void setUp() throws SQLException, IOException {
 
         File directoryFile = new File(manageDataset_directory);
 
@@ -102,7 +103,7 @@ public class DatabaseManagerMySQLTest extends DelfosTest {
         ChangeableMySQLDatasetLoader datasetLoader = new ChangeableMySQLDatasetLoader(mySQLConnection);
 
         ChangeableDatasetConfigurationFileParser.saveConfigFile(
-                manageDatasetConfigFile.getPath(),
+                manageDatasetConfigFile,
                 datasetLoader);
     }
 

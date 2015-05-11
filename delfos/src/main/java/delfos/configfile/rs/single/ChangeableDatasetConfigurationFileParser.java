@@ -39,10 +39,10 @@ public class ChangeableDatasetConfigurationFileParser {
     /**
      * Almacena la configuración completa del dataset en el fichero indicado.
      *
-     * @param fileName Nombre del fichero en que se almacena la configuración.
+     * @param configFile Nombre del fichero en que se almacena la configuración.
      * @param datasetLoader Objeto para recuperar los datos de entrada.
      */
-    public static void saveConfigFile(String fileName, ChangeableDatasetLoader datasetLoader) {
+    public static void saveConfigFile(File configFile, ChangeableDatasetLoader datasetLoader) throws IOException {
 
         Document doc = new Document();
         Element root = new Element("config");
@@ -51,18 +51,14 @@ public class ChangeableDatasetConfigurationFileParser {
         root.addContent(DatasetLoaderXML.getElement(datasetLoader));
 
         doc.addContent(root);
-
         XMLOutputter outputter = new XMLOutputter(Constants.getXMLFormat());
 
-        try {
-            if (!fileName.endsWith("." + CONFIGURATION_EXTENSION)) {
-                fileName += "." + CONFIGURATION_EXTENSION;
-            }
-            FileWriter fileWriter = new FileWriter(fileName);
+        if (!configFile.getAbsolutePath().endsWith("." + CONFIGURATION_EXTENSION)) {
+            configFile = new File(configFile.getAbsolutePath() + "." + CONFIGURATION_EXTENSION);
+        }
+
+        try (FileWriter fileWriter = new FileWriter(configFile)) {
             outputter.output(doc, fileWriter);
-            fileWriter.close();
-        } catch (IOException ex) {
-            ERROR_CODES.CANNOT_WRITE_FILE.exit(ex);
         }
     }
 

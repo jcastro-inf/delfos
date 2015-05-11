@@ -67,7 +67,8 @@ public class ArgumentsNonPersonalisedTest extends DelfosTest {
     public void test_NonPersonalised_BuildRecommendationModel_callFromCommandLine() throws Exception {
         createConfigurationFile();
 
-        ConsoleParameters consoleParameters = ArgumentsNonPersonalisedTestSuite.buildRecommendationModel(NON_PERSONALISED_RS_CONFIG_XML);
+        ConsoleParameters consoleParameters
+                = ArgumentsNonPersonalisedTestSuite.buildRecommendationModel(NON_PERSONALISED_RS_CONFIG_XML);
 
         CaseUseManagerTest.testCaseUseSubManager(BuildRecommendationModel.getInstance(), consoleParameters);
         Main.mainWithExceptions(consoleParameters);

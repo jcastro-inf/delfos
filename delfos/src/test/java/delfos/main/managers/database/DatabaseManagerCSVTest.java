@@ -1,14 +1,15 @@
 package delfos.main.managers.database;
 
-import java.io.File;
-import static org.junit.Assert.assertTrue;
-import org.junit.Before;
-import org.junit.Test;
 import delfos.common.FileUtilities;
 import delfos.configfile.rs.single.ChangeableDatasetConfigurationFileParser;
 import delfos.constants.DelfosTest;
 import delfos.constants.TestConstants;
 import delfos.dataset.loaders.csv.changeable.ChangeableCSVFileDatasetLoader;
+import java.io.File;
+import java.io.IOException;
+import static org.junit.Assert.assertTrue;
+import org.junit.Before;
+import org.junit.Test;
 
 /**
  *
@@ -39,7 +40,7 @@ public class DatabaseManagerCSVTest extends DelfosTest {
             manageDataset_directory + "changeableUsers.csv");
 
     @Before
-    public void setUp() {
+    public void setUp() throws IOException {
         File directoryFile_ManageDataset = new File(manageDataset_directory);
 
         FileUtilities.cleanDirectory(directoryFile_ManageDataset);
@@ -50,7 +51,7 @@ public class DatabaseManagerCSVTest extends DelfosTest {
                 usersFile.getPath());
 
         ChangeableDatasetConfigurationFileParser.saveConfigFile(
-                manageDatasetConfigFile.getPath(),
+                manageDatasetConfigFile,
                 datasetLoader_ManageDataset);
     }
 
