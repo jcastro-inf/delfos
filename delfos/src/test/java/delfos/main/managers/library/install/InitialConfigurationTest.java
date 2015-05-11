@@ -22,7 +22,7 @@ public class InitialConfigurationTest extends DelfosTest {
 
         ConsoleParameters consoleParameters = ConsoleParameters.parseArguments(
                 "--initial-config",
-                "-datasets-dir", "./delfos-1.2.20150422-install/datasets",
+                "-datasets-dir", "./delfos-install/datasets",
                 "-config", delfosConfigurationDirectory
         );
 
