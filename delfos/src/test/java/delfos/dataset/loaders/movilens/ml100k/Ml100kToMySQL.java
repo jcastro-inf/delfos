@@ -1,4 +1,4 @@
-package delfos;
+package delfos.dataset.loaders.movilens.ml100k;
 
 import delfos.configureddatasets.ConfiguredDatasetsFactory;
 import delfos.constants.DelfosTest;
@@ -7,7 +7,6 @@ import delfos.dataset.basic.loader.types.ContentDatasetLoader;
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.loader.types.UsersDatasetLoader;
 import delfos.dataset.basic.rating.Rating;
-import delfos.dataset.loaders.movilens.ml100k.MovieLens100k;
 import delfos.dataset.loaders.movilens.ml100k.validation.MovieLens100kValidation;
 import delfos.io.database.mysql.dataset.DatasetToMySQL;
 import delfos.io.database.mysql.dataset.RatingsDatasetToMySQL;
@@ -21,7 +20,7 @@ import org.junit.Test;
  */
 public class Ml100kToMySQL extends DelfosTest {
 
-    //@Test
+    @Test
     public void convertDataset() throws ClassNotFoundException, SQLException {
 
         DatasetLoader<? extends Rating> ml100k = ConfiguredDatasetsFactory.getInstance().getDatasetLoader("ml-100k");
