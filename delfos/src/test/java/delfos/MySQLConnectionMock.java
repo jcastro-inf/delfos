@@ -1,9 +1,9 @@
 package delfos;
 
-import java.sql.Connection;
-import java.sql.SQLException;
 import delfos.databaseconnections.DatabaseConection;
 import delfos.rs.persistence.DatabasePersistenceTest;
+import java.sql.Connection;
+import java.sql.SQLException;
 
 /**
  *
@@ -82,6 +82,11 @@ public class MySQLConnectionMock implements DatabaseConection {
 
     @Override
     public Connection doConnection() throws SQLException {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void close() throws SQLException {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 

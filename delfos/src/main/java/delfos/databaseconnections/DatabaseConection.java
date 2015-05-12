@@ -6,7 +6,7 @@ import java.sql.SQLException;
 /**
  * Interfaz que encapsula una conexión a base de datos.
  *
-* @author Jorge Castro Gallardo
+ * @author Jorge Castro Gallardo
  *
  * @version 1.0 Unknown date
  * @version 1.1 (1 de Marzo de 2013)
@@ -69,4 +69,9 @@ public interface DatabaseConection {
     public DatabaseConection copyWithPrefix(String prefix) throws SQLException;
 
     public Connection doConnection() throws SQLException;
+
+    /**
+     * Commits and closes the connection.
+     */
+    public void close() throws SQLException;
 }

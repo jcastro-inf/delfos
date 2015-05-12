@@ -76,9 +76,9 @@ public class MovieLens100k extends CompleteDatasetLoaderAbstract<Rating> {
         });
     }
 
-    public MovieLens100k(File file) {
+    public MovieLens100k(File directory) {
         this();
-        setParameterValue(DirectoryOfDataset, file);
+        setParameterValue(DirectoryOfDataset, directory);
     }
 
     @Override

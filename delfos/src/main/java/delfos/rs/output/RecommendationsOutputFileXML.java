@@ -1,5 +1,13 @@
 package delfos.rs.output;
 
+import delfos.Constants;
+import delfos.ERROR_CODES;
+import delfos.common.FileUtilities;
+import delfos.common.Global;
+import delfos.common.parameters.Parameter;
+import delfos.common.parameters.restriction.StringParameter;
+import delfos.io.xml.recommendations.RecommendationsToXML;
+import delfos.rs.recommendation.Recommendations;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -8,14 +16,6 @@ import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import org.jdom2.input.SAXBuilder;
 import org.jdom2.output.XMLOutputter;
-import delfos.ERROR_CODES;
-import delfos.Constants;
-import delfos.common.FileUtilities;
-import delfos.common.Global;
-import delfos.common.parameters.Parameter;
-import delfos.common.parameters.restriction.StringParameter;
-import delfos.io.xml.recommendations.RecommendationsToXML;
-import delfos.rs.recommendation.Recommendations;
 
 /**
  * Escribe las recomendaciones a un fichero XML. El parámetro
@@ -74,6 +74,7 @@ public class RecommendationsOutputFileXML extends RecommendationsOutputMethod {
         XMLOutputter outputter = new XMLOutputter(Constants.getXMLFormat());
 
         File file = getCompleteFile(idTarget);
+
         FileUtilities.createDirectoriesForFile(file);
 
         try (FileWriter fileWriter = new FileWriter(file)) {

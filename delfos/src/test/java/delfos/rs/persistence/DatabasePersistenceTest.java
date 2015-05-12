@@ -14,7 +14,7 @@ import delfos.dataset.basic.user.User;
 import delfos.dataset.loaders.database.mysql.MySQLDatabaseDatasetLoader_Default;
 import delfos.factories.RecommenderSystemsFactory;
 import delfos.io.database.mysql.dataset.ContentDatasetToMySQL;
-import delfos.io.database.mysql.dataset.RatingDatasetToMySQL;
+import delfos.io.database.mysql.dataset.RatingsDatasetToMySQL;
 import delfos.io.database.mysql.dataset.UsersDatasetToMySQL;
 import delfos.main.managers.recommendation.singleuser.SingleUserRecommendation;
 import delfos.recommendationcandidates.OnlyNewItems;
@@ -72,7 +72,7 @@ public class DatabasePersistenceTest extends DelfosTest {
 
         MockDatasetLoader mockDatasetLoader = new MockDatasetLoader();
 
-        RatingDatasetToMySQL ratingDatasetToMySQL = new RatingDatasetToMySQL(mySQLConnection);
+        RatingsDatasetToMySQL ratingDatasetToMySQL = new RatingsDatasetToMySQL(mySQLConnection);
         ratingDatasetToMySQL.writeDataset(mockDatasetLoader.getRatingsDataset());
 
         ContentDatasetToMySQL contentDatasetToMySQL = new ContentDatasetToMySQL(mySQLConnection);
