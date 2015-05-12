@@ -1,12 +1,12 @@
 package delfos.common;
 
+import delfos.ERROR_CODES;
 import java.io.File;
 import java.io.FileNotFoundException;
-import delfos.ERROR_CODES;
 
 /**
  *
-* @author Jorge Castro Gallardo
+ * @author Jorge Castro Gallardo
  * @version 1.0 17-May-2013
  */
 public class FileUtilities {
@@ -78,13 +78,17 @@ public class FileUtilities {
             throw new IllegalArgumentException("File for path creation is null");
         }
 
-        File directory = file.getParentFile();
+        File directory = file.getAbsoluteFile().getParentFile();
 
         if (directory == null) {
             throw new IllegalArgumentException("Directory for creation is null");
         }
 
-        createDirectoryPath(directory);
+        if (directory.exists() && directory.isDirectory()) {
+            return;
+        } else {
+            createDirectoryPath(directory);
+        }
     }
 
     public static void createDirectoryPath(File directory) {

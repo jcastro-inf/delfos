@@ -1,4 +1,4 @@
-package delfos.dataset.loaders.movilens.ml100k;
+package delfos.dataset.loaders.movilens.ml100k.validation;
 
 import delfos.common.exceptions.dataset.CannotLoadContentDataset;
 import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
@@ -8,6 +8,7 @@ import delfos.common.exceptions.dataset.users.UserAlreadyExists;
 import delfos.common.parameters.Parameter;
 import delfos.common.parameters.restriction.DirectoryParameter;
 import delfos.common.parameters.restriction.IntegerParameter;
+import delfos.common.parameters.restriction.ObjectParameter;
 import delfos.dataset.basic.features.Feature;
 import delfos.dataset.basic.features.FeatureGenerator;
 import delfos.dataset.basic.features.FeatureType;
@@ -32,6 +33,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
@@ -43,13 +45,9 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * Dataset loader para cargar los datasets de MovieLens llamados ml-100k.
- *
  * @author Jorge Castro Gallardo
- *
- * @version 24-Julio-2013
  */
-public class MovieLens100k extends CompleteDatasetLoaderAbstract<Rating> {
+public class MovieLens100kValidation extends CompleteDatasetLoaderAbstract<RatingWithTimestamp> {
 
     private static final long serialVersionUID = 1L;
     public final static Parameter DirectoryOfDataset = new Parameter("Directory", new DirectoryParameter(new File(
@@ -61,66 +59,82 @@ public class MovieLens100k extends CompleteDatasetLoaderAbstract<Rating> {
             + "MovieLens-100k ratings" + File.separator
             + "ml-100k" + File.separator)));
     public final static Parameter Index_init_genres = new Parameter("Index_init_genres", new IntegerParameter(0, 1000, 5));
-    private RatingsDataset<Rating> rd = null;
-    private ContentDataset cd = null;
-    private UsersDataset ud = null;
+    public final static Parameter Partition = new Parameter("Partition", new ObjectParameter(Arrays.asList("1", "2", "3", "4", "5", "a", "b"), "1"));
+    private RatingsDataset<RatingWithTimestamp> ratingsDataset = null;
+    private RatingsDataset<RatingWithTimestamp> ratingsDataset_test = null;
+    private ContentDataset contentDataset = null;
+    private UsersDataset usersDataset = null;
 
-    public MovieLens100k() {
+    public MovieLens100kValidation() {
         addParameter(DirectoryOfDataset);
         addParameter(Index_init_genres);
 
+        addParameter(Partition);
+
         addParammeterListener(() -> {
-            rd = null;
-            cd = null;
-            ud = null;
+            ratingsDataset = null;
+            contentDataset = null;
+            usersDataset = null;
+            ratingsDataset_test = null;
         });
     }
 
-    public MovieLens100k(File directory) {
+    public MovieLens100kValidation(File directory, String partition) {
         this();
         setParameterValue(DirectoryOfDataset, directory);
+        setParameterValue(Partition, partition);
     }
 
     @Override
-    public RatingsDataset<Rating> getRatingsDataset() throws CannotLoadRatingsDataset {
-        if (rd == null) {
-            try {
-                List<Rating> ratings = new LinkedList<>();
-
-                File ratingsFile = getRatingsDatasetFile();
-                // Abrimos el archivo
-                FileInputStream fstream = new FileInputStream(ratingsFile);
-                // Creamos el Buffer de Lectura
-                try ( // Creamos el objeto de entrada
-                        DataInputStream entrada = new DataInputStream(fstream)) {
-                    // Creamos el Buffer de Lectura
-                    BufferedReader buffer = new BufferedReader(new InputStreamReader(entrada));
-                    String linea;
-                    // Leer el archivo linea por linea
-                    while ((linea = buffer.readLine()) != null) {
-                        String[] campos = linea.split("\t");
-
-                        int idUser = Integer.parseInt(campos[0]);
-                        int idItem = Integer.parseInt(campos[1]);
-                        byte ratingValue = Byte.parseByte(campos[2]);
-                        long timestamp = Long.parseLong(campos[3]);
-
-                        Rating rating = new RatingWithTimestamp(idUser, idItem, ratingValue, timestamp);
-                        ratings.add(rating);
-                    }
-                }
-
-                rd = new BothIndexRatingsDataset(ratings);
-            } catch (IOException | NumberFormatException ex) {
-                throw new CannotLoadRatingsDataset(ex);
-            }
+    public RatingsDataset<RatingWithTimestamp> getRatingsDataset() throws CannotLoadRatingsDataset {
+        if (ratingsDataset == null) {
+            ratingsDataset = getRatingsDatasetFromFile(getRatingsDatasetFile());
         }
-        return rd;
+        return ratingsDataset;
+    }
+
+    public RatingsDataset<RatingWithTimestamp> getRatingsDataset_test() throws CannotLoadRatingsDataset {
+        if (ratingsDataset_test == null) {
+            ratingsDataset_test = getRatingsDatasetFromFile(getRatingsDatasetTestFile());
+        }
+        return ratingsDataset_test;
+    }
+
+    private BothIndexRatingsDataset<RatingWithTimestamp> getRatingsDatasetFromFile(File ratingsFile) throws CannotLoadRatingsDataset {
+        try {
+            List<Rating> ratings = new LinkedList<>();
+
+            // Abrimos el archivo
+            FileInputStream fstream = new FileInputStream(ratingsFile);
+            // Creamos el Buffer de Lectura
+            try ( // Creamos el objeto de entrada
+                    DataInputStream entrada = new DataInputStream(fstream)) {
+                // Creamos el Buffer de Lectura
+                BufferedReader buffer = new BufferedReader(new InputStreamReader(entrada));
+                String linea;
+                // Leer el archivo linea por linea
+                while ((linea = buffer.readLine()) != null) {
+                    String[] campos = linea.split("\t");
+
+                    int idUser = Integer.parseInt(campos[0]);
+                    int idItem = Integer.parseInt(campos[1]);
+                    byte ratingValue = Byte.parseByte(campos[2]);
+                    long timestamp = Long.parseLong(campos[3]);
+
+                    Rating rating = new RatingWithTimestamp(idUser, idItem, ratingValue, timestamp);
+                    ratings.add(rating);
+                }
+            }
+
+            return new BothIndexRatingsDataset(ratings);
+        } catch (IOException | NumberFormatException ex) {
+            throw new CannotLoadRatingsDataset(ex);
+        }
     }
 
     @Override
     public ContentDataset getContentDataset() throws CannotLoadContentDataset {
-        if (cd == null) {
+        if (contentDataset == null) {
             Map<String, Integer> generos_byName = new TreeMap<>();
             List<String> generos_byIndex = new ArrayList<>();
             final int indexInicialGeneros = getIndexInicialGeneros();
@@ -205,18 +219,18 @@ public class MovieLens100k extends CompleteDatasetLoaderAbstract<Rating> {
                     }
                 }
 
-                cd = new ContentDatasetDefault(items);
+                contentDataset = new ContentDatasetDefault(items);
             } catch (IOException | NumberFormatException | ItemAlreadyExists ex) {
                 throw new CannotLoadContentDataset(ex);
             }
         }
-        return cd;
+        return contentDataset;
     }
 
     @Override
     public UsersDataset getUsersDataset() throws CannotLoadUsersDataset {
 
-        if (ud == null) {
+        if (usersDataset == null) {
 
             File occupationFile = getOccupationFile();
 
@@ -233,7 +247,7 @@ public class MovieLens100k extends CompleteDatasetLoaderAbstract<Rating> {
                         line = br.readLine();
                     }
                 } catch (FileNotFoundException ex) {
-                    Logger.getLogger(MovieLens100k.class.getName()).log(Level.SEVERE, null, ex);
+                    Logger.getLogger(MovieLens100kValidation.class.getName()).log(Level.SEVERE, null, ex);
                 }
 
             } catch (IOException ex) {
@@ -277,30 +291,25 @@ public class MovieLens100k extends CompleteDatasetLoaderAbstract<Rating> {
                         line = br.readLine();
                     }
                 } catch (FileNotFoundException ex) {
-                    Logger.getLogger(MovieLens100k.class.getName()).log(Level.SEVERE, null, ex);
+                    Logger.getLogger(MovieLens100kValidation.class.getName()).log(Level.SEVERE, null, ex);
                 }
 
             } catch (IOException ex) {
                 throw new CannotLoadUsersDataset(ex);
             }
             try {
-                ud = new UsersDatasetAdapter(users);
+                usersDataset = new UsersDatasetAdapter(users);
             } catch (UserAlreadyExists ex) {
                 throw new CannotLoadUsersDataset(ex);
             }
         }
 
-        return ud;
+        return usersDataset;
     }
 
     @Override
     public RelevanceCriteria getDefaultRelevanceCriteria() {
         return new RelevanceCriteria(4);
-    }
-
-    private File getRatingsDatasetFile() {
-        String filename = ((File) getParameterValue(DirectoryOfDataset)).getAbsoluteFile() + File.separator + "u.data";
-        return new File(filename);
     }
 
     private File getContentDatasetFile() {
@@ -325,5 +334,19 @@ public class MovieLens100k extends CompleteDatasetLoaderAbstract<Rating> {
 
     private int getIndexInicialGeneros() {
         return (Integer) getParameterValue(Index_init_genres);
+    }
+
+    private File getRatingsDatasetFile() {
+        String partition = getParameterValue(Partition).toString();
+        String filename = ((File) getParameterValue(DirectoryOfDataset)).getAbsoluteFile()
+                + File.separator + "u" + partition + ".base";
+        return new File(filename);
+    }
+
+    private File getRatingsDatasetTestFile() {
+        String partition = getParameterValue(Partition).toString();
+        String filename = ((File) getParameterValue(DirectoryOfDataset)).getAbsoluteFile()
+                + File.separator + "u" + partition + ".test";
+        return new File(filename);
     }
 }

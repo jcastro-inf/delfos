@@ -1,5 +1,16 @@
 package delfos.dataset.loaders.database;
 
+import delfos.ERROR_CODES;
+import delfos.common.exceptions.dataset.entity.EntityAlreadyExists;
+import delfos.common.exceptions.dataset.entity.EntityNotFound;
+import delfos.common.exceptions.dataset.items.ItemNotFound;
+import delfos.databaseconnections.DatabaseConection;
+import delfos.dataset.basic.features.Feature;
+import delfos.dataset.basic.features.FeatureGenerator;
+import delfos.dataset.basic.features.FeatureType;
+import delfos.dataset.basic.item.ContentDataset;
+import delfos.dataset.basic.item.ContentDatasetDefault;
+import delfos.dataset.basic.item.Item;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.sql.Connection;
@@ -12,23 +23,12 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
-import delfos.ERROR_CODES;
-import delfos.common.exceptions.dataset.entity.EntityAlreadyExists;
-import delfos.common.exceptions.dataset.entity.EntityNotFound;
-import delfos.common.exceptions.dataset.items.ItemNotFound;
-import delfos.databaseconnections.DatabaseConection;
-import delfos.dataset.basic.item.ContentDataset;
-import delfos.dataset.basic.item.ContentDatasetDefault;
-import delfos.dataset.basic.item.Item;
-import delfos.dataset.basic.features.Feature;
-import delfos.dataset.basic.features.FeatureGenerator;
-import delfos.dataset.basic.features.FeatureType;
 
 /**
  * Constructor de los datasets en memoria (de contenido y de ratings) a partir
  * de los datos en la base de datos mysql del conocido conjunto Movilens
  *
-* @author Jorge Castro Gallardo
+ * @author Jorge Castro Gallardo
  *
  * @version 1.0 Unknow date
  * @version 1.1 (21-01-2013) Ahora implementa de {@link RatingsDatasetAdapter}
@@ -95,7 +95,7 @@ public class DatabaseContentDataset implements ContentDataset {
 
     @Override
     public Set<Object> getAllFeatureValues(Feature feature) {
-        Set<Object> ret = new TreeSet<Object>();
+        Set<Object> ret = new TreeSet<>();
 
         FeatureType featureType = feature.getType();
 
@@ -138,7 +138,7 @@ public class DatabaseContentDataset implements ContentDataset {
 
     @Override
     public Collection<Integer> allID() {
-        Set<Integer> items = new TreeSet<Integer>();
+        Set<Integer> items = new TreeSet<>();
 
         String query = "SELECT idItem FROM movies;";
         try (
@@ -169,7 +169,7 @@ public class DatabaseContentDataset implements ContentDataset {
 
     @Override
     public Collection<Integer> getAvailableItems() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return allID();
     }
 
     @Override
@@ -214,7 +214,7 @@ public class DatabaseContentDataset implements ContentDataset {
 
     @Override
     public Collection<Integer> getAllID() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return allID();
     }
 
     @Override
