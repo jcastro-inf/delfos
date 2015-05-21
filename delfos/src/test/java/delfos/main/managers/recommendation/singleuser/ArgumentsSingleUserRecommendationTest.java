@@ -52,7 +52,7 @@ public class ArgumentsSingleUserRecommendationTest extends DelfosTest {
         String[] consoleArguments = {
             "--single-user",
             "--build",
-            "-config-file", SINGLE_USER_RS_CONFIG_XML
+            "-rs-config", SINGLE_USER_RS_CONFIG_XML
         };
 
         BuildRecommendationModel.getInstance().manageCaseUse(ConsoleParameters.parseArguments(consoleArguments));
@@ -70,7 +70,7 @@ public class ArgumentsSingleUserRecommendationTest extends DelfosTest {
             "--single-user",
             "--recommend",
             "-u", "1",
-            "-config-file", SINGLE_USER_RS_CONFIG_XML
+            "-rs-config", SINGLE_USER_RS_CONFIG_XML
 
         };
 
@@ -88,7 +88,7 @@ public class ArgumentsSingleUserRecommendationTest extends DelfosTest {
         ConsoleParameters consoleParameters = ConsoleParameters.parseArguments(
                 "--single-user",
                 "--build",
-                "-config-file", SINGLE_USER_RS_CONFIG_XML
+                "-rs-config", SINGLE_USER_RS_CONFIG_XML
         );
 
         CaseUseManagerTest.testCaseUseSubManager(BuildRecommendationModel.getInstance(), consoleParameters);
@@ -107,7 +107,7 @@ public class ArgumentsSingleUserRecommendationTest extends DelfosTest {
                 "--single-user",
                 "--recommend",
                 "-u", "1",
-                "-config-file", SINGLE_USER_RS_CONFIG_XML
+                "-rs-config", SINGLE_USER_RS_CONFIG_XML
         );
 
         CaseUseManagerTest.testCaseUseSubManager(Recommend.getInstance(), consoleParameters);

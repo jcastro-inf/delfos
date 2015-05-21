@@ -1,11 +1,12 @@
 package delfos.databaseconnections;
 
 import com.mysql.jdbc.jdbc2.optional.MysqlDataSource;
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.sql.Statement;
 import delfos.ERROR_CODES;
 import delfos.common.Global;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 
 /**
  * Almacena los datos para hacer una conexión a base de datos mysql. Todas las
@@ -50,6 +51,8 @@ public class MySQLConnection implements DatabaseConection {
      */
     private final String prefix;
 
+    private Connection activeConnection = null;
+
     /**
      * Constructor de la conexión con una base de datos MySQL.
      *
@@ -83,29 +86,35 @@ public class MySQLConnection implements DatabaseConection {
         this.port = port;
         this.prefix = prefix;
 
-        try (Connection conn = doConnection()) {
-        }
+        doConnection();
 
     }
 
     @Override
     public final Connection doConnection() throws SQLException {
-        try {
-            // Cargamos el controlador JDBC
-            Class.forName("com.mysql.jdbc.Driver");
-            MysqlDataSource dataSource = new MysqlDataSource();
+        if (activeConnection == null) {
 
-            dataSource.setUser(user);
-            dataSource.setPassword(pass);
-            dataSource.setDatabaseName(databaseName);
-            dataSource.setServerName(serverName);
-            dataSource.setPort(port);
+            try {
+                // Cargamos el controlador JDBC
+                Class.forName("com.mysql.jdbc.Driver");
+                MysqlDataSource dataSource = new MysqlDataSource();
 
-            return dataSource.getConnection();
-        } catch (ClassNotFoundException ex) {
-            ERROR_CODES.DEPENDENCY_NOT_FOUND.exit(ex);
-            throw new IllegalArgumentException(ex);
+                dataSource.setUser(user);
+                dataSource.setPassword(pass);
+                dataSource.setDatabaseName(databaseName);
+                dataSource.setServerName(serverName);
+                dataSource.setPort(port);
+
+                Connection connection = dataSource.getConnection();
+                connection.setAutoCommit(true);
+                activeConnection = connection;
+            } catch (ClassNotFoundException ex) {
+                ERROR_CODES.DEPENDENCY_NOT_FOUND.exit(ex);
+                throw new IllegalArgumentException(ex);
+            }
         }
+
+        return activeConnection;
     }
 
     @Override
@@ -154,7 +163,9 @@ public class MySQLConnection implements DatabaseConection {
     }
 
     public static boolean existsTableWithPrefix(MySQLConnection mysqlConnection, String tableNameWithPrefix) {
-        try (Connection connection = mysqlConnection.doConnection()) {
+
+        try {
+            Connection connection = mysqlConnection.doConnection();
             String select = "Select count(*) from " + tableNameWithPrefix + ";";
             try (Statement statement = connection.createStatement()) {
                 statement.execute(select);
@@ -165,6 +176,44 @@ public class MySQLConnection implements DatabaseConection {
         } catch (SQLException ex) {
             ERROR_CODES.DATABASE_NOT_READY.exit(ex);
             throw new IllegalArgumentException(ex);
+        }
+    }
+
+    @Override
+    public void close() throws SQLException {
+        if (!doConnection().getAutoCommit()) {
+            doConnection().commit();
+        }
+        doConnection().close();
+        activeConnection = null;
+    }
+
+    public void execute(String sentence) throws SQLException {
+        Connection connection = doConnection();
+        try (Statement statement = connection.createStatement()) {
+            statement.execute(sentence);
+        } catch (Exception ex) {
+            Global.showInfoMessage("ERROR in sentence:\n");
+            Global.showInfoMessage(sentence + "\n");
+            throw new SQLException(ex);
+        }
+    }
+
+    public ResultSet executeQuery(String sentence) throws SQLException {
+        Connection connection = doConnection();
+        try {
+            Statement statement = connection.createStatement();
+            return statement.executeQuery(sentence);
+        } catch (SQLException ex) {
+            Global.showInfoMessage("ERROR in sentence:\n");
+            Global.showInfoMessage("\t" + sentence + "\n");
+            throw ex;
+        }
+    }
+
+    public void commit() throws SQLException {
+        if (!doConnection().getAutoCommit()) {
+            doConnection().commit();
         }
     }
 }

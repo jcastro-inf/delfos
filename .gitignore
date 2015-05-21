@@ -8,7 +8,7 @@
 /delfos/.config/
 
 # Delfos directory to deploy in any linux machine
-/delfos/delfos-1.2.20150422-install/.config/
+/delfos/delfos-install/.config/
 
 # Nano (text editor) backups.
 *~

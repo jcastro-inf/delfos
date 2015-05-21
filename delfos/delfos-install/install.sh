@@ -15,7 +15,7 @@ java -jar $DELFOS_JAR -config $DELFOS_CONFIG $@' > delfos
 chmod +x delfos
 
 #Download an install large datasets
-datasetsSelected="-datasets-to-install ml-100k";
+datasetsSelected="-datasets-to-install ml-100k complete-5u-10i ssii-partition9";
 ml1mURL="http://files.grouplens.org/datasets/movielens/ml-1m.zip"
 
 installml1m (){
