@@ -10,6 +10,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Map;
 import org.jdom2.Document;
 import org.jdom2.Element;
@@ -42,8 +43,11 @@ public class ConsensusOfIndividualRecommendationsToXML {
             Element thisMemberElement = new Element(MEMBER_ELEMENT_NAME);
             thisMemberElement.setAttribute(MEMBER_ELEMENT_NAME_ID_ATTRIBUTE_NAME, Integer.toString(idMember));
 
+            ArrayList<Recommendation> sortedRecommendations = new ArrayList<>(singleUserRecommendations.get(idMember));
+            Collections.sort(sortedRecommendations, Recommendation.getRecommendationPreferenceComparator());
+
             int rank = 1;
-            for (Recommendation r : singleUserRecommendations.get(idMember)) {
+            for (Recommendation r : sortedRecommendations) {
                 Element recommendation = new Element(RECOMMENDATION_ELEMENT_NAME);
                 recommendation.setAttribute(RECOMMENDATION_ELEMENT_ID_ITEM_ATTRIBUTE_NAME, Integer.toString(r.getIdItem()));
 
@@ -61,7 +65,10 @@ public class ConsensusOfIndividualRecommendationsToXML {
         String members = singleUserRecommendations.keySet().toString();
         groupElement.setAttribute(GROUP_ELEMENT_MEMBERS_ATTRIBUTE_NAME, members);
         int rank = 1;
-        for (Recommendation r : groupRecommendations) {
+
+        ArrayList<Recommendation> sortedGroupRecommendations = new ArrayList<>(groupRecommendations);
+        Collections.sort(sortedGroupRecommendations, Recommendation.getRecommendationPreferenceComparator());
+        for (Recommendation r : sortedGroupRecommendations) {
 
             Element recommendation = new Element(RECOMMENDATION_ELEMENT_NAME);
             recommendation.setAttribute(RECOMMENDATION_ELEMENT_ID_ITEM_ATTRIBUTE_NAME, Integer.toString(r.getIdItem()));

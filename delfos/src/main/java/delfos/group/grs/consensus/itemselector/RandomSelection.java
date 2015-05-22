@@ -20,18 +20,13 @@ public class RandomSelection extends GroupRecommendationsSelector implements See
 
     @Override
     public Set<Integer> getRecommendationSelection(Map<Integer, Collection<Recommendation>> membersRecommendations) {
+        Set<Integer> itemsToSelect = super.getRecommendationSelection(membersRecommendations);
 
         long groupSeed = getGroupSeed(membersRecommendations.keySet());
         long numItems = getNumItemsSelect();
         Random random = new Random(groupSeed);
 
-        Set<Integer> itemsToSelect = new TreeSet<>();
         Set<Integer> itemsSelected = new TreeSet<>();
-
-        int idUser = membersRecommendations.keySet().iterator().next();
-        membersRecommendations.get(idUser).stream().forEach((r) -> {
-            itemsToSelect.add(r.getIdItem());
-        });
 
         while (itemsSelected.size() < numItems) {
             int nextRandom = random.nextInt(itemsToSelect.size());

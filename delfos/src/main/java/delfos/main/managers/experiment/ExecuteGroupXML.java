@@ -70,13 +70,13 @@ public class ExecuteGroupXML extends CaseUseMode {
             }
 
             consoleParameters.printUnusedParameters(System.err);
-            xmlExperimentsExecution(xmlExperimentsDirectory, xmlExperimentsDirectory + File.separator + "dataset" + File.separator, NUM_EJECUCIONES, SEED);
+            manageCaseUse(xmlExperimentsDirectory, xmlExperimentsDirectory + File.separator + "dataset" + File.separator, NUM_EJECUCIONES, SEED);
         } catch (UndefinedParameterException ex) {
             consoleParameters.printUnusedParameters(System.err);
         }
     }
 
-    private static void xmlExperimentsExecution(String experimentsDirectory, String datasetDirectory, int numExecutions, long seed) {
+    public static void manageCaseUse(String experimentsDirectory, String datasetDirectory, int numExecutions, long seed) {
         try {
             GroupXMLexperimentsExecution execution = new GroupXMLexperimentsExecution(
                     experimentsDirectory,

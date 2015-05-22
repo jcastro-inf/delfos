@@ -102,7 +102,8 @@ public class TuringPreparator implements ExperimentPreparator {
                 .forEach((singleExperimentDirectory) -> {
                     String[] args = {
                         "-seed", "77352653",
-                        ExecuteGroupXML.MODE_PARAMETER, singleExperimentDirectory.getPath(),
+                        ExecuteGroupXML.MODE_PARAMETER,
+                        ExecuteGroupXML.XML_DIRECTORY, singleExperimentDirectory.getPath(),
                         "-numExec", "1"};
                     Main.mainWithExceptions(args);
                 });
