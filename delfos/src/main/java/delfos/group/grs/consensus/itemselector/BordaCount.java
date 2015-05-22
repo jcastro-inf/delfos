@@ -22,6 +22,7 @@ public class BordaCount extends GroupRecommendationsSelector {
 
     @Override
     public Set<Integer> getRecommendationSelection(Map<Integer, Collection<Recommendation>> membersRecommendations) {
+        super.getRecommendationSelection(membersRecommendations);
 
         long numItems = getNumItemsSelect();
         Set<Integer> itemsSelected = new TreeSet<>();

@@ -19,6 +19,7 @@ public class TopNOfEach extends GroupRecommendationsSelector {
 
     @Override
     public Set<Integer> getRecommendationSelection(Map<Integer, Collection<Recommendation>> membersRecommendations) {
+        super.getRecommendationSelection(membersRecommendations);
 
         Set<Integer> itemsSelected = new TreeSet<>();
         Map<Integer, LinkedList<Recommendation>> removableRecommendations = new TreeMap<>();

@@ -150,9 +150,4 @@ public class ConsensusGRS_CaseStudy {
     private void executeAllExperimentsInDirectory(File directory) {
         new TuringPreparator().executeAllExperimentsInDirectory(directory);
     }
-
-    private Object File(String CONSENSUS_GRS_INPUT_DATA_DIRECTORY) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
 }
