@@ -22,6 +22,7 @@ public class BordaCount extends GroupRecommendationsSelector {
 
     @Override
     public Set<Integer> getRecommendationSelection(Map<Integer, Collection<Recommendation>> membersRecommendations) {
+        super.getRecommendationSelection(membersRecommendations);
 
         long numItems = getNumItemsSelect();
         Set<Integer> itemsSelected = new TreeSet<>();
@@ -30,6 +31,7 @@ public class BordaCount extends GroupRecommendationsSelector {
 
         for (int idUser : membersRecommendations.keySet()) {
             List<Recommendation> reverseList = new ArrayList<>(membersRecommendations.get(idUser));
+            Collections.sort(reverseList, Recommendation.getRecommendationPreferenceComparator());
             Collections.reverse(reverseList);
 
             int index = 1;

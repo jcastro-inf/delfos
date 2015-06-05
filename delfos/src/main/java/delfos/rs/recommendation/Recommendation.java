@@ -147,7 +147,7 @@ public class Recommendation implements Comparable<Recommendation>, Serializable 
         return hash;
     }
 
-    private static Comparator<Recommendation> getRecommendationPreferenceComparator() {
+    public static Comparator<Recommendation> getRecommendationPreferenceComparator() {
         Comparator<Recommendation> comparator = (Recommendation o1, Recommendation o2) -> {
             int compare = Double.compare(o1.preference.doubleValue(), o2.preference.doubleValue());
             if (compare != 0) {

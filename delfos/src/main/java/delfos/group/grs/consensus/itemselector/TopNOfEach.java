@@ -2,6 +2,7 @@ package delfos.group.grs.consensus.itemselector;
 
 import delfos.rs.recommendation.Recommendation;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Set;
@@ -18,13 +19,16 @@ public class TopNOfEach extends GroupRecommendationsSelector {
 
     @Override
     public Set<Integer> getRecommendationSelection(Map<Integer, Collection<Recommendation>> membersRecommendations) {
+        super.getRecommendationSelection(membersRecommendations);
 
         Set<Integer> itemsSelected = new TreeSet<>();
         Map<Integer, LinkedList<Recommendation>> removableRecommendations = new TreeMap<>();
         int numItemsToSelect = getNumItemsSelect();
 
         membersRecommendations.entrySet().stream().forEach((entry) -> {
-            removableRecommendations.put(entry.getKey(), new LinkedList<>(entry.getValue()));
+            LinkedList<Recommendation> sortedRemovableRecommendation = new LinkedList<>(entry.getValue());
+            Collections.sort(sortedRemovableRecommendation, Recommendation.getRecommendationPreferenceComparator());
+            removableRecommendations.put(entry.getKey(), sortedRemovableRecommendation);
         });
 
         while (itemsSelected.size() != numItemsToSelect) {
