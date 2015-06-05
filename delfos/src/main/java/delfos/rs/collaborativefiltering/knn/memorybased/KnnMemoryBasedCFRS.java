@@ -155,14 +155,22 @@ public class KnnMemoryBasedCFRS extends KnnCollaborativeRecommender<KnnMemoryMod
                 ret.add(neighbor);
             }
         }
-        Collections.sort(ret);
 
+        if (Global.isVerboseAnnoying()) {
+            Collections.sort(ret, (Neighbor o1, Neighbor o2) -> o1.getIdNeighbor() - o2.getIdNeighbor());
+
+            Global.showMessageTimestamped("============ All users similarity =================");
+            printNeighborhood(idUser, ret);
+        }
+
+        Collections.sort(ret);
         int neighborhoodSize_ = ((Number) getParameterValue(KnnMemoryBasedCFRS.NEIGHBORHOOD_SIZE)).intValue();
-        if (ret.isEmpty()) {
-//            Global.showInfoMessage("No se pudieron encontrar vecinos para el usuario "+idUser);
-            ret = Collections.emptyList();
-        } else {
-            ret = ret.subList(0, Math.min(ret.size(), neighborhoodSize_));
+
+        ret = ret.subList(0, Math.min(ret.size(), neighborhoodSize_));
+
+        if (Global.isVerboseAnnoying()) {
+            Global.showMessageTimestamped("============ Selected neighborhood =================");
+            printNeighborhood(idUser, ret);
         }
 
         return ret;
@@ -177,8 +185,8 @@ public class KnnMemoryBasedCFRS extends KnnCollaborativeRecommender<KnnMemoryMod
      * @param ratingsDataset Conjunto de valoraciones.
      * @param idUser Id del usuario activo
      * @param vecinos Vecinos del usuario activo
-     * @param candidateItems Lista de productos que se consideran recomendables, es
-     * decir, que podrían ser recomendados si la predicción es alta
+     * @param candidateItems Lista de productos que se consideran recomendables,
+     * es decir, que podrían ser recomendados si la predicción es alta
      * @return Lista de recomendaciones para el usuario, ordenadas por
      * valoracion predicha.
      * @throws UserNotFound Si el usuario activo o alguno de los vecinos
@@ -224,5 +232,21 @@ public class KnnMemoryBasedCFRS extends KnnCollaborativeRecommender<KnnMemoryMod
     @Override
     public void saveRecommendationModel(DatabasePersistence databasePersistence, KnnMemoryModel model) throws FailureInPersistence {
         //No hay modelo que guardar.
+    }
+
+    private void printNeighborhood(int idUser, List<Neighbor> ret) {
+        StringBuilder message = new StringBuilder();
+
+        message.append("=========================================================\n");
+        message.append("Neighbors of user '").append(idUser).append("'\n");
+        for (Neighbor nei : ret) {
+            message.append("\tnei: '").append(nei.getIdNeighbor());
+
+            message.append("'\t\t\t");
+            message.append(nei.getSimilarity()).append("\n");
+        }
+        message.append("=========================================================\n");
+
+        Global.showMessageTimestamped(message.toString());
     }
 }

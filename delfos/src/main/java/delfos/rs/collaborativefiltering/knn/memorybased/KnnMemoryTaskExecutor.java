@@ -1,21 +1,21 @@
 package delfos.rs.collaborativefiltering.knn.memorybased;
 
+import delfos.ERROR_CODES;
+import delfos.common.exceptions.CouldNotComputeSimilarity;
+import delfos.common.exceptions.dataset.items.ItemNotFound;
+import delfos.common.exceptions.dataset.users.UserNotFound;
+import delfos.common.parallelwork.SingleTaskExecute;
+import delfos.dataset.basic.rating.Rating;
+import delfos.dataset.basic.rating.RatingsDataset;
+import delfos.rs.collaborativefiltering.knn.CommonRating;
+import delfos.rs.collaborativefiltering.knn.RecommendationEntity;
+import delfos.rs.collaborativefiltering.profile.Neighbor;
+import delfos.similaritymeasures.CollaborativeSimilarityMeasure;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
-import delfos.dataset.basic.rating.Rating;
-import delfos.dataset.basic.rating.RatingsDataset;
-import delfos.rs.collaborativefiltering.knn.CommonRating;
-import delfos.rs.collaborativefiltering.knn.RecommendationEntity;
-import delfos.ERROR_CODES;
-import delfos.rs.collaborativefiltering.profile.Neighbor;
-import delfos.similaritymeasures.CollaborativeSimilarityMeasure;
-import delfos.common.exceptions.CouldNotComputeSimilarity;
-import delfos.common.exceptions.dataset.items.ItemNotFound;
-import delfos.common.exceptions.dataset.users.UserNotFound;
-import delfos.common.parallelwork.SingleTaskExecute;
 
 public final class KnnMemoryTaskExecutor implements SingleTaskExecute<KnnMemoryTask> {
 
@@ -53,24 +53,24 @@ public final class KnnMemoryTaskExecutor implements SingleTaskExecute<KnnMemoryT
             neighborRatings = ratingsDataset.getUserRatingsRated(idNeighbor);
         } catch (UserNotFound ex) {
             ERROR_CODES.USER_NOT_FOUND.exit(ex);
-            activeUserRated = new TreeMap<Integer, Rating>();
-            neighborRatings = new TreeMap<Integer, Rating>();
+            activeUserRated = new TreeMap<>();
+            neighborRatings = new TreeMap<>();
         }
 
         Set<Integer> intersectionSet = null;
 
         if (relevanceFactor_) {
-            intersectionSet = new TreeSet<Integer>(activeUserRated.keySet());
+            intersectionSet = new TreeSet<>(activeUserRated.keySet());
             intersectionSet.retainAll(neighborRatings.keySet());
         }
 
-        ArrayList<CommonRating> common = new ArrayList<CommonRating>();
+        ArrayList<CommonRating> common = new ArrayList<>();
 
         if (!defaultRating_) {
 
             Set<Integer> intersection;
             if (intersectionSet == null) {
-                intersection = new TreeSet<Integer>();
+                intersection = new TreeSet<>();
                 for (int id : activeUserRated.keySet()) {
                     if (neighborRatings.containsKey(id)) {
                         intersection.add(id);
