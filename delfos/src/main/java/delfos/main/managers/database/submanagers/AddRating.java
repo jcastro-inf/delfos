@@ -12,56 +12,16 @@ import delfos.common.exceptions.dataset.items.ItemNotFound;
 import delfos.common.exceptions.dataset.users.UserNotFound;
 import delfos.dataset.basic.rating.RatingWithTimestamp;
 import delfos.dataset.changeable.ChangeableDatasetLoader;
+import static delfos.main.managers.database.DatabaseManager.MANAGE_RATING_DATABASE_ADD_RATING;
+import static delfos.main.managers.database.DatabaseManager.MANAGE_RATING_DATABASE_ID_ITEM;
+import static delfos.main.managers.database.DatabaseManager.MANAGE_RATING_DATABASE_ID_USER;
+import static delfos.main.managers.database.DatabaseManager.MANAGE_RATING_DATABASE_RATING_VALUE;
 
 /**
  *
  * @author jcastro
  */
 public class AddRating extends DatabaseCaseUseSubManager {
-
-    /**
-     * Parametro para especificar que la biblioteca añada un usuario a la base
-     * de datos que está siendo administrada.
-     */
-    @Deprecated
-    public static final String MANAGE_RATING_DATABASE_ADD_RATING_OLD = "-addRating";
-
-    /**
-     * Parametro para especificar que la biblioteca añada un usuario a la base
-     * de datos que está siendo administrada.
-     */
-    public static final String MANAGE_RATING_DATABASE_ADD_RATING = "--add-rating";
-
-    /**
-     * Parametro para especificar a la biblioteca el usuario con el que se está
-     * trabajando.
-     */
-    public static final String MANAGE_RATING_DATABASE_ID_USER_OLD = "-idUser";
-    /**
-     * Parametro para especificar a la biblioteca el producto con el que se está
-     * trabajando.
-     */
-    public static final String MANAGE_RATING_DATABASE_ID_ITEM_OLD = "-idItem";
-    /**
-     * Parametro para especificar a la biblioteca el valor del rating que se
-     * desea añadir.
-     */
-    public static final String MANAGE_RATING_DATABASE_RATING_VALUE_OLD = "-ratingValue";
-    /**
-     * Parametro para especificar a la biblioteca el usuario con el que se está
-     * trabajando.
-     */
-    public static final String MANAGE_RATING_DATABASE_ID_USER = "-user";
-    /**
-     * Parametro para especificar a la biblioteca el producto con el que se está
-     * trabajando.
-     */
-    public static final String MANAGE_RATING_DATABASE_ID_ITEM = "-item";
-    /**
-     * Parametro para especificar a la biblioteca el valor del rating que se
-     * desea añadir.
-     */
-    public static final String MANAGE_RATING_DATABASE_RATING_VALUE = "-value";
 
     private static final AddRating instance = new AddRating();
 
@@ -71,7 +31,7 @@ public class AddRating extends DatabaseCaseUseSubManager {
 
     @Override
     public boolean isRightManager(ConsoleParameters consoleParameters) {
-        return consoleParameters.deprecatedParameter_isDefined(MANAGE_RATING_DATABASE_ADD_RATING_OLD, MANAGE_RATING_DATABASE_ADD_RATING);
+        return consoleParameters.isFlagDefined(MANAGE_RATING_DATABASE_ADD_RATING);
     }
 
     @Override
@@ -81,11 +41,11 @@ public class AddRating extends DatabaseCaseUseSubManager {
         Number ratingValue;
 
         try {
-            idItem = new Integer(consoleParameters.deprecatedParameter_getValue(MANAGE_RATING_DATABASE_ID_ITEM_OLD, MANAGE_RATING_DATABASE_ID_ITEM));
+            idItem = new Integer(consoleParameters.getValue(MANAGE_RATING_DATABASE_ID_ITEM));
 
-            idUser = new Integer(consoleParameters.deprecatedParameter_getValue(MANAGE_RATING_DATABASE_ID_USER_OLD, MANAGE_RATING_DATABASE_ID_USER));
+            idUser = new Integer(consoleParameters.getValue(MANAGE_RATING_DATABASE_ID_USER));
 
-            String ratingValueString = consoleParameters.deprecatedParameter_getValue(MANAGE_RATING_DATABASE_RATING_VALUE_OLD, MANAGE_RATING_DATABASE_RATING_VALUE);
+            String ratingValueString = consoleParameters.getValue(MANAGE_RATING_DATABASE_RATING_VALUE);
             ratingValue = new Double(ratingValueString);
         } catch (UndefinedParameterException ex) {
             switch (ex.getParameterMissing()) {

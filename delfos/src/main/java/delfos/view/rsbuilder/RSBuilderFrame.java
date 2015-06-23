@@ -31,6 +31,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.beans.PropertyChangeEvent;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -382,6 +383,7 @@ public class RSBuilderFrame extends Frame {
     private void saveConfig(boolean build) {
 
         JFileChooser jfc = new JFileChooser(SwingGUIScope.getInstance().getCurrentDirectory());
+        jfc.setSelectedFile(new File(configFile).getAbsoluteFile());
         jfc.setFileFilter(new FileNameExtensionFilter("Recommender System Configuration (XML)", "xml"));
         jfc.setDialogTitle("Save recommender system configuration XML file");
         int option = jfc.showSaveDialog(RSBuilderFrame.this);
@@ -432,7 +434,6 @@ public class RSBuilderFrame extends Frame {
                                 buildingProgressChanged(actualJob, 0, -1);
                                 Object model = rs.buildRecommendationModel(loader);
                                 rs.saveRecommendationModel(databasePersistence, model);
-
                             } else {
                                 throw new IllegalStateException("The persistence technique is not recognised: " + persistenceTechnique.getName());
                             }

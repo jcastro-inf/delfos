@@ -52,10 +52,10 @@ public class ArgumentsSingleUserRecommendationTest extends DelfosTest {
         String[] consoleArguments = {
             "--single-user",
             "--build",
-            "-config-file", SINGLE_USER_RS_CONFIG_XML
+            "-rs-config", SINGLE_USER_RS_CONFIG_XML
         };
 
-        BuildRecommendationModel.getInstance().manageCaseUse(new ConsoleParameters(consoleArguments));
+        BuildRecommendationModel.getInstance().manageCaseUse(ConsoleParameters.parseArguments(consoleArguments));
     }
 
     @Test
@@ -70,14 +70,14 @@ public class ArgumentsSingleUserRecommendationTest extends DelfosTest {
             "--single-user",
             "--recommend",
             "-u", "1",
-            "-config-file", SINGLE_USER_RS_CONFIG_XML
+            "-rs-config", SINGLE_USER_RS_CONFIG_XML
 
         };
 
-        CaseUseManagerTest.testCaseUseSubManager(Recommend.getInstance(), new ConsoleParameters(consoleArguments));
+        CaseUseManagerTest.testCaseUseSubManager(Recommend.getInstance(), ConsoleParameters.parseArguments(consoleArguments));
 
         Recommend.getInstance()
-                .manageCaseUse(new ConsoleParameters(consoleArguments));
+                .manageCaseUse(ConsoleParameters.parseArguments(consoleArguments));
     }
 
     @Test
@@ -85,10 +85,10 @@ public class ArgumentsSingleUserRecommendationTest extends DelfosTest {
         System.out.println("test_SingleUser_BuildRecommendationModel_manageCaseUse");
 
         createConfigurationFile();
-        ConsoleParameters consoleParameters = new ConsoleParameters(
+        ConsoleParameters consoleParameters = ConsoleParameters.parseArguments(
                 "--single-user",
                 "--build",
-                "-config-file", SINGLE_USER_RS_CONFIG_XML
+                "-rs-config", SINGLE_USER_RS_CONFIG_XML
         );
 
         CaseUseManagerTest.testCaseUseSubManager(BuildRecommendationModel.getInstance(), consoleParameters);
@@ -103,11 +103,11 @@ public class ArgumentsSingleUserRecommendationTest extends DelfosTest {
 
         test_SingleUser_BuildRecommendationModel_manageCaseUse();
 
-        ConsoleParameters consoleParameters = new ConsoleParameters(
+        ConsoleParameters consoleParameters = ConsoleParameters.parseArguments(
                 "--single-user",
                 "--recommend",
                 "-u", "1",
-                "-config-file", SINGLE_USER_RS_CONFIG_XML
+                "-rs-config", SINGLE_USER_RS_CONFIG_XML
         );
 
         CaseUseManagerTest.testCaseUseSubManager(Recommend.getInstance(), consoleParameters);

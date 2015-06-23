@@ -1,32 +1,37 @@
 package delfos.dataset.loaders.database.mysql;
 
-import java.sql.SQLException;
 import delfos.ERROR_CODES;
 import delfos.common.exceptions.dataset.CannotLoadContentDataset;
 import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
+import delfos.common.exceptions.dataset.CannotLoadUsersDataset;
 import delfos.databaseconnections.MySQLConnection;
 import delfos.dataset.basic.item.ContentDataset;
+import delfos.dataset.basic.loader.types.ContentDatasetLoader;
+import delfos.dataset.basic.loader.types.UsersDatasetLoader;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RatingsDataset;
 import delfos.dataset.basic.rating.RelevanceCriteria;
-import delfos.dataset.basic.loader.types.ContentDatasetLoader;
+import delfos.dataset.basic.user.UsersDataset;
 import delfos.io.database.mysql.dataset.ContentDatasetToMySQL;
-import delfos.io.database.mysql.dataset.RatingDatasetToMySQL;
+import delfos.io.database.mysql.dataset.RatingsDatasetToMySQL;
+import delfos.io.database.mysql.dataset.UsersDatasetToMySQL;
+import java.sql.SQLException;
 
 /**
  * Clase para recuperar los datasets almacenados mediante las clases
- * {@link RatingDatasetToMySQL} y {@link ContentDatasetToMySQL} y utilizarlos
+ * {@link RatingsDatasetToMySQL} y {@link ContentDatasetToMySQL} y utilizarlos
  * para la recomendación.
  *
-* @author Jorge Castro Gallardo
+ * @author Jorge Castro Gallardo
  *
  * @version 1.0 15-Mar-2013
  */
-public class MySQLDatabaseDatasetLoader_Default extends MySQLDatabaseDatasetLoaderAbstract implements ContentDatasetLoader {
+public class MySQLDatabaseDatasetLoader_Default extends MySQLDatabaseDatasetLoaderAbstract implements ContentDatasetLoader, UsersDatasetLoader {
 
     private static final long serialVersionUID = 1L;
     private RatingsDataset<? extends Rating> ratingsDataset;
-    private ContentDataset cd;
+    private ContentDataset contentDataset;
+    private UsersDataset usersDataset;
 
     public MySQLDatabaseDatasetLoader_Default() {
         super();
@@ -47,7 +52,7 @@ public class MySQLDatabaseDatasetLoader_Default extends MySQLDatabaseDatasetLoad
     public RatingsDataset<? extends Rating> getRatingsDataset() throws CannotLoadRatingsDataset {
         if (ratingsDataset == null) {
             try {
-                RatingDatasetToMySQL datasetToMySQL = new RatingDatasetToMySQL(getMySQLConnection());
+                RatingsDatasetToMySQL datasetToMySQL = new RatingsDatasetToMySQL(getMySQLConnection());
                 ratingsDataset = datasetToMySQL.readDataset();
             } catch (ClassNotFoundException ex) {
                 ERROR_CODES.DEPENDENCY_NOT_FOUND.exit(ex);
@@ -60,17 +65,17 @@ public class MySQLDatabaseDatasetLoader_Default extends MySQLDatabaseDatasetLoad
 
     @Override
     public ContentDataset getContentDataset() throws CannotLoadContentDataset {
-        if (cd == null) {
+        if (contentDataset == null) {
             try {
                 ContentDatasetToMySQL contentDatasetToMySQL = new ContentDatasetToMySQL(getMySQLConnection());
-                cd = contentDatasetToMySQL.readDataset();
+                contentDataset = contentDatasetToMySQL.readDataset();
             } catch (ClassNotFoundException ex) {
                 ERROR_CODES.DEPENDENCY_NOT_FOUND.exit(ex);
             } catch (SQLException ex) {
                 throw new CannotLoadContentDataset(ex);
             }
         }
-        return cd;
+        return contentDataset;
     }
 
     @Override
@@ -111,5 +116,20 @@ public class MySQLDatabaseDatasetLoader_Default extends MySQLDatabaseDatasetLoad
 
     private String getTableNamePrefix() {
         return (String) getParameterValue(CONNECTION_CONFIGURATION_PREFIX);
+    }
+
+    @Override
+    public UsersDataset getUsersDataset() throws CannotLoadUsersDataset {
+        if (usersDataset == null) {
+            try {
+                UsersDatasetToMySQL usersDatasetToMySQL = new UsersDatasetToMySQL(getMySQLConnection());
+                usersDataset = usersDatasetToMySQL.readDataset();
+            } catch (ClassNotFoundException ex) {
+                ERROR_CODES.DEPENDENCY_NOT_FOUND.exit(ex);
+            } catch (SQLException ex) {
+                throw new CannotLoadContentDataset(ex);
+            }
+        }
+        return usersDataset;
     }
 }

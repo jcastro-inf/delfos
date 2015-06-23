@@ -1,15 +1,6 @@
 package delfos.rs.bufferedrecommenders;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
+import delfos.Constants;
 import delfos.ERROR_CODES;
 import delfos.common.Global;
 import delfos.common.exceptions.dataset.CannotLoadContentDataset;
@@ -21,13 +12,22 @@ import delfos.common.exceptions.ratings.NotEnoughtUserInformation;
 import delfos.common.parameters.Parameter;
 import delfos.common.parameters.restriction.DirectoryParameter;
 import delfos.common.parameters.restriction.RecommenderSystemParameterRestriction;
-import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.loader.types.DatasetLoader;
+import delfos.dataset.basic.rating.Rating;
+import delfos.rs.RecommendationModelBuildingProgressListener;
 import delfos.rs.RecommenderSystem;
 import delfos.rs.RecommenderSystemAdapter;
-import delfos.rs.RecommendationModelBuildingProgressListener;
 import delfos.rs.collaborativefiltering.svd.TryThisAtHomeSVD;
 import delfos.rs.recommendation.Recommendation;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.util.Collection;
+import java.util.Map;
 
 /**
  * Sistema de recomendación que almacena las recomendaciones calculadas en un
@@ -46,7 +46,12 @@ public class RecommenderSystem_bufferedRecommendations extends RecommenderSystem
      */
     public static final Parameter BUFFER_DIRECTORY = new Parameter(
             "persistenceFileDirectory",
-            new DirectoryParameter(new File("bufferOfRecommendations" + File.separator).getAbsoluteFile()));
+            new DirectoryParameter(
+                    new File(Constants.getTempDirectory().getAbsolutePath() + File.separator
+                            + "bufferOfRecommendations" + File.separator
+                    )
+            )
+    );
     /**
      * Sistema de recomendación con persistencia en modelo para el que se fija
      * el modelo.

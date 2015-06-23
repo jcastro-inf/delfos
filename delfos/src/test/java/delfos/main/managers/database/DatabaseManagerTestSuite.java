@@ -1,9 +1,11 @@
 package delfos.main.managers.database;
 
+import delfos.ConsoleParameters;
+import delfos.main.Main;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
-import delfos.main.Main;
+import java.util.List;
 
 /**
  *
@@ -15,14 +17,16 @@ public class DatabaseManagerTestSuite {
     public static void initDatabase(File manageDatasetConfigFile) throws Exception {
 
         String[] commandLineArguments = {
-            "-manage-database", manageDatasetConfigFile.getPath(),
-            "--init"};
+            "--manage-database",
+            "-database-config", manageDatasetConfigFile.getPath(),
+            "--init-database"};
         Main.mainWithExceptions(commandLineArguments);
     }
 
     public static void addUser(File manageDatasetConfigFile, int idUser) throws Exception {
         String[] commandLineArguments = {
-            "-manage-database", manageDatasetConfigFile.getPath(),
+            "--manage-database",
+            "-database-config", manageDatasetConfigFile.getPath(),
             "-add-user", Integer.toString(idUser)
         };
         Main.mainWithExceptions(commandLineArguments);
@@ -30,59 +34,66 @@ public class DatabaseManagerTestSuite {
 
     public static void addUserFeatures(File manageDatasetConfigFile, int idUser, String... features) throws Exception {
 
-        ArrayList<String> commandLineArguments = new ArrayList<>();
+        String[] args = {
+            "--manage-database",
+            "-database-config", manageDatasetConfigFile.getPath(),
+            "-add-user-features", Integer.toString(idUser),
+            "-features"
+        };
 
-        commandLineArguments.add("-manage-database");
-        commandLineArguments.add(manageDatasetConfigFile.getPath());
+        List<String> arguments = new ArrayList<>(Arrays.asList(args));
+        arguments.addAll(Arrays.asList(features));
 
-        commandLineArguments.add("-add-user-features");
-        commandLineArguments.add(Integer.toString(idUser));
+        ConsoleParameters consoleParameters
+                = ConsoleParameters.parseArguments(arguments.toArray(new String[0]));
 
-        commandLineArguments.add("-features");
-        commandLineArguments.addAll(Arrays.asList(features));
-
-        Main.mainWithExceptions(commandLineArguments.toArray(new String[0]));
+        Main.mainWithExceptions(consoleParameters);
     }
 
     public static void addItem(File manageDatasetConfigFile, int idItem) throws Exception {
 
         String[] commandLineArguments = {
-            "-manage-database", manageDatasetConfigFile.getPath(),
+            "--manage-database",
+            "-database-config", manageDatasetConfigFile.getPath(),
             "-add-item", Integer.toString(idItem)};
         Main.mainWithExceptions(commandLineArguments);
     }
 
     public static void addItemFeatures(File manageDatasetConfigFile, int idItem, String... features) throws Exception {
 
-        ArrayList<String> commandLineArguments = new ArrayList<>();
+        String[] args = {
+            "--manage-database",
+            "-database-config", manageDatasetConfigFile.getPath(),
+            "-add-item-features", Integer.toString(idItem),
+            "-features"
+        };
 
-        commandLineArguments.add("-manage-database");
-        commandLineArguments.add(manageDatasetConfigFile.getPath());
+        List<String> arguments = new ArrayList<>(Arrays.asList(args));
+        arguments.addAll(Arrays.asList(features));
 
-        commandLineArguments.add("-add-item-features");
-        commandLineArguments.add(Integer.toString(idItem));
+        ConsoleParameters consoleParameters
+                = ConsoleParameters.parseArguments(arguments.toArray(new String[0]));
 
-        commandLineArguments.add("-features");
-        commandLineArguments.addAll(Arrays.asList(features));
-
-        Main.mainWithExceptions(commandLineArguments.toArray(new String[0]));
+        Main.mainWithExceptions(consoleParameters);
     }
 
     public static void addRating(File manageDatasetConfigFile, int idUser, int idItem, double ratingValue) throws Exception {
 
         String[] commandLineArguments = {
-            "-manage-database", manageDatasetConfigFile.getPath(),
+            "--manage-database",
+            "-database-config", manageDatasetConfigFile.getPath(),
             "--add-rating",
-            "-idUser", Integer.toString(idUser),
-            "-idItem", Integer.toString(idItem),
-            "-ratingValue", Double.toString(ratingValue)};
+            "-user", Integer.toString(idUser),
+            "-item", Integer.toString(idItem),
+            "-value", Double.toString(ratingValue)};
 
         Main.mainWithExceptions(commandLineArguments);
     }
 
     static void printUsers(File manageDatasetConfigFile) {
         String[] commandLineArguments = {
-            "-manage-database", manageDatasetConfigFile.getPath(),
+            "--manage-database",
+            "-database-config", manageDatasetConfigFile.getPath(),
             "--user-set"};
 
         Main.mainWithExceptions(commandLineArguments);
@@ -91,7 +102,8 @@ public class DatabaseManagerTestSuite {
     static void printItems(File manageDatasetConfigFile) {
 
         String[] commandLineArguments = {
-            "-manage-database", manageDatasetConfigFile.getPath(),
+            "--manage-database",
+            "-database-config", manageDatasetConfigFile.getPath(),
             "--item-set"};
 
         Main.mainWithExceptions(commandLineArguments);
@@ -100,7 +112,8 @@ public class DatabaseManagerTestSuite {
     static void printUserRatings(File manageDatasetConfigFile, int idUser) {
 
         String[] commandLineArguments = {
-            "-manage-database", manageDatasetConfigFile.getPath(),
+            "--manage-database",
+            "-database-config", manageDatasetConfigFile.getPath(),
             "-user-ratings", Integer.toString(idUser)};
 
         Main.mainWithExceptions(commandLineArguments);
@@ -109,7 +122,8 @@ public class DatabaseManagerTestSuite {
     static void printItemRatings(File manageDatasetConfigFile, int idItem) {
 
         String[] commandLineArguments = {
-            "-manage-database", manageDatasetConfigFile.getPath(),
+            "--manage-database",
+            "-database-config", manageDatasetConfigFile.getPath(),
             "-item-ratings", Integer.toString(idItem)};
 
         Main.mainWithExceptions(commandLineArguments);
@@ -117,7 +131,8 @@ public class DatabaseManagerTestSuite {
 
     static void printRatingsTable(File manageDatasetConfigFile) {
         String[] commandLineArguments = {
-            "-manage-database", manageDatasetConfigFile.getPath(),
+            "--manage-database",
+            "-database-config", manageDatasetConfigFile.getPath(),
             "--ratings-table"};
 
         Main.mainWithExceptions(commandLineArguments);

@@ -16,7 +16,7 @@ public class GroupRecommendation extends CaseUseModeWithSubManagers {
     /**
      * Parámetro de la linea de comandos para usar el modo non-personalised.
      */
-    public static final String GROUP_MODE = "-group-recommendation";
+    public static final String GROUP_MODE = "--group-recommendation";
     /**
      * Parámetro de la linea de comandos para especificar los usuarios del
      * grupo.

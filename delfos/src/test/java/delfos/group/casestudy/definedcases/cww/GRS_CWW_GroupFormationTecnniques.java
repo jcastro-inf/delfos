@@ -1,5 +1,6 @@
 package delfos.group.casestudy.definedcases.cww;
 
+import delfos.Constants;
 import delfos.configureddatasets.ConfiguredDatasetLoader;
 import delfos.constants.DelfosTest;
 import delfos.dataset.basic.loader.types.DatasetLoader;
@@ -40,7 +41,11 @@ public class GRS_CWW_GroupFormationTecnniques extends DelfosTest {
     @Test
     public void makeCasesAndExecuteLocaly() {
 
-        String experimentBaseDirectoryString = "experiments" + File.separator + this.getClass().getSimpleName() + File.separator;
+        String experimentBaseDirectoryString
+                = Constants.getTempDirectory().getAbsolutePath() + File.separator
+                + "experiments" + File.separator
+                + this.getClass().getSimpleName() + File.separator;
+
         File experimentBaseDirectory = new File(experimentBaseDirectoryString);
 
         GroupRecommenderSystem groupRecommenderSystem = new SVDforGroup_ratingsAggregation();

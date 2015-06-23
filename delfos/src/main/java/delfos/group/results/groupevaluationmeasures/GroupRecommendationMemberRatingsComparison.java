@@ -1,5 +1,6 @@
 package delfos.group.results.groupevaluationmeasures;
 
+import delfos.Constants;
 import delfos.common.FileUtilities;
 import delfos.common.exceptions.dataset.users.UserNotFound;
 import delfos.dataset.basic.rating.Rating;
@@ -32,7 +33,10 @@ public class GroupRecommendationMemberRatingsComparison extends GroupEvaluationM
         return false;
     }
 
-    public static final File TEST_SET_DIRECTORY = new File("." + File.separator + "test-temp" + File.separator + "test-set" + File.separator);
+    public static final File TEST_SET_DIRECTORY = new File(
+            Constants.getTempDirectory().getAbsoluteFile() + File.separator
+            + GroupRecommendationMemberRatingsComparison.class.getSimpleName() + File.separator
+            + "test-set" + File.separator);
 
     @Override
     public GroupMeasureResult getMeasureResult(GroupRecommendationResult recommendationResults, RatingsDataset<? extends Rating> testDataset, RelevanceCriteria relevanceCriteria) {

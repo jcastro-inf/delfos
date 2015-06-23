@@ -10,9 +10,9 @@
                 <goal>org.codehaus.mojo:exec-maven-plugin:1.2.1:exec</goal>
             </goals>
             <properties>
-                <exec.args>-classpath %classpath delfos.main.Main --initial-config -config ./.config/delfos -v -datasets-dir ./datasets -datasets-to-install ml-100k complete-5u-10i ssii-partition9 ml-1m -v</exec.args>
+                <exec.args>-classpath %classpath delfos.main.Main --init-database-x</exec.args>
                 <exec.executable>java</exec.executable>
-                <exec.workingdir>/home/jcastro/delfos/delfos/delfos/delfos-1.2.20150422-install</exec.workingdir>
+                <exec.workingdir></exec.workingdir>
             </properties>
         </action>
         <action>
@@ -25,10 +25,10 @@
                 <goal>org.codehaus.mojo:exec-maven-plugin:1.2.1:exec</goal>
             </goals>
             <properties>
-                <exec.args>-Xdebug -Xrunjdwp:transport=dt_socket,server=n,address=${jpda.address} -classpath %classpath delfos.main.Main --initial-config -config ./.config/delfos -v -datasets-dir ./datasets -datasets-to-install ml-100k complete-5u-10i ssii-partition9 ml-1m -v</exec.args>
+                <exec.args>-Xdebug -Xrunjdwp:transport=dt_socket,server=n,address=${jpda.address} -classpath %classpath delfos.main.Main --init-database-x</exec.args>
                 <exec.executable>java</exec.executable>
                 <jpda.listen>true</jpda.listen>
-                <exec.workingdir>/home/jcastro/delfos/delfos/delfos/delfos-1.2.20150422-install</exec.workingdir>
+                <exec.workingdir></exec.workingdir>
             </properties>
         </action>
         <action>
@@ -41,9 +41,9 @@
                 <goal>org.codehaus.mojo:exec-maven-plugin:1.2.1:exec</goal>
             </goals>
             <properties>
-                <exec.args>-classpath %classpath delfos.main.Main --initial-config -config ./.config/delfos -v -datasets-dir ./datasets -datasets-to-install ml-100k complete-5u-10i ssii-partition9 ml-1m -v</exec.args>
+                <exec.args>-classpath %classpath delfos.main.Main --init-database-x</exec.args>
                 <exec.executable>java</exec.executable>
-                <exec.workingdir>/home/jcastro/delfos/delfos/delfos/delfos-1.2.20150422-install</exec.workingdir>
+                <exec.workingdir></exec.workingdir>
             </properties>
         </action>
     </actions>

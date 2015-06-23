@@ -124,7 +124,7 @@ public class TryThisAtHomeSVDTest extends DelfosTest {
                 new RecommendationsOutputStandardRaw(5));
 
         //Construcción del modelo.
-        String[] buildArgs = {"--single-user", "--b", "-config-file", configFile};
+        String[] buildArgs = {"--single-user", "--b", "-rs-config", configFile};
         Main.mainWithExceptions(buildArgs);
         System.out.println("Built model of '" + recommenderSystem);
 
@@ -132,7 +132,7 @@ public class TryThisAtHomeSVDTest extends DelfosTest {
         Arrays.asList(users)
                 .parallelStream()
                 .map((idUser) -> {
-                    String[] args = {"--single-user", "--r", "-u", idUser.toString(), "-config-file", configFile};
+                    String[] args = {"--single-user", "--r", "-u", idUser.toString(), "-rs-config", configFile};
                     return args;
                 })
                 .forEach((recommendationArgs) -> {

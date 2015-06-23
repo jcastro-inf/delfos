@@ -1,5 +1,26 @@
 package delfos.view.recommendation;
 
+import delfos.ERROR_CODES;
+import delfos.common.Chronometer;
+import delfos.common.DateCollapse;
+import delfos.common.Global;
+import delfos.common.exceptions.dataset.CannotLoadContentDataset;
+import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
+import delfos.common.exceptions.dataset.CannotLoadUsersDataset;
+import delfos.common.exceptions.dataset.items.ItemNotFound;
+import delfos.common.exceptions.dataset.users.UserNotFound;
+import delfos.common.exceptions.ratings.NotEnoughtUserInformation;
+import delfos.common.parameters.view.EditParameterDialog;
+import delfos.configureddatasets.ConfiguredDatasetsFactory;
+import delfos.dataset.basic.item.ContentDataset;
+import delfos.dataset.basic.loader.types.ContentDatasetLoader;
+import delfos.dataset.basic.loader.types.DatasetLoader;
+import delfos.dataset.basic.rating.Rating;
+import delfos.dataset.basic.rating.RelevanceCriteria;
+import delfos.factories.RecommenderSystemsFactory;
+import delfos.rs.RecommenderSystem;
+import delfos.rs.RecommenderSystemAdapter;
+import delfos.rs.recommendation.Recommendation;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
@@ -13,7 +34,6 @@ import java.awt.event.WindowEvent;
 import java.lang.management.ManagementFactory;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.logging.Level;
@@ -31,27 +51,6 @@ import javax.swing.JSpinner;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingConstants;
 import javax.swing.SwingWorker;
-import delfos.ERROR_CODES;
-import delfos.common.Chronometer;
-import delfos.common.DateCollapse;
-import delfos.common.Global;
-import delfos.common.exceptions.dataset.CannotLoadContentDataset;
-import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
-import delfos.common.exceptions.dataset.CannotLoadUsersDataset;
-import delfos.common.exceptions.dataset.items.ItemNotFound;
-import delfos.common.exceptions.dataset.users.UserNotFound;
-import delfos.common.exceptions.ratings.NotEnoughtUserInformation;
-import delfos.common.parameters.view.EditParameterDialog;
-import delfos.configureddatasets.ConfiguredDatasetsFactory;
-import delfos.dataset.basic.item.ContentDataset;
-import delfos.dataset.basic.rating.Rating;
-import delfos.dataset.basic.rating.RelevanceCriteria;
-import delfos.dataset.basic.loader.types.ContentDatasetLoader;
-import delfos.dataset.basic.loader.types.DatasetLoader;
-import delfos.factories.RecommenderSystemsFactory;
-import delfos.rs.RecommenderSystem;
-import delfos.rs.RecommenderSystemAdapter;
-import delfos.rs.recommendation.Recommendation;
 
 /**
  * Clase que encapsula el funcionamiento de la interfaz destinada a la
@@ -68,6 +67,7 @@ import delfos.rs.recommendation.Recommendation;
 public class RecommendationWindow extends JFrame {
 
     public static final long serialVersionUID = 1L;
+    private static Object recommendationModel;
     private JButton buildModel;
     private JLabel progressMessage;
     private JProgressBar progressBar;
@@ -110,7 +110,7 @@ public class RecommendationWindow extends JFrame {
         this.setLayout(new GridBagLayout());
 
         GridBagConstraints constraints = new GridBagConstraints();
-        constraints.fill = GridBagConstraints.BOTH;
+        constraints.fill = GridBagConstraints.NONE;
         constraints.weightx = 0.0;
         constraints.weighty = 0.0;
         constraints.gridx = 0;
@@ -120,7 +120,7 @@ public class RecommendationWindow extends JFrame {
         constraints.insets = new Insets(3, 4, 3, 4);
         this.add(panelSelectorUsuario(), constraints);
 
-        constraints.fill = GridBagConstraints.BOTH;
+        constraints.fill = GridBagConstraints.NONE;
         constraints.weightx = 0.0;
         constraints.weighty = 0.0;
         constraints.gridx = 1;
@@ -130,7 +130,7 @@ public class RecommendationWindow extends JFrame {
         constraints.insets = new Insets(3, 4, 3, 4);
         this.add(panelCriterioRelevancia(), constraints);
 
-        constraints.fill = GridBagConstraints.BOTH;
+        constraints.fill = GridBagConstraints.NONE;
         constraints.weightx = 0.0;
         constraints.weighty = 1.0;
         constraints.gridx = 0;
@@ -160,7 +160,7 @@ public class RecommendationWindow extends JFrame {
         constraints.insets = new Insets(3, 4, 3, 4);
         this.add(panelDatasetSelector(), constraints);
 
-        constraints.fill = GridBagConstraints.HORIZONTAL;
+        constraints.fill = GridBagConstraints.BOTH;
         constraints.weightx = 1.0;
         constraints.weighty = 1.0;
         constraints.gridx = 2;
@@ -239,12 +239,12 @@ public class RecommendationWindow extends JFrame {
                     @Override
                     protected Void doInBackground() {
                         rs.addRecommendationModelBuildingProgressListener((String actualJob, int percent, long remainingTime1) -> {
-                            progressBar.setValue(percent * 2);
-                            progressMessage.setText(actualJob);
+                            progressBar.setValue(percent);
+                            progressMessage.setText(actualJob + " --> Remaining Time: " + DateCollapse.collapse(remainingTime1));
                         });
 
                         try {
-                            rs.buildRecommendationModel(datasetLoader);
+                            RecommendationWindow.recommendationModel = rs.buildRecommendationModel(datasetLoader);
                             correcto = true;
                         } catch (CannotLoadRatingsDataset | CannotLoadContentDataset | CannotLoadUsersDataset ex) {
                             Logger.getLogger(RecommendationWindow.class.getName()).log(Level.SEVERE, null, ex);
@@ -258,6 +258,7 @@ public class RecommendationWindow extends JFrame {
                             calcularRecomendaciones.setEnabled(true);
                             progressBar.setValue(100);
                             progressMessage.setText("Finished");
+                            computeRecommendations();
                         } else {
                             progressBar.setValue(0);
                             progressMessage.setText("Error in construction");
@@ -295,41 +296,44 @@ public class RecommendationWindow extends JFrame {
         calcularRecomendaciones.setEnabled(false);
         ret.add(calcularRecomendaciones, constraints);
         this.calcularRecomendaciones.addActionListener((ActionEvent e) -> {
-            try {
-                RecommenderSystemAdapter<Object> recommenderSystem = (RecommenderSystemAdapter<Object>) SRSelector.getSelectedItem();
-                int idUser = ((Number) selectorUsuario.getSelectedItem()).intValue();
-                DatasetLoader<? extends Rating> datasetLoader = (DatasetLoader) datasetSelector.getSelectedItem();
-                RelevanceCriteria relevanceCriteria = new RelevanceCriteria((Number) spinerRelevancia.getValue());
-                final ContentDataset contentDataset;
-                if (datasetLoader instanceof ContentDatasetLoader) {
-                    ContentDatasetLoader contentDatasetLoader = (ContentDatasetLoader) datasetLoader;
-                    contentDataset = contentDatasetLoader.getContentDataset();
-                } else {
-                    throw new CannotLoadContentDataset("The dataset loader is not a ContentDatasetLoader, cannot apply a content-based ");
-                }
-                Set<Integer> noValoradas = new TreeSet<>(contentDataset.allID());
-                noValoradas.removeAll(datasetLoader.getRatingsDataset().getUserRated(idUser));
-                recommendationsJTableModel.setContentDataset(contentDataset);
-
-                Object model = recommenderSystem.buildRecommendationModel(datasetLoader);
-                Collection<Recommendation> recommendations = recommenderSystem.recommendToUser(datasetLoader, model, idUser, noValoradas);
-                RecommendationWindow.this.recommendationsJTableModel.setRecomendaciones(recommendations);
-            } catch (CannotLoadRatingsDataset ex) {
-                ERROR_CODES.CANNOT_LOAD_RATINGS_DATASET.exit(ex);
-            } catch (UserNotFound ex) {
-                ERROR_CODES.USER_NOT_FOUND.exit(ex);
-            } catch (CannotLoadContentDataset ex) {
-                ERROR_CODES.CANNOT_LOAD_CONTENT_DATASET.exit(ex);
-            } catch (ItemNotFound ex) {
-                ERROR_CODES.ITEM_NOT_FOUND.exit(ex);
-            } catch (CannotLoadUsersDataset ex) {
-                ERROR_CODES.CANNOT_LOAD_USERS_DATASET.exit(ex);
-            } catch (NotEnoughtUserInformation ex) {
-                ERROR_CODES.USER_NOT_ENOUGHT_INFORMATION.exit(ex);
-            }
+            computeRecommendations();
         });
 
         return ret;
+    }
+
+    private void computeRecommendations() throws RuntimeException {
+        try {
+            RecommenderSystemAdapter<Object> recommenderSystem = (RecommenderSystemAdapter<Object>) SRSelector.getSelectedItem();
+            int idUser = ((Number) selectorUsuario.getSelectedItem()).intValue();
+            DatasetLoader<? extends Rating> datasetLoader = (DatasetLoader) datasetSelector.getSelectedItem();
+            RelevanceCriteria relevanceCriteria = new RelevanceCriteria((Number) spinerRelevancia.getValue());
+            final ContentDataset contentDataset;
+            if (datasetLoader instanceof ContentDatasetLoader) {
+                ContentDatasetLoader contentDatasetLoader = (ContentDatasetLoader) datasetLoader;
+                contentDataset = contentDatasetLoader.getContentDataset();
+            } else {
+                throw new CannotLoadContentDataset("The dataset loader is not a ContentDatasetLoader, cannot apply a content-based ");
+            }
+            Set<Integer> noValoradas = new TreeSet<>(contentDataset.allID());
+            noValoradas.removeAll(datasetLoader.getRatingsDataset().getUserRated(idUser));
+            recommendationsJTableModel.setContentDataset(contentDataset);
+
+            Collection<Recommendation> recommendations = recommenderSystem.recommendToUser(datasetLoader, recommendationModel, idUser, noValoradas);
+            RecommendationWindow.this.recommendationsJTableModel.setRecomendaciones(recommendations);
+        } catch (CannotLoadRatingsDataset ex) {
+            ERROR_CODES.CANNOT_LOAD_RATINGS_DATASET.exit(ex);
+        } catch (UserNotFound ex) {
+            ERROR_CODES.USER_NOT_FOUND.exit(ex);
+        } catch (CannotLoadContentDataset ex) {
+            ERROR_CODES.CANNOT_LOAD_CONTENT_DATASET.exit(ex);
+        } catch (ItemNotFound ex) {
+            ERROR_CODES.ITEM_NOT_FOUND.exit(ex);
+        } catch (CannotLoadUsersDataset ex) {
+            ERROR_CODES.CANNOT_LOAD_USERS_DATASET.exit(ex);
+        } catch (NotEnoughtUserInformation ex) {
+            ERROR_CODES.USER_NOT_ENOUGHT_INFORMATION.exit(ex);
+        }
     }
 
     private Component panelRecommenderSystems() {
@@ -340,6 +344,7 @@ public class RecommendationWindow extends JFrame {
 
         SRSelector.addActionListener((ActionEvent e) -> {
             calcularRecomendaciones.setEnabled(false);
+            recommendationModel = null;
         });
 
         GridBagConstraints constraints = new GridBagConstraints();
@@ -430,6 +435,7 @@ public class RecommendationWindow extends JFrame {
             } catch (CannotLoadRatingsDataset ex) {
                 ERROR_CODES.CANNOT_LOAD_RATINGS_DATASET.exit(ex);
             }
+            recommendationModel = null;
         });
 
         ((DatasetLoader) datasetSelector.getSelectedItem()).addParammeterListener(() -> {
@@ -578,7 +584,12 @@ public class RecommendationWindow extends JFrame {
         constraints.insets = new Insets(3, 4, 3, 4);
         selectorUsuario = new JComboBox();
         selectorUsuario.addActionListener((ActionEvent e) -> {
-            recommendationsJTableModel.setRecomendaciones(new ArrayList<>());
+            if (recommendationModel == null) {
+                recommendationsJTableModel.setRecomendaciones(new ArrayList<>());
+            } else {
+                computeRecommendations();
+            }
+
         });
         ret.add(selectorUsuario, constraints);
 
@@ -593,7 +604,6 @@ public class RecommendationWindow extends JFrame {
         this.recommendationsTable = new RecommendationsTable(recommendationsJTableModel);
         JScrollPane scroll = new JScrollPane(recommendationsTable);
         scroll.setMinimumSize(new Dimension(200, 200));
-        scroll.setPreferredSize(new Dimension(200, 200));
         GridBagConstraints constraints = new GridBagConstraints();
         constraints.fill = GridBagConstraints.BOTH;
         constraints.weightx = 1.0;

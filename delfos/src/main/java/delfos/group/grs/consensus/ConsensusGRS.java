@@ -14,7 +14,6 @@ import delfos.common.parameters.Parameter;
 import delfos.common.parameters.restriction.BooleanParameter;
 import delfos.common.parameters.restriction.DirectoryParameter;
 import delfos.common.parameters.restriction.FloatParameter;
-import delfos.common.parameters.restriction.ObjectParameter;
 import delfos.common.parameters.restriction.ParameterOwnerRestriction;
 import delfos.common.parameters.restriction.RecommenderSystemParameterRestriction;
 import delfos.dataset.basic.loader.types.DatasetLoader;
@@ -22,7 +21,6 @@ import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RatingsDataset;
 import delfos.dataset.basic.user.User;
 import delfos.dataset.util.DatasetOperations;
-import delfos.factories.AggregationOperatorFactory;
 import delfos.group.groupsofusers.GroupOfUsers;
 import delfos.group.grs.GroupRecommenderSystemAdapter;
 import delfos.group.grs.SingleRecommendationModel;
@@ -33,8 +31,8 @@ import delfos.group.grs.consensus.itemselector.GroupRecommendationsSelector;
 import delfos.group.grs.recommendations.GroupRecommendations;
 import delfos.group.grs.recommendations.GroupRecommendationsWithMembersRecommendations;
 import delfos.io.csv.dataset.DatasetToCSV;
-import delfos.rs.RecommenderSystem;
 import delfos.rs.RecommendationModelBuildingProgressListener;
+import delfos.rs.RecommenderSystem;
 import delfos.rs.collaborativefiltering.svd.SVDFoldingIn;
 import delfos.rs.recommendation.Recommendation;
 import delfos.rs.recommendation.RecommendationComputationDetails;
@@ -78,7 +76,7 @@ public class ConsensusGRS extends GroupRecommenderSystemAdapter<SingleRecommenda
      */
     public static final Parameter AGGREGATION_OPPERATOR = new Parameter(
             "AGGREGATION_METHOD",
-            new ObjectParameter(AggregationOperatorFactory.getInstance().getAllAggregationOperators(), new MinimumValue()),
+            new ParameterOwnerRestriction(AggregationOperator.class, new MinimumValue()),
             "Especifica la técnica de agregación para agregar los ratings de "
             + "los usuarios y formar el perfil del grupo."
     );
@@ -191,7 +189,7 @@ public class ConsensusGRS extends GroupRecommenderSystemAdapter<SingleRecommenda
             Set<Integer> candidateItems)
             throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset, NotEnoughtUserInformation {
 
-        final GroupRecommendationsSelector itemSelector = new BordaCount();
+        final GroupRecommendationsSelector itemSelector = (GroupRecommendationsSelector) getParameterValue(ITEM_SELECTOR);
         final AggregationOperator aggregationOperator = getAggregationOperator();
         final RecommenderSystem singleUserRecommenderSystem = getSingleUserRecommender();
 
@@ -347,7 +345,10 @@ public class ConsensusGRS extends GroupRecommenderSystemAdapter<SingleRecommenda
 
         File consensusInputFilesDirectory = (File) getParameterValue(CONSENSUS_INPUT_FILES_DIRECTORY);
         if (!consensusInputFilesDirectory.exists()) {
-            consensusInputFilesDirectory.mkdirs();
+            boolean mkdirs = consensusInputFilesDirectory.mkdirs();
+            if (!mkdirs) {
+                throw new IllegalStateException("Could not create '" + consensusInputFilesDirectory.getAbsolutePath() + "' dir");
+            }
         }
 
         HashCodeBuilder hashBuilder = new HashCodeBuilder(37, 11);

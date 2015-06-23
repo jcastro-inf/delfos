@@ -2,6 +2,7 @@ package delfos.main.managers;
 
 import delfos.ConsoleParameters;
 import delfos.common.Global;
+import delfos.main.Main;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -69,14 +70,7 @@ public abstract class CaseUseModeWithSubManagers extends CaseUseMode {
     }
 
     public static void noCaseUseManagersActivated(ConsoleParameters consoleParameters) {
-
-        StringBuilder message = new StringBuilder();
-
-        message.append("Unrecognized command line : ");
-        message.append(consoleParameters.printOriginalParameters());
-        message.append("\n");
-
-        Global.showWarning(message.toString());
+        Main.noCaseUseActivated(consoleParameters);
     }
 
     public static void manyCaseUseManagersActivated(ConsoleParameters consoleParameters, List<CaseUseSubManager> suitableCaseUseManagers) {

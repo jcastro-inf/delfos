@@ -1,6 +1,7 @@
 package delfos.group;
 
 import delfos.ConsoleParameters;
+import delfos.Constants;
 import delfos.ERROR_CODES;
 import delfos.UndefinedParameterException;
 import delfos.common.exceptions.dataset.CannotLoadContentDataset;
@@ -26,6 +27,7 @@ import delfos.group.groupsofusers.measuresovergroups.SumDistanceInGraph;
 import delfos.group.grs.GroupRecommenderSystem;
 import delfos.group.results.groupevaluationmeasures.GroupEvaluationMeasure;
 import delfos.group.results.groupevaluationmeasures.MAE;
+import delfos.main.managers.experiment.ExecuteGroupXML;
 import delfos.rs.trustbased.FixedGraph;
 import delfos.rs.trustbased.implicittrustcomputation.ShambourLu_UserBasedImplicitTrustComputation;
 import java.io.File;
@@ -56,15 +58,15 @@ public class MainGroup {
         GroupRecommenderSystemsFactory.getInstance().copyInSingleUserRecommender();
         GroupRatingsFilterFactory.getInstance();
 
-        if (consoleParameters.isDefined("-default")) {
+        if (consoleParameters.isParameterDefined("-default")) {
             consoleParameters.printUnusedParameters(System.err);
             defaultBehaviour();
             return true;
         }
 
-        if (consoleParameters.isDefined("-executeGroupXML")) {
+        if (consoleParameters.isParameterDefined(ExecuteGroupXML.MODE_PARAMETER)) {
             try {
-                String xmlExperimentsDirectory = consoleParameters.getValue("-executeGroupXML");
+                String xmlExperimentsDirectory = consoleParameters.getValue(ExecuteGroupXML.MODE_PARAMETER);
 
                 final int NUM_EJECUCIONES;
                 {
@@ -97,7 +99,7 @@ public class MainGroup {
             return true;
         }
 
-        if (consoleParameters.isDefined("-testFilter")) {
+        if (consoleParameters.isParameterDefined("-testFilter")) {
 
             final int NUM_EJECUCIONES, NUM_GROUPS, SIZE_OF_GROUPS;
             final long SEED;
@@ -151,7 +153,7 @@ public class MainGroup {
             return true;
         }
 
-        if (consoleParameters.isDefined("-groupLevelCaseStudy")) {
+        if (consoleParameters.isParameterDefined("-groupLevelCaseStudy")) {
 
             final int SIZE_OF_GROUPS;
             {
@@ -202,7 +204,7 @@ public class MainGroup {
             return true;
         }
 
-        if (consoleParameters.isDefined(GroupRecommendationManager.GRS_RECOMMENDATION_PARAMMETER)) {
+        if (consoleParameters.isParameterDefined(GroupRecommendationManager.GRS_RECOMMENDATION_PARAMMETER)) {
             try {
                 return GroupRecommendationManager.execute(consoleParameters);
             } catch (Exception ex) {
@@ -227,7 +229,7 @@ public class MainGroup {
                 SIZE_OF_GROUPS,
                 SEED);
 
-        filterCaseStudy.setDirectory(new File("experiments" + File.separator).getAbsolutePath());
+        filterCaseStudy.setDirectory(new File(Constants.getTempDirectory().getAbsolutePath() + File.separator + "experiments" + File.separator).getAbsolutePath());
         try {
             filterCaseStudy.execute();
         } catch (UserNotFound ex) {

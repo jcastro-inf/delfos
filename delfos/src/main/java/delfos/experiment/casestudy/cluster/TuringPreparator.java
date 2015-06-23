@@ -1,12 +1,8 @@
 package delfos.experiment.casestudy.cluster;
 
-import java.io.File;
-import java.text.DecimalFormat;
-import java.util.Arrays;
-import java.util.List;
 import delfos.common.FileUtilities;
-import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.loader.types.DatasetLoader;
+import delfos.dataset.basic.rating.Rating;
 import delfos.experiment.casestudy.CaseStudy;
 import delfos.experiment.casestudy.defaultcase.DefaultCaseStudy;
 import delfos.group.casestudy.GroupCaseStudy;
@@ -14,6 +10,11 @@ import delfos.group.casestudy.defaultcase.DefaultGroupCaseStudy;
 import delfos.group.io.xml.casestudy.GroupCaseStudyXML;
 import delfos.io.xml.casestudy.CaseStudyXML;
 import delfos.main.Main;
+import delfos.main.managers.experiment.ExecuteGroupXML;
+import java.io.File;
+import java.text.DecimalFormat;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  *
@@ -101,7 +102,8 @@ public class TuringPreparator implements ExperimentPreparator {
                 .forEach((singleExperimentDirectory) -> {
                     String[] args = {
                         "-seed", "77352653",
-                        "-executeGroupXML", singleExperimentDirectory.getPath(),
+                        ExecuteGroupXML.MODE_PARAMETER,
+                        ExecuteGroupXML.XML_DIRECTORY, singleExperimentDirectory.getPath(),
                         "-numExec", "1"};
                     Main.mainWithExceptions(args);
                 });
@@ -114,7 +116,7 @@ public class TuringPreparator implements ExperimentPreparator {
                 .forEach((singleExperimentDirectory) -> {
                     String[] args = {
                         "-seed", "77352653",
-                        "-executeGroupXML", singleExperimentDirectory.getPath(),
+                        ExecuteGroupXML.MODE_PARAMETER, singleExperimentDirectory.getPath(),
                         "-numExec", Integer.toString(numExec)
                     };
 
@@ -130,7 +132,7 @@ public class TuringPreparator implements ExperimentPreparator {
                 .forEach((singleExperimentDirectory) -> {
                     String[] args = {
                         "-seed", "77352653",
-                        "-executeGroupXML", singleExperimentDirectory.getPath(),
+                        ExecuteGroupXML.MODE_PARAMETER, singleExperimentDirectory.getPath(),
                         "-numExec", Integer.toString(numExec),
                         "-maxCPU", Integer.toString(maxCPU)};
 

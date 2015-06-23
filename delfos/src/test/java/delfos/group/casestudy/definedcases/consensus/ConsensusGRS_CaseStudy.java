@@ -1,33 +1,34 @@
 package delfos.group.casestudy.definedcases.consensus;
 
+import delfos.Constants;
+import delfos.common.FileUtilities;
+import delfos.common.aggregationoperators.MinimumValue;
+import delfos.configureddatasets.ConfiguredDatasetsFactory;
+import delfos.dataset.basic.loader.types.DatasetLoader;
+import delfos.dataset.basic.rating.Rating;
+import delfos.dataset.basic.rating.RelevanceCriteria;
+import delfos.experiment.casestudy.cluster.TuringPreparator;
+import delfos.group.casestudy.GroupCaseStudy;
+import delfos.group.casestudy.defaultcase.DefaultGroupCaseStudy;
+import delfos.group.experiment.validation.groupformation.FixedGroupSize_OnlyNGroups;
+import delfos.group.experiment.validation.groupformation.GroupFormationTechnique;
+import delfos.group.experiment.validation.predictionvalidation.NoPredictionProtocol;
+import delfos.group.experiment.validation.validationtechniques.HoldOutGroupRatedItems;
+import delfos.group.factories.GroupEvaluationMeasuresFactory;
+import delfos.group.factories.GroupRecommendationsSelectorFactory;
+import delfos.group.grs.consensus.ConsensusGRS;
+import delfos.group.grs.consensus.itemselector.GroupRecommendationsSelector;
+import delfos.rs.RecommenderSystem;
+import delfos.rs.bufferedrecommenders.RecommenderSystem_fixedFilePersistence;
+import delfos.rs.collaborativefiltering.knn.memorybased.nwr.KnnMemoryBasedNWR;
+import delfos.rs.collaborativefiltering.svd.SVDFoldingIn;
+import delfos.rs.persistence.FilePersistence;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
-import delfos.common.FileUtilities;
-import delfos.common.aggregationoperators.MinimumValue;
-import delfos.common.decimalnumbers.NumberRounder;
-import delfos.configureddatasets.ConfiguredDatasetsFactory;
-import delfos.dataset.basic.rating.Rating;
-import delfos.dataset.basic.rating.RelevanceCriteria;
-import delfos.dataset.basic.loader.types.DatasetLoader;
-import delfos.experiment.casestudy.cluster.TuringPreparator;
-import delfos.group.casestudy.GroupCaseStudy;
-import delfos.group.casestudy.defaultcase.DefaultGroupCaseStudy;
-import delfos.group.factories.GroupEvaluationMeasuresFactory;
-import delfos.group.grs.consensus.ConsensusGRS;
-import delfos.group.grs.consensus.itemselector.TopNOfEach;
-import delfos.group.experiment.validation.validationtechniques.HoldOutGroupRatedItems;
-import delfos.group.experiment.validation.groupformation.FixedGroupSize_OnlyNGroups;
-import delfos.group.experiment.validation.groupformation.GroupFormationTechnique;
-import delfos.group.experiment.validation.predictionvalidation.NoPredictionProtocol;
-import delfos.rs.RecommenderSystem;
-import delfos.rs.bufferedrecommenders.RecommenderSystem_fixedFilePersistence;
-import delfos.rs.collaborativefiltering.knn.memorybased.nwr.KnnMemoryBasedNWR;
-import delfos.rs.collaborativefiltering.svd.SVDFoldingIn;
-import delfos.rs.persistence.FilePersistence;
 
 /**
  *
@@ -39,15 +40,18 @@ public class ConsensusGRS_CaseStudy {
     public ConsensusGRS_CaseStudy() {
     }
 
-    public static final String CONSENSUS_GRS_EXPERIMENT_DIRECTORY = "." + File.separator
+    public static final String CONSENSUS_GRS_EXPERIMENT_DIRECTORY
+            = Constants.getTempDirectory().getAbsolutePath() + File.separator
             + "experiments" + File.separator
             + "consensus-grs-experiments" + File.separator;
 
-    public static final String CONSENSUS_GRS_INPUT_DIRECTORY = "." + File.separator
+    public static final String CONSENSUS_GRS_INPUT_DIRECTORY
+            = Constants.getTempDirectory().getAbsolutePath() + File.separator
             + "experiments" + File.separator
             + "consensus-grs-input";
 
-    public static final String CONSENSUS_GRS_OUTPUT_DIRECTORY = "." + File.separator
+    public static final String CONSENSUS_GRS_OUTPUT_DIRECTORY
+            = Constants.getTempDirectory().getAbsolutePath() + File.separator
             + "experiments" + File.separator
             + "consensus-grs-output";
 
@@ -60,7 +64,6 @@ public class ConsensusGRS_CaseStudy {
         final File persistenceDirectory = new File(CONSENSUS_GRS_INPUT_DIRECTORY);
 
         FileUtilities.deleteDirectoryRecursive(persistenceDirectory);
-
         persistenceDirectory.mkdirs();
         new File(CONSENSUS_GRS_INPUT_DATA_DIRECTORY).mkdirs();
     }
@@ -93,28 +96,20 @@ public class ConsensusGRS_CaseStudy {
     private List<ConsensusGRS> getAllConsensusGRS() {
         LinkedList<ConsensusGRS> GRSs = new LinkedList<>();
 
-        GRSs.add(new ConsensusGRS(getKnnUserRecommender(), new MinimumValue(), new TopNOfEach(), false, 0.8));
-        GRSs.getLast().setAlias("Consensus_NoConsensus");
+        final MinimumValue aggregationOperator = new MinimumValue();
 
-        double[] consensusDegrees = {
-            0.5,
-            0.6, 0.65, 0.66, 0.67, 0.68, 0.69,
-            0.7, 0.71, 0.72, 0.73, 0.74, 0.75, 0.76, 0.77, 0.78, 0.79,
-            0.8, 0.81, 0.82, 0.83, 0.84, 0.85, 0.86, 0.87, 0.88, 0.89,
-            0.9
-        };
+        for (GroupRecommendationsSelector groupRecommendationsSelector : GroupRecommendationsSelectorFactory.getInstance().getAllClasses()) {
+            ConsensusGRS consensusGRS = new ConsensusGRS(getKnnUserRecommender(), aggregationOperator, groupRecommendationsSelector, false, 0.8);
 
-        for (double consensusDegree : consensusDegrees) {
+            File inputDir = new File(CONSENSUS_GRS_INPUT_DIRECTORY + File.separator + groupRecommendationsSelector.getName().substring(0, 2));
+            File outputDir = new File(CONSENSUS_GRS_OUTPUT_DIRECTORY + File.separator + groupRecommendationsSelector.getName().substring(0, 2));
 
-            ConsensusGRS consensusGRS = new ConsensusGRS(getKnnUserRecommender(), new MinimumValue(), new TopNOfEach(), true, consensusDegree);
+            consensusGRS.setParameterValue(ConsensusGRS.CONSENSUS_INPUT_FILES_DIRECTORY, inputDir);
+            consensusGRS.setParameterValue(ConsensusGRS.CONSENSUS_OUTPUT_FILES_DIRECTORY, outputDir);
+            consensusGRS.setAlias("Consensus_NoConsensus_" + groupRecommendationsSelector.getName());
 
-            String consensusDegreeStr = NumberRounder.round_str(consensusDegree);
-
-            consensusGRS.setAlias("Consensus_" + consensusDegreeStr);
-            consensusGRS.setParameterValue(ConsensusGRS.CONSENSUS_OUTPUT_FILES_DIRECTORY, CONSENSUS_GRS_OUTPUT_DIRECTORY);
             GRSs.add(consensusGRS);
         }
-
         return GRSs;
     }
 
@@ -140,6 +135,8 @@ public class ConsensusGRS_CaseStudy {
         }
 
         turingPreparator.prepareGroupExperiment(new File(CONSENSUS_GRS_EXPERIMENT_DIRECTORY), groupCaseStudys, getDatasetLoader());
+
+        turingPreparator.executeAllExperimentsInDirectory(new File(CONSENSUS_GRS_EXPERIMENT_DIRECTORY));
     }
 
     @Test
@@ -153,5 +150,4 @@ public class ConsensusGRS_CaseStudy {
     private void executeAllExperimentsInDirectory(File directory) {
         new TuringPreparator().executeAllExperimentsInDirectory(directory);
     }
-
 }

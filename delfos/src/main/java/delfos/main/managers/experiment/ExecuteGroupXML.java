@@ -16,15 +16,18 @@ import java.io.File;
  */
 public class ExecuteGroupXML extends CaseUseMode {
 
+    public static final String MODE_PARAMETER = "--execute-group-xml";
+
     /**
-     * Parámetro de la linea de comandos para especificar que se muestre la
-     * interfaz de recomendación.
+     * The directory that contains the group xml to be executed.
      */
-    public static final String EXECUTE_GROUP_XML = "-executeGroupXML";
+    public static final String XML_DIRECTORY = ExecuteXML.XML_DIRECTORY;
+    private static final String SEED_PARAMETER = ExecuteXML.SEED_PARAMETER;
+    private static final String NUM_EXEC_PARAMETER = ExecuteXML.NUM_EXEC_PARAMETER;
 
     @Override
     public String getModeParameter() {
-        return EXECUTE_GROUP_XML;
+        return MODE_PARAMETER;
     }
 
     private static class Holder {
@@ -36,19 +39,19 @@ public class ExecuteGroupXML extends CaseUseMode {
         return Holder.INSTANCE;
     }
 
-    public ExecuteGroupXML() {
+    private ExecuteGroupXML() {
     }
 
     @Override
     public void manageCaseUse(ConsoleParameters consoleParameters) {
         try {
-            String xmlExperimentsDirectory = consoleParameters.getValue("-executeGroupXML");
+            String xmlExperimentsDirectory = consoleParameters.getValue(ExecuteGroupXML.XML_DIRECTORY);
 
             final int NUM_EJECUCIONES;
             {
                 int num;
                 try {
-                    num = Integer.parseInt(consoleParameters.getValue("-numExec"));
+                    num = Integer.parseInt(consoleParameters.getValue(NUM_EXEC_PARAMETER));
                 } catch (UndefinedParameterException ex) {
                     num = 1;
                 }
@@ -59,7 +62,7 @@ public class ExecuteGroupXML extends CaseUseMode {
             {
                 long num;
                 try {
-                    num = Long.parseLong(consoleParameters.getValue("-seed"));
+                    num = Long.parseLong(consoleParameters.getValue(SEED_PARAMETER));
                 } catch (UndefinedParameterException ex) {
                     num = System.currentTimeMillis();
                 }
@@ -67,13 +70,13 @@ public class ExecuteGroupXML extends CaseUseMode {
             }
 
             consoleParameters.printUnusedParameters(System.err);
-            xmlExperimentsExecution(xmlExperimentsDirectory, xmlExperimentsDirectory + File.separator + "dataset" + File.separator, NUM_EJECUCIONES, SEED);
+            manageCaseUse(xmlExperimentsDirectory, xmlExperimentsDirectory + File.separator + "dataset" + File.separator, NUM_EJECUCIONES, SEED);
         } catch (UndefinedParameterException ex) {
             consoleParameters.printUnusedParameters(System.err);
         }
     }
 
-    private static void xmlExperimentsExecution(String experimentsDirectory, String datasetDirectory, int numExecutions, long seed) {
+    public static void manageCaseUse(String experimentsDirectory, String datasetDirectory, int numExecutions, long seed) {
         try {
             GroupXMLexperimentsExecution execution = new GroupXMLexperimentsExecution(
                     experimentsDirectory,

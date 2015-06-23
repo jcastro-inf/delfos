@@ -39,7 +39,7 @@ public class ArgumentsGroupRecommendationTest extends DelfosTest {
      * Nombre del fichero que almacena la configuración del dataset manejado por
      * la biblioteca.
      */
-    private final static String GROUP_RECOMMENDER_SYSTEM_CONFIG_XML = TEST_DIRECTORY + "groupRecommenderSystemConfiguration.xml";
+    private final static String GROUP_RECOMMENDER_SYSTEM_CONFIG_XML = TEST_DIRECTORY + "grs-config.xml";
 
     @Before
     public void beforeTest() {
@@ -48,59 +48,53 @@ public class ArgumentsGroupRecommendationTest extends DelfosTest {
 
     @Test
     public void test_Group_BuildRecommendationModel_manageCaseUse() throws Exception {
-        System.out.println("test_Group_BuildRecommendationModel_manageCaseUse");
-
         createConfigurationFile();
         String[] consoleArguments = {
-            "-group-recommendation",
+            "--group-recommendation",
             "--build",
-            "-config-file",
+            "-rs-config",
             GROUP_RECOMMENDER_SYSTEM_CONFIG_XML
         };
 
-        BuildRecommendationModel.getInstance().manageCaseUse(new ConsoleParameters(consoleArguments));
+        BuildRecommendationModel.getInstance().manageCaseUse(ConsoleParameters.parseArguments(consoleArguments));
     }
 
     @Test
     public void test_Group_Recommend_manageCaseUse() throws Exception {
-        System.out.println("test_Group_Recommend_manageCaseUse");
-
         createConfigurationFile();
 
         test_Group_BuildRecommendationModel_manageCaseUse();
 
         String[] consoleArguments = {
-            "-group-recommendation",
+            "--group-recommendation",
             "-group-members",
             "1", "65", "89", "54", "256",
-            "-config-file",
+            "-rs-config",
             GROUP_RECOMMENDER_SYSTEM_CONFIG_XML
 
         };
 
         Recommend.getInstance()
-                .manageCaseUse(new ConsoleParameters(consoleArguments));
+                .manageCaseUse(ConsoleParameters.parseArguments(consoleArguments));
     }
 
     @Test(expected = NumberFormatException.class)
     public void test_Group_Recommend_manageCaseUse_illegalUserIdMustThrowNumberFormatException() throws Exception {
-        System.out.println("test_Group_Recommend_manageCaseUse");
-
         createConfigurationFile();
 
         test_Group_BuildRecommendationModel_manageCaseUse();
 
         String[] consoleArguments = {
-            "-group-recommendation",
+            "--group-recommendation",
             "-group-members",
             "65", "89", "ABC", "54", "256",
-            "-config-file",
+            "-rs-config",
             GROUP_RECOMMENDER_SYSTEM_CONFIG_XML
 
         };
 
         Recommend.getInstance()
-                .manageCaseUse(new ConsoleParameters(consoleArguments));
+                .manageCaseUse(ConsoleParameters.parseArguments(consoleArguments));
     }
 
     @Test
@@ -108,10 +102,10 @@ public class ArgumentsGroupRecommendationTest extends DelfosTest {
         System.out.println("test_Group_BuildRecommendationModel_manageCaseUse");
 
         createConfigurationFile();
-        ConsoleParameters consoleParameters = new ConsoleParameters(
-                "-group-recommendation",
+        ConsoleParameters consoleParameters = ConsoleParameters.parseArguments(
+                "--group-recommendation",
                 "--build",
-                "-config-file",
+                "-rs-config",
                 GROUP_RECOMMENDER_SYSTEM_CONFIG_XML
         );
 
@@ -127,11 +121,11 @@ public class ArgumentsGroupRecommendationTest extends DelfosTest {
 
         test_Group_BuildRecommendationModel_manageCaseUse();
 
-        ConsoleParameters consoleParameters = new ConsoleParameters(
-                "-group-recommendation",
+        ConsoleParameters consoleParameters = ConsoleParameters.parseArguments(
+                "--group-recommendation",
                 "-group-members",
                 "1", "65", "89", "54", "256",
-                "-config-file",
+                "-rs-config",
                 GROUP_RECOMMENDER_SYSTEM_CONFIG_XML
         );
 

@@ -10,7 +10,7 @@
                 <goal>org.codehaus.mojo:exec-maven-plugin:1.2.1:exec</goal>
             </goals>
             <properties>
-                <exec.args>-classpath %classpath delfos.main.Main -seed 77352653 -executeGroupXML experiments/GRSItemWeightedCaseStudy/[ml-100k]_AOI_Ratings_Mean_Tweak2Weights_completePreferences/ -numExec 1 -verbose</exec.args>
+                <exec.args>-classpath %classpath delfos.main.Main --execute-group-xml -directory temp\experiments\consensus-grs-experiments\[ml-100k]_Consensus_0,50000000 -num-exec 1 -seed 77352653</exec.args>
                 <exec.executable>java</exec.executable>
             </properties>
         </action>
@@ -24,7 +24,7 @@
                 <goal>org.codehaus.mojo:exec-maven-plugin:1.2.1:exec</goal>
             </goals>
             <properties>
-                <exec.args>-Xdebug -Xrunjdwp:transport=dt_socket,server=n,address=${jpda.address} -classpath %classpath delfos.main.Main -seed 77352653 -executeGroupXML experiments/GRSItemWeightedCaseStudy/[ml-100k]_AOI_Ratings_Mean_Tweak2Weights_completePreferences/ -numExec 1 -verbose</exec.args>
+                <exec.args>-Xdebug -Xrunjdwp:transport=dt_socket,server=n,address=${jpda.address} -classpath %classpath delfos.main.Main --execute-group-xml -directory temp\experiments\consensus-grs-experiments\[ml-100k]_Consensus_0,50000000 -num-exec 1 -seed 77352653</exec.args>
                 <exec.executable>java</exec.executable>
                 <jpda.listen>true</jpda.listen>
             </properties>
@@ -39,7 +39,7 @@
                 <goal>org.codehaus.mojo:exec-maven-plugin:1.2.1:exec</goal>
             </goals>
             <properties>
-                <exec.args>-classpath %classpath delfos.main.Main -seed 77352653 -executeGroupXML experiments/GRSItemWeightedCaseStudy/[ml-100k]_AOI_Ratings_Mean_Tweak2Weights_completePreferences/ -numExec 1 -verbose</exec.args>
+                <exec.args>-classpath %classpath delfos.main.Main --execute-group-xml -directory temp\experiments\consensus-grs-experiments\[ml-100k]_Consensus_0,50000000 -num-exec 1 -seed 77352653</exec.args>
                 <exec.executable>java</exec.executable>
             </properties>
         </action>

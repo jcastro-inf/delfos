@@ -49,12 +49,12 @@ public class ArgumentsSingleUserBuildXTest extends DelfosTest {
 
         createConfigurationFile();
         String[] consoleArguments = {
-            "-config-file",
+            "-rs-config",
             SINGLE_USER_RS_CONFIG_XML,
-            "-single-user-build-x"
+            "--single-user-build-x"
         };
 
-        BuildConfigurationFileGUI.getInstance().isRightManager(new ConsoleParameters(consoleArguments));
+        BuildConfigurationFileGUI.getInstance().isRightManager(ConsoleParameters.parseArguments(consoleArguments));
     }
 
     @Test
@@ -62,10 +62,10 @@ public class ArgumentsSingleUserBuildXTest extends DelfosTest {
         System.out.println("test_SingleUser_BuildRecommendationModel_manageCaseUse");
 
         createConfigurationFile();
-        ConsoleParameters consoleParameters = new ConsoleParameters(
-                "-config-file",
+        ConsoleParameters consoleParameters = ConsoleParameters.parseArguments(
+                "-rs-config",
                 SINGLE_USER_RS_CONFIG_XML,
-                "-single-user-build-x"
+                "--single-user-build-x"
         );
         CaseUseManagerTest.testCaseUse(BuildConfigurationFileGUI.getInstance(), consoleParameters);
     }

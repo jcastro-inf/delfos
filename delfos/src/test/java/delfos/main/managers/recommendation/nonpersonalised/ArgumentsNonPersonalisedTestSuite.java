@@ -1,7 +1,7 @@
 package delfos.main.managers.recommendation.nonpersonalised;
 
-import java.io.File;
 import delfos.ConsoleParameters;
+import java.io.File;
 
 /**
  *
@@ -15,20 +15,20 @@ public class ArgumentsNonPersonalisedTestSuite {
         String[] consoleArguments = {
             "--non-personalised",
             "--build",
-            "-config-file", manageDatasetConfigFile.getAbsolutePath()
+            "-rs-config", manageDatasetConfigFile.getAbsolutePath()
         };
 
-        return new ConsoleParameters(consoleArguments);
+        return ConsoleParameters.parseArguments(consoleArguments);
     }
 
     public static ConsoleParameters recommendAnonymous(File manageDatasetConfigFile) throws Exception {
         String[] consoleArguments = {
             "--non-personalised",
             "--recommend",
-            "-config-file", manageDatasetConfigFile.getAbsolutePath()
+            "-rs-config", manageDatasetConfigFile.getAbsolutePath()
         };
 
-        return new ConsoleParameters(consoleArguments);
+        return ConsoleParameters.parseArguments(consoleArguments);
     }
 
     public static ConsoleParameters recommendToUser(File manageDatasetConfigFile, int idUser) throws Exception {
@@ -36,10 +36,10 @@ public class ArgumentsNonPersonalisedTestSuite {
             "--non-personalised",
             "--recommend",
             "-u", Integer.toString(idUser),
-            "-config-file", manageDatasetConfigFile.getAbsolutePath()
+            "-rs-config", manageDatasetConfigFile.getAbsolutePath()
         };
 
-        return new ConsoleParameters(consoleArguments);
+        return ConsoleParameters.parseArguments(consoleArguments);
     }
 
 }
