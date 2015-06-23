@@ -99,6 +99,8 @@ public class Main {
 
         caseUse.add(delfos.main.managers.recommendation.nonpersonalised.helpers.CreateDefaultNonPersonalisedRecommender.getInstance());
 
+        caseUse.add(delfos.main.managers.recommendation.group.helpers.CreateDefaultGroupRecommender.getInstance());
+
         caseUse.add(delfos.main.managers.library.install.InitialConfiguration.getInstance());
 
         return caseUse;
