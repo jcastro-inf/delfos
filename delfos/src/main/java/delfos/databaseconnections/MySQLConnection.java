@@ -181,7 +181,8 @@ public class MySQLConnection implements DatabaseConection {
 
     @Override
     public void close() throws SQLException {
-        if (!doConnection().getAutoCommit()) {
+        final Connection connection = doConnection();
+        if (!connection.getAutoCommit()) {
             doConnection().commit();
         }
         doConnection().close();

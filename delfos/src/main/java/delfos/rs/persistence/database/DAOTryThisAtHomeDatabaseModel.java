@@ -1,5 +1,12 @@
 package delfos.rs.persistence.database;
 
+import delfos.ERROR_CODES;
+import delfos.common.Global;
+import delfos.databaseconnections.DatabaseConection;
+import delfos.rs.collaborativefiltering.svd.TryThisAtHomeSVD;
+import delfos.rs.collaborativefiltering.svd.TryThisAtHomeSVDModel;
+import delfos.rs.persistence.DatabasePersistence;
+import delfos.rs.persistence.FailureInPersistence;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -9,13 +16,6 @@ import java.util.Collection;
 import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import delfos.ERROR_CODES;
-import delfos.common.Global;
-import delfos.databaseconnections.DatabaseConection;
-import delfos.rs.collaborativefiltering.svd.TryThisAtHomeSVD;
-import delfos.rs.collaborativefiltering.svd.TryThisAtHomeSVDModel;
-import delfos.rs.persistence.DatabasePersistence;
-import delfos.rs.persistence.FailureInPersistence;
 
 /**
  * Objeto para almacenar y recuperar en una base de datos mysql el modelo de
@@ -131,17 +131,12 @@ public class DAOTryThisAtHomeDatabaseModel implements RecommendationModelDatabas
 
         try {
             createStructures(databasePersistence.getConection());
-        } catch (SQLException ex) {
-            Logger.getLogger(DAOTryThisAtHomeDatabaseModel.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (ClassNotFoundException ex) {
+        } catch (SQLException | ClassNotFoundException ex) {
             Logger.getLogger(DAOTryThisAtHomeDatabaseModel.class.getName()).log(Level.SEVERE, null, ex);
         }
         final String prefix = databasePersistence.getPrefix();
 
-        try (
-                Connection connection = databasePersistence.getConection().doConnection();
-                Statement st = connection.createStatement()) {
-
+        try (Statement st = databasePersistence.getConection().doConnection().createStatement()) {
             {
                 //Guardo los usuarios
                 ArrayList<ArrayList<Double>> userProfiles = model.getAllUserFeatures();
@@ -221,8 +216,7 @@ public class DAOTryThisAtHomeDatabaseModel implements RecommendationModelDatabas
             final int numItems;
 
             try (
-                    Connection connection = databasePersistence.getConection().doConnection();
-                    Statement statement = connection.createStatement()) {
+                    Statement statement = databasePersistence.getConection().doConnection().createStatement()) {
 
                 ResultSet executeQuery;
 
@@ -267,8 +261,8 @@ public class DAOTryThisAtHomeDatabaseModel implements RecommendationModelDatabas
                 throw new FailureInPersistence(ex);
             }
 
-            ArrayList<ArrayList<Double>> usersFeatures = new ArrayList<ArrayList<Double>>(numUsers);
-            TreeMap<Integer, Integer> usersIndex = new TreeMap<Integer, Integer>();
+            ArrayList<ArrayList<Double>> usersFeatures = new ArrayList<>(numUsers);
+            TreeMap<Integer, Integer> usersIndex = new TreeMap<>();
 
             {
                 StringBuilder sentence = new StringBuilder();
@@ -295,7 +289,7 @@ public class DAOTryThisAtHomeDatabaseModel implements RecommendationModelDatabas
 
                         if (!usersIndex.containsKey(idUser)) {
                             usersIndex.put(idUser, usersIndex.size());
-                            ArrayList<Double> arrayList = new ArrayList<Double>(numFeatures);
+                            ArrayList<Double> arrayList = new ArrayList<>(numFeatures);
                             for (int i = 0; i < numFeatures; i++) {
                                 arrayList.add(null);
                             }
@@ -318,12 +312,6 @@ public class DAOTryThisAtHomeDatabaseModel implements RecommendationModelDatabas
                 sentence.append(getItemProfilesTable(prefix));
                 sentence.append(";");
 
-//            sentence.append(" where ");
-//            for (int idItem : item) {
-//                sentence.append(" idItem = ").append(idItem);
-//                sentence.append(" or ");
-//            }
-//            sentence.replace(sentence.length() - 4, sentence.length(), ";");
                 try (
                         Connection connection = databasePersistence.getConection().doConnection();
                         Statement statement = connection.createStatement()) {

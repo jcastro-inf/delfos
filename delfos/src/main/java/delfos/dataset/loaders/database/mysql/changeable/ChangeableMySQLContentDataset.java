@@ -1,6 +1,20 @@
 package delfos.dataset.loaders.database.mysql.changeable;
 
-import java.sql.Connection;
+import delfos.ERROR_CODES;
+import delfos.common.Global;
+import delfos.common.LockedIterator;
+import delfos.common.exceptions.dataset.entity.EntityAlreadyExists;
+import delfos.common.exceptions.dataset.entity.EntityNotFound;
+import delfos.common.exceptions.dataset.items.ItemAlreadyExists;
+import delfos.common.exceptions.dataset.items.ItemNotFound;
+import delfos.databaseconnections.MySQLConnection;
+import delfos.dataset.basic.features.CollectionOfEntitiesWithFeatures;
+import delfos.dataset.basic.features.Feature;
+import delfos.dataset.basic.features.FeatureGenerator;
+import delfos.dataset.basic.features.FeatureType;
+import delfos.dataset.basic.item.ContentDatasetDefault;
+import delfos.dataset.basic.item.Item;
+import delfos.dataset.changeable.ChangeableContentDataset;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -12,27 +26,12 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
-import delfos.ERROR_CODES;
-import delfos.common.Global;
-import delfos.common.LockedIterator;
-import delfos.common.exceptions.dataset.entity.EntityAlreadyExists;
-import delfos.common.exceptions.dataset.entity.EntityNotFound;
-import delfos.common.exceptions.dataset.items.ItemAlreadyExists;
-import delfos.common.exceptions.dataset.items.ItemNotFound;
-import delfos.databaseconnections.MySQLConnection;
-import delfos.dataset.basic.item.ContentDatasetDefault;
-import delfos.dataset.basic.item.Item;
-import delfos.dataset.basic.features.CollectionOfEntitiesWithFeatures;
-import delfos.dataset.basic.features.Feature;
-import delfos.dataset.basic.features.FeatureGenerator;
-import delfos.dataset.basic.features.FeatureType;
-import delfos.dataset.changeable.ChangeableContentDataset;
 
 /**
  * Implementa un dataset de contenido con persistencia sobre base de datos MySQL
  * con la posibilidad de modificar los productos del mismo.
  *
-* @author Jorge Castro Gallardo
+ * @author Jorge Castro Gallardo
  *
  * @version 04-Diciembre-2013
  */
@@ -74,12 +73,14 @@ public class ChangeableMySQLContentDataset implements ChangeableContentDataset, 
         boolean allOK = true;
 
         if (!MySQLConnection.existsTable(connection, contentDefinitionTable_name)) {
-            Global.showWarning("Content definition table '" + contentDefinitionTable_name + "' in database '" + connection.getDatabaseName() + "' not exists");
+
+            Global.showWarning("Content definition table '" + contentDefinitionTable_name + "' in database '" + mySQLConnection.getDatabaseName() + "' not exists");
+
             allOK = false;
         }
 
         if (!MySQLConnection.existsTable(connection, productsTable_name)) {
-            Global.showWarning("Products table '" + productsTable_name + "' in database '" + connection.getDatabaseName() + "' not exists");
+            Global.showWarning("Products table '" + productsTable_name + "' in database '" + mySQLConnection.getDatabaseName() + "' not exists");
             allOK = false;
         }
 
@@ -103,7 +104,7 @@ public class ChangeableMySQLContentDataset implements ChangeableContentDataset, 
             if (contentDataset.getAllID().contains(item.getId())) {
                 //El dataset ya tenía el producto, haciento cambio.
 
-                Map<Integer, Item> items = new TreeMap<Integer, Item>();
+                Map<Integer, Item> items = new TreeMap<>();
 
                 for (Item item2 : contentDataset) {
                     items.put(item2.getId(), item2);
@@ -155,7 +156,7 @@ public class ChangeableMySQLContentDataset implements ChangeableContentDataset, 
     public void commitChangesInPersistence() {
         // No need for commit changes, they are already in the database
 
-        try (Connection connection = mySQLConnection.doConnection(); Statement statement = connection.createStatement()) {
+        try (Statement statement = mySQLConnection.doConnection().createStatement()) {
             statement.execute("COMMIT;");
             statement.close();
         } catch (SQLException ex) {
@@ -169,7 +170,7 @@ public class ChangeableMySQLContentDataset implements ChangeableContentDataset, 
     }
 
     public void createItemFeaturesTable() throws SQLException {
-        try (Connection connection = mySQLConnection.doConnection(); Statement statement = connection.createStatement()) {
+        try (Statement statement = mySQLConnection.doConnection().createStatement()) {
             String dropTable = "drop table if exists " + getContentDefinitionTable_name() + ";";
             statement.execute(dropTable);
             String createTable = "CREATE TABLE IF NOT EXISTS `" + getContentDefinitionTable_name() + "` (\n"
@@ -183,7 +184,7 @@ public class ChangeableMySQLContentDataset implements ChangeableContentDataset, 
     }
 
     protected void createItemsTable() throws SQLException {
-        try (Connection connection = mySQLConnection.doConnection(); Statement statement = connection.createStatement()) {
+        try (Statement statement = mySQLConnection.doConnection().createStatement()) {
             Feature[] features = contentDataset.getFeatures();
 
             String clearFeaturesTable = "delete from " + getContentDefinitionTable_name() + ";";
@@ -311,7 +312,7 @@ public class ChangeableMySQLContentDataset implements ChangeableContentDataset, 
 
     private void insertItemInTable(Item item) throws SQLException {
 
-        try (Connection connection = mySQLConnection.doConnection(); Statement statement = connection.createStatement()) {
+        try (Statement statement = mySQLConnection.doConnection().createStatement()) {
 
             //Borro el producto.
             String deleteProduct = "delete from " + getProductsTable_name() + " where " + productsTable_ItemIDField + " = " + item.getId() + ";";
@@ -350,10 +351,10 @@ public class ChangeableMySQLContentDataset implements ChangeableContentDataset, 
     }
 
     private void readContentDataset() throws SQLException {
-        List<Item> items = new LinkedList<Item>();
+        List<Item> items = new LinkedList<>();
 
         //Leo las características
-        try (Connection connection = mySQLConnection.doConnection(); Statement statement = connection.createStatement()) {
+        try (Statement statement = mySQLConnection.doConnection().createStatement()) {
             String selectFeatures = "Select " + contentDefinitionTable_FeatureIdField + "," + contentDefinitionTable_FeatureNameField + "," + contentDefinitionTable_FeatureTypeField
                     + " from " + getContentDefinitionTable_name() + ";";
 
@@ -404,7 +405,7 @@ public class ChangeableMySQLContentDataset implements ChangeableContentDataset, 
                     availables.add(idItem);
                 }
 
-                Map<Feature, Object> itemFeatures = new TreeMap<Feature, Object>();
+                Map<Feature, Object> itemFeatures = new TreeMap<>();
 
                 for (Feature feature : featureGenerator.getSortedFeatures()) {
                     final String column = feature.getName();
@@ -444,7 +445,7 @@ public class ChangeableMySQLContentDataset implements ChangeableContentDataset, 
 
     @Override
     public String toString() {
-        Set<String> items = new TreeSet<String>();
+        Set<String> items = new TreeSet<>();
         for (Item item : contentDataset) {
             items.add("Item " + item.getId());
         }

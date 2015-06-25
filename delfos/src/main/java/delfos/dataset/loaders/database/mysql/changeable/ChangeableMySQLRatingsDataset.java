@@ -1,15 +1,5 @@
 package delfos.dataset.loaders.database.mysql.changeable;
 
-import java.sql.Connection;
-import java.sql.Date;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
 import delfos.ERROR_CODES;
 import delfos.common.Global;
 import delfos.common.LockedIterator;
@@ -22,6 +12,14 @@ import delfos.dataset.basic.rating.RatingsDataset;
 import delfos.dataset.basic.rating.domain.Domain;
 import delfos.dataset.changeable.ChangeableRatingsDataset;
 import delfos.dataset.storage.memory.BothIndexRatingsDataset;
+import java.sql.Date;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -125,7 +123,7 @@ public final class ChangeableMySQLRatingsDataset implements RatingsDataset<Ratin
                 + idItem + ","
                 + ratingValue.ratingValue.floatValue() + ","
                 + "'" + date.toString() + "');";
-        try (Connection connection = mySQLConnection.doConnection(); Statement statement = connection.createStatement()) {
+        try (Statement statement = mySQLConnection.doConnection().createStatement()) {
             statement.execute(insert);
         } catch (SQLException ex) {
             ERROR_CODES.DATABASE_NOT_READY.exit(ex);
@@ -142,7 +140,7 @@ public final class ChangeableMySQLRatingsDataset implements RatingsDataset<Ratin
 
     @Override
     public void removeRating(int idUser, int idItem) {
-        try (Connection connection = mySQLConnection.doConnection(); Statement statement = connection.createStatement()) {
+        try (Statement statement = mySQLConnection.doConnection().createStatement()) {
             String delete = "delete from `" + getRatingsTable_nameWithPrefix()
                     + " where " + ratingsTable_UserIDField + " = " + idUser + " and "
                     + ratingsTable_ItemIDField + " = " + idItem + ";";
@@ -155,11 +153,9 @@ public final class ChangeableMySQLRatingsDataset implements RatingsDataset<Ratin
 
     @Override
     public void commitChangesInPersistence() {
-        //No se hace nada, la tabla ya esta actualizada.
 
-        try (Connection connection = mySQLConnection.doConnection(); Statement statement = connection.createStatement()) {
+        try (Statement statement = mySQLConnection.doConnection().createStatement()) {
             statement.execute("COMMIT;");
-            statement.close();
         } catch (SQLException ex) {
             ERROR_CODES.DATABASE_NOT_READY.exit(ex);
         }
@@ -167,7 +163,7 @@ public final class ChangeableMySQLRatingsDataset implements RatingsDataset<Ratin
 
     protected void createTables() throws SQLException {
 
-        try (Connection connection = mySQLConnection.doConnection(); Statement statement = connection.createStatement()) {
+        try (Statement statement = mySQLConnection.doConnection().createStatement()) {
             String dropTable = "drop table if exists " + getRatingsTable_nameWithPrefix() + ";";
             statement.execute(dropTable);
 
@@ -184,13 +180,13 @@ public final class ChangeableMySQLRatingsDataset implements RatingsDataset<Ratin
 
     private void loadRatingsFromExistingTable() throws SQLException {
 
-        try (Connection connection = mySQLConnection.doConnection(); Statement statement = connection.createStatement()) {
+        try (Statement statement = mySQLConnection.doConnection().createStatement()) {
 
             String select = "select " + ratingsTable_UserIDField + "," + ratingsTable_ItemIDField + "," + ratingsTable_RatingField + "," + ratingsTable_TimestampField
                     + " from " + getRatingsTable_nameWithPrefix();
             ResultSet result = statement.executeQuery(select);
 
-            List<Rating> ratings = new LinkedList<Rating>();
+            List<Rating> ratings = new LinkedList<>();
 
             while (result.next()) {
                 int idUser = result.getInt(1);

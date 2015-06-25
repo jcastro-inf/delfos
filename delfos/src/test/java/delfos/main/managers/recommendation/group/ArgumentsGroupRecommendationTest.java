@@ -55,6 +55,11 @@ public class ArgumentsGroupRecommendationTest extends DelfosTest {
         CaseUseManagerTest.testCaseUse(CreateDefaultGroupRecommender.getInstance(), consoleParameters);
 
         CreateDefaultGroupRecommender.getInstance().manageCaseUse(consoleParameters);
+        final File defaultXML = new File("." + File.separator + "default-group-recommender.xml");
+
+        assert defaultXML.exists();
+
+        defaultXML.delete();
     }
 
     @Test

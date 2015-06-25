@@ -63,7 +63,7 @@ public class DatabaseManagerMySQLDatasetPrinterManagerTest extends DelfosTest {
     private void cleanDatabase() throws SQLException {
 
         //Drop tables
-        try (Connection connection = mySQLConnection.doConnection(); Statement statement = connection.createStatement()) {
+        try (Statement statement = mySQLConnection.doConnection().createStatement()) {
 
             ChangeableMySQLDatasetLoader datasetLoader = new ChangeableMySQLDatasetLoader(mySQLConnection);
 
