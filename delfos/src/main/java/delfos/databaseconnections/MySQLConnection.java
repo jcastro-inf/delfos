@@ -164,18 +164,12 @@ public class MySQLConnection implements DatabaseConection {
 
     public static boolean existsTableWithPrefix(MySQLConnection mysqlConnection, String tableNameWithPrefix) {
 
-        try {
-            Connection connection = mysqlConnection.doConnection();
-            String select = "Select count(*) from " + tableNameWithPrefix + ";";
-            try (Statement statement = connection.createStatement()) {
-                statement.execute(select);
-                return true;
-            } catch (SQLException ex) {
-                return false;
-            }
+        String select = "Select count(*) from " + tableNameWithPrefix + ";";
+        try (Statement statement = mysqlConnection.doConnection().createStatement()) {
+            statement.execute(select);
+            return true;
         } catch (SQLException ex) {
-            ERROR_CODES.DATABASE_NOT_READY.exit(ex);
-            throw new IllegalArgumentException(ex);
+            return false;
         }
     }
 
