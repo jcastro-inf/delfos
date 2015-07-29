@@ -1,8 +1,5 @@
 package delfos.dataset.loaders.database.mysql.changeable;
 
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.sql.Statement;
 import delfos.ERROR_CODES;
 import delfos.common.Global;
 import delfos.common.exceptions.dataset.CannotLoadContentDataset;
@@ -20,6 +17,8 @@ import static delfos.dataset.loaders.database.mysql.MySQLDatabaseDatasetLoader.C
 import static delfos.dataset.loaders.database.mysql.MySQLDatabaseDatasetLoader.CONNECTION_CONFIGURATION_PORT;
 import static delfos.dataset.loaders.database.mysql.MySQLDatabaseDatasetLoader.CONNECTION_CONFIGURATION_PREFIX;
 import static delfos.dataset.loaders.database.mysql.MySQLDatabaseDatasetLoader.CONNECTION_CONFIGURATION_USER;
+import java.sql.SQLException;
+import java.sql.Statement;
 
 /**
  * Dataset almacenado en CSV que permite la modificación de sus datos.
@@ -240,8 +239,7 @@ public class ChangeableMySQLDatasetLoader extends ChangeableDatasetLoaderAbstrac
         //Drop all previous tables.
         //Drop tables
         try (
-                Connection connection = getMySQLConnectionDescription().doConnection();
-                Statement statement = connection.createStatement()) {
+                Statement statement = getMySQLConnectionDescription().doConnection().createStatement()) {
 
             String dropTable_itemFeatures = "Drop table if exists " + getContentDefinitionTable_name_withPrefix() + ";";
             statement.execute(dropTable_itemFeatures);

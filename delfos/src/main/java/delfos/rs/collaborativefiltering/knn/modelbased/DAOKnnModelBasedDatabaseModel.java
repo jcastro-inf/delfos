@@ -1,17 +1,16 @@
 package delfos.rs.collaborativefiltering.knn.modelbased;
 
-import java.sql.Connection;
+import delfos.common.Global;
+import delfos.databaseconnections.DatabaseConection;
+import delfos.rs.collaborativefiltering.profile.Neighbor;
+import delfos.rs.persistence.DatabasePersistence;
+import delfos.rs.persistence.FailureInPersistence;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Collection;
 import java.util.Map;
 import java.util.TreeMap;
-import delfos.common.Global;
-import delfos.databaseconnections.DatabaseConection;
-import delfos.rs.collaborativefiltering.profile.Neighbor;
-import delfos.rs.persistence.DatabasePersistence;
-import delfos.rs.persistence.FailureInPersistence;
 
 /**
  * Clase encargada de almacenar el modelo de recomendación generado por el
@@ -46,8 +45,7 @@ public class DAOKnnModelBasedDatabaseModel {
 
     private void createStructures(DatabaseConection databaseConection) throws FailureInPersistence {
         try (
-                Connection connection = databaseConection.doConnection();
-                Statement st = connection.createStatement()) {
+                Statement st = databaseConection.doConnection().createStatement()) {
             String dropTable = "DROP TABLE IF EXISTS " + getTemporalProfilesTable(databaseConection) + ";";
             st.execute(dropTable);
 
@@ -64,8 +62,7 @@ public class DAOKnnModelBasedDatabaseModel {
 
     private void makePermanent(DatabaseConection databaseConection) throws FailureInPersistence {
         try (
-                Connection connection = databaseConection.doConnection();
-                Statement st = connection.createStatement()) {
+                Statement st = databaseConection.doConnection().createStatement()) {
             st.execute("DROP TABLE IF EXISTS " + getProfilesTable(databaseConection) + ";");
             st.execute("ALTER TABLE " + getTemporalProfilesTable(databaseConection) + " RENAME TO " + getProfilesTable(databaseConection) + ";");
 
@@ -86,8 +83,7 @@ public class DAOKnnModelBasedDatabaseModel {
 
         String consulta = "";
         try (
-                Connection connection = databaseConection.doConnection();
-                Statement st = connection.createStatement()) {
+                Statement st = databaseConection.doConnection().createStatement()) {
 
             int i = 1;
             for (KnnModelItemProfile profile : model) {
@@ -138,14 +134,13 @@ public class DAOKnnModelBasedDatabaseModel {
     }
 
     public KnnModelBasedCFRSModel loadModel(DatabasePersistence databasePersistence, Collection<Integer> users, Collection<Integer> items) throws FailureInPersistence {
-        Map<Integer, KnnModelItemProfile> itemProfiles = new TreeMap<Integer, KnnModelItemProfile>();
+        Map<Integer, KnnModelItemProfile> itemProfiles = new TreeMap<>();
 
         DatabaseConection databaseConection;
         try {
             databaseConection = databasePersistence.getConection();
 
-            Connection connection = databaseConection.doConnection();
-            Statement st = connection.createStatement();
+            Statement st = databaseConection.doConnection().createStatement();
 
             final String query = "select idItem,idNeighbor,similarity from " + getProfilesTable(databaseConection) + " where 1;";
             try (ResultSet rst = st.executeQuery(query)) {

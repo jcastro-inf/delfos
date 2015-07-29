@@ -5,7 +5,6 @@ import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RatingWithTimestamp;
 import delfos.dataset.basic.rating.RatingsDataset;
 import delfos.dataset.storage.memory.BothIndexRatingsDataset;
-import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -52,8 +51,8 @@ public class RatingsDatasetToMySQL {
 
     public RatingsDataset<? extends Rating> readDataset() throws SQLException {
 
-        try (Connection conn = mySQLConnection.doConnection();
-                Statement statement = conn.createStatement();
+        try (
+                Statement statement = mySQLConnection.doConnection().createStatement();
                 ResultSet resultSet = statement.executeQuery("SELECT " + ID_USER_COLUMN_NAME + "," + ID_ITEM_COLUMN_NAME + "," + RATING_COLUMN_NAME + " FROM " + RATINGS_TABLE_NAME + ";")) {
 
             Collection<Rating> ratings = new ArrayList<>();

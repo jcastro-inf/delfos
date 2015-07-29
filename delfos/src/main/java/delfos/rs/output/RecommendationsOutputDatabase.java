@@ -9,7 +9,6 @@ import delfos.databaseconnections.DatabaseConection;
 import delfos.databaseconnections.MySQLConnection;
 import delfos.rs.recommendation.Recommendation;
 import delfos.rs.recommendation.Recommendations;
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
@@ -150,8 +149,7 @@ public class RecommendationsOutputDatabase extends RecommendationsOutputMethod {
 
         //Primero borro de la tabla si el usuario tenía recomendaciones.
         try (
-                Connection connection = getConection().doConnection();
-                Statement deleteStatement = connection.createStatement()) {
+                Statement deleteStatement = getConection().doConnection().createStatement()) {
 
             //CleanUserRecomendations.
             String deleteStatementString = "delete from " + getTableName() + "\n"
@@ -176,8 +174,7 @@ public class RecommendationsOutputDatabase extends RecommendationsOutputMethod {
 
         //Escribo las recomendaciones.
         try (
-                Connection connection = getConection().doConnection();
-                Statement statement = connection.createStatement()) {
+                Statement statement = getConection().doConnection().createStatement()) {
 
             for (Recommendation r : topNrecommendations) {
                 String insert = "INSERT INTO " + getTableName() + "(" + getIdTargetField() + "," + getIdItemField() + "," + getPreferenceField() + "," + getRecommenderField() + ") VALUES "
@@ -246,9 +243,7 @@ public class RecommendationsOutputDatabase extends RecommendationsOutputMethod {
         create.append(") ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1;");
 
         try (
-                Connection connection = getConection().doConnection();
-                Statement statement = connection.createStatement()) {
-
+                Statement statement = getConection().doConnection().createStatement()) {
             statement.execute(create.toString());
         }
     }
