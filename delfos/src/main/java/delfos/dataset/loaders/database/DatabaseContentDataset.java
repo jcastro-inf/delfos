@@ -13,7 +13,6 @@ import delfos.dataset.basic.item.ContentDatasetDefault;
 import delfos.dataset.basic.item.Item;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -64,8 +63,7 @@ public class DatabaseContentDataset implements ContentDataset {
         //Selecionamos todas las películas de la BD:
         String query = "SELECT * FROM movies WHERE idItem = " + idItem + ";";
         try (
-                Connection connection = conexion.doConnection();
-                Statement statement = connection.createStatement();
+                Statement statement = conexion.doConnection().createStatement();
                 ResultSet rst = statement.executeQuery(query)) {
 
             //Mientras haya películas las insertamos en la lista:
@@ -101,8 +99,7 @@ public class DatabaseContentDataset implements ContentDataset {
 
         String query = "SELECT distinct " + feature.getName() + " FROM movies;";
         try (
-                Connection connection = conexion.doConnection();
-                Statement statement = connection.createStatement();
+                Statement statement = conexion.doConnection().createStatement();
                 ResultSet rst = statement.executeQuery(query)) {
 
             //Mientras haya películas las insertamos en la lista:
@@ -122,8 +119,7 @@ public class DatabaseContentDataset implements ContentDataset {
         int numItems = 0;
         String query = "SELECT count(*) n FROM movies;";
         try (
-                Connection connection = conexion.doConnection();
-                Statement statement = connection.createStatement();
+                Statement statement = conexion.doConnection().createStatement();
                 ResultSet rst = statement.executeQuery(query)) {
             //Mientras haya películas las insertamos en la lista:
             while (rst.next()) {
@@ -142,15 +138,13 @@ public class DatabaseContentDataset implements ContentDataset {
 
         String query = "SELECT idItem FROM movies;";
         try (
-                Connection connection = conexion.doConnection();
-                Statement statement = connection.createStatement();
+                Statement statement = conexion.doConnection().createStatement();
                 ResultSet rst = statement.executeQuery(query)) {
 
             while (rst.next()) {
                 int idItem = rst.getInt("idItem");
                 items.add(idItem);
             }
-            rst.close();
         } catch (SQLException ex) {
             ERROR_CODES.CANNOT_LOAD_CONTENT_DATASET.exit(ex);
         }

@@ -17,6 +17,7 @@ import delfos.group.grs.GroupRecommenderSystem;
 import delfos.group.grs.recommendations.GroupRecommendations;
 import delfos.main.managers.CaseUseSubManager;
 import delfos.main.managers.recommendation.ArgumentsRecommendation;
+import delfos.main.managers.recommendation.group.GroupRecommendation;
 import static delfos.main.managers.recommendation.group.GroupRecommendation.GROUP_MODE;
 import static delfos.main.managers.recommendation.group.GroupRecommendation.TARGET_GROUP;
 import delfos.recommendationcandidates.RecommendationCandidatesSelector;

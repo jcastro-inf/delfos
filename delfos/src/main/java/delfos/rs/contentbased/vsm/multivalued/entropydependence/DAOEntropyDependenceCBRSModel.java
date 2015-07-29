@@ -1,18 +1,17 @@
 package delfos.rs.contentbased.vsm.multivalued.entropydependence;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.Collection;
-import java.util.Map;
-import java.util.TreeMap;
 import delfos.ERROR_CODES;
 import delfos.dataset.basic.features.Feature;
 import delfos.dataset.basic.features.FeatureGenerator;
 import delfos.dataset.basic.features.FeatureType;
 import delfos.rs.persistence.DatabasePersistence;
 import delfos.rs.persistence.FailureInPersistence;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.Collection;
+import java.util.Map;
+import java.util.TreeMap;
 
 /**
  *
@@ -64,8 +63,7 @@ public class DAOEntropyDependenceCBRSModel {
 
     public void createModelTables(DatabasePersistence databasePersistence) throws ClassNotFoundException, SQLException {
         try (
-                Connection connection = databasePersistence.getConection().doConnection();
-                Statement createStatement = connection.createStatement()) {
+                Statement createStatement = databasePersistence.getConection().doConnection().createStatement()) {
 
             String createStatementString0 = "CREATE TABLE IF NOT EXISTS " + getFEATURES_TABLE_NAME_TEMP(databasePersistence) + " (\n"
                     + FEATURES_FIELD_FEATURE + " varchar(255) NOT NULL,\n"
@@ -93,8 +91,7 @@ public class DAOEntropyDependenceCBRSModel {
 
     public void fixModel(DatabasePersistence databasePersistence) throws FailureInPersistence {
         try (
-                Connection connection = databasePersistence.getConection().doConnection();
-                Statement st = connection.createStatement()) {
+                Statement st = databasePersistence.getConection().doConnection().createStatement()) {
 
             st.execute("DROP TABLE IF EXISTS " + getFEATURES_TABLE_NAME(databasePersistence) + ";");
             st.execute("ALTER TABLE " + getFEATURES_TABLE_NAME_TEMP(databasePersistence) + " RENAME TO " + getFEATURES_TABLE_NAME(databasePersistence) + ";");
@@ -121,8 +118,7 @@ public class DAOEntropyDependenceCBRSModel {
         createModelTables(databasePersistence);
 
         try (
-                Connection connection = databasePersistence.getConection().doConnection();
-                Statement statement = connection.createStatement()) {
+                Statement statement = databasePersistence.getConection().doConnection().createStatement()) {
 
             //Las lleno de información
             for (Feature feature : model.getAllFeatures()) {
@@ -168,13 +164,12 @@ public class DAOEntropyDependenceCBRSModel {
 
     public EntropyDependenceCBRSModel loadModel(DatabasePersistence databasePersistence, Collection<Integer> users, Collection<Integer> items) throws FailureInPersistence {
         try (
-                Connection connection = databasePersistence.getConection().doConnection();
-                Statement statement = connection.createStatement()) {
+                Statement statement = databasePersistence.getConection().doConnection().createStatement()) {
             FeatureGenerator featureGenerator = new FeatureGenerator();
 
-            Map<Integer, EntropyDependenceCBRSItemProfile> itemProfiles = new TreeMap<Integer, EntropyDependenceCBRSItemProfile>();
-            Map<Feature, Number> weights = new TreeMap<Feature, Number>();
-            Map<String, FeatureType> featureTypes = new TreeMap<String, FeatureType>();
+            Map<Integer, EntropyDependenceCBRSItemProfile> itemProfiles = new TreeMap<>();
+            Map<Feature, Number> weights = new TreeMap<>();
+            Map<String, FeatureType> featureTypes = new TreeMap<>();
 
             {
                 //Leo las características.
@@ -211,7 +206,7 @@ public class DAOEntropyDependenceCBRSModel {
 
             {
 
-                Map<Integer, Map<Feature, Object>> itemFeatureValues = new TreeMap<Integer, Map<Feature, Object>>();
+                Map<Integer, Map<Feature, Object>> itemFeatureValues = new TreeMap<>();
                 //Reading item profiles.
                 String selectItemProfiles = "Select " + ITEM_PROFILES_FIELD_ID_ITEM + "," + ITEM_PROFILES_FIELD_FEATURE + "," + ITEM_PROFILES_FIELD_FEATURE_VALUE + " \n"
                         + " from " + getITEM_PROFILES_TABLE_NAME(databasePersistence) + " \n;";
@@ -223,7 +218,7 @@ public class DAOEntropyDependenceCBRSModel {
                     String featureValueString = executeQuery.getString(ITEM_PROFILES_FIELD_FEATURE_VALUE);
 
                     if (!itemFeatureValues.containsKey(idItem)) {
-                        itemFeatureValues.put(idItem, new TreeMap<Feature, Object>());
+                        itemFeatureValues.put(idItem, new TreeMap<>());
                     }
                     Map<Feature, Object> itemProfile = itemFeatureValues.get(idItem);
 

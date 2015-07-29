@@ -1,6 +1,5 @@
 package delfos.dataset.loaders.database.mysql.changeable;
 
-import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -135,7 +134,7 @@ public class ChangeableMySQLUsersDataset implements ChangeableUsersDataset, Coll
     @Override
     public void commitChangesInPersistence() {
         // No need for commit changes, they are already in the database
-        try (Connection connection = mySQLConnection.doConnection(); Statement statement = connection.createStatement()) {
+        try (Statement statement = mySQLConnection.doConnection().createStatement()) {
             statement.execute("COMMIT;");
             statement.close();
         } catch (SQLException ex) {
@@ -149,7 +148,7 @@ public class ChangeableMySQLUsersDataset implements ChangeableUsersDataset, Coll
     }
 
     public void createUserFeaturesTable() throws SQLException {
-        try (Connection connection = mySQLConnection.doConnection(); Statement statement = connection.createStatement()) {
+        try (Statement statement = mySQLConnection.doConnection().createStatement()) {
             String dropTable = "drop table if exists " + userFeaturesTable_nameWithPrefix() + ";";
             statement.execute(dropTable);
 
@@ -164,7 +163,7 @@ public class ChangeableMySQLUsersDataset implements ChangeableUsersDataset, Coll
     }
 
     protected void createUsersTable() throws SQLException {
-        try (Connection connection = mySQLConnection.doConnection(); Statement statement = connection.createStatement()) {
+        try (Statement statement = mySQLConnection.doConnection().createStatement()) {
             Feature[] features = usersDataset.getFeatures();
 
             String clearFeaturesTable = "delete from " + userFeaturesTable_nameWithPrefix() + ";";
@@ -266,7 +265,7 @@ public class ChangeableMySQLUsersDataset implements ChangeableUsersDataset, Coll
     }
 
     private void insertUserInTable(User user) throws SQLException {
-        try (Connection connection = mySQLConnection.doConnection(); Statement statement = connection.createStatement()) {
+        try (Statement statement = mySQLConnection.doConnection().createStatement()) {
 
             //Borro el usuario.
             String deleteUser = "delete from " + getProductsTable_nameWithPrefix() + " where " + usersTable_UserIDField + " = " + user.getId() + ";";
@@ -308,7 +307,7 @@ public class ChangeableMySQLUsersDataset implements ChangeableUsersDataset, Coll
         List<User> users = new LinkedList<>();
 
         //Leo las características
-        try (Connection connection = mySQLConnection.doConnection(); Statement statement = connection.createStatement()) {
+        try (Statement statement = mySQLConnection.doConnection().createStatement()) {
             String selectFeatures = "Select " + userFeaturesTable_FeatureIdField + "," + userFeaturesTable_FeatureNameField + "," + userFeaturesTable_FeatureTypeField
                     + " from " + userFeaturesTable_nameWithPrefix() + ";";
             try (ResultSet result = statement.executeQuery(selectFeatures)) {

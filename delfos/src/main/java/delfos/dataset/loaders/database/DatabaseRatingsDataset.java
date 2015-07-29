@@ -5,11 +5,9 @@ import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RatingsDatasetAdapter;
 import delfos.dataset.basic.rating.domain.DecimalDomain;
 import delfos.dataset.basic.rating.domain.Domain;
-import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
@@ -38,14 +36,12 @@ public class DatabaseRatingsDataset extends RatingsDatasetAdapter {
         Integer ret = null;
         String query = "SELECT idUser,idItem,rating FROM ratings where idUser = " + idUser + " and idItem = " + idItem + ";";
         try (
-                Connection connection = conexion.doConnection();
-                Statement statement = connection.createStatement();
+                Statement statement = conexion.doConnection().createStatement();
                 ResultSet rst = statement.executeQuery(query)) {
 
             while (rst.next()) {
                 ret = rst.getInt("rating");
             }
-            rst.close();
         } catch (SQLException ex) {
             connectionError(ex);
             return null;
@@ -62,8 +58,7 @@ public class DatabaseRatingsDataset extends RatingsDatasetAdapter {
         Set<Integer> ret = new TreeSet<>();
         String query = "select distinct idUser from ratings;";
         try (
-                Connection connection = conexion.doConnection();
-                Statement statement = connection.createStatement();
+                Statement statement = conexion.doConnection().createStatement();
                 ResultSet rst = statement.executeQuery(query)) {
 
             int i = 0;
@@ -87,8 +82,7 @@ public class DatabaseRatingsDataset extends RatingsDatasetAdapter {
         String query = "SELECT distinct idItem FROM ratings;";
 
         try (
-                Connection connection = conexion.doConnection();
-                Statement statement = connection.createStatement();
+                Statement statement = conexion.doConnection().createStatement();
                 ResultSet rst = statement.executeQuery(query)) {
             while (rst.next()) {
                 int idUser = rst.getInt("idItem");
@@ -104,11 +98,10 @@ public class DatabaseRatingsDataset extends RatingsDatasetAdapter {
 
     @Override
     public Set<Integer> getUserRated(Integer idUser) {
-        Set<Integer> valuedItems = new TreeSet<Integer>();
+        Set<Integer> valuedItems = new TreeSet<>();
         String query = "SELECT idItem FROM ratings WHERE idUser = " + idUser + ";";
         try (
-                Connection connection = conexion.doConnection();
-                Statement statement = connection.createStatement();
+                Statement statement = conexion.doConnection().createStatement();
                 ResultSet rst = statement.executeQuery(query)) {
 
             while (rst.next()) {
@@ -126,12 +119,11 @@ public class DatabaseRatingsDataset extends RatingsDatasetAdapter {
     @Override
     public Map<Integer, Rating> getUserRatingsRated(Integer idUser) {
 
-        Map<Integer, Rating> valuedItems = new TreeMap<Integer, Rating>();
+        Map<Integer, Rating> valuedItems = new TreeMap<>();
 
         String query = "SELECT idItem,rating FROM ratings WHERE idUser = " + idUser + ";";
         try (
-                Connection connection = conexion.doConnection();
-                Statement statement = connection.createStatement();
+                Statement statement = conexion.doConnection().createStatement();
                 ResultSet rst = statement.executeQuery(query)) {
 
             while (rst.next()) {
@@ -149,12 +141,11 @@ public class DatabaseRatingsDataset extends RatingsDatasetAdapter {
 
     @Override
     public Set<Integer> getItemRated(Integer idItem) {
-        Set<Integer> users = new TreeSet<Integer>();
+        Set<Integer> users = new TreeSet<>();
 
         String query = "SELECT idUser FROM ratings WHERE idItem = " + idItem + ";";
         try (
-                Connection connection = conexion.doConnection();
-                Statement statement = connection.createStatement();
+                Statement statement = conexion.doConnection().createStatement();
                 ResultSet rst = statement.executeQuery(query)) {
 
             while (rst.next()) {
@@ -172,12 +163,11 @@ public class DatabaseRatingsDataset extends RatingsDatasetAdapter {
     @Override
     public Map<Integer, Rating> getItemRatingsRated(Integer idItem) {
 
-        Map<Integer, Rating> usersRatings = new TreeMap<Integer, Rating>();
+        Map<Integer, Rating> usersRatings = new TreeMap<>();
 
         String query = "SELECT idUser,rating FROM ratings WHERE idItem = " + idItem + ";";
         try (
-                Connection connection = conexion.doConnection();
-                Statement statement = connection.createStatement();
+                Statement statement = conexion.doConnection().createStatement();
                 ResultSet rst = statement.executeQuery(query)) {
 
             while (rst.next()) {

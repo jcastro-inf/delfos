@@ -72,6 +72,8 @@ public interface DatabaseConection {
 
     /**
      * Commits and closes the connection.
+     *
+     * @throws java.sql.SQLException
      */
     public void close() throws SQLException;
 }

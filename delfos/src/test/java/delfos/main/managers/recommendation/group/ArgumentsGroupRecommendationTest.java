@@ -12,6 +12,7 @@ import delfos.group.grs.GroupRecommenderSystem;
 import delfos.group.grs.aggregation.AggregationOfIndividualRatings;
 import delfos.main.Main;
 import delfos.main.managers.CaseUseManagerTest;
+import delfos.main.managers.recommendation.group.helpers.CreateDefaultGroupRecommender;
 import delfos.recommendationcandidates.OnlyNewItems;
 import delfos.rs.collaborativefiltering.knn.memorybased.nwr.KnnMemoryBasedNWR;
 import delfos.rs.output.RecommendationsOutputStandardRaw;
@@ -44,6 +45,21 @@ public class ArgumentsGroupRecommendationTest extends DelfosTest {
     @Before
     public void beforeTest() {
         FileUtilities.cleanDirectory(new File(TEST_DIRECTORY));
+    }
+
+    @Test
+    public void test_Group_BuildRecommendationModel_createDefaultConfigFile() throws Exception {
+
+        ConsoleParameters consoleParameters = ConsoleParameters.parseArguments("--create-default-group-recommender");
+
+        CaseUseManagerTest.testCaseUse(CreateDefaultGroupRecommender.getInstance(), consoleParameters);
+
+        CreateDefaultGroupRecommender.getInstance().manageCaseUse(consoleParameters);
+        final File defaultXML = new File("." + File.separator + "default-group-recommender.xml");
+
+        assert defaultXML.exists();
+
+        defaultXML.delete();
     }
 
     @Test

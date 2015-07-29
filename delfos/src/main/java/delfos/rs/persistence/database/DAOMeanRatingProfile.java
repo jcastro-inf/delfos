@@ -1,6 +1,12 @@
 package delfos.rs.persistence.database;
 
-import java.sql.Connection;
+import delfos.common.Global;
+import delfos.databaseconnections.DatabaseConection;
+import delfos.rs.nonpersonalised.meanrating.arithmeticmean.MeanRating;
+import delfos.rs.nonpersonalised.meanrating.arithmeticmean.MeanRatingRS;
+import delfos.rs.nonpersonalised.meanrating.arithmeticmean.MeanRatingRSModel;
+import delfos.rs.persistence.DatabasePersistence;
+import delfos.rs.persistence.FailureInPersistence;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -9,13 +15,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import delfos.common.Global;
-import delfos.databaseconnections.DatabaseConection;
-import delfos.rs.nonpersonalised.meanrating.arithmeticmean.MeanRating;
-import delfos.rs.nonpersonalised.meanrating.arithmeticmean.MeanRatingRS;
-import delfos.rs.nonpersonalised.meanrating.arithmeticmean.MeanRatingRSModel;
-import delfos.rs.persistence.DatabasePersistence;
-import delfos.rs.persistence.FailureInPersistence;
 
 /**
  * DAO para base de datos que almacena el modelo de recomendación del sistema
@@ -39,8 +38,7 @@ public class DAOMeanRatingProfile implements RecommendationModelDatabasePersiste
     private void createStructure(DatabaseConection databaseConection) throws SQLException {
         //Creacion de las tablas
         try (
-                Connection connection = databaseConection.doConnection();
-                Statement statement = connection.createStatement()) {
+                Statement statement = databaseConection.doConnection().createStatement()) {
 
             statement.execute("DROP TABLE IF EXISTS `" + PROFILE_TABLE + "`;");
 
@@ -55,10 +53,9 @@ public class DAOMeanRatingProfile implements RecommendationModelDatabasePersiste
     @Override
     public MeanRatingRSModel loadModel(DatabasePersistence databasePersistence, Collection<Integer> users, Collection<Integer> items) throws FailureInPersistence {
         try (
-                Connection connection = databasePersistence.getConection().doConnection();
-                Statement statement = connection.createStatement()) {
+                Statement statement = databasePersistence.getConection().doConnection().createStatement()) {
 
-            List<MeanRating> profiles = new LinkedList<MeanRating>();
+            List<MeanRating> profiles = new LinkedList<>();
 
             final String stringStatement = "SELECT " + ID_COLUMN_NAME + "," + PREFERENCE_COLUMN_NAME + " FROM " + PROFILE_TABLE + " ORDER BY " + PREFERENCE_COLUMN_NAME + " DESC;";
             ResultSet rst = statement.executeQuery(stringStatement);
@@ -88,8 +85,7 @@ public class DAOMeanRatingProfile implements RecommendationModelDatabasePersiste
         }
 
         try (
-                Connection connection = databasePersistence.getConection().doConnection();
-                Statement statement = connection.createStatement()) {
+                Statement statement = databasePersistence.getConection().doConnection().createStatement()) {
 
             List<MeanRating> meanProfile = model.getRangedMeanRatings();
 

@@ -5,11 +5,9 @@ import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RatingsDatasetAdapter;
 import delfos.dataset.basic.rating.domain.DecimalDomain;
 import delfos.dataset.basic.rating.domain.Domain;
-import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
@@ -43,8 +41,7 @@ public class NetflixDatabaseRatingsDataset extends RatingsDatasetAdapter {
 
             String query = "SELECT userID,puntuacion,itemID FROM netflix_ratings where userID = " + idUser + " and itemID = " + idItem + ";";
             try (
-                    Connection connection = conexion.doConnection();
-                    Statement statement = connection.createStatement();
+                    Statement statement = conexion.doConnection().createStatement();
                     ResultSet rst = statement.executeQuery(query)) {
                 while (rst.next()) {
                     ret = rst.getInt("puntuacion");
@@ -68,8 +65,7 @@ public class NetflixDatabaseRatingsDataset extends RatingsDatasetAdapter {
 
             String query = "select distinct userID from netflix_ratings;";
             try (
-                    Connection connection = conexion.doConnection();
-                    Statement statement = connection.createStatement();
+                    Statement statement = conexion.doConnection().createStatement();
                     ResultSet rst = statement.executeQuery(query)) {
 
                 int i = 0;
@@ -94,8 +90,7 @@ public class NetflixDatabaseRatingsDataset extends RatingsDatasetAdapter {
 
             String query = "SELECT distinct itemID FROM netflix_ratings;";
             try (
-                    Connection connection = conexion.doConnection();
-                    Statement statement = connection.createStatement();
+                    Statement statement = conexion.doConnection().createStatement();
                     ResultSet rst = statement.executeQuery(query)) {
                 while (rst.next()) {
                     int idUser = rst.getInt("itemID");
@@ -116,8 +111,7 @@ public class NetflixDatabaseRatingsDataset extends RatingsDatasetAdapter {
 
             String query = "SELECT itemID FROM netflix_ratings WHERE userID = " + idUser + ";";
             try (
-                    Connection connection = conexion.doConnection();
-                    Statement statement = connection.createStatement();
+                    Statement statement = conexion.doConnection().createStatement();
                     ResultSet rst = statement.executeQuery(query)) {
                 while (rst.next()) {
                     int idItem = rst.getInt("itemID");
@@ -139,8 +133,7 @@ public class NetflixDatabaseRatingsDataset extends RatingsDatasetAdapter {
 
             String query = "SELECT itemID,puntuacion FROM netflix_ratings WHERE userID = " + idUser + ";";
             try (
-                    Connection connection = conexion.doConnection();
-                    Statement statement = connection.createStatement();
+                    Statement statement = conexion.doConnection().createStatement();
                     ResultSet rst = statement.executeQuery(query)) {
                 while (rst.next()) {
                     int idItem = rst.getInt("itemID");
@@ -162,8 +155,7 @@ public class NetflixDatabaseRatingsDataset extends RatingsDatasetAdapter {
 
             String query = "SELECT userID FROM netflix_ratings WHERE itemID = " + idItem + ";";
             try (
-                    Connection connection = conexion.doConnection();
-                    Statement statement = connection.createStatement();
+                    Statement statement = conexion.doConnection().createStatement();
                     ResultSet rst = statement.executeQuery(query)) {
                 while (rst.next()) {
                     int idUser = rst.getInt("userID");
@@ -185,8 +177,7 @@ public class NetflixDatabaseRatingsDataset extends RatingsDatasetAdapter {
 
             String query = "SELECT userID,puntuacion FROM netflix_ratings WHERE itemID = " + idItem + ";";
             try (
-                    Connection connection = conexion.doConnection();
-                    Statement statement = connection.createStatement();
+                    Statement statement = conexion.doConnection().createStatement();
                     ResultSet rst = statement.executeQuery(query)) {
                 while (rst.next()) {
                     int idUser = rst.getInt("userID");

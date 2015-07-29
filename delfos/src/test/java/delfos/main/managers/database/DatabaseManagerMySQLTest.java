@@ -9,7 +9,6 @@ import delfos.databaseconnections.MySQLConnection;
 import delfos.dataset.loaders.database.mysql.changeable.ChangeableMySQLDatasetLoader;
 import java.io.File;
 import java.io.IOException;
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 import org.junit.Assert;
@@ -56,14 +55,14 @@ public class DatabaseManagerMySQLTest extends DelfosTest {
         if (mySQLConnection == null) {
             Assert.fail("Database not ready.");
         } else {
-            Connection connection = mySQLConnection.doConnection();
+
         }
     }
 
     private void cleanDatabase() throws SQLException {
 
         //Drop tables
-        try (Connection connection = mySQLConnection.doConnection(); Statement statement = connection.createStatement()) {
+        try (Statement statement = mySQLConnection.doConnection().createStatement()) {
 
             ChangeableMySQLDatasetLoader datasetLoader = new ChangeableMySQLDatasetLoader(mySQLConnection);
 

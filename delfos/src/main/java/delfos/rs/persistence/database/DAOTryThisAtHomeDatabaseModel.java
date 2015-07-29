@@ -1,6 +1,12 @@
 package delfos.rs.persistence.database;
 
-import java.sql.Connection;
+import delfos.ERROR_CODES;
+import delfos.common.Global;
+import delfos.databaseconnections.DatabaseConection;
+import delfos.rs.collaborativefiltering.svd.TryThisAtHomeSVD;
+import delfos.rs.collaborativefiltering.svd.TryThisAtHomeSVDModel;
+import delfos.rs.persistence.DatabasePersistence;
+import delfos.rs.persistence.FailureInPersistence;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -9,13 +15,6 @@ import java.util.Collection;
 import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import delfos.ERROR_CODES;
-import delfos.common.Global;
-import delfos.databaseconnections.DatabaseConection;
-import delfos.rs.collaborativefiltering.svd.TryThisAtHomeSVD;
-import delfos.rs.collaborativefiltering.svd.TryThisAtHomeSVDModel;
-import delfos.rs.persistence.DatabasePersistence;
-import delfos.rs.persistence.FailureInPersistence;
 
 /**
  * Objeto para almacenar y recuperar en una base de datos mysql el modelo de
@@ -78,8 +77,7 @@ public class DAOTryThisAtHomeDatabaseModel implements RecommendationModelDatabas
 
     private void createStructures(DatabaseConection databaseConection) throws FailureInPersistence {
         try (
-                Connection connection = databaseConection.doConnection();
-                Statement st = connection.createStatement()) {
+                Statement st = databaseConection.doConnection().createStatement()) {
 
             String prefix = databaseConection.getPrefix();
 
@@ -108,8 +106,7 @@ public class DAOTryThisAtHomeDatabaseModel implements RecommendationModelDatabas
 
     private void makePermanent(DatabaseConection databaseConection) throws FailureInPersistence {
         try (
-                Connection connection = databaseConection.doConnection();
-                Statement st = connection.createStatement()) {
+                Statement st = databaseConection.doConnection().createStatement()) {
             String prefix = databaseConection.getPrefix();
 
             st.execute("COMMIT");
@@ -131,17 +128,12 @@ public class DAOTryThisAtHomeDatabaseModel implements RecommendationModelDatabas
 
         try {
             createStructures(databasePersistence.getConection());
-        } catch (SQLException ex) {
-            Logger.getLogger(DAOTryThisAtHomeDatabaseModel.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (ClassNotFoundException ex) {
+        } catch (SQLException | ClassNotFoundException ex) {
             Logger.getLogger(DAOTryThisAtHomeDatabaseModel.class.getName()).log(Level.SEVERE, null, ex);
         }
         final String prefix = databasePersistence.getPrefix();
 
-        try (
-                Connection connection = databasePersistence.getConection().doConnection();
-                Statement st = connection.createStatement()) {
-
+        try (Statement st = databasePersistence.getConection().doConnection().createStatement()) {
             {
                 //Guardo los usuarios
                 ArrayList<ArrayList<Double>> userProfiles = model.getAllUserFeatures();
@@ -221,8 +213,7 @@ public class DAOTryThisAtHomeDatabaseModel implements RecommendationModelDatabas
             final int numItems;
 
             try (
-                    Connection connection = databasePersistence.getConection().doConnection();
-                    Statement statement = connection.createStatement()) {
+                    Statement statement = databasePersistence.getConection().doConnection().createStatement()) {
 
                 ResultSet executeQuery;
 
@@ -267,8 +258,8 @@ public class DAOTryThisAtHomeDatabaseModel implements RecommendationModelDatabas
                 throw new FailureInPersistence(ex);
             }
 
-            ArrayList<ArrayList<Double>> usersFeatures = new ArrayList<ArrayList<Double>>(numUsers);
-            TreeMap<Integer, Integer> usersIndex = new TreeMap<Integer, Integer>();
+            ArrayList<ArrayList<Double>> usersFeatures = new ArrayList<>(numUsers);
+            TreeMap<Integer, Integer> usersIndex = new TreeMap<>();
 
             {
                 StringBuilder sentence = new StringBuilder();
@@ -277,17 +268,10 @@ public class DAOTryThisAtHomeDatabaseModel implements RecommendationModelDatabas
                 sentence.append(getUserProfilesTable(prefix));
                 sentence.append(";");
 
-//            sentence.append(" where ");
-//            for (int idUser : users1) {
-//                sentence.append(" idUser = ").append(idUser);
-//
-//                sentence.append(" or ");
-//            }
-//            sentence.replace(sentence.length() - 4, sentence.length(), ";");
                 try (
-                        Connection connection = databasePersistence.getConection().doConnection();
-                        Statement statement = connection.createStatement()) {
-                    ResultSet rstUsers = statement.executeQuery(sentence.toString());
+                        Statement statement = databasePersistence.getConection().doConnection().createStatement();
+                        ResultSet rstUsers = statement.executeQuery(sentence.toString())) {
+
                     while (rstUsers.next()) {
                         int idUser = rstUsers.getInt("idUser");
                         int idFeature = rstUsers.getInt("idFeature");
@@ -295,7 +279,7 @@ public class DAOTryThisAtHomeDatabaseModel implements RecommendationModelDatabas
 
                         if (!usersIndex.containsKey(idUser)) {
                             usersIndex.put(idUser, usersIndex.size());
-                            ArrayList<Double> arrayList = new ArrayList<Double>(numFeatures);
+                            ArrayList<Double> arrayList = new ArrayList<>(numFeatures);
                             for (int i = 0; i < numFeatures; i++) {
                                 arrayList.add(null);
                             }
@@ -309,8 +293,8 @@ public class DAOTryThisAtHomeDatabaseModel implements RecommendationModelDatabas
                 }
             }
 
-            ArrayList<ArrayList<Double>> itemsFeatures = new ArrayList<ArrayList<Double>>(numItems);
-            TreeMap<Integer, Integer> itemsIndex = new TreeMap<Integer, Integer>();
+            ArrayList<ArrayList<Double>> itemsFeatures = new ArrayList<>(numItems);
+            TreeMap<Integer, Integer> itemsIndex = new TreeMap<>();
 
             {
                 StringBuilder sentence = new StringBuilder();
@@ -318,16 +302,10 @@ public class DAOTryThisAtHomeDatabaseModel implements RecommendationModelDatabas
                 sentence.append(getItemProfilesTable(prefix));
                 sentence.append(";");
 
-//            sentence.append(" where ");
-//            for (int idItem : item) {
-//                sentence.append(" idItem = ").append(idItem);
-//                sentence.append(" or ");
-//            }
-//            sentence.replace(sentence.length() - 4, sentence.length(), ";");
                 try (
-                        Connection connection = databasePersistence.getConection().doConnection();
-                        Statement statement = connection.createStatement()) {
-                    ResultSet rstItems = statement.executeQuery(sentence.toString());
+                        Statement statement = databasePersistence.getConection().doConnection().createStatement();
+                        ResultSet rstItems = statement.executeQuery(sentence.toString());) {
+
                     while (rstItems.next()) {
                         int idItem = rstItems.getInt("idItem");
                         int idFeature = rstItems.getInt("idFeature");
@@ -335,7 +313,7 @@ public class DAOTryThisAtHomeDatabaseModel implements RecommendationModelDatabas
 
                         if (!itemsIndex.containsKey(idItem)) {
                             itemsIndex.put(idItem, itemsIndex.size());
-                            ArrayList<Double> arrayList = new ArrayList<Double>(numFeatures);
+                            ArrayList<Double> arrayList = new ArrayList<>(numFeatures);
                             for (int i = 0; i < numFeatures; i++) {
                                 arrayList.add(null);
                             }
