@@ -25,11 +25,11 @@ public class MultiThreadExecutionManager<TaskType extends Task> implements Runna
     private int threadInitNumber = 0;
 
     private final String taskName;
-    private final ListOfTasks<TaskType> listOfTasks;
-    private final Class<? extends SingleTaskExecute<TaskType>> singleTaskExecuteClass;
+    protected final ListOfTasks<TaskType> listOfTasks;
+    protected final Class<? extends SingleTaskExecute<TaskType>> singleTaskExecuteClass;
     private final List<Worker> workers = Collections.synchronizedList(new LinkedList<Worker>());
     private final List<ExecutionProgressListener> listeners = new LinkedList<>();
-    private final MeanIterative timePerTask = new MeanIterative(50);
+    protected final MeanIterative timePerTask = new MeanIterative(50);
     private final List<PartialWorkListener<TaskType>> partialWorkListener = new LinkedList<>();
     private final Chronometer timeRunning = new Chronometer();
     private final Thread parentThread;

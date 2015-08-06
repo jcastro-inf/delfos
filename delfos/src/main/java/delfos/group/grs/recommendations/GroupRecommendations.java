@@ -22,8 +22,18 @@ public class GroupRecommendations extends Recommendations {
         targetGroupOfUsers = null;
     }
 
-    public GroupRecommendations(GroupOfUsers groupOfUsers, Collection<Recommendation> recommendations, RecommendationComputationDetails recommendationComputationDetails) {
+    public GroupRecommendations(
+            GroupOfUsers groupOfUsers,
+            Collection<Recommendation> recommendations,
+            RecommendationComputationDetails recommendationComputationDetails) {
         super(groupOfUsers.getTargetId(), recommendations, recommendationComputationDetails);
+        this.targetGroupOfUsers = groupOfUsers;
+    }
+
+    public GroupRecommendations(
+            GroupOfUsers groupOfUsers,
+            Collection<Recommendation> recommendations) {
+        super(groupOfUsers.getTargetId(), recommendations, RecommendationComputationDetails.EMPTY_DETAILS);
         this.targetGroupOfUsers = groupOfUsers;
     }
 

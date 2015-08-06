@@ -1,9 +1,5 @@
 package delfos.dataset.basic.item;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Set;
-import java.util.TreeSet;
 import delfos.common.Global;
 import delfos.common.exceptions.dataset.entity.EntityAlreadyExists;
 import delfos.common.exceptions.dataset.entity.EntityNotFound;
@@ -11,11 +7,15 @@ import delfos.common.exceptions.dataset.items.ItemAlreadyExists;
 import delfos.common.exceptions.dataset.items.ItemNotFound;
 import delfos.dataset.basic.features.CollectionOfEntitiesWithFeaturesDefault;
 import delfos.dataset.basic.features.FeatureGenerator;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Set;
+import java.util.TreeSet;
 
 /**
  * Dataset de contenido que almacena todos los items en memoria
  *
-* @author Jorge Castro Gallardo
+ * @author Jorge Castro Gallardo
  *
  * @version 1.0.0 Unknown date
  * @version 1.0.1 07-Mar-2013 Eliminación de la especificación de las
@@ -85,7 +85,7 @@ public class ContentDatasetDefault extends CollectionOfEntitiesWithFeaturesDefau
             throw new ItemNotFound(idItem);
         }
         if (availableProducts == null) {
-            availableProducts = new TreeSet<Integer>(allID());
+            availableProducts = new TreeSet<>(allID());
         }
 
         if (available) {
@@ -132,7 +132,7 @@ public class ContentDatasetDefault extends CollectionOfEntitiesWithFeaturesDefau
 
     @Override
     public String toString() {
-        Set<String> items = new TreeSet<String>();
+        Set<String> items = new TreeSet<>();
         for (Item item : this) {
             items.add("Item " + item.getId());
         }

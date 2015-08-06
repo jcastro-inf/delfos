@@ -1,10 +1,14 @@
-package delfos.rs.collaborativefiltering.knn.memorybased;
+package delfos.group.grs.hesitant;
 
 import delfos.common.exceptions.dataset.users.UserNotFound;
 import delfos.common.parallelwork.Task;
+import delfos.dataset.basic.item.Item;
+import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
-import delfos.dataset.basic.rating.RatingsDataset;
+import delfos.group.groupsofusers.GroupOfUsers;
 import delfos.rs.collaborativefiltering.profile.Neighbor;
+import es.jcastro.hesitant.HesitantValuation;
+import es.jcastro.hesitant.similarity.HesitantSimilarity;
 
 /**
  * Clase que almacena los datos necesarios para ejecutar paralelamente el
@@ -14,37 +18,42 @@ import delfos.rs.collaborativefiltering.profile.Neighbor;
  *
  * @version 14-Noviembre-2013
  */
-public class KnnMemoryTask extends Task {
+public class HesitantKnnNeighborSimilarityTask extends Task {
 
-    public final int idUser;
     public final int idNeighbor;
-    public KnnMemoryBasedCFRS rs;
-    public RatingsDataset<? extends Rating> ratingsDataset;
+    public DatasetLoader<? extends Rating> datasetLoader;
     public Neighbor neighbor = null;
+    public final GroupOfUsers groupOfUsers;
+    public final HesitantValuation<Item, Double> groupModel;
+    public HesitantSimilarity hesitantSimilarity;
 
-    public KnnMemoryTask(RatingsDataset<? extends Rating> ratingsDataset, int idUser, int idNeighbor, KnnMemoryBasedCFRS rs) throws UserNotFound {
-        this.ratingsDataset = ratingsDataset;
-        this.idUser = idUser;
+    public HesitantKnnNeighborSimilarityTask(
+            DatasetLoader<? extends Rating> datasetLoader,
+            GroupOfUsers groupOfUsers, HesitantValuation<Item, Double> groupModel,
+            int idNeighbor, HesitantSimilarity similarity) throws UserNotFound {
+        this.datasetLoader = datasetLoader;
+        this.groupModel = groupModel;
+
+        this.groupOfUsers = groupOfUsers;
         this.idNeighbor = idNeighbor;
-        this.rs = rs;
+        this.hesitantSimilarity = similarity;
     }
 
     @Override
     public String toString() {
         StringBuilder str = new StringBuilder();
 
-        str.append("idUser ---------> ").append(idUser).append("\n");
+        str.append("group ----------> ").append(groupOfUsers.getGroupMembers()).append("\n");
         str.append("idNeighbor -----> ").append(idNeighbor).append("\n");
-        str.append("rs -------------> ").append(rs.getAlias()).append("\n");
-        str.append("\n").append(rs.getNameWithParameters());
+        str.append("rs -------------> ").append(hesitantSimilarity.getClass().getSimpleName()).append("\n");
 
         return str.toString();
     }
 
     public void setNeighbor(Neighbor neighbor) {
         this.neighbor = neighbor;
-        rs = null;
-        ratingsDataset = null;
+        hesitantSimilarity = null;
+        datasetLoader = null;
     }
 
     public Neighbor getNeighbor() {
