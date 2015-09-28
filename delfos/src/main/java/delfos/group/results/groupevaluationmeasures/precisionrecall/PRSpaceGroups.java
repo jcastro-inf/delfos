@@ -87,7 +87,7 @@ public class PRSpaceGroups extends GroupEvaluationMeasure {
             Global.showWarning("Grupos sin Matriz en " + PRSpaceGroups.class + " --> " + gruposSinMatriz + " \n");
         }
 
-        Map<String, Double> detailedResult = new TreeMap<String, Double>();
+        Map<String, Double> detailedResult = new TreeMap<>();
         for (int i = 0; i < agregada.size(); i++) {
             double precisionAt = agregada.getPrecisionAt(i);
             detailedResult.put("Precision@" + i, precisionAt);
@@ -98,7 +98,7 @@ public class PRSpaceGroups extends GroupEvaluationMeasure {
 
     @Override
     public GroupMeasureResult agregateResults(Collection<GroupMeasureResult> results) {
-        ArrayList<ConfusionMatricesCurve> curves = new ArrayList<ConfusionMatricesCurve>();
+        ArrayList<ConfusionMatricesCurve> curves = new ArrayList<>();
 
         for (GroupMeasureResult r : results) {
             Element e = r.getXMLElement();
@@ -112,7 +112,7 @@ public class PRSpaceGroups extends GroupEvaluationMeasure {
 
         ConfusionMatricesCurve mergeCurves = ConfusionMatricesCurve.mergeCurves(curves);
 
-        Map<String, Double> detailedResult = new TreeMap<String, Double>();
+        Map<String, Double> detailedResult = new TreeMap<>();
         for (int i = 0; i < mergeCurves.size(); i++) {
             double precisionAt = mergeCurves.getPrecisionAt(i);
             detailedResult.put("Precision@" + i, precisionAt);

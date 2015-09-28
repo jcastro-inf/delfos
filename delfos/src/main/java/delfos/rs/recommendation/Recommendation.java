@@ -2,13 +2,14 @@ package delfos.rs.recommendation;
 
 import delfos.common.decimalnumbers.NumberCompare;
 import delfos.common.decimalnumbers.NumberRounder;
+import delfos.dataset.basic.item.Item;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
-import java.util.TreeSet;
+import java.util.stream.Collectors;
 
 /**
  * Almacena una recomendación devuelta por un sistema de recomendación.
@@ -27,11 +28,9 @@ public class Recommendation implements Comparable<Recommendation>, Serializable 
      * @return
      */
     public static Set<Integer> getSetOfItems(Collection<Recommendation> recommendations) {
-        Set<Integer> ret = new TreeSet<>();
-        for (Recommendation r : recommendations) {
-            ret.add(r.getIdItem());
-        }
-        return ret;
+        return recommendations.parallelStream()
+                .map((recommendation) -> recommendation.getIdItem())
+                .collect(Collectors.toSet());
     }
 
     public static Map<Integer, Number> convertToMapOfNumbers(Collection<Recommendation> recommendations) {
@@ -39,7 +38,7 @@ public class Recommendation implements Comparable<Recommendation>, Serializable 
         Map<Integer, Number> map = new TreeMap<>();
 
         for (Recommendation recommendation : recommendations) {
-            final int idItem = recommendation.idItem;
+            final int idItem = recommendation.getIdItem();
             final Number preference = recommendation.preference;
 
             if (map.containsKey(idItem)) {
@@ -60,7 +59,7 @@ public class Recommendation implements Comparable<Recommendation>, Serializable 
         int i = 0;
         for (Recommendation recommendation : recommendations) {
 
-            final int idItem = recommendation.idItem;
+            final int idItem = recommendation.getIdItem();
             final Number preference = (size - i) / size;
 
             if (map.containsKey(idItem)) {
@@ -79,8 +78,8 @@ public class Recommendation implements Comparable<Recommendation>, Serializable 
      *********************** ATRIBUTOS DE INSTANCIA
      * *************************************************************************
      */
-    private final int idItem;
     private final Number preference;
+    protected final Item item;
 
     /**
      * Constructor que asigna los valores del objeto
@@ -89,9 +88,16 @@ public class Recommendation implements Comparable<Recommendation>, Serializable 
      * @param preference preferencia que el sistema de recomendación ha asignado
      * al item para el usuario al que se recomienda
      */
+    @Deprecated
     public Recommendation(Integer idItem, Number preference) {
-        this.idItem = idItem;
         this.preference = preference;
+        this.item = new Item(idItem);
+    }
+
+    public Recommendation(Item item, Number preference) {
+
+        this.preference = null;
+        this.item = null;
     }
 
     /**
@@ -99,8 +105,9 @@ public class Recommendation implements Comparable<Recommendation>, Serializable 
      *
      * @return id del item que se recomienda
      */
+    @Deprecated
     public int getIdItem() {
-        return idItem;
+        return item.getId();
     }
 
     /**
@@ -117,7 +124,7 @@ public class Recommendation implements Comparable<Recommendation>, Serializable 
     @Override
     public String toString() {
         String preferenceRounded = NumberRounder.round_str(preference);
-        return "item:" + idItem + "-->" + preferenceRounded;
+        return "item:" + item.getId() + "-->" + preferenceRounded;
     }
 
     @Override
@@ -130,7 +137,7 @@ public class Recommendation implements Comparable<Recommendation>, Serializable 
     public boolean equals(Object obj) {
         if (obj instanceof Recommendation) {
             Recommendation recommendation = (Recommendation) obj;
-            if (this.idItem != recommendation.idItem) {
+            if (this.getIdItem() != recommendation.getIdItem()) {
                 return false;
             }
             return NumberCompare.equals(this.preference, recommendation.preference, 4);
@@ -142,7 +149,7 @@ public class Recommendation implements Comparable<Recommendation>, Serializable 
     @Override
     public int hashCode() {
         int hash = 3;
-        hash = 37 * hash + this.idItem;
+        hash = 37 * hash + this.getIdItem();
         hash = 37 * hash + (this.preference != null ? this.preference.hashCode() : 0);
         return hash;
     }
@@ -153,7 +160,7 @@ public class Recommendation implements Comparable<Recommendation>, Serializable 
             if (compare != 0) {
                 return compare;
             } else {
-                return Integer.compare(o1.idItem, o2.idItem);
+                return Integer.compare(o1.getIdItem(), o2.getIdItem());
             }
         };
 
@@ -173,7 +180,7 @@ public class Recommendation implements Comparable<Recommendation>, Serializable 
      */
     public boolean relaxedEquals(Recommendation r, int numDecimals) {
 
-        if (this.idItem != r.idItem) {
+        if (this.getIdItem() != r.getIdItem()) {
             return false;
         }
         return NumberCompare.equals(this.preference, r.preference, numDecimals);
