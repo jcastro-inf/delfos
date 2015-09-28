@@ -103,6 +103,8 @@ public class Main {
 
         caseUse.add(delfos.main.managers.library.install.InitialConfiguration.getInstance());
 
+        caseUse.add(delfos.main.managers.gui.neighborhood.NeighborhoodGUI.getInstance());
+
         return caseUse;
     }
 

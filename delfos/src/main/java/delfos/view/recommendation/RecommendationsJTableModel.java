@@ -56,7 +56,7 @@ public class RecommendationsJTableModel extends AbstractTableModel {
         return datos[columnIndex][rowIndex];
     }
 
-    void setRecomendaciones(Collection<Recommendation> recommendOnly) {
+    public void setRecomendaciones(Collection<Recommendation> recommendOnly) {
         if (this.cd == null) {
             datos = new Object[3][0];
             return;
@@ -80,9 +80,10 @@ public class RecommendationsJTableModel extends AbstractTableModel {
         fireTableDataChanged();
     }
 
-    void setContentDataset(ContentDataset cd) {
+    public void setContentDataset(ContentDataset cd) {
         this.cd = cd;
         datos = new Object[3][0];
         fireTableDataChanged();
     }
+
 }

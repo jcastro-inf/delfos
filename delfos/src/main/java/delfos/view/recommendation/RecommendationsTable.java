@@ -2,6 +2,7 @@ package delfos.view.recommendation;
 
 import javax.swing.JTable;
 import javax.swing.table.TableColumn;
+import javax.swing.table.TableRowSorter;
 
 /**
  * Tabla que muestra la información de los características del dataset. Muestra
@@ -26,12 +27,26 @@ public class RecommendationsTable extends JTable {
     public RecommendationsTable(RecommendationsJTableModel recommendationsTableModel) {
         super(recommendationsTableModel);
 
-        TableColumn column = null;
+        TableColumn column;
         for (int j = 0; j < getColumnCount(); j++) {
             column = getColumnModel().getColumn(j);
             if (j == 0) {
                 column.setMaxWidth(100);
             }
+            if (j == 1) {
+                column.setMaxWidth(100);
+            }
         }
+
+        TableRowSorter<RecommendationsJTableModel> sorter = new TableRowSorter<>(recommendationsTableModel);
+
+        sorter.setComparator(0, (Number o1, Number o2) -> {
+            return ((Double) o1.doubleValue()).compareTo(o2.doubleValue());
+        });
+        sorter.setComparator(1, (Number o1, Number o2) -> {
+            return ((Double) o1.doubleValue()).compareTo(o2.doubleValue());
+        });
+
+        setRowSorter(sorter);
     }
 }
