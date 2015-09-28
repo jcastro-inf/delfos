@@ -115,7 +115,7 @@ public class AreaUnderRoc extends GroupEvaluationMeasure {
 
     @Override
     public GroupMeasureResult agregateResults(Collection<GroupMeasureResult> results) {
-        ArrayList<ConfusionMatricesCurve> curves = new ArrayList<ConfusionMatricesCurve>();
+        ArrayList<ConfusionMatricesCurve> curves = new ArrayList<>();
 
         for (GroupMeasureResult r : results) {
             Element e = r.getXMLElement();

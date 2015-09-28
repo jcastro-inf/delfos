@@ -2,8 +2,9 @@ package delfos.common.parallelwork;
 
 /**
  *
-* @author Jorge Castro Gallardo
+ * @author Jorge Castro Gallardo
  * @version 1.0 22-May-2013
+ * @param <Task>
  */
 public interface SingleTaskExecute<Task> {
 

@@ -1,10 +1,10 @@
 package delfos.rs.collaborativefiltering.profile;
 
+import delfos.rs.collaborativefiltering.knn.RecommendationEntity;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
-import delfos.rs.collaborativefiltering.knn.RecommendationEntity;
 
 /**
  * Clase que representa un vecino en un algoritmo de recomendación colaborativo

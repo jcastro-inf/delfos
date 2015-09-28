@@ -8,7 +8,6 @@
     <packaging>jar</packaging>
 
     <name>delfos</name>
-    <url>http://maven.apache.org</url>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -93,6 +92,11 @@
             <artifactId>es.sinbad2.jcastro.fuzzyclustering</artifactId>
             <version>1.0.20140918</version>
             <type>jar</type>
+        </dependency>
+        <dependency>
+            <groupId>es.jcastro</groupId>
+            <artifactId>hesitant-utils</artifactId>
+            <version>1.0.0</version>
         </dependency>
     </dependencies>
 

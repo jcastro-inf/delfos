@@ -383,8 +383,7 @@ public final class AggregationOfIndividualRatings_itemWeighted
         if (recommenderSystem instanceof KnnMemoryBasedNWR_itemWeighted) {
             KnnMemoryBasedNWR_itemWeighted knnMemoryBasedNWR_NaturalNoise = (KnnMemoryBasedNWR_itemWeighted) recommenderSystem;
 
-            groupRecom = knnMemoryBasedNWR_NaturalNoise.recommendOnlyWithItemWeighting(
-                    new DatasetLoaderGiven(datasetLoader, ratingsDataset_withPseudoUser),
+            groupRecom = knnMemoryBasedNWR_NaturalNoise.recommendOnlyWithItemWeighting(new DatasetLoaderGiven(datasetLoader, ratingsDataset_withPseudoUser),
                     (KnnMemoryModel) RecommendationModel.getRecommendationModel(),
                     idGroup,
                     itemWeights,

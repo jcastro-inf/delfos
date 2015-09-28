@@ -4,11 +4,11 @@ package delfos.common.exceptions.dataset.entity;
  * Excepción que se lanza al intentar buscar una entidad que no existe en la
  * colección {@link CollectionOfEntitiesWithFeatures}.
  *
-* @author Jorge Castro Gallardo
+ * @author Jorge Castro Gallardo
  *
  * @version 1.0 4-Octubre-2013
  */
-public class EntityNotFound extends Exception {
+public class EntityNotFound extends RuntimeException {
 
     private static final long serialVersionUID = 1L;
     private final int id;
@@ -18,6 +18,7 @@ public class EntityNotFound extends Exception {
      * Crea la excepción a partir del identificador de la entidad que no se
      * encuentra.
      *
+     * @param entityClass
      * @param id Identificador de la entidad no encontrada.
      */
     public EntityNotFound(Class<?> entityClass, int id) {
