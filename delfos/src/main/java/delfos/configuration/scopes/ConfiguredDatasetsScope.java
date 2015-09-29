@@ -132,6 +132,7 @@ public class ConfiguredDatasetsScope extends ConfigurationScope {
                     }
 
                     configuredDatasets.add(new ConfiguredDataset(name, description, datasetLoader));
+
                 }
                 if (configuredDatasets.isEmpty()) {
                     Global.showWarning("No configured datasets found, check configuration file.");

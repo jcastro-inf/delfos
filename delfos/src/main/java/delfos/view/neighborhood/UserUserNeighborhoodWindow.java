@@ -10,14 +10,18 @@ import delfos.common.exceptions.dataset.CannotLoadUsersDataset;
 import delfos.common.exceptions.dataset.items.ItemNotFound;
 import delfos.common.exceptions.dataset.users.UserNotFound;
 import delfos.common.exceptions.ratings.NotEnoughtUserInformation;
+import delfos.common.parameters.ParameterListener;
 import delfos.common.parameters.view.EditParameterDialog;
 import delfos.configureddatasets.ConfiguredDataset;
 import delfos.configureddatasets.ConfiguredDatasetsFactory;
 import delfos.dataset.basic.item.ContentDataset;
 import delfos.dataset.basic.loader.types.ContentDatasetLoader;
 import delfos.dataset.basic.loader.types.DatasetLoader;
+import delfos.dataset.basic.loader.types.UsersDatasetLoader;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RelevanceCriteria;
+import delfos.dataset.basic.user.User;
+import delfos.dataset.basic.user.UsersDataset;
 import delfos.rs.RecommenderSystem;
 import delfos.rs.RecommenderSystemAdapter;
 import delfos.rs.collaborativefiltering.knn.memorybased.KnnMemoryBasedCFRS;
@@ -32,13 +36,18 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.lang.management.ManagementFactory;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.stream.Collectors;
 import javax.swing.BorderFactory;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
@@ -94,6 +103,8 @@ public class UserUserNeighborhoodWindow extends JFrame {
         initComponents();
 
         plugListeners();
+
+        fillData();
 
         this.pack();
         Dimension d = Toolkit.getDefaultToolkit().getScreenSize();
@@ -223,9 +234,6 @@ public class UserUserNeighborhoodWindow extends JFrame {
 
         GridBagConstraints constraints = new GridBagConstraints();
 
-        ConfiguredDataset[] configuredDatasets
-                = ConfiguredDatasetsFactory.getInstance().getAllConfiguredDatasets().toArray(new ConfiguredDataset[0]);
-
         constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.anchor = GridBagConstraints.NORTH;
         constraints.weightx = 1.0;
@@ -235,7 +243,7 @@ public class UserUserNeighborhoodWindow extends JFrame {
         constraints.gridwidth = 1;
         constraints.gridheight = 1;
         constraints.insets = new Insets(3, 4, 3, 4);
-        this.datasetLoaderSelector = new JComboBox<>(configuredDatasets);
+        this.datasetLoaderSelector = new JComboBox<>();
         ret.add(datasetLoaderSelector, constraints);
 
         constraints.fill = GridBagConstraints.HORIZONTAL;
@@ -385,154 +393,6 @@ public class UserUserNeighborhoodWindow extends JFrame {
         return ret;
     }
 
-    private void fillData() {
-        RecommenderSystem[] recommenderSystems = new RecommenderSystem[2];
-
-        recommenderSystems[0] = new KnnMemoryBasedCFRS();
-        recommenderSystems[1] = new KnnModelBasedCFRS();
-
-        recommenderSystemSelector.setModel(new DefaultComboBoxModel<>(recommenderSystems));
-
-    }
-
-    private void plugListeners() {
-        if (1 == 1) {
-            return;
-        }
-        datasetLoaderSelector.addActionListener((ActionEvent e) -> {
-            try {
-                final DatasetLoader<? extends Rating> dl = ((ConfiguredDataset) datasetLoaderSelector.getSelectedItem()).getDatasetLoader();
-                try {
-                    userSelector.setModel(new DefaultComboBoxModel(dl.getRatingsDataset().allUsers().toArray()));
-
-                } catch (CannotLoadContentDataset ex) {
-                    Global.showError(ex);
-                    userSelector.setModel(new DefaultComboBoxModel(new Object[0]));
-
-                }
-
-                dl.addParammeterListener(() -> {
-                    try {
-
-                        try {
-                            userSelector.setModel(new DefaultComboBoxModel(dl.getRatingsDataset().allUsers().toArray()));
-                        } catch (CannotLoadRatingsDataset ex) {
-                            ERROR_CODES.CANNOT_LOAD_RATINGS_DATASET.exit(ex);
-                        }
-
-                        return;
-                    } catch (CannotLoadContentDataset ex) {
-                        ERROR_CODES.CANNOT_LOAD_CONTENT_DATASET.exit(ex);
-                    } catch (CannotLoadRatingsDataset ex) {
-                        ERROR_CODES.CANNOT_LOAD_RATINGS_DATASET.exit(ex);
-                    }
-
-                    userSelector.setModel(new DefaultComboBoxModel<>(new Object[0]));
-                });
-                datasetLoaderParameters.setEnabled(dl.getParameters().size() > 0);
-            } catch (CannotLoadRatingsDataset ex) {
-                ERROR_CODES.CANNOT_LOAD_RATINGS_DATASET.exit(ex);
-            }
-            recommendationModel = null;
-        });
-
-        ((DatasetLoader) datasetLoaderSelector.getSelectedItem()).addParammeterListener(() -> {
-            try {
-                try {
-                    userSelector.setModel(new DefaultComboBoxModel<>(((DatasetLoader) datasetLoaderSelector.getSelectedItem()).getRatingsDataset().allUsers().toArray(new Integer[0])));
-                } catch (CannotLoadRatingsDataset ex) {
-                    ERROR_CODES.CANNOT_LOAD_RATINGS_DATASET.exit(ex);
-                }
-                return;
-
-            } catch (CannotLoadContentDataset ex) {
-                ERROR_CODES.CANNOT_LOAD_CONTENT_DATASET.exit(ex);
-            } catch (CannotLoadRatingsDataset ex) {
-                ERROR_CODES.CANNOT_LOAD_RATINGS_DATASET.exit(ex);
-            }
-
-            userSelector.setModel(new DefaultComboBoxModel(new Object[0]));
-        });
-
-        recommenderSystemSelector.addActionListener((ActionEvent e) -> {
-            recommendationModel = null;
-        });
-    }
-
-    private void computeRecommendations() throws RuntimeException {
-
-        try {
-            RecommenderSystemAdapter<Object> recommenderSystem = (RecommenderSystemAdapter<Object>) recommenderSystemSelector.getSelectedItem();
-            int idUser = ((Number) userSelector.getSelectedItem()).intValue();
-            DatasetLoader<? extends Rating> datasetLoader = (DatasetLoader) datasetLoaderSelector.getSelectedItem();
-            RelevanceCriteria relevanceCriteria = new RelevanceCriteria((Number) relevanceThresholdSelector.getValue());
-            final ContentDataset contentDataset;
-            if (datasetLoader instanceof ContentDatasetLoader) {
-                ContentDatasetLoader contentDatasetLoader = (ContentDatasetLoader) datasetLoader;
-                contentDataset = contentDatasetLoader.getContentDataset();
-            } else {
-                throw new CannotLoadContentDataset("The dataset loader is not a ContentDatasetLoader, cannot apply a content-based ");
-            }
-            Set<Integer> noValoradas = new TreeSet<>(contentDataset.allID());
-            noValoradas.removeAll(datasetLoader.getRatingsDataset().getUserRated(idUser));
-            recommendationsJTableModel.setContentDataset(contentDataset);
-
-            Collection<Recommendation> recommendations = recommenderSystem.recommendToUser(datasetLoader, recommendationModel, idUser, noValoradas);
-            UserUserNeighborhoodWindow.this.recommendationsJTableModel.setRecomendaciones(recommendations);
-        } catch (CannotLoadRatingsDataset ex) {
-            ERROR_CODES.CANNOT_LOAD_RATINGS_DATASET.exit(ex);
-        } catch (UserNotFound ex) {
-            ERROR_CODES.USER_NOT_FOUND.exit(ex);
-        } catch (CannotLoadContentDataset ex) {
-            ERROR_CODES.CANNOT_LOAD_CONTENT_DATASET.exit(ex);
-        } catch (ItemNotFound ex) {
-            ERROR_CODES.ITEM_NOT_FOUND.exit(ex);
-        } catch (CannotLoadUsersDataset ex) {
-            ERROR_CODES.CANNOT_LOAD_USERS_DATASET.exit(ex);
-        } catch (NotEnoughtUserInformation ex) {
-            ERROR_CODES.USER_NOT_ENOUGHT_INFORMATION.exit(ex);
-        }
-    }
-
-    private Chronometer chrono;
-    private int previousPercent;
-    private String previousProceso;
-
-    /**
-     * Lanza el evento de cambio en el progreso de ejecución.
-     *
-     * @param proceso Proceso que se ejecuta actualmente.
-     * @param percent Porcentaje completado.
-     * @param remainingSeconds Tiempo restante estimado.
-     */
-    private void executionProgressChanged(String proceso, int percent, long remainingSeconds) {
-        progressMessage.setText(proceso);
-        progressBar.setValue(percent);
-        if (chrono == null) {
-            chrono = new Chronometer();
-            chrono.reset();
-            this.remainingTime.setText(DateCollapse.collapse(remainingSeconds));
-            this.remainingTime.setVisible(true);
-            this.previousPercent = percent;
-            this.previousProceso = proceso;
-        } else {
-            if (previousProceso.equals(proceso) && previousPercent == percent) {
-                if (chrono.getPartialElapsed() > 5000) {
-                    this.remainingTime.setText(DateCollapse.collapse(remainingSeconds));
-                    this.remainingTime.setVisible(true);
-                    chrono.reset();
-                }
-            } else {
-                this.previousPercent = percent;
-                this.previousProceso = proceso;
-                this.remainingTime.setVisible(false);
-                this.remainingTime.setText(DateCollapse.collapse(remainingSeconds));
-                this.remainingTime.setVisible(true);
-                chrono.reset();
-            }
-        }
-    }
-
     private Component panelResultados() {
         GridBagConstraints constraints = new GridBagConstraints();
         JPanel results = new JPanel();
@@ -628,6 +488,215 @@ public class UserUserNeighborhoodWindow extends JFrame {
         inputPanel.add(panelCriterioRelevancia(), constraints);
 
         return inputPanel;
+    }
+
+    private Chronometer chrono;
+    private int previousPercent;
+    private String previousProceso;
+
+    /**
+     * Lanza el evento de cambio en el progreso de ejecución.
+     *
+     * @param proceso Proceso que se ejecuta actualmente.
+     * @param percent Porcentaje completado.
+     * @param remainingSeconds Tiempo restante estimado.
+     */
+    private void executionProgressChanged(String proceso, int percent, long remainingSeconds) {
+        progressMessage.setText(proceso);
+        progressBar.setValue(percent);
+        if (chrono == null) {
+            chrono = new Chronometer();
+            chrono.reset();
+            this.remainingTime.setText(DateCollapse.collapse(remainingSeconds));
+            this.remainingTime.setVisible(true);
+            this.previousPercent = percent;
+            this.previousProceso = proceso;
+        } else {
+            if (previousProceso.equals(proceso) && previousPercent == percent) {
+                if (chrono.getPartialElapsed() > 5000) {
+                    this.remainingTime.setText(DateCollapse.collapse(remainingSeconds));
+                    this.remainingTime.setVisible(true);
+                    chrono.reset();
+                }
+            } else {
+                this.previousPercent = percent;
+                this.previousProceso = proceso;
+                this.remainingTime.setVisible(false);
+                this.remainingTime.setText(DateCollapse.collapse(remainingSeconds));
+                this.remainingTime.setVisible(true);
+                chrono.reset();
+            }
+        }
+    }
+
+    private void fillData() {
+        RecommenderSystem[] recommenderSystems = new RecommenderSystem[2];
+        recommenderSystems[0] = new KnnMemoryBasedCFRS();
+        recommenderSystems[1] = new KnnModelBasedCFRS();
+        recommenderSystemSelector.setModel(new DefaultComboBoxModel<>(recommenderSystems));
+
+        ConfiguredDataset[] configuredDatasets
+                = ConfiguredDatasetsFactory.getInstance().getAllConfiguredDatasets().toArray(new ConfiguredDataset[0]);
+        datasetLoaderSelector.setModel(new DefaultComboBoxModel<>(configuredDatasets));
+
+        fillUsersSelector(((ConfiguredDataset) datasetLoaderSelector.getSelectedItem()).getDatasetLoader());
+
+        fillRecommendationTable();
+    }
+
+    private void fillUsersSelector(DatasetLoader<? extends Rating> datasetLoader) throws IllegalStateException, CannotLoadUsersDataset {
+        if (datasetLoader instanceof UsersDatasetLoader) {
+
+            UsersDataset usersDataset = ((UsersDatasetLoader) datasetLoader).getUsersDataset();
+
+            User[] users = new User[usersDataset.getAllID().size()];
+
+            {
+                List<User> usersList = usersDataset.getAllID().parallelStream().map((idUser) -> {
+                    return ((User) usersDataset.get(idUser));
+                }).collect(Collectors.toList());
+                Collections.sort(usersList, (User o1, User o2) -> o1.getId() - o2.getId());
+                users = usersList.toArray(new User[0]);
+            }
+
+            userSelector.setModel(new DefaultComboBoxModel(users));
+        } else {
+            throw new IllegalStateException("arg");
+        }
+    }
+
+    private void plugListeners() {
+
+        updateUsersWhenDatasetLoaderChanges();
+
+        if (1 == 1) {
+            return;
+        }
+
+        datasetLoaderSelector.addActionListener((ActionEvent e) -> {
+            try {
+                final DatasetLoader<? extends Rating> dl = ((ConfiguredDataset) datasetLoaderSelector.getSelectedItem()).getDatasetLoader();
+                try {
+                    userSelector.setModel(new DefaultComboBoxModel(dl.getRatingsDataset().allUsers().toArray()));
+
+                } catch (CannotLoadContentDataset ex) {
+                    Global.showError(ex);
+                    userSelector.setModel(new DefaultComboBoxModel(new Object[0]));
+
+                }
+
+                dl.addParammeterListener(() -> {
+                    try {
+
+                        try {
+                            userSelector.setModel(new DefaultComboBoxModel(dl.getRatingsDataset().allUsers().toArray()));
+                        } catch (CannotLoadRatingsDataset ex) {
+                            ERROR_CODES.CANNOT_LOAD_RATINGS_DATASET.exit(ex);
+                        }
+
+                        return;
+                    } catch (CannotLoadContentDataset ex) {
+                        ERROR_CODES.CANNOT_LOAD_CONTENT_DATASET.exit(ex);
+                    } catch (CannotLoadRatingsDataset ex) {
+                        ERROR_CODES.CANNOT_LOAD_RATINGS_DATASET.exit(ex);
+                    }
+
+                    userSelector.setModel(new DefaultComboBoxModel<>(new Object[0]));
+                });
+                datasetLoaderParameters.setEnabled(dl.getParameters().size() > 0);
+            } catch (CannotLoadRatingsDataset ex) {
+                ERROR_CODES.CANNOT_LOAD_RATINGS_DATASET.exit(ex);
+            }
+            recommendationModel = null;
+        });
+
+        ((DatasetLoader) datasetLoaderSelector.getSelectedItem()).addParammeterListener(() -> {
+            try {
+                try {
+                    userSelector.setModel(new DefaultComboBoxModel<>(((DatasetLoader) datasetLoaderSelector.getSelectedItem()).getRatingsDataset().allUsers().toArray(new Integer[0])));
+                } catch (CannotLoadRatingsDataset ex) {
+                    ERROR_CODES.CANNOT_LOAD_RATINGS_DATASET.exit(ex);
+                }
+                return;
+
+            } catch (CannotLoadContentDataset ex) {
+                ERROR_CODES.CANNOT_LOAD_CONTENT_DATASET.exit(ex);
+            } catch (CannotLoadRatingsDataset ex) {
+                ERROR_CODES.CANNOT_LOAD_RATINGS_DATASET.exit(ex);
+            }
+
+            userSelector.setModel(new DefaultComboBoxModel(new Object[0]));
+        });
+
+        recommenderSystemSelector.addActionListener((ActionEvent e) -> {
+            recommendationModel = null;
+        });
+    }
+
+    private void computeRecommendations() throws RuntimeException {
+
+        try {
+            RecommenderSystemAdapter<Object> recommenderSystem = (RecommenderSystemAdapter<Object>) recommenderSystemSelector.getSelectedItem();
+            int idUser = ((Number) userSelector.getSelectedItem()).intValue();
+            DatasetLoader<? extends Rating> datasetLoader = (DatasetLoader) datasetLoaderSelector.getSelectedItem();
+            RelevanceCriteria relevanceCriteria = new RelevanceCriteria((Number) relevanceThresholdSelector.getValue());
+            final ContentDataset contentDataset;
+            if (datasetLoader instanceof ContentDatasetLoader) {
+                ContentDatasetLoader contentDatasetLoader = (ContentDatasetLoader) datasetLoader;
+                contentDataset = contentDatasetLoader.getContentDataset();
+            } else {
+                throw new CannotLoadContentDataset("The dataset loader is not a ContentDatasetLoader, cannot apply a content-based ");
+            }
+            Set<Integer> noValoradas = new TreeSet<>(contentDataset.allID());
+            noValoradas.removeAll(datasetLoader.getRatingsDataset().getUserRated(idUser));
+            recommendationsJTableModel.setContentDataset(contentDataset);
+
+            Collection<Recommendation> recommendations = recommenderSystem.recommendToUser(datasetLoader, recommendationModel, idUser, noValoradas);
+            UserUserNeighborhoodWindow.this.recommendationsJTableModel.setRecomendaciones(recommendations);
+        } catch (CannotLoadRatingsDataset ex) {
+            ERROR_CODES.CANNOT_LOAD_RATINGS_DATASET.exit(ex);
+        } catch (UserNotFound ex) {
+            ERROR_CODES.USER_NOT_FOUND.exit(ex);
+        } catch (CannotLoadContentDataset ex) {
+            ERROR_CODES.CANNOT_LOAD_CONTENT_DATASET.exit(ex);
+        } catch (ItemNotFound ex) {
+            ERROR_CODES.ITEM_NOT_FOUND.exit(ex);
+        } catch (CannotLoadUsersDataset ex) {
+            ERROR_CODES.CANNOT_LOAD_USERS_DATASET.exit(ex);
+        } catch (NotEnoughtUserInformation ex) {
+            ERROR_CODES.USER_NOT_ENOUGHT_INFORMATION.exit(ex);
+        }
+    }
+
+    private ParameterListener datasetLoaderParameterListener = () -> {
+        ConfiguredDataset selectedItem = datasetLoaderSelector.getItemAt(datasetLoaderSelector.getSelectedIndex());
+        DatasetLoader<? extends Rating> datasetLoader = selectedItem.getDatasetLoader();
+        fillUsersSelector(datasetLoader);
+    };
+
+    private final ItemListener datasetLoaderSelectedListener = (ItemEvent e) -> {
+        ConfiguredDataset item = (ConfiguredDataset) e.getItem();
+        DatasetLoader<? extends Rating> datasetLoader = item.getDatasetLoader();
+
+        switch (e.getStateChange()) {
+            case ItemEvent.SELECTED:
+                datasetLoader.addParammeterListener(datasetLoaderParameterListener);
+                break;
+            case ItemEvent.DESELECTED:
+                datasetLoader.removeParammeterListener(datasetLoaderParameterListener);
+                break;
+            default:
+                break;
+        }
+
+    };
+
+    private void updateUsersWhenDatasetLoaderChanges() {
+        this.datasetLoaderSelector.addItemListener(datasetLoaderSelectedListener);
+    }
+
+    private void fillRecommendationTable() {
+
     }
 
 }
