@@ -97,8 +97,9 @@ public class TuringPreparator implements ExperimentPreparator {
     }
 
     public void executeAllExperimentsInDirectory(File directory) {
-        Arrays.asList(directory.listFiles())
-                .parallelStream()
+        List<File> children = Arrays.asList(directory.listFiles());
+
+        children.stream()
                 .forEach((singleExperimentDirectory) -> {
                     String[] args = {
                         "-seed", "77352653",
@@ -107,7 +108,6 @@ public class TuringPreparator implements ExperimentPreparator {
                         "-numExec", "1"};
                     Main.mainWithExceptions(args);
                 });
-
     }
 
     public void executeAllExperimentsInDirectory(File directory, int numExec) {
