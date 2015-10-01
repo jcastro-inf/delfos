@@ -8,7 +8,6 @@ import delfos.common.exceptions.dataset.items.ItemNotFound;
 import delfos.common.exceptions.dataset.users.UserNotFound;
 import delfos.common.exceptions.ratings.NotEnoughtUserInformation;
 import delfos.common.parallelwork.MultiThreadExecutionManager;
-import delfos.common.parallelwork.MultiThreadExecutionManagerDebug;
 import delfos.common.parameters.Parameter;
 import delfos.common.parameters.restriction.ObjectParameter;
 import delfos.dataset.basic.item.ContentDataset;
@@ -126,7 +125,7 @@ public class HesitantKnnGroupUser
 
         List<HesitantKnnNeighborSimilarityTask> tasks = stream.collect(Collectors.toList());
 
-        MultiThreadExecutionManager<HesitantKnnNeighborSimilarityTask> executionManager = new MultiThreadExecutionManagerDebug<>(
+        MultiThreadExecutionManager<HesitantKnnNeighborSimilarityTask> executionManager = new MultiThreadExecutionManager<>(
                 "Find neighbors of group " + groupOfUsers,
                 tasks,
                 HesitantKnnNeighborSimilarityTaskExecutor.class);
