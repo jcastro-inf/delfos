@@ -49,6 +49,10 @@ public class HesitantGRS_CaseStudy extends DelfosTest {
     }
 
     private Collection<ConfiguredDatasetLoader> getDatasetLoader() {
+        if (1 == 1) {
+            return Arrays.asList(new ConfiguredDatasetLoader("ml-100k"));
+        }
+
         return ConfiguredDatasetsFactory.getInstance()
                 .keySet()
                 .stream()
@@ -107,6 +111,6 @@ public class HesitantGRS_CaseStudy extends DelfosTest {
     }
 
     private void executeAllExperimentsInDirectory(File directory) {
-        new TuringPreparator().executeAllExperimentsInDirectory(directory, 20);
+        new TuringPreparator().executeAllExperimentsInDirectory(directory, 1);
     }
 }

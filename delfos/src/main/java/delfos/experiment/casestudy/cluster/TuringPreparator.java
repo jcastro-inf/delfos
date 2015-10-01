@@ -68,6 +68,8 @@ public class TuringPreparator implements ExperimentPreparator {
         for (DatasetLoader<? extends Rating> datasetLoader : datasetLoaders) {
             for (GroupCaseStudy groupCaseStudy : groupCaseStudies) {
 
+                groupCaseStudy.setAlias(groupCaseStudy.getAlias() + "_hash=" + groupCaseStudies.hashCode());
+
                 String fileName = "[" + datasetLoader.getAlias() + "]" + "_" + groupCaseStudy.getAlias() + ".xml";
 
                 DecimalFormat format = new DecimalFormat("000");
@@ -114,7 +116,7 @@ public class TuringPreparator implements ExperimentPreparator {
 
     public void executeAllExperimentsInDirectory(File directory, int numExec) {
         Arrays.asList(directory.listFiles())
-                .parallelStream()
+                .stream()
                 .forEach((singleExperimentDirectory) -> {
                     String[] args = {
                         ExecuteGroupXML.MODE_PARAMETER,

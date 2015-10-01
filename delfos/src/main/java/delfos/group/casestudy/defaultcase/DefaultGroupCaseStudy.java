@@ -46,6 +46,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -115,6 +116,48 @@ public class DefaultGroupCaseStudy extends GroupCaseStudy {
         this.groupValidationTechnique = groupValidationTechniqueValue;
 
         setAlias(groupRecommenderSystem.getAlias());
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 97 * hash + Objects.hashCode(this.datasetLoader);
+        hash = 97 * hash + Objects.hashCode(this.groupRecommenderSystem);
+        hash = 97 * hash + Objects.hashCode(this.groupFormationTechnique);
+        hash = 97 * hash + Objects.hashCode(this.relevanceCriteria);
+        hash = 97 * hash + Objects.hashCode(this.groupPredictionProtocol);
+        hash = 97 * hash + Objects.hashCode(this.groupValidationTechnique);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final DefaultGroupCaseStudy other = (DefaultGroupCaseStudy) obj;
+        if (!Objects.equals(this.datasetLoader, other.datasetLoader)) {
+            return false;
+        }
+        if (!Objects.equals(this.groupRecommenderSystem, other.groupRecommenderSystem)) {
+            return false;
+        }
+        if (!Objects.equals(this.groupFormationTechnique, other.groupFormationTechnique)) {
+            return false;
+        }
+        if (!Objects.equals(this.relevanceCriteria, other.relevanceCriteria)) {
+            return false;
+        }
+        if (!Objects.equals(this.groupPredictionProtocol, other.groupPredictionProtocol)) {
+            return false;
+        }
+        if (!Objects.equals(this.groupValidationTechnique, other.groupValidationTechnique)) {
+            return false;
+        }
+        return true;
     }
 
     public DefaultGroupCaseStudy(DatasetLoader<? extends Rating> datasetLoader) {
