@@ -1,5 +1,6 @@
 package delfos.experiment.casestudy.cluster;
 
+import delfos.Constants;
 import delfos.common.FileUtilities;
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
@@ -66,6 +67,9 @@ public class TuringPreparator implements ExperimentPreparator {
 
         for (DatasetLoader<? extends Rating> datasetLoader : datasetLoaders) {
             for (GroupCaseStudy groupCaseStudy : groupCaseStudies) {
+
+                groupCaseStudy.setAlias(groupCaseStudy.getAlias() + "_hash=" + groupCaseStudies.hashCode());
+
                 String fileName = "[" + datasetLoader.getAlias() + "]" + "_" + groupCaseStudy.getAlias() + ".xml";
 
                 DecimalFormat format = new DecimalFormat("000");
@@ -97,27 +101,28 @@ public class TuringPreparator implements ExperimentPreparator {
     }
 
     public void executeAllExperimentsInDirectory(File directory) {
-        Arrays.asList(directory.listFiles())
-                .parallelStream()
+        List<File> children = Arrays.asList(directory.listFiles());
+
+        children.stream()
                 .forEach((singleExperimentDirectory) -> {
                     String[] args = {
-                        "-seed", "77352653",
+                        ExecuteGroupXML.SEED_PARAMETER, "77352653",
                         ExecuteGroupXML.MODE_PARAMETER,
                         ExecuteGroupXML.XML_DIRECTORY, singleExperimentDirectory.getPath(),
-                        "-numExec", "1"};
+                        ExecuteGroupXML.NUM_EXEC_PARAMETER, "1"};
                     Main.mainWithExceptions(args);
                 });
-
     }
 
     public void executeAllExperimentsInDirectory(File directory, int numExec) {
         Arrays.asList(directory.listFiles())
-                .parallelStream()
+                .stream()
                 .forEach((singleExperimentDirectory) -> {
                     String[] args = {
-                        "-seed", "77352653",
-                        ExecuteGroupXML.MODE_PARAMETER, singleExperimentDirectory.getPath(),
-                        "-numExec", Integer.toString(numExec)
+                        ExecuteGroupXML.MODE_PARAMETER,
+                        ExecuteGroupXML.SEED_PARAMETER, "77352653",
+                        ExecuteGroupXML.XML_DIRECTORY, singleExperimentDirectory.getPath(),
+                        ExecuteGroupXML.NUM_EXEC_PARAMETER, Integer.toString(numExec)
                     };
 
                     Main.mainWithExceptions(args);
@@ -131,10 +136,11 @@ public class TuringPreparator implements ExperimentPreparator {
                 .stream()
                 .forEach((singleExperimentDirectory) -> {
                     String[] args = {
-                        "-seed", "77352653",
-                        ExecuteGroupXML.MODE_PARAMETER, singleExperimentDirectory.getPath(),
-                        "-numExec", Integer.toString(numExec),
-                        "-maxCPU", Integer.toString(maxCPU)};
+                        ExecuteGroupXML.SEED_PARAMETER, "77352653",
+                        ExecuteGroupXML.MODE_PARAMETER,
+                        ExecuteGroupXML.XML_DIRECTORY, singleExperimentDirectory.getPath(),
+                        ExecuteGroupXML.NUM_EXEC_PARAMETER, Integer.toString(numExec),
+                        Constants.MAX_CPUS, Integer.toString(maxCPU)};
 
                     Main.mainWithExceptions(args);
 

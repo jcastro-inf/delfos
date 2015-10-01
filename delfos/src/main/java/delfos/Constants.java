@@ -57,7 +57,7 @@ public class Constants {
      * adicionales que se pueden utilizar, a parte de la hebra principal.
      *
      */
-    static final String MAX_CPUS = "-maxCPU";
+    public static final String MAX_CPUS = "-maxCPU";
 
     /**
      * States the temporal directory used by the library.

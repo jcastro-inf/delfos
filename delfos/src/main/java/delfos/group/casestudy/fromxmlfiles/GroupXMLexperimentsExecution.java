@@ -111,7 +111,6 @@ public class GroupXMLexperimentsExecution {
                             groupEvaluationMeasures,
                             numExecutions,
                             seed));
-
                 }
             } catch (JDOMException | IOException ex) {
                 Logger.getLogger(GroupXMLexperimentsExecution.class.getName()).log(Level.SEVERE, null, ex);

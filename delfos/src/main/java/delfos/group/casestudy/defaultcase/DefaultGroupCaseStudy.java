@@ -1,14 +1,5 @@
 package delfos.group.casestudy.defaultcase;
 
-import java.io.Closeable;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import delfos.common.Chronometer;
 import delfos.common.Global;
 import delfos.common.exceptions.dataset.CannotLoadContentDataset;
@@ -21,16 +12,25 @@ import delfos.common.parallelwork.MultiThreadExecutionManager;
 import delfos.common.parallelwork.Parallelisation;
 import delfos.common.parallelwork.notblocking.MultiThreadExecutionManager_NotBlocking;
 import delfos.common.statisticalfuncions.MeanIterative;
-import delfos.dataset.basic.rating.Rating;
-import delfos.dataset.basic.rating.RelevanceCriteria;
 import delfos.dataset.basic.loader.types.ContentDatasetLoader;
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.loader.types.TrustDatasetLoader;
 import delfos.dataset.basic.loader.types.UsersDatasetLoader;
+import delfos.dataset.basic.rating.Rating;
+import delfos.dataset.basic.rating.RelevanceCriteria;
+import delfos.dataset.generated.random.RandomDatasetLoader;
 import delfos.dataset.storage.validationdatasets.PairOfTrainTestRatingsDataset;
+import delfos.experiment.SeedHolder;
 import delfos.group.casestudy.GroupCaseStudy;
 import delfos.group.casestudy.parallelisation.SingleGroupRecommendation;
 import delfos.group.casestudy.parallelisation.SingleGroupRecommendationTask;
+import delfos.group.experiment.validation.groupformation.FixedGroupSize_OnlyNGroups;
+import delfos.group.experiment.validation.groupformation.GroupFormationTechnique;
+import delfos.group.experiment.validation.predictionvalidation.GroupPredictionProtocol;
+import delfos.group.experiment.validation.predictionvalidation.GroupRecommendationRequest;
+import delfos.group.experiment.validation.predictionvalidation.NoPredictionProtocol;
+import delfos.group.experiment.validation.validationtechniques.GroupValidationTechnique;
+import delfos.group.experiment.validation.validationtechniques.HoldOutGroupRatedItems;
 import delfos.group.factories.GroupEvaluationMeasuresFactory;
 import delfos.group.groupsofusers.GroupOfUsers;
 import delfos.group.grs.GroupRecommenderSystem;
@@ -38,16 +38,18 @@ import delfos.group.grs.RandomGroupRecommender;
 import delfos.group.results.groupevaluationmeasures.GroupEvaluationMeasure;
 import delfos.group.results.groupevaluationmeasures.GroupMeasureResult;
 import delfos.group.results.grouprecomendationresults.GroupRecommendationResult;
-import delfos.group.experiment.validation.validationtechniques.GroupValidationTechnique;
-import delfos.group.experiment.validation.validationtechniques.HoldOutGroupRatedItems;
-import delfos.group.experiment.validation.groupformation.FixedGroupSize_OnlyNGroups;
-import delfos.group.experiment.validation.groupformation.GroupFormationTechnique;
-import delfos.group.experiment.validation.predictionvalidation.GroupPredictionProtocol;
-import delfos.group.experiment.validation.predictionvalidation.GroupRecommendationRequest;
-import delfos.group.experiment.validation.predictionvalidation.NoPredictionProtocol;
-import delfos.experiment.SeedHolder;
 import delfos.rs.RecommenderSystemBuildingProgressListener_default;
 import delfos.rs.recommendation.Recommendation;
+import java.io.Closeable;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.TreeMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Clase para ejecutar un caso de estudio de sistemas de recomendación a grupos.
@@ -100,7 +102,11 @@ public class DefaultGroupCaseStudy extends GroupCaseStudy {
             RelevanceCriteria criteria,
             int numEjecuciones) {
 
-        this.datasetLoader = datasetLoader;
+        if (datasetLoader == null) {
+            this.datasetLoader = new RandomDatasetLoader(50, 50, 0.5);
+        } else {
+            this.datasetLoader = datasetLoader;
+        }
         this.groupRecommenderSystem = groupRecommenderSystem;
         this.groupFormationTechnique = groupFormationTechnique;
         this.numEjecuciones = numEjecuciones;
@@ -110,6 +116,48 @@ public class DefaultGroupCaseStudy extends GroupCaseStudy {
         this.groupValidationTechnique = groupValidationTechniqueValue;
 
         setAlias(groupRecommenderSystem.getAlias());
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 97 * hash + Objects.hashCode(this.datasetLoader);
+        hash = 97 * hash + Objects.hashCode(this.groupRecommenderSystem);
+        hash = 97 * hash + Objects.hashCode(this.groupFormationTechnique);
+        hash = 97 * hash + Objects.hashCode(this.relevanceCriteria);
+        hash = 97 * hash + Objects.hashCode(this.groupPredictionProtocol);
+        hash = 97 * hash + Objects.hashCode(this.groupValidationTechnique);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final DefaultGroupCaseStudy other = (DefaultGroupCaseStudy) obj;
+        if (!Objects.equals(this.datasetLoader, other.datasetLoader)) {
+            return false;
+        }
+        if (!Objects.equals(this.groupRecommenderSystem, other.groupRecommenderSystem)) {
+            return false;
+        }
+        if (!Objects.equals(this.groupFormationTechnique, other.groupFormationTechnique)) {
+            return false;
+        }
+        if (!Objects.equals(this.relevanceCriteria, other.relevanceCriteria)) {
+            return false;
+        }
+        if (!Objects.equals(this.groupPredictionProtocol, other.groupPredictionProtocol)) {
+            return false;
+        }
+        if (!Objects.equals(this.groupValidationTechnique, other.groupValidationTechnique)) {
+            return false;
+        }
+        return true;
     }
 
     public DefaultGroupCaseStudy(DatasetLoader<? extends Rating> datasetLoader) {

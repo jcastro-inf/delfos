@@ -12,8 +12,9 @@ import delfos.group.grs.consensus.ConsensusGRS;
 import delfos.group.grs.cww.CentralityWeightedAggregationGRS;
 import delfos.group.grs.filtered.GroupRecommenderSystemWithPostFilter;
 import delfos.group.grs.filtered.GroupRecommenderSystemWithPreFilter;
-import delfos.group.grs.mean.MeanRatingGRS;
+import delfos.group.grs.hesitant.HesitantKnnGroupUser;
 import delfos.group.grs.itemweighted.AggregationOfIndividualRatings_itemWeighted;
+import delfos.group.grs.mean.MeanRatingGRS;
 import delfos.group.grs.penalty.PenaltyGRS_Ratings;
 import delfos.group.grs.penalty.PenaltyGRS_Recommendations;
 import delfos.group.grs.persistence.GroupRecommenderSystem_fixedFilePersistence;
@@ -22,7 +23,7 @@ import delfos.group.grs.svd.SVDforGroup_ratingsAggregation;
 /**
  * Factoría para los sistemas de recomendación a grupos.
  *
-* @author Jorge Castro Gallardo
+ * @author Jorge Castro Gallardo
  * @version 1.0 09-May-2013
  */
 public class GroupRecommenderSystemsFactory extends Factory<GroupRecommenderSystem> {
@@ -55,6 +56,8 @@ public class GroupRecommenderSystemsFactory extends Factory<GroupRecommenderSyst
         instance.addClass(PenaltyGRS_Recommendations.class);
 
         instance.addClass(AggregationOfIndividualRatings_itemWeighted.class);
+
+        instance.addClass(HesitantKnnGroupUser.class);
 
     }
 
