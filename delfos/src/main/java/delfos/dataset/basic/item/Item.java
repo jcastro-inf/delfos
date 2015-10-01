@@ -1,12 +1,13 @@
 package delfos.dataset.basic.item;
 
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeMap;
 import delfos.dataset.basic.features.EntityWithFeatures;
 import static delfos.dataset.basic.features.EntityWithFeaturesDefault.checkFeatureAndFeatureValuesArrays;
 import delfos.dataset.basic.features.Feature;
 import delfos.rs.contentbased.ContentBasedRecommender;
+import java.io.Serializable;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
 
 /**
  * Clase que almacena el contenido de un producto. Se utiliza en
@@ -15,7 +16,9 @@ import delfos.rs.contentbased.ContentBasedRecommender;
  * @author Jorge Castro Gallardo
  * @version 1.0 (19 Octubre 2011)
  */
-public class Item implements Comparable<Item>, EntityWithFeatures {
+public class Item implements Comparable<Item>, EntityWithFeatures, Serializable {
+
+    private static final long serialVersionUID = 3034;
 
     private final int idItem;
     private final String name;
