@@ -97,13 +97,13 @@ public class HesitantKnnGroupUser
             Map<Integer, Rating> groupRatings = DatasetUtilities.getUserMap_Rating(idPseudoUser,
                     AggregationOfIndividualRatings.getGroupProfile(datasetLoader, new Mean(), groupOfUsers));
 
-            RatingsDataset<? extends Rating> pseudoUserRatingsDataset = new PseudoUserRatingsDataset<>(ratingsDataset, groupRatings);
+            RatingsDataset<? extends Rating> pseudoUserRatingsDatasetForPrediction = new PseudoUserRatingsDataset<>(ratingsDataset, groupRatings);
 
             int neighborhoodSize = (int) getParameterValue(NEIGHBORHOOD_SIZE);
             PredictionTechnique predictionTechnique = (PredictionTechnique) getParameterValue(PREDICTION_TECHNIQUE);
 
             Collection<Recommendation> ret = KnnMemoryBasedNWR.recommendWithNeighbors(
-                    pseudoUserRatingsDataset,
+                    pseudoUserRatingsDatasetForPrediction,
                     idPseudoUser,
                     neighbors,
                     neighborhoodSize, candidateItems,
