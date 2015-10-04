@@ -84,7 +84,17 @@ public class GroupXMLexperimentsExecution {
 
         File[] datasetFiles = datasetsDirectoryDirectory.listFiles(new FileFilterByExtension(false, "xml"));
         if (datasetFiles.length == 0) {
-            throw new IllegalStateException("No dataset files in '" + datasetsDirectoryDirectory.getAbsolutePath() + "'");
+            try {
+                System.out.println("-------------------- Sleeping 2seconds --------------------");
+                System.err.println("-------------------- Sleeping 2seconds --------------------");
+                Thread.sleep(2000);
+            } catch (InterruptedException ex) {
+
+            }
+            datasetFiles = datasetsDirectoryDirectory.listFiles(new FileFilterByExtension(false, "xml"));
+            if (datasetFiles.length == 0) {
+                throw new IllegalStateException("No dataset files in '" + datasetsDirectoryDirectory.getAbsolutePath() + "'");
+            }
         }
 
         List<ExecuteGroupCaseStudy_Task> listOfTasks = new ArrayList<>();

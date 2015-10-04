@@ -1,12 +1,14 @@
 package delfos.dataset.basic.rating;
 
+import java.util.Objects;
+
 /**
  * Clase que encapsula el criterio de relevancia que usará el sistema de
  * recomendación, las medidas de evaluación y cualquier otro componente de la
  * librería de recomendación para discernir si a un usuario le gusta un producto
  * o no
  *
-* @author Jorge Castro Gallardo
+ * @author Jorge Castro Gallardo
  */
 public class RelevanceCriteria {
 
@@ -72,6 +74,23 @@ public class RelevanceCriteria {
     @Override
     public String toString() {
         return "threshold=" + threshold.doubleValue();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof RelevanceCriteria) {
+            RelevanceCriteria relevanceCriteria = (RelevanceCriteria) obj;
+            return this.threshold.equals(relevanceCriteria.threshold);
+        } else {
+            return super.equals(obj); //To change body of generated methods, choose Tools | Templates.
+        }
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 3;
+        hash = 47 * hash + Objects.hashCode(this.threshold);
+        return hash;
     }
 
 }
