@@ -1,9 +1,5 @@
 package delfos.group.casestudy.fromxmlfiles;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.Collection;
-import org.jdom2.JDOMException;
 import delfos.ERROR_CODES;
 import delfos.common.FileUtilities;
 import delfos.common.exceptions.dataset.CannotLoadContentDataset;
@@ -11,21 +7,25 @@ import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
 import delfos.common.exceptions.dataset.items.ItemNotFound;
 import delfos.common.exceptions.dataset.users.UserNotFound;
 import delfos.common.parallelwork.SingleTaskExecute;
+import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RelevanceCriteria;
-import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.experiment.ExperimentListerner_default;
 import delfos.experiment.casestudy.ExecutionProgressListener_default;
 import delfos.group.casestudy.GroupCaseStudy;
 import delfos.group.casestudy.GroupCaseStudyConfiguration;
 import delfos.group.casestudy.defaultcase.DefaultGroupCaseStudy;
+import delfos.group.experiment.validation.groupformation.GroupFormationTechnique;
+import delfos.group.experiment.validation.predictionvalidation.GroupPredictionProtocol;
+import delfos.group.experiment.validation.validationtechniques.GroupValidationTechnique;
 import delfos.group.grs.GroupRecommenderSystem;
 import delfos.group.io.excel.casestudy.GroupCaseStudyExcel;
 import delfos.group.io.xml.casestudy.GroupCaseStudyXML;
 import delfos.group.results.groupevaluationmeasures.GroupEvaluationMeasure;
-import delfos.group.experiment.validation.validationtechniques.GroupValidationTechnique;
-import delfos.group.experiment.validation.groupformation.GroupFormationTechnique;
-import delfos.group.experiment.validation.predictionvalidation.GroupPredictionProtocol;
+import java.io.File;
+import java.io.IOException;
+import java.util.Collection;
+import org.jdom2.JDOMException;
 
 /**
  *
@@ -75,9 +75,10 @@ public class GroupCaseStudy_SingleTaskExecute implements SingleTaskExecute<Execu
             throw new IllegalStateException(ex);
         }
 
-        File fileToSaveResults = new File(caseName);
-
-        fileToSaveResults = FileUtilities.addPrefix(fileToSaveResults, experimentsDirectory + File.separator + "results" + File.separator);
+        File fileToSaveResults = new File(
+                experimentsDirectory.getAbsolutePath() + File.separator
+                + "results" + File.separator
+                + caseName);
 
         File excelFile = FileUtilities.changeExtension(fileToSaveResults, "xls");
         File xmlFile = FileUtilities.changeExtension(fileToSaveResults, "xml");

@@ -27,8 +27,8 @@ public class Main {
     }
 
     public static void mainWithExceptions(String[] args) {
-        Chronometer c = new Chronometer();
-        c.reset();
+        Chronometer chronometer = new Chronometer();
+        chronometer.reset();
 
         ConsoleParameters consoleParameters;
         try {

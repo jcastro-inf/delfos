@@ -8,7 +8,6 @@ import delfos.common.exceptions.dataset.items.ItemNotFound;
 import delfos.common.exceptions.dataset.users.UserNotFound;
 import delfos.common.exceptions.ratings.NotEnoughtUserInformation;
 import delfos.common.parallelwork.MultiThreadExecutionManager;
-import delfos.common.parallelwork.MultiThreadExecutionManagerDebug;
 import delfos.common.parameters.Parameter;
 import delfos.common.parameters.restriction.ObjectParameter;
 import delfos.dataset.basic.item.ContentDataset;
@@ -92,18 +91,16 @@ public class HesitantKnnGroupUser
             RatingsDataset<? extends Rating> ratingsDataset = datasetLoader.getRatingsDataset();
             neighbors = getNeighbors(datasetLoader, groupModel, groupOfUsers);
 
-            int idPseudoUser = -1;
+            int neighborhoodSize = (int) getParameterValue(NEIGHBORHOOD_SIZE);
 
+            PredictionTechnique predictionTechnique = (PredictionTechnique) getParameterValue(PREDICTION_TECHNIQUE);
+            int idPseudoUser = -1;
             Map<Integer, Rating> groupRatings = DatasetUtilities.getUserMap_Rating(idPseudoUser,
                     AggregationOfIndividualRatings.getGroupProfile(datasetLoader, new Mean(), groupOfUsers));
 
-            RatingsDataset<? extends Rating> pseudoUserRatingsDataset = new PseudoUserRatingsDataset<>(ratingsDataset, groupRatings);
-
-            int neighborhoodSize = (int) getParameterValue(NEIGHBORHOOD_SIZE);
-            PredictionTechnique predictionTechnique = (PredictionTechnique) getParameterValue(PREDICTION_TECHNIQUE);
-
+            RatingsDataset<? extends Rating> pseudoUserRatingsDatasetForPrediction = new PseudoUserRatingsDataset<>(ratingsDataset, groupRatings);
             Collection<Recommendation> ret = KnnMemoryBasedNWR.recommendWithNeighbors(
-                    pseudoUserRatingsDataset,
+                    pseudoUserRatingsDatasetForPrediction,
                     idPseudoUser,
                     neighbors,
                     neighborhoodSize, candidateItems,
@@ -128,7 +125,7 @@ public class HesitantKnnGroupUser
 
         List<HesitantKnnNeighborSimilarityTask> tasks = stream.collect(Collectors.toList());
 
-        MultiThreadExecutionManager<HesitantKnnNeighborSimilarityTask> executionManager = new MultiThreadExecutionManagerDebug<>(
+        MultiThreadExecutionManager<HesitantKnnNeighborSimilarityTask> executionManager = new MultiThreadExecutionManager<>(
                 "Find neighbors of group " + groupOfUsers,
                 tasks,
                 HesitantKnnNeighborSimilarityTaskExecutor.class);

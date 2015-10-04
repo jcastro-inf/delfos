@@ -1,7 +1,5 @@
 package delfos.factories;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import delfos.rs.RecommenderSystemAdapter;
 import delfos.similaritymeasures.BasicSimilarityMeasure;
 import delfos.similaritymeasures.CollaborativeSimilarityMeasure;
@@ -23,6 +21,8 @@ import delfos.similaritymeasures.useruser.UserUserSimilarity;
 import delfos.similaritymeasures.useruser.UserUserSimilarityWrapper;
 import delfos.similaritymeasures.useruser.UserUserSimilarityWrapper_relevanceFactor;
 import delfos.similaritymeasures.useruser.UserUserSimilarity_buffered;
+import java.util.ArrayList;
+import java.util.Collection;
 
 /**
  * Factoría que conoce todas las medidas de similitud que la biblioteca de
@@ -32,7 +32,7 @@ import delfos.similaritymeasures.useruser.UserUserSimilarity_buffered;
  * diseñadas para funcionar en sistemas de recomendación colaborativos
  * ({@link CollaborativeSimilarityMeasure}).
  *
-* @author Jorge Castro Gallardo
+ * @author Jorge Castro Gallardo
  *
  * @version 1.0 Unknown date
  * @version 1.1 20-Mar-2013

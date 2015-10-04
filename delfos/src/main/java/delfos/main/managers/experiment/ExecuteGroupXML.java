@@ -22,8 +22,8 @@ public class ExecuteGroupXML extends CaseUseMode {
      * The directory that contains the group xml to be executed.
      */
     public static final String XML_DIRECTORY = ExecuteXML.XML_DIRECTORY;
-    private static final String SEED_PARAMETER = ExecuteXML.SEED_PARAMETER;
-    private static final String NUM_EXEC_PARAMETER = ExecuteXML.NUM_EXEC_PARAMETER;
+    public static final String SEED_PARAMETER = ExecuteXML.SEED_PARAMETER;
+    public static final String NUM_EXEC_PARAMETER = ExecuteXML.NUM_EXEC_PARAMETER;
 
     @Override
     public String getModeParameter() {
@@ -46,34 +46,42 @@ public class ExecuteGroupXML extends CaseUseMode {
     public void manageCaseUse(ConsoleParameters consoleParameters) {
         try {
             String xmlExperimentsDirectory = consoleParameters.getValue(ExecuteGroupXML.XML_DIRECTORY);
-
-            final int NUM_EJECUCIONES;
-            {
-                int num;
-                try {
-                    num = Integer.parseInt(consoleParameters.getValue(NUM_EXEC_PARAMETER));
-                } catch (UndefinedParameterException ex) {
-                    num = 1;
-                }
-                NUM_EJECUCIONES = num;
-            }
-
-            long SEED;
-            {
-                long num;
-                try {
-                    num = Long.parseLong(consoleParameters.getValue(SEED_PARAMETER));
-                } catch (UndefinedParameterException ex) {
-                    num = System.currentTimeMillis();
-                }
-                SEED = num;
-            }
+            int NUM_EJECUCIONES = getNumExecutions(consoleParameters);
+            long SEED = getSeed(consoleParameters);
 
             consoleParameters.printUnusedParameters(System.err);
             manageCaseUse(xmlExperimentsDirectory, xmlExperimentsDirectory + File.separator + "dataset" + File.separator, NUM_EJECUCIONES, SEED);
         } catch (UndefinedParameterException ex) {
             consoleParameters.printUnusedParameters(System.err);
         }
+    }
+
+    private long getSeed(ConsoleParameters consoleParameters) throws NumberFormatException {
+        long SEED;
+        {
+            long num;
+            try {
+                num = Long.parseLong(consoleParameters.getValue(SEED_PARAMETER));
+            } catch (UndefinedParameterException ex) {
+                num = System.currentTimeMillis();
+            }
+            SEED = num;
+        }
+        return SEED;
+    }
+
+    private int getNumExecutions(ConsoleParameters consoleParameters) throws NumberFormatException {
+        final int NUM_EJECUCIONES;
+        {
+            int num;
+            try {
+                num = Integer.parseInt(consoleParameters.getValue(NUM_EXEC_PARAMETER));
+            } catch (UndefinedParameterException ex) {
+                num = 1;
+            }
+            NUM_EJECUCIONES = num;
+        }
+        return NUM_EJECUCIONES;
     }
 
     public static void manageCaseUse(String experimentsDirectory, String datasetDirectory, int numExecutions, long seed) {

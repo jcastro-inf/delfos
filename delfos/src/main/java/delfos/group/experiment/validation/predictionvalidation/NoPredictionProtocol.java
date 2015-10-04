@@ -27,6 +27,12 @@ public class NoPredictionProtocol extends GroupPredictionProtocol {
         super();
     }
 
+    @Deprecated
+    public NoPredictionProtocol(long seed) {
+        this();
+        setParameterValue(SEED, seed);
+    }
+
     private Set<Integer> getRatedItems(DatasetLoader<? extends Rating> datasetLoader, GroupOfUsers group) throws CannotLoadRatingsDataset, UserNotFound {
         return DatasetUtilities.getMembersRatings_byItem(group, datasetLoader).keySet();
     }
@@ -40,4 +46,5 @@ public class NoPredictionProtocol extends GroupPredictionProtocol {
                 getRatedItems(testDatasetLoader, group)));
 
     }
+
 }

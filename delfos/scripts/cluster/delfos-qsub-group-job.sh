@@ -21,6 +21,6 @@ then
 	echo "Experimento $experimentFolder ejecutado aqui" >  $PBS_JOBNAME.o$idJob.$HOSTNAME.${experimentFolderNoBars}.yaHabiaSidoEjecutado	
 else
 	echo "Experimento $experimentFolder ejecutado aqui" >  $PBS_JOBNAME.o$idJob.$HOSTNAME.${experimentFolderNoBars}ejecutando
-	~/java-8-oracle/bin/java -Xms8g -jar delfos.jar -seed 77352653 -executeGroupXML ${experimentFolder} -numExec 20
+	~/java-8-oracle/bin/java -Xms8g -jar delfos.jar --execute-group-xml -seed 77352653 -directory ${experimentFolder} -num-exec 20
 	echo "Experimento $experimentFolder ejecutado aqui" >  $PBS_JOBNAME.o$idJob.$HOSTNAME.${experimentFolderNoBars}finalizado
 fi

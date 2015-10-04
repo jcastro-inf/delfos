@@ -170,6 +170,10 @@ public class GroupCaseStudyXML {
         GroupCaseStudyXML.caseStudyToXMLFile_onlyDescription(caseStudyGroup, new File(file));
     }
 
+    public static void saveCaseDescription(GroupCaseStudy caseStudyGroup, File file) {
+        GroupCaseStudyXML.caseStudyToXMLFile_onlyDescription(caseStudyGroup, file);
+    }
+
     public static void saveCaseResults(GroupCaseStudy caseStudyGroup, String descriptivePrefix, String file) {
         File fileFile = FileUtilities.addPrefix(new File(file), descriptivePrefix);
         if (Constants.isPrintFullXML()) {
@@ -199,6 +203,8 @@ public class GroupCaseStudyXML {
         casoDeUso.addContent(GroupPredictionProtocolXML.getElement(caseStudyGroup.getGroupPredictionProtocol()));
         casoDeUso.addContent(RelevanceCriteriaXML.getElement(caseStudyGroup.getRelevanceCriteria()));
         doc.addContent(casoDeUso);
+
+        FileUtilities.createDirectoriesForFile(file);
 
         XMLOutputter outputter = new XMLOutputter(Constants.getXMLFormat());
         try (FileWriter fileWriter = new FileWriter(file)) {
