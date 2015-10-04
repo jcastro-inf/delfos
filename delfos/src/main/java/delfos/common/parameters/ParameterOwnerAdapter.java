@@ -335,8 +335,15 @@ public abstract class ParameterOwnerAdapter implements ParameterOwner {
 
     @Override
     public int hashCode() {
-        int hash = 5;
-        hash = 13 * hash + Objects.hashCode(this.parameterValues);
+        int hash = 7;
+
+        hash = 97 * hash + Objects.hashCode(this.getClass().hashCode());
+
+        for (Parameter parameter : parameterValues.keySet()) {
+            hash = 97 * hash + parameter.getName().hashCode();
+            hash = 97 * hash + getParameterValue(parameter).hashCode();
+        }
+
         return hash;
     }
 }

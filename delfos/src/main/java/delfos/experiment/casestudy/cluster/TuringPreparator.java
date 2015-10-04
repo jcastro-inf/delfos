@@ -68,34 +68,23 @@ public class TuringPreparator implements ExperimentPreparator {
         for (DatasetLoader<? extends Rating> datasetLoader : datasetLoaders) {
             for (GroupCaseStudy groupCaseStudy : groupCaseStudies) {
 
-                groupCaseStudy.setAlias(groupCaseStudy.getAlias() + "_hash=" + groupCaseStudies.hashCode());
+                groupCaseStudy.setAlias(groupCaseStudy.getAlias() + "_hash=" + groupCaseStudy.hashCode());
 
-                String fileName = "[" + datasetLoader.getAlias() + "]" + "_" + groupCaseStudy.getAlias() + ".xml";
+                String experimentName = "[" + datasetLoader.getAlias() + "]" + "_" + groupCaseStudy.getAlias();
 
                 DecimalFormat format = new DecimalFormat("000");
 
-                String experimentNumber = format.format(i++);
-//                String thisIterationDirectory = "experiment_" + experimentNumber;
-                String thisIterationDirectory = "[" + datasetLoader.getAlias() + "]" + "_" + groupCaseStudy.getAlias();
-
                 //Clean directory
-                File finalDirectoryRS = new File(experimentBaseDirectory + File.separator + thisIterationDirectory);
-                File finalDirectoryDataset = new File(finalDirectoryRS + File.separator + "dataset");
-                FileUtilities.deleteDirectoryRecursive(finalDirectoryDataset);
-                finalDirectoryDataset.mkdirs();
+                File finalDirectoryRS = new File(experimentBaseDirectory.getAbsolutePath() + File.separator + experimentName);
+                File finalDirectoryDataset = new File(finalDirectoryRS.getAbsolutePath() + File.separator + "dataset");
+                FileUtilities.deleteDirectoryRecursive(finalDirectoryRS);
 
-                File rsConfigFile = new File(finalDirectoryRS + File.separator + fileName);
-                GroupCaseStudyXML.saveCaseDescription(groupCaseStudy, rsConfigFile.getAbsolutePath());
+                File experimentConfigurationFile = new File(finalDirectoryRS + File.separator + experimentName + ".xml");
+                File datasetConfiguration = new File(finalDirectoryDataset.getAbsolutePath() + File.separator + datasetLoader.getAlias() + ".xml");
 
-                //generateDatasetFile
-                {
-                    GroupCaseStudy datasetLoaderCaseStudy = new DefaultGroupCaseStudy(
-                            datasetLoader
-                    );
+                GroupCaseStudyXML.saveCaseDescription(groupCaseStudy, experimentConfigurationFile);
+                GroupCaseStudyXML.saveCaseDescription(new DefaultGroupCaseStudy(datasetLoader), datasetConfiguration);
 
-                    File datasetConfigFile = new File(finalDirectoryDataset + File.separator + datasetLoaderCaseStudy.getAlias() + ".xml");
-                    GroupCaseStudyXML.saveCaseDescription(datasetLoaderCaseStudy, datasetConfigFile.getAbsolutePath());
-                }
             }
         }
     }

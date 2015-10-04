@@ -88,11 +88,12 @@ public class HesitantGRS_CaseStudy extends DelfosTest {
                         groupRecommenderSystem,
                         groupFormationTechnique,
                         new HoldOutGroupRatedItems(SEED_VALUE),
-                        new NoPredictionProtocol(),
+                        new NoPredictionProtocol(SEED_VALUE),
                         GroupEvaluationMeasuresFactory.getInstance().getAllClasses(),
                         new RelevanceCriteria(4), 1);
 
                 groupCaseStudy.setAlias(groupRecommenderSystem.getAlias());
+                groupCaseStudy.setSeedValue(SEED_VALUE);
                 groupCaseStudys.add(groupCaseStudy);
             }
         }
