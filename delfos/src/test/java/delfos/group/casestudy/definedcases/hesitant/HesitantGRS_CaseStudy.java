@@ -1,6 +1,7 @@
 package delfos.group.casestudy.definedcases.hesitant;
 
 import delfos.Constants;
+import delfos.common.FileUtilities;
 import delfos.configureddatasets.ConfiguredDatasetLoader;
 import delfos.configureddatasets.ConfiguredDatasetsFactory;
 import delfos.constants.DelfosTest;
@@ -108,6 +109,8 @@ public class HesitantGRS_CaseStudy extends DelfosTest {
 
     @Test
     public void testExecute() throws Exception {
+        FileUtilities.deleteDirectoryRecursive(experimentDirectory);
+
         createCaseStudyXML();
 
         executeAllExperimentsInDirectory(experimentDirectory);

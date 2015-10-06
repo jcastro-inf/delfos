@@ -68,11 +68,10 @@ public class TuringPreparator implements ExperimentPreparator {
         for (DatasetLoader<? extends Rating> datasetLoader : datasetLoaders) {
             for (GroupCaseStudy groupCaseStudy : groupCaseStudies) {
 
-                groupCaseStudy.setAlias(groupCaseStudy.getAlias() + "_hash=" + groupCaseStudy.hashCode());
-
-                String experimentName = "[" + datasetLoader.getAlias() + "]" + "_" + groupCaseStudy.getAlias();
-
-                DecimalFormat format = new DecimalFormat("000");
+                String experimentName
+                        = "[" + datasetLoader.getAlias() + "]_"
+                        + groupCaseStudy.getAlias()
+                        + "_hash=" + groupCaseStudy.hashCode();
 
                 //Clean directory
                 File finalDirectoryRS = new File(experimentBaseDirectory.getAbsolutePath() + File.separator + experimentName);
