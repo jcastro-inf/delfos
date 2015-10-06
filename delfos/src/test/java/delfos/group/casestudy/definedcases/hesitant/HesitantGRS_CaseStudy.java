@@ -50,7 +50,9 @@ public class HesitantGRS_CaseStudy extends DelfosTest {
 
     private Collection<ConfiguredDatasetLoader> getDatasetLoader() {
         if (1 == 1) {
-            return Arrays.asList(new ConfiguredDatasetLoader("ml-100k"));
+            return Arrays.asList(
+                    new ConfiguredDatasetLoader("ml-100k"),
+                    new ConfiguredDatasetLoader("ml-1m"));
         }
 
         return ConfiguredDatasetsFactory.getInstance()
