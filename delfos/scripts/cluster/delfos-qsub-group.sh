@@ -17,8 +17,10 @@ else
 				if [ $((q%3)) == 0 ]
 				then
 					qsub -q queue1 -v experimentFolder=${i} "./delfos-qsub-group-job.sh";echo "submited to queue1"
+					echo 'qsub -q queue1 -v experimentFolder=${i} "./delfos-qsub-group-job.sh";echo "submited to queue1' >> delfos-qsub-group.sh.log
 				else
 					qsub -q queue2 -v experimentFolder=${i} "./delfos-qsub-group-job.sh";echo "submited to queue2"
+					echo 'qsub -q queue2 -v experimentFolder=${i} "./delfos-qsub-group-job.sh";echo "submited to queue2' >> delfos-qsub-group.sh.log
 				fi
 				let k++
 				let q++
