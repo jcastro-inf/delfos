@@ -695,6 +695,29 @@ public class UserUserNeighborhoodWindow extends JFrame {
         this.datasetLoaderSelector.addItemListener(datasetLoaderSelectedListener);
     }
 
+    class RecommendationModelHolder {
+
+        Object recommendationModel = null;
+
+        public void buildRecommendationModel() {
+            ConfiguredDataset configuredDataset
+                    = (ConfiguredDataset) datasetLoaderSelector.getSelectedItem();
+
+            RecommenderSystem<? extends Object> recommenderSystem
+                    = (RecommenderSystem<? extends Object>) recommenderSystemSelector
+                    .getSelectedItem();
+        }
+
+        public void setRecommendationModel(Object recommendationModel) {
+            recommendationModelChanged();
+        }
+
+        private void recommendationModelChanged() {
+
+        }
+
+    }
+
     private void fillRecommendationTable() {
 
     }
