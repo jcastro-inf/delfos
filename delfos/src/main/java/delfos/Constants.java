@@ -51,7 +51,7 @@ public class Constants {
     /**
      * Flag para indicar que se escriban los XML detallados de las ejecuciones.
      */
-    static final String PRINT_FULL_XML = "-fullXML";
+    public static final String PRINT_FULL_XML = "--full-results";
     /**
      * Parámetro de la línea de comandos para limitar el número de cpus
      * adicionales que se pueden utilizar, a parte de la hebra principal.
@@ -176,7 +176,7 @@ public class Constants {
             Constants.setRawResult(true);
         }
 
-        if (consoleParameters.isParameterDefined(PRINT_FULL_XML)) {
+        if (consoleParameters.isFlagDefined(PRINT_FULL_XML)) {
             Constants.setPrintFullXML(true);
         }
 

@@ -14,6 +14,7 @@ import delfos.group.results.groupevaluationmeasures.NMAE;
 import delfos.group.results.groupevaluationmeasures.NRMSE;
 import delfos.group.results.groupevaluationmeasures.NumberOfRecommendations;
 import delfos.group.results.groupevaluationmeasures.NumberOfRequests;
+import delfos.group.results.groupevaluationmeasures.PrintNeighbors;
 import delfos.group.results.groupevaluationmeasures.RMSE;
 import delfos.group.results.groupevaluationmeasures.precisionrecall.PRSpaceGroups;
 
@@ -21,7 +22,7 @@ import delfos.group.results.groupevaluationmeasures.precisionrecall.PRSpaceGroup
  * Clase que conoce todas las medidas de evaluación a grupos y permite
  * recuperarlas para su uso en los casos de estudio.
  *
-* @author Jorge Castro Gallardo
+ * @author Jorge Castro Gallardo
  *
  * @version 1.1 26-Jan-2013
  */
@@ -57,6 +58,7 @@ public class GroupEvaluationMeasuresFactory extends Factory<GroupEvaluationMeasu
 
         //Histogram measures
         instance.addClass(GroupRecommendationMemberRatingsComparison.class);
+        instance.addClass(PrintNeighbors.class);
     }
 
     private GroupEvaluationMeasuresFactory() {

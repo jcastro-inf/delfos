@@ -32,14 +32,14 @@ public class HesitantGRS_CaseStudy extends DelfosTest {
     }
 
     public static final long SEED_VALUE = 77352653L;
-    public static final int NUM_GROUPS = 90;
+    public static final int NUM_GROUPS = 1;
 
     File experimentDirectory = new File(Constants.getTempDirectory().getAbsolutePath() + File.separator
             + "experiments" + File.separator
             + "HesitantGRS" + File.separator);
 
     private Collection<GroupFormationTechnique> getGroupFormationTechnique() {
-        return Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
+        return Arrays.asList(5)
                 .stream()
                 .map((groupSize) -> {
                     GroupFormationTechnique gft = new FixedGroupSize_OnlyNGroups(NUM_GROUPS, groupSize);
@@ -52,8 +52,7 @@ public class HesitantGRS_CaseStudy extends DelfosTest {
     private Collection<ConfiguredDatasetLoader> getDatasetLoader() {
         if (1 == 1) {
             return Arrays.asList(
-                    new ConfiguredDatasetLoader("ml-100k"),
-                    new ConfiguredDatasetLoader("ml-1m"));
+                    new ConfiguredDatasetLoader("ml-100k"));
         }
 
         return ConfiguredDatasetsFactory.getInstance()
@@ -71,7 +70,7 @@ public class HesitantGRS_CaseStudy extends DelfosTest {
                 .stream()
                 .map((hesitantSimilarity) -> {
 
-                    return Arrays.asList(1, 20, 50, 100, 200, 500)
+                    return Arrays.asList(20)
                     .stream()
                     .map((neighborhoodSize)
                             -> {

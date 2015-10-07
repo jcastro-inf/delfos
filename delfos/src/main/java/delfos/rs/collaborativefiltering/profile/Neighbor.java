@@ -2,6 +2,7 @@ package delfos.rs.collaborativefiltering.profile;
 
 import delfos.rs.collaborativefiltering.knn.RecommendationEntity;
 import java.io.Serializable;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -19,8 +20,12 @@ public class Neighbor implements Comparable<Neighbor>, Serializable {
 
     private static final long serialVersionUID = 106L;
 
+    public static final Comparator<Neighbor> BY_ID = (Neighbor o1, Neighbor o2) -> Integer.compare(o1.getIdNeighbor(), o2.getIdNeighbor());
+    public static final Comparator<Neighbor> BY_SIMILARITY_ASC = (Neighbor o1, Neighbor o2) -> Float.compare(o1.getSimilarity(), o2.getSimilarity());
+    public static final Comparator<Neighbor> BY_SIMILARITY_DESC = (Neighbor o1, Neighbor o2) -> -Float.compare(o1.getSimilarity(), o2.getSimilarity());
+
     public static Map<Integer, Double> getNeighborsMap(List<Neighbor> neighbors) {
-        Map<Integer, Double> ret = new TreeMap<Integer, Double>();
+        Map<Integer, Double> ret = new TreeMap<>();
 
         for (Neighbor n : neighbors) {
             Double similarity = (double) n.similarity;

@@ -48,7 +48,6 @@ public class RecommendationsToXML {
             element.setAttribute(
                     detailField.name().toLowerCase(),
                     recommendations.getDetails(detailField).toString());
-
         }
 
         for (Recommendation r : recommendations.getRecommendations()) {

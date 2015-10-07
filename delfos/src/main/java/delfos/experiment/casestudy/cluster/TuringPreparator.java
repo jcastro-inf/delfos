@@ -110,7 +110,7 @@ public class TuringPreparator implements ExperimentPreparator {
                         ExecuteGroupXML.MODE_PARAMETER,
                         ExecuteGroupXML.SEED_PARAMETER, "77352653",
                         ExecuteGroupXML.XML_DIRECTORY, singleExperimentDirectory.getPath(),
-                        ExecuteGroupXML.NUM_EXEC_PARAMETER, Integer.toString(numExec)
+                        ExecuteGroupXML.NUM_EXEC_PARAMETER, Integer.toString(numExec), Constants.PRINT_FULL_XML
                     };
 
                     Main.mainWithExceptions(args);
