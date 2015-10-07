@@ -25,6 +25,7 @@ import delfos.rs.collaborativefiltering.knn.memorybased.nwr.KnnMemoryBasedNWR;
 import delfos.rs.collaborativefiltering.predictiontechniques.PredictionTechnique;
 import delfos.rs.collaborativefiltering.profile.Neighbor;
 import delfos.rs.recommendation.Recommendation;
+import delfos.rs.recommendation.RecommendationWithNeighbors;
 import es.jcastro.hesitant.HesitantValuation;
 import es.jcastro.hesitant.similarity.HesitantPearson;
 import es.jcastro.hesitant.similarity.HesitantSimilarity;
@@ -105,6 +106,11 @@ public class HesitantKnnGroupUser
                     neighbors,
                     neighborhoodSize, candidateItems,
                     predictionTechnique);
+
+            Collection<Recommendation> retWithNeighbors = ret.stream()
+                    .map(recommendation -> new RecommendationWithNeighbors(recommendation.getIdItem(), recommendation.getPreference(), neighbors))
+                    .collect(Collectors.toList());
+
             return ret;
         } catch (CannotLoadRatingsDataset ex) {
             throw new IllegalArgumentException(ex);
