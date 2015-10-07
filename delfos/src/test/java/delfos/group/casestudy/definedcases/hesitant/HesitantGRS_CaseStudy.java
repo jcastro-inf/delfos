@@ -67,15 +67,28 @@ public class HesitantGRS_CaseStudy extends DelfosTest {
     }
 
     private List<GroupRecommenderSystem> getGRSs() {
-        return HesitantSimilarityFactory.getAll()
+        List<List<HesitantKnnGroupUser>> lists = HesitantSimilarityFactory.getAll()
                 .stream()
                 .map((hesitantSimilarity) -> {
-                    HesitantKnnGroupUser grs = new HesitantKnnGroupUser();
-                    grs.setAlias(hesitantSimilarity.getName());
-                    grs.setParameterValue(HesitantKnnGroupUser.HESITANT_SIMILARITY_MEASURE, hesitantSimilarity);
-                    return grs;
-                })
-                .collect(Collectors.toList());
+
+                    return Arrays.asList(1, 20, 50, 100, 200, 500)
+                    .stream()
+                    .map((neighborhoodSize)
+                            -> {
+                        HesitantKnnGroupUser grs = new HesitantKnnGroupUser();
+                        grs.setAlias(hesitantSimilarity.getName() + "_neighborhoodSize=" + neighborhoodSize);
+                        grs.setParameterValue(HesitantKnnGroupUser.NEIGHBORHOOD_SIZE, neighborhoodSize);
+                        grs.setParameterValue(HesitantKnnGroupUser.HESITANT_SIMILARITY_MEASURE, hesitantSimilarity);
+                        return grs;
+                    })
+                    .collect(Collectors.toList());
+                }).collect(Collectors.toList());
+
+        List<GroupRecommenderSystem> ret = new ArrayList<>();
+        lists.stream().forEach((list) -> {
+            ret.addAll(list);
+        });
+        return ret;
     }
 
     public void createCaseStudyXML() {
