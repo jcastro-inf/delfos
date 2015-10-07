@@ -41,12 +41,12 @@ public class Constants {
      * Flag para indicar los mensajes que se impriman se deben hacer por ambas
      * salidas: estándar y de error.
      */
-    public static final String DOUBLE_PRINT = "-doublePrint";
+    public static final String DOUBLE_PRINT = "--double-print";
     /**
      * Flag para indicar que se escriban los datos en bruto en el fichero de
      * resultados de las ejecuciones.
      */
-    static final String RAW_DATA = "-rawData";
+    public static final String RAW_DATA = "--raw-data";
 
     /**
      * Flag para indicar que se escriban los XML detallados de las ejecuciones.
@@ -168,11 +168,11 @@ public class Constants {
             }
         }
 
-        if (consoleParameters.isParameterDefined(DOUBLE_PRINT)) {
+        if (consoleParameters.isFlagDefined(DOUBLE_PRINT)) {
             Global.setDoublePrint(true);
         }
 
-        if (consoleParameters.isParameterDefined(RAW_DATA)) {
+        if (consoleParameters.isFlagDefined(RAW_DATA)) {
             Constants.setRawResult(true);
         }
 
@@ -181,16 +181,8 @@ public class Constants {
         }
 
         if (consoleParameters.isParameterDefined(MAX_CPUS)) {
-            String value = "0";
-            try {
-                value = consoleParameters.getValue(MAX_CPUS);
-            } catch (UndefinedParameterException ex) {
-                //Este error no se puede producir nunca.
-                ERROR_CODES.UNDEFINED_ERROR.exit(ex);
-            }
-
-            int numCPU = Integer.parseInt(value);
-            Parallelisation.setMaxCPU(numCPU);
+            String numCPU = consoleParameters.getValue(MAX_CPUS);
+            Parallelisation.setMaxCPU(Integer.parseInt(numCPU));
         }
     }
 

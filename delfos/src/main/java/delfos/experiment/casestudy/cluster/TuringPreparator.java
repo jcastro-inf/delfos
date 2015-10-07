@@ -97,7 +97,9 @@ public class TuringPreparator implements ExperimentPreparator {
                         ExecuteGroupXML.SEED_PARAMETER, "77352653",
                         ExecuteGroupXML.MODE_PARAMETER,
                         ExecuteGroupXML.XML_DIRECTORY, singleExperimentDirectory.getPath(),
-                        ExecuteGroupXML.NUM_EXEC_PARAMETER, "1"};
+                        ExecuteGroupXML.NUM_EXEC_PARAMETER, "1",
+                        Constants.PRINT_FULL_XML,
+                        Constants.RAW_DATA};
                     Main.mainWithExceptions(args);
                 });
     }
@@ -110,7 +112,9 @@ public class TuringPreparator implements ExperimentPreparator {
                         ExecuteGroupXML.MODE_PARAMETER,
                         ExecuteGroupXML.SEED_PARAMETER, "77352653",
                         ExecuteGroupXML.XML_DIRECTORY, singleExperimentDirectory.getPath(),
-                        ExecuteGroupXML.NUM_EXEC_PARAMETER, Integer.toString(numExec), Constants.PRINT_FULL_XML
+                        ExecuteGroupXML.NUM_EXEC_PARAMETER, Integer.toString(numExec),
+                        Constants.PRINT_FULL_XML,
+                        Constants.RAW_DATA
                     };
 
                     Main.mainWithExceptions(args);
@@ -128,7 +132,9 @@ public class TuringPreparator implements ExperimentPreparator {
                         ExecuteGroupXML.MODE_PARAMETER,
                         ExecuteGroupXML.XML_DIRECTORY, singleExperimentDirectory.getPath(),
                         ExecuteGroupXML.NUM_EXEC_PARAMETER, Integer.toString(numExec),
-                        Constants.MAX_CPUS, Integer.toString(maxCPU)};
+                        Constants.MAX_CPUS, Integer.toString(maxCPU),
+                        Constants.PRINT_FULL_XML,
+                        Constants.RAW_DATA};
 
                     Main.mainWithExceptions(args);
 

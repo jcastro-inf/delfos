@@ -14,6 +14,8 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -50,16 +52,17 @@ public class GroupRecommendationMemberRatingsComparison extends GroupEvaluationM
         for (Map.Entry<GroupOfUsers, List<Recommendation>> entry : recommendationResults) {
 
             GroupOfUsers groupOfUsers = entry.getKey();
-            List<Recommendation> groupRecommendation = entry.getValue();
+            List<Recommendation> recommendations = entry.getValue();
 
-            if (groupRecommendation.isEmpty()) {
+            if (recommendations.isEmpty()) {
                 str.append("No recommendations for group ").append(groupOfUsers).append("\n");
             } else {
-                Set<Integer> items = Recommendation.getSetOfItems(groupRecommendation);
+                Set<Integer> items = Recommendation.getSetOfItems(recommendations);
 
                 Map<Integer, Map<Integer, Number>> datasetToShow = new TreeMap<>();
 
-                datasetToShow.put(8888, Recommendation.convertToMapOfNumbers_onlyRankPreference(groupRecommendation));
+                datasetToShow.put(8888, Recommendation.convertToMapOfNumbers_onlyRankPreference(recommendations));
+                datasetToShow.put(9999, Recommendation.convertToMapOfNumbers(recommendations));
 
                 groupOfUsers
                         .getGroupMembers().stream().forEach((idMember) -> {
@@ -83,6 +86,48 @@ public class GroupRecommendationMemberRatingsComparison extends GroupEvaluationM
                 str.append("==============================================================").append("\n");
                 str.append(printCompactRatingTable).append("\n");
                 str.append("==============================================================").append("\n");
+
+                if (Constants.isRawResultDefined()) {
+                    StringBuilder rawData = new StringBuilder();
+
+                    rawData.append("idItem\tprediction\trank\t");
+                    for (Integer member : groupOfUsers) {
+                        rawData.append(member).append("\t");
+                    }
+                    rawData.setCharAt(rawData.length() - 1, '\n');
+
+                    List<Recommendation> recommendationsSortedById = new ArrayList<>(recommendations);
+                    Collections.sort(recommendationsSortedById, Recommendation.BY_ID);
+
+                    Map<Recommendation, Integer> recommendationsRank = new TreeMap();
+
+                    ArrayList<Recommendation> groupRecommendationSortedByPreference = new ArrayList<>(recommendations);
+                    Collections.sort(groupRecommendationSortedByPreference, Recommendation.BY_PREFERENCE_DESC);
+                    groupRecommendationSortedByPreference.stream().forEachOrdered((recommendation) -> {
+                        recommendationsRank.put(recommendation, recommendationsRank.size() + 1);
+                    });
+                    recommendationsSortedById.stream().forEachOrdered(recommendation -> {
+                        rawData.append(
+                                recommendation.getIdItem()).append("\t")
+                                .append(recommendation.getPreference().doubleValue()).append("\t")
+                                .append(recommendationsRank.get(recommendation)).append("\t");
+                        for (Integer member : groupOfUsers) {
+                            String ratingStr;
+                            if (datasetToShow.get(member).containsKey(recommendation.getIdItem())) {
+                                ratingStr = datasetToShow.get(member).get(recommendation.getIdItem()).toString();
+                            } else {
+                                ratingStr = "-";
+                            }
+
+                            rawData.append(ratingStr).append("\t");
+                        }
+                        rawData.deleteCharAt(rawData.length() - 1);
+                        rawData.append("\n");
+                    });
+
+                    str.append("\n\n\nRecommendations_raw\n");
+                    str.append(rawData);
+                }
             }
         }
 

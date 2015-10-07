@@ -1,5 +1,6 @@
 package delfos.group.results.groupevaluationmeasures.detailed;
 
+import delfos.Constants;
 import delfos.rs.collaborativefiltering.profile.Neighbor;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -25,38 +26,42 @@ public class RecommendationsWithNeighborToXML {
         Element element = new Element(NEIGHBORS_ELEMENT_NAME);
         element.setAttribute(ID_TARGET_ATTRIBUTE_NAME, targetId);
 
-        ArrayList<Neighbor> neighborsSorted = new ArrayList<>(neighbors);
-        Collections.sort(neighborsSorted, Neighbor.BY_ID);
+        ArrayList<Neighbor> neighborsSortedById = new ArrayList<>(neighbors);
+        Collections.sort(neighborsSortedById, Neighbor.BY_ID);
 
-        Map<Neighbor, Integer> neighborsRank = new TreeMap<>();
         List<Neighbor> neighborsSortedBySimilarity = new ArrayList<>(neighbors);
         Collections.sort(neighborsSortedBySimilarity, Neighbor.BY_SIMILARITY_DESC);
 
-        Element rawDataElement = new Element(NEIGHBORS_ELEMENT_NAME + "_RAW");
-        rawDataElement.setAttribute(ID_TARGET_ATTRIBUTE_NAME, targetId);
-        StringBuilder rawData = new StringBuilder();
-
+        Map<Neighbor, Integer> neighborsRank = new TreeMap<>();
         neighborsSortedBySimilarity.stream().forEachOrdered(neighbor -> {
             neighborsRank.put(neighbor, neighborsRank.size() + 1);
         });
-        rawDataElement.addContent(rawData.toString());
 
-        neighborsSorted.stream().forEachOrdered((neighbor) -> {
-            getNeighborElement(neighbor, neighborsRank.get(neighbor), element);
-            rawData.append(neighbor.getIdNeighbor()).append("\t").append(neighbor.getSimilarity()).append("\t").append(neighborsRank.get(neighbor)).append("\n");
+        neighborsSortedById.stream().forEachOrdered((neighbor) -> {
+            element.addContent(getNeighborElement(neighbor, neighborsRank.get(neighbor)));
         });
 
-        element.addContent(rawDataElement);
+        if (Constants.isRawResultDefined()) {
+            Element rawDataElement = new Element(NEIGHBORS_ELEMENT_NAME + "_RAW");
+            rawDataElement.setAttribute(ID_TARGET_ATTRIBUTE_NAME, targetId);
+            StringBuilder rawData = new StringBuilder();
+            neighborsSortedById.stream().forEachOrdered((neighbor) -> {
+                rawData.append(neighbor.getIdNeighbor()).append("\t").append(neighbor.getSimilarity()).append("\t").append(neighborsRank.get(neighbor)).append("\n");
+            });
+            rawDataElement.addContent(rawData.toString());
+
+            element.addContent(rawDataElement);
+        }
         return element;
     }
 
-    private static void getNeighborElement(Neighbor neighbor, int rank, Element element) {
+    private static Element getNeighborElement(Neighbor neighbor, int rank) {
         Element neighborElement = new Element("neighbor");
 
         neighborElement.setAttribute(ID_NEIGHBOR_TTRIBUTE_NAME, Integer.toString(neighbor.getIdNeighbor()));
         neighborElement.setAttribute(SIMILARITY_ATTRIBUTE_NAME, Float.toString(neighbor.getSimilarity()));
         neighborElement.setAttribute(RANK_ATTRIBUTE_NAME, Integer.toString(rank));
 
-        element.addContent(neighborElement);
+        return neighborElement;
     }
 }
