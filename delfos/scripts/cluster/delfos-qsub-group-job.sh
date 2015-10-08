@@ -8,9 +8,6 @@
 hostname
 cd $PBS_O_WORKDIR
 
-#Copio el archivo de configuración general del cluster para ser usado en este nodo.
-cp ./.config/configuredDatasets@delfos0.xml ./.config/configuredDatasets@$HOSTNAME.xml -v
-
 idJob=${PBS_JOBID%%.*}
 
 experimentFolderNoBars=${experimentFolder//"/"/.}

@@ -1,10 +1,13 @@
 package delfos.io.xml.recommendations;
 
+import delfos.Constants;
 import delfos.rs.recommendation.Recommendation;
 import delfos.rs.recommendation.RecommendationComputationDetails;
 import delfos.rs.recommendation.RecommendationComputationDetails.DetailField;
 import delfos.rs.recommendation.Recommendations;
 import delfos.rs.recommendation.RecommendationsFactory;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -31,6 +34,7 @@ public class RecommendationsToXML {
     public static final String ID_TARGET_ATTRIBUTE_NAME = "idTarget";
     public static final String ID_ITEM_ATTRIBUTE_NAME = "idItem";
     public static final String PREFERENCE_ATTRIBUTE_NAME = "preference";
+    public static final String RANK_ATTRIBUTE_NAME = "rank";
 
     /**
      * Convierte las recomendaciones de un usuario a un elemento XML.
@@ -48,15 +52,42 @@ public class RecommendationsToXML {
             element.setAttribute(
                     detailField.name().toLowerCase(),
                     recommendations.getDetails(detailField).toString());
-
         }
 
-        for (Recommendation r : recommendations.getRecommendations()) {
+        List<Recommendation> recommendationsSortedById = new ArrayList<>(recommendations.getRecommendations());
+        Collections.sort(recommendationsSortedById, Recommendation.BY_ID);
+
+        Map<Recommendation, Integer> recommendationsRank = new TreeMap();
+
+        ArrayList<Recommendation> groupRecommendationSortedByPreference = new ArrayList<>(recommendations.getRecommendations());
+        Collections.sort(groupRecommendationSortedByPreference, Recommendation.BY_PREFERENCE_DESC);
+        groupRecommendationSortedByPreference.stream().forEachOrdered((recommendation) -> {
+            recommendationsRank.put(recommendation, recommendationsRank.size() + 1);
+        });
+
+        for (Recommendation r : recommendationsSortedById) {
             Element recommendation = new Element(RECOMMENDATION_ELEMENT_NAME);
             recommendation.setAttribute(ID_ITEM_ATTRIBUTE_NAME, Integer.toString(r.getIdItem()));
             recommendation.setAttribute(PREFERENCE_ATTRIBUTE_NAME, r.getPreference().toString());
+            recommendation.setAttribute(RANK_ATTRIBUTE_NAME, r.getPreference().toString());
             element.addContent(recommendation);
         }
+
+        if (Constants.isRawResultDefined()) {
+            Element rawDataElement = new Element(RECOMMENDATIONS_ELEMENT_NAME + "_RAW");
+            rawDataElement.setAttribute(ID_TARGET_ATTRIBUTE_NAME, recommendations.getTargetIdentifier());
+            StringBuilder rawData = new StringBuilder();
+
+            recommendationsSortedById.stream().forEachOrdered(recommendation -> {
+                rawData.append(
+                        recommendation.getIdItem()).append("\t")
+                        .append(recommendation.getPreference().doubleValue()).append("\t")
+                        .append(recommendationsRank.get(recommendation)).append("\n");
+            });
+            rawDataElement.addContent(rawData.toString());
+            element.addContent(rawDataElement);
+        }
+
         return element;
     }
 

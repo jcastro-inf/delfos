@@ -21,10 +21,12 @@ import delfos.dataset.util.DatasetUtilities;
 import delfos.group.groupsofusers.GroupOfUsers;
 import delfos.group.grs.GroupRecommenderSystemAdapter;
 import delfos.group.grs.aggregation.AggregationOfIndividualRatings;
+import delfos.rs.collaborativefiltering.knn.RecommendationEntity;
 import delfos.rs.collaborativefiltering.knn.memorybased.nwr.KnnMemoryBasedNWR;
 import delfos.rs.collaborativefiltering.predictiontechniques.PredictionTechnique;
 import delfos.rs.collaborativefiltering.profile.Neighbor;
 import delfos.rs.recommendation.Recommendation;
+import delfos.rs.recommendation.RecommendationWithNeighbors;
 import es.jcastro.hesitant.HesitantValuation;
 import es.jcastro.hesitant.similarity.HesitantPearson;
 import es.jcastro.hesitant.similarity.HesitantSimilarity;
@@ -105,7 +107,12 @@ public class HesitantKnnGroupUser
                     neighbors,
                     neighborhoodSize, candidateItems,
                     predictionTechnique);
-            return ret;
+
+            Collection<Recommendation> retWithNeighbors = ret.stream()
+                    .map(recommendation -> new RecommendationWithNeighbors(recommendation.getIdItem(), recommendation.getPreference(), neighbors))
+                    .collect(Collectors.toList());
+
+            return retWithNeighbors;
         } catch (CannotLoadRatingsDataset ex) {
             throw new IllegalArgumentException(ex);
         }
@@ -133,8 +140,13 @@ public class HesitantKnnGroupUser
         executionManager.run();
 
         List<Neighbor> neighbors = executionManager.getAllFinishedTasks().parallelStream()
-                .filter(task -> task.neighbor != null && task.neighbor.getSimilarity() > 0)
-                .map(task -> task.getNeighbor())
+                .map((tarea) -> {
+                    if (tarea.getNeighbor() == null) {
+                        return new Neighbor(RecommendationEntity.USER, tarea.idNeighbor, 0);
+                    } else {
+                        return tarea.getNeighbor();
+                    }
+                })
                 .collect(Collectors.toList());
 
         Collections.sort(neighbors);
