@@ -1,19 +1,18 @@
 package delfos.dataset.basic.features;
 
+import delfos.common.LockedIterator;
+import delfos.common.exceptions.dataset.entity.EntityNotFound;
+import delfos.dataset.basic.item.Item;
+import delfos.dataset.basic.user.User;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
-import delfos.common.LockedIterator;
-import delfos.common.exceptions.dataset.entity.EntityNotFound;
-import delfos.dataset.basic.item.Item;
-import delfos.dataset.basic.user.User;
 
 /**
  * Clase que define el comportamiento común de una colección de
@@ -51,7 +50,7 @@ public abstract class CollectionOfEntitiesWithFeaturesDefault<Entity extends Ent
     protected Map<Feature, Double> maxNumerical = new TreeMap<>();
 
     @Override
-    public final void add(Entity entity) {
+    public final boolean add(Entity entity) {
 
         Map<Feature, Object> featureValues_thisEntity = new TreeMap<>();
         for (Feature feature : entity.getFeatures()) {
@@ -102,6 +101,7 @@ public abstract class CollectionOfEntitiesWithFeaturesDefault<Entity extends Ent
         }
 
         entitiesById.put(entity.getId(), newEntity);
+        return true;
     }
 
     @Override
@@ -143,6 +143,7 @@ public abstract class CollectionOfEntitiesWithFeaturesDefault<Entity extends Ent
         return new LockedIterator<>(entitiesById.values().iterator());
     }
 
+    @Override
     public int size() {
         return entitiesById.size();
     }
@@ -175,18 +176,15 @@ public abstract class CollectionOfEntitiesWithFeaturesDefault<Entity extends Ent
         if (!minNumerical.containsKey(feature)) {
             Set<Object> values = getAllFeatureValues(feature);
             List<Object> a = new ArrayList<>(values);
-            Collections.sort(a, new Comparator<Object>() {
-                @Override
-                public int compare(Object o1, Object o2) {
-                    if (o1 instanceof Number) {
-                        if (o2 instanceof Number) {
-                            return (int) (((Number) o1).floatValue() - ((Number) o2).floatValue());
-                        } else {
-                            throw new IllegalArgumentException("There is a not numerical value (featureName='" + feature + "' type='" + feature.getType() + "' value='" + o2 + "'");
-                        }
+            Collections.sort(a, (Object o1, Object o2) -> {
+                if (o1 instanceof Number) {
+                    if (o2 instanceof Number) {
+                        return (int) (((Number) o1).floatValue() - ((Number) o2).floatValue());
                     } else {
-                        throw new IllegalArgumentException("There is a not numerical value (featureName='" + feature + "' type='" + feature.getType() + "' value='" + o1 + "'");
+                        throw new IllegalArgumentException("There is a not numerical value (featureName='" + feature + "' type='" + feature.getType() + "' value='" + o2 + "'");
                     }
+                } else {
+                    throw new IllegalArgumentException("There is a not numerical value (featureName='" + feature + "' type='" + feature.getType() + "' value='" + o1 + "'");
                 }
             });
             minNumerical.put(feature, ((Number) a.get(0)).doubleValue());
@@ -209,18 +207,15 @@ public abstract class CollectionOfEntitiesWithFeaturesDefault<Entity extends Ent
         if (!maxNumerical.containsKey(feature)) {
             Set<Object> values = getAllFeatureValues(feature);
             List<Object> a = new ArrayList<>(values);
-            Collections.sort(a, new Comparator<Object>() {
-                @Override
-                public int compare(Object o1, Object o2) {
-                    if (o1 instanceof Number) {
-                        if (o2 instanceof Number) {
-                            return (int) (((Number) o1).floatValue() - ((Number) o2).floatValue());
-                        } else {
-                            throw new IllegalArgumentException("There is a not numerical value (featureName='" + feature + "' type='" + feature.getType() + "' value='" + o2 + "'");
-                        }
+            Collections.sort(a, (Object o1, Object o2) -> {
+                if (o1 instanceof Number) {
+                    if (o2 instanceof Number) {
+                        return (int) (((Number) o1).floatValue() - ((Number) o2).floatValue());
                     } else {
-                        throw new IllegalArgumentException("There is a not numerical value (featureName='" + feature + "' type='" + feature.getType() + "' value='" + o1 + "'");
+                        throw new IllegalArgumentException("There is a not numerical value (featureName='" + feature + "' type='" + feature.getType() + "' value='" + o2 + "'");
                     }
+                } else {
+                    throw new IllegalArgumentException("There is a not numerical value (featureName='" + feature + "' type='" + feature.getType() + "' value='" + o1 + "'");
                 }
             });
             maxNumerical.put(feature, ((Number) a.get(a.size() - 1)).doubleValue());
@@ -250,5 +245,35 @@ public abstract class CollectionOfEntitiesWithFeaturesDefault<Entity extends Ent
         } else {
             throw new EntityNotFound(Item.class, idItem);
         }
+    }
+
+    @Override
+    public boolean contains(Object o) {
+        if (o instanceof EntityWithFeatures) {
+            EntityWithFeatures name = (EntityWithFeatures) o;
+            return entitiesById.containsKey(name.getId()) && entitiesById.get(name.getId()) != null;
+        } else {
+            return false;
+        }
+    }
+
+    @Override
+    public Object[] toArray() {
+        return this.entitiesById.values().toArray();
+    }
+
+    @Override
+    public <T> T[] toArray(T[] a) {
+        return this.entitiesById.values().toArray(a);
+    }
+
+    @Override
+    public boolean containsAll(Collection<?> c) {
+        return c.stream().allMatch(((element) -> this.contains(element)));
+    }
+
+    @Override
+    public boolean addAll(Collection<? extends Entity> entitys) {
+        return entitys.stream().anyMatch((entity) -> add(entity));
     }
 }

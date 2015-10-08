@@ -1,7 +1,20 @@
 package delfos.rs;
 
+import delfos.common.exceptions.dataset.CannotLoadContentDataset;
+import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
+import delfos.common.exceptions.dataset.items.ItemNotFound;
+import delfos.common.exceptions.dataset.users.UserNotFound;
+import delfos.common.exceptions.ratings.NotEnoughtUserInformation;
 import delfos.common.parameters.ParameterOwnerType;
+import delfos.dataset.basic.item.Item;
+import delfos.dataset.basic.loader.types.DatasetLoader;
+import delfos.dataset.basic.rating.Rating;
+import delfos.dataset.basic.user.User;
 import delfos.rs.contentbased.ContentBasedRecommender;
+import delfos.rs.recommendation.Recommendation;
+import delfos.rs.recommendation.Recommendations;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Interfaz que establece los métodos necesarios para implementar un sistema de
@@ -35,4 +48,33 @@ public abstract class RecommenderSystemAdapter<RecommendationModel>
     public final ParameterOwnerType getParameterOwnerType() {
         return ParameterOwnerType.RECOMMENDER_SYSTEM;
     }
+
+    @Override
+    public Recommendations recommendToUser(
+            DatasetLoader<? extends Rating> dataset,
+            RecommendationModel recommendationModel,
+            User user,
+            Set<Item> candidateItems) {
+
+        try {
+            return new Recommendations(user, recommendToUser(
+                    dataset,
+                    recommendationModel,
+                    user.getId(),
+                    candidateItems.parallelStream()
+                    .map((item) -> item.getId())
+                    .collect(Collectors.toSet())));
+        } catch (UserNotFound | CannotLoadRatingsDataset ex) {
+            throw new IllegalArgumentException(ex);
+        } catch (ItemNotFound | CannotLoadContentDataset ex) {
+            throw new IllegalStateException(ex);
+        } catch (NotEnoughtUserInformation ex) {
+            return new Recommendations(
+                    dataset,
+                    candidateItems.parallelStream()
+                    .map((item) -> new Recommendation(item, Double.NaN))
+                    .collect(Collectors.toList()));
+        }
+    }
+
 }

@@ -1,23 +1,21 @@
 package delfos.dataset.basic.features;
 
+import delfos.common.exceptions.dataset.entity.EntityNotFound;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
-import delfos.common.exceptions.dataset.entity.EntityNotFound;
 
 /**
  * Interfaz que implementan los objetos que contengan
  * {@link EntityWithFeatures}. Proporciona métodos útiles sobre las entidades,
  * sus características y los valores de las mismas.
  *
-* @author Jorge Castro Gallardo
+ * @author Jorge Castro Gallardo
  *
  * @version 1.0 4-Octubre-2013
  * @param <Entity>
  */
-public interface CollectionOfEntitiesWithFeatures<Entity extends EntityWithFeatures> extends Iterable<Entity> {
-
-    public void add(Entity entity) throws EntityNotFound;
+public interface CollectionOfEntitiesWithFeatures<Entity extends EntityWithFeatures> extends Iterable<Entity>, Collection<Entity> {
 
     public Entity get(int idEntity) throws EntityNotFound;
 
@@ -83,4 +81,30 @@ public interface CollectionOfEntitiesWithFeatures<Entity extends EntityWithFeatu
     public Collection<Integer> getAllID();
 
     public Map<Feature, Object> parseEntityFeaturesAndAddToExisting(int idEntity, Map<String, String> features) throws EntityNotFound;
+
+    @Override
+    public default boolean isEmpty() {
+        return size() == 0;
+    }
+
+    @Override
+    public default boolean remove(Object o) {
+        throw new UnsupportedOperationException("Not allowed to delete entities.");
+    }
+
+    @Override
+    public default boolean removeAll(Collection<?> c) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public default boolean retainAll(Collection<?> c) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public default void clear() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
 }

@@ -26,6 +26,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
+import java.util.stream.Collectors;
 
 /**
  * Implementa un dataset de contenido con persistencia sobre base de datos MySQL
@@ -298,13 +299,14 @@ public class ChangeableMySQLContentDataset implements ChangeableContentDataset, 
 
     @Override
     public Iterator<Item> iterator() {
-        return new LockedIterator<Item>(contentDataset.iterator());
+        return new LockedIterator<>(contentDataset.iterator());
     }
 
     @Override
-    public void add(Item entity) throws EntityAlreadyExists {
+    public boolean add(Item entity) throws EntityAlreadyExists {
         try {
             addItem(entity);
+            return true;
         } catch (ItemAlreadyExists ex) {
             throw new EntityAlreadyExists(entity.getId(), ex);
         }
@@ -460,5 +462,59 @@ public class ChangeableMySQLContentDataset implements ChangeableContentDataset, 
             ex.isA(ItemNotFound.class);
             throw new ItemNotFound(idItem, ex);
         }
+    }
+
+    @Override
+    public boolean remove(Object o) {
+        throw new UnsupportedOperationException("Not allowed to delete entities.");
+    }
+
+    @Override
+    public boolean removeAll(Collection<?> c) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public boolean retainAll(Collection<?> c) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void clear() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public boolean isEmpty() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public boolean contains(Object o) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    public Collection<Item> getAllItems() {
+        return getAllID().stream().map((idItem) -> get(idItem)).collect(Collectors.toList());
+    }
+
+    @Override
+    public Object[] toArray() {
+        return getAllItems().toArray();
+    }
+
+    @Override
+    public <T> T[] toArray(T[] a) {
+        return getAllItems().toArray(a);
+    }
+
+    @Override
+    public boolean containsAll(Collection<?> c) {
+        return c.stream().allMatch(((element) -> this.contains(element)));
+    }
+
+    @Override
+    public boolean addAll(Collection<? extends Item> entitys) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }

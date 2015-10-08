@@ -16,24 +16,24 @@ public class Recommendations implements Serializable {
 
     private static final long serialVersionUID = 654546L;
 
-    private final String targetIdentifier;
+    private final Object target;
     private final Collection<Recommendation> recommendations;
     private final RecommendationComputationDetails recommendationComputationDetails;
 
     protected Recommendations() {
-        this.targetIdentifier = null;
+        this.target = null;
         this.recommendations = null;
         this.recommendationComputationDetails = null;
     }
 
-    public Recommendations(String targetIdentifier, Collection<Recommendation> recommendations) {
-        this.targetIdentifier = targetIdentifier;
+    public Recommendations(Object target, Collection<Recommendation> recommendations) {
+        this.target = target;
         this.recommendations = new LinkedList<>(recommendations);
         recommendationComputationDetails = new RecommendationComputationDetails();
     }
 
-    public Recommendations(String targetIdentifier, Collection<Recommendation> recommendations, RecommendationComputationDetails recommendationComputationDetails) {
-        this.targetIdentifier = targetIdentifier;
+    public Recommendations(Object target, Collection<Recommendation> recommendations, RecommendationComputationDetails recommendationComputationDetails) {
+        this.target = target;
         this.recommendations = new LinkedList<>(recommendations);
         this.recommendationComputationDetails = recommendationComputationDetails;
     }
@@ -42,8 +42,12 @@ public class Recommendations implements Serializable {
         return recommendationComputationDetails.getDetailFieldValue(detailField);
     }
 
+    public Object getTarget() {
+        return target;
+    }
+
     public String getTargetIdentifier() {
-        return targetIdentifier;
+        return target.toString();
     }
 
     public Collection<Recommendation> getRecommendations() {
@@ -59,7 +63,7 @@ public class Recommendations implements Serializable {
     }
 
     public SortedRecommendations sortByPreference() {
-        return new SortedRecommendations(targetIdentifier, recommendations, recommendationComputationDetails);
+        return new SortedRecommendations(target, recommendations, recommendationComputationDetails);
     }
 
 }
