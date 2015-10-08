@@ -31,14 +31,14 @@ public class HesitantGRS_CaseStudy extends DelfosTest {
     }
 
     public static final long SEED_VALUE = 77352653L;
-    public static final int NUM_GROUPS = 90;
+    public static final int NUM_GROUPS = 1;
 
     File experimentDirectory = new File(Constants.getTempDirectory().getAbsolutePath() + File.separator
             + "experiments" + File.separator
             + "HesitantGRS" + File.separator);
 
     private Collection<GroupFormationTechnique> getGroupFormationTechnique() {
-        return Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
+        return Arrays.asList(5)
                 .stream()
                 .map((groupSize) -> {
                     GroupFormationTechnique gft = new FixedGroupSize_OnlyNGroups(NUM_GROUPS, groupSize);
@@ -50,7 +50,8 @@ public class HesitantGRS_CaseStudy extends DelfosTest {
 
     private Collection<ConfiguredDatasetLoader> getDatasetLoader() {
         if (1 == 1) {
-            return Arrays.asList(new ConfiguredDatasetLoader("ml-100k"));
+            return Arrays.asList(
+                    new ConfiguredDatasetLoader("ml-100k"));
         }
 
         return ConfiguredDatasetsFactory.getInstance()
@@ -64,15 +65,28 @@ public class HesitantGRS_CaseStudy extends DelfosTest {
     }
 
     private List<GroupRecommenderSystem> getGRSs() {
-        return HesitantSimilarityFactory.getAll()
+        List<List<HesitantKnnGroupUser>> lists = HesitantSimilarityFactory.getAll()
                 .stream()
                 .map((hesitantSimilarity) -> {
-                    HesitantKnnGroupUser grs = new HesitantKnnGroupUser();
-                    grs.setAlias(hesitantSimilarity.getName());
-                    grs.setParameterValue(HesitantKnnGroupUser.HESITANT_SIMILARITY_MEASURE, hesitantSimilarity);
-                    return grs;
-                })
-                .collect(Collectors.toList());
+
+                    return Arrays.asList(20)
+                    .stream()
+                    .map((neighborhoodSize)
+                            -> {
+                        HesitantKnnGroupUser grs = new HesitantKnnGroupUser();
+                        grs.setAlias(hesitantSimilarity.getName() + "_neighborhoodSize=" + neighborhoodSize);
+                        grs.setParameterValue(HesitantKnnGroupUser.NEIGHBORHOOD_SIZE, neighborhoodSize);
+                        grs.setParameterValue(HesitantKnnGroupUser.HESITANT_SIMILARITY_MEASURE, hesitantSimilarity);
+                        return grs;
+                    })
+                    .collect(Collectors.toList());
+                }).collect(Collectors.toList());
+
+        List<GroupRecommenderSystem> ret = new ArrayList<>();
+        lists.stream().forEach((list) -> {
+            ret.addAll(list);
+        });
+        return ret;
     }
 
     public void createCaseStudyXML() {
@@ -106,8 +120,9 @@ public class HesitantGRS_CaseStudy extends DelfosTest {
 
     @Test
     public void testExecute() throws Exception {
-        createCaseStudyXML();
+        //FileUtilities.deleteDirectoryRecursive(experimentDirectory);
 
+       //createCaseStudyXML();
         executeAllExperimentsInDirectory(experimentDirectory);
     }
 

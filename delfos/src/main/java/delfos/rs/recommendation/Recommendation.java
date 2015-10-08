@@ -18,6 +18,10 @@ import java.util.stream.Collectors;
  */
 public class Recommendation implements Comparable<Recommendation>, Serializable {
 
+    public static final Comparator<Recommendation> BY_ID = (Recommendation o1, Recommendation o2) -> Integer.compare(o1.getIdItem(), o2.getIdItem());
+    public static final Comparator<Recommendation> BY_PREFERENCE_ASC = (Recommendation o1, Recommendation o2) -> Double.compare(o1.getPreference().doubleValue(), o2.getPreference().doubleValue());
+    public static final Comparator<Recommendation> BY_PREFERENCE_DESC = (Recommendation o1, Recommendation o2) -> -Double.compare(o1.getPreference().doubleValue(), o2.getPreference().doubleValue());
+
     private static final long serialVersionUID = 5468;
 
     /**
@@ -185,4 +189,9 @@ public class Recommendation implements Comparable<Recommendation>, Serializable 
         }
         return NumberCompare.equals(this.preference, r.preference, numDecimals);
     }
+
+    public Item getItem() {
+        return item;
+    }
+
 }

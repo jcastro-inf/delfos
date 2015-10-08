@@ -14,6 +14,8 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -22,6 +24,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
+ * Writes extended information of the recommendation in an XML file. This
+ * information is the test ratings of each group and its recommendations.
  *
  * @version 05-oct-2014
  * @author Jorge Castro Gallardo
@@ -50,16 +54,17 @@ public class GroupRecommendationMemberRatingsComparison extends GroupEvaluationM
         for (Map.Entry<GroupOfUsers, List<Recommendation>> entry : recommendationResults) {
 
             GroupOfUsers groupOfUsers = entry.getKey();
-            List<Recommendation> groupRecommendation = entry.getValue();
+            List<Recommendation> recommendations = entry.getValue();
 
-            if (groupRecommendation.isEmpty()) {
+            if (recommendations.isEmpty()) {
                 str.append("No recommendations for group ").append(groupOfUsers).append("\n");
             } else {
-                Set<Integer> items = Recommendation.getSetOfItems(groupRecommendation);
+                Set<Integer> items = Recommendation.getSetOfItems(recommendations);
 
-                Map<Integer, Map<Integer, Number>> datasetToShow = new TreeMap<>();
+                Map<Integer, Map<Integer, Number>> membersRatings = new TreeMap<>();
 
-                datasetToShow.put(8888, Recommendation.convertToMapOfNumbers_onlyRankPreference(groupRecommendation));
+                membersRatings.put(8888, Recommendation.convertToMapOfNumbers_onlyRankPreference(recommendations));
+                membersRatings.put(9999, Recommendation.convertToMapOfNumbers(recommendations));
 
                 groupOfUsers
                         .getGroupMembers().stream().forEach((idMember) -> {
@@ -76,13 +81,17 @@ public class GroupRecommendationMemberRatingsComparison extends GroupEvaluationM
                             } catch (UserNotFound ex) {
                                 Logger.getLogger(GroupRecommendationMemberRatingsComparison.class.getName()).log(Level.SEVERE, null, ex);
                             }
-                            datasetToShow.put(idMember, thisMemberRatings);
+                            membersRatings.put(idMember, thisMemberRatings);
                         });
 
-                String printCompactRatingTable = DatasetPrinter.printCompactRatingTable(datasetToShow);
+                String printCompactRatingTable = DatasetPrinter.printCompactRatingTable(membersRatings);
                 str.append("==============================================================").append("\n");
                 str.append(printCompactRatingTable).append("\n");
                 str.append("==============================================================").append("\n");
+
+                if (Constants.isRawResultDefined()) {
+                    str.append(printRawOutput(groupOfUsers, recommendations, membersRatings));
+                }
             }
         }
 
@@ -93,6 +102,50 @@ public class GroupRecommendationMemberRatingsComparison extends GroupEvaluationM
         }
 
         return new GroupMeasureResult(this, 1.0);
+    }
+
+    private StringBuilder printRawOutput(GroupOfUsers groupOfUsers, List<Recommendation> recommendations, Map<Integer, Map<Integer, Number>> membersRatings) {
+
+        StringBuilder rawData = new StringBuilder();
+
+        rawData.append("idItem\tprediction\trank\t");
+        for (Integer member : groupOfUsers) {
+            rawData.append(member).append("\t");
+        }
+        rawData.setCharAt(rawData.length() - 1, '\n');
+
+        List<Recommendation> recommendationsSortedById = new ArrayList<>(recommendations);
+        Collections.sort(recommendationsSortedById, Recommendation.BY_ID);
+
+        Map<Recommendation, Integer> recommendationsRank = new TreeMap();
+
+        ArrayList<Recommendation> groupRecommendationSortedByPreference = new ArrayList<>(recommendations);
+        Collections.sort(groupRecommendationSortedByPreference, Recommendation.BY_PREFERENCE_DESC);
+        groupRecommendationSortedByPreference.stream().forEachOrdered((recommendation) -> {
+            recommendationsRank.put(recommendation, recommendationsRank.size() + 1);
+        });
+        recommendationsSortedById.stream().forEachOrdered(recommendation -> {
+            rawData.append(
+                    recommendation.getIdItem()).append("\t")
+                    .append(recommendation.getPreference().doubleValue()).append("\t")
+                    .append(recommendationsRank.get(recommendation)).append("\t");
+            for (Integer member : groupOfUsers) {
+                String ratingStr;
+                if (membersRatings.get(member).containsKey(recommendation.getIdItem())) {
+                    ratingStr = membersRatings.get(member).get(recommendation.getIdItem()).toString();
+                } else {
+                    ratingStr = "-";
+                }
+
+                rawData.append(ratingStr).append("\t");
+            }
+            rawData.deleteCharAt(rawData.length() - 1);
+            rawData.append("\n");
+        });
+
+        rawData.append("Recommendations_raw\n");
+        return rawData;
+
     }
 
 }
