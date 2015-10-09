@@ -13,9 +13,12 @@ import delfos.dataset.basic.user.User;
 import delfos.dataset.basic.user.UsersDataset;
 import delfos.recommendationcandidates.OnlyNewItems;
 import delfos.rs.RecommenderSystem;
+import delfos.rs.collaborativefiltering.knn.RecommendationEntity;
 import delfos.rs.collaborativefiltering.knn.memorybased.KnnMemoryBasedCFRS;
 import delfos.rs.collaborativefiltering.knn.modelbased.KnnModelBasedCFRS;
+import delfos.rs.collaborativefiltering.profile.Neighbor;
 import delfos.rs.output.RecommendationsOutputStandardRaw;
+import delfos.rs.recommendation.Recommendation;
 import delfos.rs.recommendation.Recommendations;
 import delfos.rs.recommendation.RecommendationsWithNeighbors;
 import delfos.view.neighborhood.components.ratings.RatingsTable;
@@ -35,7 +38,10 @@ import java.awt.event.WindowEvent;
 import java.lang.management.ManagementFactory;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import javax.swing.BorderFactory;
 import javax.swing.DefaultComboBoxModel;
@@ -607,11 +613,43 @@ public class UserUserNeighborhoodWindow extends JFrame {
 
         output.writeRecommendations(recommendations);
 
-        recommendationsTable.setRecomendaciones(recommendations);
+        Map<Integer, Number> recommendationsByItem = Recommendation.convertToMapOfNumbers(recommendations.getRecommendations());
+        List<Recommendation> recommendationsComplete = candidateItems.stream()
+                .map((item -> {
+                    if (recommendationsByItem.containsKey(item.getId())) {
+                        return new Recommendation(item, recommendationsByItem.get(item.getId()));
+                    } else {
+                        return new Recommendation(item, Double.NaN);
+                    }
+                })).collect(Collectors.toList());
+        recommendationsComplete.sort(Recommendation.BY_PREFERENCE_DESC);
+
+        recommendationsTable.setRecomendaciones(new Recommendations(recommendations.getTarget(), recommendationsComplete));
 
         if (recommendations instanceof RecommendationsWithNeighbors) {
             RecommendationsWithNeighbors recommendationsWithNeighbors = (RecommendationsWithNeighbors) recommendations;
-            neighborsTable.setNeighbors(recommendationsWithNeighbors);
+            Map<Integer, Neighbor> neighbors = recommendationsWithNeighbors.getNeighbors().stream()
+                    .collect(Collectors.toMap(
+                                    (neighbor -> neighbor.getIdNeighbor()),
+                                    Function.identity()));
+
+            List<Neighbor> neighborsComplete = ((UsersDatasetLoader) datasetLoader).getUsersDataset().stream()
+                    .filter((user) -> !Objects.equals(user.getId(), userSelected.getId()))
+                    .map((neighbor -> {
+                        if (neighbors.containsKey(neighbor.getId())) {
+                            return neighbors.get(neighbor.getId());
+                        } else {
+                            return new Neighbor(RecommendationEntity.USER, neighbor.getId(), Double.NaN);
+                        }
+                    }))
+                    .collect(Collectors.toList());
+
+            neighborsComplete.sort(Neighbor.BY_SIMILARITY_DESC);
+            neighborsTable.setNeighbors(new RecommendationsWithNeighbors(
+                    userSelected.getName(),
+                    recommendations.getRecommendations(),
+                    neighborsComplete)
+            );
         }
 
     }

@@ -1,39 +1,35 @@
-package delfos.view.neighborhood.components.recommendations;
+package delfos.view.neighborhood.components.ratings;
 
-import delfos.rs.recommendation.Recommendations;
+import delfos.dataset.basic.item.ContentDataset;
+import delfos.dataset.basic.rating.Rating;
 import java.awt.Component;
-import java.awt.Dimension;
+import java.util.Collection;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableRowSorter;
 
 /**
- * Tabla que muestra la información de los características del dataset. Muestra
- * también qué características están activos y el orden de mostrado. Esta clase
- * se utiliza en la generación del diagrama de coordenadas paralelas
+ * Table to show the ratings, initially sorted by id.
  *
- * @author Jorge Castro Gallardo (Universidad de Jaén, Sinbad2)
- *
- * @version 1.0 Unknown date
- * @version 1.1 20-Mar-2013
+ * @author Jorge Castro Gallardo
  */
-public class RecommendationsTable {
+public class RatingsTable {
 
     private final static long serialVersionUID = 1L;
 
     private final JScrollPane scroll;
-    private final JTable recommendationsJTable;
-    private final RecommendationsJTableModel recommendationsJTableModel;
+    private final JTable ratingsJTable;
+    private final RatingsJTableModel ratingsJTableModel;
 
-    public RecommendationsTable() {
+    public RatingsTable() {
 
-        recommendationsJTable = new JTable();
-        recommendationsJTableModel = new RecommendationsJTableModel();
+        ratingsJTableModel = new RatingsJTableModel();
+        ratingsJTable = new JTable(ratingsJTableModel);
 
         TableColumn column;
-        for (int j = 0; j < recommendationsJTable.getColumnCount(); j++) {
-            column = recommendationsJTable.getColumnModel().getColumn(j);
+        for (int j = 0; j < ratingsJTable.getColumnCount(); j++) {
+            column = ratingsJTable.getColumnModel().getColumn(j);
             if (j == 0) {
                 column.setMaxWidth(100);
             }
@@ -42,7 +38,7 @@ public class RecommendationsTable {
             }
         }
 
-        TableRowSorter<RecommendationsJTableModel> sorter = new TableRowSorter<>(recommendationsJTableModel);
+        TableRowSorter<RatingsJTableModel> sorter = new TableRowSorter<>(ratingsJTableModel);
 
         sorter.setComparator(0, (Number o1, Number o2) -> {
             return ((Double) o1.doubleValue()).compareTo(o2.doubleValue());
@@ -51,18 +47,17 @@ public class RecommendationsTable {
             return ((Double) o1.doubleValue()).compareTo(o2.doubleValue());
         });
 
-        recommendationsJTable.setRowSorter(sorter);
+        ratingsJTable.setRowSorter(sorter);
 
-        scroll = new JScrollPane(recommendationsJTable);
-        scroll.setMinimumSize(new Dimension(200, 200));
+        scroll = new JScrollPane(ratingsJTable);
     }
 
     public Component getComponent() {
         return scroll;
     }
 
-    public void setRecomendaciones(Recommendations recommendations) {
-        recommendationsJTableModel.setRecomendaciones(recommendations);
+    public void setRatings(Collection<Rating> ratings, ContentDataset contentDataset) {
+        ratingsJTableModel.setRecomendaciones(ratings, contentDataset);
     }
 
 }

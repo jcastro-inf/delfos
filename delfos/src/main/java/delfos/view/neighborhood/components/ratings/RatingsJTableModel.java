@@ -1,7 +1,8 @@
-package delfos.view.neighborhood.components.recommendations;
+package delfos.view.neighborhood.components.ratings;
 
-import delfos.rs.recommendation.Recommendation;
-import delfos.rs.recommendation.Recommendations;
+import delfos.dataset.basic.item.ContentDataset;
+import delfos.dataset.basic.item.Item;
+import delfos.dataset.basic.rating.Rating;
 import java.util.Collection;
 import java.util.LinkedList;
 import javax.swing.table.AbstractTableModel;
@@ -9,10 +10,10 @@ import javax.swing.table.AbstractTableModel;
 /**
  * @author jcastro
  */
-public class RecommendationsJTableModel extends AbstractTableModel {
+public class RatingsJTableModel extends AbstractTableModel {
 
     private final static long serialVersionUID = 1L;
-    Collection<Recommendation> lista = new LinkedList<>();
+    Collection<Rating> lista = new LinkedList<>();
     private Object[][] datos = new Object[3][0];
 
     @Override
@@ -31,7 +32,7 @@ public class RecommendationsJTableModel extends AbstractTableModel {
             return "idItem";
         }
         if (column == 1) {
-            return "Pref";
+            return "Rating";
         }
         if (column == 2) {
             return "Name";
@@ -44,14 +45,16 @@ public class RecommendationsJTableModel extends AbstractTableModel {
         return datos[columnIndex][rowIndex];
     }
 
-    public void setRecomendaciones(Recommendations recommendations) {
+    public void setRecomendaciones(Collection<Rating> ratings, ContentDataset contentDataset) {
 
-        datos = new Object[3][recommendations.getRecommendations().size()];
+        datos = new Object[3][ratings.size()];
         int index = 0;
-        for (Recommendation recommendation : recommendations.getRecommendations()) {
-            datos[0][index] = recommendation.getItem().getId();
-            datos[1][index] = recommendation.getPreference().floatValue();
-            datos[2][index] = recommendation.getItem().getName();
+        for (Rating rating : ratings) {
+            Item item = contentDataset.get(rating.idItem);
+
+            datos[0][index] = item.getId();
+            datos[1][index] = rating.ratingValue.floatValue();
+            datos[2][index] = item.getName();
 
             index++;
         }
