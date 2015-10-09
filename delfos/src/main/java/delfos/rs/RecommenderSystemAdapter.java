@@ -7,13 +7,17 @@ import delfos.common.exceptions.dataset.users.UserNotFound;
 import delfos.common.exceptions.ratings.NotEnoughtUserInformation;
 import delfos.common.parameters.ParameterOwnerType;
 import delfos.dataset.basic.item.Item;
+import delfos.dataset.basic.loader.types.ContentDatasetLoader;
 import delfos.dataset.basic.loader.types.DatasetLoader;
+import delfos.dataset.basic.loader.types.UsersDatasetLoader;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.user.User;
 import delfos.rs.contentbased.ContentBasedRecommender;
 import delfos.rs.recommendation.Recommendation;
 import delfos.rs.recommendation.Recommendations;
+import java.util.Collection;
 import java.util.Set;
+import java.util.TreeSet;
 import java.util.stream.Collectors;
 
 /**
@@ -57,13 +61,15 @@ public abstract class RecommenderSystemAdapter<RecommendationModel>
             Set<Item> candidateItems) {
 
         try {
+            TreeSet<Integer> itemSet = candidateItems.parallelStream()
+                    .map((item) -> item.getId())
+                    .collect(Collectors.toCollection(TreeSet::new));
+
             return new Recommendations(user, recommendToUser(
                     dataset,
                     recommendationModel,
                     user.getId(),
-                    candidateItems.parallelStream()
-                    .map((item) -> item.getId())
-                    .collect(Collectors.toSet())));
+                    itemSet));
         } catch (UserNotFound | CannotLoadRatingsDataset ex) {
             throw new IllegalArgumentException(ex);
         } catch (ItemNotFound | CannotLoadContentDataset ex) {
@@ -75,6 +81,26 @@ public abstract class RecommenderSystemAdapter<RecommendationModel>
                     .map((item) -> new Recommendation(item, Double.NaN))
                     .collect(Collectors.toList()));
         }
+    }
+
+    @Deprecated
+    @Override
+    public Collection<Recommendation> recommendToUser(DatasetLoader<? extends Rating> dataset, RecommendationModel model, Integer idUser, Set<Integer> idItems) throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset, NotEnoughtUserInformation {
+
+        Set<Item> candidateItems = idItems.stream()
+                .filter((idItem) -> idItems.contains(idItem))
+                .map((idItem) -> ((ContentDatasetLoader) dataset).getContentDataset().get(idItem))
+                .collect(Collectors.toSet());
+
+        User user;
+        if (dataset instanceof UsersDatasetLoader) {
+            UsersDatasetLoader usersDatasetLoader = (UsersDatasetLoader) dataset;
+            user = usersDatasetLoader.getUsersDataset().get(idUser);
+        } else {
+            user = new User(idUser);
+        }
+
+        return recommendToUser(dataset, model, user, candidateItems).getRecommendations();
     }
 
 }

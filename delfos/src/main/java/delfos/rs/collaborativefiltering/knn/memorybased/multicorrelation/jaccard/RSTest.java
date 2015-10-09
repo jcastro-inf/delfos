@@ -175,10 +175,6 @@ public class RSTest extends CollaborativeRecommender<RSTest_Model> {
         Collections.sort(preFilterNeighbors);
         LinkedList<Neighbor> neighbors = new LinkedList<>();
 
-        if (preFilterNeighbors.isEmpty()) {
-            System.out.println("preFilterNeighbors is empty");
-        }
-
         //Recorro los vecinos por jaccard,
         Neighbor preFilterNeighbor = preFilterNeighbors.removeFirst();
 
@@ -230,8 +226,8 @@ public class RSTest extends CollaborativeRecommender<RSTest_Model> {
      * @param ratingsDataset Conjunto de valoraciones.
      * @param idUser Id del usuario activo
      * @param vecinos Vecinos del usuario activo
-     * @param candidateItems Lista de productos que se consideran recomendables, es
-     * decir, que podrían ser recomendados si la predicción es alta
+     * @param candidateItems Lista de productos que se consideran recomendables,
+     * es decir, que podrían ser recomendados si la predicción es alta
      * @return Lista de recomendaciones para el usuario, ordenadas por
      * valoracion predicha.
      * @throws UserNotFound Si el usuario activo o alguno de los vecinos

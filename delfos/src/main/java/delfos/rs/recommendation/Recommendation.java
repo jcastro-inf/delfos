@@ -18,9 +18,30 @@ import java.util.stream.Collectors;
  */
 public class Recommendation implements Comparable<Recommendation>, Serializable {
 
-    public static final Comparator<Recommendation> BY_ID = (Recommendation o1, Recommendation o2) -> Integer.compare(o1.getIdItem(), o2.getIdItem());
-    public static final Comparator<Recommendation> BY_PREFERENCE_ASC = (Recommendation o1, Recommendation o2) -> Double.compare(o1.getPreference().doubleValue(), o2.getPreference().doubleValue());
-    public static final Comparator<Recommendation> BY_PREFERENCE_DESC = (Recommendation o1, Recommendation o2) -> -Double.compare(o1.getPreference().doubleValue(), o2.getPreference().doubleValue());
+    private static void validateComparatorParameters(Recommendation o1, Recommendation o2) {
+        if (o1 == null) {
+            throw new IllegalStateException("recommendation 1 is null");
+        } else if (o2 == null) {
+            throw new IllegalStateException("recommendation 2 is null");
+        } else if (o1.getPreference() == null) {
+            throw new IllegalStateException("Preference value of recommendation 1 is null");
+        } else if (o2.getPreference() == null) {
+            throw new IllegalStateException("Preference value of recommendation 2 is null");
+        }
+    }
+
+    public static final Comparator<Recommendation> BY_ID = (Recommendation o1, Recommendation o2) -> {
+        validateComparatorParameters(o1, o2);
+        return Integer.compare(o1.getIdItem(), o2.getIdItem());
+    };
+    public static final Comparator<Recommendation> BY_PREFERENCE_ASC = (Recommendation o1, Recommendation o2) -> {
+        validateComparatorParameters(o1, o2);
+        return Double.compare(o1.getPreference().doubleValue(), o2.getPreference().doubleValue());
+    };
+    public static final Comparator<Recommendation> BY_PREFERENCE_DESC = (Recommendation o1, Recommendation o2) -> {
+        validateComparatorParameters(o1, o2);
+        return -Double.compare(o1.getPreference().doubleValue(), o2.getPreference().doubleValue());
+    };
 
     private static final long serialVersionUID = 5468;
 
@@ -94,14 +115,25 @@ public class Recommendation implements Comparable<Recommendation>, Serializable 
      */
     @Deprecated
     public Recommendation(Integer idItem, Number preference) {
+        if (idItem == null) {
+            throw new IllegalArgumentException("Item cannot be null");
+        } else if (preference == null) {
+            throw new IllegalArgumentException("Preference cannot be null");
+        }
+
         this.preference = preference;
         this.item = new Item(idItem);
     }
 
     public Recommendation(Item item, Number preference) {
+        if (item == null) {
+            throw new IllegalArgumentException("Item cannot be null");
+        } else if (preference == null) {
+            throw new IllegalArgumentException("Preference cannot be null");
+        }
 
-        this.preference = null;
-        this.item = null;
+        this.preference = preference;
+        this.item = item;
     }
 
     /**

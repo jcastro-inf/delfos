@@ -52,12 +52,10 @@ public class RecommendationsOutputStandardRaw extends RecommendationsOutputMetho
 
         switch (sortBy) {
             case SORT_BY_PREFERENCE:
-                Collections.sort(topNrecommendations);
+                Collections.sort(topNrecommendations, Recommendation.BY_PREFERENCE_DESC);
                 break;
             case SORT_BY_ID_ITEM:
-                Collections.sort(
-                        topNrecommendations,
-                        (Recommendation o1, Recommendation o2) -> Integer.compare(o1.getIdItem(), o2.getIdItem()));
+                Collections.sort(topNrecommendations, Recommendation.BY_ID);
                 break;
             case SORT_BY_NO_SORT:
                 break;
@@ -71,7 +69,7 @@ public class RecommendationsOutputStandardRaw extends RecommendationsOutputMetho
 
         System.out.println("Target '" + idTarget + "' recommendations:");
         for (Recommendation r : topNrecommendations) {
-            System.out.println("\t" + r.getIdItem() + "," + r.getPreference());
+            System.out.println("\t" + r.getIdItem() + "," + r.getItem().getName() + "," + r.getPreference());
         }
     }
 }

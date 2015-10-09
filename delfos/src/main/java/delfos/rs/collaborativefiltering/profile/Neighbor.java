@@ -27,11 +27,11 @@ public class Neighbor implements Comparable<Neighbor>, Serializable {
     public static Map<Integer, Double> getNeighborsMap(List<Neighbor> neighbors) {
         Map<Integer, Double> ret = new TreeMap<>();
 
-        for (Neighbor n : neighbors) {
+        neighbors.stream().forEach((n) -> {
             Double similarity = (double) n.similarity;
             Integer idNeighbor = n.idNeighbor;
             ret.put(idNeighbor, similarity);
-        }
+        });
 
         return ret;
     }
@@ -105,13 +105,9 @@ public class Neighbor implements Comparable<Neighbor>, Serializable {
     public boolean equals(Object obj) {
         if (obj instanceof Neighbor) {
             Neighbor neighbor = (Neighbor) obj;
-            if (entity == neighbor.entity
+            return entity == neighbor.entity
                     && idNeighbor == neighbor.idNeighbor
-                    && similarity == neighbor.similarity) {
-                return true;
-            } else {
-                return false;
-            }
+                    && similarity == neighbor.similarity;
         } else {
             return false;
         }

@@ -2,6 +2,7 @@ package delfos.main.managers.gui.neighborhood;
 
 import delfos.ConsoleParameters;
 import delfos.main.managers.CaseUseMode;
+import delfos.view.neighborhood.UserUserNeighborhoodWindow;
 
 /**
  *
@@ -35,7 +36,7 @@ public class NeighborhoodGUI extends CaseUseMode {
 
     @Override
     public void manageCaseUse(ConsoleParameters consoleParameters) {
-        delfos.view.neighborhood.UserUserNeighborhoodWindow neighborhoodGUI = new delfos.view.neighborhood.UserUserNeighborhoodWindow();
+        UserUserNeighborhoodWindow neighborhoodGUI = new UserUserNeighborhoodWindow();
         neighborhoodGUI.setVisible(true);
     }
 }
