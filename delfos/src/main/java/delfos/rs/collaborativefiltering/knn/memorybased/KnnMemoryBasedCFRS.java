@@ -31,7 +31,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeMap;
 import java.util.stream.Collectors;
 
 /**
@@ -112,7 +111,7 @@ public class KnnMemoryBasedCFRS extends KnnCollaborativeRecommender<KnnMemoryMod
     }
 
     @Override
-    public Recommendations recommendToUser(DatasetLoader<? extends Rating> datasetLoader, KnnMemoryModel model, User user, java.util.Set<Item> candidateItems) throws UserNotFound {
+    public Recommendations recommendToUser(DatasetLoader<? extends Rating> datasetLoader, KnnMemoryModel model, User user, Set<Item> candidateItems) throws UserNotFound {
         try {
             List<Neighbor> neighbors;
             RatingsDataset<? extends Rating> ratingsDataset = datasetLoader.getRatingsDataset();
@@ -167,7 +166,7 @@ public class KnnMemoryBasedCFRS extends KnnCollaborativeRecommender<KnnMemoryMod
             printNeighborhood(idUser, ret);
         }
 
-        Collections.sort(ret);
+        Collections.sort(ret, Neighbor.BY_SIMILARITY_DESC);
         int neighborhoodSize_ = ((Number) getParameterValue(KnnMemoryBasedCFRS.NEIGHBORHOOD_SIZE)).intValue();
 
         ret = ret.subList(0, Math.min(ret.size(), neighborhoodSize_));
@@ -200,11 +199,12 @@ public class KnnMemoryBasedCFRS extends KnnCollaborativeRecommender<KnnMemoryMod
         PredictionTechnique predictionTechnique_ = (PredictionTechnique) getParameterValue(KnnMemoryBasedCFRS.PREDICTION_TECHNIQUE);
 
         //Predicción de la valoración
-        Collection<Recommendation> recommendationList = new LinkedList<>();
-        Map<Integer, Map<Integer, ? extends Rating>> ratingsVecinos = new TreeMap<>();
-        for (Neighbor ss : vecinos) {
-            ratingsVecinos.put(ss.getIdNeighbor(), ratingsDataset.getUserRatingsRated(ss.getIdNeighbor()));
-        }
+        Collection<Recommendation> recommendations = new LinkedList<>();
+        Map<Integer, Map<Integer, ? extends Rating>> ratingsVecinos = vecinos.stream()
+                .filter((neighbor -> Float.isFinite(neighbor.getSimilarity()) && neighbor.getSimilarity() > 0))
+                .collect(Collectors.toMap(
+                                (neighbor -> neighbor.getIdNeighbor()),
+                                (neighbor -> ratingsDataset.getUserRatingsRated(neighbor.getIdNeighbor()))));
 
         for (Item item : candidateItems) {
             Collection<MatchRating> match = new LinkedList<>();
@@ -217,15 +217,14 @@ public class KnnMemoryBasedCFRS extends KnnCollaborativeRecommender<KnnMemoryMod
 
             try {
                 float predicted = predictionTechnique_.predictRating(idUser, item.getId(), match, ratingsDataset);
-                recommendationList.add(new Recommendation(item, predicted));
-
+                recommendations.add(new Recommendation(item, predicted));
             } catch (CouldNotPredictRating ex) {
             } catch (ItemNotFound ex) {
                 Global.showError(ex);
             }
         }
 
-        return recommendationList;
+        return recommendations;
     }
 
     @Override
