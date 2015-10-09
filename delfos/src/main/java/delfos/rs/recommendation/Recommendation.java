@@ -1,5 +1,6 @@
 package delfos.rs.recommendation;
 
+import delfos.Constants;
 import delfos.common.decimalnumbers.NumberCompare;
 import delfos.common.decimalnumbers.NumberRounder;
 import delfos.dataset.basic.item.Item;
@@ -7,6 +8,7 @@ import java.io.Serializable;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
@@ -17,6 +19,34 @@ import java.util.stream.Collectors;
  * @author Jorge Castro Gallardo (Universidad de Jaén, Sinbad2)
  */
 public class Recommendation implements Comparable<Recommendation>, Serializable {
+
+    public static final Comparator<Recommendation> BY_ID = (Recommendation o1, Recommendation o2) -> {
+        validateComparatorParameters(o1, o2);
+        return Integer.compare(o1.getIdItem(), o2.getIdItem());
+    };
+
+    public static final Comparator<Recommendation> BY_PREFERENCE_ASC = (Recommendation o1, Recommendation o2) -> {
+        if (Double.isNaN(o1.preference.doubleValue()) && Double.isNaN(o2.preference.doubleValue())) {
+            return BY_ID.compare(o1, o2);
+        } else if (Double.isNaN(o1.preference.doubleValue())) {
+            return 1;
+        } else if (Double.isNaN(o2.preference.doubleValue())) {
+            return -1;
+        } else {
+            return Double.compare(o1.preference.doubleValue(), o2.preference.doubleValue());
+        }
+    };
+    public static final Comparator<Recommendation> BY_PREFERENCE_DESC = (Recommendation o1, Recommendation o2) -> {
+        if (Double.isNaN(o1.preference.doubleValue()) && Double.isNaN(o2.preference.doubleValue())) {
+            return BY_ID.compare(o1, o2);
+        } else if (Double.isNaN(o1.preference.doubleValue())) {
+            return 1;
+        } else if (Double.isNaN(o2.preference.doubleValue())) {
+            return -1;
+        } else {
+            return -Double.compare(o1.preference.doubleValue(), o2.preference.doubleValue());
+        }
+    };
 
     private static void validateComparatorParameters(Recommendation o1, Recommendation o2) {
         if (o1 == null) {
@@ -29,19 +59,6 @@ public class Recommendation implements Comparable<Recommendation>, Serializable 
             throw new IllegalStateException("Preference value of recommendation 2 is null");
         }
     }
-
-    public static final Comparator<Recommendation> BY_ID = (Recommendation o1, Recommendation o2) -> {
-        validateComparatorParameters(o1, o2);
-        return Integer.compare(o1.getIdItem(), o2.getIdItem());
-    };
-    public static final Comparator<Recommendation> BY_PREFERENCE_ASC = (Recommendation o1, Recommendation o2) -> {
-        validateComparatorParameters(o1, o2);
-        return Double.compare(o1.getPreference().doubleValue(), o2.getPreference().doubleValue());
-    };
-    public static final Comparator<Recommendation> BY_PREFERENCE_DESC = (Recommendation o1, Recommendation o2) -> {
-        validateComparatorParameters(o1, o2);
-        return -Double.compare(o1.getPreference().doubleValue(), o2.getPreference().doubleValue());
-    };
 
     private static final long serialVersionUID = 5468;
 
@@ -210,16 +227,16 @@ public class Recommendation implements Comparable<Recommendation>, Serializable 
      * Compara esta valoración con otra, teniendo en cuenta solo 4 decimales.
      *
      * @param r Recomendación con la que se compara
-     * @param numDecimals numero de decimales a tener en cuenta.
      * @return true si las recomendación es del mismo producto y la preferencia
      * es igual hasta el cuarto decimal, false en otro caso.
      */
-    public boolean relaxedEquals(Recommendation r, int numDecimals) {
+    public boolean relaxedEquals(Recommendation r) {
 
-        if (this.getIdItem() != r.getIdItem()) {
+        if (!Objects.equals(this.getItem().getId(), r.item.getId())) {
             return false;
+        } else {
+            return NumberCompare.equals(this.preference, r.preference, Constants.COMPARE_NUM_DECIMALS);
         }
-        return NumberCompare.equals(this.preference, r.preference, numDecimals);
     }
 
     public Item getItem() {
