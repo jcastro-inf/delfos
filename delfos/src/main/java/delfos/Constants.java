@@ -25,6 +25,7 @@ import org.jdom2.output.Format;
 public class Constants {
 
     private static File tempDirectory = new File("." + File.separator + "temp");
+    public static int COMPARE_NUM_DECIMALS = 4;
 
     public static class EnvironmentVariables {
 
