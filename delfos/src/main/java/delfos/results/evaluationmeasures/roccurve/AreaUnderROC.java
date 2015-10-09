@@ -1,12 +1,5 @@
 package delfos.results.evaluationmeasures.roccurve;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import org.jdom2.Element;
 import delfos.ERROR_CODES;
 import delfos.common.Chronometer;
 import delfos.common.Global;
@@ -22,6 +15,13 @@ import delfos.results.evaluationmeasures.EvaluationMeasure;
 import delfos.results.evaluationmeasures.confusionmatrix.ConfusionMatricesCurve;
 import delfos.results.evaluationmeasures.confusionmatrix.ConfusionMatrix;
 import delfos.rs.recommendation.Recommendation;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import org.jdom2.Element;
 
 /**
  * Medida de evaluación para calcular el area bajo roc, tomando el tamaño de la
@@ -74,9 +74,6 @@ public class AreaUnderROC extends EvaluationMeasure {
             try {
                 Map<Integer, ? extends Rating> userRatings = testDataset.getUserRatingsRated(idUser);
                 recommendationList.stream().map((r) -> r.getIdItem()).map((idItem) -> {
-                    if (!userRatings.containsKey(idItem)) {
-                        System.out.println("Depura");
-                    }
                     return idItem;
                 }).forEach((idItem) -> {
                     listaTransformada.add(relevanceCriteria.isRelevant(userRatings.get(idItem).ratingValue));

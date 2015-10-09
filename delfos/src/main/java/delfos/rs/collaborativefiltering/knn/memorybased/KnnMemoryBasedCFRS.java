@@ -2,13 +2,17 @@ package delfos.rs.collaborativefiltering.knn.memorybased;
 
 import delfos.common.Global;
 import delfos.common.exceptions.CouldNotPredictRating;
+import delfos.common.exceptions.dataset.CannotLoadContentDataset;
 import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
 import delfos.common.exceptions.dataset.items.ItemNotFound;
 import delfos.common.exceptions.dataset.users.UserNotFound;
+import delfos.common.exceptions.ratings.NotEnoughtUserInformation;
 import delfos.common.parallelwork.MultiThreadExecutionManager;
+import delfos.dataset.basic.item.Item;
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RatingsDataset;
+import delfos.dataset.basic.user.User;
 import delfos.rs.collaborativefiltering.knn.KnnCollaborativeRecommender;
 import delfos.rs.collaborativefiltering.knn.MatchRating;
 import delfos.rs.collaborativefiltering.knn.RecommendationEntity;
@@ -17,6 +21,8 @@ import delfos.rs.collaborativefiltering.profile.Neighbor;
 import delfos.rs.persistence.DatabasePersistence;
 import delfos.rs.persistence.FailureInPersistence;
 import delfos.rs.recommendation.Recommendation;
+import delfos.rs.recommendation.Recommendations;
+import delfos.rs.recommendation.RecommendationsWithNeighbors;
 import delfos.similaritymeasures.CollaborativeSimilarityMeasure;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -24,7 +30,9 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
+import java.util.stream.Collectors;
 
 /**
  * Sistema de recomendación basado en el filtrado colaborativo basado en
@@ -104,13 +112,13 @@ public class KnnMemoryBasedCFRS extends KnnCollaborativeRecommender<KnnMemoryMod
     }
 
     @Override
-    public Collection<Recommendation> recommendToUser(DatasetLoader<? extends Rating> datasetLoader, KnnMemoryModel model, Integer idUser, java.util.Set<Integer> candidateItems) throws UserNotFound {
+    public Recommendations recommendToUser(DatasetLoader<? extends Rating> datasetLoader, KnnMemoryModel model, User user, java.util.Set<Item> candidateItems) throws UserNotFound {
         try {
             List<Neighbor> neighbors;
             RatingsDataset<? extends Rating> ratingsDataset = datasetLoader.getRatingsDataset();
-            neighbors = getNeighbors(ratingsDataset, idUser);
-            Collection<Recommendation> ret = recommendWithNeighbors(datasetLoader.getRatingsDataset(), idUser, neighbors, candidateItems);
-            return ret;
+            neighbors = getNeighbors(ratingsDataset, user.getId());
+            Collection<Recommendation> ret = recommendWithNeighbors(datasetLoader.getRatingsDataset(), user.getId(), neighbors, candidateItems);
+            return new RecommendationsWithNeighbors(user.getTargetId(), ret, neighbors);
         } catch (CannotLoadRatingsDataset ex) {
             throw new IllegalArgumentException(ex);
         }
@@ -132,13 +140,9 @@ public class KnnMemoryBasedCFRS extends KnnCollaborativeRecommender<KnnMemoryMod
 
         ratingsDataset.getUserRated(idUser);
 
-        List<KnnMemoryTask> tasks = new ArrayList<>();
-        for (int idNeighbor : ratingsDataset.allUsers()) {
-            try {
-                tasks.add(new KnnMemoryTask(ratingsDataset, idUser, idNeighbor, this));
-            } catch (UserNotFound ex) {
-            }
-        }
+        List<KnnMemoryTask> tasks = ratingsDataset.allUsers().parallelStream()
+                .map((idNeighbor) -> new KnnMemoryTask(ratingsDataset, idUser, idNeighbor, this))
+                .collect(Collectors.toList());
 
         MultiThreadExecutionManager<KnnMemoryTask> multiThreadExecutionManager = new MultiThreadExecutionManager<>(
                 "Compute neighbors of " + idUser,
@@ -192,7 +196,7 @@ public class KnnMemoryBasedCFRS extends KnnCollaborativeRecommender<KnnMemoryMod
      * @throws UserNotFound Si el usuario activo o alguno de los vecinos
      * indicados no se encuentra en el dataset.
      */
-    public Collection<Recommendation> recommendWithNeighbors(RatingsDataset<? extends Rating> ratingsDataset, Integer idUser, List<Neighbor> vecinos, Collection<Integer> candidateItems) throws UserNotFound {
+    public Collection<Recommendation> recommendWithNeighbors(RatingsDataset<? extends Rating> ratingsDataset, Integer idUser, List<Neighbor> vecinos, Collection<Item> candidateItems) throws UserNotFound {
         PredictionTechnique predictionTechnique_ = (PredictionTechnique) getParameterValue(KnnMemoryBasedCFRS.PREDICTION_TECHNIQUE);
 
         //Predicción de la valoración
@@ -202,18 +206,18 @@ public class KnnMemoryBasedCFRS extends KnnCollaborativeRecommender<KnnMemoryMod
             ratingsVecinos.put(ss.getIdNeighbor(), ratingsDataset.getUserRatingsRated(ss.getIdNeighbor()));
         }
 
-        for (int idItem : candidateItems) {
+        for (Item item : candidateItems) {
             Collection<MatchRating> match = new LinkedList<>();
             for (Neighbor ss : vecinos) {
-                Rating rating = ratingsVecinos.get(ss.getIdNeighbor()).get(idItem);
+                Rating rating = ratingsVecinos.get(ss.getIdNeighbor()).get(item.getId());
                 if (rating != null) {
-                    match.add(new MatchRating(RecommendationEntity.ITEM, ss.getIdNeighbor(), idItem, rating.ratingValue, ss.getSimilarity()));
+                    match.add(new MatchRating(RecommendationEntity.ITEM, ss.getIdNeighbor(), item.getId(), rating.ratingValue, ss.getSimilarity()));
                 }
             }
 
             try {
-                float predicted = predictionTechnique_.predictRating(idUser, idItem, match, ratingsDataset);
-                recommendationList.add(new Recommendation(idItem, predicted));
+                float predicted = predictionTechnique_.predictRating(idUser, item.getId(), match, ratingsDataset);
+                recommendationList.add(new Recommendation(item, predicted));
 
             } catch (CouldNotPredictRating ex) {
             } catch (ItemNotFound ex) {
@@ -248,5 +252,10 @@ public class KnnMemoryBasedCFRS extends KnnCollaborativeRecommender<KnnMemoryMod
         message.append("=========================================================\n");
 
         Global.showMessageTimestamped(message.toString());
+    }
+
+    @Override
+    public Collection<Recommendation> recommendToUser(DatasetLoader<? extends Rating> dataset, KnnMemoryModel model, Integer idUser, Set<Integer> candidateItems) throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset, NotEnoughtUserInformation {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }

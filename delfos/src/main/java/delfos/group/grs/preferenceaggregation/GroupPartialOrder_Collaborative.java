@@ -1,19 +1,13 @@
 package delfos.group.grs.preferenceaggregation;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeMap;
-import java.util.TreeSet;
 import delfos.common.exceptions.dataset.CannotLoadContentDataset;
 import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
 import delfos.common.exceptions.dataset.items.ItemNotFound;
 import delfos.common.exceptions.dataset.users.UserNotFound;
-import delfos.rs.collaborativefiltering.knn.RecommendationEntity;
+import delfos.common.exceptions.ratings.NotEnoughtUserInformation;
+import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RatingsDataset;
-import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.generated.modifieddatasets.PseudoUserRatingsDataset;
 import delfos.dataset.util.DatasetUtilities;
 import delfos.group.groupsofusers.GroupOfUsers;
@@ -21,10 +15,18 @@ import delfos.group.grs.GroupRecommenderSystemAdapter;
 import delfos.group.grs.preferenceaggregation.order.LearningToOrderThings;
 import delfos.group.grs.preferenceaggregation.order.Preff;
 import delfos.group.grs.preferenceaggregation.order.RatingBasedPref;
+import delfos.rs.collaborativefiltering.knn.RecommendationEntity;
 import delfos.rs.collaborativefiltering.knn.memorybased.KnnMemoryBasedCFRS;
 import delfos.rs.collaborativefiltering.predictiontechniques.WeightedSum;
 import delfos.rs.recommendation.Recommendation;
 import delfos.similaritymeasures.PearsonCorrelationCoefficient;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
+import java.util.TreeSet;
 
 /**
  * Implementa el sistema de recomendación a grupos basado en la medida propuesta
@@ -154,7 +156,12 @@ public class GroupPartialOrder_Collaborative extends GroupRecommenderSystemAdapt
         memoryBased.setParameterValue(KnnMemoryBasedCFRS.SIMILARITY_MEASURE, new PearsonCorrelationCoefficient());
         memoryBased.setParameterValue(KnnMemoryBasedCFRS.PREDICTION_TECHNIQUE, new WeightedSum());
 
-        Collection<Recommendation> recommendOnly = memoryBased.recommendToUser(datasetLoader, memoryBased.buildRecommendationModel(datasetLoader), idPseudoUser, candidateItems);
+        Collection<Recommendation> recommendOnly;
+        try {
+            recommendOnly = memoryBased.recommendToUser(datasetLoader, memoryBased.buildRecommendationModel(datasetLoader), idPseudoUser, candidateItems);
+        } catch (NotEnoughtUserInformation ex) {
+            recommendOnly = new ArrayList<>();
+        }
         return recommendOnly;
 
     }

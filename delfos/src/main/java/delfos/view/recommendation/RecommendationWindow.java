@@ -1,5 +1,6 @@
 package delfos.view.recommendation;
 
+import delfos.view.neighborhood.components.recommendations.RecommendationsTable;
 import delfos.ERROR_CODES;
 import delfos.common.Chronometer;
 import delfos.common.DateCollapse;
@@ -21,6 +22,7 @@ import delfos.factories.RecommenderSystemsFactory;
 import delfos.rs.RecommenderSystem;
 import delfos.rs.RecommenderSystemAdapter;
 import delfos.rs.recommendation.Recommendation;
+import delfos.rs.recommendation.Recommendations;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
@@ -46,7 +48,6 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
-import javax.swing.JScrollPane;
 import javax.swing.JSpinner;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingConstants;
@@ -79,8 +80,9 @@ public class RecommendationWindow extends JFrame {
     private JButton calcularRecomendaciones;
     private JSpinner spinerRelevancia;
     private JLabel remainingTime;
-    private RecommendationsJTableModel recommendationsJTableModel;
+
     private RecommendationsTable recommendationsTable;
+
     private JComboBox selectorUsuario;
 
     /**
@@ -317,10 +319,9 @@ public class RecommendationWindow extends JFrame {
             }
             Set<Integer> noValoradas = new TreeSet<>(contentDataset.allID());
             noValoradas.removeAll(datasetLoader.getRatingsDataset().getUserRated(idUser));
-            recommendationsJTableModel.setContentDataset(contentDataset);
 
             Collection<Recommendation> recommendations = recommenderSystem.recommendToUser(datasetLoader, recommendationModel, idUser, noValoradas);
-            RecommendationWindow.this.recommendationsJTableModel.setRecomendaciones(recommendations);
+            recommendationsTable.setRecomendaciones(new Recommendations(idUser, recommendations));
         } catch (CannotLoadRatingsDataset ex) {
             ERROR_CODES.CANNOT_LOAD_RATINGS_DATASET.exit(ex);
         } catch (UserNotFound ex) {
@@ -585,7 +586,7 @@ public class RecommendationWindow extends JFrame {
         selectorUsuario = new JComboBox();
         selectorUsuario.addActionListener((ActionEvent e) -> {
             if (recommendationModel == null) {
-                recommendationsJTableModel.setRecomendaciones(new ArrayList<>());
+                recommendationsTable.setRecomendaciones(new Recommendations("", new ArrayList<>()));
             } else {
                 computeRecommendations();
             }
@@ -600,10 +601,7 @@ public class RecommendationWindow extends JFrame {
     private Component panelRecomendaciones() {
         JPanel ret = new JPanel(new GridBagLayout());
         ret.setBorder(BorderFactory.createTitledBorder("Recommendations"));
-        this.recommendationsJTableModel = new RecommendationsJTableModel();
-        this.recommendationsTable = new RecommendationsTable(recommendationsJTableModel);
-        JScrollPane scroll = new JScrollPane(recommendationsTable);
-        scroll.setMinimumSize(new Dimension(200, 200));
+
         GridBagConstraints constraints = new GridBagConstraints();
         constraints.fill = GridBagConstraints.BOTH;
         constraints.weightx = 1.0;
@@ -613,7 +611,9 @@ public class RecommendationWindow extends JFrame {
         constraints.gridwidth = 1;
         constraints.gridheight = 1;
         constraints.insets = new Insets(3, 4, 3, 4);
-        ret.add(scroll, constraints);
+
+        recommendationsTable = new RecommendationsTable();
+        ret.add(recommendationsTable.getComponent(), constraints);
 
         return ret;
     }

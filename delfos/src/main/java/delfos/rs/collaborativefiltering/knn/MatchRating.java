@@ -1,6 +1,8 @@
 package delfos.rs.collaborativefiltering.knn;
 
+import delfos.dataset.basic.item.Item;
 import delfos.dataset.basic.rating.Rating;
+import delfos.dataset.basic.user.User;
 
 /**
  * Clase que encapsula los datos referentes a una coinicidencia de rating que se
@@ -9,7 +11,7 @@ import delfos.dataset.basic.rating.Rating;
  * junto con el rating la ponderacion del mismo al usarlo en predicción y el
  * tipo de entidad a la que se recomienda.
  *
-* @author Jorge Castro Gallardo
+ * @author Jorge Castro Gallardo
  *
  * @version 1.0 Unknown date.
  * @version 1.1 19-Abril-2013
@@ -17,8 +19,8 @@ import delfos.dataset.basic.rating.Rating;
 public class MatchRating {
 
     private final RecommendationEntity entity;
-    private final int idUser;
-    private final int idItem;
+    private final User user;
+    private final Item item;
     private final Number ratingValue;
     private final float weight;
 
@@ -32,14 +34,15 @@ public class MatchRating {
      * @param weight Peso de la valoración sobre el total (viene determinado por
      * la similitud de usuarios, de items, etc.)
      */
+    @Deprecated
     public MatchRating(RecommendationEntity entity, int idUser, int idItem, Number rating, float weight) {
         this.entity = entity;
-        this.idUser = idUser;
-        this.idItem = idItem;
+        this.user = new User(idUser);
+        this.item = new Item(idItem);
         this.ratingValue = rating;
         this.weight = weight;
     }
-    
+
     /**
      * Constructor del objeto.
      *
@@ -50,10 +53,11 @@ public class MatchRating {
      * @param weight Peso de la valoración sobre el total (viene determinado por
      * la similitud de usuarios, de items, etc.)
      */
+    @Deprecated
     public MatchRating(RecommendationEntity entity, int idUser, int idItem, Rating rating, float weight) {
         this.entity = entity;
-        this.idUser = idUser;
-        this.idItem = idItem;
+        this.user = new User(idUser);
+        this.item = new Item(idItem);
         this.ratingValue = rating.ratingValue;
         this.weight = weight;
     }
@@ -64,7 +68,7 @@ public class MatchRating {
      * @return ID del producto.
      */
     public int getIdItem() {
-        return idItem;
+        return item.getId();
     }
 
     /**
@@ -73,12 +77,13 @@ public class MatchRating {
      * @return ID del usuario.
      */
     public int getIdUser() {
-        return idUser;
+        return user.getId();
     }
 
     /**
      * Devuelve la valoración.
-     * @return  Valoración.
+     *
+     * @return Valoración.
      */
     public Number getRating() {
         return ratingValue;
@@ -86,6 +91,7 @@ public class MatchRating {
 
     /**
      * Devuelve la ponderación con que se debe tener en cuenta esta valoración.
+     *
      * @return Ponderación de la valoración.
      */
     public float getWeight() {
@@ -100,4 +106,13 @@ public class MatchRating {
     public RecommendationEntity getEntity() {
         return entity;
     }
+
+    public Item getItem() {
+        return item;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
 }

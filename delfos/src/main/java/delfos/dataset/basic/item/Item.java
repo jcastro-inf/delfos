@@ -55,14 +55,6 @@ public class Item implements Comparable<Item>, EntityWithFeatures, Serializable 
     public Item(int idItem, String name, Map<Feature, Object> featureValues) {
         this(idItem, name);
 
-//        for (Map.Entry<Feature, Object> entry : featureValues.entrySet()) {
-//            Feature feature = entry.getKey();
-//            Object featureValue = entry.getValue();
-//
-////            if (featureValue == null) {
-////                throw new IllegalArgumentException("The feature '" + feature + "' has a null value.");
-////            }
-//        }
         this.featuresValues.putAll(featureValues);
     }
 
