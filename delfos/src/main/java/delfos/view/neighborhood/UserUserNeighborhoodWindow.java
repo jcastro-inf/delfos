@@ -18,6 +18,7 @@ import delfos.rs.collaborativefiltering.knn.modelbased.KnnModelBasedCFRS;
 import delfos.rs.output.RecommendationsOutputStandardRaw;
 import delfos.rs.recommendation.Recommendations;
 import delfos.rs.recommendation.RecommendationsWithNeighbors;
+import delfos.view.neighborhood.components.ratings.RatingsTable;
 import delfos.view.neighborhood.components.recommendations.RecommendationsTable;
 import delfos.view.neighborhood.components.uknn.UserNeighborsTable;
 import java.awt.Component;
@@ -44,8 +45,8 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
-import javax.swing.JScrollPane;
 import javax.swing.JSpinner;
+import javax.swing.JSplitPane;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingConstants;
 
@@ -68,8 +69,8 @@ public class UserUserNeighborhoodWindow extends JFrame {
     private JSpinner relevanceThresholdSelector;
 
     private RecommendationsTable recommendationsTable;
-
     private UserNeighborsTable neighborsTable;
+    private RatingsTable ratingsTable;
 
     RecommendationModelHolder recommendationModelHolder = new RecommendationModelHolder();
 
@@ -355,7 +356,6 @@ public class UserUserNeighborhoodWindow extends JFrame {
 
         this.recommendationsTable = new RecommendationsTable();
         ret.add(recommendationsTable.getComponent(), constraints);
-
         return ret;
     }
 
@@ -391,15 +391,33 @@ public class UserUserNeighborhoodWindow extends JFrame {
         constraints.gridheight = 1;
         constraints.insets = new Insets(3, 4, 3, 4);
 
-        this.recommendationsTable = new RecommendationsTable();
-        ret.add(recommendationsTable.getComponent(), constraints);
+        this.ratingsTable = new RatingsTable();
+        ret.add(ratingsTable.getComponent(), constraints);
         return ret;
     }
 
     private Component panelResults() {
-        GridBagConstraints constraints = new GridBagConstraints();
+
         JPanel results = new JPanel();
-        results.setLayout(new GridBagLayout());
+
+        JSplitPane splitAandB = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
+
+        splitAandB.setLeftComponent(panelRecomendaciones());
+        splitAandB.setRightComponent(panelNeighbors());
+        splitAandB.setMinimumSize(new Dimension(30, 30));
+        splitAandB.setResizeWeight(0.5);
+        splitAandB.setOneTouchExpandable(true);
+        splitAandB.setContinuousLayout(true);
+
+        JSplitPane splitABandC = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
+        splitABandC.setLeftComponent(splitAandB);
+        splitABandC.setRightComponent(panelRatings());
+        splitABandC.setMinimumSize(new Dimension(30, 30));
+        splitAandB.setResizeWeight(0.333);
+        splitABandC.setOneTouchExpandable(true);
+        splitABandC.setContinuousLayout(true);
+
+        GridBagConstraints constraints = new GridBagConstraints();
 
         constraints.fill = GridBagConstraints.BOTH;
         constraints.weightx = 1.0;
@@ -409,40 +427,9 @@ public class UserUserNeighborhoodWindow extends JFrame {
         constraints.gridwidth = 1;
         constraints.gridheight = 1;
         constraints.insets = new Insets(3, 4, 3, 4);
-        results.add(panelRecomendaciones(), constraints);
+        results.add(splitABandC, constraints);
 
-        constraints.fill = GridBagConstraints.BOTH;
-        constraints.weightx = 1.0;
-        constraints.weighty = 1.0;
-        constraints.gridx = 1;
-        constraints.gridy = 0;
-        constraints.gridwidth = 1;
-        constraints.gridheight = 1;
-        constraints.insets = new Insets(3, 4, 3, 4);
-        results.add(panelNeighbors(), constraints);
-
-        constraints.fill = GridBagConstraints.BOTH;
-        constraints.weightx = 1.0;
-        constraints.weighty = 1.0;
-        constraints.gridx = 2;
-        constraints.gridy = 0;
-        constraints.gridwidth = 1;
-        constraints.gridheight = 1;
-        constraints.insets = new Insets(3, 4, 3, 4);
-        results.add(panelRatings(), constraints);
-
-        JScrollPane scroll = new JScrollPane();
-        constraints.fill = GridBagConstraints.BOTH;
-        constraints.weightx = 1.0;
-        constraints.weighty = 1.0;
-        constraints.gridx = 0;
-        constraints.gridy = 0;
-        constraints.gridwidth = 1;
-        constraints.gridheight = 1;
-        constraints.insets = new Insets(3, 4, 3, 4);
-        scroll.add(results, constraints);
-
-        return scroll;
+        return results;
     }
 
     private Component inputPanel() {

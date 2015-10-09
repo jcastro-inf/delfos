@@ -31,7 +31,7 @@ public class RecommendationsJTableModel extends AbstractTableModel {
             return "idItem";
         }
         if (column == 1) {
-            return "Preference";
+            return "Pref";
         }
         if (column == 2) {
             return "Name";
