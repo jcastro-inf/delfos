@@ -1,6 +1,5 @@
 package delfos.rs.recommendation;
 
-import delfos.Constants;
 import delfos.common.decimalnumbers.NumberCompare;
 import delfos.common.decimalnumbers.NumberRounder;
 import delfos.dataset.basic.item.Item;
@@ -193,7 +192,7 @@ public class Recommendation implements Comparable<Recommendation>, Serializable 
             if (this.getIdItem() != recommendation.getIdItem()) {
                 return false;
             }
-            return NumberCompare.equals(this.preference, recommendation.preference, 4);
+            return NumberCompare.equals(this.preference, recommendation.preference);
         } else {
             return false;
         }
@@ -235,7 +234,7 @@ public class Recommendation implements Comparable<Recommendation>, Serializable 
         if (!Objects.equals(this.getItem().getId(), r.item.getId())) {
             return false;
         } else {
-            return NumberCompare.equals(this.preference, r.preference, Constants.COMPARE_NUM_DECIMALS);
+            return NumberCompare.equals(this.preference, r.preference);
         }
     }
 
