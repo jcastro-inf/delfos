@@ -2,38 +2,28 @@ package delfos.view.neighborhood;
 
 import delfos.common.exceptions.dataset.CannotLoadUsersDataset;
 import delfos.common.parameters.ParameterListener;
-import delfos.common.parameters.view.EditParameterDialog;
 import delfos.configureddatasets.ConfiguredDataset;
 import delfos.configureddatasets.ConfiguredDatasetsFactory;
-import delfos.dataset.basic.item.ContentDataset;
 import delfos.dataset.basic.item.Item;
-import delfos.dataset.basic.loader.types.ContentDatasetLoader;
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.loader.types.UsersDatasetLoader;
 import delfos.dataset.basic.rating.Rating;
-import delfos.dataset.basic.rating.RatingsDataset;
 import delfos.dataset.basic.user.User;
 import delfos.dataset.basic.user.UsersDataset;
 import delfos.recommendationcandidates.OnlyNewItems;
 import delfos.rs.RecommenderSystem;
-import delfos.rs.collaborativefiltering.knn.RecommendationEntity;
 import delfos.rs.collaborativefiltering.knn.memorybased.KnnMemoryBasedCFRS;
 import delfos.rs.collaborativefiltering.knn.modelbased.KnnModelBasedCFRS;
-import delfos.rs.collaborativefiltering.profile.Neighbor;
-import delfos.rs.output.RecommendationsOutputStandardRaw;
-import delfos.rs.recommendation.Recommendation;
 import delfos.rs.recommendation.Recommendations;
-import delfos.rs.recommendation.RecommendationsWithNeighbors;
-import delfos.view.neighborhood.components.ratings.RatingsTable;
-import delfos.view.neighborhood.components.recommendations.RecommendationsTable;
-import delfos.view.neighborhood.components.uknn.UserNeighborsTable;
+import delfos.view.neighborhood.results.KnnMemoryCFRSRecommendationsGUI;
+import delfos.view.neighborhood.results.RecommendationsDefaultGUI;
+import delfos.view.neighborhood.results.RecommendationsGUI;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.Toolkit;
-import java.awt.event.ActionEvent;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.WindowAdapter;
@@ -41,10 +31,7 @@ import java.awt.event.WindowEvent;
 import java.lang.management.ManagementFactory;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 import javax.swing.BorderFactory;
 import javax.swing.DefaultComboBoxModel;
@@ -57,13 +44,12 @@ import javax.swing.JProgressBar;
 import javax.swing.JSpinner;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingConstants;
-import javax.swing.event.ListSelectionEvent;
 
 /**
  *
  * @author jcastro
  */
-public class UserUserNeighborhoodWindow extends JFrame {
+public class RecommendationsExplainedWindow extends JFrame {
 
     public static final long serialVersionUID = 1L;
 
@@ -74,14 +60,11 @@ public class UserUserNeighborhoodWindow extends JFrame {
     private JComboBox<RecommenderSystem> recommenderSystemSelector;
     private JComboBox<User> userSelector;
     private JComboBox<ConfiguredDataset> configuredDatasetSelector;
-
     private JSpinner relevanceThresholdSelector;
 
-    private RecommendationsTable recommendationsTable;
-    private UserNeighborsTable neighborsTable;
-    private RatingsTable ratingsTable;
+    private RecommendationsGUI resultsPanel = new RecommendationsDefaultGUI();
 
-    RecommendationModelHolder recommendationModelHolder = new RecommendationModelHolder();
+    private RecommendationModelHolder recommendationModelHolder = new RecommendationModelHolder();
 
     class RecommendationModelHolder {
 
@@ -113,7 +96,7 @@ public class UserUserNeighborhoodWindow extends JFrame {
      * Crea la ventana general para la interacción con el módulo de
      * recomendaciones.
      */
-    public UserUserNeighborhoodWindow() {
+    public RecommendationsExplainedWindow() {
         super("Recommendations - " + ManagementFactory.getRuntimeMXBean().getName());
 
         this.addWindowListener(new WindowAdapter() {
@@ -159,7 +142,8 @@ public class UserUserNeighborhoodWindow extends JFrame {
         constraints.gridwidth = 1;
         constraints.gridheight = 1;
         constraints.insets = new Insets(3, 4, 3, 4);
-        this.add(panelResults(), constraints);
+        resultsPanel = getRecommenderSystemRecommendationGUI(recommenderSystemSelected());
+        this.add(resultsPanel.getComponent(), constraints);
 
         constraints.fill = GridBagConstraints.BOTH;
         constraints.weightx = 0.0;
@@ -240,13 +224,6 @@ public class UserUserNeighborhoodWindow extends JFrame {
         constraints.insets = new Insets(3, 4, 3, 4);
         JButton recommenderSystemParameters = new JButton("Parameters");
         recommenderSystemParameters.setEnabled(false);
-        recommenderSystemParameters.addActionListener((ActionEvent e) -> {
-            EditParameterDialog recommenderSystemParameterDialog = new EditParameterDialog(UserUserNeighborhoodWindow.this, false);
-            RecommenderSystem rs = recommenderSystemSelected();
-
-            recommenderSystemParameterDialog.setParameterTaker(rs);
-            recommenderSystemParameterDialog.setVisible(true);
-        });
         ret.add(recommenderSystemParameters, constraints);
 
         return ret;
@@ -349,102 +326,6 @@ public class UserUserNeighborhoodWindow extends JFrame {
 
     }
 
-    private Component panelRecomendaciones() {
-        JPanel ret = new JPanel(new GridBagLayout());
-
-        ret.setBorder(BorderFactory.createTitledBorder("Recommendations"));
-
-        GridBagConstraints constraints = new GridBagConstraints();
-        constraints.fill = GridBagConstraints.BOTH;
-        constraints.weightx = 1.0;
-        constraints.weighty = 1.0;
-        constraints.gridx = 0;
-        constraints.gridy = 0;
-        constraints.gridwidth = 1;
-        constraints.gridheight = 1;
-        constraints.insets = new Insets(3, 4, 3, 4);
-
-        this.recommendationsTable = new RecommendationsTable();
-        ret.add(recommendationsTable.getComponent(), constraints);
-        return ret;
-    }
-
-    private Component panelNeighbors() {
-        JPanel ret = new JPanel(new GridBagLayout());
-        ret.setBorder(BorderFactory.createTitledBorder("Neighbors"));
-        GridBagConstraints constraints = new GridBagConstraints();
-        constraints.fill = GridBagConstraints.BOTH;
-        constraints.weightx = 1.0;
-        constraints.weighty = 1.0;
-        constraints.gridx = 0;
-        constraints.gridy = 0;
-        constraints.gridwidth = 1;
-        constraints.gridheight = 1;
-        constraints.insets = new Insets(3, 4, 3, 4);
-
-        this.neighborsTable = new UserNeighborsTable();
-        ret.add(neighborsTable.getComponent(), constraints);
-        return ret;
-    }
-
-    private Component panelRatings() {
-        JPanel ret = new JPanel(new GridBagLayout());
-        ret.setBorder(BorderFactory.createTitledBorder("Ratings"));
-
-        GridBagConstraints constraints = new GridBagConstraints();
-        constraints.fill = GridBagConstraints.BOTH;
-        constraints.weightx = 1.0;
-        constraints.weighty = 1.0;
-        constraints.gridx = 0;
-        constraints.gridy = 0;
-        constraints.gridwidth = 1;
-        constraints.gridheight = 1;
-        constraints.insets = new Insets(3, 4, 3, 4);
-
-        this.ratingsTable = new RatingsTable();
-        ret.add(ratingsTable.getComponent(), constraints);
-        return ret;
-    }
-
-    private Component panelResults() {
-
-        JPanel results = new JPanel(new GridBagLayout());
-
-        GridBagConstraints constraints = new GridBagConstraints();
-
-        constraints.fill = GridBagConstraints.BOTH;
-        constraints.weightx = 1.0;
-        constraints.weighty = 1.0;
-        constraints.gridx = 0;
-        constraints.gridy = 0;
-        constraints.gridwidth = 1;
-        constraints.gridheight = 1;
-        constraints.insets = new Insets(3, 4, 3, 4);
-        results.add(panelRecomendaciones(), constraints);
-
-        constraints.fill = GridBagConstraints.BOTH;
-        constraints.weightx = 1.0;
-        constraints.weighty = 1.0;
-        constraints.gridx = 1;
-        constraints.gridy = 0;
-        constraints.gridwidth = 1;
-        constraints.gridheight = 1;
-        constraints.insets = new Insets(3, 4, 3, 4);
-        results.add(panelNeighbors(), constraints);
-
-        constraints.fill = GridBagConstraints.BOTH;
-        constraints.weightx = 1.0;
-        constraints.weighty = 1.0;
-        constraints.gridx = 2;
-        constraints.gridy = 0;
-        constraints.gridwidth = 1;
-        constraints.gridheight = 1;
-        constraints.insets = new Insets(3, 4, 3, 4);
-        results.add(panelRatings(), constraints);
-
-        return results;
-    }
-
     private Component inputPanel() {
         JPanel inputPanel = new JPanel(new GridBagLayout());
         GridBagConstraints constraints = new GridBagConstraints();
@@ -503,17 +384,18 @@ public class UserUserNeighborhoodWindow extends JFrame {
     }
 
     private void fillData() {
-        RecommenderSystem[] recommenderSystems = new RecommenderSystem[2];
-        recommenderSystems[0] = new KnnMemoryBasedCFRS();
-        recommenderSystems[1] = new KnnModelBasedCFRS();
-        recommenderSystemSelector.setModel(new DefaultComboBoxModel<>(recommenderSystems));
-
         ConfiguredDataset[] configuredDatasets
                 = ConfiguredDatasetsFactory.getInstance().getAllConfiguredDatasets().toArray(new ConfiguredDataset[0]);
         configuredDatasetSelector.setModel(new DefaultComboBoxModel<>(configuredDatasets));
 
         ConfiguredDataset configuredDataset = configuredDatasetSelected();
         reloadUsersSelector(configuredDataset.getDatasetLoader());
+
+        RecommenderSystem[] recommenderSystems = new RecommenderSystem[2];
+        recommenderSystems[0] = new KnnMemoryBasedCFRS();
+        recommenderSystems[1] = new KnnModelBasedCFRS();
+        recommenderSystemSelector.setModel(new DefaultComboBoxModel<>(recommenderSystems));
+        addRecommenderSystemGUI(recommenderSystems[0]);
 
         reloadRecommendations();
     }
@@ -543,7 +425,6 @@ public class UserUserNeighborhoodWindow extends JFrame {
         addDatasetLoaderListener();
         addRecommenderSystemListener();
         addUserListener();
-        addNeighborTableListener();
     }
 
     private ParameterListener datasetLoaderParameterListener = () -> {
@@ -565,8 +446,7 @@ public class UserUserNeighborhoodWindow extends JFrame {
                 break;
             case ItemEvent.DESELECTED:
                 datasetLoader.removeParammeterListener(datasetLoaderParameterListener);
-                ratingsTable.setRatings(Collections.emptyList(), null);
-                recommendationsTable.setRecomendaciones(new Recommendations(userSelected(), Collections.EMPTY_LIST));
+                resultsPanel.clearData();
                 break;
             default:
                 break;
@@ -579,20 +459,60 @@ public class UserUserNeighborhoodWindow extends JFrame {
     };
 
     private final ItemListener recommenderSystemItemListener = (ItemEvent e) -> {
-        RecommenderSystem recommenderSystemSelected = recommenderSystemSelected();
+        RecommenderSystem recommenderSystem = (RecommenderSystem) e.getItem();
         switch (e.getStateChange()) {
             case ItemEvent.SELECTED:
-                recommenderSystemSelected.addParammeterListener(recommenderSystemParameterListener);
+                addRecommenderSystemGUI(recommenderSystem);
                 break;
             case ItemEvent.DESELECTED:
-                recommenderSystemSelected.removeParammeterListener(recommenderSystemParameterListener);
-                recommendationsTable.setRecomendaciones(new Recommendations(userSelected(), Collections.EMPTY_LIST));
+                removeRecommenderSystemGUI(recommenderSystem);
                 break;
             default:
                 break;
         }
 
     };
+
+    public void addRecommenderSystemGUI(RecommenderSystem recommenderSystem) {
+        System.out.println("ADD rs: " + recommenderSystem.getAlias());
+
+        this.remove(resultsPanel.getComponent());
+
+        GridBagConstraints constraints = new GridBagConstraints();
+        constraints.fill = GridBagConstraints.BOTH;
+        constraints.weightx = 1.0;
+        constraints.weighty = 1.0;
+        constraints.gridx = 1;
+        constraints.gridy = 0;
+        constraints.gridwidth = 1;
+        constraints.gridheight = 1;
+        constraints.insets = new Insets(3, 4, 3, 4);
+        resultsPanel = getRecommenderSystemRecommendationGUI(recommenderSystemSelected());
+        this.add(resultsPanel.getComponent(), constraints);
+        this.setVisible(true);
+
+        recommenderSystem.addParammeterListener(recommenderSystemParameterListener);
+    }
+
+    public void removeRecommenderSystemGUI(RecommenderSystem recommenderSystem) {
+        System.out.println("REMOVE rs: " + recommenderSystem.getAlias());
+
+        recommenderSystem.removeParammeterListener(recommenderSystemParameterListener);
+        this.remove(resultsPanel.getComponent());
+
+        GridBagConstraints constraints = new GridBagConstraints();
+        constraints.fill = GridBagConstraints.BOTH;
+        constraints.weightx = 1.0;
+        constraints.weighty = 1.0;
+        constraints.gridx = 1;
+        constraints.gridy = 0;
+        constraints.gridwidth = 1;
+        constraints.gridheight = 1;
+        constraints.insets = new Insets(3, 4, 3, 4);
+        resultsPanel = getRecommenderSystemRecommendationGUI(null);
+        this.add(resultsPanel.getComponent(), constraints);
+        this.setVisible(true);
+    }
 
     private void addRecommenderSystemListener() {
         recommenderSystemSelector.addItemListener(recommenderSystemItemListener);
@@ -619,49 +539,7 @@ public class UserUserNeighborhoodWindow extends JFrame {
 
         Recommendations recommendations = recommenderSystem.recommendToUser(datasetLoader, recommendationModel, userSelected, candidateItems);
 
-        RecommendationsOutputStandardRaw output = new RecommendationsOutputStandardRaw(3);
-
-        output.writeRecommendations(recommendations);
-
-        Map<Integer, Number> recommendationsByItem = Recommendation.convertToMapOfNumbers(recommendations.getRecommendations());
-        List<Recommendation> recommendationsComplete = candidateItems.stream()
-                .map((item -> {
-                    if (recommendationsByItem.containsKey(item.getId())) {
-                        return new Recommendation(item, recommendationsByItem.get(item.getId()));
-                    } else {
-                        return new Recommendation(item, Double.NaN);
-                    }
-                })).collect(Collectors.toList());
-        recommendationsComplete.sort(Recommendation.BY_PREFERENCE_DESC);
-
-        recommendationsTable.setRecomendaciones(new Recommendations(recommendations.getTarget(), recommendationsComplete));
-
-        if (recommendations instanceof RecommendationsWithNeighbors) {
-            RecommendationsWithNeighbors recommendationsWithNeighbors = (RecommendationsWithNeighbors) recommendations;
-            Map<Integer, Neighbor> neighbors = recommendationsWithNeighbors.getNeighbors().stream()
-                    .collect(Collectors.toMap(
-                                    (neighbor -> neighbor.getIdNeighbor()),
-                                    Function.identity()));
-
-            List<Neighbor> neighborsComplete = ((UsersDatasetLoader) datasetLoader).getUsersDataset().stream()
-                    .filter((user) -> !Objects.equals(user.getId(), userSelected.getId()))
-                    .map((neighbor -> {
-                        if (neighbors.containsKey(neighbor.getId())) {
-                            return neighbors.get(neighbor.getId());
-                        } else {
-                            return new Neighbor(RecommendationEntity.USER, neighbor.getId(), Double.NaN);
-                        }
-                    }))
-                    .collect(Collectors.toList());
-
-            neighborsComplete.sort(Neighbor.BY_SIMILARITY_DESC);
-            neighborsTable.setNeighbors(new RecommendationsWithNeighbors(
-                    userSelected.getName(),
-                    recommendations.getRecommendations(),
-                    neighborsComplete)
-            );
-        }
-
+        resultsPanel.updateResult(datasetLoader, recommendationModel, userSelected, recommendations, candidateItems);
     }
 
     public RecommenderSystem recommenderSystemSelected() {
@@ -676,20 +554,17 @@ public class UserUserNeighborhoodWindow extends JFrame {
         return configuredDatasetSelector.getItemAt(configuredDatasetSelector.getSelectedIndex());
     }
 
-    private void addNeighborTableListener() {
+    private RecommendationsGUI getRecommenderSystemRecommendationGUI(RecommenderSystem recommenderSystem) {
 
-        neighborsTable.addNeighborSelectorListener((ListSelectionEvent e) -> {
-            ContentDataset contentDataset = ((ContentDatasetLoader) configuredDatasetSelected().getDatasetLoader()).getContentDataset();
-            RatingsDataset<? extends Rating> ratingsDataset = configuredDatasetSelected().getDatasetLoader().getRatingsDataset();
+        System.out.println("Updating interface for: " + recommenderSystem);
 
-            if (e.getFirstIndex() == -1) {
-                ratingsTable.setRatings(Collections.emptyList(), contentDataset);
-            }
-            Neighbor neighbor = neighborsTable.getSelected();
-            if (neighbor == null) {
-                return;
-            }
-            ratingsTable.setRatings(ratingsDataset.getUserRatingsRated(neighbor.getIdNeighbor()).values(), contentDataset);
-        });
+        if (recommenderSystem instanceof KnnMemoryBasedCFRS) {
+            return new KnnMemoryCFRSRecommendationsGUI();
+        } else if (recommenderSystem instanceof KnnModelBasedCFRS) {
+            return new RecommendationsDefaultGUI();
+        } else {
+            return new RecommendationsDefaultGUI();
+        }
     }
+
 }

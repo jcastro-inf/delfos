@@ -1,5 +1,6 @@
 package delfos.rs.recommendation;
 
+import delfos.dataset.basic.user.User;
 import delfos.rs.collaborativefiltering.profile.Neighbor;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -9,6 +10,11 @@ import java.util.List;
 public class RecommendationsWithNeighbors extends Recommendations {
 
     private List<Neighbor> neighbors;
+
+    public static final RecommendationsWithNeighbors EMPTY_LIST = new RecommendationsWithNeighbors(
+            User.ANONYMOUS_USER.getName(),
+            Collections.EMPTY_LIST,
+            Collections.EMPTY_LIST);
 
     public RecommendationsWithNeighbors() {
         super();
