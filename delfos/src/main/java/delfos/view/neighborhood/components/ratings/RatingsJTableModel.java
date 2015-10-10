@@ -45,8 +45,8 @@ public class RatingsJTableModel extends AbstractTableModel {
         return datos[columnIndex][rowIndex];
     }
 
-    public void setRecomendaciones(Collection<Rating> ratings, ContentDataset contentDataset) {
-
+    public void setRatings(Collection< ? extends Rating> ratings, ContentDataset contentDataset) {
+        System.out.println("RatingsSet :" + ratings);
         datos = new Object[3][ratings.size()];
         int index = 0;
         for (Rating rating : ratings) {

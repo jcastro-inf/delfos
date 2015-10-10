@@ -2,8 +2,6 @@ package delfos.view.neighborhood.components.recommendations;
 
 import delfos.rs.recommendation.Recommendation;
 import delfos.rs.recommendation.Recommendations;
-import java.util.Collection;
-import java.util.LinkedList;
 import javax.swing.table.AbstractTableModel;
 
 /**
@@ -12,8 +10,16 @@ import javax.swing.table.AbstractTableModel;
 public class RecommendationsJTableModel extends AbstractTableModel {
 
     private final static long serialVersionUID = 1L;
-    Collection<Recommendation> lista = new LinkedList<>();
-    private Object[][] datos = new Object[3][0];
+
+    private static final int ID_ITEM_INDEX = 0;
+    private static final int PREFERENCE_INDEX = 1;
+    private static final int NAME_INDEX = 2;
+    private static final int RECOMMENDATION_INDEX = 3;
+
+    private static final int COLUMN_COUNT = 3;
+    private static final int DATA_COLUMN_COUNT = COLUMN_COUNT + 1;
+
+    private Object[][] datos = new Object[DATA_COLUMN_COUNT][0];
 
     @Override
     public int getRowCount() {
@@ -22,18 +28,18 @@ public class RecommendationsJTableModel extends AbstractTableModel {
 
     @Override
     public int getColumnCount() {
-        return datos.length;
+        return COLUMN_COUNT;
     }
 
     @Override
     public String getColumnName(int column) {
-        if (column == 0) {
+        if (column == ID_ITEM_INDEX) {
             return "idItem";
         }
-        if (column == 1) {
+        if (column == PREFERENCE_INDEX) {
             return "Preference";
         }
-        if (column == 2) {
+        if (column == NAME_INDEX) {
             return "Name";
         }
         return "fallo";
@@ -46,16 +52,21 @@ public class RecommendationsJTableModel extends AbstractTableModel {
 
     public void setRecomendaciones(Recommendations recommendations) {
 
-        datos = new Object[3][recommendations.getRecommendations().size()];
-        int index = 0;
+        datos = new Object[DATA_COLUMN_COUNT][recommendations.getRecommendations().size()];
+        int rowIndex = 0;
         for (Recommendation recommendation : recommendations.getRecommendations()) {
-            datos[0][index] = recommendation.getItem().getId();
-            datos[1][index] = recommendation.getPreference().floatValue();
-            datos[2][index] = recommendation.getItem().getName();
+            datos[RECOMMENDATION_INDEX][rowIndex] = recommendation;
+            datos[ID_ITEM_INDEX][rowIndex] = recommendation.getItem().getId();
+            datos[PREFERENCE_INDEX][rowIndex] = recommendation.getPreference().floatValue();
+            datos[NAME_INDEX][rowIndex] = recommendation.getItem().getName();
 
-            index++;
+            rowIndex++;
         }
         fireTableDataChanged();
+    }
+
+    Recommendation getRecommendationAtRow(int selectedRow) {
+        return (Recommendation) getValueAt(selectedRow, RECOMMENDATION_INDEX);
     }
 
 }

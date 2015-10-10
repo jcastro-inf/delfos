@@ -5,10 +5,13 @@ import delfos.common.parameters.ParameterListener;
 import delfos.common.parameters.view.EditParameterDialog;
 import delfos.configureddatasets.ConfiguredDataset;
 import delfos.configureddatasets.ConfiguredDatasetsFactory;
+import delfos.dataset.basic.item.ContentDataset;
 import delfos.dataset.basic.item.Item;
+import delfos.dataset.basic.loader.types.ContentDatasetLoader;
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.loader.types.UsersDatasetLoader;
 import delfos.dataset.basic.rating.Rating;
+import delfos.dataset.basic.rating.RatingsDataset;
 import delfos.dataset.basic.user.User;
 import delfos.dataset.basic.user.UsersDataset;
 import delfos.recommendationcandidates.OnlyNewItems;
@@ -52,9 +55,9 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.JSpinner;
-import javax.swing.JSplitPane;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingConstants;
+import javax.swing.event.ListSelectionEvent;
 
 /**
  *
@@ -348,6 +351,7 @@ public class UserUserNeighborhoodWindow extends JFrame {
 
     private Component panelRecomendaciones() {
         JPanel ret = new JPanel(new GridBagLayout());
+
         ret.setBorder(BorderFactory.createTitledBorder("Recommendations"));
 
         GridBagConstraints constraints = new GridBagConstraints();
@@ -404,24 +408,7 @@ public class UserUserNeighborhoodWindow extends JFrame {
 
     private Component panelResults() {
 
-        JPanel results = new JPanel();
-
-        JSplitPane splitAandB = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
-
-        splitAandB.setLeftComponent(panelRecomendaciones());
-        splitAandB.setRightComponent(panelNeighbors());
-        splitAandB.setMinimumSize(new Dimension(30, 30));
-        splitAandB.setResizeWeight(0.5);
-        splitAandB.setOneTouchExpandable(true);
-        splitAandB.setContinuousLayout(true);
-
-        JSplitPane splitABandC = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
-        splitABandC.setLeftComponent(splitAandB);
-        splitABandC.setRightComponent(panelRatings());
-        splitABandC.setMinimumSize(new Dimension(30, 30));
-        splitAandB.setResizeWeight(0.333);
-        splitABandC.setOneTouchExpandable(true);
-        splitABandC.setContinuousLayout(true);
+        JPanel results = new JPanel(new GridBagLayout());
 
         GridBagConstraints constraints = new GridBagConstraints();
 
@@ -433,14 +420,33 @@ public class UserUserNeighborhoodWindow extends JFrame {
         constraints.gridwidth = 1;
         constraints.gridheight = 1;
         constraints.insets = new Insets(3, 4, 3, 4);
-        results.add(splitABandC, constraints);
+        results.add(panelRecomendaciones(), constraints);
+
+        constraints.fill = GridBagConstraints.BOTH;
+        constraints.weightx = 1.0;
+        constraints.weighty = 1.0;
+        constraints.gridx = 1;
+        constraints.gridy = 0;
+        constraints.gridwidth = 1;
+        constraints.gridheight = 1;
+        constraints.insets = new Insets(3, 4, 3, 4);
+        results.add(panelNeighbors(), constraints);
+
+        constraints.fill = GridBagConstraints.BOTH;
+        constraints.weightx = 1.0;
+        constraints.weighty = 1.0;
+        constraints.gridx = 2;
+        constraints.gridy = 0;
+        constraints.gridwidth = 1;
+        constraints.gridheight = 1;
+        constraints.insets = new Insets(3, 4, 3, 4);
+        results.add(panelRatings(), constraints);
 
         return results;
     }
 
     private Component inputPanel() {
-        JPanel inputPanel = new JPanel();
-        inputPanel.setLayout(new GridBagLayout());
+        JPanel inputPanel = new JPanel(new GridBagLayout());
         GridBagConstraints constraints = new GridBagConstraints();
 
         constraints.fill = GridBagConstraints.BOTH;
@@ -537,6 +543,7 @@ public class UserUserNeighborhoodWindow extends JFrame {
         addDatasetLoaderListener();
         addRecommenderSystemListener();
         addUserListener();
+        addNeighborTableListener();
     }
 
     private ParameterListener datasetLoaderParameterListener = () -> {
@@ -558,6 +565,8 @@ public class UserUserNeighborhoodWindow extends JFrame {
                 break;
             case ItemEvent.DESELECTED:
                 datasetLoader.removeParammeterListener(datasetLoaderParameterListener);
+                ratingsTable.setRatings(Collections.emptyList(), null);
+                recommendationsTable.setRecomendaciones(new Recommendations(userSelected(), Collections.EMPTY_LIST));
                 break;
             default:
                 break;
@@ -577,6 +586,7 @@ public class UserUserNeighborhoodWindow extends JFrame {
                 break;
             case ItemEvent.DESELECTED:
                 recommenderSystemSelected.removeParammeterListener(recommenderSystemParameterListener);
+                recommendationsTable.setRecomendaciones(new Recommendations(userSelected(), Collections.EMPTY_LIST));
                 break;
             default:
                 break;
@@ -666,4 +676,20 @@ public class UserUserNeighborhoodWindow extends JFrame {
         return configuredDatasetSelector.getItemAt(configuredDatasetSelector.getSelectedIndex());
     }
 
+    private void addNeighborTableListener() {
+
+        neighborsTable.addNeighborSelectorListener((ListSelectionEvent e) -> {
+            ContentDataset contentDataset = ((ContentDatasetLoader) configuredDatasetSelected().getDatasetLoader()).getContentDataset();
+            RatingsDataset<? extends Rating> ratingsDataset = configuredDatasetSelected().getDatasetLoader().getRatingsDataset();
+
+            if (e.getFirstIndex() == -1) {
+                ratingsTable.setRatings(Collections.emptyList(), contentDataset);
+            }
+            Neighbor neighbor = neighborsTable.getSelected();
+            if (neighbor == null) {
+                return;
+            }
+            ratingsTable.setRatings(ratingsDataset.getUserRatingsRated(neighbor.getIdNeighbor()).values(), contentDataset);
+        });
+    }
 }

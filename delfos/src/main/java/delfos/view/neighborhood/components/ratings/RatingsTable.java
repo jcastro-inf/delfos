@@ -56,8 +56,8 @@ public class RatingsTable {
         return scroll;
     }
 
-    public void setRatings(Collection<Rating> ratings, ContentDataset contentDataset) {
-        ratingsJTableModel.setRecomendaciones(ratings, contentDataset);
+    public void setRatings(Collection<? extends Rating> ratings, ContentDataset contentDataset) {
+        ratingsJTableModel.setRatings(ratings, contentDataset);
     }
 
 }

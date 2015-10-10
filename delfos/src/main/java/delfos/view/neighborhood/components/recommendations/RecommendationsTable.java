@@ -1,9 +1,11 @@
 package delfos.view.neighborhood.components.recommendations;
 
+import delfos.rs.recommendation.Recommendation;
 import delfos.rs.recommendation.Recommendations;
 import java.awt.Component;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.event.ListSelectionListener;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableRowSorter;
 
@@ -55,7 +57,18 @@ public class RecommendationsTable {
     }
 
     public void setRecomendaciones(Recommendations recommendations) {
+
         recommendationsJTableModel.setRecomendaciones(recommendations);
+    }
+
+    public void addRecommendationSelectorListener(ListSelectionListener listSelectionListener) {
+        recommendationsJTable.getSelectionModel().addListSelectionListener(listSelectionListener);
+    }
+
+    public Recommendation getSelectedRecommendation() {
+        int selectedRow = recommendationsJTable.getSelectedRow();
+
+        return recommendationsJTableModel.getRecommendationAtRow(selectedRow);
     }
 
 }
