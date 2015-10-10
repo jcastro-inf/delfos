@@ -233,7 +233,7 @@ public class TfIdfCBRS extends ContentBasedRecommender<TfIdfCBRSModel, TfIdfCBRS
         for (Feature feature : userProfileValuesMap.keySet()) {
             for (Object featureValue : userProfileValuesMap.get(feature).keySet()) {
                 double featureValueValue = userProfileValuesMap.get(feature).get(featureValue);
-                System.out.println(i + "\t" + feature + "\t" + featureValue + "\t" + featureValueValue);
+                Global.showInfoMessage(i + "\t" + feature + "\t" + featureValue + "\t" + featureValueValue + "\n");
                 i++;
             }
         }

@@ -5,6 +5,19 @@
  */
 package delfos.dataset.loaders.epinions;
 
+import delfos.ERROR_CODES;
+import delfos.common.Chronometer;
+import delfos.common.Global;
+import delfos.common.datastructures.DoubleMapping;
+import delfos.common.exceptions.dataset.entity.EntityNotFound;
+import delfos.common.exceptions.dataset.items.ItemAlreadyExists;
+import delfos.common.exceptions.dataset.items.ItemNotFound;
+import delfos.dataset.basic.features.Feature;
+import delfos.dataset.basic.features.FeatureGenerator;
+import delfos.dataset.basic.features.FeatureType;
+import delfos.dataset.basic.item.ContentDataset;
+import delfos.dataset.basic.item.ContentDatasetDefault;
+import delfos.dataset.basic.item.Item;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -15,29 +28,17 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Set;
-import delfos.ERROR_CODES;
-import delfos.common.Chronometer;
-import delfos.common.Global;
-import delfos.common.datastructures.DoubleMapping;
-import delfos.common.exceptions.dataset.entity.EntityNotFound;
-import delfos.common.exceptions.dataset.items.ItemAlreadyExists;
-import delfos.common.exceptions.dataset.items.ItemNotFound;
-import delfos.dataset.basic.item.ContentDataset;
-import delfos.dataset.basic.item.ContentDatasetDefault;
-import delfos.dataset.basic.item.Item;
-import delfos.dataset.basic.features.Feature;
-import delfos.dataset.basic.features.FeatureGenerator;
-import delfos.dataset.basic.features.FeatureType;
+import java.util.stream.Collectors;
 
 /**
  *
-* @author Jorge Castro Gallardo
+ * @author Jorge Castro Gallardo
  */
 public class EPinionsContentDataset implements ContentDataset {
 
-    private final DoubleMapping<Long, Integer> productsIndex = new DoubleMapping<Long, Integer>();
-    private final DoubleMapping<Long, Integer> authorsIndex = new DoubleMapping<Long, Integer>();
-    private final DoubleMapping<Long, Integer> subjectsIndex = new DoubleMapping<Long, Integer>();
+    private final DoubleMapping<Long, Integer> productsIndex = new DoubleMapping<>();
+    private final DoubleMapping<Long, Integer> authorsIndex = new DoubleMapping<>();
+    private final DoubleMapping<Long, Integer> subjectsIndex = new DoubleMapping<>();
 
     private final ContentDatasetDefault contentDataset;
 
@@ -55,7 +56,7 @@ public class EPinionsContentDataset implements ContentDataset {
 
         Chronometer c = new Chronometer();
 
-        LinkedList<Item> items = new LinkedList<Item>();
+        LinkedList<Item> items = new LinkedList<>();
 
         while (linea != null) {
 
@@ -161,7 +162,7 @@ public class EPinionsContentDataset implements ContentDataset {
     }
 
     @Override
-    public void add(Item entity) throws EntityNotFound {
+    public boolean add(Item entity) throws EntityNotFound {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
@@ -231,5 +232,59 @@ public class EPinionsContentDataset implements ContentDataset {
             ex.isA(ItemNotFound.class);
             throw new ItemNotFound(idItem, ex);
         }
+    }
+
+    @Override
+    public boolean remove(Object o) {
+        throw new UnsupportedOperationException("Not allowed to delete entities.");
+    }
+
+    @Override
+    public boolean removeAll(Collection<?> c) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public boolean retainAll(Collection<?> c) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void clear() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public boolean isEmpty() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public boolean contains(Object o) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    public Collection<Item> getAllItems() {
+        return getAllID().stream().map((idItem) -> get(idItem)).collect(Collectors.toList());
+    }
+
+    @Override
+    public Object[] toArray() {
+        return getAllItems().toArray();
+    }
+
+    @Override
+    public <T> T[] toArray(T[] a) {
+        return getAllItems().toArray(a);
+    }
+
+    @Override
+    public boolean containsAll(Collection<?> c) {
+        return c.stream().allMatch(((element) -> this.contains(element)));
+    }
+
+    @Override
+    public boolean addAll(Collection<? extends Item> entitys) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }

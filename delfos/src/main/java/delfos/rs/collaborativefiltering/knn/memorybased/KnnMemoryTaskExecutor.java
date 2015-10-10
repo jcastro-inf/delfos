@@ -91,7 +91,7 @@ public final class KnnMemoryTaskExecutor implements SingleTaskExecute<KnnMemoryT
                 common.add(new CommonRating(RecommendationEntity.ITEM, idItem, RecommendationEntity.USER, idUser, idNeighbor, d1, d2));
             }
         } else {
-            Set<Integer> union = new TreeSet<Integer>(activeUserRated.keySet());
+            Set<Integer> union = new TreeSet<>(activeUserRated.keySet());
             union.addAll(neighborRatings.keySet());
             if (union.isEmpty()) {
                 return;
@@ -150,6 +150,7 @@ public final class KnnMemoryTaskExecutor implements SingleTaskExecute<KnnMemoryT
                 task.setNeighbor(neighbor);
             }
         } catch (CouldNotComputeSimilarity ex) {
+            task.setNeighbor(new Neighbor(RecommendationEntity.USER, idNeighbor, Double.NaN));
         }
     }
 }

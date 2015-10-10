@@ -1,6 +1,5 @@
 package delfos.rs.collaborativefiltering.knn.memorybased;
 
-import delfos.common.exceptions.dataset.users.UserNotFound;
 import delfos.common.parallelwork.Task;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RatingsDataset;
@@ -22,7 +21,7 @@ public class KnnMemoryTask extends Task {
     public RatingsDataset<? extends Rating> ratingsDataset;
     public Neighbor neighbor = null;
 
-    public KnnMemoryTask(RatingsDataset<? extends Rating> ratingsDataset, int idUser, int idNeighbor, KnnMemoryBasedCFRS rs) throws UserNotFound {
+    public KnnMemoryTask(RatingsDataset<? extends Rating> ratingsDataset, int idUser, int idNeighbor, KnnMemoryBasedCFRS rs) {
         this.ratingsDataset = ratingsDataset;
         this.idUser = idUser;
         this.idNeighbor = idNeighbor;

@@ -1,17 +1,18 @@
 package delfos.factories;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.List;
 import delfos.ERROR_CODES;
 import delfos.common.Global;
 import delfos.common.parameters.ParameterOwner;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Factoría de todos los elementos de tipo ParameterOwner
  *
-* @author Jorge Castro Gallardo
+ * @author Jorge Castro Gallardo
  * @version 1.0 15-May-2013
  */
 public class ParameterOwnerFactory {
@@ -93,7 +94,7 @@ public class ParameterOwnerFactory {
         if (allClasses.isEmpty()) {
             ERROR_CODES.NO_INSTANCES_IN_FACTORY.exit(new IllegalStateException("Never added a instance to this factory: " + this.getClass().getName()));
         }
-        List<ParameterOwner> ret = new ArrayList<ParameterOwner>();
+        List<ParameterOwner> ret = Collections.synchronizedList(new ArrayList<>());
 
         for (Class<? extends ParameterOwner> c : allClasses) {
             try {

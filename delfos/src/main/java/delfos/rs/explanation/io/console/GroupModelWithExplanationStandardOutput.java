@@ -1,6 +1,5 @@
 package delfos.rs.explanation.io.console;
 
-import java.util.Map;
 import delfos.common.Global;
 import delfos.common.aggregationoperators.AggregationOperator;
 import delfos.common.datastructures.histograms.HistogramCategories;
@@ -8,6 +7,7 @@ import delfos.group.groupsofusers.GroupOfUsers;
 import delfos.rs.explanation.GroupModelWithExplanation;
 import delfos.rs.explanation.NestedExplanation;
 import delfos.rs.explanation.PenaltyAggregationExplanation;
+import java.util.Map;
 
 /**
  *
@@ -52,11 +52,11 @@ public class GroupModelWithExplanationStandardOutput {
         }
 
         if (Global.isVerboseAnnoying()) {
-            System.out.println("Histograma sin empates");
+            Global.showMessageTimestamped("Histograma sin empates");
 
             generalHistogram_noTies.printHistogram(System.out);
 
-            System.out.println("Histograma con empates");
+            Global.showMessageTimestamped("Histograma con empates");
             generalHistogram.printHistogram(System.out);
         }
     }

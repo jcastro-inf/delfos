@@ -42,7 +42,6 @@ import javax.swing.JSpinner;
 import javax.swing.JTextField;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 import javax.swing.filechooser.FileFilter;
 
 /**
@@ -62,7 +61,7 @@ public class EditParameterDialog extends JDialog {
      * modificar.
      */
     private Map<Parameter, Object> parametrosModificados;
-    private JPanel panel = null;
+    private JPanel parametersPanel = null;
     private ParameterOwner parameterOwner;
     private final boolean onlyRead;
 
@@ -104,14 +103,121 @@ public class EditParameterDialog extends JDialog {
     public final void setParameterTaker(final ParameterOwner _parameterOwner) {
         this.parameterOwner = _parameterOwner;
         this.setTitle("Parameters of '" + _parameterOwner.getName() + "'");
-        if (panel != null) {
-            this.remove(panel);
+        if (parametersPanel != null) {
+            this.remove(parametersPanel);
         }
 
         parametrosModificados = new LinkedHashMap<>();
-        panel = new JPanel(new GridBagLayout());
-        GridBagConstraints constraints = new GridBagConstraints();
+        parametersPanel = parametersPanel(_parameterOwner);
 
+        GridBagConstraints constraints = new GridBagConstraints();
+        constraints.fill = GridBagConstraints.BOTH;
+        constraints.weightx = 1.0;
+        constraints.weighty = 1.0;
+        constraints.gridx = 0;
+        constraints.gridy = 0;
+        constraints.gridwidth = 3;
+        constraints.gridheight = 1;
+        constraints.insets = new Insets(3, 4, 3, 4);
+        this.add(parametersPanel, constraints);
+
+        constraints.fill = GridBagConstraints.NONE;
+        constraints.anchor = GridBagConstraints.EAST;
+        constraints.weightx = 0.0;
+        constraints.weighty = 0.0;
+        constraints.gridx = 0;
+        constraints.gridy = 1;
+        constraints.gridwidth = 2;
+        constraints.gridheight = 1;
+        constraints.insets = new Insets(3, 4, 3, 4);
+        JButton cancelar = new JButton("Cancel");
+        cancelar.addActionListener((ActionEvent e) -> {
+            if (!onlyRead) {
+                if (!parametrosModificados.isEmpty()) {
+                    int n = JOptionPane.showConfirmDialog(
+                            EditParameterDialog.this,
+                            "Parameter modification will be discarded. Are you sure?",
+                            "Parameter modification",
+                            JOptionPane.YES_NO_OPTION);
+                    if (n == JOptionPane.YES_OPTION) {
+                        boolean correcto = true;
+                        for (Parameter p : parametrosModificados.keySet()) {
+                            Object newValue = parametrosModificados.get(p);
+                            if (EditParameterDialog.this.parameterOwner.setParameterValue(p, newValue) == null) {
+                                Global.showWarning("No se pudo asignar el parámetro " + p.getName() + "=" + newValue + "\n");
+                                correcto = false;
+                            }
+                        }
+                        if (correcto) {
+                            EditParameterDialog.this.setVisible(false);
+                            EditParameterDialog.this.dispose();
+                        }
+                    }
+                }
+            }
+            EditParameterDialog.this.setVisible(false);
+            EditParameterDialog.this.dispose();
+        });
+        this.add(cancelar, constraints);
+        constraints.fill = GridBagConstraints.NONE;
+        constraints.anchor = GridBagConstraints.EAST;
+        constraints.weightx = 0.0;
+        constraints.weighty = 0.0;
+        constraints.gridx = 1;
+        constraints.gridy = 1;
+        constraints.gridwidth = 2;
+        constraints.gridheight = 1;
+        constraints.insets = new Insets(3, 4, 3, 4);
+
+        JButton aceptar = new JButton("Done");
+        aceptar.addActionListener((ActionEvent e) -> {
+            if (!onlyRead) {
+                if (!parametrosModificados.isEmpty()) {
+                    String s = "";
+                    for (Parameter p : parametrosModificados.keySet()) {
+                        s += p.getName() + ",";
+                    }
+                    s = s.substring(0, s.length() - 1);
+
+                    int n = JOptionPane.showConfirmDialog(
+                            EditParameterDialog.this,
+                            "The following parameters will be modified: \n" + s,
+                            "Parameter modification",
+                            JOptionPane.YES_NO_OPTION);
+
+                    if (n == JOptionPane.YES_OPTION) {
+                        boolean correcto = true;
+                        for (Parameter p : parametrosModificados.keySet()) {
+                            Object newValue = parametrosModificados.get(p);
+                            if (EditParameterDialog.this.parameterOwner.setParameterValue(p, newValue) == null) {
+                                Global.showWarning("Cannot make the parameter assignment: " + p.getName() + "=" + newValue + "\n");
+                                Global.showError(new IllegalStateException("Cannot make the parameter assignment: " + p.getName() + "=" + newValue + "\n"));
+                                correcto = false;
+                            }
+                        }
+                        if (correcto) {
+                            EditParameterDialog.this.setVisible(false);
+                            EditParameterDialog.this.dispose();
+                        }
+                    }
+                }
+            } else {
+                JOptionPane.showMessageDialog(EditParameterDialog.this, "Changes will be discarded due to the experiment is running.", "Runing experiment", JOptionPane.INFORMATION_MESSAGE);
+            }
+            EditParameterDialog.this.setVisible(false);
+            EditParameterDialog.this.dispose();
+        });
+        this.add(aceptar, constraints);
+        this.pack();
+
+        Dimension d = Toolkit.getDefaultToolkit().getScreenSize();
+        this.setLocation((d.width - this.getWidth()) / 2, (d.height - this.getHeight()) / 2);
+
+    }
+
+    private JPanel parametersPanel(final ParameterOwner _parameterOwner) {
+        parametersPanel = new JPanel(new GridBagLayout());
+        GridBagConstraints constraints = new GridBagConstraints();
         int y = 0;
         for (final Parameter p : this.parameterOwner.getParameters()) {
             constraints.fill = GridBagConstraints.HORIZONTAL;
@@ -122,7 +228,7 @@ public class EditParameterDialog extends JDialog {
             constraints.gridwidth = 1;
             constraints.gridheight = 1;
             constraints.insets = new Insets(3, 4, 3, 4);
-            panel.add(new JLabel(p.getName()), constraints);
+            parametersPanel.add(new JLabel(p.getName()), constraints);
 
             Object restriction = p.getRestriction();
             boolean widgetCreado = false;
@@ -148,7 +254,7 @@ public class EditParameterDialog extends JDialog {
                 spinner.addChangeListener((ChangeEvent e) -> {
                     EditParameterDialog.this.parametrosModificados.put(p, spinner.getValue());
                 });
-                panel.add(spinner, constraints);
+                parametersPanel.add(spinner, constraints);
                 widgetCreado = true;
             }
 
@@ -169,13 +275,10 @@ public class EditParameterDialog extends JDialog {
 
                 final JSpinner spinner = new JSpinner(new SpinnerNumberModel(value, min, max, 1));
                 spinner.setSize(50, spinner.getSize().height);
-                spinner.addChangeListener(new ChangeListener() {
-                    @Override
-                    public void stateChanged(ChangeEvent e) {
-                        EditParameterDialog.this.parametrosModificados.put(p, spinner.getValue());
-                    }
+                spinner.addChangeListener((ChangeEvent e) -> {
+                    EditParameterDialog.this.parametrosModificados.put(p, spinner.getValue());
                 });
-                panel.add(spinner, constraints);
+                parametersPanel.add(spinner, constraints);
                 widgetCreado = true;
             }
 
@@ -196,15 +299,12 @@ public class EditParameterDialog extends JDialog {
 
                 final JSpinner spinner = new JSpinner(new SpinnerNumberModel(value, min, max, 1));
                 spinner.setSize(50, spinner.getSize().height);
-                spinner.addChangeListener(new ChangeListener() {
-                    @Override
-                    public void stateChanged(ChangeEvent e) {
-                        long value1 = ((Number) spinner.getValue()).longValue();
+                spinner.addChangeListener((ChangeEvent e) -> {
+                    long value1 = ((Number) spinner.getValue()).longValue();
 
-                        EditParameterDialog.this.parametrosModificados.put(p, value1);
-                    }
+                    EditParameterDialog.this.parametrosModificados.put(p, value1);
                 });
-                panel.add(spinner, constraints);
+                parametersPanel.add(spinner, constraints);
                 widgetCreado = true;
             }
 
@@ -222,39 +322,36 @@ public class EditParameterDialog extends JDialog {
                 constraints.insets = new Insets(3, 4, 3, 4);
                 final JButton botonElegirArchivo = new JButton(file.getName());
                 botonElegirArchivo.setToolTipText(file.getAbsolutePath());
-                botonElegirArchivo.addActionListener(new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        JFileChooser chooser = new JFileChooser();
-                        chooser.setDialogTitle("Select " + p.getName() + " file");
+                botonElegirArchivo.addActionListener((ActionEvent e) -> {
+                    JFileChooser chooser = new JFileChooser();
+                    chooser.setDialogTitle("Select " + p.getName() + " file");
 
-                        File currentDirectory = SwingGUIScope.getInstance().getCurrentDirectory();
+                    File currentDirectory = SwingGUIScope.getInstance().getCurrentDirectory();
 
-                        chooser.setCurrentDirectory(currentDirectory);
+                    chooser.setCurrentDirectory(currentDirectory);
 
-                        chooser.setFileFilter(new FileFilter() {
-                            @Override
-                            public boolean accept(File f) {
-                                return fpr.getFileFilter().accept(f);
-                            }
-
-                            @Override
-                            public String getDescription() {
-                                return "Filtro del parámetro " + fpr.getName();
-                            }
-                        });
-
-                        int opcion = chooser.showOpenDialog(EditParameterDialog.this);
-
-                        if (opcion == JFileChooser.APPROVE_OPTION) {
-                            SwingGUIScope.getInstance().setCurrentDirectory(chooser.getSelectedFile());
-                            botonElegirArchivo.setText(chooser.getSelectedFile().getName());
-                            botonElegirArchivo.setToolTipText(chooser.getSelectedFile().getAbsolutePath());
-                            EditParameterDialog.this.parametrosModificados.put(p, chooser.getSelectedFile());
+                    chooser.setFileFilter(new FileFilter() {
+                        @Override
+                        public boolean accept(File f) {
+                            return fpr.getFileFilter().accept(f);
                         }
+
+                        @Override
+                        public String getDescription() {
+                            return "Filtro del parámetro " + fpr.getName();
+                        }
+                    });
+
+                    int opcion = chooser.showOpenDialog(EditParameterDialog.this);
+
+                    if (opcion == JFileChooser.APPROVE_OPTION) {
+                        SwingGUIScope.getInstance().setCurrentDirectory(chooser.getSelectedFile());
+                        botonElegirArchivo.setText(chooser.getSelectedFile().getName());
+                        botonElegirArchivo.setToolTipText(chooser.getSelectedFile().getAbsolutePath());
+                        EditParameterDialog.this.parametrosModificados.put(p, chooser.getSelectedFile());
                     }
                 });
-                panel.add(botonElegirArchivo, constraints);
+                parametersPanel.add(botonElegirArchivo, constraints);
                 widgetCreado = true;
             }
 
@@ -283,7 +380,7 @@ public class EditParameterDialog extends JDialog {
                     }
                 }
                 combo.setSelectedIndex(index);
-                panel.add(combo, constraints);
+                parametersPanel.add(combo, constraints);
                 widgetCreado = true;
             }
 
@@ -305,7 +402,7 @@ public class EditParameterDialog extends JDialog {
                     EditParameterDialog.this.parametrosModificados.put(p, check.isSelected());
                 });
 
-                panel.add(check, constraints);
+                parametersPanel.add(check, constraints);
                 widgetCreado = true;
             }
 
@@ -333,11 +430,8 @@ public class EditParameterDialog extends JDialog {
                 }
 
                 final JComboBox combo = new JComboBox(allowed);
-                combo.addActionListener(new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        EditParameterDialog.this.parametrosModificados.put(p, combo.getSelectedItem());
-                    }
+                combo.addActionListener((ActionEvent e) -> {
+                    EditParameterDialog.this.parametrosModificados.put(p, combo.getSelectedItem());
                 });
 
                 combo.setSelectedIndex(index);
@@ -353,20 +447,16 @@ public class EditParameterDialog extends JDialog {
                 constraints.insets = new Insets(3, 4, 3, 4);
 
                 JButton parametros = new JButton("Parameters");
-                parametros.addActionListener(new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        ParameterOwner parameterOwner;
-                        if (EditParameterDialog.this.parametrosModificados.containsKey(p)) {
-                            parameterOwner = (ParameterOwner) EditParameterDialog.this.parametrosModificados.get(p);
-                        } else {
-                            parameterOwner = (ParameterOwner) _parameterOwner.getParameterValue(p);
-                        }
-                        EditParameterDialog editParameterDialog = new EditParameterDialog(EditParameterDialog.this, onlyRead);
-                        editParameterDialog.setParameterTaker(parameterOwner);
-                        editParameterDialog.setVisible(true);
-
+                parametros.addActionListener((ActionEvent e) -> {
+                    ParameterOwner parameterOwner1;
+                    if (EditParameterDialog.this.parametrosModificados.containsKey(p)) {
+                        parameterOwner1 = (ParameterOwner) EditParameterDialog.this.parametrosModificados.get(p);
+                    } else {
+                        parameterOwner1 = (ParameterOwner) _parameterOwner.getParameterValue(p);
                     }
+                    EditParameterDialog editParameterDialog = new EditParameterDialog(EditParameterDialog.this, onlyRead);
+                    editParameterDialog.setParameterTaker(parameterOwner1);
+                    editParameterDialog.setVisible(true);
                 });
                 innerPanel.add(parametros, constraints);
 
@@ -378,7 +468,7 @@ public class EditParameterDialog extends JDialog {
                 constraints.gridwidth = 1;
                 constraints.gridheight = 1;
                 constraints.insets = new Insets(3, 4, 3, 4);
-                panel.add(innerPanel, constraints);
+                parametersPanel.add(innerPanel, constraints);
                 widgetCreado = true;
             }
 
@@ -405,11 +495,8 @@ public class EditParameterDialog extends JDialog {
                     }
                 }
                 final JComboBox combo = new JComboBox(allowed);
-                combo.addActionListener(new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        EditParameterDialog.this.parametrosModificados.put(p, combo.getSelectedItem());
-                    }
+                combo.addActionListener((ActionEvent e) -> {
+                    EditParameterDialog.this.parametrosModificados.put(p, combo.getSelectedItem());
                 });
                 combo.setSelectedIndex(index);
                 innerPanel.add(combo, constraints);
@@ -424,20 +511,16 @@ public class EditParameterDialog extends JDialog {
                 constraints.insets = new Insets(3, 4, 3, 4);
 
                 JButton parametros = new JButton("Parameters");
-                parametros.addActionListener(new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        ParameterOwner parameterOwner;
-                        if (EditParameterDialog.this.parametrosModificados.containsKey(p)) {
-                            parameterOwner = (ParameterOwner) EditParameterDialog.this.parametrosModificados.get(p);
-                        } else {
-                            parameterOwner = (ParameterOwner) _parameterOwner.getParameterValue(p);
-                        }
-                        EditParameterDialog editParameterDialog = new EditParameterDialog(EditParameterDialog.this, onlyRead);
-                        editParameterDialog.setParameterTaker(parameterOwner);
-                        editParameterDialog.setVisible(true);
-
+                parametros.addActionListener((ActionEvent e) -> {
+                    ParameterOwner parameterOwner1;
+                    if (EditParameterDialog.this.parametrosModificados.containsKey(p)) {
+                        parameterOwner1 = (ParameterOwner) EditParameterDialog.this.parametrosModificados.get(p);
+                    } else {
+                        parameterOwner1 = (ParameterOwner) _parameterOwner.getParameterValue(p);
                     }
+                    EditParameterDialog editParameterDialog = new EditParameterDialog(EditParameterDialog.this, onlyRead);
+                    editParameterDialog.setParameterTaker(parameterOwner1);
+                    editParameterDialog.setVisible(true);
                 });
                 innerPanel.add(parametros, constraints);
 
@@ -449,7 +532,7 @@ public class EditParameterDialog extends JDialog {
                 constraints.gridwidth = 1;
                 constraints.gridheight = 1;
                 constraints.insets = new Insets(3, 4, 3, 4);
-                panel.add(innerPanel, constraints);
+                parametersPanel.add(innerPanel, constraints);
                 widgetCreado = true;
             }
 
@@ -497,7 +580,7 @@ public class EditParameterDialog extends JDialog {
                     }
                 });
 
-                panel.add(passField, constraints);
+                parametersPanel.add(passField, constraints);
                 widgetCreado = true;
             }
 
@@ -536,7 +619,7 @@ public class EditParameterDialog extends JDialog {
                     }
                 });
 
-                panel.add(textField, constraints);
+                parametersPanel.add(textField, constraints);
                 widgetCreado = true;
             }
 
@@ -564,11 +647,8 @@ public class EditParameterDialog extends JDialog {
                 }
 
                 final JComboBox combo = new JComboBox(allowed);
-                combo.addActionListener(new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        EditParameterDialog.this.parametrosModificados.put(p, combo.getSelectedItem());
-                    }
+                combo.addActionListener((ActionEvent e) -> {
+                    EditParameterDialog.this.parametrosModificados.put(p, combo.getSelectedItem());
                 });
 
                 combo.setSelectedIndex(index);
@@ -584,20 +664,16 @@ public class EditParameterDialog extends JDialog {
                 constraints.insets = new Insets(3, 4, 3, 4);
 
                 JButton parametros = new JButton("Parameters");
-                parametros.addActionListener(new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        ParameterOwner parameterOwner;
-                        if (EditParameterDialog.this.parametrosModificados.containsKey(p)) {
-                            parameterOwner = (ParameterOwner) EditParameterDialog.this.parametrosModificados.get(p);
-                        } else {
-                            parameterOwner = (ParameterOwner) _parameterOwner.getParameterValue(p);
-                        }
-                        EditParameterDialog editParameterDialog = new EditParameterDialog(EditParameterDialog.this, onlyRead);
-                        editParameterDialog.setParameterTaker(parameterOwner);
-                        editParameterDialog.setVisible(true);
-
+                parametros.addActionListener((ActionEvent e) -> {
+                    ParameterOwner parameterOwner1;
+                    if (EditParameterDialog.this.parametrosModificados.containsKey(p)) {
+                        parameterOwner1 = (ParameterOwner) EditParameterDialog.this.parametrosModificados.get(p);
+                    } else {
+                        parameterOwner1 = (ParameterOwner) _parameterOwner.getParameterValue(p);
                     }
+                    EditParameterDialog editParameterDialog = new EditParameterDialog(EditParameterDialog.this, onlyRead);
+                    editParameterDialog.setParameterTaker(parameterOwner1);
+                    editParameterDialog.setVisible(true);
                 });
                 innerPanel.add(parametros, constraints);
 
@@ -609,7 +685,7 @@ public class EditParameterDialog extends JDialog {
                 constraints.gridwidth = 1;
                 constraints.gridheight = 1;
                 constraints.insets = new Insets(3, 4, 3, 4);
-                panel.add(innerPanel, constraints);
+                parametersPanel.add(innerPanel, constraints);
                 widgetCreado = true;
             }
 
@@ -658,7 +734,7 @@ public class EditParameterDialog extends JDialog {
                         }
                     }
                 });
-                panel.add(botonElegirArchivo, constraints);
+                parametersPanel.add(botonElegirArchivo, constraints);
                 widgetCreado = true;
             }
 
@@ -669,113 +745,6 @@ public class EditParameterDialog extends JDialog {
 
             y++;
         }
-        constraints.fill = GridBagConstraints.BOTH;
-        constraints.weightx = 1.0;
-        constraints.weighty = 1.0;
-        constraints.gridx = 0;
-        constraints.gridy = 0;
-        constraints.gridwidth = 3;
-        constraints.gridheight = 1;
-        constraints.insets = new Insets(3, 4, 3, 4);
-        this.add(panel, constraints);
-
-        constraints.fill = GridBagConstraints.NONE;
-        constraints.anchor = GridBagConstraints.EAST;
-        constraints.weightx = 0.0;
-        constraints.weighty = 0.0;
-        constraints.gridx = 0;
-        constraints.gridy = 1;
-        constraints.gridwidth = 2;
-        constraints.gridheight = 1;
-        constraints.insets = new Insets(3, 4, 3, 4);
-        JButton cancelar = new JButton("Cancel");
-        cancelar.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (!onlyRead) {
-                    if (!parametrosModificados.isEmpty()) {
-                        int n = JOptionPane.showConfirmDialog(
-                                EditParameterDialog.this,
-                                "Parameter modification will be discarded. Are you sure?",
-                                "Parameter modification",
-                                JOptionPane.YES_NO_OPTION);
-                        if (n == JOptionPane.YES_OPTION) {
-                            boolean correcto = true;
-                            for (Parameter p : parametrosModificados.keySet()) {
-                                Object newValue = parametrosModificados.get(p);
-                                if (EditParameterDialog.this.parameterOwner.setParameterValue(p, newValue) == null) {
-                                    Global.showWarning("No se pudo asignar el parámetro " + p.getName() + "=" + newValue + "\n");
-                                    correcto = false;
-                                }
-                            }
-                            if (correcto) {
-                                EditParameterDialog.this.setVisible(false);
-                                EditParameterDialog.this.dispose();
-                            }
-                        }
-                    }
-                }
-                EditParameterDialog.this.setVisible(false);
-                EditParameterDialog.this.dispose();
-            }
-        });
-        this.add(cancelar, constraints);
-        constraints.fill = GridBagConstraints.NONE;
-        constraints.anchor = GridBagConstraints.EAST;
-        constraints.weightx = 0.0;
-        constraints.weighty = 0.0;
-        constraints.gridx = 1;
-        constraints.gridy = 1;
-        constraints.gridwidth = 2;
-        constraints.gridheight = 1;
-        constraints.insets = new Insets(3, 4, 3, 4);
-
-        JButton aceptar = new JButton("Done");
-        aceptar.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (!onlyRead) {
-                    if (!parametrosModificados.isEmpty()) {
-                        String s = "";
-                        for (Parameter p : parametrosModificados.keySet()) {
-                            s += p.getName() + ",";
-                        }
-                        s = s.substring(0, s.length() - 1);
-
-                        int n = JOptionPane.showConfirmDialog(
-                                EditParameterDialog.this,
-                                "The following parameters will be modified: \n" + s,
-                                "Parameter modification",
-                                JOptionPane.YES_NO_OPTION);
-
-                        if (n == JOptionPane.YES_OPTION) {
-                            boolean correcto = true;
-                            for (Parameter p : parametrosModificados.keySet()) {
-                                Object newValue = parametrosModificados.get(p);
-                                if (EditParameterDialog.this.parameterOwner.setParameterValue(p, newValue) == null) {
-                                    Global.showWarning("Cannot make the parameter assignment: " + p.getName() + "=" + newValue + "\n");
-                                    Global.showError(new IllegalStateException("Cannot make the parameter assignment: " + p.getName() + "=" + newValue + "\n"));
-                                    correcto = false;
-                                }
-                            }
-                            if (correcto) {
-                                EditParameterDialog.this.setVisible(false);
-                                EditParameterDialog.this.dispose();
-                            }
-                        }
-                    }
-                } else {
-                    JOptionPane.showMessageDialog(EditParameterDialog.this, "Changes will be discarded due to the experiment is running.", "Runing experiment", JOptionPane.INFORMATION_MESSAGE);
-                }
-                EditParameterDialog.this.setVisible(false);
-                EditParameterDialog.this.dispose();
-            }
-        });
-        this.add(aceptar, constraints);
-        this.pack();
-
-        Dimension d = Toolkit.getDefaultToolkit().getScreenSize();
-        this.setLocation((d.width - this.getWidth()) / 2, (d.height - this.getHeight()) / 2);
-
+        return parametersPanel;
     }
 }

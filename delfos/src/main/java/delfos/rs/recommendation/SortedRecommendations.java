@@ -18,25 +18,25 @@ public class SortedRecommendations implements Serializable {
 
     private static final long serialVersionUID = 654546L;
 
-    private final String targetIdentifier;
+    private final Object target;
     private final List<Recommendation> sortedRecommendations;
     private final RecommendationComputationDetails recommendationComputationDetails;
 
-    protected SortedRecommendations() {
-        this.targetIdentifier = null;
+    private SortedRecommendations() {
+        this.target = null;
         this.sortedRecommendations = null;
         this.recommendationComputationDetails = null;
     }
 
-    public SortedRecommendations(String targetIdentifier, Collection<Recommendation> recommendations) {
-        this.targetIdentifier = targetIdentifier;
+    public SortedRecommendations(Object target, Collection<Recommendation> recommendations) {
+        this.target = target;
         this.sortedRecommendations = new LinkedList<>(recommendations);
         Collections.sort(sortedRecommendations);
         recommendationComputationDetails = new RecommendationComputationDetails();
     }
 
-    public SortedRecommendations(String targetIdentifier, Collection<Recommendation> recommendations, RecommendationComputationDetails recommendationComputationDetails) {
-        this.targetIdentifier = targetIdentifier;
+    public SortedRecommendations(Object target, Collection<Recommendation> recommendations, RecommendationComputationDetails recommendationComputationDetails) {
+        this.target = target;
         this.sortedRecommendations = new LinkedList<>(recommendations);
         Collections.sort(sortedRecommendations);
         this.recommendationComputationDetails = recommendationComputationDetails;
@@ -47,7 +47,11 @@ public class SortedRecommendations implements Serializable {
     }
 
     public String getTargetIdentifier() {
-        return targetIdentifier;
+        return target.toString();
+    }
+
+    public Object getTarget() {
+        return target;
     }
 
     public List<Recommendation> getRecommendations() {

@@ -46,6 +46,9 @@
         <profile>
             <id>result-analysis-gui</id>
         </profile>
+        <profile>
+            <id>gui-neighborhood</id>
+        </profile>
     </profiles>
 
     <dependencies>

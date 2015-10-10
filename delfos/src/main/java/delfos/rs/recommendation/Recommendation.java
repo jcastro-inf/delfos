@@ -7,6 +7,7 @@ import java.io.Serializable;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
@@ -18,9 +19,45 @@ import java.util.stream.Collectors;
  */
 public class Recommendation implements Comparable<Recommendation>, Serializable {
 
-    public static final Comparator<Recommendation> BY_ID = (Recommendation o1, Recommendation o2) -> Integer.compare(o1.getIdItem(), o2.getIdItem());
-    public static final Comparator<Recommendation> BY_PREFERENCE_ASC = (Recommendation o1, Recommendation o2) -> Double.compare(o1.getPreference().doubleValue(), o2.getPreference().doubleValue());
-    public static final Comparator<Recommendation> BY_PREFERENCE_DESC = (Recommendation o1, Recommendation o2) -> -Double.compare(o1.getPreference().doubleValue(), o2.getPreference().doubleValue());
+    public static final Comparator<Recommendation> BY_ID = (Recommendation o1, Recommendation o2) -> {
+        validateComparatorParameters(o1, o2);
+        return Integer.compare(o1.getIdItem(), o2.getIdItem());
+    };
+
+    public static final Comparator<Recommendation> BY_PREFERENCE_ASC = (Recommendation o1, Recommendation o2) -> {
+        if (Double.isNaN(o1.preference.doubleValue()) && Double.isNaN(o2.preference.doubleValue())) {
+            return BY_ID.compare(o1, o2);
+        } else if (Double.isNaN(o1.preference.doubleValue())) {
+            return 1;
+        } else if (Double.isNaN(o2.preference.doubleValue())) {
+            return -1;
+        } else {
+            return Double.compare(o1.preference.doubleValue(), o2.preference.doubleValue());
+        }
+    };
+    public static final Comparator<Recommendation> BY_PREFERENCE_DESC = (Recommendation o1, Recommendation o2) -> {
+        if (Double.isNaN(o1.preference.doubleValue()) && Double.isNaN(o2.preference.doubleValue())) {
+            return BY_ID.compare(o1, o2);
+        } else if (Double.isNaN(o1.preference.doubleValue())) {
+            return 1;
+        } else if (Double.isNaN(o2.preference.doubleValue())) {
+            return -1;
+        } else {
+            return -Double.compare(o1.preference.doubleValue(), o2.preference.doubleValue());
+        }
+    };
+
+    private static void validateComparatorParameters(Recommendation o1, Recommendation o2) {
+        if (o1 == null) {
+            throw new IllegalStateException("recommendation 1 is null");
+        } else if (o2 == null) {
+            throw new IllegalStateException("recommendation 2 is null");
+        } else if (o1.getPreference() == null) {
+            throw new IllegalStateException("Preference value of recommendation 1 is null");
+        } else if (o2.getPreference() == null) {
+            throw new IllegalStateException("Preference value of recommendation 2 is null");
+        }
+    }
 
     private static final long serialVersionUID = 5468;
 
@@ -94,14 +131,25 @@ public class Recommendation implements Comparable<Recommendation>, Serializable 
      */
     @Deprecated
     public Recommendation(Integer idItem, Number preference) {
+        if (idItem == null) {
+            throw new IllegalArgumentException("Item cannot be null");
+        } else if (preference == null) {
+            throw new IllegalArgumentException("Preference cannot be null");
+        }
+
         this.preference = preference;
         this.item = new Item(idItem);
     }
 
     public Recommendation(Item item, Number preference) {
+        if (item == null) {
+            throw new IllegalArgumentException("Item cannot be null");
+        } else if (preference == null) {
+            throw new IllegalArgumentException("Preference cannot be null");
+        }
 
-        this.preference = null;
-        this.item = null;
+        this.preference = preference;
+        this.item = item;
     }
 
     /**
@@ -144,7 +192,7 @@ public class Recommendation implements Comparable<Recommendation>, Serializable 
             if (this.getIdItem() != recommendation.getIdItem()) {
                 return false;
             }
-            return NumberCompare.equals(this.preference, recommendation.preference, 4);
+            return NumberCompare.equals(this.preference, recommendation.preference);
         } else {
             return false;
         }
@@ -178,16 +226,16 @@ public class Recommendation implements Comparable<Recommendation>, Serializable 
      * Compara esta valoración con otra, teniendo en cuenta solo 4 decimales.
      *
      * @param r Recomendación con la que se compara
-     * @param numDecimals numero de decimales a tener en cuenta.
      * @return true si las recomendación es del mismo producto y la preferencia
      * es igual hasta el cuarto decimal, false en otro caso.
      */
-    public boolean relaxedEquals(Recommendation r, int numDecimals) {
+    public boolean relaxedEquals(Recommendation r) {
 
-        if (this.getIdItem() != r.getIdItem()) {
+        if (!Objects.equals(this.getItem().getId(), r.item.getId())) {
             return false;
+        } else {
+            return NumberCompare.equals(this.preference, r.preference);
         }
-        return NumberCompare.equals(this.preference, r.preference, numDecimals);
     }
 
     public Item getItem() {

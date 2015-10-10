@@ -1,12 +1,5 @@
 package delfos.dataset.mockdatasets;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeMap;
-import java.util.TreeSet;
 import delfos.common.exceptions.dataset.entity.EntityAlreadyExists;
 import delfos.common.exceptions.dataset.entity.EntityNotFound;
 import delfos.common.exceptions.dataset.users.UserNotFound;
@@ -14,6 +7,14 @@ import delfos.dataset.basic.features.Feature;
 import delfos.dataset.basic.features.FeatureGenerator;
 import delfos.dataset.basic.user.User;
 import delfos.dataset.basic.user.UsersDataset;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
+import java.util.TreeSet;
+import java.util.stream.Collectors;
 
 /**
  *
@@ -47,7 +48,7 @@ public class MockUsersDataset implements UsersDataset {
     }
 
     @Override
-    public void add(User entity) throws EntityAlreadyExists {
+    public boolean add(User entity) throws EntityAlreadyExists {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
@@ -95,6 +96,7 @@ public class MockUsersDataset implements UsersDataset {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
+    @Override
     public int size() {
         return users.size();
     }
@@ -112,5 +114,59 @@ public class MockUsersDataset implements UsersDataset {
     @Override
     public Iterator<User> iterator() {
         return new ArrayList<>(users.values()).iterator();
+    }
+
+    @Override
+    public boolean remove(Object o) {
+        throw new UnsupportedOperationException("Not allowed to delete entities.");
+    }
+
+    @Override
+    public boolean removeAll(Collection<?> c) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public boolean retainAll(Collection<?> c) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void clear() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public boolean isEmpty() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public boolean contains(Object o) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    public Collection<User> getAllItems() {
+        return getAllID().stream().map((idUser) -> get(idUser)).collect(Collectors.toList());
+    }
+
+    @Override
+    public Object[] toArray() {
+        return getAllItems().toArray();
+    }
+
+    @Override
+    public <T> T[] toArray(T[] a) {
+        return getAllItems().toArray(a);
+    }
+
+    @Override
+    public boolean containsAll(Collection<?> c) {
+        return c.stream().allMatch(((element) -> this.contains(element)));
+    }
+
+    @Override
+    public boolean addAll(Collection<? extends User> entitys) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }

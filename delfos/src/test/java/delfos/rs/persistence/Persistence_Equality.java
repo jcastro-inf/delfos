@@ -86,7 +86,7 @@ public class Persistence_Equality {
             Recommendation fileRecommendation = fileRecommendationsIterator.next();
             Recommendation databaseRecommendation = databaseRecommendationsIterator.next();
 
-            if (!fileRecommendation.relaxedEquals(databaseRecommendation, 4)) {
+            if (!fileRecommendation.relaxedEquals(databaseRecommendation)) {
                 assertEquals(recommenderSystem.getName() + ": " + "Recommendation lists are different\n"
                         + fileRecommendations_File.getAbsolutePath() + "\n"
                         + databaseRecommendations_File.getAbsolutePath(),

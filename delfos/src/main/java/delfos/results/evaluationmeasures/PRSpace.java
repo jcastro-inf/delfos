@@ -1,11 +1,5 @@
 package delfos.results.evaluationmeasures;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
-import org.jdom2.Element;
 import delfos.ERROR_CODES;
 import delfos.common.Global;
 import delfos.common.exceptions.dataset.users.UserNotFound;
@@ -18,6 +12,12 @@ import delfos.results.MeasureResult;
 import delfos.results.RecommendationResults;
 import delfos.results.evaluationmeasures.confusionmatrix.ConfusionMatricesCurve;
 import delfos.rs.recommendation.Recommendation;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
+import org.jdom2.Element;
 
 /**
  * Medida de evaluación que calcula la precisión y recall a lo largo de todos
@@ -59,10 +59,6 @@ public class PRSpace extends EvaluationMeasure {
                 for (Recommendation r : recommendationList) {
 
                     int idItem = r.getIdItem();
-                    if (!userRatings.containsKey(idItem)) {
-                        System.out.println("Depura");
-                    }
-
                     resultados.add(relevanceCriteria.isRelevant(userRatings.get(idItem).ratingValue));
                 }
             } catch (UserNotFound ex) {
