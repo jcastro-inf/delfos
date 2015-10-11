@@ -4,6 +4,7 @@ import delfos.common.Global;
 import delfos.common.exceptions.CouldNotPredictRating;
 import delfos.common.exceptions.dataset.CannotLoadContentDataset;
 import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
+import delfos.common.exceptions.dataset.entity.EntityNotFound;
 import delfos.common.exceptions.dataset.items.ItemNotFound;
 import delfos.common.exceptions.dataset.users.UserNotFound;
 import delfos.common.exceptions.ratings.NotEnoughtUserInformation;
@@ -189,7 +190,7 @@ public class KnnMemoryBasedCFRS extends KnnCollaborativeRecommender<KnnMemoryMod
      *
      * @param ratingsDataset Conjunto de valoraciones.
      * @param idUser Id del usuario activo
-     * @param vecinos Vecinos del usuario activo
+     * @param neighbors Vecinos del usuario activo
      * @param candidateItems Lista de productos que se consideran recomendables,
      * es decir, que podrían ser recomendados si la predicción es alta
      * @return Lista de recomendaciones para el usuario, ordenadas por
@@ -197,23 +198,27 @@ public class KnnMemoryBasedCFRS extends KnnCollaborativeRecommender<KnnMemoryMod
      * @throws UserNotFound Si el usuario activo o alguno de los vecinos
      * indicados no se encuentra en el dataset.
      */
-    public Collection<Recommendation> recommendWithNeighbors(RatingsDataset<? extends Rating> ratingsDataset, Integer idUser, List<Neighbor> vecinos, Collection<Item> candidateItems) throws UserNotFound {
+    public Collection<Recommendation> recommendWithNeighbors(RatingsDataset<? extends Rating> ratingsDataset, Integer idUser, List<Neighbor> neighbors, Collection<Item> candidateItems) throws UserNotFound {
         PredictionTechnique predictionTechnique_ = (PredictionTechnique) getParameterValue(KnnMemoryBasedCFRS.PREDICTION_TECHNIQUE);
+
+        List<Neighbor> neighborsWithPositiveSimilarity = neighbors.stream()
+                .filter((neighbor -> Float.isFinite(neighbor.getSimilarity()) && neighbor.getSimilarity() > 0))
+                .collect(Collectors.toList());
 
         //Predicción de la valoración
         Collection<Recommendation> recommendations = new LinkedList<>();
-        Map<Integer, Map<Integer, ? extends Rating>> ratingsVecinos = vecinos.stream()
-                .filter((neighbor -> Float.isFinite(neighbor.getSimilarity()) && neighbor.getSimilarity() > 0))
+        Map<Integer, Map<Integer, ? extends Rating>> ratingsVecinos = neighborsWithPositiveSimilarity
+                .stream()
                 .collect(Collectors.toMap(
                                 (neighbor -> neighbor.getIdNeighbor()),
                                 (neighbor -> ratingsDataset.getUserRatingsRated(neighbor.getIdNeighbor()))));
 
         for (Item item : candidateItems) {
             Collection<MatchRating> match = new LinkedList<>();
-            for (Neighbor ss : vecinos) {
-                Rating rating = ratingsVecinos.get(ss.getIdNeighbor()).get(item.getId());
+            for (Neighbor neighbor : neighborsWithPositiveSimilarity) {
+                Rating rating = ratingsVecinos.get(neighbor.getIdNeighbor()).get(item.getId());
                 if (rating != null) {
-                    match.add(new MatchRating(RecommendationEntity.ITEM, ss.getIdNeighbor(), item.getId(), rating.ratingValue, ss.getSimilarity()));
+                    match.add(new MatchRating(RecommendationEntity.ITEM, neighbor.getIdNeighbor(), item.getId(), rating.ratingValue, neighbor.getSimilarity()));
                 }
             }
 
@@ -221,6 +226,7 @@ public class KnnMemoryBasedCFRS extends KnnCollaborativeRecommender<KnnMemoryMod
                 float predicted = predictionTechnique_.predictRating(idUser, item.getId(), match, ratingsDataset);
                 recommendations.add(new Recommendation(item, predicted));
             } catch (CouldNotPredictRating ex) {
+                recommendations.add(new Recommendation(item, Double.NaN));
             } catch (ItemNotFound ex) {
                 Global.showError(ex);
             }
@@ -262,11 +268,12 @@ public class KnnMemoryBasedCFRS extends KnnCollaborativeRecommender<KnnMemoryMod
             Integer idUser,
             Set<Integer> candidateItems) throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset, NotEnoughtUserInformation {
 
- User user;       
-try{user = ((UsersDatasetLoader) dataset).getUsersDataset().get(idUser);
-}catch (EntityNotFound ex){
-user = new User(idUser);
-}
+        User user;
+        try {
+            user = ((UsersDatasetLoader) dataset).getUsersDataset().get(idUser);
+        } catch (EntityNotFound ex) {
+            user = new User(idUser);
+        }
 
         Set<Item> candidateItemSet = ((ContentDatasetLoader) dataset).getContentDataset().stream()
                 .filter((item -> candidateItems.contains(item.getId())))

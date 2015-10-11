@@ -6,7 +6,9 @@ import delfos.common.exceptions.dataset.users.UserNotFound;
 import delfos.common.parallelwork.SingleTaskExecute;
 import delfos.rs.collaborativefiltering.knn.RecommendationEntity;
 import delfos.rs.collaborativefiltering.profile.Neighbor;
+import delfos.similaritymeasures.PearsonCorrelationCoefficient;
 import delfos.similaritymeasures.useruser.UserUserSimilarity;
+import delfos.similaritymeasures.useruser.UserUserSimilarityWrapper;
 
 public final class RSTest_SingleNeighborCalculator implements SingleTaskExecute<RSTest_Task> {
 
@@ -23,7 +25,7 @@ public final class RSTest_SingleNeighborCalculator implements SingleTaskExecute<
         if (idUser == idNeighbor) {
             return;
         }
-        UserUserSimilarity userUserSimilarity = (UserUserSimilarity) rs.getParameterValue(RSTest.SIMILARITY_MEASURE);
+        UserUserSimilarity userUserSimilarity = (UserUserSimilarity) new UserUserSimilarityWrapper(new PearsonCorrelationCoefficient());
 
         double similarity;
         try {

@@ -328,12 +328,13 @@ public enum ERROR_CODES {
     }
 
     public void exit(Throwable ex) throws RuntimeException {
-        System.out.flush();
+        ex.printStackTrace(System.out);
         System.out.println(ex.getMessage());
         System.out.println("\t\tError code " + this.name() + ":" + exitValue);
         System.out.flush();
 
         if (Global.isDoublePrint()) {
+            ex.printStackTrace(System.err);
             System.err.flush();
             System.err.println(ex.getMessage());
             System.err.println("Error code " + this.name() + ":" + exitValue);

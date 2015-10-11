@@ -18,12 +18,9 @@ import delfos.factories.EvaluationMeasuresFactory;
 import delfos.results.evaluationmeasures.EvaluationMeasure;
 import delfos.rs.RecommenderSystem;
 import delfos.rs.bufferedrecommenders.RecommenderSystem_bufferedRecommendations;
-import delfos.rs.collaborativefiltering.knn.memorybased.multicorrelation.jaccard.RSTest;
+import delfos.rs.collaborativefiltering.knn.memorybased.KnnMemoryBasedCFRS;
 import delfos.rs.collaborativefiltering.predictiontechniques.WeightedSum;
 import delfos.similaritymeasures.PearsonCorrelationCoefficient;
-import delfos.similaritymeasures.useruser.RelevanceFactor;
-import delfos.similaritymeasures.useruser.UserUserMultipleCorrelationCoefficient;
-import delfos.similaritymeasures.useruser.UserUserSimilarityWrapper;
 import java.io.File;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -90,14 +87,14 @@ public class MultiPearson_RSTest {
         for (int neighborhoodSize : neighborhoodSizes) {
             String neighborhoodSizeSufix = "_nei=" + format.format(neighborhoodSize);
             {
+                PearsonCorrelationCoefficient similarityMeasure = new PearsonCorrelationCoefficient();
+                WeightedSum predictionTechnique = new WeightedSum();
                 //Pearson
                 String alias = "KnnMulti_Pearson" + neighborhoodSizeSufix;
-                RSTest recommenderSystem
-                        = new RSTest(
-                                new RelevanceFactor(0),
-                                new UserUserSimilarityWrapper(new PearsonCorrelationCoefficient()),
-                                neighborhoodSize,
-                                new WeightedSum());
+                KnnMemoryBasedCFRS recommenderSystem
+                        = new KnnMemoryBasedCFRS(
+                                similarityMeasure,
+                                neighborhoodSize, null, false, 1, neighborhoodSize, predictionTechnique);
                 RecommenderSystem_bufferedRecommendations recommenderSystem_bufferedRecommendations
                         = new RecommenderSystem_bufferedRecommendations(
                                 new File("." + File.separator + "bufferedRecommendations" + File.separator + alias),
@@ -116,13 +113,13 @@ public class MultiPearson_RSTest {
             {
                 //MultiPearson + relevance
                 String alias = "KnnMulti_Pearson(rf=30)" + neighborhoodSizeSufix;
-                RSTest recommenderSystem
-                        = new RSTest(
-                                new RelevanceFactor(30),
-                                new UserUserSimilarityWrapper(new PearsonCorrelationCoefficient()),
-                                neighborhoodSize,
-                                new WeightedSum()
-                        );
+
+                PearsonCorrelationCoefficient similarityMeasure = new PearsonCorrelationCoefficient();
+                WeightedSum predictionTechnique = new WeightedSum();
+                KnnMemoryBasedCFRS recommenderSystem
+                        = new KnnMemoryBasedCFRS(
+                                similarityMeasure,
+                                neighborhoodSize, null, false, 1, neighborhoodSize, predictionTechnique);
 
                 RecommenderSystem_bufferedRecommendations recommenderSystem_bufferedRecommendations
                         = new RecommenderSystem_bufferedRecommendations(
@@ -142,13 +139,12 @@ public class MultiPearson_RSTest {
             {
                 //MultiPearson + relevance
                 String alias = "KnnMulti_MultiPearson" + neighborhoodSizeSufix;
-                RSTest recommenderSystem
-                        = new RSTest(
-                                new RelevanceFactor(0),
-                                new UserUserMultipleCorrelationCoefficient(new PearsonCorrelationCoefficient()),
-                                neighborhoodSize,
-                                new WeightedSum()
-                        );
+                PearsonCorrelationCoefficient similarityMeasure = new PearsonCorrelationCoefficient();
+                WeightedSum predictionTechnique = new WeightedSum();
+                KnnMemoryBasedCFRS recommenderSystem
+                        = new KnnMemoryBasedCFRS(
+                                similarityMeasure,
+                                neighborhoodSize, null, false, 1, neighborhoodSize, predictionTechnique);
 
                 RecommenderSystem_bufferedRecommendations recommenderSystem_bufferedRecommendations
                         = new RecommenderSystem_bufferedRecommendations(
@@ -168,13 +164,12 @@ public class MultiPearson_RSTest {
             {
                 //MultiPearson + relevance
                 String alias = "KnnMulti_MultiPearson(rf=30)" + neighborhoodSizeSufix;
-                RSTest recommenderSystem
-                        = new RSTest(
-                                new RelevanceFactor(30),
-                                new UserUserMultipleCorrelationCoefficient(new PearsonCorrelationCoefficient()),
-                                neighborhoodSize,
-                                new WeightedSum()
-                        );
+                PearsonCorrelationCoefficient similarityMeasure = new PearsonCorrelationCoefficient();
+                WeightedSum predictionTechnique = new WeightedSum();
+                KnnMemoryBasedCFRS recommenderSystem
+                        = new KnnMemoryBasedCFRS(
+                                similarityMeasure,
+                                neighborhoodSize, null, false, 1, neighborhoodSize, predictionTechnique);
 
                 RecommenderSystem_bufferedRecommendations recommenderSystem_bufferedRecommendations
                         = new RecommenderSystem_bufferedRecommendations(
