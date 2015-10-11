@@ -1,21 +1,27 @@
 package delfos.dataset.generated.random;
 
-import java.util.Arrays;
+import delfos.ERROR_CODES;
 import delfos.common.Global;
+import delfos.common.exceptions.dataset.users.UserAlreadyExists;
 import delfos.common.parameters.Parameter;
 import delfos.common.parameters.restriction.FloatParameter;
 import delfos.common.parameters.restriction.IntegerParameter;
 import delfos.common.parameters.restriction.ObjectParameter;
 import delfos.dataset.basic.item.ContentDataset;
+import delfos.dataset.basic.loader.types.ContentDatasetLoader;
+import delfos.dataset.basic.loader.types.DatasetLoaderAbstract;
+import delfos.dataset.basic.loader.types.UsersDatasetLoader;
 import delfos.dataset.basic.rating.RatingWithTimestamp;
 import delfos.dataset.basic.rating.RatingsDataset;
 import delfos.dataset.basic.rating.RelevanceCriteria;
-import delfos.dataset.basic.loader.types.DatasetLoaderAbstract;
-import delfos.dataset.basic.loader.types.ContentDatasetLoader;
-import delfos.experiment.SeedHolder;
 import delfos.dataset.basic.rating.domain.DecimalDomain;
 import delfos.dataset.basic.rating.domain.Domain;
 import delfos.dataset.basic.rating.domain.IntegerDomain;
+import delfos.dataset.basic.user.User;
+import delfos.dataset.basic.user.UsersDatasetAdapter;
+import delfos.experiment.SeedHolder;
+import java.util.Arrays;
+import java.util.stream.Collectors;
 
 /**
  * Dataset loader aleatorio. Esta clase se usa para testear los sistemas de
@@ -28,7 +34,7 @@ import delfos.dataset.basic.rating.domain.IntegerDomain;
  * @author Jorge Castro Gallardo
  * @version 1.0 31-Jan-2013
  */
-public class RandomDatasetLoader extends DatasetLoaderAbstract<RatingWithTimestamp> implements ContentDatasetLoader, SeedHolder {
+public class RandomDatasetLoader extends DatasetLoaderAbstract<RatingWithTimestamp> implements ContentDatasetLoader, UsersDatasetLoader, SeedHolder {
 
     private static final long serialVersionUID = 1L;
     private RatingsDataset<RatingWithTimestamp> rd;
@@ -75,6 +81,7 @@ public class RandomDatasetLoader extends DatasetLoaderAbstract<RatingWithTimesta
      * productos tendrán. Por defecto es 2.
      */
     public final static Parameter content_numNumericalDifferentValues = new Parameter("content_numNumericalDifferentValues", new IntegerParameter(1, 1000000, 2));
+    private UsersDatasetAdapter ud;
 
     /**
      * Constructor por defecto del dataset aleatorio, que añade los parámetros y
@@ -151,6 +158,11 @@ public class RandomDatasetLoader extends DatasetLoaderAbstract<RatingWithTimesta
                     seedValue);
 
             cd = new RandomContentDataset(rd, numNumericFeaturesValue, numNominalFeaturesValue, numNumericalDifferentValuesValue, seedValue);
+            try {
+                ud = new UsersDatasetAdapter(rd.allUsers().stream().map((idUser -> new User(idUser))).collect(Collectors.toList()));
+            } catch (UserAlreadyExists ex) {
+                ERROR_CODES.USER_ALREADY_EXISTS.exit(ex);
+            }
         }
         return rd;
     }
@@ -161,6 +173,12 @@ public class RandomDatasetLoader extends DatasetLoaderAbstract<RatingWithTimesta
         getRatingsDataset();
 
         return cd;
+    }
+
+    @Override
+    public UsersDatasetAdapter getUsersDataset() {
+        getRatingsDataset();
+        return ud;
     }
 
     @Override

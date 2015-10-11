@@ -4,19 +4,19 @@ import delfos.common.exceptions.dataset.CannotLoadContentDataset;
 import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
 import delfos.common.exceptions.dataset.CannotLoadUsersDataset;
 import delfos.dataset.basic.item.ContentDataset;
-import delfos.dataset.basic.rating.Rating;
-import delfos.dataset.basic.rating.RatingsDataset;
-import delfos.dataset.basic.rating.RelevanceCriteria;
-import delfos.dataset.basic.user.UsersDataset;
 import delfos.dataset.basic.loader.types.CompleteDatasetLoaderAbstract_withTrust;
 import delfos.dataset.basic.loader.types.ContentDatasetLoader;
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.loader.types.UsersDatasetLoader;
+import delfos.dataset.basic.rating.Rating;
+import delfos.dataset.basic.rating.RatingsDataset;
+import delfos.dataset.basic.rating.RelevanceCriteria;
+import delfos.dataset.basic.user.UsersDataset;
 
 /**
  * Dataset loader a partir de los datasets de contenido y de valoraciones.
  *
-* @author Jorge Castro Gallardo
+ * @author Jorge Castro Gallardo
  *
  * @version Unknown date
  * @version 26-Noviembre-2013
@@ -59,7 +59,7 @@ public class DatasetLoaderGiven<RatingType extends Rating> extends CompleteDatas
     }
 
     @Override
-    public UsersDataset getUsersDataset() throws CannotLoadUsersDataset {
+    public synchronized UsersDataset getUsersDataset() throws CannotLoadUsersDataset {
         final UsersDataset usersDataset;
         if (datasetLoader instanceof UsersDatasetLoader) {
             UsersDatasetLoader usersDatasetLoader = (UsersDatasetLoader) datasetLoader;

@@ -130,9 +130,10 @@ public class MultiThreadExecutionManager<TaskType extends Task> implements Runna
                         singleTaskExecute.executeSingleTask(task);
                     } catch (Throwable ex) {
 
+                        Global.showWarning("TaskType failed '" + task.toString() + "'.");
+                        Global.showWarning(ex);
                         parentMultiThread.erroneousTask(task);
                         runningThread.interrupt();
-                        Global.showWarning("TaskType failed '" + task.toString() + "'.");
                         ERROR_CODES.TASK_EXECUTION_FAILED.exit(ex);
                     }
                     long timeElapsed = c.getTotalElapsed();

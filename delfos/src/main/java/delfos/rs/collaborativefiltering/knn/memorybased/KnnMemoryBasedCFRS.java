@@ -9,7 +9,9 @@ import delfos.common.exceptions.dataset.users.UserNotFound;
 import delfos.common.exceptions.ratings.NotEnoughtUserInformation;
 import delfos.common.parallelwork.MultiThreadExecutionManager;
 import delfos.dataset.basic.item.Item;
+import delfos.dataset.basic.loader.types.ContentDatasetLoader;
 import delfos.dataset.basic.loader.types.DatasetLoader;
+import delfos.dataset.basic.loader.types.UsersDatasetLoader;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RatingsDataset;
 import delfos.dataset.basic.user.User;
@@ -254,7 +256,23 @@ public class KnnMemoryBasedCFRS extends KnnCollaborativeRecommender<KnnMemoryMod
     }
 
     @Override
-    public Collection<Recommendation> recommendToUser(DatasetLoader<? extends Rating> dataset, KnnMemoryModel model, Integer idUser, Set<Integer> candidateItems) throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset, NotEnoughtUserInformation {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public Collection<Recommendation> recommendToUser(
+            DatasetLoader<? extends Rating> dataset,
+            KnnMemoryModel model,
+            Integer idUser,
+            Set<Integer> candidateItems) throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset, NotEnoughtUserInformation {
+
+ User user;       
+try{user = ((UsersDatasetLoader) dataset).getUsersDataset().get(idUser);
+}catch (EntityNotFound ex){
+user = new User(idUser);
+}
+
+        Set<Item> candidateItemSet = ((ContentDatasetLoader) dataset).getContentDataset().stream()
+                .filter((item -> candidateItems.contains(item.getId())))
+                .collect(Collectors.toSet());
+
+        Recommendations recommendToUser = recommendToUser(dataset, model, user, candidateItemSet);
+        return recommendToUser.getRecommendations();
     }
 }
