@@ -62,6 +62,7 @@ public class ChangeableMySQLDatasetLoader extends ChangeableDatasetLoaderAbstrac
     private ChangeableMySQLRatingsDataset ratingsDataset;
     private ChangeableMySQLContentDataset contentDataset;
     private ChangeableMySQLUsersDataset usersDataset;
+    private MySQLConnection mySQLConnection;
 
     public ChangeableMySQLDatasetLoader() {
         super();
@@ -122,31 +123,34 @@ public class ChangeableMySQLDatasetLoader extends ChangeableDatasetLoaderAbstrac
     }
 
     public synchronized final MySQLConnection getMySQLConnectionDescription() throws SQLException {
-        try {
-            String _user = (String) getParameterValue(CONNECTION_CONFIGURATION_USER);
-            String _pass = (String) getParameterValue(CONNECTION_CONFIGURATION_PASSWORD);
-            String _databaseName = (String) getParameterValue(CONNECTION_CONFIGURATION_DATABASE_NAME);
-            String _serverName = (String) getParameterValue(CONNECTION_CONFIGURATION_HOST_NAME);
-            int _port = (Integer) getParameterValue(CONNECTION_CONFIGURATION_PORT);
+        if (this.mySQLConnection == null) {
+            try {
+                String _user = (String) getParameterValue(CONNECTION_CONFIGURATION_USER);
+                String _pass = (String) getParameterValue(CONNECTION_CONFIGURATION_PASSWORD);
+                String _databaseName = (String) getParameterValue(CONNECTION_CONFIGURATION_DATABASE_NAME);
+                String _serverName = (String) getParameterValue(CONNECTION_CONFIGURATION_HOST_NAME);
+                int _port = (Integer) getParameterValue(CONNECTION_CONFIGURATION_PORT);
 
-            String _prefix = (String) getParameterValue(CONNECTION_CONFIGURATION_PREFIX);
+                String _prefix = (String) getParameterValue(CONNECTION_CONFIGURATION_PREFIX);
 
-            if (Global.isVerboseAnnoying()) {
-                Global.showInfoMessage(ChangeableMySQLDatasetLoader.class + ": Making database connection with properties:\n");
+                if (Global.isVerboseAnnoying()) {
+                    Global.showInfoMessage(ChangeableMySQLDatasetLoader.class + ": Making database connection with properties:\n");
 
-                Global.showInfoMessage("\tUser -----------> " + _user + "\n");
-                Global.showInfoMessage("\tPass -----------> " + _pass + "\n");
-                Global.showInfoMessage("\tDatabase Name --> " + _databaseName + "\n");
-                Global.showInfoMessage("\tServer Name ----> " + _serverName + "\n");
-                Global.showInfoMessage("\tPort -----------> " + _port + "\n");
-                Global.showInfoMessage("\tPrefix ---------> " + _prefix + "\n");
+                    Global.showInfoMessage("\tUser -----------> " + _user + "\n");
+                    Global.showInfoMessage("\tPass -----------> " + _pass + "\n");
+                    Global.showInfoMessage("\tDatabase Name --> " + _databaseName + "\n");
+                    Global.showInfoMessage("\tServer Name ----> " + _serverName + "\n");
+                    Global.showInfoMessage("\tPort -----------> " + _port + "\n");
+                    Global.showInfoMessage("\tPrefix ---------> " + _prefix + "\n");
+                }
+
+                this.mySQLConnection = new MySQLConnection(_user, _pass, _databaseName, _serverName, _port, _prefix);
+            } catch (ClassNotFoundException ex) {
+                ERROR_CODES.DEPENDENCY_NOT_FOUND.exit(ex);
+                throw new IllegalStateException(ex);
             }
-
-            return new MySQLConnection(_user, _pass, _databaseName, _serverName, _port, _prefix);
-        } catch (ClassNotFoundException ex) {
-            ERROR_CODES.DEPENDENCY_NOT_FOUND.exit(ex);
-            throw new IllegalStateException(ex);
         }
+        return this.mySQLConnection;
     }
 
     @Override
