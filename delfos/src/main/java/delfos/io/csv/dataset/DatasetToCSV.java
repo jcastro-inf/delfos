@@ -1,9 +1,5 @@
 package delfos.io.csv.dataset;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.util.Collection;
 import delfos.ERROR_CODES;
 import delfos.common.FileUtilities;
 import delfos.common.exceptions.dataset.CannotLoadContentDataset;
@@ -25,15 +21,16 @@ import delfos.io.csv.dataset.rating.RatingsDatasetToCSV_JavaCSV20;
 import delfos.io.csv.dataset.user.DefaultUsersDatasetToCSV;
 import delfos.io.csv.dataset.user.UsersDatasetToCSV;
 import delfos.io.types.DatasetSaver;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.Collection;
 
 /**
  * Clase que almacena datasets de valoraciones y de contenido en un archivo de
  * valores separados por comas (CSV)
  *
  * @author Jorge Castro Gallardo
- *
- * @version 1.0 Unknown date
- * @version 18-Septiembre-2013 Agregación de los datasets de usuarios.
  */
 public class DatasetToCSV extends DatasetSaver {
 
