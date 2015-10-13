@@ -53,7 +53,7 @@ public class SimilarMembers_exceptTest extends DelfosTest {
         Collection<GroupOfUsers> result = instance.shuffle(datasetLoader);
 
         Collection<GroupOfUsers> expResult = new ArrayList<>();
-        expResult.add(new GroupOfUsers(133, 258, 778, 800, 886));
+        expResult.add(new GroupOfUsers(5, 12, 16, 260, 886));
         assertEquals(expResult, result);
     }
 
