@@ -67,8 +67,11 @@ public class RecommendationsTable {
 
     public Recommendation getSelectedRecommendation() {
         int selectedRow = recommendationsJTable.getSelectedRow();
-
-        return recommendationsJTableModel.getRecommendationAtRow(selectedRow);
+        if (selectedRow == -1) {
+            return null;
+        } else {
+            return recommendationsJTableModel.getRecommendationAtRow(selectedRow);
+        }
     }
 
 }

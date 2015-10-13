@@ -18,6 +18,7 @@ import delfos.rs.RecommenderSystem;
 import delfos.rs.collaborativefiltering.knn.memorybased.KnnMemoryBasedCFRS;
 import delfos.rs.collaborativefiltering.knn.modelbased.KnnModelBasedCFRS;
 import delfos.rs.recommendation.Recommendations;
+import delfos.view.neighborhood.components.iknn.KnnModelCFRSRecommendationsGUI;
 import delfos.view.neighborhood.components.uknn.KnnMemoryCFRSRecommendationsGUI;
 import delfos.view.neighborhood.results.RecommendationsDefaultGUI;
 import delfos.view.neighborhood.results.RecommendationsGUI;
@@ -69,9 +70,13 @@ public class RecommendationsExplainedWindow extends JFrame {
 
     private RecommendationModelHolder recommendationModelHolder = new RecommendationModelHolder();
 
-    class RecommendationModelHolder {
+    public class RecommendationModelHolder {
 
         Object recommendationModel = null;
+
+        private RecommendationModelHolder() {
+
+        }
 
         public synchronized Object getRecommendationModel() {
             return recommendationModel;
@@ -125,6 +130,10 @@ public class RecommendationsExplainedWindow extends JFrame {
             thread.start();
         }
 
+    }
+
+    public RecommendationModelHolder getRecommendationModelHolder() {
+        return recommendationModelHolder;
     }
 
     /**
@@ -581,11 +590,11 @@ public class RecommendationsExplainedWindow extends JFrame {
         return recommenderSystemSelector.getItemAt(recommenderSystemSelector.getSelectedIndex());
     }
 
-    private User userSelected() {
+    public User userSelected() {
         return userSelector.getItemAt(userSelector.getSelectedIndex());
     }
 
-    private ConfiguredDataset configuredDatasetSelected() {
+    public ConfiguredDataset configuredDatasetSelected() {
         return configuredDatasetSelector.getItemAt(configuredDatasetSelector.getSelectedIndex());
     }
 
@@ -596,7 +605,7 @@ public class RecommendationsExplainedWindow extends JFrame {
         if (recommenderSystem instanceof KnnMemoryBasedCFRS) {
             return new KnnMemoryCFRSRecommendationsGUI();
         } else if (recommenderSystem instanceof KnnModelBasedCFRS) {
-            return new RecommendationsDefaultGUI();
+            return new KnnModelCFRSRecommendationsGUI(this);
         } else {
             return new RecommendationsDefaultGUI();
         }
