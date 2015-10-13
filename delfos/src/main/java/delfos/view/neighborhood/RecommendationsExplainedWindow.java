@@ -18,7 +18,7 @@ import delfos.rs.RecommenderSystem;
 import delfos.rs.collaborativefiltering.knn.memorybased.KnnMemoryBasedCFRS;
 import delfos.rs.collaborativefiltering.knn.modelbased.KnnModelBasedCFRS;
 import delfos.rs.recommendation.Recommendations;
-import delfos.view.neighborhood.results.KnnMemoryCFRSRecommendationsGUI;
+import delfos.view.neighborhood.components.uknn.KnnMemoryCFRSRecommendationsGUI;
 import delfos.view.neighborhood.results.RecommendationsDefaultGUI;
 import delfos.view.neighborhood.results.RecommendationsGUI;
 import java.awt.Component;

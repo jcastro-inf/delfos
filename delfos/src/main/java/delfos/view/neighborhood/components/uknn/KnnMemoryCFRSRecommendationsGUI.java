@@ -1,4 +1,4 @@
-package delfos.view.neighborhood.results;
+package delfos.view.neighborhood.components.uknn;
 
 import delfos.dataset.basic.item.ContentDataset;
 import delfos.dataset.basic.item.Item;
@@ -15,7 +15,7 @@ import delfos.rs.recommendation.Recommendations;
 import delfos.rs.recommendation.RecommendationsWithNeighbors;
 import delfos.view.neighborhood.components.ratings.RatingsTable;
 import delfos.view.neighborhood.components.recommendations.RecommendationsTable;
-import delfos.view.neighborhood.components.uknn.UserNeighborsTable;
+import delfos.view.neighborhood.results.RecommendationsGUI;
 import java.awt.Component;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
