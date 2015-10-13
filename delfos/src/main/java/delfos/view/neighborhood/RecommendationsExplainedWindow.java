@@ -1,5 +1,7 @@
 package delfos.view.neighborhood;
 
+import delfos.common.Chronometer;
+import delfos.common.DateCollapse;
 import delfos.common.exceptions.dataset.CannotLoadUsersDataset;
 import delfos.common.parameters.ParameterListener;
 import delfos.configureddatasets.ConfiguredDataset;
@@ -11,11 +13,13 @@ import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.user.User;
 import delfos.dataset.basic.user.UsersDataset;
 import delfos.recommendationcandidates.OnlyNewItems;
+import delfos.rs.RecommendationModelBuildingProgressListener;
 import delfos.rs.RecommenderSystem;
 import delfos.rs.collaborativefiltering.knn.memorybased.KnnMemoryBasedCFRS;
 import delfos.rs.collaborativefiltering.knn.modelbased.KnnModelBasedCFRS;
 import delfos.rs.recommendation.Recommendations;
-import delfos.view.neighborhood.results.KnnMemoryCFRSRecommendationsGUI;
+import delfos.view.neighborhood.components.iknn.KnnModelCFRSRecommendationsGUI;
+import delfos.view.neighborhood.components.uknn.KnnMemoryCFRSRecommendationsGUI;
 import delfos.view.neighborhood.results.RecommendationsDefaultGUI;
 import delfos.view.neighborhood.results.RecommendationsGUI;
 import java.awt.Component;
@@ -53,7 +57,7 @@ public class RecommendationsExplainedWindow extends JFrame {
 
     public static final long serialVersionUID = 1L;
 
-    private JLabel remainingTime;
+    private JLabel timeMessage;
     private JLabel progressMessage;
     private JProgressBar progressBar;
 
@@ -66,18 +70,19 @@ public class RecommendationsExplainedWindow extends JFrame {
 
     private RecommendationModelHolder recommendationModelHolder = new RecommendationModelHolder();
 
-    class RecommendationModelHolder {
+    public class RecommendationModelHolder {
 
         Object recommendationModel = null;
 
+        private RecommendationModelHolder() {
+
+        }
+
         public synchronized Object getRecommendationModel() {
-            if (recommendationModel == null) {
-                recommendationModel = buildRecommendationModel();
-            }
             return recommendationModel;
         }
 
-        public synchronized Object buildRecommendationModel() {
+        private synchronized Object buildRecommendationModel() {
             ConfiguredDataset configuredDataset
                     = configuredDatasetSelected();
 
@@ -86,10 +91,49 @@ public class RecommendationsExplainedWindow extends JFrame {
         }
 
         public synchronized void reloadRecommendationModel() {
+
             recommendationModel = null;
-            recommendationModel = buildRecommendationModel();
+
+            class ModelBuilder implements Runnable, RecommendationModelBuildingProgressListener {
+
+                @Override
+                public void run() {
+                    Chronometer chronometer = new Chronometer();
+                    recommenderSystemSelected().addRecommendationModelBuildingProgressListener(this);
+                    recommendationModel = buildRecommendationModel();
+                    Recommendations recommendations = computeRecommendations(recommendationModel);
+                    recommenderSystemSelected().removeRecommendationModelBuildingProgressListener(this);
+
+                    updateGUI(
+                            "Recommendation model built",
+                            "Built in " + DateCollapse.collapse(chronometer.getTotalElapsed()),
+                            100);
+                }
+
+                @Override
+                public void buildingProgressChanged(String actualJob, int percent, long remainingTime) {
+                    updateGUI(
+                            "Building recommendation model (" + actualJob + ")",
+                            "Remaining time: " + DateCollapse.collapse(remainingTime),
+                            percent);
+                }
+
+                private void updateGUI(String progressMessage, String timeMessage, int percent) {
+                    RecommendationsExplainedWindow.this.progressMessage.setText(progressMessage);
+                    RecommendationsExplainedWindow.this.timeMessage.setText(timeMessage);
+                    RecommendationsExplainedWindow.this.progressBar.setValue(percent);
+                }
+            }
+
+            ModelBuilder modelBuilder = new ModelBuilder();
+            Thread thread = new Thread(modelBuilder);
+            thread.start();
         }
 
+    }
+
+    public RecommendationModelHolder getRecommendationModelHolder() {
+        return recommendationModelHolder;
     }
 
     /**
@@ -171,7 +215,7 @@ public class RecommendationsExplainedWindow extends JFrame {
         constraints.insets = new Insets(3, 4, 3, 4);
         ret.add(progressMessage, constraints);
 
-        this.remainingTime = new JLabel();
+        this.timeMessage = new JLabel();
         constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.weightx = 1.0;
         constraints.weighty = 0.0;
@@ -180,7 +224,7 @@ public class RecommendationsExplainedWindow extends JFrame {
         constraints.gridwidth = 1;
         constraints.gridheight = 1;
         constraints.insets = new Insets(3, 4, 3, 4);
-        ret.add(remainingTime, constraints);
+        ret.add(timeMessage, constraints);
 
         this.progressBar = new JProgressBar(SwingConstants.HORIZONTAL);
         this.progressBar.setStringPainted(true);
@@ -397,7 +441,7 @@ public class RecommendationsExplainedWindow extends JFrame {
         recommenderSystemSelector.setModel(new DefaultComboBoxModel<>(recommenderSystems));
         addRecommenderSystemGUI(recommenderSystems[0]);
 
-        reloadRecommendations();
+        recommendationModelHolder.reloadRecommendationModel();
     }
 
     private void reloadUsersSelector(DatasetLoader<? extends Rating> datasetLoader) throws IllegalStateException, CannotLoadUsersDataset {
@@ -433,7 +477,6 @@ public class RecommendationsExplainedWindow extends JFrame {
 
         recommendationModelHolder.reloadRecommendationModel();
         reloadUsersSelector(datasetLoader);
-        reloadRecommendations();
     };
 
     private final ItemListener datasetLoaderSelectedListener = (ItemEvent e) -> {
@@ -455,7 +498,6 @@ public class RecommendationsExplainedWindow extends JFrame {
 
     private final ParameterListener recommenderSystemParameterListener = () -> {
         recommendationModelHolder.reloadRecommendationModel();
-        reloadRecommendations();
     };
 
     private final ItemListener recommenderSystemItemListener = (ItemEvent e) -> {
@@ -523,12 +565,13 @@ public class RecommendationsExplainedWindow extends JFrame {
     }
 
     private void addUserListener() {
-        userSelector.addActionListener((actionEvent) -> reloadRecommendations());
+        userSelector.addActionListener((actionEvent) -> {
+            Object recommendationModel = recommendationModelHolder.getRecommendationModel();
+            computeRecommendations(recommendationModel);
+        });
     }
 
-    private void reloadRecommendations() {
-        Object recommendationModel = recommendationModelHolder.getRecommendationModel();
-
+    private Recommendations computeRecommendations(Object recommendationModel) {
         User userSelected = userSelected();
 
         RecommenderSystem recommenderSystem = recommenderSystemSelected();
@@ -540,17 +583,18 @@ public class RecommendationsExplainedWindow extends JFrame {
         Recommendations recommendations = recommenderSystem.recommendToUser(datasetLoader, recommendationModel, userSelected, candidateItems);
 
         resultsPanel.updateResult(datasetLoader, recommendationModel, userSelected, recommendations, candidateItems);
+        return recommendations;
     }
 
     public RecommenderSystem recommenderSystemSelected() {
         return recommenderSystemSelector.getItemAt(recommenderSystemSelector.getSelectedIndex());
     }
 
-    private User userSelected() {
+    public User userSelected() {
         return userSelector.getItemAt(userSelector.getSelectedIndex());
     }
 
-    private ConfiguredDataset configuredDatasetSelected() {
+    public ConfiguredDataset configuredDatasetSelected() {
         return configuredDatasetSelector.getItemAt(configuredDatasetSelector.getSelectedIndex());
     }
 
@@ -561,7 +605,7 @@ public class RecommendationsExplainedWindow extends JFrame {
         if (recommenderSystem instanceof KnnMemoryBasedCFRS) {
             return new KnnMemoryCFRSRecommendationsGUI();
         } else if (recommenderSystem instanceof KnnModelBasedCFRS) {
-            return new RecommendationsDefaultGUI();
+            return new KnnModelCFRSRecommendationsGUI(this);
         } else {
             return new RecommendationsDefaultGUI();
         }

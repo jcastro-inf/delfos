@@ -66,7 +66,11 @@ public class RecommendationsJTableModel extends AbstractTableModel {
     }
 
     Recommendation getRecommendationAtRow(int selectedRow) {
-        return (Recommendation) getValueAt(selectedRow, RECOMMENDATION_INDEX);
+        if (selectedRow == -1) {
+            return null;
+        } else {
+            return (Recommendation) getValueAt(selectedRow, RECOMMENDATION_INDEX);
+        }
     }
 
 }

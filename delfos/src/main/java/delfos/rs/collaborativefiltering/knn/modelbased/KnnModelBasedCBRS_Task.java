@@ -1,11 +1,11 @@
 package delfos.rs.collaborativefiltering.knn.modelbased;
 
+import delfos.common.parallelwork.Task;
+import delfos.dataset.basic.loader.types.DatasetLoader;
+import delfos.dataset.basic.rating.Rating;
+import delfos.rs.collaborativefiltering.profile.Neighbor;
 import java.util.Collections;
 import java.util.List;
-import delfos.common.parallelwork.Task;
-import delfos.dataset.basic.rating.Rating;
-import delfos.dataset.basic.rating.RatingsDataset;
-import delfos.rs.collaborativefiltering.profile.Neighbor;
 
 /**
  *
@@ -17,13 +17,13 @@ public class KnnModelBasedCBRS_Task extends Task {
 
     public final int idItem;
     private KnnModelBasedCFRS rs;
-    private RatingsDataset<? extends Rating> ratingsDataset;
+    private DatasetLoader<? extends Rating> datasetLoader;
     private List<Neighbor> neighbors = null;
 
-    public KnnModelBasedCBRS_Task(int idItem, KnnModelBasedCFRS rs, RatingsDataset<? extends Rating> ratingsDataset) {
+    public KnnModelBasedCBRS_Task(int idItem, KnnModelBasedCFRS rs, DatasetLoader<? extends Rating> datasetLoader) {
         this.idItem = idItem;
         this.rs = rs;
-        this.ratingsDataset = ratingsDataset;
+        this.datasetLoader = datasetLoader;
     }
 
     @Override
@@ -45,13 +45,13 @@ public class KnnModelBasedCBRS_Task extends Task {
         return rs;
     }
 
-    public RatingsDataset<? extends Rating> getRatingsDataset() {
-        return ratingsDataset;
+    public DatasetLoader<? extends Rating> getDatasetLoader() {
+        return datasetLoader;
     }
 
     public void setNeighbors(List<Neighbor> neighbors) {
         rs = null;
-        ratingsDataset = null;
+        datasetLoader = null;
         this.neighbors = neighbors;
     }
 

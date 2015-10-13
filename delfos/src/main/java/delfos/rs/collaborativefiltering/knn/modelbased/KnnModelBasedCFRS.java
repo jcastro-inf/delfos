@@ -8,6 +8,8 @@ import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
 import delfos.common.exceptions.dataset.items.ItemNotFound;
 import delfos.common.exceptions.dataset.users.UserNotFound;
 import delfos.common.parallelwork.MultiThreadExecutionManager;
+import delfos.dataset.basic.item.ContentDataset;
+import delfos.dataset.basic.loader.types.ContentDatasetLoader;
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RatingsDataset;
@@ -76,11 +78,11 @@ public class KnnModelBasedCFRS
 
         List<KnnModelBasedCBRS_Task> tasks = new ArrayList<>(allRatedItems.size());
         for (int idItem : allRatedItems) {
-            tasks.add(new KnnModelBasedCBRS_Task(idItem, this, ratingsDataset));
+            tasks.add(new KnnModelBasedCBRS_Task(idItem, this, datasetLoader));
         }
 
         MultiThreadExecutionManager<KnnModelBasedCBRS_Task> executionManager = new MultiThreadExecutionManager<>(
-                "Profile creation",
+                "Item-item model calculation",
                 tasks,
                 KnnModelBasedCBRS_TaskExecutor.class);
 
@@ -92,7 +94,7 @@ public class KnnModelBasedCFRS
             itemsProfiles.put(finishedTasks.idItem, new KnnModelItemProfile(finishedTasks.getIdItem(), neighbors));
         }
 
-        fireBuildingProgressChangedEvent("Finished profile creation", 100, -1);
+        fireBuildingProgressChangedEvent("Finished item-item model calculation", 100, -1);
         return new KnnModelBasedCFRSModel(itemsProfiles);
 
     }
@@ -153,12 +155,15 @@ public class KnnModelBasedCFRS
      * @throws ItemNotFound Cuando se intentan buscar los vecinos de un producto
      * que no existe en el dataset de valoraciones.
      */
-    public List<Neighbor> getNeighbors(RatingsDataset<? extends Rating> ratingsDataset, int idItem) throws ItemNotFound {
+    public List<Neighbor> getNeighbors(DatasetLoader datasetLoader, int idItem) throws ItemNotFound {
         CollaborativeSimilarityMeasure similarityMeasureValue = (CollaborativeSimilarityMeasure) getParameterValue(SIMILARITY_MEASURE);
         int neighborhoodSizeValue = (Integer) getParameterValue(NEIGHBORHOOD_SIZE);
 
         boolean isRelevanceFactorApplied = (Boolean) getParameterValue(RELEVANCE_FACTOR);
         int relevanceFactorIntValue = (Integer) getParameterValue(RELEVANCE_FACTOR_VALUE);
+
+        RatingsDataset ratingsDataset = datasetLoader.getRatingsDataset();
+        ContentDataset contentDataset = ((ContentDatasetLoader) datasetLoader).getContentDataset();
 
         List<Neighbor> itemsSimilares = new ArrayList<>();
         Map<Integer, ? extends Rating> itemRatingsRated = ratingsDataset.getItemRatingsRated(idItem);
@@ -193,7 +198,7 @@ public class KnnModelBasedCFRS
                             if (isRelevanceFactorApplied && common.size() < relevanceFactorIntValue) {
                                 similarity = (similarity * (common.size() / (float) relevanceFactorIntValue));
                             }
-                            itemsSimilares.add(new Neighbor(RecommendationEntity.ITEM, idItemNeighbor, similarity));
+                            itemsSimilares.add(new Neighbor(RecommendationEntity.ITEM, contentDataset.get(idItemNeighbor), similarity));
                         }
                     } catch (CouldNotComputeSimilarity ex) {
                     }

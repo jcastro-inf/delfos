@@ -1,6 +1,7 @@
 package delfos.rs.collaborativefiltering.profile;
 
 import delfos.common.decimalnumbers.NumberCompare;
+import delfos.dataset.basic.features.EntityWithFeatures;
 import delfos.rs.collaborativefiltering.knn.RecommendationEntity;
 import java.io.Serializable;
 import java.util.Comparator;
@@ -60,18 +61,19 @@ public class Neighbor implements Comparable<Neighbor>, Serializable {
     /**
      * Entidad que es este vecino (Usuario o producto).
      */
-    private final RecommendationEntity entity;
+    private final RecommendationEntity recommendationEntity;
     /**
      * ID del vecino.
      */
     private final int idNeighbor;
+    private EntityWithFeatures neighbor;
     /**
      * Similitud con el objeto del que es vecino.
      */
     private final float similarity;
 
     public Neighbor() {
-        this.entity = null;
+        this.recommendationEntity = null;
         this.idNeighbor = -1;
         this.similarity = -1;
     }
@@ -84,9 +86,17 @@ public class Neighbor implements Comparable<Neighbor>, Serializable {
      * @param idNeighbor id de la entidad vecina
      * @param similarity peso del vecino
      */
+    @Deprecated
     public Neighbor(RecommendationEntity entity, int idNeighbor, double similarity) {
-        this.entity = entity;
+        this.recommendationEntity = entity;
         this.idNeighbor = idNeighbor;
+        this.similarity = (float) similarity;
+    }
+
+    public Neighbor(RecommendationEntity recommendationEntity, EntityWithFeatures neighbor, double similarity) {
+        this.recommendationEntity = recommendationEntity;
+        this.idNeighbor = neighbor.getId();
+        this.neighbor = neighbor;
         this.similarity = (float) similarity;
     }
 
@@ -110,14 +120,14 @@ public class Neighbor implements Comparable<Neighbor>, Serializable {
 
     @Override
     public int compareTo(Neighbor t) {
-        if (this.entity.compareTo(t.getEntity()) == 0) {
+        if (this.recommendationEntity.compareTo(t.getRecommendationEntity()) == 0) {
             if (BY_ID.compare(this, t) == 0) {
                 return BY_SIMILARITY_DESC.compare(this, t);
             } else {
                 return BY_ID.compare(this, t);
             }
         }
-        return this.entity.compareTo(t.getEntity());
+        return this.recommendationEntity.compareTo(t.getRecommendationEntity());
     }
 
     @Override
@@ -126,20 +136,20 @@ public class Neighbor implements Comparable<Neighbor>, Serializable {
             return false;
         }
 
-        Neighbor neighbor = (Neighbor) obj;
-        if (entity != neighbor.entity) {
+        Neighbor otherNeighbor = (Neighbor) obj;
+        if (recommendationEntity != otherNeighbor.recommendationEntity) {
             return false;
-        } else if (idNeighbor != neighbor.idNeighbor) {
+        } else if (idNeighbor != otherNeighbor.idNeighbor) {
             return false;
         } else {
-            return NumberCompare.equals(this.similarity, neighbor.similarity);
+            return NumberCompare.equals(this.similarity, otherNeighbor.similarity);
         }
     }
 
     @Override
     public int hashCode() {
         int hash = 3;
-        hash = 97 * hash + (this.entity != null ? this.entity.hashCode() : 0);
+        hash = 97 * hash + (this.recommendationEntity != null ? this.recommendationEntity.hashCode() : 0);
         hash = 97 * hash + this.idNeighbor;
         hash = 97 * hash + Float.floatToIntBits(this.similarity);
         return hash;
@@ -151,14 +161,18 @@ public class Neighbor implements Comparable<Neighbor>, Serializable {
      *
      * @return tipo de entidad vecina
      */
-    public RecommendationEntity getEntity() {
-        return entity;
+    public RecommendationEntity getRecommendationEntity() {
+        return recommendationEntity;
+    }
+
+    public EntityWithFeatures getNeighbor() {
+        return neighbor;
     }
 
     @Override
     public String toString() {
         String ret = "unknow";
-        switch (entity) {
+        switch (recommendationEntity) {
             case ITEM:
                 ret = "idItem:" + getIdNeighbor() + " -> " + getSimilarity();
                 break;
