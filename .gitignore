@@ -1,5 +1,6 @@
 # Compile output directory.
 /delfos/target/
+/delfos/nbactions-dummy-profile.xml
 
 # Delfos temporary directory, used to store unsaved results and other files and directories that are safe to delete.
 /delfos/temp/
