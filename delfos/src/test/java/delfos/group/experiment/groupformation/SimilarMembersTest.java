@@ -1,6 +1,12 @@
 package delfos.group.experiment.groupformation;
 
+import delfos.configureddatasets.ConfiguredDatasetsFactory;
+import delfos.constants.DelfosTest;
+import delfos.constants.TestConstants;
+import delfos.dataset.basic.loader.types.DatasetLoader;
+import delfos.dataset.basic.rating.Rating;
 import delfos.group.experiment.validation.groupformation.SimilarMembers;
+import delfos.group.groupsofusers.GroupOfUsers;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -10,13 +16,6 @@ import java.util.TreeSet;
 import org.junit.Assert;
 import static org.junit.Assert.assertEquals;
 import org.junit.Test;
-import delfos.configureddatasets.ConfiguredDatasetsFactory;
-import delfos.constants.DelfosTest;
-import delfos.constants.TestConstants;
-import delfos.dataset.basic.rating.Rating;
-import delfos.dataset.basic.loader.types.DatasetLoader;
-import delfos.group.groupsofusers.GroupOfUsers;
-import delfos.group.groupsofusers.GroupOfUsers;
 
 /**
  *
