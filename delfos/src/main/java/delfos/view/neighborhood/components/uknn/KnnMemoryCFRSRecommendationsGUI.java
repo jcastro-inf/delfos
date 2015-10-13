@@ -13,7 +13,6 @@ import delfos.rs.collaborativefiltering.profile.Neighbor;
 import delfos.rs.recommendation.Recommendation;
 import delfos.rs.recommendation.Recommendations;
 import delfos.rs.recommendation.RecommendationsWithNeighbors;
-import delfos.view.neighborhood.components.ratings.RatingsTable;
 import delfos.view.neighborhood.components.recommendations.RecommendationsTable;
 import delfos.view.neighborhood.results.RecommendationsGUI;
 import java.awt.Component;
@@ -39,7 +38,7 @@ public class KnnMemoryCFRSRecommendationsGUI implements RecommendationsGUI {
 
     private RecommendationsTable recommendationsTable;
     private UserNeighborsTable neighborsTable;
-    private RatingsTable ratingsTable;
+    private RatingsUserNeighborTable ratingsTable;
     private final Component resultsComponent;
     private JPanel ratingsPanel;
     private JPanel neighborsPanel;
@@ -113,7 +112,7 @@ public class KnnMemoryCFRSRecommendationsGUI implements RecommendationsGUI {
 
     private Component neighborsPanel() {
         neighborsPanel = new JPanel(new GridBagLayout());
-        neighborsPanel.setBorder(BorderFactory.createTitledBorder("Neighbors"));
+        neighborsPanel.setBorder(BorderFactory.createTitledBorder("User neighbors"));
         GridBagConstraints constraints = new GridBagConstraints();
         constraints.fill = GridBagConstraints.BOTH;
         constraints.weightx = 1.0;
@@ -131,7 +130,7 @@ public class KnnMemoryCFRSRecommendationsGUI implements RecommendationsGUI {
 
     private Component ratingsPanel() {
         ratingsPanel = new JPanel(new GridBagLayout());
-        ratingsPanel.setBorder(BorderFactory.createTitledBorder("Ratings"));
+        ratingsPanel.setBorder(BorderFactory.createTitledBorder("Ratings neighbor vs target"));
 
         GridBagConstraints constraints = new GridBagConstraints();
         constraints.fill = GridBagConstraints.BOTH;
@@ -143,7 +142,7 @@ public class KnnMemoryCFRSRecommendationsGUI implements RecommendationsGUI {
         constraints.gridheight = 1;
         constraints.insets = new Insets(3, 4, 3, 4);
 
-        this.ratingsTable = new RatingsTable();
+        this.ratingsTable = new RatingsUserNeighborTable();
         ratingsPanel.add(ratingsTable.getComponent(), constraints);
         return ratingsPanel;
     }
