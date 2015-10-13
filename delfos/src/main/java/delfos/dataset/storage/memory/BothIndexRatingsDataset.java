@@ -1,7 +1,6 @@
 package delfos.dataset.storage.memory;
 
 import delfos.ERROR_CODES;
-import delfos.common.exceptions.dataset.items.ItemNotFound;
 import delfos.common.exceptions.dataset.users.UserNotFound;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RatingsDataset;
@@ -146,17 +145,9 @@ public class BothIndexRatingsDataset<RatingType extends Rating> extends RatingsD
     }
 
     @Override
-    public RatingType getRating(int idUser, int idItem) throws ItemNotFound, UserNotFound {
+    public RatingType getRating(int idUser, int idItem) {
 
-        if (!itemIndex.containsKey(idItem)) {
-            throw new ItemNotFound(idItem);
-        }
-
-        if (!userIndex.containsKey(idUser)) {
-            throw new UserNotFound(idUser);
-        }
-
-        if (userIndex.get(idUser).containsKey(idItem)) {
+        if (userIndex.containsKey(idUser) && userIndex.get(idUser).containsKey(idItem)) {
             RatingType rating = userIndex.get(idUser).get(idItem);
             return rating;
         } else {
@@ -207,7 +198,7 @@ public class BothIndexRatingsDataset<RatingType extends Rating> extends RatingsD
     }
 
     @Override
-    public Set<Integer> getUserRated(Integer idUser) throws UserNotFound {
+    public Set<Integer> getUserRated(Integer idUser) {
         if (userIndex.containsKey(idUser)) {
             return Collections.unmodifiableSet(getUserRatingsRated(idUser).keySet());
         } else {
@@ -216,7 +207,7 @@ public class BothIndexRatingsDataset<RatingType extends Rating> extends RatingsD
     }
 
     @Override
-    public Set<Integer> getItemRated(Integer idItem) throws ItemNotFound {
+    public Set<Integer> getItemRated(Integer idItem) {
         if (itemIndex.containsKey(idItem)) {
             return Collections.unmodifiableSet(getItemRatingsRated(idItem).keySet());
         } else {
@@ -225,7 +216,7 @@ public class BothIndexRatingsDataset<RatingType extends Rating> extends RatingsD
     }
 
     @Override
-    public Map<Integer, RatingType> getUserRatingsRated(Integer idUser) throws UserNotFound {
+    public Map<Integer, RatingType> getUserRatingsRated(Integer idUser) {
         if (userIndex.containsKey(idUser)) {
             Map<Integer, RatingType> ret = userIndex.get(idUser);
             return Collections.unmodifiableMap(ret);
@@ -235,7 +226,7 @@ public class BothIndexRatingsDataset<RatingType extends Rating> extends RatingsD
     }
 
     @Override
-    public Map<Integer, RatingType> getItemRatingsRated(Integer idItem) throws ItemNotFound {
+    public Map<Integer, RatingType> getItemRatingsRated(Integer idItem) {
         if (itemIndex.containsKey(idItem)) {
             Map<Integer, RatingType> ret = itemIndex.get(idItem);
             return Collections.unmodifiableMap(ret);
@@ -250,7 +241,7 @@ public class BothIndexRatingsDataset<RatingType extends Rating> extends RatingsD
     }
 
     @Override
-    public boolean isRatedItem(int idItem) throws ItemNotFound {
+    public boolean isRatedItem(int idItem) {
         if (itemIndex.containsKey(idItem)) {
             return itemIndex.get(idItem).isEmpty();
         } else {
@@ -259,7 +250,7 @@ public class BothIndexRatingsDataset<RatingType extends Rating> extends RatingsD
     }
 
     @Override
-    public boolean isRatedUser(int idUser) throws UserNotFound {
+    public boolean isRatedUser(int idUser) {
         if (userIndex.containsKey(idUser)) {
             return userIndex.get(idUser).isEmpty();
         } else {
