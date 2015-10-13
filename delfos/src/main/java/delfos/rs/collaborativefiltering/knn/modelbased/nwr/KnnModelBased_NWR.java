@@ -118,7 +118,7 @@ public class KnnModelBased_NWR
         });
 
         MultiThreadExecutionManager<KnnModelBasedCBRSTask> executionManager = new MultiThreadExecutionManager<>(
-                "Profile creation",
+                "Item-item model calculation",
                 tasks,
                 SingleItemProfileGeneration.class);
 
@@ -138,7 +138,7 @@ public class KnnModelBased_NWR
             itemsProfiles.put(finishedTasks.idItem, new KnnModelItemProfile(finishedTasks.getIdItem(), neighbors));
         });
 
-        fireBuildingProgressChangedEvent("Finished profile creation", 100, -1);
+        fireBuildingProgressChangedEvent("Finished item-item model calculation", 100, -1);
         return new KnnModelBasedCFRSModel(itemsProfiles);
 
     }
