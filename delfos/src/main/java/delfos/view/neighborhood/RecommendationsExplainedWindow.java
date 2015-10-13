@@ -74,13 +74,10 @@ public class RecommendationsExplainedWindow extends JFrame {
         Object recommendationModel = null;
 
         public synchronized Object getRecommendationModel() {
-            if (recommendationModel == null) {
-                recommendationModel = buildRecommendationModel();
-            }
             return recommendationModel;
         }
 
-        private Object buildRecommendationModel() {
+        private synchronized Object buildRecommendationModel() {
             ConfiguredDataset configuredDataset
                     = configuredDatasetSelected();
 
@@ -560,7 +557,7 @@ public class RecommendationsExplainedWindow extends JFrame {
 
     private void addUserListener() {
         userSelector.addActionListener((actionEvent) -> {
-            Object recommendationModel = recommendationModelHolder.buildRecommendationModel();
+            Object recommendationModel = recommendationModelHolder.getRecommendationModel();
             computeRecommendations(recommendationModel);
         });
     }
