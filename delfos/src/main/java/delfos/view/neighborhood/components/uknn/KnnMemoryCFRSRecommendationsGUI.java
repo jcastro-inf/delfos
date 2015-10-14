@@ -36,6 +36,10 @@ import javax.swing.event.ListSelectionEvent;
  */
 public class KnnMemoryCFRSRecommendationsGUI implements RecommendationsGUI {
 
+    private static final String RECOMMENDATIONS_BORDER_TITLE = "Recommendations";
+    private static final String RATINGS_BORDER_TITLE = "Ratings neighbor vs target";
+    private static final String NEIGHBORS_BORDER_TITLE = "User neighbors";
+
     private RecommendationsTable recommendationsTable;
     private UserNeighborsTable neighborsTable;
     private RatingsUserNeighborTable ratingsTable;
@@ -93,7 +97,7 @@ public class KnnMemoryCFRSRecommendationsGUI implements RecommendationsGUI {
     private Component recommendationsPanel() {
         recommendationsPanel = new JPanel(new GridBagLayout());
 
-        recommendationsPanel.setBorder(BorderFactory.createTitledBorder("Recommendations"));
+        recommendationsPanel.setBorder(BorderFactory.createTitledBorder(RECOMMENDATIONS_BORDER_TITLE));
 
         GridBagConstraints constraints = new GridBagConstraints();
         constraints.fill = GridBagConstraints.BOTH;
@@ -112,7 +116,7 @@ public class KnnMemoryCFRSRecommendationsGUI implements RecommendationsGUI {
 
     private Component neighborsPanel() {
         neighborsPanel = new JPanel(new GridBagLayout());
-        neighborsPanel.setBorder(BorderFactory.createTitledBorder("User neighbors"));
+        neighborsPanel.setBorder(BorderFactory.createTitledBorder(NEIGHBORS_BORDER_TITLE));
         GridBagConstraints constraints = new GridBagConstraints();
         constraints.fill = GridBagConstraints.BOTH;
         constraints.weightx = 1.0;
@@ -130,7 +134,7 @@ public class KnnMemoryCFRSRecommendationsGUI implements RecommendationsGUI {
 
     private Component ratingsPanel() {
         ratingsPanel = new JPanel(new GridBagLayout());
-        ratingsPanel.setBorder(BorderFactory.createTitledBorder("Ratings neighbor vs target"));
+        ratingsPanel.setBorder(BorderFactory.createTitledBorder(RATINGS_BORDER_TITLE));
 
         GridBagConstraints constraints = new GridBagConstraints();
         constraints.fill = GridBagConstraints.BOTH;

@@ -46,7 +46,6 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.JSpinner;
-import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingConstants;
 
 /**
@@ -56,6 +55,10 @@ import javax.swing.SwingConstants;
 public class RecommendationsExplainedWindow extends JFrame {
 
     public static final long serialVersionUID = 1L;
+
+    private static final String TARGET_USER_BORDER_TITLE = "User selection";
+    private static final String DATASET_BORDER_TITLE = "Dataset";
+    private static final String RECOMMENDER_SYSTEM_BORDER_TITLE = "Recommender System";
 
     private JLabel timeMessage;
     private JLabel progressMessage;
@@ -244,7 +247,7 @@ public class RecommendationsExplainedWindow extends JFrame {
 
     private Component panelRecommenderSystems() {
         JPanel ret = new JPanel(new GridBagLayout());
-        ret.setBorder(BorderFactory.createTitledBorder("Recommender Systems"));
+        ret.setBorder(BorderFactory.createTitledBorder(RECOMMENDER_SYSTEM_BORDER_TITLE));
 
         GridBagConstraints constraints = new GridBagConstraints();
         constraints.fill = GridBagConstraints.HORIZONTAL;
@@ -275,7 +278,7 @@ public class RecommendationsExplainedWindow extends JFrame {
 
     private Component panelDatasetSelector() {
         JPanel ret = new JPanel(new GridBagLayout());
-        ret.setBorder(BorderFactory.createTitledBorder("Dataset"));
+        ret.setBorder(BorderFactory.createTitledBorder(DATASET_BORDER_TITLE));
 
         GridBagConstraints constraints = new GridBagConstraints();
 
@@ -307,42 +310,10 @@ public class RecommendationsExplainedWindow extends JFrame {
         return ret;
     }
 
-    private Component panelCriterioRelevancia() {
-        JPanel ret = new JPanel(new GridBagLayout());
-        ret.setBorder(BorderFactory.createTitledBorder("Relevance criteria"));
-
-        GridBagConstraints constraints = new GridBagConstraints();
-
-        constraints.fill = GridBagConstraints.HORIZONTAL;
-        constraints.anchor = GridBagConstraints.NORTH;
-        constraints.weightx = 1.0;
-        constraints.weighty = 0.0;
-        constraints.gridx = 0;
-        constraints.gridy = 0;
-        constraints.gridwidth = 1;
-        constraints.gridheight = 1;
-        constraints.insets = new Insets(3, 4, 3, 4);
-        ret.add(new JLabel("Relevance threshold"), constraints);
-
-        constraints.fill = GridBagConstraints.HORIZONTAL;
-        constraints.anchor = GridBagConstraints.NORTH;
-        constraints.weightx = 0.0;
-        constraints.weighty = 0.0;
-        constraints.gridx = 1;
-        constraints.gridy = 0;
-        constraints.gridwidth = 1;
-        constraints.gridheight = 1;
-        constraints.insets = new Insets(3, 4, 3, 4);
-        this.relevanceThresholdSelector = new JSpinner(new SpinnerNumberModel(4.0, 0.1, 5.0, 0.2));
-        ret.add(relevanceThresholdSelector, constraints);
-
-        return ret;
-    }
-
     private Component panelSelectorUsuario() {
 
         JPanel ret = new JPanel(new GridBagLayout());
-        ret.setBorder(BorderFactory.createTitledBorder("User selection"));
+        ret.setBorder(BorderFactory.createTitledBorder(TARGET_USER_BORDER_TITLE));
 
         GridBagConstraints constraints = new GridBagConstraints();
         constraints.fill = GridBagConstraints.BOTH;
@@ -406,19 +377,9 @@ public class RecommendationsExplainedWindow extends JFrame {
 
         constraints.fill = GridBagConstraints.BOTH;
         constraints.weightx = 0.0;
-        constraints.weighty = 0.0;
-        constraints.gridx = 0;
-        constraints.gridy = 3;
-        constraints.gridwidth = 1;
-        constraints.gridheight = 1;
-        constraints.insets = new Insets(3, 4, 3, 4);
-        inputPanel.add(panelCriterioRelevancia(), constraints);
-
-        constraints.fill = GridBagConstraints.BOTH;
-        constraints.weightx = 0.0;
         constraints.weighty = 1.0;
         constraints.gridx = 0;
-        constraints.gridy = 4;
+        constraints.gridy = 3;
         constraints.gridwidth = 1;
         constraints.gridheight = 1;
         constraints.insets = new Insets(3, 4, 3, 4);
