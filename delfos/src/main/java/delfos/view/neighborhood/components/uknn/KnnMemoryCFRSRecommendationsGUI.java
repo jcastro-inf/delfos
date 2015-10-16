@@ -212,17 +212,19 @@ public class KnnMemoryCFRSRecommendationsGUI implements RecommendationsGUI {
     private void addNeighborTableListener() {
 
         neighborsTable.addNeighborSelectorListener((ListSelectionEvent e) -> {
+
             ContentDataset contentDataset = ((ContentDatasetLoader) datasetLoader).getContentDataset();
             RatingsDataset<? extends Rating> ratingsDataset = datasetLoader.getRatingsDataset();
 
-            if (e.getFirstIndex() == -1) {
+            int indexSelected = e.getFirstIndex();
+            if (indexSelected == -1) {
                 ratingsTable.setRatings(Collections.emptyList(), contentDataset);
+            } else if (neighborsTable.getSelected() == null) {
+                ratingsTable.setRatings(Collections.emptyList(), contentDataset);
+            } else {
+                Neighbor neighbor = neighborsTable.getSelected();
+                ratingsTable.setRatings(ratingsDataset.getUserRatingsRated(neighbor.getIdNeighbor()).values(), contentDataset);
             }
-            Neighbor neighbor = neighborsTable.getSelected();
-            if (neighbor == null) {
-                return;
-            }
-            ratingsTable.setRatings(ratingsDataset.getUserRatingsRated(neighbor.getIdNeighbor()).values(), contentDataset);
         });
     }
 
