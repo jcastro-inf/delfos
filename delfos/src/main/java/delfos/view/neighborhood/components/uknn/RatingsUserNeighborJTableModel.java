@@ -2,9 +2,15 @@ package delfos.view.neighborhood.components.uknn;
 
 import delfos.dataset.basic.item.ContentDataset;
 import delfos.dataset.basic.item.Item;
+import delfos.dataset.basic.loader.types.ContentDatasetLoader;
+import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
+import delfos.dataset.basic.rating.RatingsDataset;
+import delfos.dataset.basic.user.User;
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.Set;
+import java.util.stream.Collectors;
 import javax.swing.table.AbstractTableModel;
 
 /**
@@ -16,6 +22,13 @@ public class RatingsUserNeighborJTableModel extends AbstractTableModel {
     Collection<Rating> lista = new LinkedList<>();
     private Object[][] datos = new Object[3][0];
 
+    private static final int ID_ITEM_COLUMN = 0;
+    private static final int ITEM_NAME_COLUMN = 1;
+    private static final int USER_RATING_COLUMN = 2;
+    private static final int NEIGHBOR_RATING_COLUMN = 3;
+
+    private static final int COLUMN_COUNT = 4;
+
     @Override
     public int getRowCount() {
         return datos[0].length;
@@ -23,19 +36,22 @@ public class RatingsUserNeighborJTableModel extends AbstractTableModel {
 
     @Override
     public int getColumnCount() {
-        return datos.length;
+        return COLUMN_COUNT;
     }
 
     @Override
     public String getColumnName(int column) {
-        if (column == 0) {
+        if (column == ID_ITEM_COLUMN) {
             return "idItem";
         }
-        if (column == 1) {
-            return "Rating";
-        }
-        if (column == 2) {
+        if (column == ITEM_NAME_COLUMN) {
             return "Name";
+        }
+        if (column == USER_RATING_COLUMN) {
+            return "target";
+        }
+        if (column == NEIGHBOR_RATING_COLUMN) {
+            return "neighbor";
         }
         return "fallo";
     }
@@ -45,15 +61,27 @@ public class RatingsUserNeighborJTableModel extends AbstractTableModel {
         return datos[columnIndex][rowIndex];
     }
 
-    public void setRatings(Collection< ? extends Rating> ratings, ContentDataset contentDataset) {
-        datos = new Object[3][ratings.size()];
-        int index = 0;
-        for (Rating rating : ratings) {
-            Item item = contentDataset.get(rating.idItem);
+    public void setRatings(DatasetLoader datasetLoader, User user, User neighbor) {
 
-            datos[0][index] = item.getId();
-            datos[1][index] = rating.ratingValue.floatValue();
-            datos[2][index] = item.getName();
+        ContentDataset contentDataset = ((ContentDatasetLoader) datasetLoader).getContentDataset();
+        RatingsDataset ratingsDataset = datasetLoader.getRatingsDataset();
+
+        Set<Item> itemsRatedUnion = contentDataset.stream().filter(item -> {
+            boolean userHasRated = ratingsDataset.getUserRated(user.getId()).contains(item.getId());
+            boolean neighborHasRated = neighbor != null && ratingsDataset.getUserRated(neighbor.getId()).contains(item.getId());
+            return userHasRated || neighborHasRated;
+        }).collect(Collectors.toSet());
+
+        datos = new Object[COLUMN_COUNT][itemsRatedUnion.size()];
+        int index = 0;
+        for (Item item : itemsRatedUnion) {
+            Rating userRating = ratingsDataset.getRating(user.getId(), item.getId());
+            Rating neighborRating = neighbor == null ? null : ratingsDataset.getRating(neighbor.getId(), item.getId());
+
+            datos[ID_ITEM_COLUMN][index] = item.getId();
+            datos[USER_RATING_COLUMN][index] = userRating == null ? "" : userRating.ratingValue.doubleValue();
+            datos[NEIGHBOR_RATING_COLUMN][index] = neighborRating == null ? "" : neighborRating.ratingValue.doubleValue();
+            datos[ITEM_NAME_COLUMN][index] = item.getName();
 
             index++;
         }

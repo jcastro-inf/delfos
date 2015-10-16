@@ -564,7 +564,7 @@ public class RecommendationsExplainedWindow extends JFrame {
         System.out.println("Updating interface for: " + recommenderSystem);
 
         if (recommenderSystem instanceof KnnMemoryBasedCFRS) {
-            return new KnnMemoryCFRSRecommendationsGUI();
+            return new KnnMemoryCFRSRecommendationsGUI(this);
         } else if (recommenderSystem instanceof KnnModelBasedCFRS) {
             return new KnnModelCFRSRecommendationsGUI(this);
         } else {
