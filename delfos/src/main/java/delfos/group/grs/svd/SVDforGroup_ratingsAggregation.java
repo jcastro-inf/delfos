@@ -14,7 +14,7 @@ import delfos.common.exceptions.dataset.users.UserNotFound;
 import delfos.common.parameters.Parameter;
 import delfos.common.parameters.restriction.ParameterOwnerRestriction;
 import delfos.dataset.basic.rating.Rating;
-import delfos.dataset.loaders.given.DatasetLoaderGiven;
+import delfos.dataset.loaders.given.DatasetLoaderGivenRatingsDataset;
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.generated.modifieddatasets.PseudoUserRatingsDataset;
 import delfos.dataset.util.DatasetUtilities;
@@ -104,7 +104,7 @@ public class SVDforGroup_ratingsAggregation extends GroupRecommenderSystemAdapte
 
         final int idPseudoUser = rd.getIdPseudoUser();
 
-        TryThisAtHomeSVDModel foldInModel = singleUserSR.incrementModelWithUserRatings(RecommendationModel, new DatasetLoaderGiven(datasetLoader, rd), idPseudoUser);
+        TryThisAtHomeSVDModel foldInModel = singleUserSR.incrementModelWithUserRatings(RecommendationModel, new DatasetLoaderGivenRatingsDataset(datasetLoader, rd), idPseudoUser);
 
         int idPseudoUserIndex = foldInModel.getUsersIndex().get(idPseudoUser);
 

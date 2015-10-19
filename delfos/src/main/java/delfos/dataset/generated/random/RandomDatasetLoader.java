@@ -1,8 +1,6 @@
 package delfos.dataset.generated.random;
 
-import delfos.ERROR_CODES;
 import delfos.common.Global;
-import delfos.common.exceptions.dataset.users.UserAlreadyExists;
 import delfos.common.parameters.Parameter;
 import delfos.common.parameters.restriction.FloatParameter;
 import delfos.common.parameters.restriction.IntegerParameter;
@@ -158,11 +156,12 @@ public class RandomDatasetLoader extends DatasetLoaderAbstract<RatingWithTimesta
                     seedValue);
 
             cd = new RandomContentDataset(rd, numNumericFeaturesValue, numNominalFeaturesValue, numNumericalDifferentValuesValue, seedValue);
-            try {
-                ud = new UsersDatasetAdapter(rd.allUsers().stream().map((idUser -> new User(idUser))).collect(Collectors.toList()));
-            } catch (UserAlreadyExists ex) {
-                ERROR_CODES.USER_ALREADY_EXISTS.exit(ex);
-            }
+
+            ud = new UsersDatasetAdapter(rd
+                    .allUsers().stream()
+                    .map((idUser -> new User(idUser)))
+                    .collect(Collectors.toSet()));
+
         }
         return rd;
     }

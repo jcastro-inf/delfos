@@ -1,28 +1,25 @@
 package delfos.dataset.basic.features;
 
-import delfos.dataset.basic.features.FeatureGenerator;
-import delfos.dataset.basic.features.Feature;
-import delfos.dataset.basic.features.FeatureType;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import org.junit.Test;
-import org.junit.BeforeClass;
 import static delfos.Assert.assertStringArrayEquals;
+import delfos.common.FileUtilities;
 import delfos.constants.TestConstants;
 import delfos.dataset.basic.item.ContentDataset;
 import delfos.dataset.basic.item.ContentDatasetDefault;
 import delfos.dataset.basic.item.Item;
 import delfos.io.csv.dataset.item.ContentDatasetToCSV;
 import delfos.io.csv.dataset.item.DefaultContentDatasetToCSV;
-import delfos.common.FileUtilities;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
+import java.util.TreeSet;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import org.junit.BeforeClass;
+import org.junit.Test;
 
 /**
  * Testeo el comportamiento de los datasets de contenido con múltiples valores
@@ -99,12 +96,12 @@ public class MultiNominalFeatureTypeTest {
             FeatureGenerator generator = new FeatureGenerator();
             generator.createFeature("generos", FeatureType.MultiNominal);
             Feature generos = generator.searchFeature("generos");
-            List<Item> items = new ArrayList<Item>();
+            TreeSet<Item> items = new TreeSet<>();
             // Item 1
             {
-                Map<Feature, Object> featureValues = new TreeMap<Feature, Object>();
+                Map<Feature, Object> featureValues = new TreeMap<>();
 
-                List<String> generosValues = new LinkedList<String>();
+                List<String> generosValues = new LinkedList<>();
                 generosValues.add("drama");
                 generosValues.add("love");
 
@@ -116,9 +113,9 @@ public class MultiNominalFeatureTypeTest {
 
             // Item 2
             {
-                Map<Feature, Object> featureValues = new TreeMap<Feature, Object>();
+                Map<Feature, Object> featureValues = new TreeMap<>();
 
-                List<String> generosValues = new LinkedList<String>();
+                List<String> generosValues = new LinkedList<>();
                 generosValues.add("sci-fi");
 
                 featureValues.put(generos, generosValues);
@@ -129,9 +126,9 @@ public class MultiNominalFeatureTypeTest {
 
             // Item 3
             {
-                Map<Feature, Object> featureValues = new TreeMap<Feature, Object>();
+                Map<Feature, Object> featureValues = new TreeMap<>();
 
-                List<String> generosValues = new LinkedList<String>();
+                List<String> generosValues = new LinkedList<>();
                 generosValues.add("sci-fi");
                 generosValues.add("western");
 

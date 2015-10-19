@@ -1,12 +1,12 @@
 package delfos.dataset.memory.validationdatasets;
 
-import java.util.ArrayList;
-import java.util.List;
+import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
+import delfos.dataset.basic.loader.types.DatasetLoaderAbstract;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RatingsDataset;
-import delfos.dataset.basic.loader.types.DatasetLoaderAbstract;
 import delfos.dataset.storage.memory.BothIndexRatingsDataset;
-import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
@@ -21,6 +21,7 @@ public class MockDatasetLoader_ValidationDatasets extends DatasetLoaderAbstract<
     public MockDatasetLoader_ValidationDatasets() {
     }
 
+    @Override
     public RatingsDataset<Rating> getRatingsDataset() throws CannotLoadRatingsDataset {
         if (ratingDataset == null) {
             createRatingsDataset();
@@ -30,7 +31,7 @@ public class MockDatasetLoader_ValidationDatasets extends DatasetLoaderAbstract<
     }
 
     private void createRatingsDataset() {
-        List<Rating> ratings = new ArrayList<Rating>();
+        List<Rating> ratings = new ArrayList<>();
 
         ratings.add(new Rating(1, 11, 5));
         ratings.add(new Rating(1, 12, 4));
@@ -43,7 +44,7 @@ public class MockDatasetLoader_ValidationDatasets extends DatasetLoaderAbstract<
         ratings.add(new Rating(3, 14, 2));
         ratings.add(new Rating(3, 15, 1));
 
-        ratingDataset = new BothIndexRatingsDataset<Rating>(ratings);
+        ratingDataset = new BothIndexRatingsDataset<>(ratings);
     }
 
 }

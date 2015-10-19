@@ -1,30 +1,29 @@
 package delfos.dataset.loaders.movilens.ml1m;
 
+import delfos.common.exceptions.dataset.CannotLoadContentDataset;
+import delfos.dataset.basic.features.Feature;
+import delfos.dataset.basic.features.FeatureGenerator;
+import delfos.dataset.basic.features.FeatureType;
+import delfos.dataset.basic.item.ContentDataset;
+import delfos.dataset.basic.item.ContentDatasetDefault;
+import delfos.dataset.basic.item.Item;
+import delfos.io.csv.dataset.item.ContentDatasetToCSV;
+import delfos.io.csv.dataset.rating.CSVReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
-import delfos.dataset.basic.item.ContentDataset;
-import delfos.dataset.basic.item.ContentDatasetDefault;
-import delfos.dataset.basic.item.Item;
-import delfos.dataset.basic.features.Feature;
-import delfos.dataset.basic.features.FeatureGenerator;
-import delfos.dataset.basic.features.FeatureType;
-import delfos.io.csv.dataset.item.ContentDatasetToCSV;
-import delfos.io.csv.dataset.rating.CSVReader;
-import delfos.common.exceptions.dataset.CannotLoadContentDataset;
-import delfos.common.exceptions.dataset.items.ItemAlreadyExists;
+import java.util.TreeSet;
 
 /**
  * Clase para leer/escribir un dataset de contenido a fichero csv.
  *
-* @author Jorge Castro Gallardo
+ * @author Jorge Castro Gallardo
  *
  * @version 1.0 04-Mar-2013
  */
@@ -94,10 +93,10 @@ public class MovieLens1MillionContentDatasetToCSV implements ContentDatasetToCSV
             stringBuilder.append(linea.toString());
         }
 
-        BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(new File(fileNameWithExtension)));
-        bufferedWriter.write(stringBuilder.toString());
-        bufferedWriter.flush();
-        bufferedWriter.close();
+        try (BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(new File(fileNameWithExtension)))) {
+            bufferedWriter.write(stringBuilder.toString());
+            bufferedWriter.flush();
+        }
 
     }
 
@@ -107,7 +106,7 @@ public class MovieLens1MillionContentDatasetToCSV implements ContentDatasetToCSV
         try {
             FeatureGenerator featureGenerator = new FeatureGenerator();
 
-            LinkedList<Item> items = new LinkedList<Item>();
+            TreeSet<Item> items = new TreeSet<>();
             CSVReader reader = new CSVReader(contentCSV, "\"", "::");
 
             final int idItemColumn = 0;
@@ -137,8 +136,6 @@ public class MovieLens1MillionContentDatasetToCSV implements ContentDatasetToCSV
         } catch (IOException ex) {
             throw new CannotLoadContentDataset(ex);
         } catch (NumberFormatException ex) {
-            throw new CannotLoadContentDataset(ex);
-        } catch (ItemAlreadyExists ex) {
             throw new CannotLoadContentDataset(ex);
         }
     }

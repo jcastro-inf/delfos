@@ -1,9 +1,19 @@
 package delfos.dataset.basic.loader.types;
 
+import delfos.common.exceptions.dataset.CannotLoadContentDataset;
+import delfos.common.exceptions.dataset.CannotLoadUsersDataset;
 import delfos.common.parameters.ParameterOwnerAdapter;
 import delfos.common.parameters.ParameterOwnerType;
+import delfos.dataset.basic.item.ContentDataset;
+import delfos.dataset.basic.item.ContentDatasetDefault;
+import delfos.dataset.basic.item.Item;
 import delfos.dataset.basic.rating.Rating;
+import delfos.dataset.basic.rating.RatingsDataset;
 import delfos.dataset.basic.rating.RelevanceCriteria;
+import delfos.dataset.basic.user.User;
+import delfos.dataset.basic.user.UsersDataset;
+import delfos.dataset.basic.user.UsersDatasetAdapter;
+import java.util.stream.Collectors;
 
 /**
  * Establece las operaciones que un <code>DatasetLoader</code> debe implementar.
@@ -57,5 +67,29 @@ public abstract class DatasetLoaderAbstract<RatingType extends Rating> extends P
     @Override
     public RelevanceCriteria getDefaultRelevanceCriteria() {
         return new RelevanceCriteria(4);
+    }
+
+    @Override
+    public UsersDataset getUsersDataset() throws CannotLoadUsersDataset {
+
+        RatingsDataset<RatingType> ratingsDataset = getRatingsDataset();
+
+        return new UsersDatasetAdapter(ratingsDataset
+                .allUsers().stream()
+                .map(idUser -> new User(idUser))
+                .collect(Collectors.toSet()));
+
+    }
+
+    @Override
+    public ContentDataset getContentDataset() throws CannotLoadContentDataset {
+
+        RatingsDataset<RatingType> ratingsDataset = getRatingsDataset();
+
+        return new ContentDatasetDefault(ratingsDataset
+                .allRatedItems().stream()
+                .map(idItem -> new Item(idItem))
+                .collect(Collectors.toSet()));
+
     }
 }

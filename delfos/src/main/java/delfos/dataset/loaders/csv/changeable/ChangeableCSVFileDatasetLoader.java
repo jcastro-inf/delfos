@@ -1,32 +1,25 @@
 package delfos.dataset.loaders.csv.changeable;
 
-import java.io.File;
-import java.util.LinkedList;
-import java.util.TreeSet;
-import delfos.dataset.basic.item.Item;
-import delfos.dataset.basic.rating.Rating;
+import delfos.common.exceptions.dataset.CannotLoadContentDataset;
+import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
+import delfos.common.exceptions.dataset.CannotLoadUsersDataset;
+import delfos.common.filefilters.FileFilterByExtension;
+import delfos.common.parameters.Parameter;
+import delfos.common.parameters.restriction.FileParameter;
 import delfos.dataset.basic.rating.RelevanceCriteria;
-import delfos.dataset.basic.user.User;
 import delfos.dataset.changeable.ChangeableContentDataset;
 import delfos.dataset.changeable.ChangeableDatasetLoaderAbstract;
 import delfos.dataset.changeable.ChangeableRatingsDataset;
 import delfos.dataset.changeable.ChangeableUsersDataset;
 import delfos.dataset.loaders.csv.CSVfileDatasetLoader;
-import delfos.ERROR_CODES;
-import delfos.common.exceptions.dataset.CannotLoadContentDataset;
-import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
-import delfos.common.exceptions.dataset.CannotLoadUsersDataset;
-import delfos.common.exceptions.dataset.items.ItemAlreadyExists;
-import delfos.common.exceptions.dataset.users.UserAlreadyExists;
-import delfos.common.filefilters.FileFilterByExtension;
-import delfos.common.parameters.Parameter;
-import delfos.common.parameters.ParameterListener;
-import delfos.common.parameters.restriction.FileParameter;
+import java.io.File;
+import java.util.TreeSet;
+import java.util.stream.Collectors;
 
 /**
  * Dataset almacenado en CSV que permite la modificación de sus datos.
  *
-* @author Jorge Castro Gallardo
+ * @author Jorge Castro Gallardo
  *
  * @version 16-sep-2013
  */
@@ -44,12 +37,9 @@ public class ChangeableCSVFileDatasetLoader extends ChangeableDatasetLoaderAbstr
         addParameter(RATINGS_FILE);
         addParameter(CONTENT_FILE);
         addParameter(USERS_FILE);
-        addParammeterListener(new ParameterListener() {
-            @Override
-            public void parameterChanged() {
-                rd = null;
-                cd = null;
-            }
+        addParammeterListener(() -> {
+            rd = null;
+            cd = null;
         });
     }
 
@@ -58,7 +48,6 @@ public class ChangeableCSVFileDatasetLoader extends ChangeableDatasetLoaderAbstr
         setParameterValue(RATINGS_FILE, ratingsFile);
         setParameterValue(CONTENT_FILE, contentFile);
         setParameterValue(USERS_FILE, usersFile);
-
     }
 
     /**
@@ -137,11 +126,10 @@ public class ChangeableCSVFileDatasetLoader extends ChangeableDatasetLoaderAbstr
                     getRatingsDatasetFile().getAbsolutePath(),
                     getContentDatasetFile().getAbsolutePath(),
                     getUsersDatasetFile().getAbsolutePath());
-            try {
-                this.cd = new ChangeableContentDatasetCSV(this, staticDatasetLoader.getContentDataset());
-            } catch (ItemAlreadyExists ex) {
-                throw new CannotLoadContentDataset("Cannot load items dataset, there are repeated items: " + ex.getIdItem() + "");
-            }
+
+            this.cd = new ChangeableContentDatasetCSV(this, staticDatasetLoader
+                    .getContentDataset().stream()
+                    .collect(Collectors.toSet()));
 
         }
         return cd;
@@ -155,11 +143,8 @@ public class ChangeableCSVFileDatasetLoader extends ChangeableDatasetLoaderAbstr
                     getRatingsDatasetFile().getAbsolutePath(),
                     getContentDatasetFile().getAbsolutePath(),
                     getUsersDatasetFile().getAbsolutePath());
-            try {
-                this.ud = new ChangeableUsersDatasetCSV(this, staticDatasetLoader.getUsersDataset());
-            } catch (UserAlreadyExists ex) {
-                throw new CannotLoadUsersDataset("Cannot load users dataset, there are repeated idUser: " + ex.getIdUser() + "");
-            }
+
+            this.ud = new ChangeableUsersDatasetCSV(this, staticDatasetLoader.getUsersDataset().stream().collect(Collectors.toSet()));
 
         }
         return ud;
@@ -175,31 +160,20 @@ public class ChangeableCSVFileDatasetLoader extends ChangeableDatasetLoaderAbstr
         try {
             rd = getChangeableRatingsDataset();
         } catch (CannotLoadRatingsDataset ex) {
-            rd = new ChangeableRatingsDatasetCSV(this, new TreeSet<Rating>());
+            rd = new ChangeableRatingsDatasetCSV(this, new TreeSet<>());
         }
 
         try {
             cd = getChangeableContentDataset();
         } catch (CannotLoadContentDataset ex) {
-            try {
-                cd = new ChangeableContentDatasetCSV(this, new LinkedList<Item>());
-            } catch (ItemAlreadyExists ex1) {
-                //This situation never happens
-                ERROR_CODES.UNDEFINED_ERROR.exit(ex1);
-                throw new IllegalArgumentException(ex1);
-            }
+            cd = new ChangeableContentDatasetCSV(this, new TreeSet<>());
         }
 
         try {
             ud = getChangeableUsersDataset();
         } catch (CannotLoadUsersDataset ex) {
-            try {
-                ud = new ChangeableUsersDatasetCSV(this, new LinkedList<User>());
-            } catch (UserAlreadyExists ex1) {
-                //This situation never happens
-                ERROR_CODES.UNDEFINED_ERROR.exit(ex1);
-                throw new IllegalArgumentException(ex1);
-            }
+            ud = new ChangeableUsersDatasetCSV(this, new TreeSet<>());
+
         }
     }
 }

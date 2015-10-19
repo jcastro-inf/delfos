@@ -3,9 +3,7 @@ package delfos.dataset.loaders.database.mysql.changeable;
 import delfos.ERROR_CODES;
 import delfos.common.Global;
 import delfos.common.LockedIterator;
-import delfos.common.exceptions.dataset.entity.EntityAlreadyExists;
 import delfos.common.exceptions.dataset.entity.EntityNotFound;
-import delfos.common.exceptions.dataset.items.ItemAlreadyExists;
 import delfos.common.exceptions.dataset.items.ItemNotFound;
 import delfos.databaseconnections.MySQLConnection;
 import delfos.dataset.basic.features.CollectionOfEntitiesWithFeatures;
@@ -20,8 +18,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
@@ -100,52 +96,43 @@ public class ChangeableMySQLContentDataset implements ChangeableContentDataset, 
     }
 
     @Override
-    public final void addItem(Item item) throws ItemAlreadyExists {
-        try {
-            if (contentDataset.getAllID().contains(item.getId())) {
-                //El dataset ya tenía el producto, haciento cambio.
+    public final void addItem(Item item) {
+        if (contentDataset.getAllID().contains(item.getId())) {
+            //El dataset ya tenía el producto, haciento cambio.
 
-                Map<Integer, Item> items = new TreeMap<>();
+            Map<Integer, Item> items = contentDataset.stream()
+                    .collect(Collectors.toMap(
+                                    (itemInner -> itemInner.getId()),
+                                    (itemInner -> itemInner)));
 
-                for (Item item2 : contentDataset) {
-                    items.put(item2.getId(), item2);
-                }
+            items.remove(item.getId());
+            items.put(item.getId(), item);
 
-                items.remove(item.getId());
-                items.put(item.getId(), item);
+            contentDataset = new ContentDatasetDefault(items.values().stream().collect(Collectors.toSet()));
 
-                try {
-                    contentDataset = new ContentDatasetDefault(items.values());
-                } catch (ItemAlreadyExists ex) {
-                    //TODO: Este error nunca se produce
-                    ERROR_CODES.UNDEFINED_ERROR.exit(ex);
-                }
-            }
-
-            boolean necesarioRegenerarTabla = false;
-
-            for (Feature feature : item.getFeatures()) {
-                if (featureGenerator.searchFeature(feature.getName()) == null) {
-                    //El producto tiene nuevas características, se necesita añadir una columna.
-                    necesarioRegenerarTabla = true;
-                    break;
-                }
-            }
-
-            try {
-                if (necesarioRegenerarTabla) {
-                    createItemsTable();
-                } else {
-                    insertItemInTable(item);
-                }
-            } catch (SQLException ex) {
-                ERROR_CODES.DATABASE_NOT_READY.exit(ex);
-            }
-
-            // TODO hay algo por hacer...
-        } catch (EntityAlreadyExists ex) {
-            throw new ItemAlreadyExists(item.getId(), ex);
         }
+
+        boolean necesarioRegenerarTabla = false;
+
+        for (Feature feature : item.getFeatures()) {
+            if (featureGenerator.searchFeature(feature.getName()) == null) {
+                //El producto tiene nuevas características, se necesita añadir una columna.
+                necesarioRegenerarTabla = true;
+                break;
+            }
+        }
+
+        try {
+            if (necesarioRegenerarTabla) {
+                createItemsTable();
+            } else {
+                insertItemInTable(item);
+            }
+        } catch (SQLException ex) {
+            ERROR_CODES.DATABASE_NOT_READY.exit(ex);
+        }
+
+        // TODO hay algo por hacer...
     }
 
     @Override
@@ -303,13 +290,9 @@ public class ChangeableMySQLContentDataset implements ChangeableContentDataset, 
     }
 
     @Override
-    public boolean add(Item entity) throws EntityAlreadyExists {
-        try {
-            addItem(entity);
-            return true;
-        } catch (ItemAlreadyExists ex) {
-            throw new EntityAlreadyExists(entity.getId(), ex);
-        }
+    public boolean add(Item entity) {
+        addItem(entity);
+        return true;
     }
 
     private void insertItemInTable(Item item) throws SQLException {
@@ -353,7 +336,7 @@ public class ChangeableMySQLContentDataset implements ChangeableContentDataset, 
     }
 
     private void readContentDataset() throws SQLException {
-        List<Item> items = new LinkedList<>();
+        Set<Item> items = new TreeSet<>();
 
         //Leo las características
         try (Statement statement = mySQLConnection.doConnection().createStatement()) {
@@ -428,12 +411,7 @@ public class ChangeableMySQLContentDataset implements ChangeableContentDataset, 
             if (Global.isVerboseAnnoying()) {
                 Global.showInfoMessage("Items readed : " + items.size() + "\n");
             }
-            try {
-                contentDataset = new ContentDatasetDefault(items);
-            } catch (ItemAlreadyExists ex) {
-                ERROR_CODES.ITEM_ALREADY_EXISTS.exit(ex);
-                throw new IllegalArgumentException(ex);
-            }
+            contentDataset = new ContentDatasetDefault(items);
         }
     }
 

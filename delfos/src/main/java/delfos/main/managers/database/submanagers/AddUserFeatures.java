@@ -6,7 +6,6 @@ import delfos.UndefinedParameterException;
 import delfos.common.Global;
 import delfos.common.exceptions.dataset.CannotLoadUsersDataset;
 import delfos.common.exceptions.dataset.entity.EntityNotFound;
-import delfos.common.exceptions.dataset.users.UserAlreadyExists;
 import delfos.common.exceptions.dataset.users.UserNotFound;
 import delfos.dataset.basic.features.Feature;
 import delfos.dataset.basic.user.User;
@@ -103,9 +102,6 @@ public class AddUserFeatures extends DatabaseCaseUseSubManager {
             changeableDatasetLoader.getChangeableUsersDataset().addUser(new User(user.getId(), newName, newEntityFeatures));
         } catch (CannotLoadUsersDataset ex) {
             ERROR_CODES.CANNOT_LOAD_USERS_DATASET.exit(ex);
-            throw new IllegalArgumentException(ex);
-        } catch (UserAlreadyExists ex) {
-            ERROR_CODES.USER_NOT_FOUND.exit(ex);
             throw new IllegalArgumentException(ex);
         } catch (EntityNotFound ex) {
             ERROR_CODES.USER_NOT_FOUND.exit(ex);

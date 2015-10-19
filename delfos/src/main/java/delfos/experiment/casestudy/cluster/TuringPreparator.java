@@ -94,7 +94,7 @@ public class TuringPreparator implements ExperimentPreparator {
         children.stream()
                 .forEach((singleExperimentDirectory) -> {
                     String[] args = {
-                        ExecuteGroupXML.SEED_PARAMETER, "77352653",
+                        ExecuteGroupXML.SEED_PARAMETER, "123456",
                         ExecuteGroupXML.MODE_PARAMETER,
                         ExecuteGroupXML.XML_DIRECTORY, singleExperimentDirectory.getPath(),
                         ExecuteGroupXML.NUM_EXEC_PARAMETER, "1",
@@ -110,7 +110,7 @@ public class TuringPreparator implements ExperimentPreparator {
                 .forEach((singleExperimentDirectory) -> {
                     String[] args = {
                         ExecuteGroupXML.MODE_PARAMETER,
-                        ExecuteGroupXML.SEED_PARAMETER, "77352653",
+                        ExecuteGroupXML.SEED_PARAMETER, "123456",
                         ExecuteGroupXML.XML_DIRECTORY, singleExperimentDirectory.getPath(),
                         ExecuteGroupXML.NUM_EXEC_PARAMETER, Integer.toString(numExec),
                         Constants.PRINT_FULL_XML,
@@ -128,7 +128,7 @@ public class TuringPreparator implements ExperimentPreparator {
                 .stream()
                 .forEach((singleExperimentDirectory) -> {
                     String[] args = {
-                        ExecuteGroupXML.SEED_PARAMETER, "77352653",
+                        ExecuteGroupXML.SEED_PARAMETER, "123456",
                         ExecuteGroupXML.MODE_PARAMETER,
                         ExecuteGroupXML.XML_DIRECTORY, singleExperimentDirectory.getPath(),
                         ExecuteGroupXML.NUM_EXEC_PARAMETER, Integer.toString(numExec),

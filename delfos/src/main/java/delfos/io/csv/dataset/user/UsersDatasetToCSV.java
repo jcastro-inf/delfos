@@ -1,15 +1,14 @@
 package delfos.io.csv.dataset.user;
 
+import delfos.common.exceptions.dataset.CannotLoadUsersDataset;
+import delfos.dataset.basic.user.UsersDataset;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import delfos.dataset.basic.user.UsersDataset;
-import delfos.common.exceptions.dataset.CannotLoadUsersDataset;
-import delfos.common.exceptions.dataset.users.UserAlreadyExists;
 
 /**
  *
-* @author Jorge Castro Gallardo
+ * @author Jorge Castro Gallardo
  *
  * @version 13-mar-2014
  */
@@ -28,7 +27,8 @@ public interface UsersDatasetToCSV {
      */
     public static final String USER_NAME_COLUMN_NAME = "name";
 
-    public UsersDataset readUsersDataset(File usersFile) throws CannotLoadUsersDataset, FileNotFoundException, UserAlreadyExists;
+    public UsersDataset readUsersDataset(File usersFile)
+            throws CannotLoadUsersDataset, FileNotFoundException;
 
     public void writeDataset(UsersDataset usersDataset, String fileName) throws IOException;
 

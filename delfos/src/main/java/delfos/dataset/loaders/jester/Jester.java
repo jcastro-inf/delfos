@@ -2,7 +2,9 @@ package delfos.dataset.loaders.jester;
 
 import delfos.common.Global;
 import delfos.common.datastructures.MultiSet;
+import delfos.common.exceptions.dataset.CannotLoadContentDataset;
 import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
+import delfos.common.exceptions.dataset.CannotLoadUsersDataset;
 import delfos.common.parameters.Parameter;
 import delfos.common.parameters.restriction.BooleanParameter;
 import delfos.common.parameters.restriction.ObjectParameter;
@@ -14,10 +16,15 @@ import delfos.dataset.basic.loader.types.DatasetLoaderAbstract;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RatingsDataset;
 import delfos.dataset.basic.rating.RelevanceCriteria;
+import delfos.dataset.basic.user.User;
+import delfos.dataset.basic.user.UsersDataset;
+import delfos.dataset.basic.user.UsersDatasetAdapter;
 import delfos.dataset.storage.memory.BothIndexRatingsDataset;
 import delfos.dataset.storage.memory.DefaultMemoryRatingsDataset_UserIndexed;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.TreeSet;
+import java.util.stream.Collectors;
 import jxl.Sheet;
 import jxl.Workbook;
 
@@ -52,29 +59,31 @@ public class Jester extends DatasetLoaderAbstract {
         memoryEfficient = new Parameter("saveMemory", new BooleanParameter(Boolean.FALSE));
         DATASET_VERSION_PARAMETER = new Parameter("datasetVersion", new ObjectParameter(values, VERSION_1));
     }
-    private RatingsDataset<Rating> rd;
-    private ContentDataset cd;
+    private RatingsDataset<Rating> ratingsDataset;
+    private ContentDataset contentDataset;
+    private UsersDataset usersDataset;
 
     public Jester() {
         addParameter(memoryEfficient);
         addParameter(DATASET_VERSION_PARAMETER);
         addParammeterListener(() -> {
-            rd = null;
-            cd = null;
+            ratingsDataset = null;
+            contentDataset = null;
+            usersDataset = null;
         });
     }
 
     @Override
     public RatingsDataset<Rating> getRatingsDataset() throws CannotLoadRatingsDataset {
-        if (rd == null) {
+        if (ratingsDataset == null) {
             String fileName = (String) getParameterValue(DATASET_VERSION_PARAMETER);
 
-            ArrayList<Rating> ratings = new ArrayList<Rating>();
+            ArrayList<Rating> ratings = new ArrayList<>();
 
-            ArrayList<Item> items = new ArrayList<Item>();
+            TreeSet<Item> items = new TreeSet<>();
             try {
 
-                MultiSet<Float> nullRatings = new MultiSet<Float>();
+                MultiSet<Float> nullRatings = new MultiSet<>();
                 Workbook archivoExcel = Workbook.getWorkbook(new File(fileName));
                 for (int sheetNo = 0; sheetNo < 1; sheetNo++) {
                     Sheet hoja = archivoExcel.getSheet(sheetNo);
@@ -104,9 +113,9 @@ public class Jester extends DatasetLoaderAbstract {
                 }
 
                 if ((Boolean) getParameterValue(memoryEfficient)) {
-                    rd = new DefaultMemoryRatingsDataset_UserIndexed(ratings);
+                    ratingsDataset = new DefaultMemoryRatingsDataset_UserIndexed(ratings);
                 } else {
-                    rd = new BothIndexRatingsDataset(ratings);
+                    ratingsDataset = new BothIndexRatingsDataset(ratings);
                 }
 
                 nullRatings.removeAllOccurrences(new Float(99));
@@ -115,21 +124,42 @@ public class Jester extends DatasetLoaderAbstract {
                 }
                 Feature[] features = new Feature[0];
                 Object[] values = new Object[0];
-                for (int idItem : rd.allRatedItems()) {
+                for (int idItem : ratingsDataset.allRatedItems()) {
                     items.add(new Item(idItem, Integer.toString(idItem), features, values));
                 }
 
-                cd = new ContentDatasetDefault(items);
+                contentDataset = new ContentDatasetDefault(items);
+                usersDataset = new UsersDatasetAdapter(ratingsDataset.allUsers().stream().map(idUser -> new User(idUser)).collect(Collectors.toSet()));
             } catch (Throwable ex) {
                 Global.showError(ex);
-                rd = null;
-                cd = null;
+                ratingsDataset = null;
+                contentDataset = null;
 
                 throw new CannotLoadRatingsDataset(ex);
             }
 
         }
-        return rd;
+        return ratingsDataset;
+    }
+
+    @Override
+    public ContentDataset getContentDataset() throws CannotLoadContentDataset {
+        try {
+            getRatingsDataset();
+            return contentDataset;
+        } catch (CannotLoadRatingsDataset ex) {
+            throw new CannotLoadContentDataset(ex);
+        }
+    }
+
+    @Override
+    public UsersDataset getUsersDataset() throws CannotLoadUsersDataset {
+        try {
+            getRatingsDataset();
+            return usersDataset;
+        } catch (CannotLoadRatingsDataset ex) {
+            throw new CannotLoadUsersDataset(ex);
+        }
     }
 
     /**

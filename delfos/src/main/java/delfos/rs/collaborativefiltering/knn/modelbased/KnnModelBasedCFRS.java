@@ -26,7 +26,6 @@ import delfos.rs.recommendation.Recommendation;
 import delfos.similaritymeasures.CollaborativeSimilarityMeasure;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -145,19 +144,24 @@ public class KnnModelBasedCFRS
     }
 
     /**
-     * Obtiene el perfil de un producto dado. En Knn-ItemItem, el perfil de un
-     * producto se compone de k productos similares al producto activo.
+     * Computes the list of neighbors for the given item, sorted by similarity
+     * DESC.
+     * <p>
+     * <p>
+     * This method must return a Neighbor object for each item in the dataset.
+     * For the neighbors that is not possible to compute a similarity,
+     * {@link Float#NaN} similarity is assigned.
+     * <p>
+     * <p>
+     * The neighbors will be selected in the prediction step.
      *
-     * @param ratingsDataset
-     * @param idItem Producto para el que se calculan sus vecinos.
-     * @return Lista de productos vecinos, ordenada por similitud con el
-     * producto activo.
-     * @throws ItemNotFound Cuando se intentan buscar los vecinos de un producto
-     * que no existe en el dataset de valoraciones.
+     * @param datasetLoader Data set used.
+     * @param idItem Target item, for which the neighbors are computed.
+     * @return A list wit a Neighbor object for each item in the dataset, sorted
+     * by similarity desc.
      */
-    public List<Neighbor> getNeighbors(DatasetLoader datasetLoader, int idItem) throws ItemNotFound {
+    public List<Neighbor> getNeighbors(DatasetLoader datasetLoader, int idItem) {
         CollaborativeSimilarityMeasure similarityMeasureValue = (CollaborativeSimilarityMeasure) getParameterValue(SIMILARITY_MEASURE);
-        int neighborhoodSizeValue = (Integer) getParameterValue(NEIGHBORHOOD_SIZE);
 
         boolean isRelevanceFactorApplied = (Boolean) getParameterValue(RELEVANCE_FACTOR);
         int relevanceFactorIntValue = (Integer) getParameterValue(RELEVANCE_FACTOR_VALUE);
@@ -171,46 +175,44 @@ public class KnnModelBasedCFRS
         Collection<Integer> allItems = ratingsDataset.allRatedItems();
         for (int idItemNeighbor : allItems) {
             if (idItem != idItemNeighbor) {
-                try {
-                    Map<Integer, ? extends Rating> neighborRated = ratingsDataset.getItemRatingsRated(idItemNeighbor);
-                    Set<Integer> intersection = new HashSet<>(itemRatingsRated.keySet());
-                    intersection.retainAll(neighborRated.keySet());
-                    if (intersection.isEmpty()) {
-                        continue;
-                    }
-                    List<CommonRating> common = new LinkedList<>();
-                    for (int idUser : intersection) {
-                        common.add(new CommonRating(
-                                RecommendationEntity.USER,
-                                idUser,
-                                RecommendationEntity.ITEM,
-                                idItem,
-                                idItemNeighbor,
-                                itemRatingsRated.get(idUser).ratingValue.floatValue(),
-                                neighborRated.get(idUser).ratingValue.floatValue()));
-                    }
+                Map<Integer, ? extends Rating> neighborRated = ratingsDataset.getItemRatingsRated(idItemNeighbor);
+                Set<Integer> intersection = new HashSet<>(itemRatingsRated.keySet());
+                intersection.retainAll(neighborRated.keySet());
 
-                    float similarity;
-                    try {
-                        similarity = similarityMeasureValue.similarity(common, ratingsDataset);
-
-                        if (similarity > 0) {
-                            if (isRelevanceFactorApplied && common.size() < relevanceFactorIntValue) {
-                                similarity = (similarity * (common.size() / (float) relevanceFactorIntValue));
-                            }
-                            itemsSimilares.add(new Neighbor(RecommendationEntity.ITEM, contentDataset.get(idItemNeighbor), similarity));
-                        }
-                    } catch (CouldNotComputeSimilarity ex) {
-                    }
-                } catch (ItemNotFound ex) {
-                    Global.showWarning("Item " + idItemNeighbor + " has no ratings.");
+                List<CommonRating> common = new LinkedList<>();
+                for (int idUser : intersection) {
+                    common.add(new CommonRating(
+                            RecommendationEntity.USER,
+                            idUser,
+                            RecommendationEntity.ITEM,
+                            idItem,
+                            idItemNeighbor,
+                            itemRatingsRated.get(idUser).ratingValue.floatValue(),
+                            neighborRated.get(idUser).ratingValue.floatValue()));
                 }
+
+                float similarity;
+                try {
+                    similarity = similarityMeasureValue.similarity(common, ratingsDataset);
+
+                    if (similarity > 0) {
+                        if (isRelevanceFactorApplied && common.size() < relevanceFactorIntValue) {
+                            similarity = (similarity * (common.size() / (float) relevanceFactorIntValue));
+                        }
+
+                    }
+                } catch (CouldNotComputeSimilarity ex) {
+                    similarity = Float.NaN;
+                }
+
+                itemsSimilares.add(new Neighbor(RecommendationEntity.ITEM, contentDataset.get(idItemNeighbor), similarity));
             }
         }
 
         //Ordenar la lista y extraer los n mas similares
-        Collections.sort(itemsSimilares);
-        return itemsSimilares.subList(0, Math.min(itemsSimilares.size(), neighborhoodSizeValue));
+        itemsSimilares.sort(Neighbor.BY_SIMILARITY_DESC);
+
+        return itemsSimilares;
     }
 
     @Override

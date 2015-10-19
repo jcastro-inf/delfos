@@ -6,7 +6,6 @@ import delfos.UndefinedParameterException;
 import delfos.common.Global;
 import delfos.common.exceptions.dataset.CannotLoadContentDataset;
 import delfos.common.exceptions.dataset.entity.EntityNotFound;
-import delfos.common.exceptions.dataset.items.ItemAlreadyExists;
 import delfos.common.exceptions.dataset.items.ItemNotFound;
 import delfos.dataset.basic.features.Feature;
 import delfos.dataset.basic.item.Item;
@@ -104,9 +103,6 @@ public class AddItemFeatures extends DatabaseCaseUseSubManager {
             changeableDatasetLoader.getChangeableContentDataset().addItem(new Item(item.getId(), newName, newEntityFeatures));
         } catch (CannotLoadContentDataset ex) {
             ERROR_CODES.CANNOT_LOAD_CONTENT_DATASET.exit(ex);
-            throw new IllegalArgumentException(ex);
-        } catch (ItemAlreadyExists ex) {
-            ERROR_CODES.ITEM_ALREADY_EXISTS.exit(ex);
             throw new IllegalArgumentException(ex);
         } catch (ItemNotFound ex) {
             ERROR_CODES.ITEM_NOT_FOUND.exit(ex);

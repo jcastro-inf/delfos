@@ -46,7 +46,7 @@ public class GRSItemWeightedCaseStudy extends DelfosTest {
             + "experiments" + File.separator
             + GRSItemWeightedCaseStudy.class.getSimpleName() + File.separator;
 
-    private static final int NUM_GROUPS = 180, SIZE_OF_GROUPS = 5, SEED_VALUE = 77352653;
+    private static final int NUM_GROUPS = 180, SIZE_OF_GROUPS = 5, SEED_VALUE = 123456;
 
     private final DatasetLoader<? extends Rating> datasetLoader = new ConfiguredDatasetLoader("ml-100k");
 

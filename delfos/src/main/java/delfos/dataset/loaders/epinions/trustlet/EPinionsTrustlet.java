@@ -7,8 +7,6 @@ import delfos.common.exceptions.dataset.CannotLoadContentDataset;
 import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
 import delfos.common.exceptions.dataset.CannotLoadTrustDataset;
 import delfos.common.exceptions.dataset.CannotLoadUsersDataset;
-import delfos.common.exceptions.dataset.items.ItemAlreadyExists;
-import delfos.common.exceptions.dataset.users.UserAlreadyExists;
 import delfos.common.parameters.Parameter;
 import delfos.common.parameters.restriction.DirectoryParameter;
 import delfos.dataset.basic.features.Feature;
@@ -37,7 +35,10 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.Set;
 import java.util.StringTokenizer;
+import java.util.TreeSet;
+import java.util.stream.Collectors;
 
 /**
  *
@@ -141,7 +142,7 @@ public class EPinionsTrustlet extends DatasetLoaderAbstract<Rating> implements U
 
                 Chronometer c = new Chronometer();
 
-                LinkedList<Item> items = new LinkedList<>();
+                Set<Item> items = new TreeSet<>();
 
                 Feature[] features = new Feature[2];
                 features[0] = authorFeature;
@@ -222,7 +223,7 @@ public class EPinionsTrustlet extends DatasetLoaderAbstract<Rating> implements U
 
                 Global.showMessageTimestamped("Loaded " + items.size() + " items");
                 contentDataset = new ContentDatasetDefault(items);
-            } catch (IOException | ItemAlreadyExists ex) {
+            } catch (IOException ex) {
                 throw new CannotLoadContentDataset(ex);
             }
 
@@ -271,16 +272,12 @@ public class EPinionsTrustlet extends DatasetLoaderAbstract<Rating> implements U
                 throw new CannotLoadRatingsDataset(ex);
             }
 
-            try {
-                Collection<User> users = new LinkedList<>();
-                idUsers.values().stream().forEach((idUser) -> {
-                    users.add(new User(idUser));
-                });
+            Set<User> users = idUsers.values().stream()
+                    .map((idUser) -> new User(idUser))
+                    .collect(Collectors.toSet());
 
-                usersDataset = new UsersDatasetAdapter(users);
-            } catch (UserAlreadyExists ex) {
-                throw new CannotLoadUsersDataset(ex);
-            }
+            usersDataset = new UsersDatasetAdapter(users);
+
         }
     }
 

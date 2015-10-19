@@ -23,7 +23,7 @@ import delfos.common.parameters.restriction.FloatParameter;
 import delfos.common.parameters.restriction.ParameterOwnerRestriction;
 import delfos.common.parameters.restriction.RecommenderSystemParameterRestriction;
 import delfos.dataset.basic.rating.Rating;
-import delfos.dataset.loaders.given.DatasetLoaderGiven;
+import delfos.dataset.loaders.given.DatasetLoaderGivenRatingsDataset;
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.generated.modifieddatasets.PseudoUserRatingsDataset;
 import delfos.dataset.util.DatasetPrinterDeprecated;
@@ -165,8 +165,7 @@ public class CentralityWeightedAggregationGRS extends GroupRecommenderSystemAdap
 
         Collection<Recommendation> groupRecom;
 
-        groupRecom = recommenderSystem.recommendToUser(
-                new DatasetLoaderGiven(datasetLoader, ratingsDataset_withPseudoUser),
+        groupRecom = recommenderSystem.recommendToUser(new DatasetLoaderGivenRatingsDataset(datasetLoader, ratingsDataset_withPseudoUser),
                 RecommendationModel.getRecommendationModel(),
                 idGroup,
                 candidateItems);

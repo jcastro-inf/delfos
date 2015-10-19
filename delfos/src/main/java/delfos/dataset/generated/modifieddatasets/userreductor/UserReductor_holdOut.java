@@ -1,31 +1,28 @@
 package delfos.dataset.generated.modifieddatasets.userreductor;
 
-import java.util.Random;
-import java.util.TreeSet;
 import delfos.common.Global;
-import delfos.common.exceptions.dataset.CannotLoadContentDataset;
 import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
 import delfos.common.parameters.Parameter;
 import delfos.common.parameters.restriction.FloatParameter;
-import delfos.dataset.basic.item.ContentDataset;
+import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RatingsDataset;
 import delfos.dataset.basic.rating.RelevanceCriteria;
-import delfos.dataset.loaders.csv.CSVfileDatasetLoader;
-import delfos.dataset.basic.loader.types.ContentDatasetLoader;
-import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.generated.modifieddatasets.DatasetSampler;
+import delfos.dataset.loaders.csv.CSVfileDatasetLoader;
+import java.util.Random;
+import java.util.TreeSet;
 
 /**
  * Envoltura de los datasets que se encarga de realizar una selección aleatoria
  * de entre todos los usuarios para trabajar con un dataset más pequeño
  *
-* @author Jorge Castro Gallardo
+ * @author Jorge Castro Gallardo
  *
  * @version 1.1 (21-01-2013) Ahora implementa de {@link RatingsDatasetAdapter}
  * @version 21-Enero-2014 Clase renombrada para claridad de su funcionamiento.
  */
-public class UserReductor_holdOut extends DatasetSampler implements ContentDatasetLoader {
+public class UserReductor_holdOut extends DatasetSampler {
 
     private static final long serialVersionUID = 1L;
     /**
@@ -33,7 +30,7 @@ public class UserReductor_holdOut extends DatasetSampler implements ContentDatas
      * el dataset reducido.
      */
     public static final Parameter usersPercentage = new Parameter("usersPercentage", new FloatParameter(0.0f, 1.0f, 0.1f));
-    private RatingsDataset<? extends Rating> ratingsDataset = null;
+    private UserReductor_allowedUsers<? extends Rating> ratingsDataset = null;
 
     public UserReductor_holdOut() {
         this(new CSVfileDatasetLoader());
@@ -83,20 +80,6 @@ public class UserReductor_holdOut extends DatasetSampler implements ContentDatas
             throw new CannotLoadRatingsDataset("must call shuffle before using this method");
         } else {
             return ratingsDataset;
-        }
-    }
-
-    @Override
-    public ContentDataset getContentDataset() throws CannotLoadContentDataset {
-        if (ratingsDataset == null) {
-            throw new CannotLoadContentDataset("must call shuffle before using this method");
-        } else {
-            if (getOriginalDataset() instanceof ContentDatasetLoader) {
-                ContentDatasetLoader contentDatasetLoader = (ContentDatasetLoader) getOriginalDataset();
-                return contentDatasetLoader.getContentDataset();
-            } else {
-                throw new CannotLoadContentDataset("The dataset loader is not a ContentDatasetLoader, cannot apply a content-based ");
-            }
         }
     }
 
