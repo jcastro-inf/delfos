@@ -61,13 +61,13 @@ public class RatingsUserNeighborJTableModel extends AbstractTableModel {
         return datos[columnIndex][rowIndex];
     }
 
-    public void setRatings(DatasetLoader datasetLoader, User user, User neighbor) {
+    public synchronized void setRatings(DatasetLoader datasetLoader, User user, User neighbor) {
 
         ContentDataset contentDataset = ((ContentDatasetLoader) datasetLoader).getContentDataset();
         RatingsDataset ratingsDataset = datasetLoader.getRatingsDataset();
 
         Set<Item> itemsRatedUnion = contentDataset.stream().filter(item -> {
-            boolean userHasRated = ratingsDataset.getUserRated(user.getId()).contains(item.getId());
+            boolean userHasRated = user != null && ratingsDataset.getUserRated(user.getId()).contains(item.getId());
             boolean neighborHasRated = neighbor != null && ratingsDataset.getUserRated(neighbor.getId()).contains(item.getId());
             return userHasRated || neighborHasRated;
         }).collect(Collectors.toSet());
@@ -75,7 +75,7 @@ public class RatingsUserNeighborJTableModel extends AbstractTableModel {
         datos = new Object[COLUMN_COUNT][itemsRatedUnion.size()];
         int index = 0;
         for (Item item : itemsRatedUnion) {
-            Rating userRating = ratingsDataset.getRating(user.getId(), item.getId());
+            Rating userRating = user == null ? null : ratingsDataset.getRating(user.getId(), item.getId());
             Rating neighborRating = neighbor == null ? null : ratingsDataset.getRating(neighbor.getId(), item.getId());
 
             datos[ID_ITEM_COLUMN][index] = item.getId();

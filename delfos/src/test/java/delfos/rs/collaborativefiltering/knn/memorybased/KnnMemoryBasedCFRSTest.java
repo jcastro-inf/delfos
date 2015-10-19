@@ -8,8 +8,11 @@ import delfos.dataset.basic.item.ContentDataset;
 import delfos.dataset.basic.item.ContentDatasetDefault;
 import delfos.dataset.basic.item.Item;
 import delfos.dataset.basic.loader.types.DatasetLoader;
+import delfos.dataset.basic.loader.types.UsersDatasetLoader;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RatingsDataset;
+import delfos.dataset.basic.user.User;
+import delfos.dataset.basic.user.UsersDataset;
 import delfos.dataset.loaders.given.DatasetLoaderGivenRatingsContent;
 import delfos.dataset.storage.memory.BothIndexRatingsDataset;
 import delfos.dataset.util.DatasetPrinterDeprecated;
@@ -96,11 +99,16 @@ public class KnnMemoryBasedCFRSTest extends DelfosTest {
     public void testBasicWithPearson() throws CannotLoadRatingsDataset, UserNotFound {
         KnnMemoryBasedCFRS knnMemory = new KnnMemoryBasedCFRS(new PearsonCorrelationCoefficient(), null, null, false, 1, 20, new WeightedSum());
 
-        List<Neighbor> neighbors = knnMemory.getNeighbors(datasetLoader.getRatingsDataset(), 1);
+        UsersDataset usersDataset = ((UsersDatasetLoader) datasetLoader).getUsersDataset();
+
+        User user = usersDataset.getUser(1);
+        User neighborUser = usersDataset.getUser(2);
+
+        List<Neighbor> neighbors = knnMemory.getNeighbors(datasetLoader, user);
         assertArrayEquals(
                 "The neighbor list is wrong",
                 Arrays.asList(
-                        new Neighbor(RecommendationEntity.USER, 2, 1)).toArray(),
+                        new Neighbor(RecommendationEntity.USER, neighborUser, 1)).toArray(),
                 neighbors.toArray());
 
     }
@@ -109,13 +117,20 @@ public class KnnMemoryBasedCFRSTest extends DelfosTest {
     public void testBasicWithCosine() throws CannotLoadRatingsDataset, UserNotFound {
         KnnMemoryBasedCFRS knnMemory = new KnnMemoryBasedCFRS(new CosineCoefficient(), null, null, false, 1, 20, new WeightedSum());
 
-        List<Neighbor> neighbors = knnMemory.getNeighbors(datasetLoader.getRatingsDataset(), 1);
+        UsersDataset usersDataset = ((UsersDatasetLoader) datasetLoader).getUsersDataset();
+
+        User user = usersDataset.getUser(1);
+        User neighborUser2 = usersDataset.getUser(2);
+        User neighborUser3 = usersDataset.getUser(3);
+
+        List<Neighbor> neighbors = knnMemory.getNeighbors(datasetLoader, user);
 
         assertArrayEquals(
                 "The neighbor list is wrong",
                 Arrays.asList(
-                        new Neighbor(RecommendationEntity.USER, 2, 0.9997108),
-                        new Neighbor(RecommendationEntity.USER, 3, 0.886990057)).toArray(),
+                        new Neighbor(RecommendationEntity.USER, neighborUser2, 0.9997108),
+                        new Neighbor(RecommendationEntity.USER, neighborUser3, 0.886990057)).toArray(),
                 neighbors.toArray());
     }
+
 }
