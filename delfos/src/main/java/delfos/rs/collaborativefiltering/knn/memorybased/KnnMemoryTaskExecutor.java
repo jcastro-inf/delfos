@@ -47,10 +47,6 @@ public final class KnnMemoryTaskExecutor implements SingleTaskExecute<KnnMemoryT
         boolean relevanceFactor_ = (Boolean) rs.getParameterValue(KnnMemoryBasedCFRS.RELEVANCE_FACTOR);
         int relevanceFactorValue_ = (Integer) rs.getParameterValue(KnnMemoryBasedCFRS.RELEVANCE_FACTOR_VALUE);
 
-        if (user.getId() == 1 && neighborUser.getId() == 2) {
-            System.out.println("Jorge depura");
-        }
-
         final Map<Integer, ? extends Rating> userRatings = ratingsDataset.getUserRatingsRated(user.getId());
         final Map<Integer, ? extends Rating> neighborRatings = ratingsDataset.getUserRatingsRated(neighborUser.getId());
 

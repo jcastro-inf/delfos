@@ -1,5 +1,6 @@
 package delfos.rs.collaborativefiltering.knn.memorybased;
 
+import delfos.ERROR_CODES;
 import delfos.common.Global;
 import delfos.common.exceptions.CouldNotPredictRating;
 import delfos.common.exceptions.dataset.CannotLoadContentDataset;
@@ -154,35 +155,27 @@ public class KnnMemoryBasedCFRS extends KnnCollaborativeRecommender<KnnMemoryMod
 
         multiThreadExecutionManager.run();
 
-        List<Neighbor> ret = new ArrayList<>();
+        List<Neighbor> allNeighbors = new ArrayList<>();
+        final Collection<KnnMemoryTask> allFinishedTasks = multiThreadExecutionManager.getAllFinishedTasks();
         //Recompongo los resultados.
-        for (KnnMemoryTask task : multiThreadExecutionManager.getAllFinishedTasks()) {
+        for (KnnMemoryTask task : allFinishedTasks) {
             Neighbor neighbor = task.getNeighbor();
             if (neighbor == null) {
-                ret.add(new Neighbor(RecommendationEntity.USER, task.neighborUser, Double.NaN));
+                allNeighbors.add(new Neighbor(RecommendationEntity.USER, task.neighborUser, Double.NaN));
             } else {
-                ret.add(neighbor);
+                allNeighbors.add(neighbor);
             }
         }
 
         if (Global.isVerboseAnnoying()) {
-            Collections.sort(ret, (Neighbor o1, Neighbor o2) -> o1.getIdNeighbor() - o2.getIdNeighbor());
+            Collections.sort(allNeighbors, (Neighbor o1, Neighbor o2) -> o1.getIdNeighbor() - o2.getIdNeighbor());
 
             Global.showMessageTimestamped("============ All users similarity =================");
-            printNeighborhood(user.getId(), ret);
+            printNeighborhood(user.getId(), allNeighbors);
         }
 
-        Collections.sort(ret, Neighbor.BY_SIMILARITY_DESC);
-        int neighborhoodSize_ = ((Number) getParameterValue(KnnMemoryBasedCFRS.NEIGHBORHOOD_SIZE)).intValue();
-
-        ret = ret.subList(0, Math.min(ret.size(), neighborhoodSize_));
-
-        if (Global.isVerboseAnnoying()) {
-            Global.showMessageTimestamped("============ Selected neighborhood =================");
-            printNeighborhood(user.getId(), ret);
-        }
-
-        return ret;
+        allNeighbors.sort(Neighbor.BY_SIMILARITY_DESC);
+        return allNeighbors;
 
     }
 
@@ -201,16 +194,31 @@ public class KnnMemoryBasedCFRS extends KnnCollaborativeRecommender<KnnMemoryMod
      * @throws UserNotFound Si el usuario activo o alguno de los vecinos
      * indicados no se encuentra en el dataset.
      */
-    public Collection<Recommendation> recommendWithNeighbors(RatingsDataset<? extends Rating> ratingsDataset, Integer idUser, List<Neighbor> neighbors, Collection<Item> candidateItems) throws UserNotFound {
+    public Collection<Recommendation> recommendWithNeighbors(
+            RatingsDataset<? extends Rating> ratingsDataset,
+            Integer idUser,
+            List<Neighbor> neighbors,
+            Collection<Item> candidateItems) {
+
         PredictionTechnique predictionTechnique_ = (PredictionTechnique) getParameterValue(KnnMemoryBasedCFRS.PREDICTION_TECHNIQUE);
 
-        List<Neighbor> neighborsWithPositiveSimilarity = neighbors.stream()
+        int neighborhoodSize_ = ((Number) getParameterValue(KnnMemoryBasedCFRS.NEIGHBORHOOD_SIZE)).intValue();
+
+        List<Neighbor> neighborsWithPositiveSimilarityAndSelected = neighbors.stream()
                 .filter((neighbor -> Float.isFinite(neighbor.getSimilarity()) && neighbor.getSimilarity() > 0))
                 .collect(Collectors.toList());
+        neighborsWithPositiveSimilarityAndSelected.sort(Neighbor.BY_SIMILARITY_DESC);
+        neighborsWithPositiveSimilarityAndSelected = neighborsWithPositiveSimilarityAndSelected
+                .subList(0, Math.min(neighborsWithPositiveSimilarityAndSelected.size(), neighborhoodSize_));
+
+        if (Global.isVerboseAnnoying()) {
+            Global.showMessageTimestamped("============ Selected neighborhood =================");
+            printNeighborhood(idUser, neighborsWithPositiveSimilarityAndSelected);
+        }
 
         //Predicción de la valoración
         Collection<Recommendation> recommendations = new LinkedList<>();
-        Map<Integer, Map<Integer, ? extends Rating>> ratingsVecinos = neighborsWithPositiveSimilarity
+        Map<Integer, Map<Integer, ? extends Rating>> ratingsVecinos = neighborsWithPositiveSimilarityAndSelected
                 .stream()
                 .collect(Collectors.toMap(
                                 (neighbor -> neighbor.getIdNeighbor()),
@@ -218,7 +226,7 @@ public class KnnMemoryBasedCFRS extends KnnCollaborativeRecommender<KnnMemoryMod
 
         for (Item item : candidateItems) {
             Collection<MatchRating> match = new LinkedList<>();
-            for (Neighbor neighbor : neighborsWithPositiveSimilarity) {
+            for (Neighbor neighbor : neighborsWithPositiveSimilarityAndSelected) {
                 Rating rating = ratingsVecinos.get(neighbor.getIdNeighbor()).get(item.getId());
                 if (rating != null) {
                     match.add(new MatchRating(RecommendationEntity.USER, neighbor.getIdNeighbor(), item.getId(), rating.ratingValue, neighbor.getSimilarity()));
@@ -231,7 +239,8 @@ public class KnnMemoryBasedCFRS extends KnnCollaborativeRecommender<KnnMemoryMod
             } catch (CouldNotPredictRating ex) {
                 recommendations.add(new Recommendation(item, Double.NaN));
             } catch (ItemNotFound ex) {
-                Global.showError(ex);
+                ERROR_CODES.ITEM_NOT_FOUND.exit(ex);
+                recommendations.add(new Recommendation(item, Double.NaN));
             }
         }
 

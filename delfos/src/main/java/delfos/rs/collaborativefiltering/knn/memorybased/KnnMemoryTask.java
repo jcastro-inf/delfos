@@ -43,8 +43,6 @@ public class KnnMemoryTask extends Task {
 
     public void setNeighbor(Neighbor neighbor) {
         this.neighbor = neighbor;
-        rs = null;
-        datasetLoader = null;
     }
 
     public Neighbor getNeighbor() {
