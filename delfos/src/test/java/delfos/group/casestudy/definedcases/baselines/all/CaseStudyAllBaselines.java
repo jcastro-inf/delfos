@@ -62,7 +62,7 @@ public class CaseStudyAllBaselines {
             + "experiments" + File.separator
             + CaseStudyAllBaselines.class.getSimpleName() + File.separator;
 
-    public static long SEED_VALUE = 77352653L;
+    public static long SEED_VALUE = 123456;
 
     public static final Collection<Integer> GROUPS_SIZES = Arrays.asList(5, 10, 15);
     public static final int NUM_GROUPS = 943 / 15;

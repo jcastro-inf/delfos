@@ -68,7 +68,7 @@ public class ConsensusGRS_CaseStudy {
         new File(CONSENSUS_GRS_INPUT_DATA_DIRECTORY).mkdirs();
     }
 
-    public static final long SEED_VALUE = 77352653L;
+    public static final long SEED_VALUE = 123456L;
     public static final int SIZE_OF_GROUPS = 5;
     public static final int NUM_GROUPS = 30;
 
