@@ -33,9 +33,9 @@ public class NumberCompare {
 
         if (diff == 0) {
             return true;
-        } else if (diff < Math.pow(10, COMPARE_NUM_DECIMALS)) {
+        } else if (diff < Math.pow(10, -COMPARE_NUM_DECIMALS)) {
             return true;
-        } else if (diff > Math.pow(10, COMPARE_NUM_DECIMALS)) {
+        } else if (diff > Math.pow(10, -COMPARE_NUM_DECIMALS)) {
             final int value = (int) Math.pow(10, COMPARE_NUM_DECIMALS);
 
             p1 = (int) (p1 * value);
