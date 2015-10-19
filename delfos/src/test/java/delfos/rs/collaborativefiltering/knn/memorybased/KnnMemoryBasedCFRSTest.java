@@ -144,7 +144,7 @@ public class KnnMemoryBasedCFRSTest extends DelfosTest {
     }
 
     @Test
-    public void testGetNeighborsMethodReturnsANeighborForEachItemButHimself() {
+    public void testGetNeighborsMethodReturnsANeighborForEachUserButHimself() {
 
         UsersDataset usersDataset = ((UsersDatasetLoader) datasetLoader).getUsersDataset();
 
