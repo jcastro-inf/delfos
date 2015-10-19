@@ -145,6 +145,7 @@ public class KnnMemoryBasedCFRS extends KnnCollaborativeRecommender<KnnMemoryMod
         UsersDataset usersDataset = ((UsersDatasetLoader) datasetLoader).getUsersDataset();
 
         List<KnnMemoryTask> tasks = usersDataset.parallelStream()
+                .filter(user2 -> !user.equals(user2))
                 .map((userNeighbor) -> new KnnMemoryTask(datasetLoader, user, userNeighbor, this))
                 .collect(Collectors.toList());
 

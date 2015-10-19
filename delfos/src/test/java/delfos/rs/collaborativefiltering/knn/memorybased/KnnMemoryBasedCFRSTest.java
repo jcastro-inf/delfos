@@ -117,7 +117,8 @@ public class KnnMemoryBasedCFRSTest extends DelfosTest {
         assertArrayEquals(
                 "The neighbor list is wrong",
                 Arrays.asList(
-                        new Neighbor(RecommendationEntity.USER, neighborUser, 1)).toArray(),
+                        new Neighbor(RecommendationEntity.USER, neighborUser, 1),
+                        new Neighbor(RecommendationEntity.USER, 3, -0.57735026)).toArray(),
                 neighbors.toArray());
 
     }
