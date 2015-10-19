@@ -1,9 +1,7 @@
 package delfos.dataset.basic.item;
 
 import delfos.common.Global;
-import delfos.common.exceptions.dataset.entity.EntityAlreadyExists;
 import delfos.common.exceptions.dataset.entity.EntityNotFound;
-import delfos.common.exceptions.dataset.items.ItemAlreadyExists;
 import delfos.common.exceptions.dataset.items.ItemNotFound;
 import delfos.dataset.basic.features.CollectionOfEntitiesWithFeaturesDefault;
 import delfos.dataset.basic.features.FeatureGenerator;
@@ -11,6 +9,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.stream.Collectors;
 
 /**
  * Dataset de contenido que almacena todos los items en memoria
@@ -42,17 +41,10 @@ public class ContentDatasetDefault extends CollectionOfEntitiesWithFeaturesDefau
      * Crea un dataset de contenido a partir de los items que contiene.
      *
      * @param items
-     * @throws delfos.common.exceptions.dataset.items.ItemAlreadyExists
      */
-    public ContentDatasetDefault(Collection<Item> items) throws ItemAlreadyExists {
+    public ContentDatasetDefault(Set<Item> items) {
         this();
-        for (Item item : items) {
-            try {
-                add(item);
-            } catch (EntityAlreadyExists ex) {
-                throw new ItemAlreadyExists(item.getId(), ex);
-            }
-        }
+        items.stream().forEach((item) -> add(item));
     }
 
     @Override
@@ -132,10 +124,9 @@ public class ContentDatasetDefault extends CollectionOfEntitiesWithFeaturesDefau
 
     @Override
     public String toString() {
-        Set<String> items = new TreeSet<>();
-        for (Item item : this) {
-            items.add("Item " + item.getId());
-        }
+        Set<String> items = this.stream()
+                .map((item) -> "Item " + item.getId())
+                .collect(Collectors.toCollection(TreeSet::new));
         return items.toString();
     }
 

@@ -1,17 +1,16 @@
 package delfos.dataset.basic.user;
 
+import delfos.common.exceptions.dataset.entity.EntityNotFound;
+import delfos.common.exceptions.dataset.users.UserNotFound;
+import delfos.dataset.basic.features.CollectionOfEntitiesWithFeaturesDefault;
+import delfos.dataset.basic.features.Feature;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.TreeSet;
-import delfos.dataset.basic.features.CollectionOfEntitiesWithFeaturesDefault;
-import delfos.dataset.basic.features.Feature;
-import delfos.common.exceptions.dataset.entity.EntityNotFound;
-import delfos.common.exceptions.dataset.users.UserAlreadyExists;
-import delfos.common.exceptions.dataset.users.UserNotFound;
 
 /**
  *
-* @author Jorge Castro Gallardo
+ * @author Jorge Castro Gallardo
  *
  * @version 24-jul-2013
  */
@@ -20,10 +19,8 @@ public class UsersDatasetAdapter extends CollectionOfEntitiesWithFeaturesDefault
     public UsersDatasetAdapter() {
     }
 
-    public UsersDatasetAdapter(Iterable<User> userCollection) throws UserAlreadyExists {
-        for (User user : userCollection) {
-            add(user);
-        }
+    public UsersDatasetAdapter(Set<User> userCollection) {
+        userCollection.stream().forEach((user) -> add(user));
     }
 
     @Override
@@ -56,7 +53,7 @@ public class UsersDatasetAdapter extends CollectionOfEntitiesWithFeaturesDefault
 
     @Override
     public String toString() {
-        Set<String> _entitiesById = new TreeSet<String>();
+        Set<String> _entitiesById = new TreeSet<>();
         for (User user : this) {
             _entitiesById.add(user.getName() + " (User " + user.getId() + ")");
         }

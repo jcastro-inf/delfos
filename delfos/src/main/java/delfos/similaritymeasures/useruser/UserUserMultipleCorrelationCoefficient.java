@@ -15,7 +15,7 @@ import delfos.common.parameters.restriction.ParameterOwnerRestriction;
 import delfos.common.statisticalfuncions.MeanIterative;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RatingsDataset;
-import delfos.dataset.loaders.given.DatasetLoaderGiven;
+import delfos.dataset.loaders.given.DatasetLoaderGivenRatingsDataset;
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.storage.memory.BothIndexRatingsDataset;
 import delfos.similaritymeasures.BasicSimilarityMeasure;
@@ -141,7 +141,7 @@ public class UserUserMultipleCorrelationCoefficient extends SimilarityMeasureAda
 
         RatingsDataset<Rating> ratingsDataset_completed = new BothIndexRatingsDataset<>(completedRatings);
 
-        DatasetLoader<Rating> datasetLoader_completed = new DatasetLoaderGiven<>(datasetLoader, ratingsDataset_completed);
+        DatasetLoader<Rating> datasetLoader_completed = new DatasetLoaderGivenRatingsDataset<>(datasetLoader, ratingsDataset_completed);
 
         double simAB = toRange(wrappedSimilarity.similarity(datasetLoader_completed, a, b));
 
@@ -187,7 +187,7 @@ public class UserUserMultipleCorrelationCoefficient extends SimilarityMeasureAda
 
         RatingsDataset<Rating> ratingsDataset_completed = new BothIndexRatingsDataset<>(completedRatings);
 
-        DatasetLoader<Rating> datasetLoader_completed = new DatasetLoaderGiven<>(datasetLoader, ratingsDataset_completed);
+        DatasetLoader<Rating> datasetLoader_completed = new DatasetLoaderGivenRatingsDataset<>(datasetLoader, ratingsDataset_completed);
 
         double simAB = toRange(wrappedSimilarity.similarity(datasetLoader_completed, a, b));
         return simAB;
@@ -225,7 +225,7 @@ public class UserUserMultipleCorrelationCoefficient extends SimilarityMeasureAda
 
         RatingsDataset<Rating> ratingsDataset_completed = new BothIndexRatingsDataset<>(completedRatings);
 
-        DatasetLoader<Rating> datasetLoader_completed = new DatasetLoaderGiven<>(datasetLoader, ratingsDataset_completed);
+        DatasetLoader<Rating> datasetLoader_completed = new DatasetLoaderGivenRatingsDataset<>(datasetLoader, ratingsDataset_completed);
 
         double simAC_I = toRange(wrappedSimilarity.similarity(datasetLoader_completed, a, c_i));
         return simAC_I;
@@ -263,7 +263,7 @@ public class UserUserMultipleCorrelationCoefficient extends SimilarityMeasureAda
 
         RatingsDataset<Rating> ratingsDataset_completed = new BothIndexRatingsDataset<>(completedRatings);
 
-        DatasetLoader<Rating> datasetLoader_completed = new DatasetLoaderGiven<>(datasetLoader, ratingsDataset_completed);
+        DatasetLoader<Rating> datasetLoader_completed = new DatasetLoaderGivenRatingsDataset<>(datasetLoader, ratingsDataset_completed);
 
         double simBC_I = toRange(wrappedSimilarity.similarity(datasetLoader_completed, b, c_i));
         return simBC_I;

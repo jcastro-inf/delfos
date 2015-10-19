@@ -19,7 +19,7 @@ import delfos.dataset.basic.loader.types.UsersDatasetLoader;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RatingsDataset;
 import delfos.dataset.basic.rating.RelevanceCriteria;
-import delfos.dataset.loaders.given.DatasetLoaderGiven;
+import delfos.dataset.loaders.given.DatasetLoaderGivenRatingsDataset;
 import delfos.dataset.storage.validationdatasets.PairOfTrainTestRatingsDataset;
 import delfos.dataset.storage.validationdatasets.ValidationDatasets;
 import delfos.experiment.ExperimentListener;
@@ -298,7 +298,7 @@ public class DefaultCaseStudy extends CaseStudy implements ParameterListener {
                                 Map<Integer, Set<Integer>> predictionRatings = new TreeMap<>();
                                 predictionRatings.put(idUser, new TreeSet<>(candidateItems));
                                 RatingsDataset<Rating> predictionRatingsDataset = ValidationDatasets.getInstance().createTrainingDataset((RatingsDataset<Rating>) datasetLoader.getRatingsDataset(), predictionRatings);
-                                DatasetLoader<Rating> predictionDatasetLoader = new DatasetLoaderGiven<>(
+                                DatasetLoader<Rating> predictionDatasetLoader = new DatasetLoaderGivenRatingsDataset<>(
                                         datasetLoader,
                                         predictionRatingsDataset);
                                 multiThreadExecutionManager_SingleRecommendation.addTask(new SingleUserRecommendationTask(recommenderSystem, predictionDatasetLoader, model, idUser, candidateItems));

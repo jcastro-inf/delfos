@@ -3,13 +3,18 @@ package delfos.dataset.loaders.epinions;
 import delfos.common.exceptions.dataset.CannotLoadContentDataset;
 import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
 import delfos.common.exceptions.dataset.CannotLoadTrustDataset;
+import delfos.common.exceptions.dataset.CannotLoadUsersDataset;
 import delfos.common.parameters.Parameter;
 import delfos.common.parameters.restriction.DirectoryParameter;
-import delfos.dataset.basic.loader.types.ContentDatasetLoader;
 import delfos.dataset.basic.loader.types.DatasetLoaderAbstract;
 import delfos.dataset.basic.loader.types.TrustDatasetLoader;
+import delfos.dataset.basic.user.User;
+import delfos.dataset.basic.user.UsersDataset;
+import delfos.dataset.basic.user.UsersDatasetAdapter;
 import java.io.File;
 import java.io.IOException;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  *
@@ -17,13 +22,15 @@ import java.io.IOException;
  *
  * @version 10-dic-2013
  */
-public class EPinionsDatasetLoader extends DatasetLoaderAbstract implements ContentDatasetLoader, TrustDatasetLoader {
+public class EPinionsDatasetLoader extends DatasetLoaderAbstract implements TrustDatasetLoader {
 
     public static final Parameter EPINIONS_DATASET_DIRECTORY;
 
     private EPinionsRatingsDataset ratingsDataset = null;
     private EPinionsContentDataset contentDataset = null;
     private EPinionsTrustDataset trustDataset = null;
+
+    private UsersDataset usersDataset = null;
 
     static {
         File epinionsDatasetDirectory = new File("." + File.separator + "datasets" + File.separator + "epinions" + File.separator);
@@ -32,6 +39,13 @@ public class EPinionsDatasetLoader extends DatasetLoaderAbstract implements Cont
 
     public EPinionsDatasetLoader() {
         addParameter(EPINIONS_DATASET_DIRECTORY);
+
+        addParammeterListener(() -> {
+            usersDataset = null;
+            ratingsDataset = null;
+            contentDataset = null;
+            trustDataset = null;
+        });
     }
 
     @Override
@@ -80,4 +94,15 @@ public class EPinionsDatasetLoader extends DatasetLoaderAbstract implements Cont
 
         return trustDataset;
     }
+
+    @Override
+    public UsersDataset getUsersDataset() throws CannotLoadUsersDataset {
+        if (usersDataset == null) {
+            Set<User> users = getRatingsDataset().allUsers().stream().map(idUser -> new User(idUser)).collect(Collectors.toSet());
+            usersDataset = new UsersDatasetAdapter(users);
+        }
+
+        return usersDataset;
+    }
+
 }

@@ -4,7 +4,6 @@ import delfos.ConsoleParameters;
 import delfos.ERROR_CODES;
 import delfos.UndefinedParameterException;
 import delfos.common.exceptions.dataset.CannotLoadContentDataset;
-import delfos.common.exceptions.dataset.items.ItemAlreadyExists;
 import delfos.dataset.basic.item.Item;
 import delfos.dataset.changeable.ChangeableDatasetLoader;
 import static delfos.main.managers.database.DatabaseManager.MANAGE_RATING_DATABASE_ADD_ITEM;
@@ -33,7 +32,8 @@ public class AddItem extends DatabaseCaseUseSubManager {
 
             int idItem = new Integer(consoleParameters.getValue(MANAGE_RATING_DATABASE_ADD_ITEM));
             if (changeableDatasetLoader.getContentDataset().getAllID().contains(idItem)) {
-                throw new ItemAlreadyExists(idItem);
+                IllegalArgumentException ex = new IllegalArgumentException();
+                ERROR_CODES.MANAGE_RATING_DATABASE_ITEM_ALREADY_EXISTS.exit(ex);
             }
             changeableDatasetLoader.getChangeableContentDataset().addItem(new Item(idItem));
         } catch (NumberFormatException ex) {
@@ -44,9 +44,6 @@ public class AddItem extends DatabaseCaseUseSubManager {
             throw new IllegalArgumentException(ex);
         } catch (CannotLoadContentDataset ex) {
             ERROR_CODES.CANNOT_LOAD_CONTENT_DATASET.exit(ex);
-            throw new IllegalArgumentException(ex);
-        } catch (ItemAlreadyExists ex) {
-            ERROR_CODES.MANAGE_RATING_DATABASE_ITEM_ALREADY_EXISTS.exit(ex);
             throw new IllegalArgumentException(ex);
         }
     }

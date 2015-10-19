@@ -1,6 +1,14 @@
 package delfos.io.csv.dataset.user;
 
 import com.csvreader.CsvReader;
+import delfos.common.Global;
+import delfos.common.exceptions.dataset.CannotLoadUsersDataset;
+import delfos.dataset.basic.features.Feature;
+import delfos.dataset.basic.features.FeatureGenerator;
+import delfos.dataset.basic.features.FeatureType;
+import delfos.dataset.basic.user.User;
+import delfos.dataset.basic.user.UsersDataset;
+import delfos.dataset.basic.user.UsersDatasetAdapter;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
@@ -11,15 +19,7 @@ import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
-import delfos.common.Global;
-import delfos.common.exceptions.dataset.CannotLoadUsersDataset;
-import delfos.common.exceptions.dataset.users.UserAlreadyExists;
-import delfos.dataset.basic.features.Feature;
-import delfos.dataset.basic.features.FeatureGenerator;
-import delfos.dataset.basic.features.FeatureType;
-import delfos.dataset.basic.user.User;
-import delfos.dataset.basic.user.UsersDataset;
-import delfos.dataset.basic.user.UsersDatasetAdapter;
+import java.util.TreeSet;
 
 /**
  * Clase para leer/escribir un dataset de contenido a fichero csv.
@@ -111,12 +111,12 @@ public class DefaultUsersDatasetToCSV implements UsersDatasetToCSV {
     }
 
     @Override
-    public UsersDataset readUsersDataset(File usersFile) throws CannotLoadUsersDataset, FileNotFoundException, UserAlreadyExists {
+    public UsersDataset readUsersDataset(File usersFile) throws CannotLoadUsersDataset, FileNotFoundException {
 
         try {
             FeatureGenerator featureGenerator = new FeatureGenerator();
             int defaultIndexUsers = 1;
-            LinkedList<User> users = new LinkedList<>();
+            TreeSet<User> users = new TreeSet<>();
             CsvReader reader = new CsvReader(
                     new FileInputStream(usersFile.getAbsolutePath()),
                     Charset.forName("UTF-8"));

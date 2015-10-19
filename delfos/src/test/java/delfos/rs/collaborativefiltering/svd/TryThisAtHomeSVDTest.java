@@ -3,7 +3,6 @@ package delfos.rs.collaborativefiltering.svd;
 import delfos.common.FileUtilities;
 import delfos.common.exceptions.dataset.CannotLoadContentDataset;
 import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
-import delfos.common.exceptions.dataset.items.ItemAlreadyExists;
 import delfos.common.exceptions.dataset.items.ItemNotFound;
 import delfos.common.exceptions.dataset.users.UserNotFound;
 import delfos.configfile.rs.single.RecommenderSystemConfigurationFileParser;
@@ -24,7 +23,6 @@ import delfos.rs.persistence.DatabasePersistenceTest;
 import delfos.rs.persistence.FilePersistence;
 import delfos.rs.recommendation.Recommendation;
 import java.io.File;
-import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -55,7 +53,8 @@ public class TryThisAtHomeSVDTest extends DelfosTest {
     public static final String TABLE_NAME_PREFIX = "trythisathome_test_";
 
     @BeforeClass
-    public static void setUpClass() throws IOException, CannotLoadContentDataset, CannotLoadRatingsDataset, SQLException, ClassNotFoundException, ItemAlreadyExists {
+    public static void setUpClass()
+            throws Exception {
 
         FileUtilities.cleanDirectory(new File(TEST_DIRECTORY));
 

@@ -1,22 +1,10 @@
 package delfos.dataset.loaders.csv;
 
 import com.csvreader.CsvReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.nio.charset.Charset;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Map;
-import java.util.TreeMap;
-import java.util.TreeSet;
 import delfos.common.Global;
 import delfos.common.exceptions.dataset.CannotLoadContentDataset;
 import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
 import delfos.common.exceptions.dataset.CannotLoadUsersDataset;
-import delfos.common.exceptions.dataset.items.ItemAlreadyExists;
-import delfos.common.exceptions.dataset.users.UserAlreadyExists;
 import delfos.common.filefilters.FileFilterByExtension;
 import delfos.common.parameters.Parameter;
 import delfos.common.parameters.restriction.FileParameter;
@@ -33,6 +21,18 @@ import delfos.dataset.basic.user.User;
 import delfos.dataset.basic.user.UsersDataset;
 import delfos.dataset.basic.user.UsersDatasetAdapter;
 import delfos.dataset.storage.memory.BothIndexRatingsDataset;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
+import java.util.TreeSet;
+import java.util.stream.Collectors;
 
 /**
  *
@@ -87,7 +87,7 @@ public class CSVfileDatasetLoader_table extends DatasetLoaderAbstract<Rating> im
         reader.setDelimiter('\t');
 
         Map<Integer, Item> items = new TreeMap<>();
-        Collection<User> users = new TreeSet<>();
+        Set<User> users = new TreeSet<>();
 
         try {
             int i = 1;
@@ -144,14 +144,9 @@ public class CSVfileDatasetLoader_table extends DatasetLoaderAbstract<Rating> im
         }
         reader.close();
 
-        try {
-            ratingsDataset = new BothIndexRatingsDataset<>(ratings);
-            contentDataset = new ContentDatasetDefault(items.values());
-            usersDataset = new UsersDatasetAdapter(users);
-
-        } catch (ItemAlreadyExists | UserAlreadyExists ex) {
-            throw new CannotLoadRatingsDataset(ex);
-        }
+        ratingsDataset = new BothIndexRatingsDataset<>(ratings);
+        contentDataset = new ContentDatasetDefault(items.values().stream().collect(Collectors.toSet()));
+        usersDataset = new UsersDatasetAdapter(users);
 
         return ratingsDataset;
     }

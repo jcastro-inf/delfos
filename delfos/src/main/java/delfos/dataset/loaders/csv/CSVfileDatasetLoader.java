@@ -1,29 +1,24 @@
 package delfos.dataset.loaders.csv;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.util.ArrayList;
-import java.util.Collection;
 import delfos.common.Global;
 import delfos.common.exceptions.dataset.CannotLoadContentDataset;
 import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
 import delfos.common.exceptions.dataset.CannotLoadUsersDataset;
-import delfos.common.exceptions.dataset.users.UserAlreadyExists;
 import delfos.common.filefilters.FileFilterByExtension;
 import delfos.common.parameters.Parameter;
 import delfos.common.parameters.restriction.FileParameter;
 import delfos.common.parameters.restriction.ObjectParameter;
 import delfos.dataset.basic.item.ContentDataset;
+import delfos.dataset.basic.loader.types.ContentDatasetLoader;
+import delfos.dataset.basic.loader.types.DatasetLoaderAbstract;
+import delfos.dataset.basic.loader.types.RatingsDatasetLoader;
+import delfos.dataset.basic.loader.types.UsersDatasetLoader;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RatingsDataset;
 import delfos.dataset.basic.rating.RelevanceCriteria;
 import delfos.dataset.basic.user.User;
 import delfos.dataset.basic.user.UsersDataset;
 import delfos.dataset.basic.user.UsersDatasetAdapter;
-import delfos.dataset.basic.loader.types.DatasetLoaderAbstract;
-import delfos.dataset.basic.loader.types.ContentDatasetLoader;
-import delfos.dataset.basic.loader.types.RatingsDatasetLoader;
-import delfos.dataset.basic.loader.types.UsersDatasetLoader;
 import delfos.dataset.storage.memory.BothIndexRatingsDataset;
 import delfos.dataset.storage.memory.DefaultMemoryRatingsDataset_ItemIndexed;
 import delfos.dataset.storage.memory.DefaultMemoryRatingsDataset_ItemIndexed_withMaps;
@@ -35,12 +30,17 @@ import delfos.io.csv.dataset.rating.RatingsDatasetToCSV;
 import delfos.io.csv.dataset.rating.RatingsDatasetToCSV_JavaCSV20;
 import delfos.io.csv.dataset.user.DefaultUsersDatasetToCSV;
 import delfos.io.csv.dataset.user.UsersDatasetToCSV;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.Collection;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Construye el RatingsDataset<? extends Rating>y ContentDataset a partir de dos
  * archivos CSV, uno para cada dataset
  *
-* @author Jorge Castro Gallardo
+ * @author Jorge Castro Gallardo
  *
  * @version 1.1 29-01-2013
  * @version 1.0 Unknown date
@@ -178,20 +178,18 @@ public class CSVfileDatasetLoader extends DatasetLoaderAbstract<Rating> implemen
                 try {
                     RatingsDataset<Rating> ratingsDataset1 = getRatingsDataset();
 
-                    Collection<User> users = new ArrayList<>(ratingsDataset1.allUsers().size());
-                    ratingsDataset1.allUsers().stream().forEach((idUser) -> {
-                        users.add(new User(idUser));
-                    });
+                    Set<User> users = ratingsDataset1
+                            .allUsers().stream()
+                            .map((idUser) -> new User(idUser))
+                            .collect(Collectors.toSet());
 
                     usersDataset = new UsersDatasetAdapter(users);
 
-                } catch (UserAlreadyExists | CannotLoadRatingsDataset | CannotLoadUsersDataset ex1) {
+                } catch (CannotLoadRatingsDataset | CannotLoadUsersDataset ex1) {
                     throw new CannotLoadUsersDataset(ex1);
                 }
-
-            } catch (UserAlreadyExists ex) {
-                throw new CannotLoadUsersDataset(ex);
             }
+
         }
         return usersDataset;
     }

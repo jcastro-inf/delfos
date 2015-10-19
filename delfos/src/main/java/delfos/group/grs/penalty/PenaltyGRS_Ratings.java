@@ -20,7 +20,7 @@ import delfos.common.parameters.restriction.RecommenderSystemParameterRestrictio
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RatingsDataset;
 import delfos.dataset.basic.rating.RelevanceCriteria;
-import delfos.dataset.loaders.given.DatasetLoaderGiven;
+import delfos.dataset.loaders.given.DatasetLoaderGivenRatingsDataset;
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.generated.modifieddatasets.PseudoUserRatingsDataset;
 import delfos.dataset.util.DatasetPrinterDeprecated;
@@ -165,7 +165,7 @@ public class PenaltyGRS_Ratings extends GroupRecommenderSystemAdapter<SingleReco
 
         if (isCompleteUngivenPreferences()) {
             RatingsDataset<Rating> completeRatingsDataset = AggregationOfIndividualRatings_itemWeighted.completeRatings(this, knnUser, groupOfUsers, datasetLoader, completePreferencesThreshold);
-            DatasetLoaderGiven<Rating> datasetLoaderGiven = new DatasetLoaderGiven<>(datasetLoader, completeRatingsDataset);
+            DatasetLoaderGivenRatingsDataset<Rating> datasetLoaderGiven = new DatasetLoaderGivenRatingsDataset<>(datasetLoader, completeRatingsDataset);
             newDatasetLoader = datasetLoaderGiven;
         } else {
             newDatasetLoader = datasetLoader;
@@ -203,8 +203,7 @@ public class PenaltyGRS_Ratings extends GroupRecommenderSystemAdapter<SingleReco
 
         Collection<Recommendation> groupRecomendations;
 
-        groupRecomendations = recommenderSystem.recommendToUser(
-                new DatasetLoaderGiven(datasetLoader, ratingsDataset_withPseudoUser),
+        groupRecomendations = recommenderSystem.recommendToUser(new DatasetLoaderGivenRatingsDataset(datasetLoader, ratingsDataset_withPseudoUser),
                 RecommendationModel.getRecommendationModel(),
                 idGroup,
                 candidateItems);

@@ -1,6 +1,5 @@
 package delfos.io.database.mysql.dataset;
 
-import delfos.common.exceptions.dataset.users.UserAlreadyExists;
 import delfos.databaseconnections.MySQLConnection;
 import delfos.dataset.basic.features.Feature;
 import delfos.dataset.basic.features.FeatureGenerator;
@@ -10,8 +9,7 @@ import delfos.dataset.basic.user.UsersDataset;
 import delfos.dataset.basic.user.UsersDatasetAdapter;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.TreeSet;
 
 /**
  * Clase para escribir un dataset de contenido a una base de datos MySQL.
@@ -113,7 +111,7 @@ public class UsersDatasetToMySQL {
     public UsersDataset readDataset() throws SQLException {
 
         FeatureGenerator featureGenerator = new FeatureGenerator();
-        List<User> users = new LinkedList<>();
+        TreeSet<User> users = new TreeSet<>();
 
         //Leo las características.
         ResultSet rstFeatures = mySQLConnection.executeQuery("SELECT " + featureTable_featureName + "," + featureTable_featureType + " "
@@ -174,11 +172,8 @@ public class UsersDatasetToMySQL {
                     values));
         }
 
-        try {
-            return new UsersDatasetAdapter(users);
-        } catch (UserAlreadyExists ex) {
-            throw new IllegalStateException(ex);
-        }
+        return new UsersDatasetAdapter(users);
+
     }
 
     private void createTables(UsersDataset usersDataset) throws SQLException {

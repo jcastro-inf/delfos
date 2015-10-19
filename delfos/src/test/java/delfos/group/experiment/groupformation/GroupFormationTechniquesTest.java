@@ -1,24 +1,19 @@
 package delfos.group.experiment.groupformation;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Random;
-import org.junit.BeforeClass;
-import org.junit.Test;
 import delfos.common.exceptions.dataset.CannotLoadContentDataset;
 import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
 import delfos.common.exceptions.dataset.items.ItemNotFound;
 import delfos.common.exceptions.dataset.users.UserNotFound;
 import delfos.dataset.basic.item.ContentDataset;
+import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RatingsDataset;
 import delfos.dataset.basic.rating.RelevanceCriteria;
+import delfos.dataset.basic.user.User;
+import delfos.dataset.basic.user.UsersDatasetAdapter;
 import delfos.dataset.generated.random.RandomContentDataset;
 import delfos.dataset.generated.random.RandomRatingsDatasetFactory;
 import delfos.dataset.loaders.given.DatasetLoaderGivenRatingsContent;
-import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.group.casestudy.GroupCaseStudy;
 import delfos.group.casestudy.defaultcase.DefaultGroupCaseStudy;
 import delfos.group.experiment.validation.groupformation.FixedGroupSize_OnlyNGroups;
@@ -33,6 +28,14 @@ import delfos.group.grs.GroupRecommenderSystemAdapter;
 import delfos.group.grs.RandomGroupRecommender;
 import delfos.group.grs.aggregation.AggregationOfIndividualRecommendations;
 import delfos.group.results.groupevaluationmeasures.GroupEvaluationMeasure;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Random;
+import java.util.stream.Collectors;
+import org.junit.BeforeClass;
+import org.junit.Test;
 
 /**
  * Test para comprobar las técnicas de formación de grupos.
@@ -52,6 +55,7 @@ public class GroupFormationTechniquesTest {
      */
     private static ContentDataset contentDataset;
     private static Collection<GroupEvaluationMeasure> groupEvaluationMeasures;
+    private static UsersDatasetAdapter usersDataset;
 
     public GroupFormationTechniquesTest() {
     }
@@ -68,9 +72,11 @@ public class GroupFormationTechniquesTest {
         int numValues = 10;
 
         contentDataset = new RandomContentDataset(ratingsDataset, numNumericFeatures, numNominalFeatures, numValues, seedValue);
+        usersDataset = new UsersDatasetAdapter(ratingsDataset.allUsers().stream().map(idUser -> new User(idUser)).collect(Collectors.toSet()));
+
         groupEvaluationMeasures = GroupEvaluationMeasuresFactory.getInstance().getAllClasses();
 
-        datasetLoader = new DatasetLoaderGivenRatingsContent(ratingsDataset, contentDataset);
+        datasetLoader = new DatasetLoaderGivenRatingsContent(ratingsDataset, contentDataset, usersDataset);
 
     }
 

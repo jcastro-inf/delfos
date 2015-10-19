@@ -1,16 +1,9 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package delfos.dataset.loaders.epinions;
 
-import delfos.ERROR_CODES;
 import delfos.common.Chronometer;
 import delfos.common.Global;
 import delfos.common.datastructures.DoubleMapping;
 import delfos.common.exceptions.dataset.entity.EntityNotFound;
-import delfos.common.exceptions.dataset.items.ItemAlreadyExists;
 import delfos.common.exceptions.dataset.items.ItemNotFound;
 import delfos.dataset.basic.features.Feature;
 import delfos.dataset.basic.features.FeatureGenerator;
@@ -25,9 +18,9 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeSet;
 import java.util.stream.Collectors;
 
 /**
@@ -56,7 +49,7 @@ public class EPinionsContentDataset implements ContentDataset {
 
         Chronometer c = new Chronometer();
 
-        LinkedList<Item> items = new LinkedList<>();
+        TreeSet<Item> items = new TreeSet<>();
 
         while (linea != null) {
 
@@ -118,13 +111,8 @@ public class EPinionsContentDataset implements ContentDataset {
             i++;
         }
 
-        try {
-            //Leo el archivo de contenido, construyo los items y los añado al dataset.
-            contentDataset = new ContentDatasetDefault(items);
-        } catch (ItemAlreadyExists ex) {
-            ERROR_CODES.CANNOT_LOAD_CONTENT_DATASET.exit(ex);
-            throw new IllegalArgumentException(ex);
-        }
+        contentDataset = new ContentDatasetDefault(items);
+
     }
 
     public DoubleMapping<Long, Integer> getProductsIndex() {

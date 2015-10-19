@@ -20,7 +20,7 @@ import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RatingsDataset;
 import delfos.dataset.basic.rating.RelevanceCriteria;
 import delfos.dataset.generated.modifieddatasets.PseudoUserRatingsDataset;
-import delfos.dataset.loaders.given.DatasetLoaderGiven;
+import delfos.dataset.loaders.given.DatasetLoaderGivenRatingsDataset;
 import delfos.dataset.storage.memory.BothIndexRatingsDataset;
 import delfos.dataset.util.DatasetOperations;
 import delfos.dataset.util.DatasetPrinterDeprecated;
@@ -224,7 +224,7 @@ public final class AggregationOfIndividualRatings_itemWeighted
         if (isCompletePreferences()) {
             RecommenderSystem_fixedFilePersistence completePreferencesRS = getCompletePreferencesRS();
             RatingsDataset<Rating> completeRatingsDataset = completeRatings(this, completePreferencesRS, groupOfUsers, datasetLoader, completeUngivenPreferencesThreshold);
-            DatasetLoaderGiven<Rating> datasetLoaderGiven = new DatasetLoaderGiven<>(datasetLoader, completeRatingsDataset);
+            DatasetLoaderGivenRatingsDataset<Rating> datasetLoaderGiven = new DatasetLoaderGivenRatingsDataset<>(datasetLoader, completeRatingsDataset);
             newDatasetLoader = datasetLoaderGiven;
         } else {
             newDatasetLoader = datasetLoader;
@@ -383,7 +383,7 @@ public final class AggregationOfIndividualRatings_itemWeighted
         if (recommenderSystem instanceof KnnMemoryBasedNWR_itemWeighted) {
             KnnMemoryBasedNWR_itemWeighted knnMemoryBasedNWR_NaturalNoise = (KnnMemoryBasedNWR_itemWeighted) recommenderSystem;
 
-            groupRecom = knnMemoryBasedNWR_NaturalNoise.recommendOnlyWithItemWeighting(new DatasetLoaderGiven(datasetLoader, ratingsDataset_withPseudoUser),
+            groupRecom = knnMemoryBasedNWR_NaturalNoise.recommendOnlyWithItemWeighting(new DatasetLoaderGivenRatingsDataset(datasetLoader, ratingsDataset_withPseudoUser),
                     (KnnMemoryModel) RecommendationModel.getRecommendationModel(),
                     idGroup,
                     itemWeights,

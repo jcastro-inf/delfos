@@ -1,40 +1,40 @@
 package delfos.dataset.papertestdatasets;
 
-import java.util.LinkedList;
-import java.util.Map;
-import java.util.TreeMap;
+import delfos.common.exceptions.dataset.CannotLoadContentDataset;
+import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
 import delfos.dataset.basic.item.ContentDataset;
 import delfos.dataset.basic.item.ContentDatasetDefault;
 import delfos.dataset.basic.item.Item;
+import delfos.dataset.basic.loader.types.DatasetLoaderAbstract;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RatingsDataset;
 import delfos.dataset.basic.rating.RelevanceCriteria;
-import delfos.dataset.basic.loader.types.DatasetLoaderAbstract;
-import delfos.dataset.basic.loader.types.ContentDatasetLoader;
+import delfos.dataset.basic.user.UsersDataset;
 import delfos.dataset.storage.memory.BothIndexRatingsDataset;
 import delfos.dataset.util.DatasetOperations;
-import delfos.common.exceptions.dataset.CannotLoadContentDataset;
-import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
-import delfos.common.exceptions.dataset.items.ItemAlreadyExists;
+import java.util.Map;
+import java.util.TreeMap;
+import java.util.TreeSet;
 
 /**
  *
-* @author Jorge Castro Gallardo
+ * @author Jorge Castro Gallardo
  * @version 1.0 02-May-2013
  */
-public class ImplicitTrustDataset extends DatasetLoaderAbstract<Rating> implements ContentDatasetLoader {
+public class ImplicitTrustDataset extends DatasetLoaderAbstract<Rating> {
 
     private static final long serialVersionUID = 1L;
     private RatingsDataset<Rating> ratingsDataset;
     private ContentDataset contentDataset;
+    private UsersDataset usersDataset;
 
     @Override
     public RatingsDataset<Rating> getRatingsDataset() throws CannotLoadRatingsDataset {
 
         if (ratingsDataset == null) {
-            Map<Integer, Map<Integer, Number>> ratingsByUser = new TreeMap<Integer, Map<Integer, Number>>();
+            Map<Integer, Map<Integer, Number>> ratingsByUser = new TreeMap<>();
             for (int i = 1; i <= 4; i++) {
-                ratingsByUser.put(i, new TreeMap<Integer, Number>());
+                ratingsByUser.put(i, new TreeMap<>());
             }
 
             //User 1 ratings
@@ -69,7 +69,7 @@ public class ImplicitTrustDataset extends DatasetLoaderAbstract<Rating> implemen
 
         if (contentDataset == null) {
             //Create content dataset
-            LinkedList<Item> items = new LinkedList<Item>();
+            TreeSet<Item> items = new TreeSet<>();
 
             items.add(new Item(1));
             items.add(new Item(2));
@@ -77,11 +77,9 @@ public class ImplicitTrustDataset extends DatasetLoaderAbstract<Rating> implemen
             items.add(new Item(4));
             items.add(new Item(5));
             items.add(new Item(6));
-            try {
-                contentDataset = new ContentDatasetDefault(items);
-            } catch (ItemAlreadyExists ex) {
-                throw new CannotLoadContentDataset(ex);
-            }
+
+            contentDataset = new ContentDatasetDefault(items);
+
         }
         return contentDataset;
     }

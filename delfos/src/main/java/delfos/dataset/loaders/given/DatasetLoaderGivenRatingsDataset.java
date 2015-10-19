@@ -22,13 +22,20 @@ import delfos.dataset.basic.user.UsersDataset;
  * @version 26-Noviembre-2013
  * @param <RatingType>
  */
-public class DatasetLoaderGiven<RatingType extends Rating> extends CompleteDatasetLoaderAbstract_withTrust<RatingType> implements ContentDatasetLoader {
+public class DatasetLoaderGivenRatingsDataset<RatingType extends Rating> extends CompleteDatasetLoaderAbstract_withTrust<RatingType> implements ContentDatasetLoader {
 
     private static final long serialVersionUID = 1L;
     private final DatasetLoader<? extends Rating> datasetLoader;
     private final RatingsDataset<RatingType> ratingsDataset;
 
-    public DatasetLoaderGiven(DatasetLoader<? extends Rating> datasetLoader, RatingsDataset<RatingType> ratingsDataset) {
+    /**
+     * Replaces the original ratings dataset in the dataset loader for the one
+     * provided.
+     *
+     * @param datasetLoader
+     * @param ratingsDataset
+     */
+    public DatasetLoaderGivenRatingsDataset(DatasetLoader<? extends Rating> datasetLoader, RatingsDataset<RatingType> ratingsDataset) {
         this.datasetLoader = datasetLoader;
         this.ratingsDataset = ratingsDataset;
 

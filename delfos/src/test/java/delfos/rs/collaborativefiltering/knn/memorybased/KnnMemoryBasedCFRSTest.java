@@ -1,7 +1,6 @@
 package delfos.rs.collaborativefiltering.knn.memorybased;
 
 import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
-import delfos.common.exceptions.dataset.items.ItemAlreadyExists;
 import delfos.common.exceptions.dataset.users.UserNotFound;
 import delfos.constants.DelfosTest;
 import delfos.dataset.basic.item.ContentDataset;
@@ -13,6 +12,7 @@ import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RatingsDataset;
 import delfos.dataset.basic.user.User;
 import delfos.dataset.basic.user.UsersDataset;
+import delfos.dataset.basic.user.UsersDatasetAdapter;
 import delfos.dataset.loaders.given.DatasetLoaderGivenRatingsContent;
 import delfos.dataset.storage.memory.BothIndexRatingsDataset;
 import delfos.dataset.util.DatasetPrinterDeprecated;
@@ -23,10 +23,13 @@ import delfos.similaritymeasures.CosineCoefficient;
 import delfos.similaritymeasures.PearsonCorrelationCoefficient;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
+import java.util.TreeSet;
+import java.util.stream.Collectors;
+import org.junit.Assert;
 import static org.junit.Assert.assertArrayEquals;
 import org.junit.Before;
 import org.junit.Test;
@@ -43,7 +46,7 @@ public class KnnMemoryBasedCFRSTest extends DelfosTest {
     }
 
     @Before
-    public void initialiseDataset() throws ItemAlreadyExists {
+    public void initialiseDataset() {
 
         List<Rating> ratings = new ArrayList<>();
 
@@ -83,28 +86,34 @@ public class KnnMemoryBasedCFRSTest extends DelfosTest {
         item2_features.put("nominal_2_nominal", "medium");
         Item item2 = new Item(2, "item_2", _contentDataset.parseEntityFeatures(item2_features));
 
-        Collection<Item> items = new ArrayList<>();
+        Set<Item> items = new TreeSet<>();
         items.add(item1);
         items.add(item2);
         ContentDataset contentDataset = new ContentDatasetDefault(items);
+        UsersDataset usersDataset = new UsersDatasetAdapter(ratingsDataset
+                .allUsers().stream()
+                .map(idUser -> new User(idUser))
+                .collect(Collectors.toSet()));
 
         datasetLoader = new DatasetLoaderGivenRatingsContent(
                 ratingsDataset,
-                contentDataset);
+                contentDataset,
+                usersDataset
+        );
 
         DatasetPrinterDeprecated.printCompactRatingTable(ratingsDataset);
     }
 
     @Test
     public void testBasicWithPearson() throws CannotLoadRatingsDataset, UserNotFound {
-        KnnMemoryBasedCFRS knnMemory = new KnnMemoryBasedCFRS(new PearsonCorrelationCoefficient(), null, null, false, 1, 20, new WeightedSum());
+        KnnMemoryBasedCFRS knnMemoryBasedCFRS = new KnnMemoryBasedCFRS(new PearsonCorrelationCoefficient(), null, null, false, 1, 20, new WeightedSum());
 
         UsersDataset usersDataset = ((UsersDatasetLoader) datasetLoader).getUsersDataset();
 
         User user = usersDataset.getUser(1);
         User neighborUser = usersDataset.getUser(2);
 
-        List<Neighbor> neighbors = knnMemory.getNeighbors(datasetLoader, user);
+        List<Neighbor> neighbors = knnMemoryBasedCFRS.getNeighbors(datasetLoader, user);
         assertArrayEquals(
                 "The neighbor list is wrong",
                 Arrays.asList(
@@ -115,7 +124,7 @@ public class KnnMemoryBasedCFRSTest extends DelfosTest {
 
     @Test
     public void testBasicWithCosine() throws CannotLoadRatingsDataset, UserNotFound {
-        KnnMemoryBasedCFRS knnMemory = new KnnMemoryBasedCFRS(new CosineCoefficient(), null, null, false, 1, 20, new WeightedSum());
+        KnnMemoryBasedCFRS knnMemoryBasedCFRS = new KnnMemoryBasedCFRS(new CosineCoefficient(), null, null, false, 1, 20, new WeightedSum());
 
         UsersDataset usersDataset = ((UsersDatasetLoader) datasetLoader).getUsersDataset();
 
@@ -123,7 +132,7 @@ public class KnnMemoryBasedCFRSTest extends DelfosTest {
         User neighborUser2 = usersDataset.getUser(2);
         User neighborUser3 = usersDataset.getUser(3);
 
-        List<Neighbor> neighbors = knnMemory.getNeighbors(datasetLoader, user);
+        List<Neighbor> neighbors = knnMemoryBasedCFRS.getNeighbors(datasetLoader, user);
 
         assertArrayEquals(
                 "The neighbor list is wrong",
@@ -131,6 +140,35 @@ public class KnnMemoryBasedCFRSTest extends DelfosTest {
                         new Neighbor(RecommendationEntity.USER, neighborUser2, 0.9997108),
                         new Neighbor(RecommendationEntity.USER, neighborUser3, 0.886990057)).toArray(),
                 neighbors.toArray());
+    }
+
+    @Test
+    public void testGetNeighborsMethodReturnsANeighborForEachItemButHimself() {
+
+        UsersDataset usersDataset = ((UsersDatasetLoader) datasetLoader).getUsersDataset();
+
+        KnnMemoryBasedCFRS knnMemoryBasedCFRS = new KnnMemoryBasedCFRS();
+
+        boolean requirementViolated = usersDataset.stream().anyMatch(user -> {
+
+            List<Neighbor> neighbors = knnMemoryBasedCFRS.getNeighbors(datasetLoader, user);
+
+            Set<Integer> allUsers = usersDataset.parallelStream()
+                    .map(itemInner -> itemInner.getId())
+                    .filter(innerItem -> !innerItem.equals(user.getId()))
+                    .collect(Collectors.toCollection(TreeSet::new));
+
+            Set<Integer> itemsSimilares = neighbors.parallelStream()
+                    .map(neighbor -> neighbor.getIdNeighbor())
+                    .collect(Collectors.toCollection(TreeSet::new));
+
+            return !allUsers.equals(itemsSimilares);
+        });
+
+        Assert.assertFalse(
+                "The method does not fulfills its requirements, "
+                + "a neighbor item should be returned for each item.",
+                requirementViolated);
     }
 
 }

@@ -3,8 +3,6 @@ package delfos.dataset.loaders.movilens.ml100k.validation;
 import delfos.common.exceptions.dataset.CannotLoadContentDataset;
 import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
 import delfos.common.exceptions.dataset.CannotLoadUsersDataset;
-import delfos.common.exceptions.dataset.items.ItemAlreadyExists;
-import delfos.common.exceptions.dataset.users.UserAlreadyExists;
 import delfos.common.parameters.Parameter;
 import delfos.common.parameters.restriction.DirectoryParameter;
 import delfos.common.parameters.restriction.IntegerParameter;
@@ -34,11 +32,9 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.logging.Level;
@@ -174,7 +170,7 @@ public class MovieLens100kValidation extends CompleteDatasetLoaderAbstract<Ratin
             FeatureGenerator featureGenerator = new FeatureGenerator();
             try {
 
-                List<Item> items = new LinkedList<>();
+                TreeSet<Item> items = new TreeSet<>();
 
                 // Abrimos el archivo
                 FileInputStream fstream = new FileInputStream(getContentDatasetFile());
@@ -220,7 +216,7 @@ public class MovieLens100kValidation extends CompleteDatasetLoaderAbstract<Ratin
                 }
 
                 contentDataset = new ContentDatasetDefault(items);
-            } catch (IOException | NumberFormatException | ItemAlreadyExists ex) {
+            } catch (IOException | NumberFormatException ex) {
                 throw new CannotLoadContentDataset(ex);
             }
         }
@@ -234,8 +230,8 @@ public class MovieLens100kValidation extends CompleteDatasetLoaderAbstract<Ratin
 
             File occupationFile = getOccupationFile();
 
-            Set<String> occupations = new TreeSet<>();
-            Collection<User> users = new ArrayList<>();
+            TreeSet<String> occupations = new TreeSet<>();
+            TreeSet<User> users = new TreeSet<>();
             try {
                 try (BufferedReader br = new BufferedReader(new FileReader(occupationFile))) {
                     String line = br.readLine();
@@ -297,11 +293,8 @@ public class MovieLens100kValidation extends CompleteDatasetLoaderAbstract<Ratin
             } catch (IOException ex) {
                 throw new CannotLoadUsersDataset(ex);
             }
-            try {
-                usersDataset = new UsersDatasetAdapter(users);
-            } catch (UserAlreadyExists ex) {
-                throw new CannotLoadUsersDataset(ex);
-            }
+            usersDataset = new UsersDatasetAdapter(users);
+
         }
 
         return usersDataset;

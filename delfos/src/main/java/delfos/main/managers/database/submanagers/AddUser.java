@@ -4,7 +4,6 @@ import delfos.ConsoleParameters;
 import delfos.ERROR_CODES;
 import delfos.UndefinedParameterException;
 import delfos.common.exceptions.dataset.CannotLoadUsersDataset;
-import delfos.common.exceptions.dataset.users.UserAlreadyExists;
 import delfos.dataset.basic.user.User;
 import delfos.dataset.changeable.ChangeableDatasetLoader;
 import static delfos.main.managers.database.DatabaseManager.MANAGE_RATING_DATABASE_ADD_USER;
@@ -33,7 +32,8 @@ public class AddUser extends DatabaseCaseUseSubManager {
 
             int idUser = new Integer(consoleParameters.getValue(MANAGE_RATING_DATABASE_ADD_USER));
             if (changeableDatasetLoader.getUsersDataset().getAllID().contains(idUser)) {
-                throw new UserAlreadyExists(idUser);
+                IllegalArgumentException ex = new IllegalArgumentException();
+                ERROR_CODES.MANAGE_RATING_DATABASE_USER_ALREADY_EXISTS.exit(ex);
             }
             changeableDatasetLoader.getChangeableUsersDataset().addUser(new User(idUser));
         } catch (NumberFormatException ex) {
@@ -44,9 +44,6 @@ public class AddUser extends DatabaseCaseUseSubManager {
             throw new IllegalArgumentException(ex);
         } catch (CannotLoadUsersDataset ex) {
             ERROR_CODES.CANNOT_LOAD_USERS_DATASET.exit(ex);
-            throw new IllegalArgumentException(ex);
-        } catch (UserAlreadyExists ex) {
-            ERROR_CODES.MANAGE_RATING_DATABASE_USER_ALREADY_EXISTS.exit(ex);
             throw new IllegalArgumentException(ex);
         }
     }
