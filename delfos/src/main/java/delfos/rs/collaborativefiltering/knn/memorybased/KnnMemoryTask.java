@@ -1,8 +1,9 @@
 package delfos.rs.collaborativefiltering.knn.memorybased;
 
 import delfos.common.parallelwork.Task;
+import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
-import delfos.dataset.basic.rating.RatingsDataset;
+import delfos.dataset.basic.user.User;
 import delfos.rs.collaborativefiltering.profile.Neighbor;
 
 /**
@@ -15,16 +16,16 @@ import delfos.rs.collaborativefiltering.profile.Neighbor;
  */
 public class KnnMemoryTask extends Task {
 
-    public final int idUser;
-    public final int idNeighbor;
+    public final User user;
+    public final User neighborUser;
     public KnnMemoryBasedCFRS rs;
-    public RatingsDataset<? extends Rating> ratingsDataset;
+    public DatasetLoader<? extends Rating> datasetLoader;
     public Neighbor neighbor = null;
 
-    public KnnMemoryTask(RatingsDataset<? extends Rating> ratingsDataset, int idUser, int idNeighbor, KnnMemoryBasedCFRS rs) {
-        this.ratingsDataset = ratingsDataset;
-        this.idUser = idUser;
-        this.idNeighbor = idNeighbor;
+    public KnnMemoryTask(DatasetLoader<? extends Rating> datasetLoader, User user, User neighborUser, KnnMemoryBasedCFRS rs) {
+        this.datasetLoader = datasetLoader;
+        this.user = user;
+        this.neighborUser = neighborUser;
         this.rs = rs;
     }
 
@@ -32,8 +33,8 @@ public class KnnMemoryTask extends Task {
     public String toString() {
         StringBuilder str = new StringBuilder();
 
-        str.append("idUser ---------> ").append(idUser).append("\n");
-        str.append("idNeighbor -----> ").append(idNeighbor).append("\n");
+        str.append("idUser ---------> ").append(user.getId()).append("(").append(user.getName()).append("\n");
+        str.append("idNeighbor -----> ").append(neighborUser.getId()).append("(").append(neighborUser.getName()).append("\n");
         str.append("rs -------------> ").append(rs.getAlias()).append("\n");
         str.append("\n").append(rs.getNameWithParameters());
 
@@ -43,7 +44,7 @@ public class KnnMemoryTask extends Task {
     public void setNeighbor(Neighbor neighbor) {
         this.neighbor = neighbor;
         rs = null;
-        ratingsDataset = null;
+        datasetLoader = null;
     }
 
     public Neighbor getNeighbor() {

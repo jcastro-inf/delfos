@@ -16,6 +16,7 @@ import delfos.dataset.basic.loader.types.UsersDatasetLoader;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RatingsDataset;
 import delfos.dataset.basic.user.User;
+import delfos.dataset.basic.user.UsersDataset;
 import delfos.rs.collaborativefiltering.knn.KnnCollaborativeRecommender;
 import delfos.rs.collaborativefiltering.knn.MatchRating;
 import delfos.rs.collaborativefiltering.knn.RecommendationEntity;
@@ -118,7 +119,7 @@ public class KnnMemoryBasedCFRS extends KnnCollaborativeRecommender<KnnMemoryMod
         try {
             List<Neighbor> neighbors;
             RatingsDataset<? extends Rating> ratingsDataset = datasetLoader.getRatingsDataset();
-            neighbors = getNeighbors(ratingsDataset, user.getId());
+            neighbors = getNeighbors(datasetLoader, user);
             Collection<Recommendation> ret = recommendWithNeighbors(datasetLoader.getRatingsDataset(), user.getId(), neighbors, candidateItems);
             return new RecommendationsWithNeighbors(user.getTargetId(), ret, neighbors);
         } catch (CannotLoadRatingsDataset ex) {
@@ -131,23 +132,23 @@ public class KnnMemoryBasedCFRS extends KnnCollaborativeRecommender<KnnMemoryMod
      * ello, utiliza los valores especificados en los parámetros del algoritmo y
      * los datasets de valoraciones y productos que se indicaron al sistema
      *
-     * @param ratingsDataset Dataset de valoraciones.
-     * @param idUser id del usuario para el que se calculan sus vecinos
+     * @param datasetLoader Dataset de valoraciones.
+     * @param user usuario para el que se calculan sus vecinos
      * @return Devuelve una lista ordenada por similitud de los vecinos más
      * cercanos al usuario indicado
      * @throws UserNotFound Si el usuario indicado no existe en el conjunto de
      * datos
      */
-    public List<Neighbor> getNeighbors(RatingsDataset<? extends Rating> ratingsDataset, int idUser) throws UserNotFound {
+    public List<Neighbor> getNeighbors(DatasetLoader<? extends Rating> datasetLoader, User user) throws UserNotFound {
 
-        ratingsDataset.getUserRated(idUser);
+        UsersDataset usersDataset = ((UsersDatasetLoader) datasetLoader).getUsersDataset();
 
-        List<KnnMemoryTask> tasks = ratingsDataset.allUsers().parallelStream()
-                .map((idNeighbor) -> new KnnMemoryTask(ratingsDataset, idUser, idNeighbor, this))
+        List<KnnMemoryTask> tasks = usersDataset.parallelStream()
+                .map((userNeighbor) -> new KnnMemoryTask(datasetLoader, user, userNeighbor, this))
                 .collect(Collectors.toList());
 
         MultiThreadExecutionManager<KnnMemoryTask> multiThreadExecutionManager = new MultiThreadExecutionManager<>(
-                "Compute neighbors of " + idUser,
+                "Compute neighbors of " + user.getId(),
                 tasks,
                 KnnMemoryTaskExecutor.class);
 
@@ -157,7 +158,9 @@ public class KnnMemoryBasedCFRS extends KnnCollaborativeRecommender<KnnMemoryMod
         //Recompongo los resultados.
         for (KnnMemoryTask task : multiThreadExecutionManager.getAllFinishedTasks()) {
             Neighbor neighbor = task.getNeighbor();
-            if (neighbor != null) {
+            if (neighbor == null) {
+                ret.add(new Neighbor(RecommendationEntity.USER, task.neighborUser, Double.NaN));
+            } else {
                 ret.add(neighbor);
             }
         }
@@ -166,7 +169,7 @@ public class KnnMemoryBasedCFRS extends KnnCollaborativeRecommender<KnnMemoryMod
             Collections.sort(ret, (Neighbor o1, Neighbor o2) -> o1.getIdNeighbor() - o2.getIdNeighbor());
 
             Global.showMessageTimestamped("============ All users similarity =================");
-            printNeighborhood(idUser, ret);
+            printNeighborhood(user.getId(), ret);
         }
 
         Collections.sort(ret, Neighbor.BY_SIMILARITY_DESC);
@@ -176,7 +179,7 @@ public class KnnMemoryBasedCFRS extends KnnCollaborativeRecommender<KnnMemoryMod
 
         if (Global.isVerboseAnnoying()) {
             Global.showMessageTimestamped("============ Selected neighborhood =================");
-            printNeighborhood(idUser, ret);
+            printNeighborhood(user.getId(), ret);
         }
 
         return ret;
@@ -218,7 +221,7 @@ public class KnnMemoryBasedCFRS extends KnnCollaborativeRecommender<KnnMemoryMod
             for (Neighbor neighbor : neighborsWithPositiveSimilarity) {
                 Rating rating = ratingsVecinos.get(neighbor.getIdNeighbor()).get(item.getId());
                 if (rating != null) {
-                    match.add(new MatchRating(RecommendationEntity.ITEM, neighbor.getIdNeighbor(), item.getId(), rating.ratingValue, neighbor.getSimilarity()));
+                    match.add(new MatchRating(RecommendationEntity.USER, neighbor.getIdNeighbor(), item.getId(), rating.ratingValue, neighbor.getSimilarity()));
                 }
             }
 
