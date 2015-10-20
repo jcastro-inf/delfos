@@ -1,8 +1,11 @@
 package delfos.dataset.loaders.movilens.ml100k;
 
+import delfos.ERROR_CODES;
 import delfos.common.exceptions.dataset.CannotLoadContentDataset;
 import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
 import delfos.common.exceptions.dataset.CannotLoadUsersDataset;
+import delfos.common.exceptions.dataset.items.ItemNotFound;
+import delfos.common.exceptions.dataset.users.UserNotFound;
 import delfos.common.parameters.Parameter;
 import delfos.common.parameters.restriction.DirectoryParameter;
 import delfos.common.parameters.restriction.IntegerParameter;
@@ -57,18 +60,18 @@ public class MovieLens100k extends CompleteDatasetLoaderAbstract<Rating> {
             + "MovieLens-100k ratings" + File.separator
             + "ml-100k" + File.separator)));
     public final static Parameter Index_init_genres = new Parameter("Index_init_genres", new IntegerParameter(0, 1000, 5));
-    private RatingsDataset<Rating> rd = null;
-    private ContentDataset cd = null;
-    private UsersDataset ud = null;
+    private RatingsDataset<Rating> ratingsDataset = null;
+    private ContentDataset contentDataset = null;
+    private UsersDataset usersDataset = null;
 
     public MovieLens100k() {
         addParameter(DirectoryOfDataset);
         addParameter(Index_init_genres);
 
         addParammeterListener(() -> {
-            rd = null;
-            cd = null;
-            ud = null;
+            ratingsDataset = null;
+            contentDataset = null;
+            usersDataset = null;
         });
     }
 
@@ -79,7 +82,24 @@ public class MovieLens100k extends CompleteDatasetLoaderAbstract<Rating> {
 
     @Override
     public RatingsDataset<Rating> getRatingsDataset() throws CannotLoadRatingsDataset {
-        if (rd == null) {
+        if (ratingsDataset == null) {
+            getUsersDataset();
+            getContentDataset();
+
+            int i = 1;
+            for (Item item : getContentDataset()) {
+                if (item.getId() != i) {
+                    System.out.print("EEEEEEE\t");
+                } else {
+                    System.out.println("\t\t");
+                }
+                System.out.print("id: " + item.getId() + "\t");
+
+                System.out.println("\t" + item.getName());
+                i++;
+            }
+            getContentDataset().stream().forEachOrdered((item -> System.out.println("Item: " + item.getId())));
+
             try {
                 List<Rating> ratings = new LinkedList<>();
 
@@ -97,26 +117,43 @@ public class MovieLens100k extends CompleteDatasetLoaderAbstract<Rating> {
                         String[] campos = linea.split("\t");
 
                         int idUser = Integer.parseInt(campos[0]);
+                        User user;
+                        try {
+                            user = usersDataset.getUser(idUser);
+                        } catch (UserNotFound ex) {
+                            user = usersDataset.getUser(idUser);
+                            ERROR_CODES.USER_NOT_FOUND.exit(ex);
+                            throw new IllegalStateException("User not found");
+                        }
                         int idItem = Integer.parseInt(campos[1]);
+
+                        Item item;
+                        try {
+                            item = contentDataset.getItem(idItem);
+                        } catch (ItemNotFound ex) {
+                            item = contentDataset.getItem(idItem);
+                            ERROR_CODES.ITEM_NOT_FOUND.exit(ex);
+                            throw new IllegalStateException("Item not found");
+                        }
                         byte ratingValue = Byte.parseByte(campos[2]);
                         long timestamp = Long.parseLong(campos[3]);
 
-                        Rating rating = new RatingWithTimestamp(idUser, idItem, ratingValue, timestamp);
+                        Rating rating = new RatingWithTimestamp(user, item, ratingValue, timestamp);
                         ratings.add(rating);
                     }
                 }
 
-                rd = new BothIndexRatingsDataset(ratings);
+                ratingsDataset = new BothIndexRatingsDataset(ratings);
             } catch (IOException | NumberFormatException ex) {
                 throw new CannotLoadRatingsDataset(ex);
             }
         }
-        return rd;
+        return ratingsDataset;
     }
 
     @Override
     public ContentDataset getContentDataset() throws CannotLoadContentDataset {
-        if (cd == null) {
+        if (contentDataset == null) {
             Map<String, Integer> generos_byName = new TreeMap<>();
             List<String> generos_byIndex = new ArrayList<>();
             final int indexInicialGeneros = getIndexInicialGeneros();
@@ -173,6 +210,7 @@ public class MovieLens100k extends CompleteDatasetLoaderAbstract<Rating> {
                         String[] fields = line.split("\\|");
 
                         int idItem = Integer.parseInt(fields[0]);
+
                         String itemName = fields[1];
                         String date = fields[2];
                         String unknownField = fields[3];
@@ -196,23 +234,31 @@ public class MovieLens100k extends CompleteDatasetLoaderAbstract<Rating> {
                                 itemName,
                                 nominalFeatures.keySet().toArray(new Feature[0]),
                                 nominalFeatures.values().toArray());
-                        items.add(item);
+
+                        if (idItem == 268) {
+                            System.out.println("AAAAAAAAAAA");
+                            boolean contains = items.contains(item);
+
+                            System.out.println("cococooccocntains???");
+                        }
+                        boolean added = items.add(item);
+                        System.out.println("sdsdgdfwg");
 
                     }
                 }
 
-                cd = new ContentDatasetDefault(items);
+                contentDataset = new ContentDatasetDefault(items);
             } catch (IOException | NumberFormatException ex) {
                 throw new CannotLoadContentDataset(ex);
             }
         }
-        return cd;
+        return contentDataset;
     }
 
     @Override
     public UsersDataset getUsersDataset() throws CannotLoadUsersDataset {
 
-        if (ud == null) {
+        if (usersDataset == null) {
 
             File occupationFile = getOccupationFile();
 
@@ -279,11 +325,11 @@ public class MovieLens100k extends CompleteDatasetLoaderAbstract<Rating> {
             } catch (IOException ex) {
                 throw new CannotLoadUsersDataset(ex);
             }
-            ud = new UsersDatasetAdapter(users);
+            usersDataset = new UsersDatasetAdapter(users);
 
         }
 
-        return ud;
+        return usersDataset;
     }
 
     @Override

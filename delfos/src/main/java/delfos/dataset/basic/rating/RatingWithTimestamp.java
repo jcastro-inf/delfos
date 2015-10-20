@@ -1,5 +1,7 @@
 package delfos.dataset.basic.rating;
 
+import delfos.dataset.basic.item.Item;
+import delfos.dataset.basic.user.User;
 import java.text.DecimalFormat;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
@@ -16,8 +18,14 @@ public class RatingWithTimestamp extends Rating {
 
     private final long timestamp;
 
+    @Deprecated
     public RatingWithTimestamp(int idUser, int idItem, Number rating, long timestamp) {
         super(idUser, idItem, rating);
+        this.timestamp = timestamp;
+    }
+
+    public RatingWithTimestamp(User user, Item item, Number rating, long timestamp) {
+        super(user, item, rating);
         this.timestamp = timestamp;
     }
 
