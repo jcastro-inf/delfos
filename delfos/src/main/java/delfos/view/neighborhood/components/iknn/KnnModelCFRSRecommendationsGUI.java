@@ -28,7 +28,9 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import javax.swing.BorderFactory;
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 
 /**
  *
@@ -190,10 +192,30 @@ public class KnnModelCFRSRecommendationsGUI implements RecommendationsGUI {
     }
 
     private void plugListeners() {
-        addRecommendationTableListener();
+        addRecommendationTableListenerToShowNeighbors();
+        addShowItemRecommendedAndNeighborRatingsListeners();
     }
 
-    private void addRecommendationTableListener() {
+    ListSelectionListener showItemRecommendedAndNeighborRatings = (ListSelectionEvent e) -> {
+        SwingUtilities.invokeLater(() -> {
+            Neighbor neighbor = neighborsTable.getSelected();
+            Item neighborItem = neighbor == null ? null : (Item) neighbor.getNeighbor();
+
+            Recommendation recommendation = recommendationsTable.getSelectedRecommendation();
+            Item targetItem = recommendation == null ? null : recommendation.getItem();
+
+            ratingsTable.setRatings(datasetLoader, targetItem, neighborItem);
+        });
+
+    };
+
+    private void addShowItemRecommendedAndNeighborRatingsListeners() {
+
+        neighborsTable.addNeighborSelectorListener(showItemRecommendedAndNeighborRatings);
+        recommendationsTable.addRecommendationSelectorListener(showItemRecommendedAndNeighborRatings);
+    }
+
+    private void addRecommendationTableListenerToShowNeighbors() {
         recommendationsTable.addRecommendationSelectorListener((ListSelectionEvent e) -> {
 
             ContentDataset contentDataset = ((ContentDatasetLoader) datasetLoader).getContentDataset();

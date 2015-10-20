@@ -400,7 +400,10 @@ public class RecommendationsExplainedWindow extends JFrame {
         RecommenderSystem[] recommenderSystems = new RecommenderSystem[2];
 
         recommenderSystems[0] = new KnnMemoryBasedCFRS();
-        recommenderSystems[1] = new KnnModelBasedCFRS();
+
+        KnnModelBasedCFRS knnModelBasedCFRS = new KnnModelBasedCFRS();
+        knnModelBasedCFRS.setParameterValue(KnnModelBasedCFRS.RELEVANCE_FACTOR, false);
+        recommenderSystems[1] = knnModelBasedCFRS;
         recommenderSystemSelector.setModel(new DefaultComboBoxModel<>(recommenderSystems));
         addRecommenderSystemGUI(recommenderSystems[0]);
 
