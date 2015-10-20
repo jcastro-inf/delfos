@@ -123,4 +123,16 @@ public class MatchRating {
         return user;
     }
 
+    @Override
+    public String toString() {
+        StringBuilder str = new StringBuilder();
+
+        str.append("(u: ").append(user)
+                .append(", i: ").append(item)
+                .append(") --> ").append(ratingValue)
+                .append("(w: ").append(weight).append(")");
+
+        return str.toString();
+    }
+
 }

@@ -1,11 +1,11 @@
 package delfos.rs.collaborativefiltering.knn.modelbased;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
 import delfos.rs.collaborativefiltering.knn.RecommendationEntity;
 import delfos.rs.collaborativefiltering.profile.CollaborativeFilteringItemProfile;
 import delfos.rs.collaborativefiltering.profile.Neighbor;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Clase para almacenar el perfil de un producto de un sistema de reocomendación
@@ -47,7 +47,7 @@ public class KnnModelItemProfile extends CollaborativeFilteringItemProfile imple
      */
     public KnnModelItemProfile(int idItem) {
         super(idItem);
-        this.neighborsSimilarity = new ArrayList<Neighbor>();
+        this.neighborsSimilarity = new ArrayList<>();
     }
 
     /**
@@ -59,9 +59,9 @@ public class KnnModelItemProfile extends CollaborativeFilteringItemProfile imple
      */
     public KnnModelItemProfile(int idItem, List<Neighbor> neighbors) {
         this(idItem);
-        for (Neighbor n : neighbors) {
-            neighborsSimilarity.add(n);
-        }
+        neighborsSimilarity.addAll(neighbors);
+
+        neighborsSimilarity.sort(Neighbor.BY_SIMILARITY_DESC);
     }
 
     /**
@@ -81,7 +81,7 @@ public class KnnModelItemProfile extends CollaborativeFilteringItemProfile imple
      * @return Vecinos de este producto, ordenados por similitud.
      */
     public List<Neighbor> getAllNeighbors() {
-        return new ArrayList<Neighbor>(neighborsSimilarity);
+        return new ArrayList<>(neighborsSimilarity);
     }
 
     @Override
