@@ -1,10 +1,12 @@
 package delfos.dataset.basic.rating;
 
+import delfos.dataset.basic.item.Item;
+import delfos.dataset.basic.rating.domain.DecimalDomain;
+import delfos.dataset.basic.rating.domain.IntegerDomain;
+import delfos.dataset.basic.user.User;
 import java.io.Serializable;
 import java.text.DecimalFormat;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
-import delfos.dataset.basic.rating.domain.DecimalDomain;
-import delfos.dataset.basic.rating.domain.IntegerDomain;
 
 /**
  * Clase que encapsula el almacenamiento en memoria de una valoración que un
@@ -21,15 +23,9 @@ public class Rating implements Comparable<Rating>, Serializable, Cloneable {
     public static IntegerDomain DEFAULT_INTEGER_DOMAIN = new IntegerDomain(1, 5);
     public static DecimalDomain DEFAULT_DECIMAL_DOMAIN = new DecimalDomain(1, 5);
 
-    /**
-     * Identificador del usuario que da la valoración
-     */
-    private final int idUser;
+    private final User user;
 
-    /**
-     * Identificador del producto sobre el que da la valoración
-     */
-    private final int idItem;
+    private final Item item;
 
     /**
      * Valor de valoración que el usuario da sobre el producto
@@ -43,10 +39,17 @@ public class Rating implements Comparable<Rating>, Serializable, Cloneable {
      * @param idItem
      * @param rating Valor concreto de la valoración.
      */
+    @Deprecated
     public Rating(int idUser, int idItem, Number rating) {
-        this.idUser = idUser;
-        this.idItem = idItem;
+        this.user = new User(idUser);
+        this.item = new Item(idItem);
         this.ratingValue = rating;
+    }
+
+    public Rating(User user, Item item, Number ratingValue) {
+        this.user = user;
+        this.item = item;
+        this.ratingValue = ratingValue;
     }
 
     @Override
@@ -112,14 +115,22 @@ public class Rating implements Comparable<Rating>, Serializable, Cloneable {
      * @return the idUser
      */
     public int getIdUser() {
-        return idUser;
+        return user.getId();
     }
 
     /**
      * @return the idItem
      */
     public int getIdItem() {
-        return idItem;
+        return item.getId();
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public Item getItem() {
+        return item;
     }
 
     /**
