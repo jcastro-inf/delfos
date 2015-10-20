@@ -39,7 +39,7 @@ public class NRMSE extends EvaluationMeasure {
                 Map<Integer, ? extends Rating> userRated = testDataset.getUserRatingsRated(idUser);
                 if (recommendationList != null) {
                     for (Recommendation lista : recommendationList) {
-                        Number trueRating = userRated.get(lista.getIdItem()).ratingValue;
+                        Number trueRating = userRated.get(lista.getIdItem()).getRatingValue();
                         Number predictedRating = lista.getPreference();
 
                         if (trueRating != null

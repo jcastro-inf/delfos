@@ -423,8 +423,8 @@ public class ParallelSVD
 
         for (Rating rating : datasetLoader.getRatingsDataset()) {
             try {
-                double predictRating = privatePredictRating_forTraining(parallelSVDModel, rating.idUser, rating.idItem, feature);
-                double originalRating = rating.ratingValue.doubleValue();
+                double predictRating = privatePredictRating_forTraining(parallelSVDModel, rating.getIdUser(), rating.getIdItem(), feature);
+                double originalRating = rating.getRatingValue().doubleValue();
                 mae.addValue(Math.abs(predictRating - originalRating));
 
             } catch (UserNotFound ex) {
@@ -445,18 +445,18 @@ public class ParallelSVD
 
     public static void trainModelWithThisRating(ParallelSVD_AlgorithmParameters algorithmParameters, ParallelSVDModel parallelSVDModel, Rating rating, int feature) {
         double predicted;
-        double ratingValue = rating.ratingValue.doubleValue();
+        double ratingValue = rating.getRatingValue().doubleValue();
         double error = 0;
 
         try {
-            predicted = ParallelSVD.privatePredictRating_forTraining(parallelSVDModel, rating.idUser, rating.idItem, feature);
+            predicted = ParallelSVD.privatePredictRating_forTraining(parallelSVDModel, rating.getIdUser(), rating.getIdItem(), feature);
             error = (ratingValue - predicted);
         } catch (NotEnoughtUserInformation | NotEnoughtItemInformation | UserNotFound | ItemNotFound ex) {
             throw new IllegalStateException(ex);
         }
 
-        double userFeatureValue = parallelSVDModel.getUserFeatures(rating.idUser).get(feature);
-        double itemFeatureValue = parallelSVDModel.getItemFeatures(rating.idItem).get(feature);
+        double userFeatureValue = parallelSVDModel.getUserFeatures(rating.getIdUser()).get(feature);
+        double itemFeatureValue = parallelSVDModel.getItemFeatures(rating.getIdItem()).get(feature);
 
         double updateUserValue = (error * itemFeatureValue - algorithmParameters.kVvalue * userFeatureValue);
         double updateItemValue = (error * userFeatureValue - algorithmParameters.kVvalue * itemFeatureValue);
@@ -469,12 +469,12 @@ public class ParallelSVD
         } else {
             //compruebo que los valores convergen a un valor bajo
             if (!(newUserValue > 10E20 || newUserValue < -10E20)) {
-                parallelSVDModel.setUserFeatureValue(rating.idUser, feature, newUserValue);
+                parallelSVDModel.setUserFeatureValue(rating.getIdUser(), feature, newUserValue);
             }
 
             //compruebo que los valores convergen a un valor bajo
             if (!(newItemValue > 10E20 || newItemValue < -10E20)) {
-                parallelSVDModel.setItemFeatureValue(rating.idItem, feature, newItemValue);
+                parallelSVDModel.setItemFeatureValue(rating.getIdItem(), feature, newItemValue);
             }
         }
     }

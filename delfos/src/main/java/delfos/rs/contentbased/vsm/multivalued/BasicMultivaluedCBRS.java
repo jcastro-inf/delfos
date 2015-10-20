@@ -91,7 +91,7 @@ public class BasicMultivaluedCBRS extends ContentBasedRecommender<MultivaluedUse
                 //Calculo del perfil
                 for (int idItem : userRated.keySet()) {
                     try {
-                        if (relevanceCriteria.isRelevant(userRated.get(idItem).ratingValue)) {
+                        if (relevanceCriteria.isRelevant(userRated.get(idItem).getRatingValue())) {
                             Item item = contentDataset.get(idItem);
 
                             items.add(item);
@@ -140,7 +140,7 @@ public class BasicMultivaluedCBRS extends ContentBasedRecommender<MultivaluedUse
         //Calculo del perfil
         for (int idItem : userRated.keySet()) {
             try {
-                if (relevanceCriteria.isRelevant(userRated.get(idItem).ratingValue)) {
+                if (relevanceCriteria.isRelevant(userRated.get(idItem).getRatingValue())) {
                     Item item = contentDataset.get(idItem);
 
                     items.add(item);

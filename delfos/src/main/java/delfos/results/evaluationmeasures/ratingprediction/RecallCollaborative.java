@@ -44,7 +44,7 @@ public class RecallCollaborative extends EvaluationMeasure {
 
                 for (int idItem : testDataset.getUserRated(idUser)) {
                     if (l.containsKey(idItem)) {
-                        float originalRating = userRatingsRated.get(idItem).ratingValue.floatValue();
+                        float originalRating = userRatingsRated.get(idItem).getRatingValue().floatValue();
                         float predictedRating = l.get(idItem).getPreference().floatValue();
                         if (relevanceCriteria.isRelevant(originalRating)) {
                             if (relevanceCriteria.isRelevant(predictedRating)) {

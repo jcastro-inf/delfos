@@ -66,7 +66,7 @@ public class GroupSatisfaction_StdDev extends GroupEvaluationMeasure {
                     for (int idItem : userRated.keySet()) {
                         if (recomendacionesAlGrupoReordenadas.containsKey(idItem)) {
                             double prediccionGrupo = recomendacionesAlGrupoReordenadas.get(idItem).getPreference().doubleValue();
-                            double prediccionIndividuo = userRated.get(idItem).ratingValue.doubleValue();
+                            double prediccionIndividuo = userRated.get(idItem).getRatingValue().doubleValue();
                             maeActual.addValue(Math.abs(prediccionGrupo - prediccionIndividuo));
                         }
                     }

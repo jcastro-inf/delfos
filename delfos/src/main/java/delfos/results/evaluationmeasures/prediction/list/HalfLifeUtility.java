@@ -89,7 +89,7 @@ public class HalfLifeUtility extends EvaluationMeasure {
                     for (Recommendation recommendation : recommendationList) {
 
                         double prediction = recommendation.getPreference().doubleValue();
-                        double rating = userRatings.get(recommendation.getIdItem()).ratingValue.doubleValue();
+                        double rating = userRatings.get(recommendation.getIdItem()).getRatingValue().doubleValue();
 
                         double numerator = rating - neutralRating;
                         double denominator = Math.pow(2, (j - 1) / (alpha - 1));

@@ -58,7 +58,7 @@ public class RelevanceCriteria {
         if (rating == null) {
             throw new IllegalArgumentException("The rating cannot be null.");
         }
-        return isRelevant(rating.ratingValue);
+        return isRelevant(rating.getRatingValue());
     }
 
     /**

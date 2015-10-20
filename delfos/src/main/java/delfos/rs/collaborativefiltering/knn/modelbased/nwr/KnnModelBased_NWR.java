@@ -238,8 +238,8 @@ public class KnnModelBased_NWR
                                 RecommendationEntity.ITEM,
                                 idItem,
                                 idItemNeighbor,
-                                itemRatingsRated.get(idUser).ratingValue.floatValue(),
-                                neighborRated.get(idUser).ratingValue.floatValue()));
+                                itemRatingsRated.get(idUser).getRatingValue().floatValue(),
+                                neighborRated.get(idUser).getRatingValue().floatValue()));
                     }
 
                     float similarity;

@@ -121,7 +121,7 @@ public final class ChangeableMySQLRatingsDataset implements RatingsDataset<Ratin
                 + "VALUES ("
                 + idUser + ","
                 + idItem + ","
-                + ratingValue.ratingValue.floatValue() + ","
+                + ratingValue.getRatingValue().floatValue() + ","
                 + "'" + date.toString() + "');";
         try (Statement statement = mySQLConnection.doConnection().createStatement()) {
             statement.execute(insert);
@@ -133,7 +133,7 @@ public final class ChangeableMySQLRatingsDataset implements RatingsDataset<Ratin
         for (Rating r : ratingsDataset) {
             ratings.add(r);
         }
-        ratings.add(new RatingWithTimestamp(idUser, idItem, ratingValue.ratingValue.floatValue(), System.currentTimeMillis()));
+        ratings.add(new RatingWithTimestamp(idUser, idItem, ratingValue.getRatingValue().floatValue(), System.currentTimeMillis()));
 
         ratingsDataset = new BothIndexRatingsDataset(ratings);
     }

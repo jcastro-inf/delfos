@@ -82,7 +82,7 @@ public class DatasetOperations {
         ratings.entrySet().stream().forEach((entry) -> {
             int idItem = entry.getKey();
             Rating rating = entry.getValue();
-            ret.put(idItem, rating.ratingValue);
+            ret.put(idItem, rating.getRatingValue());
         });
         return ret;
     }

@@ -88,8 +88,8 @@ public final class KnnMemoryBasedNWR_itemWeighted_TaskExecutor implements Single
                 Rating r1 = activeUserRated.get(idItem);
                 Rating r2 = neighborRatings.get(idItem);
 
-                float d1 = r1.ratingValue.floatValue();
-                float d2 = r2.ratingValue.floatValue();
+                float d1 = r1.getRatingValue().floatValue();
+                float d2 = r2.getRatingValue().floatValue();
                 float weight = itemWeights.get(idItem).floatValue();
                 common.add(new CommonRating(RecommendationEntity.ITEM, idItem, RecommendationEntity.USER, idUser, idNeighbor, d1, d2, weight));
             }
@@ -107,14 +107,14 @@ public final class KnnMemoryBasedNWR_itemWeighted_TaskExecutor implements Single
                 if (r1 == null) {
                     d1 = defaultRatingValue_;
                 } else {
-                    d1 = r1.ratingValue.floatValue();
+                    d1 = r1.getRatingValue().floatValue();
                 }
 
                 float d2;
                 if (r2 == null) {
                     d2 = defaultRatingValue_;
                 } else {
-                    d2 = r2.ratingValue.floatValue();
+                    d2 = r2.getRatingValue().floatValue();
                 }
                 float weight = itemWeights.get(idItem).floatValue();
                 common.add(new CommonRating(RecommendationEntity.ITEM, idItem, RecommendationEntity.USER, idUser, idNeighbor, d1, d2, weight));

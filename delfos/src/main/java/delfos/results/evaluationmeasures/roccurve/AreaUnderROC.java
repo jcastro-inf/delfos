@@ -76,7 +76,7 @@ public class AreaUnderROC extends EvaluationMeasure {
                 recommendationList.stream().map((r) -> r.getIdItem()).map((idItem) -> {
                     return idItem;
                 }).forEach((idItem) -> {
-                    listaTransformada.add(relevanceCriteria.isRelevant(userRatings.get(idItem).ratingValue));
+                    listaTransformada.add(relevanceCriteria.isRelevant(userRatings.get(idItem).getRatingValue()));
                 });
                 resultados.add(listaTransformada);
             } catch (UserNotFound ex) {

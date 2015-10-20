@@ -240,13 +240,13 @@ public class TryThisAtHomeSVD
                 c.reset();
                 MeanIterative meanAbsoluteError = new MeanIterative();
                 for (Rating rating : ratingsDataset) {
-                    int idUser = rating.idUser;
-                    int idItem = rating.idItem;
-                    Integer indexUser = usersIndex.get(rating.idUser);
-                    Integer indexItem = itemsIndex.get(rating.idItem);
+                    int idUser = rating.getIdUser();
+                    int idItem = rating.getIdItem();
+                    Integer indexUser = usersIndex.get(rating.getIdUser());
+                    Integer indexItem = itemsIndex.get(rating.getIdItem());
 
                     double predicted;
-                    double ratingValue = rating.ratingValue.doubleValue();
+                    double ratingValue = rating.getRatingValue().doubleValue();
                     double error = 0;
                     try {
                         predicted = privatePredictRating(datasetLoader, model, idUser, idItem);

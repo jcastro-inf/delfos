@@ -38,7 +38,7 @@ public class RMSE extends EvaluationMeasure {
                 try {
                     Map<Integer, ? extends Rating> userRated = testDataset.getUserRatingsRated(idUser);
                     for (Recommendation lista : recommendationList) {
-                        Number trueRating = userRated.get(lista.getIdItem()).ratingValue;
+                        Number trueRating = userRated.get(lista.getIdItem()).getRatingValue();
                         Number calculatedRating = lista.getPreference();
 
                         if (trueRating != null

@@ -84,11 +84,11 @@ public class InterestLMSPredictor extends RecommenderSystemAdapter<InterestLMSPr
         RatingsDataset<? extends Rating> ratingDataset = datasetLoader.getRatingsDataset();
         for (Rating rating : ratingDataset) {
             try {
-                int idUser = rating.idUser;
-                int idItem = rating.idItem;
+                int idUser = rating.getIdUser();
+                int idItem = rating.getIdItem();
                 Item item = contentDataset.get(idItem);
 
-                Number ratingValue = rating.ratingValue;
+                Number ratingValue = rating.getRatingValue();
                 Number minusOneToOneValue = domain.convertToDecimalDomain(ratingValue, minusOneToOne);
 
                 predictorModel.enterFeedback(idUser, item, minusOneToOneValue.floatValue());

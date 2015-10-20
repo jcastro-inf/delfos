@@ -71,7 +71,7 @@ public class NDCG extends GroupEvaluationMeasure {
                 for (Recommendation recommendation : recommendations) {
                     int idItem = recommendation.getIdItem();
                     if (userRatings.containsKey(idItem)) {
-                        idealRecommendations.add(new Recommendation(idItem, userRatings.get(idItem).ratingValue));
+                        idealRecommendations.add(new Recommendation(idItem, userRatings.get(idItem).getRatingValue()));
                         recommendationsIntersectUserRatings.add(recommendation);
                     }
                 }

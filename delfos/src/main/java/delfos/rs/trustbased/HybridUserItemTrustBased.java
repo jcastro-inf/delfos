@@ -378,7 +378,7 @@ public class HybridUserItemTrustBased extends CollaborativeRecommender<HybridUse
                     continue;
                 }
 
-                double rating = userRatings.get(idItemNeighbor).ratingValue.doubleValue();
+                double rating = userRatings.get(idItemNeighbor).getRatingValue().doubleValue();
                 double mediaItemVecino = ratingsDataset.getMeanRatingItem(idItemNeighbor);
 
                 double connectionItemVecino = itemBasedTrustModuleModel.getItemsTrust().connection(idItem, idItemNeighbor).doubleValue();
@@ -392,7 +392,7 @@ public class HybridUserItemTrustBased extends CollaborativeRecommender<HybridUse
                     continue;
                 }
 
-                double rating = userRatings.get(idItemNeighbor).ratingValue.doubleValue();
+                double rating = userRatings.get(idItemNeighbor).getRatingValue().doubleValue();
                 double mediaItemVecino = ratingsDataset.getMeanRatingItem(idItemNeighbor);
 
                 double reputacionItemVecino_paraUsuarioActual;
@@ -448,11 +448,11 @@ public class HybridUserItemTrustBased extends CollaborativeRecommender<HybridUse
             }
 
             if (usersTrust.connection(idUser, idUserNeighbour).doubleValue() > 0) {
-                numerador += usersTrust.connection(idUser, idUserNeighbour).doubleValue() * (neighbourRatings.get(idItem).ratingValue.doubleValue() - neighbourMeanRating);
+                numerador += usersTrust.connection(idUser, idUserNeighbour).doubleValue() * (neighbourRatings.get(idItem).getRatingValue().doubleValue() - neighbourMeanRating);
                 denominador += usersTrust.connection(idUser, idUserNeighbour).doubleValue();
             } else {
                 //No hay definida confianza directa, usando reputación.
-                numerador += usersReputation.get(idUserNeighbour).doubleValue() * (neighbourRatings.get(idItem).ratingValue.doubleValue() - neighbourMeanRating);
+                numerador += usersReputation.get(idUserNeighbour).doubleValue() * (neighbourRatings.get(idItem).getRatingValue().doubleValue() - neighbourMeanRating);
                 denominador += usersReputation.get(idUserNeighbour).doubleValue();
             }
         }

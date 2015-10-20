@@ -131,7 +131,7 @@ public class UserUserMultipleCorrelationCoefficient extends SimilarityMeasureAda
 
             itemsRated.stream().forEach((idItem) -> {
                 if (userRatings.containsKey(idItem)) {
-                    completedRatings.add(new Rating(idUser, idItem, userRatings.get(idItem).ratingValue));
+                    completedRatings.add(new Rating(idUser, idItem, userRatings.get(idItem).getRatingValue()));
                 } else {
                     completedRatings.add(new Rating(idUser, idItem, meanUserRating));
                 }
@@ -177,7 +177,7 @@ public class UserUserMultipleCorrelationCoefficient extends SimilarityMeasureAda
 
             itemsRated.stream().forEach((idItem) -> {
                 if (userRatings.containsKey(idItem)) {
-                    completedRatings.add(new Rating(idUser, idItem, userRatings.get(idItem).ratingValue));
+                    completedRatings.add(new Rating(idUser, idItem, userRatings.get(idItem).getRatingValue()));
                 } else {
                     completedRatings.add(new Rating(idUser, idItem, meanUserRating));
                 }
@@ -215,7 +215,7 @@ public class UserUserMultipleCorrelationCoefficient extends SimilarityMeasureAda
 
             itemsRated.stream().forEach((idItem) -> {
                 if (userRatings.containsKey(idItem)) {
-                    completedRatings.add(new Rating(idUser, idItem, userRatings.get(idItem).ratingValue));
+                    completedRatings.add(new Rating(idUser, idItem, userRatings.get(idItem).getRatingValue()));
                 } else {
                     completedRatings.add(new Rating(idUser, idItem, meanUserRating));
                 }
@@ -253,7 +253,7 @@ public class UserUserMultipleCorrelationCoefficient extends SimilarityMeasureAda
 
             itemsRated.stream().forEach((idItem) -> {
                 if (userRatings.containsKey(idItem)) {
-                    completedRatings.add(new Rating(idUser, idItem, userRatings.get(idItem).ratingValue));
+                    completedRatings.add(new Rating(idUser, idItem, userRatings.get(idItem).getRatingValue()));
                 } else {
                     completedRatings.add(new Rating(idUser, idItem, meanUserRating));
                 }

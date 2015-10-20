@@ -164,8 +164,8 @@ public class HesitantKnnGroupUser
             Collection<? extends Rating> ratings = ratingsDataset.getUserRatingsRated(user).values();
             for (Rating rating : ratings) {
 
-                Item item = contentDataset.get(rating.idItem);
-                double ratingValue = rating.ratingValue.doubleValue();
+                Item item = contentDataset.get(rating.getIdItem());
+                double ratingValue = rating.getRatingValue().doubleValue();
                 HesitantValuation.HesitantSingleValuation<Item, Double> valuation
                         = new HesitantValuation.HesitantSingleValuation<>(item, ratingValue);
                 valuations.add(valuation);

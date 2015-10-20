@@ -247,7 +247,7 @@ public class CentralityWeightedAggregationGRS extends GroupRecommenderSystemAdap
                 for (int idMember : groupOfUsers) {
                     Rating rating = groupMembersRatings.get(idMember).get(idItem);
                     if (rating != null) {
-                        ratingsValues.add(rating.ratingValue.doubleValue());
+                        ratingsValues.add(rating.getRatingValue().doubleValue());
                         memberWeights.add(centrality.get(idMember));
                     }
                 }

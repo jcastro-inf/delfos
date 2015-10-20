@@ -33,7 +33,7 @@ public class AverageWeightedWithNumberOfRatings implements UserRatingsAggregatio
         List<Double> weights = new ArrayList<Double>(users.size());
         double norma = 0;
         for (int idUser : users) {
-            Number userRating = rd.getRating(idUser, idItem).ratingValue;
+            Number userRating = rd.getRating(idUser, idItem).getRatingValue();
             values.add(userRating);
             double sizeOfUserRatings = rd.sizeOfUserRatings(idUser);
             weights.add(sizeOfUserRatings);

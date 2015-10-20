@@ -57,7 +57,7 @@ public class PredicitonErrorHistogram extends EvaluationMeasure {
             try {
                 Map<Integer, ? extends Rating> userRated = testDataset.getUserRatingsRated(idUser);
                 for (Recommendation lista : recommendationList) {
-                    Number rating = userRated.get(lista.getIdItem()).ratingValue;
+                    Number rating = userRated.get(lista.getIdItem()).getRatingValue();
                     Number prediction = lista.getPreference();
 
                     if (rating != null

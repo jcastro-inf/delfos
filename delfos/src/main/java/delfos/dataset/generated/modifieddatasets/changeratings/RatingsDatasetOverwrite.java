@@ -10,7 +10,6 @@ import delfos.common.exceptions.dataset.users.UserNotFound;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RatingsDataset;
 import delfos.dataset.basic.rating.RatingsDatasetAdapter;
-import delfos.dataset.basic.rating.domain.DecimalDomain;
 import delfos.dataset.basic.rating.domain.Domain;
 
 /**
@@ -34,16 +33,16 @@ public class RatingsDatasetOverwrite<RatingType extends Rating> extends RatingsD
 
         final Map<Integer, Map<Integer, RatingType>> newRatings_byUser = new TreeMap<>();
         for (RatingType rating : newRatings) {
-            if (!newRatings_byUser.containsKey(rating.idUser)) {
-                newRatings_byUser.put(rating.idUser, new TreeMap<>());
+            if (!newRatings_byUser.containsKey(rating.getIdUser())) {
+                newRatings_byUser.put(rating.getIdUser(), new TreeMap<>());
             }
 
-            if (newRatings_byUser.get(rating.idUser).containsKey(rating.idItem)) {
-                RatingType duplicatedRating = newRatings_byUser.get(rating.idUser).get(rating.idItem);
+            if (newRatings_byUser.get(rating.getIdUser()).containsKey(rating.getIdItem())) {
+                RatingType duplicatedRating = newRatings_byUser.get(rating.getIdUser()).get(rating.getIdItem());
                 throw new IllegalArgumentException("Duplicated rating specified in the newRatings collection, '" + duplicatedRating + "' and '" + rating + "'");
             }
 
-            newRatings_byUser.get(rating.idUser).put(rating.idItem, rating);
+            newRatings_byUser.get(rating.getIdUser()).put(rating.getIdItem(), rating);
         }
         return new RatingsDatasetOverwrite<>(ratingsDataset, newRatings_byUser);
     }
@@ -151,19 +150,19 @@ public class RatingsDatasetOverwrite<RatingType extends Rating> extends RatingsD
                 int idItem = entry.getKey();
                 RatingType rating = entry.getValue();
 
-                if (idUser != rating.idUser) {
+                if (idUser != rating.getIdUser()) {
                     throw new IllegalArgumentException("Rating '" + rating + "' does not match its indexation: idUser '" + idUser + "'");
                 }
-                if (idItem != rating.idItem) {
+                if (idItem != rating.getIdItem()) {
                     throw new IllegalArgumentException("Rating '" + rating + "' does not match its indexation: idItem '" + idItem + "'");
                 }
 
-                if (!newRatings_byUser.containsKey(rating.idUser)) {
-                    newRatings_byUser.put(rating.idUser, new TreeMap<>());
+                if (!newRatings_byUser.containsKey(rating.getIdUser())) {
+                    newRatings_byUser.put(rating.getIdUser(), new TreeMap<>());
                 }
 
-                if (newRatings_byUser.get(rating.idUser).containsKey(rating.idItem)) {
-                    RatingType duplicatedRating = newRatings_byUser.get(rating.idUser).get(rating.idItem);
+                if (newRatings_byUser.get(rating.getIdUser()).containsKey(rating.getIdItem())) {
+                    RatingType duplicatedRating = newRatings_byUser.get(rating.getIdUser()).get(rating.getIdItem());
                     throw new IllegalArgumentException("Duplicated rating specified in the newRatings collection, '" + duplicatedRating + "' and '" + rating + "'");
                 }
             }

@@ -131,7 +131,7 @@ public class KnnModelBasedCFRS
                 float similarity = itemNeighbor.getSimilarity();
                 Rating rating = targetUserRatings.get(itemNeighbor.getIdNeighbor());
                 if (rating != null) {
-                    matchRatings.add(new MatchRating(RecommendationEntity.USER, idUser, itemNeighbor.getIdNeighbor(), rating.ratingValue, similarity));
+                    matchRatings.add(new MatchRating(RecommendationEntity.USER, idUser, itemNeighbor.getIdNeighbor(), rating.getRatingValue(), similarity));
                 }
             }
 
@@ -195,8 +195,8 @@ public class KnnModelBasedCFRS
                                     RecommendationEntity.ITEM,
                                     item.getId(),
                                     itemNeighbor.getId(),
-                                    usersRatingsToTargetItem.get(idUser).ratingValue.floatValue(),
-                                    usersRatingsToNeighborItem.get(idUser).ratingValue.floatValue())))
+                                    usersRatingsToTargetItem.get(idUser).getRatingValue().floatValue(),
+                                    usersRatingsToNeighborItem.get(idUser).getRatingValue().floatValue())))
                     .collect(Collectors.toList());
 
             float similarity;

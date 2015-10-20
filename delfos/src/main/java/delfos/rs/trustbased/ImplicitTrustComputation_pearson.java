@@ -78,8 +78,8 @@ public class ImplicitTrustComputation_pearson {
                     List<Float> neighborList = new LinkedList<Float>();
                     for (int idItem : userRatings.keySet()) {
                         if (neighborRatings.containsKey(idItem)) {
-                            userList.add(userRatings.get(idItem).ratingValue.floatValue());
-                            neighborList.add(neighborRatings.get(idItem).ratingValue.floatValue());
+                            userList.add(userRatings.get(idItem).getRatingValue().floatValue());
+                            neighborList.add(neighborRatings.get(idItem).getRatingValue().floatValue());
                         }
                     }
 

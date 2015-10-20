@@ -80,8 +80,8 @@ public class RatingsItemNeighborJTableModel extends AbstractTableModel {
             datos[USER_ID_COLUMN][index] = user.getId();
             datos[USER_NAME_COLUMN][index] = user.getName();
 
-            datos[TARGET_RATING_COLUMN][index] = targetRating == null ? "" : targetRating.ratingValue.doubleValue();
-            datos[NEIGHBOR_RATING_COLUMN][index] = neighborRating == null ? "" : neighborRating.ratingValue.doubleValue();
+            datos[TARGET_RATING_COLUMN][index] = targetRating == null ? "" : targetRating.getRatingValue().doubleValue();
+            datos[NEIGHBOR_RATING_COLUMN][index] = neighborRating == null ? "" : neighborRating.getRatingValue().doubleValue();
 
             index++;
         }

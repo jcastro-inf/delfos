@@ -112,7 +112,7 @@ public class DatasetPrinterManager extends DatabaseCaseUseSubManager {
 
                 try {
                     Item item = changeableDatasetLoader.getChangeableContentDataset().get(idItem);
-                    System.out.println("Item '" + item.getName() + "' (id=" + idItem + ") ---> " + rating.ratingValue);
+                    System.out.println("Item '" + item.getName() + "' (id=" + idItem + ") ---> " + rating.getRatingValue());
                 } catch (EntityNotFound ex) {
                     ERROR_CODES.ITEM_NOT_FOUND.exit(ex);
                     throw new IllegalArgumentException(ex);
@@ -137,7 +137,7 @@ public class DatasetPrinterManager extends DatabaseCaseUseSubManager {
 
                 try {
                     User user = changeableDatasetLoader.getChangeableUsersDataset().get(idUser);
-                    System.out.println("User '" + user.getName() + "' (id=" + idUser + ") ---> " + rating.ratingValue);
+                    System.out.println("User '" + user.getName() + "' (id=" + idUser + ") ---> " + rating.getRatingValue());
                 } catch (EntityNotFound ex) {
                     ERROR_CODES.ITEM_NOT_FOUND.exit(ex);
                     throw new IllegalArgumentException(ex);

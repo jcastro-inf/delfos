@@ -45,7 +45,7 @@ public class DatasetUtilities {
         for (Map.Entry<Integer, Rating> userEntry : userRatings.entrySet()) {
             int idItem = userEntry.getKey();
             Rating rating = userEntry.getValue();
-            ret.put(idItem, rating.ratingValue);
+            ret.put(idItem, rating.getRatingValue());
         }
         return ret;
     }
@@ -115,7 +115,7 @@ public class DatasetUtilities {
             Map<Integer, ? extends Rating> userRatingsRated = datasetLoader.getRatingsDataset().getUserRatingsRated(idUser);
             membersRatings.put(idUser, new TreeMap<>());
             userRatingsRated.keySet().stream().forEach((Integer idItem) -> {
-                Number rating = userRatingsRated.get(idItem).ratingValue;
+                Number rating = userRatingsRated.get(idItem).getRatingValue();
                 membersRatings.get(idUser).put(idItem, rating);
             });
         }

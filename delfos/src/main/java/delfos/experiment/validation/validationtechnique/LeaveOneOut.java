@@ -51,8 +51,8 @@ public class LeaveOneOut extends ValidationTechnique {
         for (Rating rating : ratingsDataset) {
 
             Map<Integer, Set<Integer>> conjuntoTest = new TreeMap<Integer, Set<Integer>>();
-            conjuntoTest.put(rating.idUser, new TreeSet<Integer>());
-            conjuntoTest.get(rating.idUser).add(rating.idItem);
+            conjuntoTest.put(rating.getIdUser(), new TreeSet<Integer>());
+            conjuntoTest.get(rating.getIdUser()).add(rating.getIdItem());
             try {
                 ret[split] = new PairOfTrainTestRatingsDataset(
                         datasetLoader,

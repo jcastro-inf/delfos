@@ -34,8 +34,8 @@ public class RatingsDatasetTest {
             Map<Integer, Integer> numRatingsItems_byIterator = new TreeMap<Integer, Integer>();
 
             for (Rating r : ratingsDataset) {
-                int idUser = r.idUser;
-                int idItem = r.idItem;
+                int idUser = r.getIdUser();
+                int idItem = r.getIdItem();
 
                 ratingsDataset.getRating(idUser, idItem);
 

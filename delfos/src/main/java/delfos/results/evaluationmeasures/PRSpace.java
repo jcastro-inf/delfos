@@ -59,7 +59,7 @@ public class PRSpace extends EvaluationMeasure {
                 for (Recommendation r : recommendationList) {
 
                     int idItem = r.getIdItem();
-                    resultados.add(relevanceCriteria.isRelevant(userRatings.get(idItem).ratingValue));
+                    resultados.add(relevanceCriteria.isRelevant(userRatings.get(idItem).getRatingValue()));
                 }
             } catch (UserNotFound ex) {
                 ERROR_CODES.USER_NOT_FOUND.exit(ex);

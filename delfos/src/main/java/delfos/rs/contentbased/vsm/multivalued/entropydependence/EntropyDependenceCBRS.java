@@ -284,7 +284,7 @@ public class EntropyDependenceCBRS extends ContentBasedRecommender<EntropyDepend
                 List<Number> featureValues = new ArrayList<>(positiveItems.size());
                 for (Item item : positiveItems) {
                     featureValues.add((Number) item.getFeatureValue(feature));
-                    ratings.add(userRated.get(item.getId()).ratingValue);
+                    ratings.add(userRated.get(item.getId()).getRatingValue());
                 }
 
                 float intraUserWeight;

@@ -57,7 +57,7 @@ public class EPinionsRating extends Rating {
 
     @Override
     public Rating clone() throws CloneNotSupportedException {
-        return new EPinionsRating(idUser, idItem, ratingValue, status_HideRating, timestamp_creation, timestamp_lastModification, idVertical);
+        return new EPinionsRating(getIdUser(), getIdItem(), getRatingValue(), status_HideRating, timestamp_creation, timestamp_lastModification, idVertical);
     }
 
 }

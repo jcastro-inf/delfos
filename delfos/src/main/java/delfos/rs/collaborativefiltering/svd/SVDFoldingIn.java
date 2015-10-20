@@ -214,7 +214,7 @@ public class SVDFoldingIn
                     try {
                         predicted = privatePredictRating(datasetLoader, newModel, idUser, idItem);
 
-                        double error = (rating.ratingValue.doubleValue() - predicted);
+                        double error = (rating.getRatingValue().doubleValue() - predicted);
                         meanAbsoluteError.addValue(Math.abs(error));
 
                         double getUser = thisUserFeatures.get(indexFeature);

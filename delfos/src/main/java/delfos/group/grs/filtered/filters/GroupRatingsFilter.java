@@ -43,7 +43,7 @@ public abstract class GroupRatingsFilter extends ParameterOwnerAdapter {
 
                 Map<Integer, Number> userRatings_Number = new TreeMap<>();
                 for (Rating rating : userRatingsRated.values()) {
-                    userRatings_Number.put(rating.idItem, rating.ratingValue);
+                    userRatings_Number.put(rating.getIdItem(), rating.getRatingValue());
                 }
                 groupRatings.put(idUser, userRatings_Number);
             } catch (UserNotFound ex) {

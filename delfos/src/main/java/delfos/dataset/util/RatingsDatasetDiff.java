@@ -184,8 +184,8 @@ public class RatingsDatasetDiff {
             userRatedIntersection.retainAll(userRatingsRated2.keySet());
 
             userRatedIntersection.stream().forEach((idItem) -> {
-                double oldValue = userRatingsRated1.get(idItem).ratingValue.doubleValue();
-                double newValue = userRatingsRated2.get(idItem).ratingValue.doubleValue();
+                double oldValue = userRatingsRated1.get(idItem).getRatingValue().doubleValue();
+                double newValue = userRatingsRated2.get(idItem).getRatingValue().doubleValue();
 
                 diffThisUser.put(idItem, ratingValueModificationMarkers.getRatingModificationMarker(oldValue, newValue));
             });
@@ -239,8 +239,8 @@ public class RatingsDatasetDiff {
         for (Integer idItem : userRatingsRated_r1.keySet()) {
             Rating rating_r1 = userRatingsRated_r1.get(idItem);
             Rating rating_r2 = userRatingsRated_r2.get(idItem);
-            double value_r1 = rating_r1.ratingValue.doubleValue();
-            double value_r2 = rating_r2.ratingValue.doubleValue();
+            double value_r1 = rating_r1.getRatingValue().doubleValue();
+            double value_r2 = rating_r2.getRatingValue().doubleValue();
             if (value_r1 != value_r2) {
                 return true;
             }

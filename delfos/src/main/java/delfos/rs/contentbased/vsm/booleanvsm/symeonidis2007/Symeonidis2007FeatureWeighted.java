@@ -136,7 +136,7 @@ public class Symeonidis2007FeatureWeighted extends ContentBasedRecommender<Symeo
                 int idItem = entry.getKey();
                 Rating rating = entry.getValue();
 
-                if (relevanceCriteria.isRelevant(rating.ratingValue)) {
+                if (relevanceCriteria.isRelevant(rating.getRatingValue())) {
 
                     SparseVector itemProfile = makeFFItemProfile(idItem, datasetLoader, booleanFeaturesTransformation);
                     for (VectorEntry entryItemProfile : itemProfile.fast()) {
@@ -224,7 +224,7 @@ public class Symeonidis2007FeatureWeighted extends ContentBasedRecommender<Symeo
                             for (Map.Entry<Integer, ? extends Rating> entry : userRatingsRated.entrySet()) {
 
                                 int idItemRatedByUser = entry.getKey();
-                                Number rating = entry.getValue().ratingValue.doubleValue();
+                                Number rating = entry.getValue().getRatingValue().doubleValue();
 
                                 //Si el rating es negativo, este producto no cuenta.
                                 if (relevanceCriteria.isRelevant(rating)) {

@@ -182,7 +182,7 @@ public class AggregationOfIndividualRatings
                 }
                 return idItem;
             }).forEach((idItem) -> {
-                groupRatingsList.get(idItem).add(userRatingsRated.get(idItem).ratingValue);
+                groupRatingsList.get(idItem).add(userRatingsRated.get(idItem).getRatingValue());
             });
         }
 
@@ -220,7 +220,7 @@ public class AggregationOfIndividualRatings
                 }
                 return idItem;
             }).forEach((idItem) -> {
-                groupRatingsList.get(idItem).add(userRatingsRated.get(idItem).ratingValue);
+                groupRatingsList.get(idItem).add(userRatingsRated.get(idItem).getRatingValue());
             });
         }
 

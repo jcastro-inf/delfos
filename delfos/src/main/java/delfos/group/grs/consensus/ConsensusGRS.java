@@ -385,7 +385,7 @@ public class ConsensusGRS extends GroupRecommenderSystemAdapter<SingleRecommenda
                 if (!groupRatingsList.containsKey(idItem)) {
                     groupRatingsList.put(idItem, new LinkedList<>());
                 }
-                groupRatingsList.get(idItem).add(userRatingsRated.get(idItem).ratingValue);
+                groupRatingsList.get(idItem).add(userRatingsRated.get(idItem).getRatingValue());
             }
         }
 

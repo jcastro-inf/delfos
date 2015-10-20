@@ -48,8 +48,8 @@ public class TrainingRatingsDataset_Memory<RatingType extends Rating> extends Ra
 
         List<RatingType> trainingRatings = new ArrayList<>();
         for (RatingType rating : originalRatingsDataset) {
-            final int idUser = rating.idUser;
-            final int idItem = rating.idItem;
+            final int idUser = rating.getIdUser();
+            final int idItem = rating.getIdItem();
             if (testSet.containsKey(idUser)) {
                 //El usuario está en test
                 if (testSet.get(idUser).contains(idItem)) {

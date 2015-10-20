@@ -58,7 +58,7 @@ public class NMAE extends GroupEvaluationMeasure {
                 int idItem = r.getIdItem();
                 for (int idUser : group.getGroupMembers()) {
                     if (groupTrueRatings.get(idUser).containsKey(idItem)) {
-                        double trueRating = groupTrueRatings.get(idUser).get(idItem).ratingValue.doubleValue();
+                        double trueRating = groupTrueRatings.get(idUser).get(idItem).getRatingValue().doubleValue();
                         double predictedRating = r.getPreference().doubleValue();
 
                         double trueRatingNormalised = originalDomain.convertToDecimalDomain(trueRating, DecimalDomain.ZERO_TO_ONE).doubleValue();

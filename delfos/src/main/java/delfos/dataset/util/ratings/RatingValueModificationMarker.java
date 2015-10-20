@@ -68,8 +68,8 @@ public class RatingValueModificationMarker {
 
     public String getRatingModificationMarker(Rating oldRating, Rating newRating) {
         return getRatingModificationMarker(
-                oldRating.ratingValue.doubleValue(),
-                newRating.ratingValue.doubleValue());
+                oldRating.getRatingValue().doubleValue(),
+                newRating.getRatingValue().doubleValue());
     }
 
     public String getRatingModificationMarker(double oldValue, double newValue) {
