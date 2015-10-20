@@ -4,7 +4,7 @@ import delfos.common.exceptions.dataset.CannotLoadContentDataset;
 import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RatingsDataset;
-import delfos.dataset.loaders.given.DatasetLoaderGiven;
+import delfos.dataset.loaders.given.DatasetLoaderGivenRatingsDataset;
 import delfos.dataset.basic.loader.types.CompleteDatasetLoaderAbstract_withTrust;
 import delfos.dataset.basic.loader.types.DatasetLoader;
 
@@ -48,10 +48,10 @@ public class PairOfTrainTestRatingsDataset<RatingType extends Rating> extends Co
     }
 
     public DatasetLoader<? extends Rating> getTrainingDatasetLoader() {
-        return new DatasetLoaderGiven(originalDatasetLoader, train);
+        return new DatasetLoaderGivenRatingsDataset(originalDatasetLoader, train);
     }
 
     public DatasetLoader<? extends Rating> getTestDatasetLoader() {
-        return new DatasetLoaderGiven(originalDatasetLoader, test);
+        return new DatasetLoaderGivenRatingsDataset(originalDatasetLoader, test);
     }
 }

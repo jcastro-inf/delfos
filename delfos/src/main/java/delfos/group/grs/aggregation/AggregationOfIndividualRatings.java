@@ -16,7 +16,7 @@ import delfos.common.parameters.restriction.RecommenderSystemParameterRestrictio
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.generated.modifieddatasets.PseudoUserRatingsDataset;
-import delfos.dataset.loaders.given.DatasetLoaderGiven;
+import delfos.dataset.loaders.given.DatasetLoaderGivenRatingsDataset;
 import delfos.dataset.util.DatasetPrinterDeprecated;
 import delfos.dataset.util.DatasetUtilities;
 import delfos.group.groupsofusers.GroupOfUsers;
@@ -262,8 +262,7 @@ public class AggregationOfIndividualRatings
             DatasetPrinterDeprecated.printCompactRatingTable(ratingsDataset_withPseudoUser, Arrays.asList(idGroup), ratingsDataset_withPseudoUser.getUserRated(idGroup));
         }
         Collection<Recommendation> groupRecom;
-        groupRecom = recommenderSystem.recommendToUser(
-                new DatasetLoaderGiven(datasetLoader, ratingsDataset_withPseudoUser),
+        groupRecom = recommenderSystem.recommendToUser(new DatasetLoaderGivenRatingsDataset(datasetLoader, ratingsDataset_withPseudoUser),
                 RecommendationModel.getRecommendationModel(),
                 idGroup,
                 candidateItems);

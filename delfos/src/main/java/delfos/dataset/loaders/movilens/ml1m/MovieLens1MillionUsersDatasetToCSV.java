@@ -1,13 +1,7 @@
 package delfos.dataset.loaders.movilens.ml1m;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.LinkedList;
-import java.util.Map;
-import java.util.TreeMap;
+import delfos.common.exceptions.dataset.CannotLoadContentDataset;
+import delfos.common.exceptions.dataset.CannotLoadUsersDataset;
 import delfos.dataset.basic.features.Feature;
 import delfos.dataset.basic.features.FeatureGenerator;
 import delfos.dataset.basic.features.FeatureType;
@@ -19,14 +13,19 @@ import static delfos.io.csv.dataset.item.ContentDatasetToCSV.ITEM_NAME_COLUMN_NA
 import delfos.io.csv.dataset.rating.CSVReader;
 import delfos.io.csv.dataset.user.UsersDatasetToCSV;
 import static delfos.io.csv.dataset.user.UsersDatasetToCSV.CSV_EXTENSION;
-import delfos.common.exceptions.dataset.CannotLoadContentDataset;
-import delfos.common.exceptions.dataset.CannotLoadUsersDataset;
-import delfos.common.exceptions.dataset.users.UserAlreadyExists;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.Map;
+import java.util.TreeMap;
+import java.util.TreeSet;
 
 /**
  * Clase para leer/escribir un dataset de contenido a fichero csv.
  *
-* @author Jorge Castro Gallardo
+ * @author Jorge Castro Gallardo
  *
  * @version 1.0 04-Mar-2013
  */
@@ -109,7 +108,7 @@ public class MovieLens1MillionUsersDatasetToCSV implements UsersDatasetToCSV {
         try {
             FeatureGenerator featureGenerator = new FeatureGenerator();
 
-            LinkedList<User> users = new LinkedList<User>();
+            TreeSet<User> users = new TreeSet<>();
             CSVReader reader = new CSVReader(usersCSV, "\"", "::");
 
             final int idUserColumn = 0;
@@ -204,7 +203,7 @@ public class MovieLens1MillionUsersDatasetToCSV implements UsersDatasetToCSV {
 
                 String zipCode = reader.get(zipCodeColumn);
 
-                Map<Feature, Object> featureValues = new TreeMap<Feature, Object>();
+                Map<Feature, Object> featureValues = new TreeMap<>();
                 featureValues.put(genderFeature, gender);
                 featureValues.put(ageFeature, age);
                 featureValues.put(occupationFeature, occupation);
@@ -219,8 +218,6 @@ public class MovieLens1MillionUsersDatasetToCSV implements UsersDatasetToCSV {
         } catch (IOException ex) {
             throw new CannotLoadContentDataset(ex);
         } catch (NumberFormatException ex) {
-            throw new CannotLoadContentDataset(ex);
-        } catch (UserAlreadyExists ex) {
             throw new CannotLoadContentDataset(ex);
         }
     }

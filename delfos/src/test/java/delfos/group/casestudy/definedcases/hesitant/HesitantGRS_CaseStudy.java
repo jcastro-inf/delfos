@@ -30,7 +30,7 @@ public class HesitantGRS_CaseStudy extends DelfosTest {
     public HesitantGRS_CaseStudy() {
     }
 
-    public static final long SEED_VALUE = 77352653L;
+    public static final long SEED_VALUE = 123456L;
     public static final int NUM_GROUPS = 1;
 
     File experimentDirectory = new File(Constants.getTempDirectory().getAbsolutePath() + File.separator
@@ -122,7 +122,7 @@ public class HesitantGRS_CaseStudy extends DelfosTest {
     public void testExecute() throws Exception {
         //FileUtilities.deleteDirectoryRecursive(experimentDirectory);
 
-       //createCaseStudyXML();
+        //createCaseStudyXML();
         executeAllExperimentsInDirectory(experimentDirectory);
     }
 

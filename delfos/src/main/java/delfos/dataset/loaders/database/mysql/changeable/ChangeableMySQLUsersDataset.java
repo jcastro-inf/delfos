@@ -3,9 +3,7 @@ package delfos.dataset.loaders.database.mysql.changeable;
 import delfos.ERROR_CODES;
 import delfos.common.Global;
 import delfos.common.LockedIterator;
-import delfos.common.exceptions.dataset.entity.EntityAlreadyExists;
 import delfos.common.exceptions.dataset.entity.EntityNotFound;
-import delfos.common.exceptions.dataset.users.UserAlreadyExists;
 import delfos.common.exceptions.dataset.users.UserNotFound;
 import delfos.databaseconnections.MySQLConnection;
 import delfos.dataset.basic.features.CollectionOfEntitiesWithFeatures;
@@ -20,8 +18,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
@@ -79,52 +75,44 @@ public class ChangeableMySQLUsersDataset implements ChangeableUsersDataset, Coll
     }
 
     @Override
-    public final void addUser(User user) throws UserAlreadyExists {
-        try {
-            if (usersDataset.getAllID().contains(user.getId())) {
-                //El dataset ya tenía el usuario, haciento cambio.
+    public final void addUser(User user) {
+        if (usersDataset.getAllID().contains(user.getId())) {
+            //El dataset ya tenía el usuario, haciento cambio.
 
-                Map<Integer, User> users = new TreeMap<>();
+            Map<Integer, User> users = new TreeMap<>();
 
-                for (User user2 : usersDataset) {
-                    users.put(user2.getId(), user2);
-                }
-
-                users.remove(user.getId());
-                users.put(user.getId(), user);
-
-                try {
-                    usersDataset = new UsersDatasetAdapter(users.values());
-                } catch (UserAlreadyExists ex) {
-                    //TODO: Este error nunca se produce
-                    ERROR_CODES.UNDEFINED_ERROR.exit(ex);
-                }
+            for (User user2 : usersDataset) {
+                users.put(user2.getId(), user2);
             }
 
-            boolean necesarioRegenerarTabla = false;
+            users.remove(user.getId());
+            users.put(user.getId(), user);
 
-            for (Feature feature : user.getFeatures()) {
-                if (featureGenerator.searchFeature(feature.getName()) == null) {
-                    //El usuario tiene nuevas características, se necesita añadir una columna.
-                    necesarioRegenerarTabla = true;
-                    break;
-                }
-            }
+            usersDataset = new UsersDatasetAdapter(users.values().stream().collect(Collectors.toSet()));
 
-            try {
-                if (necesarioRegenerarTabla) {
-                    createUsersTable();
-                } else {
-                    insertUserInTable(user);
-                }
-            } catch (SQLException ex) {
-                ERROR_CODES.DATABASE_NOT_READY.exit(ex);
-            }
-
-            // TODO hay algo por hacer...
-        } catch (EntityAlreadyExists ex) {
-            throw new UserAlreadyExists(user.getId(), ex);
         }
+
+        boolean necesarioRegenerarTabla = false;
+
+        for (Feature feature : user.getFeatures()) {
+            if (featureGenerator.searchFeature(feature.getName()) == null) {
+                //El usuario tiene nuevas características, se necesita añadir una columna.
+                necesarioRegenerarTabla = true;
+                break;
+            }
+        }
+
+        try {
+            if (necesarioRegenerarTabla) {
+                createUsersTable();
+            } else {
+                insertUserInTable(user);
+            }
+        } catch (SQLException ex) {
+            ERROR_CODES.DATABASE_NOT_READY.exit(ex);
+        }
+
+        // TODO hay algo por hacer...
     }
 
     @Override
@@ -257,13 +245,9 @@ public class ChangeableMySQLUsersDataset implements ChangeableUsersDataset, Coll
     }
 
     @Override
-    public boolean add(User entity) throws EntityAlreadyExists {
-        try {
-            addUser(entity);
-            return true;
-        } catch (UserAlreadyExists ex) {
-            throw new EntityAlreadyExists(entity.getId(), ex);
-        }
+    public boolean add(User entity) {
+        addUser(entity);
+        return true;
     }
 
     private void insertUserInTable(User user) throws SQLException {
@@ -306,7 +290,7 @@ public class ChangeableMySQLUsersDataset implements ChangeableUsersDataset, Coll
     }
 
     private void readUsersDataset() throws SQLException {
-        List<User> users = new LinkedList<>();
+        Set<User> users = new TreeSet<>();
 
         //Leo las características
         try (Statement statement = mySQLConnection.doConnection().createStatement()) {
@@ -360,12 +344,7 @@ public class ChangeableMySQLUsersDataset implements ChangeableUsersDataset, Coll
                 users.add(user);
 
             }
-            try {
-                usersDataset = new UsersDatasetAdapter(users);
-            } catch (UserAlreadyExists ex) {
-                ERROR_CODES.USER_ALREADY_EXISTS.exit(ex);
-                throw new IllegalArgumentException(ex);
-            }
+            usersDataset = new UsersDatasetAdapter(users);
         }
     }
 

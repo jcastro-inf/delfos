@@ -1,25 +1,22 @@
 package delfos.view.neighborhood.components.uknn;
 
-import delfos.dataset.basic.item.ContentDataset;
 import delfos.dataset.basic.item.Item;
-import delfos.dataset.basic.loader.types.ContentDatasetLoader;
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.loader.types.UsersDatasetLoader;
-import delfos.dataset.basic.rating.Rating;
-import delfos.dataset.basic.rating.RatingsDataset;
 import delfos.dataset.basic.user.User;
+import delfos.dataset.basic.user.UsersDataset;
 import delfos.rs.collaborativefiltering.knn.RecommendationEntity;
 import delfos.rs.collaborativefiltering.profile.Neighbor;
 import delfos.rs.recommendation.Recommendation;
 import delfos.rs.recommendation.Recommendations;
 import delfos.rs.recommendation.RecommendationsWithNeighbors;
+import delfos.view.neighborhood.RecommendationsExplainedWindow;
 import delfos.view.neighborhood.components.recommendations.RecommendationsTable;
 import delfos.view.neighborhood.results.RecommendationsGUI;
 import java.awt.Component;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -37,8 +34,10 @@ import javax.swing.event.ListSelectionEvent;
 public class KnnMemoryCFRSRecommendationsGUI implements RecommendationsGUI {
 
     private static final String RECOMMENDATIONS_BORDER_TITLE = "Recommendations";
-    private static final String RATINGS_BORDER_TITLE = "Ratings neighbor vs target";
+    private static final String RATINGS_BORDER_TITLE = "Ratings target vs neighbor";
     private static final String NEIGHBORS_BORDER_TITLE = "User neighbors";
+
+    private final RecommendationsExplainedWindow recommendationsExplainedWindow;
 
     private RecommendationsTable recommendationsTable;
     private UserNeighborsTable neighborsTable;
@@ -49,10 +48,11 @@ public class KnnMemoryCFRSRecommendationsGUI implements RecommendationsGUI {
     private JPanel recommendationsPanel;
     private DatasetLoader datasetLoader;
 
-    public KnnMemoryCFRSRecommendationsGUI() {
+    public KnnMemoryCFRSRecommendationsGUI(RecommendationsExplainedWindow recommendationsExplainedWindow) {
         this.resultsComponent = panelResults();
 
         plugListeners();
+        this.recommendationsExplainedWindow = recommendationsExplainedWindow;
     }
 
     public final Component panelResults() {
@@ -160,7 +160,7 @@ public class KnnMemoryCFRSRecommendationsGUI implements RecommendationsGUI {
     public void clearData() {
         recommendationsTable.setRecomendaciones(RecommendationsWithNeighbors.EMPTY_LIST);
         neighborsTable.setNeighbors(RecommendationsWithNeighbors.EMPTY_LIST);
-        ratingsTable.setRatings(Collections.emptyList(), null);
+        ratingsTable.setRatings(recommendationsExplainedWindow.configuredDatasetSelected().getDatasetLoader(), null, null);
 
     }
 
@@ -207,22 +207,26 @@ public class KnnMemoryCFRSRecommendationsGUI implements RecommendationsGUI {
                     neighborsComplete)
             );
         }
+
+        ratingsTable.setRatings(datasetLoader, user, null);
     }
 
     private void addNeighborTableListener() {
 
         neighborsTable.addNeighborSelectorListener((ListSelectionEvent e) -> {
-            ContentDataset contentDataset = ((ContentDatasetLoader) datasetLoader).getContentDataset();
-            RatingsDataset<? extends Rating> ratingsDataset = datasetLoader.getRatingsDataset();
 
-            if (e.getFirstIndex() == -1) {
-                ratingsTable.setRatings(Collections.emptyList(), contentDataset);
+            User user = recommendationsExplainedWindow.userSelected();
+            UsersDataset usersDataset = ((UsersDatasetLoader) datasetLoader).getUsersDataset();
+
+            int indexSelected = e.getFirstIndex();
+            if (indexSelected == -1) {
+                ratingsTable.setRatings(datasetLoader, user, null);
+            } else if (neighborsTable.getSelected() == null) {
+                ratingsTable.setRatings(datasetLoader, user, null);
+            } else {
+                User neighbor = usersDataset.get(neighborsTable.getSelected().getIdNeighbor());
+                ratingsTable.setRatings(datasetLoader, user, neighbor);
             }
-            Neighbor neighbor = neighborsTable.getSelected();
-            if (neighbor == null) {
-                return;
-            }
-            ratingsTable.setRatings(ratingsDataset.getUserRatingsRated(neighbor.getIdNeighbor()).values(), contentDataset);
         });
     }
 

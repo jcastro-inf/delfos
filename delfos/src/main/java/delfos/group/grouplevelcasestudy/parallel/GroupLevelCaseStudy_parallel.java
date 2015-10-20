@@ -1,32 +1,29 @@
 package delfos.group.grouplevelcasestudy.parallel;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
 import delfos.common.exceptions.dataset.CannotLoadContentDataset;
 import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
 import delfos.common.exceptions.dataset.items.ItemNotFound;
 import delfos.common.exceptions.dataset.users.UserNotFound;
 import delfos.common.parallelwork.MultiThreadExecutionManager;
-import delfos.common.parallelwork.PartialWorkListener;
+import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RelevanceCriteria;
-import delfos.dataset.basic.loader.types.DatasetLoader;
-import delfos.group.grouplevelcasestudy.GroupLevelResults;
+import delfos.group.experiment.validation.groupformation.GroupFormationTechnique;
+import delfos.group.experiment.validation.predictionvalidation.GroupPredictionProtocol;
+import delfos.group.experiment.validation.validationtechniques.GroupValidationTechnique;
 import delfos.group.groupsofusers.GroupOfUsers;
 import delfos.group.groupsofusers.measuresovergroups.GroupMeasure;
 import delfos.group.grs.GroupRecommenderSystem;
 import delfos.group.results.groupevaluationmeasures.GroupEvaluationMeasure;
-import delfos.group.results.groupevaluationmeasures.GroupMeasureResult;
-import delfos.group.experiment.validation.validationtechniques.GroupValidationTechnique;
-import delfos.group.experiment.validation.groupformation.GroupFormationTechnique;
-import delfos.group.experiment.validation.predictionvalidation.GroupPredictionProtocol;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 /**
  * Realiza un caso de estudio a nivel de grupo, es decir, aplica las medidas de
  * evaluación sólo por cada grupo.
  *
-* @author Jorge Castro Gallardo
+ * @author Jorge Castro Gallardo
  * @version 1.0 03-Jun-2013
  */
 public class GroupLevelCaseStudy_parallel {
@@ -72,50 +69,16 @@ public class GroupLevelCaseStudy_parallel {
             System.out.println(line);
         }
 
-        List<SingleGroupTask> tasks = new ArrayList<SingleGroupTask>();
+        List<SingleGroupTask> tasks = new ArrayList<>();
 
         for (GroupOfUsers group : groups) {
             tasks.add(new SingleGroupTask(seed, validationTechnique, datasetLoader, groups, group, groupRecommenderSystems, predictionProtocol, grouMeasures, evaluationMeasures));
         }
 
-        MultiThreadExecutionManager<SingleGroupTask> multiThreadExecutionManager = new MultiThreadExecutionManager<SingleGroupTask>(
+        MultiThreadExecutionManager<SingleGroupTask> multiThreadExecutionManager = new MultiThreadExecutionManager<>(
                 "Group calculation",
                 tasks,
                 SingleGroupTaskExecute.class);
-
-        multiThreadExecutionManager.addPartialWorkListener(new PartialWorkListener<SingleGroupTask>() {
-            private final Object exMut = 0;
-
-            @Override
-            public void finishedTask() {
-                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-            }
-
-            @Override
-            public void finishedTask(SingleGroupTask t) {
-                GroupOfUsers group = t.getGroup();
-
-                for (GroupLevelResults groupLevelResults : t.getGroupLevelResults()) {
-                    StringBuilder line = new StringBuilder();
-                    line.append(group.toString());
-                    synchronized (exMut) {
-                        //Línea del grupo
-
-                        for (GroupMeasure groupMeasure : grouMeasures) {
-                            line.append("\t").append(groupLevelResults.getGroupMeasureValue(groupMeasure));
-                        }
-
-                        for (GroupEvaluationMeasure groupEvaluationMeasure : evaluationMeasures) {
-                            for (GroupRecommenderSystem groupRecommenderSystem : groupRecommenderSystems) {
-                                GroupMeasureResult groupMeasureResult = groupLevelResults.getEvaluationMeasureValue(groupRecommenderSystem, groupEvaluationMeasure);
-                                line.append("\t").append(groupMeasureResult.getValue());
-                            }
-                        }
-                    }
-                    System.out.println(line);
-                }
-            }
-        });
 
         multiThreadExecutionManager.run();
     }

@@ -1,9 +1,8 @@
 package delfos.view.neighborhood.components.uknn;
 
-import delfos.dataset.basic.item.ContentDataset;
-import delfos.dataset.basic.rating.Rating;
+import delfos.dataset.basic.loader.types.DatasetLoader;
+import delfos.dataset.basic.user.User;
 import java.awt.Component;
-import java.util.Collection;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.TableColumn;
@@ -56,8 +55,8 @@ public class RatingsUserNeighborTable {
         return scroll;
     }
 
-    public void setRatings(Collection<? extends Rating> ratings, ContentDataset contentDataset) {
-        ratingsJTableModel.setRatings(ratings, contentDataset);
+    public void setRatings(DatasetLoader datasetLoader, User user, User neighbor) {
+        ratingsJTableModel.setRatings(datasetLoader, user, neighbor);
     }
 
 }

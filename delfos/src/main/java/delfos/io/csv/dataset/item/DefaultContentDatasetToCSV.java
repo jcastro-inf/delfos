@@ -1,6 +1,14 @@
 package delfos.io.csv.dataset.item;
 
 import com.csvreader.CsvReader;
+import delfos.common.Global;
+import delfos.common.exceptions.dataset.CannotLoadContentDataset;
+import delfos.dataset.basic.features.Feature;
+import delfos.dataset.basic.features.FeatureGenerator;
+import delfos.dataset.basic.features.FeatureType;
+import delfos.dataset.basic.item.ContentDataset;
+import delfos.dataset.basic.item.ContentDatasetDefault;
+import delfos.dataset.basic.item.Item;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
@@ -14,15 +22,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
-import delfos.common.Global;
-import delfos.common.exceptions.dataset.CannotLoadContentDataset;
-import delfos.common.exceptions.dataset.items.ItemAlreadyExists;
-import delfos.dataset.basic.features.Feature;
-import delfos.dataset.basic.features.FeatureGenerator;
-import delfos.dataset.basic.features.FeatureType;
-import delfos.dataset.basic.item.ContentDataset;
-import delfos.dataset.basic.item.ContentDatasetDefault;
-import delfos.dataset.basic.item.Item;
+import java.util.TreeSet;
 
 /**
  * Clase para leer/escribir un dataset de contenido a fichero csv.
@@ -110,7 +110,7 @@ public class DefaultContentDatasetToCSV implements ContentDatasetToCSV {
         try {
             FeatureGenerator featureGenerator = new FeatureGenerator();
             int defaultIndexItems = 1;
-            LinkedList<Item> items = new LinkedList<>();
+            TreeSet<Item> items = new TreeSet<>();
 
             CsvReader reader = new CsvReader(
                     new FileInputStream(contentCSV.getAbsolutePath()),
@@ -259,7 +259,7 @@ public class DefaultContentDatasetToCSV implements ContentDatasetToCSV {
             reader.close();
             ContentDataset cd = new ContentDatasetDefault(items);
             return cd;
-        } catch (IOException | NumberFormatException | ItemAlreadyExists ex) {
+        } catch (IOException | NumberFormatException ex) {
             throw new CannotLoadContentDataset(ex);
         }
     }

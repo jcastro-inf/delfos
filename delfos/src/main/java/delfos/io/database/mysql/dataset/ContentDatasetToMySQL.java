@@ -1,6 +1,5 @@
 package delfos.io.database.mysql.dataset;
 
-import delfos.common.exceptions.dataset.items.ItemAlreadyExists;
 import delfos.databaseconnections.MySQLConnection;
 import delfos.dataset.basic.features.Feature;
 import delfos.dataset.basic.features.FeatureGenerator;
@@ -10,8 +9,7 @@ import delfos.dataset.basic.item.ContentDatasetDefault;
 import delfos.dataset.basic.item.Item;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.TreeSet;
 
 /**
  * Clase para escribir un dataset de contenido a una base de datos MySQL.
@@ -111,7 +109,7 @@ public class ContentDatasetToMySQL {
     public ContentDataset readDataset() throws SQLException {
 
         FeatureGenerator featureGenerator = new FeatureGenerator();
-        List<Item> items = new LinkedList<>();
+        TreeSet<Item> items = new TreeSet<>();
 
         String consulta_getFeatures = "SELECT " + featureTable_featureName + "," + featureTable_featureType + " "
                 + "FROM " + featureTableName + ";";
@@ -168,11 +166,8 @@ public class ContentDatasetToMySQL {
                     values));
         }
 
-        try {
-            return new ContentDatasetDefault(items);
-        } catch (ItemAlreadyExists ex) {
-            throw new IllegalStateException(ex);
-        }
+        return new ContentDatasetDefault(items);
+
     }
 
     private void createTables(ContentDataset contentDataset) throws SQLException {

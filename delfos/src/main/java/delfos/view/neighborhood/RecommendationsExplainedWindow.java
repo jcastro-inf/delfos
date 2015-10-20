@@ -47,6 +47,7 @@ import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.JSpinner;
 import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
 
 /**
  *
@@ -104,7 +105,7 @@ public class RecommendationsExplainedWindow extends JFrame {
                     Chronometer chronometer = new Chronometer();
                     recommenderSystemSelected().addRecommendationModelBuildingProgressListener(this);
                     recommendationModel = buildRecommendationModel();
-                    Recommendations recommendations = computeRecommendations(recommendationModel);
+                    computeRecommendations(recommendationModel);
                     recommenderSystemSelected().removeRecommendationModelBuildingProgressListener(this);
 
                     updateGUI(
@@ -397,8 +398,12 @@ public class RecommendationsExplainedWindow extends JFrame {
         reloadUsersSelector(configuredDataset.getDatasetLoader());
 
         RecommenderSystem[] recommenderSystems = new RecommenderSystem[2];
+
         recommenderSystems[0] = new KnnMemoryBasedCFRS();
-        recommenderSystems[1] = new KnnModelBasedCFRS();
+
+        KnnModelBasedCFRS knnModelBasedCFRS = new KnnModelBasedCFRS();
+        knnModelBasedCFRS.setParameterValue(KnnModelBasedCFRS.RELEVANCE_FACTOR, false);
+        recommenderSystems[1] = knnModelBasedCFRS;
         recommenderSystemSelector.setModel(new DefaultComboBoxModel<>(recommenderSystems));
         addRecommenderSystemGUI(recommenderSystems[0]);
 
@@ -532,19 +537,21 @@ public class RecommendationsExplainedWindow extends JFrame {
         });
     }
 
-    private Recommendations computeRecommendations(Object recommendationModel) {
-        User userSelected = userSelected();
+    private void computeRecommendations(Object recommendationModel) {
 
-        RecommenderSystem recommenderSystem = recommenderSystemSelected();
-        DatasetLoader<? extends Rating> datasetLoader = configuredDatasetSelected().getDatasetLoader();
+        SwingUtilities.invokeLater(() -> {
+            User userSelected = userSelected();
 
-        OnlyNewItems onlyNewItems = new OnlyNewItems();
-        Set<Item> candidateItems = onlyNewItems.candidateItemsNew(datasetLoader, userSelected);
+            RecommenderSystem recommenderSystem = recommenderSystemSelected();
+            DatasetLoader<? extends Rating> datasetLoader = configuredDatasetSelected().getDatasetLoader();
 
-        Recommendations recommendations = recommenderSystem.recommendToUser(datasetLoader, recommendationModel, userSelected, candidateItems);
+            OnlyNewItems onlyNewItems = new OnlyNewItems();
+            Set<Item> candidateItems = onlyNewItems.candidateItemsNew(datasetLoader, userSelected);
 
-        resultsPanel.updateResult(datasetLoader, recommendationModel, userSelected, recommendations, candidateItems);
-        return recommendations;
+            Recommendations recommendations = recommenderSystem.recommendToUser(datasetLoader, recommendationModel, userSelected, candidateItems);
+
+            resultsPanel.updateResult(datasetLoader, recommendationModel, userSelected, recommendations, candidateItems);
+        });
     }
 
     public RecommenderSystem recommenderSystemSelected() {
@@ -564,7 +571,7 @@ public class RecommendationsExplainedWindow extends JFrame {
         System.out.println("Updating interface for: " + recommenderSystem);
 
         if (recommenderSystem instanceof KnnMemoryBasedCFRS) {
-            return new KnnMemoryCFRSRecommendationsGUI();
+            return new KnnMemoryCFRSRecommendationsGUI(this);
         } else if (recommenderSystem instanceof KnnModelBasedCFRS) {
             return new KnnModelCFRSRecommendationsGUI(this);
         } else {

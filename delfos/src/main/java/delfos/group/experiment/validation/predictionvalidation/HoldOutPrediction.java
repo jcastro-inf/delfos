@@ -9,7 +9,7 @@ import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RatingsDataset;
 import delfos.dataset.generated.modifieddatasets.changeratings.RatingsDatasetOverwrite;
-import delfos.dataset.loaders.given.DatasetLoaderGiven;
+import delfos.dataset.loaders.given.DatasetLoaderGivenRatingsDataset;
 import delfos.dataset.util.DatasetUtilities;
 import delfos.group.groupsofusers.GroupOfUsers;
 import java.util.Arrays;
@@ -78,7 +78,7 @@ public class HoldOutPrediction extends GroupPredictionProtocol {
         Map<Integer, Map<Integer, Rating>> predictionMembersRatings_byUser_Rating = DatasetUtilities.getMapOfMaps_Rating(predictionMembersRatings_byUser);
 
         DatasetLoader<Rating> predictionPhaseDatasetLoader
-                = new DatasetLoaderGiven<>(trainDatasetLoader,
+                = new DatasetLoaderGivenRatingsDataset<>(trainDatasetLoader,
                         RatingsDatasetOverwrite.createRatingsDataset((RatingsDataset<Rating>) trainDatasetLoader.getRatingsDataset(), predictionMembersRatings_byUser_Rating));
 
         return Arrays.asList(new GroupRecommendationRequest(group, predictionPhaseDatasetLoader, itemsToPredict));

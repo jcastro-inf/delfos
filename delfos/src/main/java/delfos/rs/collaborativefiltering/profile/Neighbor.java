@@ -30,8 +30,10 @@ public class Neighbor implements Comparable<Neighbor>, Serializable {
             return 1;
         } else if (Float.isNaN(o2.similarity)) {
             return -1;
-        } else {
+        } else if (Float.compare(o1.getSimilarity(), o2.getSimilarity()) != 0) {
             return Float.compare(o1.getSimilarity(), o2.getSimilarity());
+        } else {
+            return BY_ID.compare(o1, o2);
         }
     };
     public static final Comparator<Neighbor> BY_SIMILARITY_DESC = (Neighbor o1, Neighbor o2) -> {
@@ -41,8 +43,10 @@ public class Neighbor implements Comparable<Neighbor>, Serializable {
             return 1;
         } else if (Float.isNaN(o2.similarity)) {
             return -1;
-        } else {
+        } else if (-Float.compare(o1.getSimilarity(), o2.getSimilarity()) != 0) {
             return -Float.compare(o1.getSimilarity(), o2.getSimilarity());
+        } else {
+            return BY_ID.compare(o1, o2);
         }
     };
 

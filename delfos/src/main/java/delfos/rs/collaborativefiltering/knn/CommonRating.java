@@ -14,7 +14,7 @@ package delfos.rs.collaborativefiltering.knn;
  * usuario. El método {@link CommonRating#getIdR1() } devuelve 54 y el método {@link CommonRating#getIdR3()
  * } devuelve 98.
  *
-* @author Jorge Castro Gallardo
+ * @author Jorge Castro Gallardo
  *
  * @version 1.0 Unknown date.
  * @version 1.1 20-Mar-2013
@@ -181,4 +181,40 @@ public class CommonRating {
     public void setWeight(float weight) {
         this.weight = weight;
     }
+
+    @Override
+    public String toString() {
+        StringBuilder str = new StringBuilder();
+
+        switch (ratingEntity) {
+            case USER:
+                str.append("Users");
+                break;
+            case ITEM:
+                str.append("Items");
+                break;
+            default:
+                throw new IllegalStateException("Unknown ratingEntity: " + ratingEntity);
+        }
+
+        str.append("(").append(idR1).append(",").append(idR2).append(")");
+
+        str.append(" rated ");
+        switch (commonEntity) {
+            case USER:
+                str.append("User");
+                break;
+            case ITEM:
+                str.append("Item");
+                break;
+            default:
+                throw new IllegalStateException("Unknown ratingEntity: " + ratingEntity);
+        }
+        str.append("(").append(idCommon).append(")");
+
+        str.append(" --> ").append("(").append(rating1).append(",").append(rating2).append(")");
+
+        return str.toString();
+    }
+
 }

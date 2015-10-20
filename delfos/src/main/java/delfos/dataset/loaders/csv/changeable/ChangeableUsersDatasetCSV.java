@@ -1,25 +1,24 @@
 package delfos.dataset.loaders.csv.changeable;
 
-import java.io.File;
-import java.io.IOException;
+import delfos.ERROR_CODES;
+import delfos.common.exceptions.dataset.CannotSaveUsersDataset;
+import delfos.common.exceptions.dataset.entity.EntityNotFound;
+import delfos.common.exceptions.dataset.users.UserNotFound;
+import delfos.common.parameters.ParameterListener;
 import delfos.dataset.basic.features.CollectionOfEntitiesWithFeaturesDefault;
 import delfos.dataset.basic.user.User;
 import delfos.dataset.changeable.ChangeableUsersDataset;
-import delfos.ERROR_CODES;
 import delfos.io.csv.dataset.user.DefaultUsersDatasetToCSV;
 import delfos.io.csv.dataset.user.UsersDatasetToCSV;
-import delfos.common.exceptions.dataset.CannotSaveUsersDataset;
-import delfos.common.exceptions.dataset.entity.EntityAlreadyExists;
-import delfos.common.exceptions.dataset.entity.EntityNotFound;
-import delfos.common.exceptions.dataset.users.UserAlreadyExists;
-import delfos.common.exceptions.dataset.users.UserNotFound;
-import delfos.common.parameters.ParameterListener;
+import java.io.File;
+import java.io.IOException;
+import java.util.Set;
 
 /**
  * Implementa un dataset de contenido con persistencia sobre fichero CSV con la
  * posibilidad de modificar los productos del mismo.
  *
-* @author Jorge Castro Gallardo
+ * @author Jorge Castro Gallardo
  *
  * @version 16-sep-2013
  */
@@ -27,7 +26,7 @@ public class ChangeableUsersDatasetCSV extends CollectionOfEntitiesWithFeaturesD
 
     private final ChangeableCSVFileDatasetLoader parent;
 
-    public ChangeableUsersDatasetCSV(final ChangeableCSVFileDatasetLoader parent, Iterable<User> users) throws UserAlreadyExists {
+    public ChangeableUsersDatasetCSV(final ChangeableCSVFileDatasetLoader parent, Set<User> users) {
         super();
         this.parent = parent;
         parent.addParammeterListener(new ParameterListener() {
@@ -81,12 +80,8 @@ public class ChangeableUsersDatasetCSV extends CollectionOfEntitiesWithFeaturesD
     }
 
     @Override
-    public final void addUser(User user) throws UserAlreadyExists {
-        try {
-            add(user);
-        } catch (EntityAlreadyExists ex) {
-            throw new UserAlreadyExists(user.getId(), ex);
-        }
+    public final void addUser(User user) {
+        super.add(user);
     }
 
     @Override

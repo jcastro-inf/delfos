@@ -1,25 +1,25 @@
 package delfos.rs.persistence;
 
-import java.util.ArrayList;
-import java.util.List;
 import delfos.common.exceptions.dataset.CannotLoadContentDataset;
 import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
 import delfos.common.exceptions.dataset.CannotLoadUsersDataset;
-import delfos.common.exceptions.dataset.items.ItemAlreadyExists;
-import delfos.common.exceptions.dataset.users.UserAlreadyExists;
-import delfos.dataset.basic.item.ContentDataset;
-import delfos.dataset.basic.item.ContentDatasetDefault;
-import delfos.dataset.basic.item.Item;
 import delfos.dataset.basic.features.Feature;
 import delfos.dataset.basic.features.FeatureGenerator;
 import delfos.dataset.basic.features.FeatureType;
+import delfos.dataset.basic.item.ContentDataset;
+import delfos.dataset.basic.item.ContentDatasetDefault;
+import delfos.dataset.basic.item.Item;
+import delfos.dataset.basic.loader.types.CompleteDatasetLoaderAbstract_withTrust;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RatingsDataset;
 import delfos.dataset.basic.user.User;
 import delfos.dataset.basic.user.UsersDataset;
 import delfos.dataset.basic.user.UsersDatasetAdapter;
-import delfos.dataset.basic.loader.types.CompleteDatasetLoaderAbstract_withTrust;
 import delfos.dataset.storage.memory.BothIndexRatingsDataset;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
 /**
  *
@@ -32,11 +32,11 @@ public class MockDatasetLoader extends CompleteDatasetLoaderAbstract_withTrust<R
     private final ContentDataset contentDataset;
     private final UsersDataset usersDataset;
 
-    public MockDatasetLoader() throws ItemAlreadyExists, UserAlreadyExists {
+    public MockDatasetLoader() {
 
         List<Rating> ratings = new ArrayList<>();
-        List<User> users = new ArrayList<>();
-        List<Item> items = new ArrayList<>();
+        Set<User> users = new TreeSet<>();
+        Set<Item> items = new TreeSet<>();
 
         //Items
         {

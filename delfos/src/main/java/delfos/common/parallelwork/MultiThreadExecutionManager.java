@@ -43,10 +43,8 @@ public class MultiThreadExecutionManager<TaskType extends Task> implements Runna
         partialWorkListener.add(listener);
     }
 
-    protected void fireTaskFinished(TaskType t) {
-        for (PartialWorkListener<TaskType> listener : partialWorkListener) {
-            listener.finishedTask(t);
-        }
+    protected void fireTaskFinished() {
+        partialWorkListener.stream().forEach((listener) -> listener.finishedTask());
     }
 
     @SuppressWarnings("unchecked") //TODO: eliminar este supressWarning haciendo que el código autocompruebe el cast.
@@ -138,7 +136,7 @@ public class MultiThreadExecutionManager<TaskType extends Task> implements Runna
                     }
                     long timeElapsed = c.getTotalElapsed();
                     timePerTask.addValue(timeElapsed);
-                    fireTaskFinished(task);
+                    fireTaskFinished();
                 }
 
                 listOfTasks.setWorkFinished(tasksAssigned);

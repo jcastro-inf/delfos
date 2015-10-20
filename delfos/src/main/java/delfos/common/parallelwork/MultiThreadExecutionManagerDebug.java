@@ -47,7 +47,7 @@ public class MultiThreadExecutionManagerDebug<TaskType extends Task> extends Mul
                 }
                 long timeElapsed = c.getTotalElapsed();
                 timePerTask.addValue(timeElapsed);
-                fireTaskFinished(task);
+                fireTaskFinished();
             }
 
             listOfTasks.setWorkFinished(tasksAssigned);

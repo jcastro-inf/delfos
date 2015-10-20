@@ -1,31 +1,30 @@
 package delfos.dataset.loaders.movilens.ml1m;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.util.Collection;
 import delfos.common.exceptions.dataset.CannotLoadContentDataset;
 import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
 import delfos.common.exceptions.dataset.CannotLoadUsersDataset;
-import delfos.common.exceptions.dataset.users.UserAlreadyExists;
 import delfos.common.parameters.Parameter;
 import delfos.common.parameters.ParameterListener;
 import delfos.common.parameters.restriction.DirectoryParameter;
 import delfos.common.parameters.restriction.StringParameter;
 import delfos.dataset.basic.item.ContentDataset;
+import delfos.dataset.basic.loader.types.ContentDatasetLoader;
+import delfos.dataset.basic.loader.types.DatasetLoaderAbstract;
+import delfos.dataset.basic.loader.types.UsersDatasetLoader;
 import delfos.dataset.basic.rating.RatingWithTimestamp;
 import delfos.dataset.basic.rating.RatingsDataset;
 import delfos.dataset.basic.user.UsersDataset;
-import delfos.dataset.basic.loader.types.DatasetLoaderAbstract;
-import delfos.dataset.basic.loader.types.ContentDatasetLoader;
-import delfos.dataset.basic.loader.types.UsersDatasetLoader;
 import delfos.dataset.storage.memory.BothIndexRatingsDataset;
 import delfos.io.csv.dataset.item.ContentDatasetToCSV;
 import delfos.io.csv.dataset.user.UsersDatasetToCSV;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.Collection;
 
 /**
  * Lee el dataset de MovieLens de 1 millón de ratings ml-1m.
  *
-* @author Jorge Castro Gallardo
+ * @author Jorge Castro Gallardo
  *
  * @version 12-mar-2014
  */
@@ -120,8 +119,6 @@ public class MovieLens1Million extends DatasetLoaderAbstract<RatingWithTimestamp
                 UsersDatasetToCSV usersDatasetToCSV = new MovieLens1MillionUsersDatasetToCSV();
                 usersDataset = usersDatasetToCSV.readUsersDataset(usersDatasetFile);
             } catch (FileNotFoundException ex) {
-                throw new CannotLoadUsersDataset(ex);
-            } catch (UserAlreadyExists ex) {
                 throw new CannotLoadUsersDataset(ex);
             }
         }

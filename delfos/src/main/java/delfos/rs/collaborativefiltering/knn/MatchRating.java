@@ -62,6 +62,14 @@ public class MatchRating {
         this.weight = weight;
     }
 
+    public MatchRating(RecommendationEntity entity, User user, Item item, Number ratingValue, float weight) {
+        this.entity = entity;
+        this.user = user;
+        this.item = item;
+        this.ratingValue = ratingValue;
+        this.weight = weight;
+    }
+
     /**
      * Devuelve el id del producto al que se refiere el rating.
      *
@@ -113,6 +121,18 @@ public class MatchRating {
 
     public User getUser() {
         return user;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder str = new StringBuilder();
+
+        str.append("(u: ").append(user)
+                .append(", i: ").append(item)
+                .append(") --> ").append(ratingValue)
+                .append("(w: ").append(weight).append(")");
+
+        return str.toString();
     }
 
 }

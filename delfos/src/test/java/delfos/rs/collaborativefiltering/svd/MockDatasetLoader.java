@@ -1,24 +1,26 @@
 package delfos.rs.collaborativefiltering.svd;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import delfos.ERROR_CODES;
 import delfos.common.exceptions.dataset.CannotLoadContentDataset;
 import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
-import delfos.common.exceptions.dataset.items.ItemAlreadyExists;
-import delfos.dataset.basic.item.ContentDataset;
-import delfos.dataset.basic.item.ContentDatasetDefault;
-import delfos.dataset.basic.item.Item;
 import delfos.dataset.basic.features.Feature;
 import delfos.dataset.basic.features.FeatureGenerator;
 import delfos.dataset.basic.features.FeatureType;
+import delfos.dataset.basic.item.ContentDataset;
+import delfos.dataset.basic.item.ContentDatasetDefault;
+import delfos.dataset.basic.item.Item;
+import delfos.dataset.basic.loader.types.ContentDatasetLoader;
+import delfos.dataset.basic.loader.types.DatasetLoaderAbstract;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RatingsDataset;
-import delfos.dataset.basic.loader.types.DatasetLoaderAbstract;
+import delfos.dataset.basic.user.User;
+import delfos.dataset.basic.user.UsersDataset;
+import delfos.dataset.basic.user.UsersDatasetAdapter;
 import delfos.dataset.loaders.given.DatasetLoaderGivenRatingsContent;
-import delfos.dataset.basic.loader.types.ContentDatasetLoader;
 import delfos.dataset.storage.memory.BothIndexRatingsDataset;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.TreeSet;
+import java.util.stream.Collectors;
 
 /**
  *
@@ -49,7 +51,7 @@ public class MockDatasetLoader extends DatasetLoaderAbstract<Rating> implements 
         BothIndexRatingsDataset<Rating> ratingsDataset = new BothIndexRatingsDataset<>(ratings);
         //Content dataset
         FeatureGenerator featureGenerator = new FeatureGenerator();
-        LinkedList<Item> items = new LinkedList<>();
+        TreeSet<Item> items = new TreeSet<>();
         Feature[] features = new Feature[4];
         featureGenerator.createFeature("feature1_float", FeatureType.Numerical);
         featureGenerator.createFeature("feature2_int", FeatureType.Numerical);
@@ -83,15 +85,15 @@ public class MockDatasetLoader extends DatasetLoaderAbstract<Rating> implements 
         items.add(new Item(2, "item2", features, item2_values));
         items.add(new Item(3, "item1", features, item3_values));
         items.add(new Item(4, "item1", features, item4_values));
-        ContentDataset contentDataset;
-        try {
-            contentDataset = new ContentDatasetDefault(items);
-            datasetLoader = new DatasetLoaderGivenRatingsContent(ratingsDataset, contentDataset);
-        } catch (ItemAlreadyExists ex) {
-            IllegalStateException ise = new IllegalStateException("This exception should never be thrown in a regular execution, if the dataset data is properly added. If this exception is thrown, am item with duplicate idItem[" + ex.getIdItem() + "] is being added");
-            ERROR_CODES.UNDEFINED_ERROR.exit(ise);
-            throw ise;
-        }
+        ContentDataset contentDataset = new ContentDatasetDefault(items);
+
+        UsersDataset usersDataset = new UsersDatasetAdapter(ratingsDataset
+                .allUsers().stream()
+                .map(idUser -> new User(idUser))
+                .collect(Collectors.toSet()));
+
+        datasetLoader = new DatasetLoaderGivenRatingsContent(ratingsDataset, contentDataset, usersDataset);
+
     }
 
     @Override

@@ -1,22 +1,26 @@
 package delfos.dataset.loaders.database.mysql;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.sql.SQLException;
-import delfos.dataset.basic.item.ContentDataset;
-import delfos.dataset.basic.rating.Rating;
-import delfos.dataset.basic.rating.RatingsDataset;
-import delfos.dataset.basic.rating.RelevanceCriteria;
-import delfos.dataset.storage.memory.BothIndexRatingsDataset;
-import delfos.dataset.loaders.database.DatabaseContentDataset;
-import delfos.dataset.loaders.database.DatabaseRatingsDataset;
-import delfos.dataset.basic.loader.types.ContentDatasetLoader;
 import delfos.ERROR_CODES;
 import delfos.common.exceptions.DatabaseNotReady;
 import delfos.common.exceptions.dataset.CannotLoadContentDataset;
+import delfos.common.exceptions.dataset.CannotLoadUsersDataset;
 import delfos.common.parameters.Parameter;
-import delfos.common.parameters.ParameterListener;
 import delfos.common.parameters.restriction.BooleanParameter;
+import delfos.dataset.basic.item.ContentDataset;
+import delfos.dataset.basic.loader.types.ContentDatasetLoader;
+import delfos.dataset.basic.rating.Rating;
+import delfos.dataset.basic.rating.RatingsDataset;
+import delfos.dataset.basic.rating.RelevanceCriteria;
+import delfos.dataset.basic.user.User;
+import delfos.dataset.basic.user.UsersDataset;
+import delfos.dataset.basic.user.UsersDatasetAdapter;
+import delfos.dataset.loaders.database.DatabaseContentDataset;
+import delfos.dataset.loaders.database.DatabaseRatingsDataset;
+import delfos.dataset.storage.memory.BothIndexRatingsDataset;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.sql.SQLException;
+import java.util.stream.Collectors;
 
 /**
  * Interfaz que define los métodos que un constructor de datasets para
@@ -26,7 +30,7 @@ import delfos.common.parameters.restriction.BooleanParameter;
  * <code>MovilensDatasetConstructor</code> devolverá la referencia al objeto en
  * memoria.
  *
-* @author Jorge Castro Gallardo
+ * @author Jorge Castro Gallardo
  *
  * @version UnknownDate
  * @version 26-Noviembre-2013
@@ -36,17 +40,15 @@ public class DatabaseDatasetLoader extends MySQLDatabaseDatasetLoaderAbstract im
     private static final long serialVersionUID = 1L;
     private ContentDataset mcd;
     private RatingsDataset<? extends Rating> mrd;
+    private UsersDataset mud;
     public static final Parameter cache = new Parameter("cache", new BooleanParameter(Boolean.TRUE));
 
     public DatabaseDatasetLoader() throws DatabaseNotReady {
         super();
 
-        addParammeterListener(new ParameterListener() {
-            @Override
-            public void parameterChanged() {
-                mcd = null;
-                mrd = null;
-            }
+        addParammeterListener(() -> {
+            mcd = null;
+            mrd = null;
         });
     }
 
@@ -85,6 +87,18 @@ public class DatabaseDatasetLoader extends MySQLDatabaseDatasetLoaderAbstract im
             }
         }
         return mcd;
+    }
+
+    @Override
+    public UsersDataset getUsersDataset() throws CannotLoadUsersDataset {
+        if (mud == null) {
+            mud = new UsersDatasetAdapter(mrd
+                    .allUsers().stream()
+                    .map(idUser -> new User(idUser))
+                    .collect(Collectors.toSet()));
+
+        }
+        return mud;
     }
 
     @Override

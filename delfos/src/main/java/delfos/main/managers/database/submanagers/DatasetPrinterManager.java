@@ -156,7 +156,7 @@ public class DatasetPrinterManager extends DatabaseCaseUseSubManager {
         for (int idItem : items) {
             try {
                 Item item = changeableDatasetLoader.getContentDataset().getItem(idItem);
-                System.out.println("\tidUser '" + idItem + "' with name " + item.getName());
+                System.out.println("\tidItem '" + idItem + "' with name " + item.getName());
             } catch (ItemNotFound ex) {
                 ERROR_CODES.ITEM_NOT_FOUND.exit(ex);
                 throw new IllegalArgumentException(ex);

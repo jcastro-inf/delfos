@@ -18,7 +18,7 @@ import delfos.common.parameters.ParameterListener;
 import delfos.common.parameters.restriction.ParameterOwnerRestriction;
 import delfos.common.parameters.restriction.RecommenderSystemParameterRestriction;
 import delfos.dataset.basic.rating.Rating;
-import delfos.dataset.loaders.given.DatasetLoaderGiven;
+import delfos.dataset.loaders.given.DatasetLoaderGivenRatingsDataset;
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.generated.modifieddatasets.PseudoUserRatingsDataset_manyPseudoUsers;
 import delfos.group.groupsofusers.GroupOfUsers;
@@ -138,8 +138,7 @@ public class GroupRecommenderSystemWithPreFilter extends GroupRecommenderSystemA
 
         }
 
-        Object innerGRSGroupModel = getGroupRecommenderSystem().buildGroupModel(
-                new DatasetLoaderGiven(datasetLoader, modifiedDataset),
+        Object innerGRSGroupModel = getGroupRecommenderSystem().buildGroupModel(new DatasetLoaderGivenRatingsDataset(datasetLoader, modifiedDataset),
                 RecommendationModel,
                 new GroupOfUsers(pseudoMembers.keySet()));
 
@@ -189,8 +188,7 @@ public class GroupRecommenderSystemWithPreFilter extends GroupRecommenderSystemA
         }
 
         try {
-            Collection<Recommendation> recommendations = getGroupRecommenderSystem().recommendOnly(
-                    new DatasetLoaderGiven(datasetLoader, modifiedDataset),
+            Collection<Recommendation> recommendations = getGroupRecommenderSystem().recommendOnly(new DatasetLoaderGivenRatingsDataset(datasetLoader, modifiedDataset),
                     RecommendationModel,
                     innerGRSGroupModel,
                     new GroupOfUsers(pseudoMembers.keySet()),

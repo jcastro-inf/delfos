@@ -1,12 +1,7 @@
 package delfos.dataset.loaders.csv.changeable;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.Collection;
 import delfos.ERROR_CODES;
-import delfos.common.exceptions.dataset.entity.EntityAlreadyExists;
 import delfos.common.exceptions.dataset.entity.EntityNotFound;
-import delfos.common.exceptions.dataset.items.ItemAlreadyExists;
 import delfos.common.exceptions.dataset.items.ItemNotFound;
 import delfos.common.parameters.ParameterListener;
 import delfos.dataset.basic.features.CollectionOfEntitiesWithFeaturesDefault;
@@ -14,6 +9,10 @@ import delfos.dataset.basic.item.Item;
 import delfos.dataset.changeable.ChangeableContentDataset;
 import delfos.io.csv.dataset.item.ContentDatasetToCSV;
 import delfos.io.csv.dataset.item.DefaultContentDatasetToCSV;
+import java.io.File;
+import java.io.IOException;
+import java.util.Collection;
+import java.util.Set;
 
 /**
  * Implementa un dataset de contenido con persistencia sobre fichero CSV con la
@@ -47,7 +46,7 @@ public class ChangeableContentDatasetCSV extends CollectionOfEntitiesWithFeature
         });
     }
 
-    public ChangeableContentDatasetCSV(final ChangeableCSVFileDatasetLoader parent, Iterable<Item> items) throws ItemAlreadyExists {
+    public ChangeableContentDatasetCSV(final ChangeableCSVFileDatasetLoader parent, Set<Item> items) {
         this(parent);
 
         for (Item item : items) {
@@ -56,12 +55,8 @@ public class ChangeableContentDatasetCSV extends CollectionOfEntitiesWithFeature
     }
 
     @Override
-    public final void addItem(Item item) throws ItemAlreadyExists {
-        try {
-            add(item);
-        } catch (EntityAlreadyExists ex) {
-            throw new ItemAlreadyExists(item.getId(), ex);
-        }
+    public final void addItem(Item item) {
+        super.add(item);
     }
 
     @Override
