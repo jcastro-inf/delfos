@@ -60,11 +60,11 @@ public class KnnModelBasedCFRSTest {
 
         boolean requirementViolated = contentDataset.stream().anyMatch(item -> {
 
-            List<Neighbor> neighbors = instance.getNeighbors(datasetLoader, item.getId());
+            List<Neighbor> neighbors = instance.getNeighbors(datasetLoader, item);
 
             Set<Integer> allItems = contentDataset.parallelStream()
                     .map(itemInner -> itemInner.getId())
-                    .filter(innerItem -> innerItem != item.getId())
+                    .filter(innerItem -> !innerItem.equals(item.getId()))
                     .collect(Collectors.toCollection(TreeSet::new));
 
             Set<Integer> itemsSimilares = neighbors.parallelStream()

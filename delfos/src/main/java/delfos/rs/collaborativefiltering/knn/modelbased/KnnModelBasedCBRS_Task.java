@@ -1,6 +1,7 @@
 package delfos.rs.collaborativefiltering.knn.modelbased;
 
 import delfos.common.parallelwork.Task;
+import delfos.dataset.basic.item.Item;
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
 import delfos.rs.collaborativefiltering.profile.Neighbor;
@@ -15,13 +16,13 @@ import java.util.List;
  */
 public class KnnModelBasedCBRS_Task extends Task {
 
-    public final int idItem;
+    public final Item item;
     private KnnModelBasedCFRS rs;
     private DatasetLoader<? extends Rating> datasetLoader;
     private List<Neighbor> neighbors = null;
 
-    public KnnModelBasedCBRS_Task(int idItem, KnnModelBasedCFRS rs, DatasetLoader<? extends Rating> datasetLoader) {
-        this.idItem = idItem;
+    public KnnModelBasedCBRS_Task(Item item, KnnModelBasedCFRS rs, DatasetLoader<? extends Rating> datasetLoader) {
+        this.item = item;
         this.rs = rs;
         this.datasetLoader = datasetLoader;
     }
@@ -30,15 +31,15 @@ public class KnnModelBasedCBRS_Task extends Task {
     public String toString() {
         StringBuilder str = new StringBuilder();
 
-        str.append("idItem ---------> ").append(idItem).append("\n");
+        str.append("idItem ---------> ").append(item).append("\n");
         str.append("rs -------------> ").append(rs.getAlias()).append("\n");
         str.append("\n").append(rs.getNameWithParameters());
 
         return str.toString();
     }
 
-    public int getIdItem() {
-        return idItem;
+    public Item getItem() {
+        return item;
     }
 
     public KnnModelBasedCFRS getRecommenderSystem() {
@@ -50,8 +51,6 @@ public class KnnModelBasedCBRS_Task extends Task {
     }
 
     public void setNeighbors(List<Neighbor> neighbors) {
-        rs = null;
-        datasetLoader = null;
         this.neighbors = neighbors;
     }
 

@@ -55,11 +55,11 @@ import java.util.logging.Logger;
  * Clase encargada de realizar las ejecuciones de los sistemas de recomendación
  * tradicionales, es decir, single user, recomendando conjuntos de productos a
  * un usuario utilizando datos de usuario, datos de productos y valoraciones. Se
- encarga realizar el proceso completo de prueba de un sistema de
- recomendación: invoca al método de validación, invocar al metodo buildRecommendationModel del
- sistema de recomendación, realiza la petición de recomendaciones y recoge los
- resultados, almacenando el tiempo de ejecución y llamando a las métricas de
- evaluación.
+ * encarga realizar el proceso completo de prueba de un sistema de
+ * recomendación: invoca al método de validación, invocar al metodo
+ * buildRecommendationModel del sistema de recomendación, realiza la petición de
+ * recomendaciones y recoge los resultados, almacenando el tiempo de ejecución y
+ * llamando a las métricas de evaluación.
  *
  * @author Jorge Castro Gallardo
  * @version 1.0 (19 Octubre 2011)
@@ -341,7 +341,7 @@ public class DefaultCaseStudy extends CaseStudy implements ParameterListener {
                 final Collection<SingleUserRecommendationTask> allFinishedTasks = multiThreadExecutionManager_SingleRecommendation.getAllFinishedTasks();
 
                 int numTasks = allFinishedTasks.size();
-                allFinishedTasks.parallelStream().map((task) -> {
+                allFinishedTasks.stream().map((task) -> {
                     int idUser = task.getIdUser();
                     if (!predictions.containsKey(idUser)) {
                         predictions.put(idUser, Collections.synchronizedList(new ArrayList<>()));
