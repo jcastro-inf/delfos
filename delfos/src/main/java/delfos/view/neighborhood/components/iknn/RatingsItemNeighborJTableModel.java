@@ -1,10 +1,15 @@
 package delfos.view.neighborhood.components.iknn;
 
-import delfos.dataset.basic.item.ContentDataset;
 import delfos.dataset.basic.item.Item;
+import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
+import delfos.dataset.basic.rating.RatingsDataset;
+import delfos.dataset.basic.user.User;
+import delfos.dataset.basic.user.UsersDataset;
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.Set;
+import java.util.stream.Collectors;
 import javax.swing.table.AbstractTableModel;
 
 /**
@@ -16,6 +21,13 @@ public class RatingsItemNeighborJTableModel extends AbstractTableModel {
     Collection<Rating> lista = new LinkedList<>();
     private Object[][] datos = new Object[3][0];
 
+    private static final int USER_ID_COLUMN = 0;
+    private static final int USER_NAME_COLUMN = 1;
+    private static final int TARGET_RATING_COLUMN = 2;
+    private static final int NEIGHBOR_RATING_COLUMN = 3;
+
+    private static final int COLUMN_COUNT = 4;
+
     @Override
     public int getRowCount() {
         return datos[0].length;
@@ -23,21 +35,24 @@ public class RatingsItemNeighborJTableModel extends AbstractTableModel {
 
     @Override
     public int getColumnCount() {
-        return datos.length;
+        return COLUMN_COUNT;
     }
 
     @Override
     public String getColumnName(int column) {
-        if (column == 0) {
-            return "idItem";
+        if (column == USER_ID_COLUMN) {
+            return "idUser";
         }
-        if (column == 1) {
-            return "Rating";
+        if (column == USER_NAME_COLUMN) {
+            return "name";
         }
-        if (column == 2) {
-            return "Name";
+        if (column == TARGET_RATING_COLUMN) {
+            return "target";
         }
-        return "fallo";
+        if (column == NEIGHBOR_RATING_COLUMN) {
+            return "neighbor";
+        }
+        throw new IndexOutOfBoundsException("Collumn index out of bound, '" + column + "' > '" + COLUMN_COUNT + "' ");
     }
 
     @Override
@@ -45,15 +60,28 @@ public class RatingsItemNeighborJTableModel extends AbstractTableModel {
         return datos[columnIndex][rowIndex];
     }
 
-    public void setRatings(Collection< ? extends Rating> ratings, ContentDataset contentDataset) {
-        datos = new Object[3][ratings.size()];
-        int index = 0;
-        for (Rating rating : ratings) {
-            Item item = contentDataset.get(rating.idItem);
+    public synchronized void setRatings(DatasetLoader datasetLoader, Item target, Item neighbor) {
 
-            datos[0][index] = item.getId();
-            datos[1][index] = rating.ratingValue.floatValue();
-            datos[2][index] = item.getName();
+        RatingsDataset ratingsDataset = datasetLoader.getRatingsDataset();
+        UsersDataset usersDataset = datasetLoader.getUsersDataset();
+
+        Set<User> usersRatedUnion = usersDataset.stream().filter(user -> {
+            boolean itemHasRated = target != null && ratingsDataset.getItemRated(target.getId()).contains(user.getId());
+            boolean neighborHasRated = neighbor != null && ratingsDataset.getItemRated(neighbor.getId()).contains(user.getId());
+            return itemHasRated || neighborHasRated;
+        }).collect(Collectors.toSet());
+
+        datos = new Object[COLUMN_COUNT][usersRatedUnion.size()];
+        int index = 0;
+        for (User user : usersRatedUnion) {
+            Rating targetRating = target == null ? null : ratingsDataset.getRating(user.getId(), target.getId());
+            Rating neighborRating = neighbor == null ? null : ratingsDataset.getRating(user.getId(), neighbor.getId());
+
+            datos[USER_ID_COLUMN][index] = user.getId();
+            datos[USER_NAME_COLUMN][index] = user.getName();
+
+            datos[TARGET_RATING_COLUMN][index] = targetRating == null ? "" : targetRating.ratingValue.doubleValue();
+            datos[NEIGHBOR_RATING_COLUMN][index] = neighborRating == null ? "" : neighborRating.ratingValue.doubleValue();
 
             index++;
         }

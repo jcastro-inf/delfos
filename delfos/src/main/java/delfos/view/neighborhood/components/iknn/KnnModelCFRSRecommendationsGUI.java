@@ -36,9 +36,9 @@ import javax.swing.event.ListSelectionEvent;
  */
 public class KnnModelCFRSRecommendationsGUI implements RecommendationsGUI {
 
-    private static final String NEIGHBORS_BORDER_TITLE = "Recommendation Item-Item Neighbors";
     private static final String RECOMMENDATIONS_BORDER_TITLE = "Recommendations";
-    private static final String RATINGS_BORDER_TITLE = "Ratings";
+    private static final String NEIGHBORS_BORDER_TITLE = "Recommendation Item-Item Neighbors";
+    private static final String RATINGS_BORDER_TITLE = "Ratings target vs neighbor";
 
     private RecommendationsTable recommendationsTable;
     private ItemNeighborsTable neighborsTable;
@@ -162,7 +162,7 @@ public class KnnModelCFRSRecommendationsGUI implements RecommendationsGUI {
     public void clearData() {
         recommendationsTable.setRecomendaciones(RecommendationsWithNeighbors.EMPTY_LIST);
         neighborsTable.setNeighbors(null, Collections.EMPTY_LIST, null);
-        ratingsTable.setRatings(Collections.emptyList(), null);
+        ratingsTable.setRatings(datasetLoader, null, null);
 
     }
 
