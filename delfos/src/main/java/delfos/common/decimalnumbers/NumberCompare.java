@@ -51,4 +51,35 @@ public class NumberCompare {
             throw new IllegalStateException("asdf");
         }
     }
+
+    public static int compare(Number n1, Number n2) {
+        if (COMPARE_NUM_DECIMALS < 0) {
+            throw new IllegalArgumentException("Number of decimals can't be negative.");
+        }
+
+        double d1 = n1.doubleValue();
+        double d2 = n2.doubleValue();
+
+        double diff = d1 - d2;
+
+        if (diff == 0) {
+            return 0;
+        } else if (diff < Math.pow(10, -COMPARE_NUM_DECIMALS)) {
+            return 0;
+        } else if (diff > Math.pow(10, -COMPARE_NUM_DECIMALS)) {
+            final int value = (int) Math.pow(10, COMPARE_NUM_DECIMALS);
+
+            int truncatedN1 = (int) (d1 * value);
+            truncatedN1 = truncatedN1 / value;
+
+            int truncatedN2 = (int) (d2 * value);
+            truncatedN2 = truncatedN2 / value;
+
+            return Integer.compare(truncatedN1, truncatedN2);
+        } else if (Double.isNaN(n1.doubleValue()) && Double.isNaN(n2.doubleValue())) {
+            return 0;
+        } else {
+            throw new IllegalStateException("asdf");
+        }
+    }
 }
