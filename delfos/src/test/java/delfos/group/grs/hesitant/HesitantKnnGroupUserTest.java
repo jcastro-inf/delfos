@@ -54,4 +54,34 @@ public class HesitantKnnGroupUserTest {
         output.writeRecommendations(new GroupRecommendations(groupOfUsers, groupRecommendations));
     }
 
+    @Test
+    public void testRecommendationWholeProcessDeleteRepeated() throws Exception {
+        MovieLens100k datasetLoader = ConfiguredDatasetsFactory.getInstance().getDatasetLoader("ml-100k", MovieLens100k.class);
+        datasetLoader.getRatingsDataset();
+
+        Set<User> members = Arrays.asList(4, 8, 15, 16, 23, 42).stream()
+                .map(idUser -> datasetLoader.getUsersDataset().get(idUser))
+                .collect(Collectors.toSet());
+
+        GroupOfUsers groupOfUsers = new GroupOfUsers(members);
+        RecommendationCandidatesSelector selector = new OnlyNewItems();
+
+        HesitantKnnGroupUser grs = new HesitantKnnGroupUser();
+        grs.setParameterValue(HesitantKnnGroupUser.DELETE_REPEATED, true);
+
+        Object recommendationModel = grs.buildRecommendationModel(datasetLoader);
+        HesitantValuation groupModel = grs.buildGroupModel(datasetLoader, recommendationModel, groupOfUsers);
+
+        Collection<Recommendation> groupRecommendations = grs.recommendOnly(
+                datasetLoader,
+                recommendationModel,
+                groupModel,
+                groupOfUsers,
+                selector.candidateItems(datasetLoader, groupOfUsers)
+        );
+
+        RecommendationsOutputStandardRaw output = new RecommendationsOutputStandardRaw(SortBy.SORT_BY_PREFERENCE);
+        output.writeRecommendations(new GroupRecommendations(groupOfUsers, groupRecommendations));
+    }
+
 }

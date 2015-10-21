@@ -1,6 +1,7 @@
 package delfos.group.grs.hesitant;
 
 import delfos.common.aggregationoperators.Mean;
+import delfos.common.decimalnumbers.NumberCompare;
 import delfos.common.exceptions.dataset.CannotLoadContentDataset;
 import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
 import delfos.common.exceptions.dataset.CannotLoadUsersDataset;
@@ -9,6 +10,7 @@ import delfos.common.exceptions.dataset.users.UserNotFound;
 import delfos.common.exceptions.ratings.NotEnoughtUserInformation;
 import delfos.common.parallelwork.MultiThreadExecutionManager;
 import delfos.common.parameters.Parameter;
+import delfos.common.parameters.restriction.BooleanParameter;
 import delfos.common.parameters.restriction.ObjectParameter;
 import delfos.dataset.basic.item.Item;
 import delfos.dataset.basic.loader.types.DatasetLoader;
@@ -34,6 +36,7 @@ import es.jcastro.hesitant.similarity.factory.HesitantSimilarityFactory;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -64,10 +67,15 @@ public class HesitantKnnGroupUser
     public static final Parameter NEIGHBORHOOD_SIZE = delfos.rs.collaborativefiltering.knn.KnnCollaborativeRecommender.NEIGHBORHOOD_SIZE;
     public static final Parameter PREDICTION_TECHNIQUE = delfos.rs.collaborativefiltering.knn.KnnCollaborativeRecommender.PREDICTION_TECHNIQUE;
 
+    public static final Parameter DELETE_REPEATED = new Parameter("Delete_repeated", new BooleanParameter(Boolean.FALSE));
+
     public HesitantKnnGroupUser() {
+        super();
+
         addParameter(NEIGHBORHOOD_SIZE);
         addParameter(HESITANT_SIMILARITY_MEASURE);
         addParameter(PREDICTION_TECHNIQUE);
+        addParameter(DELETE_REPEATED);
     }
 
     @Override
@@ -82,7 +90,13 @@ public class HesitantKnnGroupUser
 
     @Override
     public HesitantValuation buildGroupModel(DatasetLoader<? extends Rating> datasetLoader, Object RecommendationModel, GroupOfUsers groupOfUsers) throws UserNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset, NotEnoughtUserInformation {
-        return getHesitantProfile(datasetLoader, groupOfUsers.getMembers());
+        HesitantValuation<Item, Double> hesitantProfile = getHesitantProfile(datasetLoader, groupOfUsers.getMembers());
+
+        if (isDeleteRepeatedOn()) {
+            Comparator<Double> comparator = (Double o1, Double o2) -> NumberCompare.compare(o1, o2);
+            hesitantProfile = hesitantProfile.deleteRepeated(comparator);
+        }
+        return hesitantProfile;
     }
 
     @Override
@@ -174,5 +188,9 @@ public class HesitantKnnGroupUser
 
         HesitantValuation<Item, Double> groupProfileHesitant = new HesitantValuation<>(valuations);
         return groupProfileHesitant;
+    }
+
+    private boolean isDeleteRepeatedOn() {
+        return (Boolean) getParameterValue(DELETE_REPEATED);
     }
 }
