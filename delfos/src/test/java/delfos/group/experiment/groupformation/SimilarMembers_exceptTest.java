@@ -89,8 +89,8 @@ public class SimilarMembers_exceptTest extends DelfosTest {
         groups.stream().forEach((group1) -> {
             groups.stream().filter((group2) -> !(group1 == group2)).forEach((group2) -> {
                 Set<Integer> intersection = new TreeSet<>();
-                intersection.addAll(group1.getGroupMembers());
-                intersection.retainAll(group2.getGroupMembers());
+                intersection.addAll(group1.getIdMembers());
+                intersection.retainAll(group2.getIdMembers());
                 if (!intersection.isEmpty()) {
                     Assert.fail("Group " + group1 + " is sharing users with group " + group2 + "  ( intersection" + intersection + ")");
                 }

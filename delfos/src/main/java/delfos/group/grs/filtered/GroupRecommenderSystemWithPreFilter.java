@@ -155,7 +155,7 @@ public class GroupRecommenderSystemWithPreFilter extends GroupRecommenderSystemA
     public void checkFilteredRatings(DatasetLoader<? extends Rating> datasetLoader, GroupOfUsers groupOfUsers, Map<Integer, Map<Integer, Rating>> filteredRatings) {
         Set<Integer> usersWithoutRatingsDueToFiltering = new TreeSet<>();
 
-        for (int idUser : groupOfUsers.getGroupMembers()) {
+        for (int idUser : groupOfUsers.getIdMembers()) {
             if (!filteredRatings.containsKey(idUser) || filteredRatings.get(idUser).isEmpty()) {
                 usersWithoutRatingsDueToFiltering.add(idUser);
                 Global.showWarning("Users " + idUser + " has no ratings due to filter '" + getGroupRatingsFilter().getAlias() + "'.");

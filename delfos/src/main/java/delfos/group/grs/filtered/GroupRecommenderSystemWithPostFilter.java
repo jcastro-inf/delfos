@@ -127,7 +127,7 @@ public class GroupRecommenderSystemWithPostFilter extends GroupRecommenderSystem
 
     @Override
     public GroupOfUsers buildGroupModel(DatasetLoader<? extends Rating> datasetLoader, SingleRecommendationModel RecommendationModel, GroupOfUsers groupOfUsers) throws UserNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset {
-        return new GroupOfUsers(groupOfUsers.getGroupMembers());
+        return new GroupOfUsers(groupOfUsers.getIdMembers());
     }
 
     @Override

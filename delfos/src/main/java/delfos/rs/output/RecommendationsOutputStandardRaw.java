@@ -70,7 +70,7 @@ public class RecommendationsOutputStandardRaw extends RecommendationsOutputMetho
 
         Global.showln("Target '" + idTarget + "' recommendations:");
         for (Recommendation r : topNrecommendations) {
-            Global.showln("\t" + r.getIdItem() + "," + r.getItem().getName() + "," + r.getPreference());
+            Global.showln("\t" + r.getItem() + "," + r.getItem().getName() + "," + r.getPreference());
         }
     }
 }

@@ -5,6 +5,7 @@ import delfos.common.parallelwork.Task;
 import delfos.dataset.basic.item.Item;
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
+import delfos.dataset.basic.user.User;
 import delfos.group.groupsofusers.GroupOfUsers;
 import delfos.rs.collaborativefiltering.profile.Neighbor;
 import es.jcastro.hesitant.HesitantValuation;
@@ -20,22 +21,23 @@ import es.jcastro.hesitant.similarity.HesitantSimilarity;
  */
 public class HesitantKnnNeighborSimilarityTask extends Task {
 
-    public final int idNeighbor;
+    public final GroupOfUsers groupOfUsers;
+    public final User neighborUser;
     public DatasetLoader<? extends Rating> datasetLoader;
     public Neighbor neighbor = null;
-    public final GroupOfUsers groupOfUsers;
+
     public final HesitantValuation<Item, Double> groupModel;
     public HesitantSimilarity hesitantSimilarity;
 
     public HesitantKnnNeighborSimilarityTask(
             DatasetLoader<? extends Rating> datasetLoader,
             GroupOfUsers groupOfUsers, HesitantValuation<Item, Double> groupModel,
-            int idNeighbor, HesitantSimilarity similarity) throws UserNotFound {
+            User neighborUser, HesitantSimilarity similarity) throws UserNotFound {
         this.datasetLoader = datasetLoader;
         this.groupModel = groupModel;
 
         this.groupOfUsers = groupOfUsers;
-        this.idNeighbor = idNeighbor;
+        this.neighborUser = neighborUser;
         this.hesitantSimilarity = similarity;
     }
 
@@ -43,8 +45,8 @@ public class HesitantKnnNeighborSimilarityTask extends Task {
     public String toString() {
         StringBuilder str = new StringBuilder();
 
-        str.append("group ----------> ").append(groupOfUsers.getGroupMembers()).append("\n");
-        str.append("idNeighbor -----> ").append(idNeighbor).append("\n");
+        str.append("group ----------> ").append(groupOfUsers.getIdMembers()).append("\n");
+        str.append("idNeighbor -----> ").append(neighborUser).append("\n");
         str.append("rs -------------> ").append(hesitantSimilarity.getClass().getSimpleName()).append("\n");
 
         return str.toString();

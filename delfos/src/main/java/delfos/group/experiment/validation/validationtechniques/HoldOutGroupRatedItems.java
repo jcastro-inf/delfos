@@ -129,7 +129,7 @@ public class HoldOutGroupRatedItems extends GroupValidationTechnique {
 
                 Set<Integer> allUsers = new TreeSet<>();
                 for (GroupOfUsers g : groupsOfUsers) {
-                    allUsers.addAll(g.getGroupMembers());
+                    allUsers.addAll(g.getIdMembers());
                 }
 
                 Global.showInfoMessage("Dataset de training.\n");
@@ -176,7 +176,7 @@ public class HoldOutGroupRatedItems extends GroupValidationTechnique {
                 }
                 Global.showInfoMessage("Ratings of group " + groupOfUsers + ".\n");
 
-                DatasetPrinterDeprecated.printCompactRatingTable(DatasetOperations.convertRatingsToNumber(groupRatings), groupOfUsers.getGroupMembers(), allRatedItems_thisGroup);
+                DatasetPrinterDeprecated.printCompactRatingTable(DatasetOperations.convertRatingsToNumber(groupRatings), groupOfUsers.getIdMembers(), allRatedItems_thisGroup);
             }
         }
         return allRatedItems_thisGroup;

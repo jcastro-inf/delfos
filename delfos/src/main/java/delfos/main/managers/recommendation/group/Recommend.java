@@ -98,14 +98,14 @@ class Recommend extends CaseUseSubManager {
             }
 
             if (Global.isVerboseAnnoying()) {
-                Global.showInfoMessage("List of candidate items for group " + targetGroup.getGroupMembers() + " size: " + candidateItems.size() + "\n");
+                Global.showInfoMessage("List of candidate items for group " + targetGroup.getIdMembers() + " size: " + candidateItems.size() + "\n");
                 Global.showInfoMessage("\t" + candidateItems + "\n");
             }
 
             Object RecommendationModel;
             try {
                 Global.showMessageTimestamped("Loading recommendation model");
-                RecommendationModel = PersistenceMethodStrategy.loadModel(groupRecommenderSystem, rsc.persistenceMethod, targetGroup.getGroupMembers(), candidateItems);
+                RecommendationModel = PersistenceMethodStrategy.loadModel(groupRecommenderSystem, rsc.persistenceMethod, targetGroup.getIdMembers(), candidateItems);
                 Global.showMessageTimestamped("Loaded recommendation model");
             } catch (FailureInPersistence ex) {
                 ERROR_CODES.FAILURE_IN_PERSISTENCE.exit(ex);

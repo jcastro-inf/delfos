@@ -81,7 +81,7 @@ public class GroupRecommendationsWithMembersRecommendations extends Recommendati
                     membersRecommendationsGroupMembers.add(idMember);
                 });
 
-        Set<Integer> expectedGroupMembers = new TreeSet<>(groupRecommendations.getGroupOfUsers().getGroupMembers());
+        Set<Integer> expectedGroupMembers = new TreeSet<>(groupRecommendations.getGroupOfUsers().getIdMembers());
 
         if (!expectedGroupMembers.equals(membersRecommendationsGroupMembers)) {
             throw new IllegalArgumentException(

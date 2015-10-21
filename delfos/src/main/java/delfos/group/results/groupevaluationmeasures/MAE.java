@@ -46,7 +46,7 @@ public class MAE extends GroupEvaluationMeasure {
             Collection<Recommendation> recommendationsToGroup = entry.getValue();
 
             Map<Integer, Map<Integer, ? extends Rating>> groupTrueRatings = new TreeMap<>();
-            group.getGroupMembers().stream().forEach((idUser) -> {
+            group.getIdMembers().stream().forEach((idUser) -> {
                 try {
                     groupTrueRatings.put(idUser, testDataset.getUserRatingsRated(idUser));
                 } catch (UserNotFound ex) {
@@ -56,7 +56,7 @@ public class MAE extends GroupEvaluationMeasure {
 
             for (Recommendation r : recommendationsToGroup) {
                 int idItem = r.getIdItem();
-                for (int idUser : group.getGroupMembers()) {
+                for (int idUser : group.getIdMembers()) {
                     if (groupTrueRatings.get(idUser).containsKey(idItem)) {
                         double trueRating = groupTrueRatings.get(idUser).get(idItem).getRatingValue().doubleValue();
                         double predicted = r.getPreference().doubleValue();

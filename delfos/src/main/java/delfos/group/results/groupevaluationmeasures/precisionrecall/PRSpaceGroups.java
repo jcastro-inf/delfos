@@ -54,7 +54,7 @@ public class PRSpaceGroups extends GroupEvaluationMeasure {
                 int idItem = r.getIdItem();
 
                 MeanIterative mean = new MeanIterative();
-                for (int idUser : group.getGroupMembers()) {
+                for (int idUser : group.getIdMembers()) {
                     try {
                         Map<Integer, ? extends Rating> userRatings = testDataset.getUserRatingsRated(idUser);
                         if (userRatings.containsKey(idItem)) {

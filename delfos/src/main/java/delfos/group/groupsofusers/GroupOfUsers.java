@@ -1,5 +1,7 @@
 package delfos.group.groupsofusers;
 
+import delfos.common.Global;
+import delfos.dataset.basic.user.User;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -7,7 +9,9 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import delfos.common.Global;
+import java.util.Set;
+import java.util.TreeSet;
+import java.util.stream.Collectors;
 
 /**
  * Clase abstracta que define los métodos que un objeto que representa a un
@@ -22,25 +26,35 @@ public class GroupOfUsers implements Comparable<GroupOfUsers>, Iterable<Integer>
     /**
      * Conjunto de usuarios que pertenecen al grupo
      */
-    private final ArrayList<Integer> users;
+    private final Set<Integer> idMembers;
+
+    private final Set<User> members;
 
     public GroupOfUsers() {
-        this.users = new ArrayList<>();
+        this.idMembers = new TreeSet<>();
+        this.members = new TreeSet<>();
     }
 
+    @Deprecated
     public GroupOfUsers(Integer... _users) {
         this();
-        users.addAll(Arrays.asList(_users));
+        idMembers.addAll(Arrays.asList(_users));
 
-        if (users.size() > this.users.size()) {
+        if (idMembers.size() > this.idMembers.size()) {
             Global.showWarning("There are repeated users in the origin collection of users");
         }
     }
 
+    public GroupOfUsers(Set<User> users) {
+        this.members = new TreeSet<>(users);
+        this.idMembers = users.stream().map(user -> user.getId()).collect(Collectors.toCollection(TreeSet::new));
+    }
+
     public GroupOfUsers(Collection<Integer> users) {
-        this.users = new ArrayList<>(users);
-        Collections.sort(this.users);
-        if (users.size() > this.users.size()) {
+        this.idMembers = new TreeSet<>(users);
+        this.members = users.stream().map(user -> new User(user)).collect(Collectors.toSet());
+
+        if (users.size() > this.idMembers.size()) {
             Global.showWarning("There are repeated users in the origin collection of users");
         }
     }
@@ -52,7 +66,7 @@ public class GroupOfUsers implements Comparable<GroupOfUsers>, Iterable<Integer>
      * @return
      */
     public boolean addUser(int idUser) {
-        boolean add = users.add(idUser);
+        boolean add = idMembers.add(idUser);
         if (!add) {
             Global.showWarning("User was already a group member");
         }
@@ -60,7 +74,7 @@ public class GroupOfUsers implements Comparable<GroupOfUsers>, Iterable<Integer>
     }
 
     public boolean removeUser(int idUser) {
-        boolean remove = users.remove((Integer) idUser);
+        boolean remove = idMembers.remove((Integer) idUser);
         if (!remove) {
             Global.showWarning("User not in group");
         }
@@ -72,12 +86,16 @@ public class GroupOfUsers implements Comparable<GroupOfUsers>, Iterable<Integer>
      *
      * @return conjunto de miembros
      */
-    public Collection<Integer> getGroupMembers() {
-        return new ArrayList<>(users);
+    public Collection<Integer> getIdMembers() {
+        return new ArrayList<>(idMembers);
+    }
+
+    public Set<User> getMembers() {
+        return members;
     }
 
     public int size() {
-        return users.size();
+        return idMembers.size();
     }
 
     @Override
@@ -90,8 +108,8 @@ public class GroupOfUsers implements Comparable<GroupOfUsers>, Iterable<Integer>
             return -1;
         }
 
-        List<Integer> thisMembers = new ArrayList<>(getGroupMembers());
-        List<Integer> compareMembers = new ArrayList<>(o.getGroupMembers());
+        List<Integer> thisMembers = new ArrayList<>(getIdMembers());
+        List<Integer> compareMembers = new ArrayList<>(o.getIdMembers());
         Collections.sort(thisMembers);
         Collections.sort(compareMembers);
 
@@ -110,7 +128,7 @@ public class GroupOfUsers implements Comparable<GroupOfUsers>, Iterable<Integer>
 
     @Override
     public String toString() {
-        return groupMembersToString(getGroupMembers());
+        return groupMembersToString(getIdMembers());
     }
 
     /**
@@ -120,7 +138,7 @@ public class GroupOfUsers implements Comparable<GroupOfUsers>, Iterable<Integer>
      * @return Devuelve true si el usuario pertenece al grupo
      */
     public boolean contains(int idUser) {
-        return getGroupMembers().contains(idUser);
+        return getIdMembers().contains(idUser);
     }
 
     @Override
@@ -136,7 +154,7 @@ public class GroupOfUsers implements Comparable<GroupOfUsers>, Iterable<Integer>
     @Override
     public int hashCode() {
         int h = 0;
-        Iterator<Integer> i = getGroupMembers().iterator();
+        Iterator<Integer> i = getIdMembers().iterator();
         while (i.hasNext()) {
             Integer obj = i.next();
             if (obj != null) {
@@ -148,11 +166,11 @@ public class GroupOfUsers implements Comparable<GroupOfUsers>, Iterable<Integer>
 
     @Override
     public Iterator<Integer> iterator() {
-        return getGroupMembers().iterator();
+        return getIdMembers().iterator();
     }
 
     public String getTargetId() {
-        return GROUP_ID_TARGET_PREFIX + groupMembersToString(getGroupMembers());
+        return GROUP_ID_TARGET_PREFIX + groupMembersToString(getIdMembers());
     }
 
     public static final String GROUP_ID_TARGET_PREFIX = "Group_";

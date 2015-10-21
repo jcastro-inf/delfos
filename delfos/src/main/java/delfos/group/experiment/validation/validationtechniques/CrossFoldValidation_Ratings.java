@@ -95,7 +95,7 @@ public class CrossFoldValidation_Ratings extends GroupValidationTechnique {
             int numUsersInGroups = 0;
 
             for (GroupOfUsers g : groupsOfUsers) {
-                users.addAll(g.getGroupMembers());
+                users.addAll(g.getIdMembers());
                 numUsersInGroups += g.size();
             }
 

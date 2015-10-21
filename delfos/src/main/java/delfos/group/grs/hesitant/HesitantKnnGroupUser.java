@@ -14,7 +14,9 @@ import delfos.dataset.basic.item.Item;
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RatingsDataset;
+import delfos.dataset.basic.user.User;
 import delfos.dataset.generated.modifieddatasets.PseudoUserRatingsDataset;
+import delfos.dataset.loaders.given.DatasetLoaderGivenRatingsDataset;
 import delfos.dataset.util.DatasetUtilities;
 import delfos.group.groupsofusers.GroupOfUsers;
 import delfos.group.grs.GroupRecommenderSystemAdapter;
@@ -80,7 +82,7 @@ public class HesitantKnnGroupUser
 
     @Override
     public HesitantValuation buildGroupModel(DatasetLoader<? extends Rating> datasetLoader, Object RecommendationModel, GroupOfUsers groupOfUsers) throws UserNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset, NotEnoughtUserInformation {
-        return getHesitantProfile(datasetLoader, groupOfUsers.getGroupMembers());
+        return getHesitantProfile(datasetLoader, groupOfUsers.getMembers());
     }
 
     @Override
@@ -99,15 +101,16 @@ public class HesitantKnnGroupUser
                     AggregationOfIndividualRatings.getGroupProfile(datasetLoader, new Mean(), groupOfUsers));
 
             RatingsDataset<? extends Rating> pseudoUserRatingsDatasetForPrediction = new PseudoUserRatingsDataset<>(ratingsDataset, groupRatings);
+            DatasetLoader<? extends Rating> datasetLoaderNew = new DatasetLoaderGivenRatingsDataset<>(datasetLoader, pseudoUserRatingsDatasetForPrediction);
             Collection<Recommendation> ret = KnnMemoryBasedNWR.recommendWithNeighbors(
-                    pseudoUserRatingsDatasetForPrediction,
+                    datasetLoaderNew,
                     idPseudoUser,
                     neighbors,
                     neighborhoodSize, candidateItems,
                     predictionTechnique);
 
             Collection<Recommendation> retWithNeighbors = ret.stream()
-                    .map(recommendation -> new RecommendationWithNeighbors(recommendation.getIdItem(), recommendation.getPreference(), neighbors))
+                    .map(recommendation -> new RecommendationWithNeighbors(recommendation.getItem(), recommendation.getPreference(), neighbors))
                     .collect(Collectors.toList());
 
             return retWithNeighbors;
@@ -123,8 +126,8 @@ public class HesitantKnnGroupUser
 
         HesitantSimilarity similarity = (HesitantSimilarity) getParameterValue(HESITANT_SIMILARITY_MEASURE);
 
-        Stream<HesitantKnnNeighborSimilarityTask> stream = datasetLoader.getRatingsDataset()
-                .allUsers().parallelStream()
+        Stream<HesitantKnnNeighborSimilarityTask> stream = datasetLoader.getUsersDataset()
+                .stream()
                 .map(idNeighbor -> new HesitantKnnNeighborSimilarityTask(
                                 datasetLoader, groupOfUsers, groupModel, idNeighbor, similarity));
 
@@ -140,7 +143,7 @@ public class HesitantKnnGroupUser
         List<Neighbor> neighbors = executionManager.getAllFinishedTasks().parallelStream()
                 .map((tarea) -> {
                     if (tarea.getNeighbor() == null) {
-                        return new Neighbor(RecommendationEntity.USER, tarea.idNeighbor, 0);
+                        return new Neighbor(RecommendationEntity.USER, tarea.neighborUser, 0);
                     } else {
                         return tarea.getNeighbor();
                     }
@@ -152,16 +155,15 @@ public class HesitantKnnGroupUser
         return neighbors;
     }
 
-    public static HesitantValuation<Item, Double> getHesitantProfile(DatasetLoader<? extends Rating> datasetLoader, Collection<Integer> users) {
+    public static HesitantValuation<Item, Double> getHesitantProfile(DatasetLoader<? extends Rating> datasetLoader, Collection<User> users) {
         Collection<HesitantValuation.HesitantSingleValuation<Item, Double>> valuations = new ArrayList<>();
 
         final RatingsDataset<? extends Rating> ratingsDataset = datasetLoader.getRatingsDataset();
 
         datasetLoader.getContentDataset();
-        for (Integer user : users) {
-            Collection<? extends Rating> ratings = ratingsDataset.getUserRatingsRated(user).values();
+        for (User user : users) {
+            Collection<? extends Rating> ratings = ratingsDataset.getUserRatingsRated(user.getId()).values();
             for (Rating rating : ratings) {
-
                 Item item = rating.getItem();
                 double ratingValue = rating.getRatingValue().doubleValue();
                 HesitantValuation.HesitantSingleValuation<Item, Double> valuation
