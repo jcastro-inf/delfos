@@ -57,10 +57,10 @@ public class UserUserSimilarityWrapper extends SimilarityMeasureAdapter implemen
         List<Float> v2 = new ArrayList<>();
 
         commonItems.stream().map((idItem) -> {
-            v1.add(user1Ratings.get(idItem).ratingValue.floatValue());
+            v1.add(user1Ratings.get(idItem).getRatingValue().floatValue());
             return idItem;
         }).forEach((idItem) -> {
-            v2.add(user2Ratings.get(idItem).ratingValue.floatValue());
+            v2.add(user2Ratings.get(idItem).getRatingValue().floatValue());
         });
 
         double similarity = basicSimilarityMeasure.similarity(v1, v2);

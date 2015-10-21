@@ -1,5 +1,7 @@
 package delfos.common.exceptions.dataset.entity;
 
+import delfos.dataset.basic.features.EntityWithFeatures;
+
 /**
  * Excepción que se lanza al intentar buscar una entidad que no existe en la
  * colección {@link CollectionOfEntitiesWithFeatures}.
@@ -56,7 +58,7 @@ public class EntityNotFound extends RuntimeException {
      * @param classToCompare Clase de la que debe ser la entidad para que no
      * lanze error.
      */
-    public void isA(Class<?> classToCompare) {
+    public void isA(Class<? extends EntityWithFeatures> classToCompare) {
         if (!entityClass.isAssignableFrom(classToCompare)) {
             throw new IllegalStateException("This error entity is a " + entityClass + " not a " + classToCompare);
         }

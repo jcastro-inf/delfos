@@ -50,7 +50,7 @@ public class RandomRecommender extends CollaborativeRecommender<RandomRecommenda
 
         HistogramNumbersSmart histogramSmart = new HistogramNumbersSmart(0.5);
         for (Rating rating : datasetLoader.getRatingsDataset()) {
-            histogramSmart.addValue(rating.ratingValue.doubleValue());
+            histogramSmart.addValue(rating.getRatingValue().doubleValue());
         }
 
         histogramSmart.printHistogram(System.out);

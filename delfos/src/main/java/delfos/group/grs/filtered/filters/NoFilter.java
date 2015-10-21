@@ -35,7 +35,7 @@ public class NoFilter extends GroupRatingsFilter {
                 groupRatings.put(idUser, new TreeMap<Integer, Number>());
                 for (Map.Entry<Integer, ? extends Rating> entry : ratingsDataset.getUserRatingsRated(idUser).entrySet()) {
                     Rating rating = entry.getValue();
-                    groupRatings.get(idUser).put(rating.idItem, rating.ratingValue);
+                    groupRatings.get(idUser).put(rating.getIdItem(), rating.getRatingValue());
                 }
             } catch (UserNotFound ex) {
                 ERROR_CODES.USER_NOT_FOUND.exit(ex);

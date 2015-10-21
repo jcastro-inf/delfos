@@ -101,9 +101,9 @@ public class ShambourLu_ItemBasedImplicitTrustComputation extends WeightedGraphC
                     {
                         int index = 0;
                         for (int idUser : commonUsers) {
-                            double rating = itemRatings.get(idUser).ratingValue.doubleValue();
+                            double rating = itemRatings.get(idUser).getRatingValue().doubleValue();
                             ratings[index] = rating;
-                            double prediction = meanItem + itemNeighbourRatings.get(idUser).ratingValue.doubleValue() - meanItemNeighbour;
+                            double prediction = meanItem + itemNeighbourRatings.get(idUser).getRatingValue().doubleValue() - meanItemNeighbour;
                             predictions[index] = prediction;
                             index++;
 

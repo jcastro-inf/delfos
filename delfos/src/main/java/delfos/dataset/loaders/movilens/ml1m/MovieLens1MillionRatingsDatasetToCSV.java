@@ -65,9 +65,9 @@ public class MovieLens1MillionRatingsDatasetToCSV {
                 + rowSeparator);
 
         for (RatingWithTimestamp r : ratingsDataset) {
-            String idUser = ((Number) r.idUser).toString();
-            String idItem = ((Number) r.idItem).toString();
-            String rating = r.ratingValue.toString();
+            String idUser = ((Number) r.getIdUser()).toString();
+            String idItem = ((Number) r.getIdItem()).toString();
+            String rating = r.getRatingValue().toString();
 
             bw.write(idUser + fieldSeparator + idItem + fieldSeparator + rating + rowSeparator);
         }

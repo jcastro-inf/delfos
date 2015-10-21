@@ -51,7 +51,7 @@ public class SwitchingAggregationLeastMisseryAndAverage extends ParameterOwnerAd
         Double min = null;
 
         for (int idUser : users) {
-            Double rating = rd.getRating(idUser, idItem).ratingValue.doubleValue();
+            Double rating = rd.getRating(idUser, idItem).getRatingValue().doubleValue();
 
             if (max == null) {
                 max = rating.doubleValue();

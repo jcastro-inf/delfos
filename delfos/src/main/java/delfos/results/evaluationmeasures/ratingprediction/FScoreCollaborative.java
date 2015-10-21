@@ -61,7 +61,7 @@ public class FScoreCollaborative extends EvaluationMeasure {
                         Global.showWarning("Error in " + FScoreCollaborative.class.getName() + "\n");
                         continue;
                     }
-                    if (relevanceCriteria.isRelevant(rating.ratingValue)) {
+                    if (relevanceCriteria.isRelevant(rating.getRatingValue())) {
                         if (relevanceCriteria.isRelevant(r.getPreference())) {
                             relevantesRecomendadas++;
                         } else {

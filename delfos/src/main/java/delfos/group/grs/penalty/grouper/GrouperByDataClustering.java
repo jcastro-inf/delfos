@@ -136,7 +136,7 @@ public class GrouperByDataClustering extends Grouper {
                 Map<Integer, Double> userRatings = new TreeMap<>();
                 for (Map.Entry<Integer, ? extends Rating> entry : ratings.getUserRatingsRated(idUser).entrySet()) {
                     int idItem = entry.getKey();
-                    Double rating = entry.getValue().ratingValue.doubleValue();
+                    Double rating = entry.getValue().getRatingValue().doubleValue();
                     userRatings.put(idItem, rating);
                 }
                 clusteringInputData.put(idUser, new DataVector<>(userRatings));

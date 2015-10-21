@@ -212,7 +212,7 @@ public class EntropyDependenceUserProfile extends BasicMultivaluedUserProfile {
 
                 Rating puntuacion = userRatings.get(idItem);
                 valoresReales.add(valor);
-                puntuaciones.add(puntuacion.ratingValue);
+                puntuaciones.add(puntuacion.getRatingValue());
             }
         }
         float covarianza = 0;

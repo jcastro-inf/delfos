@@ -49,7 +49,7 @@ public class RatingRangeBased extends SimilarityMeasureAdapter implements Collab
         try {
             //minimo y maximo del usuario 1
             for (Iterator<? extends Rating> it = ratings.getUserRatingsRated(next.getIdR1()).values().iterator(); it.hasNext();) {
-                float r = it.next().ratingValue.floatValue();
+                float r = it.next().getRatingValue().floatValue();
                 if (r < minU) {
                     minU = r;
                 }
@@ -63,7 +63,7 @@ public class RatingRangeBased extends SimilarityMeasureAdapter implements Collab
         try {
             //minimo y maximo del usuario 2
             for (Iterator<? extends Rating> it = ratings.getUserRatingsRated(next.getIdR2()).values().iterator(); it.hasNext();) {
-                float r = it.next().ratingValue.floatValue();
+                float r = it.next().getRatingValue().floatValue();
                 if (r < minV) {
                     minV = r;
                 }

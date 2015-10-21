@@ -124,7 +124,7 @@ public abstract class RatingsDatasetAdapter<RatingType extends Rating> implement
                 Map<Integer, RatingType> actualRatings = getItemRatingsRated(idItem);
                 float media = 0;
                 for (RatingType rating : actualRatings.values()) {
-                    media += rating.ratingValue.floatValue() / actualRatings.size();
+                    media += rating.getRatingValue().floatValue() / actualRatings.size();
                 }
                 mediaItems.put(idItem, media);
             }
@@ -151,7 +151,7 @@ public abstract class RatingsDatasetAdapter<RatingType extends Rating> implement
             Map<Integer, RatingType> actualRatings = getUserRatingsRated(idUser);
             float media = 0;
             for (RatingType rating : actualRatings.values()) {
-                media += rating.ratingValue.floatValue() / actualRatings.size();
+                media += rating.getRatingValue().floatValue() / actualRatings.size();
             }
             mediaUsers.put(idUser, media);
         }
@@ -251,7 +251,7 @@ public abstract class RatingsDatasetAdapter<RatingType extends Rating> implement
             synchronized (this) {
                 MeanIterative meanRating = new MeanIterative();
                 for (Rating r : this) {
-                    meanRating.addValue(r.ratingValue.floatValue());
+                    meanRating.addValue(r.getRatingValue().floatValue());
                 }
                 meanRatingValue = (float) meanRating.getMean();
             }
@@ -270,7 +270,7 @@ public abstract class RatingsDatasetAdapter<RatingType extends Rating> implement
     public static <RatingType extends Rating> float getMeanRating(RatingsDataset<RatingType> ratingsDataset) {
         MeanIterative meanRating = new MeanIterative();
         for (Rating r : ratingsDataset) {
-            meanRating.addValue(r.ratingValue.floatValue());
+            meanRating.addValue(r.getRatingValue().floatValue());
         }
 
         return (float) meanRating.getMean();

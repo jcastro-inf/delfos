@@ -106,7 +106,7 @@ public class PRSpace_EachMember extends GroupEvaluationMeasure {
                 }
 
                 for (int idItem : userRatings.keySet()) {
-                    if (recommendedItems.contains(idItem) && relevanceCriteria.isRelevant(userRatings.get(idItem).ratingValue)) {
+                    if (recommendedItems.contains(idItem) && relevanceCriteria.isRelevant(userRatings.get(idItem).getRatingValue())) {
                         falseNegative++;
                     } else {
                         trueNegative++;
@@ -124,7 +124,7 @@ public class PRSpace_EachMember extends GroupEvaluationMeasure {
                         continue;
                     }
 
-                    if (relevanceCriteria.isRelevant(userRatings.get(idItem).ratingValue)) {
+                    if (relevanceCriteria.isRelevant(userRatings.get(idItem).getRatingValue())) {
                         relevanteParaUser.get(i).add(true);
                         truePositive++;
                         falseNegative--;

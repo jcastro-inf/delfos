@@ -52,9 +52,9 @@ public class PairwiseTrust_QusaiShambourAndJieLu implements PairwiseUserTrust {
             {
                 int index = 0;
                 for (int idItem : commonItems) {
-                    double rating = userRatings.get(idItem).ratingValue.doubleValue();
+                    double rating = userRatings.get(idItem).getRatingValue().doubleValue();
                     ratings[index] = rating;
-                    double prediction = meanUser + userNeighbourRatings.get(idItem).ratingValue.doubleValue() - meanUserNeighbour;
+                    double prediction = meanUser + userNeighbourRatings.get(idItem).getRatingValue().doubleValue() - meanUserNeighbour;
                     predictions[index] = prediction;
                     index++;
 

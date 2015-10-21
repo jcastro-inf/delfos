@@ -68,9 +68,9 @@ public class RMSETest {
 
                     final double prediction;
                     if (i % 2 == 0) {
-                        prediction = rating.ratingValue.doubleValue() + 1;
+                        prediction = rating.getRatingValue().doubleValue() + 1;
                     } else {
-                        prediction = rating.ratingValue.doubleValue() - 1;
+                        prediction = rating.getRatingValue().doubleValue() - 1;
                     }
                     recommendations.add(new Recommendation(idItem, prediction));
                     i++;
@@ -110,9 +110,9 @@ public class RMSETest {
 
                     final double prediction;
                     if (i % 2 == 0) {
-                        prediction = rating.ratingValue.doubleValue() + 2;
+                        prediction = rating.getRatingValue().doubleValue() + 2;
                     } else {
-                        prediction = rating.ratingValue.doubleValue() - 2;
+                        prediction = rating.getRatingValue().doubleValue() - 2;
                     }
                     recommendations.add(new Recommendation(idItem, prediction));
                     i++;
@@ -149,7 +149,7 @@ public class RMSETest {
                     final int idItem = entry.getKey();
                     final Rating rating = entry.getValue();
 
-                    final double prediction = rating.ratingValue.doubleValue();
+                    final double prediction = rating.getRatingValue().doubleValue();
                     recommendations.add(new Recommendation(idItem, prediction));
                 }
                 Collections.sort(recommendations);

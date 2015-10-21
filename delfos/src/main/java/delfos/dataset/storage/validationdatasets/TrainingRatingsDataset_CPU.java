@@ -79,7 +79,7 @@ public class TrainingRatingsDataset_CPU<RatingType extends Rating>
             allRatedItems = Collections.synchronizedSet(new TreeSet<Integer>());
 
             for (Rating rating : this) {
-                allRatedItems.add(rating.idItem);
+                allRatedItems.add(rating.getIdItem());
             }
 
             allRatedItems = Collections.unmodifiableSet(allRatedItems);

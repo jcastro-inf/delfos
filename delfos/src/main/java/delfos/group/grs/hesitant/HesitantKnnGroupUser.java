@@ -10,9 +10,7 @@ import delfos.common.exceptions.ratings.NotEnoughtUserInformation;
 import delfos.common.parallelwork.MultiThreadExecutionManager;
 import delfos.common.parameters.Parameter;
 import delfos.common.parameters.restriction.ObjectParameter;
-import delfos.dataset.basic.item.ContentDataset;
 import delfos.dataset.basic.item.Item;
-import delfos.dataset.basic.loader.types.ContentDatasetLoader;
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RatingsDataset;
@@ -157,15 +155,15 @@ public class HesitantKnnGroupUser
     public static HesitantValuation<Item, Double> getHesitantProfile(DatasetLoader<? extends Rating> datasetLoader, Collection<Integer> users) {
         Collection<HesitantValuation.HesitantSingleValuation<Item, Double>> valuations = new ArrayList<>();
 
-        final ContentDataset contentDataset = ((ContentDatasetLoader) datasetLoader).getContentDataset();
         final RatingsDataset<? extends Rating> ratingsDataset = datasetLoader.getRatingsDataset();
 
+        datasetLoader.getContentDataset();
         for (Integer user : users) {
             Collection<? extends Rating> ratings = ratingsDataset.getUserRatingsRated(user).values();
             for (Rating rating : ratings) {
 
-                Item item = contentDataset.get(rating.idItem);
-                double ratingValue = rating.ratingValue.doubleValue();
+                Item item = rating.getItem();
+                double ratingValue = rating.getRatingValue().doubleValue();
                 HesitantValuation.HesitantSingleValuation<Item, Double> valuation
                         = new HesitantValuation.HesitantSingleValuation<>(item, ratingValue);
                 valuations.add(valuation);

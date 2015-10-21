@@ -38,10 +38,10 @@ public class RatingBasedPref implements Preff<Integer> {
         for (Rating rating : ratings) {
             switch (entity) {
                 case ITEM:
-                    this.ratings.put(rating.idItem, rating.ratingValue);
+                    this.ratings.put(rating.getIdItem(), rating.getRatingValue());
                     break;
                 case USER:
-                    this.ratings.put(rating.idUser, rating.ratingValue);
+                    this.ratings.put(rating.getIdUser(), rating.getRatingValue());
                     break;
                 default:
                     throw new IllegalStateException("Unrecognized recommendation entity: " + entity);

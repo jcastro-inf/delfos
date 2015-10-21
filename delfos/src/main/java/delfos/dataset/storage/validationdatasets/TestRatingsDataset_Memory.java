@@ -42,8 +42,8 @@ public class TestRatingsDataset_Memory<RatingType extends Rating> extends Rating
 
         List<RatingType> testRatings = new ArrayList<>();
         for (RatingType rating : originalRatingsDataset) {
-            final int idUser = rating.idUser;
-            final int idItem = rating.idItem;
+            final int idUser = rating.getIdUser();
+            final int idItem = rating.getIdItem();
             if (testSet.containsKey(idUser) && testSet.get(idUser).contains(idItem)) {
                 //Este rating no está en el testSet, se añade.
                 testRatings.add(rating);

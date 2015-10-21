@@ -82,9 +82,9 @@ public class PrintNeighborsToXML extends GroupEvaluationMeasure {
                                 Map<Integer, ? extends Rating> memberRatings = testDataset.getUserRatingsRated(idMember);
 
                                 memberRatings.values().stream()
-                                .filter((rating) -> (items.contains(rating.idItem)))
+                                .filter((rating) -> (items.contains(rating.getIdItem())))
                                 .forEach((rating) -> {
-                                    thisMemberRatings.put(rating.idItem, rating.ratingValue);
+                                    thisMemberRatings.put(rating.getIdItem(), rating.getRatingValue());
                                 });
                             } catch (UserNotFound ex) {
                                 Logger.getLogger(PrintNeighborsToXML.class.getName()).log(Level.SEVERE, null, ex);

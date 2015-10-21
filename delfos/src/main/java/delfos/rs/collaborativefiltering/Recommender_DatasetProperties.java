@@ -42,8 +42,8 @@ public class Recommender_DatasetProperties extends CollaborativeRecommender<Numb
         Map<Integer, Integer> itemsRatingsNum = new TreeMap<>();
         RatingsDataset<? extends Rating> ratingsDataset = datasetLoader.getRatingsDataset();
         for (Rating rating : ratingsDataset) {
-            int idUser = rating.idUser;
-            int idItem = rating.idItem;
+            int idUser = rating.getIdUser();
+            int idItem = rating.getIdItem();
 
             if (usersRatingsNum.containsKey(idUser)) {
                 int numUserRatings = usersRatingsNum.get(idUser);

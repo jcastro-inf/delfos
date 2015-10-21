@@ -58,7 +58,7 @@ public class MatchRating {
         this.entity = entity;
         this.user = new User(idUser);
         this.item = new Item(idItem);
-        this.ratingValue = rating.ratingValue;
+        this.ratingValue = rating.getRatingValue();
         this.weight = weight;
     }
 

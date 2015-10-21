@@ -70,7 +70,7 @@ public class GroupSatisfaction_Average extends GroupEvaluationMeasure {
 
                     for (int idItem : commonItems) {
                         double prediccionGrupo = recomendacionesAlGrupoReordenadas.get(idItem).getPreference().doubleValue();
-                        double prediccionIndividuo = userRated.get(idItem).ratingValue.doubleValue();
+                        double prediccionIndividuo = userRated.get(idItem).getRatingValue().doubleValue();
                         maeActual.addValue(Math.abs(prediccionGrupo - prediccionIndividuo));
                     }
                     maeGupos.addValue(maeActual.getMean());

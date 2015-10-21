@@ -156,8 +156,8 @@ public class BothIndexRatingsDataset<RatingType extends Rating> extends RatingsD
     }
 
     protected final void addOneRating(RatingType rating) {
-        final int idUser = rating.idUser;
-        final int idItem = rating.idItem;
+        final int idUser = rating.getIdUser();
+        final int idItem = rating.getIdItem();
 
         //Añado el producto a la lista de productos.
         if (!itemIndex.containsKey(idItem)) {

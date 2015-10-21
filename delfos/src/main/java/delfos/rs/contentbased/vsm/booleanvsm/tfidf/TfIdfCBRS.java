@@ -191,7 +191,7 @@ public class TfIdfCBRS extends ContentBasedRecommender<TfIdfCBRSModel, TfIdfCBRS
             int idItem = entry.getKey();
             Rating rating = entry.getValue();
 
-            if (relevanceCriteria.isRelevant(rating.ratingValue)) {
+            if (relevanceCriteria.isRelevant(rating.getRatingValue())) {
                 SparseVector itemProfile = model.get(idItem);
                 userProfileValues.add(itemProfile);
                 numItemsPositivelyRated++;

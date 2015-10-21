@@ -46,7 +46,7 @@ public class RatingMaximization extends EvaluationMeasure {
             for (int i = 0; i < thisUserRecommendations.size(); i++) {
                 int idItem = thisUserRecommendations.get(i).getIdItem();
                 try {
-                    value += testDataset.getRating(idUser, idItem).ratingValue.doubleValue();
+                    value += testDataset.getRating(idUser, idItem).getRatingValue().doubleValue();
                     numRecommendations++;
                 } catch (UserNotFound ex) {
                     ERROR_CODES.USER_NOT_FOUND.exit(ex);

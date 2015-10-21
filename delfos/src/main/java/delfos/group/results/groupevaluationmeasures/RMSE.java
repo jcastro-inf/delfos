@@ -54,7 +54,7 @@ public class RMSE extends GroupEvaluationMeasure {
                 int idItem = r.getIdItem();
                 for (int idUser : group.getGroupMembers()) {
                     if (groupTrueRatings.get(idUser).containsKey(idItem)) {
-                        double trueRating = groupTrueRatings.get(idUser).get(idItem).ratingValue.doubleValue();
+                        double trueRating = groupTrueRatings.get(idUser).get(idItem).getRatingValue().doubleValue();
                         double predicted = r.getPreference().doubleValue();
                         rmse.addValue(Math.pow(predicted - trueRating, 2));
                     }

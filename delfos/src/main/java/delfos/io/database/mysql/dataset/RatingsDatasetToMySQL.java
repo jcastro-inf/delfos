@@ -87,9 +87,9 @@ public class RatingsDatasetToMySQL {
     private <RatingType extends Rating> void insertRatings(RatingsDataset<RatingType> ratingsDataset) throws SQLException {
 
         for (Rating rating : ratingsDataset) {
-            int idUser = rating.idUser;
-            int idItem = rating.idItem;
-            Number ratingValue = rating.ratingValue;
+            int idUser = rating.getIdUser();
+            int idItem = rating.getIdItem();
+            Number ratingValue = rating.getRatingValue();
 
             if (rating instanceof RatingWithTimestamp) {
                 RatingWithTimestamp ratingWithTimestamp = (RatingWithTimestamp) rating;

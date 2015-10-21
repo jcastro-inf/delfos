@@ -217,7 +217,7 @@ public class EPinionsContentDataset implements ContentDataset {
         try {
             return get(idItem);
         } catch (EntityNotFound ex) {
-            ex.isA(ItemNotFound.class);
+            ex.isA(Item.class);
             throw new ItemNotFound(idItem, ex);
         }
     }

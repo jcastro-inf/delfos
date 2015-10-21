@@ -79,8 +79,8 @@ public class RatingsUserNeighborJTableModel extends AbstractTableModel {
             Rating neighborRating = neighbor == null ? null : ratingsDataset.getRating(neighbor.getId(), item.getId());
 
             datos[ID_ITEM_COLUMN][index] = item.getId();
-            datos[USER_RATING_COLUMN][index] = userRating == null ? "" : userRating.ratingValue.doubleValue();
-            datos[NEIGHBOR_RATING_COLUMN][index] = neighborRating == null ? "" : neighborRating.ratingValue.doubleValue();
+            datos[USER_RATING_COLUMN][index] = userRating == null ? "" : userRating.getRatingValue().doubleValue();
+            datos[NEIGHBOR_RATING_COLUMN][index] = neighborRating == null ? "" : neighborRating.getRatingValue().doubleValue();
             datos[ITEM_NAME_COLUMN][index] = item.getName();
 
             index++;

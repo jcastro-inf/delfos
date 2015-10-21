@@ -75,18 +75,18 @@ public class ValidationDatasetsTest extends DelfosTest {
 
         //Compruebo que el training no está en el test
         for (Rating r : trainingRatingsDataset) {
-            Assert.assertEquals("A rating of train set is in test set", null, testRatingsDataset.getRating(r.idUser, r.idItem));
+            Assert.assertEquals("A rating of train set is in test set", null, testRatingsDataset.getRating(r.getIdUser(), r.getIdItem()));
         }
 
         //Compruebo que el test no está en el training
         for (Rating r : testRatingsDataset) {
-            Assert.assertEquals("A rating of test set is in train set", null, trainingRatingsDataset.getRating(r.idUser, r.idItem));
+            Assert.assertEquals("A rating of test set is in train set", null, trainingRatingsDataset.getRating(r.getIdUser(), r.getIdItem()));
         }
 
         //Compruebo que todas las valoraciones están en alguno de los dos
         for (Rating r : originalDataset) {
-            boolean estaEnTest = testRatingsDataset.getRating(r.idUser, r.idItem) != null;
-            boolean estaEnTrain = trainingRatingsDataset.getRating(r.idUser, r.idItem) != null;
+            boolean estaEnTest = testRatingsDataset.getRating(r.getIdUser(), r.getIdItem()) != null;
+            boolean estaEnTrain = trainingRatingsDataset.getRating(r.getIdUser(), r.getIdItem()) != null;
 
             //Está en training y en test, error
             assert !(estaEnTest && estaEnTrain);

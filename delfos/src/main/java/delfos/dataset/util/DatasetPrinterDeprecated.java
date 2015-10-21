@@ -262,7 +262,7 @@ public class DatasetPrinterDeprecated {
                         Global.showInfoMessage("\t - \t|");
                     } else {
 
-                        Global.showInfoMessage("\t" + NumberRounder.round(rating.ratingValue, numDecimals) + "\t|");
+                        Global.showInfoMessage("\t" + NumberRounder.round(rating.getRatingValue(), numDecimals) + "\t|");
                     }
                 } catch (UserNotFound ex) {
                     Global.showInfoMessage("\t - \t|");
@@ -383,7 +383,7 @@ public class DatasetPrinterDeprecated {
                         Global.showInfoMessage(" - \t|");
                     } else {
 
-                        Global.showInfoMessage("" + NumberRounder.round(rating.ratingValue, numDecimals) + "\t|");
+                        Global.showInfoMessage("" + NumberRounder.round(rating.getRatingValue(), numDecimals) + "\t|");
                     }
                 } catch (UserNotFound ex) {
                     Global.showInfoMessage(" - \t|");

@@ -76,7 +76,7 @@ public class AreaUnderRoc extends GroupEvaluationMeasure {
                     try {
                         Map<Integer, ? extends Rating> userRatings = testDataset.getUserRatingsRated(idUser);
                         if (userRatings.containsKey(idItem)) {
-                            mean.addValue(testDataset.getUserRatingsRated(idUser).get(idItem).ratingValue.doubleValue());
+                            mean.addValue(testDataset.getUserRatingsRated(idUser).get(idItem).getRatingValue().doubleValue());
                         }
                     } catch (UserNotFound ex) {
                         ERROR_CODES.USER_NOT_FOUND.exit(ex);

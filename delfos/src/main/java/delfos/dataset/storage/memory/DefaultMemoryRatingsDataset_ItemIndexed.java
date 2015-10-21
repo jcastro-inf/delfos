@@ -45,7 +45,7 @@ public class DefaultMemoryRatingsDataset_ItemIndexed<RatingType extends Rating> 
     public DefaultMemoryRatingsDataset_ItemIndexed(Iterable<RatingType> ratings) {
         this();
         for (RatingType r : ratings) {
-            addRating(r.idUser, r.idItem, r);
+            addRating(r.getIdUser(), r.getIdItem(), r);
         }
     }
 
@@ -55,7 +55,7 @@ public class DefaultMemoryRatingsDataset_ItemIndexed<RatingType extends Rating> 
         Iterator<RatingType> it = ratings.get(itemsIndex.get(idItem)).listIterator();
         while (it.hasNext() && rating == null) {
             RatingType _rating = it.next();
-            if (_rating.idUser == idUser && _rating.idItem == idItem) {
+            if (_rating.getIdUser() == idUser && _rating.getIdItem() == idItem) {
                 rating = _rating;
             }
         }
@@ -66,7 +66,7 @@ public class DefaultMemoryRatingsDataset_ItemIndexed<RatingType extends Rating> 
     private void addRating(int idUser, int idItem, RatingType rating) {
 
         if (rc == null) {
-            rc = new DecimalDomain(rating.ratingValue.doubleValue(), rating.ratingValue.doubleValue());
+            rc = new DecimalDomain(rating.getRatingValue().doubleValue(), rating.getRatingValue().doubleValue());
         }
 
         if (!itemsIndex.containsKey(idItem)) {
@@ -78,11 +78,11 @@ public class DefaultMemoryRatingsDataset_ItemIndexed<RatingType extends Rating> 
         }
         ratings.get(itemsIndex.get(idItem)).add(rating);
 
-        if (rating.ratingValue.floatValue() < rc.min()) {
-            rc = new DecimalDomain(rating.ratingValue.floatValue(), rc.max());
+        if (rating.getRatingValue().floatValue() < rc.min()) {
+            rc = new DecimalDomain(rating.getRatingValue().floatValue(), rc.max());
         }
-        if (rating.ratingValue.floatValue() > rc.max()) {
-            rc = new DecimalDomain(rc.min(), rating.ratingValue.floatValue());
+        if (rating.getRatingValue().floatValue() > rc.max()) {
+            rc = new DecimalDomain(rc.min(), rating.getRatingValue().floatValue());
         }
     }
 
@@ -127,8 +127,8 @@ public class DefaultMemoryRatingsDataset_ItemIndexed<RatingType extends Rating> 
             for (Iterator<RatingType> it = ratings.get(i).listIterator(); it.hasNext();) {
                 RatingType rating = it.next();
 
-                if (rating.idUser == idUser) {
-                    ret.put(rating.idItem, rating);
+                if (rating.getIdUser() == idUser) {
+                    ret.put(rating.getIdItem(), rating);
                 }
             }
         }
@@ -147,8 +147,8 @@ public class DefaultMemoryRatingsDataset_ItemIndexed<RatingType extends Rating> 
 
         for (Iterator<RatingType> it = itemRow.listIterator(); it.hasNext();) {
             RatingType rating = it.next();
-            if (rating.idItem == idItem) {
-                ret.put(rating.idUser, rating);
+            if (rating.getIdItem() == idItem) {
+                ret.put(rating.getIdUser(), rating);
             }
         }
 

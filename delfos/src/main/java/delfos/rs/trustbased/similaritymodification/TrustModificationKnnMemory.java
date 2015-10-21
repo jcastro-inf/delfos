@@ -225,7 +225,7 @@ public class TrustModificationKnnMemory extends CollaborativeRecommender<Object>
 
                 Rating rating = ratingsDataset.getUserRatingsRated(ss.getIdNeighbor()).get(idItem);
                 if (rating != null) {
-                    match.add(new MatchRating(RecommendationEntity.ITEM, ss.getIdNeighbor(), idItem, rating.ratingValue, ss.getSimilarity()));
+                    match.add(new MatchRating(RecommendationEntity.ITEM, ss.getIdNeighbor(), idItem, rating.getRatingValue(), ss.getSimilarity()));
                     numNeighborsUsed++;
                 }
 

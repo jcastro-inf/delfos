@@ -47,7 +47,7 @@ public class NDCG extends EvaluationMeasure {
 
                 for (Recommendation recommendation : recommendations) {
                     int idItem = recommendation.getIdItem();
-                    idealRecommendations.add(new Recommendation(idItem, userRatings.get(idItem).ratingValue));
+                    idealRecommendations.add(new Recommendation(idItem, userRatings.get(idItem).getRatingValue()));
                 }
 
                 double idealGain = computeDCG(idealRecommendations, userRatings);
@@ -84,7 +84,7 @@ public class NDCG extends EvaluationMeasure {
         Iterator<Recommendation> iit = items.iterator();
         while (iit.hasNext()) {
             final int idItem = iit.next().getIdItem();
-            final double rating = values.get(idItem).ratingValue.doubleValue();
+            final double rating = values.get(idItem).getRatingValue().doubleValue();
             rank++;
             if (rank < 2) {
                 gain += rating;

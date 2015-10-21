@@ -1,14 +1,14 @@
 package delfos.dataset.basic.item;
 
-import java.util.Collection;
 import delfos.common.exceptions.dataset.entity.EntityNotFound;
 import delfos.common.exceptions.dataset.items.ItemNotFound;
 import delfos.dataset.basic.features.CollectionOfEntitiesWithFeatures;
+import java.util.Collection;
 
 /**
  * Interfaz que define los métodos de un dataset de contenido.
  *
-* @author Jorge Castro Gallardo
+ * @author Jorge Castro Gallardo
  *
  * @version 16-sep-2013 Refactorización de la biblioteca para organizar los
  * dataset de contenido.
@@ -39,6 +39,7 @@ public interface ContentDataset extends Comparable<Object>, CollectionOfEntities
      *
      * @return número de productos
      */
+    @Override
     public int size();
 
     /**

@@ -230,7 +230,7 @@ public class KnnMemoryBasedCFRS extends KnnCollaborativeRecommender<KnnMemoryMod
             for (Neighbor neighbor : neighborsWithPositiveSimilarityAndSelected) {
                 Rating rating = ratingsVecinos.get(neighbor.getIdNeighbor()).get(item.getId());
                 if (rating != null) {
-                    match.add(new MatchRating(RecommendationEntity.USER, neighbor.getIdNeighbor(), item.getId(), rating.ratingValue, neighbor.getSimilarity()));
+                    match.add(new MatchRating(RecommendationEntity.USER, neighbor.getIdNeighbor(), item.getId(), rating.getRatingValue(), neighbor.getSimilarity()));
                 }
             }
 

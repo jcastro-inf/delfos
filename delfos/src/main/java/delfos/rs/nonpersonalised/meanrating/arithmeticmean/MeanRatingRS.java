@@ -62,7 +62,7 @@ public class MeanRatingRS extends CollaborativeRecommender<MeanRatingRSModel> {
             try {
                 Map<Integer, ? extends Rating> map = ratingsDataset.getItemRatingsRated(idItem);
                 for (Rating rating : map.values()) {
-                    mean.addValue(rating.ratingValue.floatValue());
+                    mean.addValue(rating.getRatingValue().floatValue());
                 }
             } catch (ItemNotFound ex) {
                 ERROR_CODES.ITEM_NOT_FOUND.exit(ex);

@@ -101,7 +101,7 @@ public class HoldOutGroupMemberTemporalRatings extends GroupValidationTechnique 
                 Set<Integer> testItemsThisUser = new TreeSet<>();
 
                 thisUserRatingsWithTimestamp.subList(firstTestItem, thisUserRatingsWithTimestamp.size()).stream().forEach((testRating) -> {
-                    testItemsThisUser.add(testRating.idItem);
+                    testItemsThisUser.add(testRating.getIdItem());
                 });
 
                 testSet.put(idUser, testItemsThisUser);

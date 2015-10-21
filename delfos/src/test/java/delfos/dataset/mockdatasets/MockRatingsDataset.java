@@ -174,7 +174,7 @@ public class MockRatingsDataset implements RatingsDataset<Rating> {
 
         float mean = 0;
         mean = itemRatings.stream()
-                .map((ratingValue) -> ratingValue.ratingValue.floatValue())
+                .map((ratingValue) -> ratingValue.getRatingValue().floatValue())
                 .reduce(mean, (accumulator, _item) -> accumulator + _item);
 
         mean = mean / itemRatings.size();
@@ -189,7 +189,7 @@ public class MockRatingsDataset implements RatingsDataset<Rating> {
 
         float mean = 0;
         mean = userRatings.stream()
-                .map((ratingValue) -> ratingValue.ratingValue.floatValue())
+                .map((ratingValue) -> ratingValue.getRatingValue().floatValue())
                 .reduce(mean, (accumulator, _item) -> accumulator + _item);
 
         mean = mean / userRatings.size();
@@ -246,7 +246,7 @@ public class MockRatingsDataset implements RatingsDataset<Rating> {
         int count = 0;
 
         for (Rating rating : this) {
-            mean += rating.ratingValue.floatValue();
+            mean += rating.getRatingValue().floatValue();
             count++;
         }
 

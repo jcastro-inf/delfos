@@ -125,9 +125,9 @@ public class ConsensusOfIndividualRecommendationsToXML {
 
             for (RatingType memberRating : memberRatings.values()) {
                 Element ratingElement = new Element(RECOMMENDATION_INPUT_MEMBER_RATINGS_RATING_ELEMENT_NAME);
-                ratingElement.setAttribute(RECOMMENDATION_INPUT_MEMBER_RATINGS_ID_USER_ATTRIBUTE_NAME, Integer.toString(memberRating.idUser));
-                ratingElement.setAttribute(RECOMMENDATION_INPUT_MEMBER_RATINGS_ID_ITEM_ATTRIBUTE_NAME, Integer.toString(memberRating.idItem));
-                ratingElement.setAttribute(RECOMMENDATION_INPUT_MEMBER_RATINGS_RATING_VALUE_ATTRIBUTE_NAME, Double.toString(memberRating.ratingValue.doubleValue()));
+                ratingElement.setAttribute(RECOMMENDATION_INPUT_MEMBER_RATINGS_ID_USER_ATTRIBUTE_NAME, Integer.toString(memberRating.getIdUser()));
+                ratingElement.setAttribute(RECOMMENDATION_INPUT_MEMBER_RATINGS_ID_ITEM_ATTRIBUTE_NAME, Integer.toString(memberRating.getIdItem()));
+                ratingElement.setAttribute(RECOMMENDATION_INPUT_MEMBER_RATINGS_RATING_VALUE_ATTRIBUTE_NAME, Double.toString(memberRating.getRatingValue().doubleValue()));
                 thisMemberRatingsElement.addContent(ratingElement);
             }
             membersRatingsElement.addContent(thisMemberRatingsElement);

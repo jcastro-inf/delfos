@@ -62,7 +62,7 @@ public final class KnnMemoryTaskExecutor implements SingleTaskExecute<KnnMemoryT
                     CommonRating commonRating = new CommonRating(
                             RecommendationEntity.ITEM, idItem,
                             RecommendationEntity.USER, user.getId(), neighborUser.getId(),
-                            userRating.ratingValue.floatValue(), neighborRating.ratingValue.floatValue());
+                            userRating.getRatingValue().floatValue(), neighborRating.getRatingValue().floatValue());
                     return commonRating;
                 }).collect(Collectors.toList());
 
@@ -81,11 +81,11 @@ public final class KnnMemoryTaskExecutor implements SingleTaskExecute<KnnMemoryT
             }
             for (int idItem : onlyOneRated) {
                 float userRating = userRatings.containsKey(idItem)
-                        ? userRatings.get(idItem).ratingValue.floatValue()
+                        ? userRatings.get(idItem).getRatingValue().floatValue()
                         : defaultRatingValue_;
 
                 float neighborRating = neighborRatings.containsKey(idItem)
-                        ? neighborRatings.get(idItem).ratingValue.floatValue()
+                        ? neighborRatings.get(idItem).getRatingValue().floatValue()
                         : defaultRatingValue_;
                 CommonRating commonRatingCompletedWithDefault = new CommonRating(
                         RecommendationEntity.ITEM, idItem,

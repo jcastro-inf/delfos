@@ -5,7 +5,9 @@ import static delfos.dataset.basic.features.EntityWithFeaturesDefault.checkFeatu
 import delfos.dataset.basic.features.Feature;
 import delfos.rs.contentbased.ContentBasedRecommender;
 import java.io.Serializable;
+import java.util.Comparator;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.TreeMap;
 
@@ -19,6 +21,17 @@ import java.util.TreeMap;
 public class Item implements Comparable<Item>, EntityWithFeatures, Serializable {
 
     private static final long serialVersionUID = 3034;
+
+    public static final Comparator<Item> BY_ID = (Item item1, Item item2) -> Integer.compare(item1.getId(), item2.getId());
+    public static final Comparator<Item> BY_NAME = (Item item1, Item item2) -> {
+        int nameComparison = item1.getName().compareTo(item2.getName());
+
+        if (nameComparison != 0) {
+            return nameComparison;
+        } else {
+            return BY_ID.compare(item1, item2);
+        }
+    };
 
     private final int idItem;
     private final String name;
@@ -109,13 +122,7 @@ public class Item implements Comparable<Item>, EntityWithFeatures, Serializable 
 
         for (int i = 0; i < features.length; i++) {
             Feature feature = features[i];
-//            if (values[i] != null) {
-//                continue;
-//            }
             Object featureValue = values[i];
-//            if (!feature.getType().isValueCorrect(featureValue)) {
-//                throw new IllegalArgumentException("The feature value '" + featureValue + "' for feature '" + featureValue + "' does not match");
-//            }
             this.featuresValues.put(feature, featureValue);
 
         }
@@ -176,7 +183,34 @@ public class Item implements Comparable<Item>, EntityWithFeatures, Serializable 
     }
 
     @Override
-    public int compareTo(Item o) {
-        return this.getName().compareTo(o.getName());
+    public int compareTo(Item otherItem) {
+        return BY_NAME.compare(this, otherItem);
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final Item other = (Item) obj;
+        if (this.idItem != other.idItem) {
+            return false;
+        }
+        if (!Objects.equals(this.name, other.name)) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 5;
+        hash = 71 * hash + this.idItem;
+        hash = 71 * hash + Objects.hashCode(this.name);
+        return hash;
+    }
+
 }

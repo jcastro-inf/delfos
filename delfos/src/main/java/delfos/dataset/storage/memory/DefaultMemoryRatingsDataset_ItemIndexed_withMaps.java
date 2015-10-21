@@ -40,7 +40,7 @@ public class DefaultMemoryRatingsDataset_ItemIndexed_withMaps<RatingType extends
     public DefaultMemoryRatingsDataset_ItemIndexed_withMaps(Iterable<RatingType> ratings) {
         this();
         for (RatingType r : ratings) {
-            addRating(r.idUser, r.idItem, r);
+            addRating(r.getIdUser(), r.getIdItem(), r);
         }
     }
 
@@ -57,7 +57,7 @@ public class DefaultMemoryRatingsDataset_ItemIndexed_withMaps<RatingType extends
     private void addRating(int idUser, int idItem, RatingType rating) {
 
         if (rc == null) {
-            rc = new DecimalDomain(rating.ratingValue.doubleValue(), rating.ratingValue.doubleValue());
+            rc = new DecimalDomain(rating.getRatingValue().doubleValue(), rating.getRatingValue().doubleValue());
         }
 
         if (!ratings_byItem.containsKey(idItem)) {
@@ -69,11 +69,11 @@ public class DefaultMemoryRatingsDataset_ItemIndexed_withMaps<RatingType extends
 
         ratings_byItem.get(idItem).put(idUser, rating);
 
-        if (rating.ratingValue.floatValue() < rc.min()) {
-            rc = new DecimalDomain(rating.ratingValue.floatValue(), rc.max());
+        if (rating.getRatingValue().floatValue() < rc.min()) {
+            rc = new DecimalDomain(rating.getRatingValue().floatValue(), rc.max());
         }
-        if (rating.ratingValue.floatValue() > rc.max()) {
-            rc = new DecimalDomain(rc.min(), rating.ratingValue.floatValue());
+        if (rating.getRatingValue().floatValue() > rc.max()) {
+            rc = new DecimalDomain(rc.min(), rating.getRatingValue().floatValue());
         }
     }
 

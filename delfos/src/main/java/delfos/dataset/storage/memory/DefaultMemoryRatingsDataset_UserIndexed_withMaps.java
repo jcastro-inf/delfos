@@ -43,7 +43,7 @@ public class DefaultMemoryRatingsDataset_UserIndexed_withMaps<RatingType extends
     public DefaultMemoryRatingsDataset_UserIndexed_withMaps(Iterable<RatingType> ratings) {
         this();
         for (RatingType r : ratings) {
-            addRating(r.idUser, r.idItem, r);
+            addRating(r.getIdUser(), r.getIdItem(), r);
         }
     }
 
@@ -68,11 +68,11 @@ public class DefaultMemoryRatingsDataset_UserIndexed_withMaps<RatingType extends
 
         ratings_byUser.get(idUser).put(idItem, rating);
 
-        if (rating.ratingValue.floatValue() < rc.min()) {
-            rc = new DecimalDomain(rating.ratingValue.floatValue(), rc.max());
+        if (rating.getRatingValue().floatValue() < rc.min()) {
+            rc = new DecimalDomain(rating.getRatingValue().floatValue(), rc.max());
         }
-        if (rating.ratingValue.floatValue() > rc.max()) {
-            rc = new DecimalDomain(rc.min(), rating.ratingValue.floatValue());
+        if (rating.getRatingValue().floatValue() > rc.max()) {
+            rc = new DecimalDomain(rc.min(), rating.getRatingValue().floatValue());
         }
     }
 

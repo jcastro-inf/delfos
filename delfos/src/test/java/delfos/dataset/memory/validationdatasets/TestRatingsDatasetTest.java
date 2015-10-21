@@ -86,8 +86,8 @@ public class TestRatingsDatasetTest extends DelfosTest {
         TestRatingsDataset testRatingsDataset = ValidationDatasets.getInstance().createTestDataset(ratingsDataset, testRatings);
 
         System.out.println(DatasetPrinter.printCompactRatingTable(testRatingsDataset));
-        assert testRatingsDataset.getRating(3, 1).ratingValue.intValue() == 3;
-        assert testRatingsDataset.getRating(3, 2).ratingValue.intValue() == 3;
+        assert testRatingsDataset.getRating(3, 1).getRatingValue().intValue() == 3;
+        assert testRatingsDataset.getRating(3, 2).getRatingValue().intValue() == 3;
 
         try {
             Rating ret = testRatingsDataset.getRating(3, 3);

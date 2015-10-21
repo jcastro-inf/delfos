@@ -19,7 +19,7 @@ public class ParallelSVD_TrainSector_SingleTaskExecutor implements SingleTaskExe
             try {
                 Map<Integer, ? extends Rating> userRatings = task.getRatingsDataset().getUserRatingsRated(idUser);
                 for (Rating rating : userRatings.values()) {
-                    if (task.getItemsSet().contains(rating.idItem)) {
+                    if (task.getItemsSet().contains(rating.getIdItem())) {
                         ParallelSVD.trainModelWithThisRating(task.getAlgorithmParameters(), task.getParallelSVDModel(), rating, task.getFeature());
                     }
                 }

@@ -71,7 +71,7 @@ public class ItemNeighborsJTableModel extends AbstractTableModel {
             data[ID_ITEM_INDEX][rowIndex] = neighbor.getIdNeighbor();
             data[SIMILARITY_INDEX][rowIndex] = neighbor.getSimilarity();
             data[NAME_INDEX][rowIndex] = neighbor.getNeighbor().getName();
-            data[TARGET_USER_RATING_INDEX][rowIndex] = rating == null ? "" : rating.ratingValue.doubleValue();
+            data[TARGET_USER_RATING_INDEX][rowIndex] = rating == null ? "" : rating.getRatingValue().doubleValue();
             data[NEIGHBOR_INDEX][rowIndex] = neighbor;
 
             rowIndex++;

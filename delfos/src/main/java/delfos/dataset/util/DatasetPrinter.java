@@ -212,7 +212,7 @@ public class DatasetPrinter {
                         Global.showInfoMessage("\t - \t|");
                     } else {
 
-                        Global.showInfoMessage("\t" + NumberRounder.round(rating.ratingValue, numDecimals) + "\t|");
+                        Global.showInfoMessage("\t" + NumberRounder.round(rating.getRatingValue(), numDecimals) + "\t|");
                     }
                 } catch (UserNotFound | ItemNotFound ex) {
                     Global.showInfoMessage("\t - \t|");
@@ -303,7 +303,7 @@ public class DatasetPrinter {
                         str.append(" - \t|");
                     } else {
 
-                        str.append("").append(NumberRounder.round(rating.ratingValue, numDecimals)).append("\t|");
+                        str.append("").append(NumberRounder.round(rating.getRatingValue(), numDecimals)).append("\t|");
                     }
                 } catch (UserNotFound | ItemNotFound ex) {
                     str.append(" - \t|");
@@ -363,7 +363,7 @@ public class DatasetPrinter {
                         str.append(" - \t|");
                     } else {
 
-                        str.append("").append(NumberRounder.round(rating.ratingValue, numDecimals)).append("\t|");
+                        str.append("").append(NumberRounder.round(rating.getRatingValue(), numDecimals)).append("\t|");
                     }
                 } catch (UserNotFound | ItemNotFound ex) {
                     str.append(" - \t|");

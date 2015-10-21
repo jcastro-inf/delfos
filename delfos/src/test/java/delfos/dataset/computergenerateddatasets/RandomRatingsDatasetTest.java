@@ -96,7 +96,7 @@ public class RandomRatingsDatasetTest {
         HistogramCategories histogram = new HistogramCategories<>();
 
         for (Rating rating : result) {
-            histogram.addValue(rating.ratingValue.intValue());
+            histogram.addValue(rating.getRatingValue().intValue());
         }
     }
 }

@@ -90,7 +90,7 @@ public class NormalizedIndividualSatisfaction extends GroupEvaluationMeasure {
                     List<Recommendation> recomendacionesAlGrupoParaUser = new ArrayList<>(predicciones.size());
                     List<Recommendation> recomendacionesOptimasAlUser = new ArrayList<>(userRated.size());
                     for (int idItem : userRated.keySet()) {
-                        recomendacionesOptimasAlUser.add(new Recommendation(idItem, userRated.get(idItem).ratingValue));
+                        recomendacionesOptimasAlUser.add(new Recommendation(idItem, userRated.get(idItem).getRatingValue()));
                     }
 
                     int minLength = Math.min(recomendacionesAlGrupoParaUser.size(), recomendacionesOptimasAlUser.size());

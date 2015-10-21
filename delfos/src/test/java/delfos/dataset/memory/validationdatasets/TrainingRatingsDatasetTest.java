@@ -64,7 +64,7 @@ public class TrainingRatingsDatasetTest extends DelfosTest {
 
         assert trainingRatingsDataset.getRating(3, 1) == null;
         assert trainingRatingsDataset.getRating(3, 2) == null;
-        assert trainingRatingsDataset.getRating(3, 3).ratingValue.intValue() == 3;
+        assert trainingRatingsDataset.getRating(3, 3).getRatingValue().intValue() == 3;
     }
 
     /**

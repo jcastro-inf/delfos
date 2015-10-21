@@ -66,7 +66,7 @@ public class NRMSETest {
                 ArrayList<Recommendation> recommendations = new ArrayList<>();
                 for (Map.Entry<Integer, ? extends Rating> entry : testDataset.getUserRatingsRated(idUser).entrySet()) {
                     final int idItem = entry.getKey();
-                    final double ratingValue = entry.getValue().ratingValue.doubleValue();
+                    final double ratingValue = entry.getValue().getRatingValue().doubleValue();
 
                     double prediction;
                     if (i % 2 == 0) {
@@ -116,7 +116,7 @@ public class NRMSETest {
                 ArrayList<Recommendation> recommendations = new ArrayList<>();
                 for (Map.Entry<Integer, ? extends Rating> entry : testDataset.getUserRatingsRated(idUser).entrySet()) {
                     final int idItem = entry.getKey();
-                    final double ratingValue = entry.getValue().ratingValue.doubleValue();
+                    final double ratingValue = entry.getValue().getRatingValue().doubleValue();
 
                     double prediction;
                     if (i % 2 == 0) {
@@ -167,7 +167,7 @@ public class NRMSETest {
                     final int idItem = entry.getKey();
                     final Rating rating = entry.getValue();
 
-                    final double prediction = rating.ratingValue.doubleValue();
+                    final double prediction = rating.getRatingValue().doubleValue();
                     recommendations.add(new Recommendation(idItem, prediction));
                 }
                 Collections.sort(recommendations);

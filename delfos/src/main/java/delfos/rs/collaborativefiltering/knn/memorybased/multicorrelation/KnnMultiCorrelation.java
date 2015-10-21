@@ -203,7 +203,7 @@ public class KnnMultiCorrelation extends CollaborativeRecommender<KnnMultiCorrel
 
                     Rating rating = itemRatingsRated.get(neighbor.getIdNeighbor());
                     if (rating != null) {
-                        match.add(new MatchRating(RecommendationEntity.ITEM, neighbor.getIdNeighbor(), idItem, rating.ratingValue, neighbor.getSimilarity()));
+                        match.add(new MatchRating(RecommendationEntity.ITEM, neighbor.getIdNeighbor(), idItem, rating.getRatingValue(), neighbor.getSimilarity()));
                         numNeighborsUsed++;
                     }
 

@@ -62,7 +62,7 @@ public class MAE extends EvaluationMeasure {
         MeanIterative userMean = new MeanIterative();
         for (Recommendation recommendation : singleUserRecommendations.getRecommendations()) {
             if (userRated.containsKey(recommendation.getIdItem())) {
-                double trueRating = userRated.get(recommendation.getIdItem()).ratingValue.doubleValue();
+                double trueRating = userRated.get(recommendation.getIdItem()).getRatingValue().doubleValue();
                 double calculatedRating = recommendation.getPreference().doubleValue();
                 userMean.addValue(Math.abs(trueRating - calculatedRating));
             }

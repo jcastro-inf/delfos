@@ -39,7 +39,7 @@ public class PrecisionCollaborative extends EvaluationMeasure {
                 Map<Integer, ? extends Rating> userRatingsRated = testDataset.getUserRatingsRated(idUser);
                 for (Recommendation r : recommendationResults.getRecommendationsForUser(idUser)) {
                     int idItem = r.getIdItem();
-                    if (relevanceCriteria.isRelevant(userRatingsRated.get(idItem).ratingValue)) {
+                    if (relevanceCriteria.isRelevant(userRatingsRated.get(idItem).getRatingValue())) {
                         if (relevanceCriteria.isRelevant(r.getPreference())) {
                             relevantesRecomendadas++;
                         } else {
