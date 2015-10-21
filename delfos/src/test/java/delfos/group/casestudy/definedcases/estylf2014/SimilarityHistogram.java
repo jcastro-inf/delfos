@@ -1,17 +1,18 @@
 package delfos.group.casestudy.definedcases.estylf2014;
 
+import delfos.common.Global;
+import delfos.common.datastructures.histograms.RangeHistogram;
+import delfos.common.exceptions.dataset.users.UserNotFound;
+import delfos.dataset.basic.loader.types.DatasetLoader;
+import delfos.dataset.loaders.movilens.ml100k.MovieLens100k;
+import delfos.group.casestudy.definedcases.jrs2014.CosineWithPenalty;
+import delfos.group.casestudy.definedcases.jrs2014.CouldNotComputeTrust;
+import delfos.group.casestudy.definedcases.jrs2014.PairwiseUserTrust;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import org.junit.Test;
-import delfos.dataset.loaders.movilens.ml100k.MovieLens100k;
-import delfos.dataset.basic.loader.types.DatasetLoader;
-import delfos.common.datastructures.histograms.RangeHistogram;
-import delfos.common.exceptions.dataset.users.UserNotFound;
-import delfos.group.casestudy.definedcases.jrs2014.CosineWithPenalty;
-import delfos.group.casestudy.definedcases.jrs2014.CouldNotComputeTrust;
-import delfos.group.casestudy.definedcases.jrs2014.PairwiseUserTrust;
 
 /**
  *
@@ -50,7 +51,7 @@ public class SimilarityHistogram {
             i++;
 
             double percent = ((i * 100.0) / users.size());
-            System.out.println(percent + "% completed");
+            Global.showln(percent + "% completed");
         }
 
         histogram.printHistogram(System.out);

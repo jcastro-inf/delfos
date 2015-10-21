@@ -1,6 +1,7 @@
 package delfos.rs.collaborativefiltering.svd;
 
 import delfos.common.FileUtilities;
+import delfos.common.Global;
 import delfos.common.exceptions.dataset.CannotLoadContentDataset;
 import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
 import delfos.common.exceptions.dataset.items.ItemNotFound;
@@ -96,7 +97,7 @@ public class TryThisAtHomeSVDTest extends DelfosTest {
                 new FilePersistence(recommenderSystem.getName(), "dat", new File(TEST_DIRECTORY)), new OnlyNewItems(), new RecommendationsOutputStandardRaw(5));
 
         SingleUserRecommendation.buildRecommendationModel(configFile);
-        System.out.println("Built recommendation model with '" + recommenderSystem);
+        Global.showln("Built recommendation model with '" + recommenderSystem);
 
         Arrays.asList(users)
                 .parallelStream()
@@ -104,7 +105,7 @@ public class TryThisAtHomeSVDTest extends DelfosTest {
                     SingleUserRecommendation.recommendToUser(configFile, idUser);
                 });
 
-        System.out.println("Recommended with '" + recommenderSystem + "' to " + datasetLoader.getRatingsDataset().allUsers().size() + " users");
+        Global.showln("Recommended with '" + recommenderSystem + "' to " + datasetLoader.getRatingsDataset().allUsers().size() + " users");
     }
 
     @Test
@@ -125,7 +126,7 @@ public class TryThisAtHomeSVDTest extends DelfosTest {
         //Construcción del modelo.
         String[] buildArgs = {"--single-user", "--b", "-rs-config", configFile};
         Main.mainWithExceptions(buildArgs);
-        System.out.println("Built model of '" + recommenderSystem);
+        Global.showln("Built model of '" + recommenderSystem);
 
         RatingsDataset<? extends Rating> ratingsDataset = datasetLoader.getRatingsDataset();
         Arrays.asList(users)
@@ -138,7 +139,7 @@ public class TryThisAtHomeSVDTest extends DelfosTest {
                     Main.mainWithExceptions(recommendationArgs);
                 });
 
-        System.out.println("Recommended with '" + recommenderSystem + "' to " + datasetLoader.getRatingsDataset().allUsers().size() + " users");
+        Global.showln("Recommended with '" + recommenderSystem + "' to " + datasetLoader.getRatingsDataset().allUsers().size() + " users");
     }
 
     @Test
@@ -153,19 +154,19 @@ public class TryThisAtHomeSVDTest extends DelfosTest {
         candidateItems.add(2);
         candidateItems.add(4);
 
-        System.out.println("Features learned USERS");
+        Global.showln("Features learned USERS");
 
         tryThisAtHomeSVDModel.getUsersIndex().keySet()
                 .parallelStream()
                 .forEach((idUser) -> {
-                    System.out.println("User " + idUser + "--> " + tryThisAtHomeSVDModel.getUserFeatures(idUser));
+                    Global.showln("User " + idUser + "--> " + tryThisAtHomeSVDModel.getUserFeatures(idUser));
                 });
 
-        System.out.println("\nFeatures learned ITEMS");
+        Global.showln("\nFeatures learned ITEMS");
         tryThisAtHomeSVDModel.getItemsIndex().keySet()
                 .parallelStream()
                 .forEach((idItem) -> {
-                    System.out.println("Item " + idItem + "--> " + tryThisAtHomeSVDModel.getItemFeatures(idItem));
+                    Global.showln("Item " + idItem + "--> " + tryThisAtHomeSVDModel.getItemFeatures(idItem));
                 });
 
         Collection<Recommendation> recommendations = tryThisAtHomeSVD.recommendToUser(datasetLoader, tryThisAtHomeSVDModel, 3, candidateItems);

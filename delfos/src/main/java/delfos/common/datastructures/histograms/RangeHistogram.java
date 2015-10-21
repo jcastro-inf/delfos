@@ -7,7 +7,7 @@ import java.util.Locale;
 
 /**
  *
-* @author Jorge Castro Gallardo
+ * @author Jorge Castro Gallardo
  *
  * @version 24-feb-2014
  */
@@ -54,10 +54,6 @@ public class RangeHistogram {
             _min += binWidth;
             _max += binWidth;
             indexCubeta++;
-        }
-
-        if (indexCubeta == numberOfBins) {
-            System.out.println("stop!");
         }
 
         return indexCubeta;

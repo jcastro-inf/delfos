@@ -211,11 +211,7 @@ public class HistogramNumbersSmart {
         double[] binValue = new double[numberOfBins];
         for (double value : values) {
             int bin = getBin(value);
-            try {
-                binValue[bin]++;
-            } catch (ArrayIndexOutOfBoundsException ex) {
-                System.out.println("bin: " + bin);
-            }
+            binValue[bin]++;
         }
 
         String[] binName = new String[numberOfBins];

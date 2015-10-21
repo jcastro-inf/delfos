@@ -1,12 +1,11 @@
 package delfos.similaritymeasures.useruser;
 
-import delfos.similaritymeasures.useruser.UserUserSimilarityWrapper;
-import static org.junit.Assert.assertEquals;
-import org.junit.BeforeClass;
-import org.junit.Test;
 import delfos.similaritymeasures.BasicSimilarityMeasure;
 import delfos.similaritymeasures.CosineCoefficient;
 import delfos.similaritymeasures.PearsonCorrelationCoefficient;
+import static org.junit.Assert.assertEquals;
+import org.junit.BeforeClass;
+import org.junit.Test;
 
 /**
  *
@@ -27,7 +26,6 @@ public class UserUserSimilarityWrapperTest {
 
     @Test
     public void testWrapper_PearsonCorrelationCoefficient() throws Exception {
-        System.out.println("testWrapper_PearsonCorrelationCoefficient");
 
         PearsonCorrelationCoefficient pcc = new PearsonCorrelationCoefficient();
         int idUser1 = 54;
@@ -40,7 +38,6 @@ public class UserUserSimilarityWrapperTest {
 
     @Test
     public void testWrapper_CosineCorrelationCoefficient() throws Exception {
-        System.out.println("testWrapper_CosineCorrelationCoefficient");
 
         BasicSimilarityMeasure basicSimilarityMeasure = new CosineCoefficient();
         int idUser1 = 54;

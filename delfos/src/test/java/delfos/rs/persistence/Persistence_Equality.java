@@ -1,5 +1,6 @@
 package delfos.rs.persistence;
 
+import delfos.common.Global;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RatingsDataset;
 import delfos.dataset.basic.user.User;
@@ -57,11 +58,11 @@ public class Persistence_Equality {
                 File fileRecommendations_File = FilePersistenceTest.getRecommendationFile(recommenderSystem, user);
                 File databaseRecommendations_File = DatabasePersistenceTest.getRecommendationFile(recommenderSystem, user);
 
-                System.out.println("====================================================");
-                System.out.println(fileRecommendations_File.getAbsolutePath());
-                System.out.println(databaseRecommendations_File.getAbsolutePath());
-                System.out.println("");
-                System.out.println("");
+                Global.showln("====================================================");
+                Global.showln(fileRecommendations_File.getAbsolutePath());
+                Global.showln(databaseRecommendations_File.getAbsolutePath());
+                Global.showln("");
+                Global.showln("");
                 assertTrue(recommenderSystem.getName() + ": " + "Recommendations for filePersistence, user " + user + " and rs: " + recommenderSystem.getName() + " doesn't exist", fileRecommendations_File.exists());
                 assertTrue(recommenderSystem.getName() + ": " + "Recommendations for databasePersistence, user " + user + " and rs: " + recommenderSystem.getName() + " doesn't exist", databaseRecommendations_File.exists());
 

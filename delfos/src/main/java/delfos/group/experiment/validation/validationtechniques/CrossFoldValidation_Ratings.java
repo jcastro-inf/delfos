@@ -166,10 +166,9 @@ public class CrossFoldValidation_Ratings extends GroupValidationTechnique {
                         allItems = new TreeSet<>(datasetLoader.getRatingsDataset().allRatedItems());
                     }
 
-                    Global.showInfoMessage("==================================================== \n");
+                    Global.showInfoMessage("==================================================== \n\n");
 
                     Set<Integer> allUsers = new TreeSet<>(datasetLoader.getRatingsDataset().allUsers());
-                    System.out.println("");
 
                     Global.showInfoMessage("Dataset de training " + idPartition + ".\n");
                     DatasetPrinterDeprecated.printCompactRatingTable(

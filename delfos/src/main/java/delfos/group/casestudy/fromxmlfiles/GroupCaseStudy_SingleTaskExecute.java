@@ -2,6 +2,7 @@ package delfos.group.casestudy.fromxmlfiles;
 
 import delfos.ERROR_CODES;
 import delfos.common.FileUtilities;
+import delfos.common.Global;
 import delfos.common.exceptions.dataset.CannotLoadContentDataset;
 import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
 import delfos.common.exceptions.dataset.items.ItemNotFound;
@@ -69,7 +70,7 @@ public class GroupCaseStudy_SingleTaskExecute implements SingleTaskExecute<Execu
         caseStudyGroupRecommendation.addExecutionProgressListener(new ExecutionProgressListener_default(System.out, 10000));
         caseStudyGroupRecommendation.setSeedValue(seed);
         try {
-            System.out.println("Executing case " + caseName);
+            Global.showln("Executing case " + caseName);
             caseStudyGroupRecommendation.execute();
         } catch (UserNotFound | ItemNotFound ex) {
             throw new IllegalStateException(ex);

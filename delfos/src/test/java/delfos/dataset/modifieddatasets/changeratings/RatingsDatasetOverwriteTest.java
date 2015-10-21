@@ -1,6 +1,8 @@
 package delfos.dataset.modifieddatasets.changeratings;
 
+import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.generated.modifieddatasets.changeratings.RatingsDatasetOverwrite;
+import delfos.dataset.storage.memory.BothIndexRatingsDataset;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedList;
@@ -10,8 +12,6 @@ import java.util.TreeSet;
 import static org.junit.Assert.assertEquals;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import delfos.dataset.basic.rating.Rating;
-import delfos.dataset.storage.memory.BothIndexRatingsDataset;
 
 /**
  *
@@ -38,14 +38,10 @@ public class RatingsDatasetOverwriteTest {
         ratings.add(new Rating(2, 25, 2));
 
         originalRatingsDataset = new BothIndexRatingsDataset<>(ratings);
-
-        System.out.println("completed originalRatingsDataset generation succesfully");
-
     }
 
     @Test
     public void testGetRating_newRating() throws Exception {
-        System.out.println("testGetRating_newRating");
 
         int idUser = 3;
         int idItem = 1;
@@ -63,7 +59,6 @@ public class RatingsDatasetOverwriteTest {
 
     @Test
     public void testGetRating_replaceRating() throws Exception {
-        System.out.println("testGetRating_replaceRating");
 
         int idUser = 1;
         int idItem = 12;
@@ -81,7 +76,6 @@ public class RatingsDatasetOverwriteTest {
 
     @Test
     public void testAllUsers() {
-        System.out.println("testAllUsers");
 
         int idUser = 3;
         int idItem = 1;
@@ -101,7 +95,6 @@ public class RatingsDatasetOverwriteTest {
 
     @Test
     public void testAllRatedItems() {
-        System.out.println("testAllRatedItems");
 
         int idUser = 3;
         int idItem = 1;

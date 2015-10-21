@@ -431,7 +431,7 @@ public class ConsensusGRS extends GroupRecommenderSystemAdapter<SingleRecommenda
             final String outputFileNameNoExtension = consensusOutputFile.getName().substring(0, consensusOutputFile.getName().lastIndexOf("."));
             if (outputFileNameNoExtension.startsWith(consensusInputXMLFileNameNoExtension) && outputFileNameNoExtension.contains("Consenso")) {
                 try {
-                    System.out.println(consensusOutputFile.getAbsolutePath());
+                    Global.showln(consensusOutputFile.getAbsolutePath());
                     double thisFileConsensusDegree = ConsensusOfIndividualRecommendationsToXML.readConsensusOutputXML(consensusOutputFile).consensusDegree;
 
                     queue.add(new PriorityItem<>(consensusOutputFile, thisFileConsensusDegree));

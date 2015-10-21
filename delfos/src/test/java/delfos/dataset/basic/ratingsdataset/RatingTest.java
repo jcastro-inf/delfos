@@ -20,7 +20,6 @@ public class RatingTest {
      */
     @Test
     public void testCompareTo() {
-        System.out.println("compareTo");
         Rating o = new Rating(1, 2, 3);
         Rating instance = new Rating(1, 2, 3.0);
         int expResult = 0;
@@ -33,7 +32,6 @@ public class RatingTest {
      */
     @Test
     public void testEquals() {
-        System.out.println("equals");
         Object obj = new Rating(1, 2, 3);
         Rating instance = new Rating(1, 2, 3.0);
         boolean expResult = true;
@@ -46,7 +44,6 @@ public class RatingTest {
      */
     @Test
     public void testHashCode() {
-        System.out.println("hashCode");
         Rating instance = new Rating(1, 2, 3.0);
         int expResult = 1074315502;
         int result = instance.hashCode();
@@ -55,7 +52,6 @@ public class RatingTest {
 
     @Test
     public void testClone() throws CloneNotSupportedException {
-        System.out.println("copyWith");
 
         Rating instance = new Rating(1, 2, 3);
         Rating expResult = new Rating(1, 2, 3.0);
@@ -70,7 +66,6 @@ public class RatingTest {
 
     @Test
     public void testEqualsCompareHashCode() {
-        System.out.println("testEqualsCompareHashCode");
 
         Rating rating = new Rating(1, 2, 3);
 

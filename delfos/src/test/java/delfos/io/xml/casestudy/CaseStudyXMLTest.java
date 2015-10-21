@@ -1,11 +1,9 @@
 package delfos.io.xml.casestudy;
 
-import delfos.io.xml.casestudy.CaseStudyXML;
-import org.junit.Test;
 import delfos.configureddatasets.ConfiguredDatasetsFactory;
+import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RelevanceCriteria;
-import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.experiment.ExperimentListerner_default;
 import delfos.experiment.casestudy.CaseStudy;
 import delfos.experiment.casestudy.defaultcase.DefaultCaseStudy;
@@ -16,6 +14,7 @@ import delfos.experiment.validation.validationtechnique.ValidationTechnique;
 import delfos.factories.EvaluationMeasuresFactory;
 import delfos.rs.RecommenderSystem;
 import delfos.rs.bias.PredictUserItemBias;
+import org.junit.Test;
 
 /**
  *
@@ -28,7 +27,6 @@ public class CaseStudyXMLTest {
 
     @Test
     public void testCaseStudyToXMLFile_OneExecutionOneSplit() {
-        System.out.println("testCaseStudyToXMLFile");
 
         DatasetLoader<? extends Rating> datasetLoader = ConfiguredDatasetsFactory.getInstance().getDatasetLoader("ml-100k");
 
@@ -54,7 +52,6 @@ public class CaseStudyXMLTest {
 
     @Test
     public void testCaseStudyToXMLFile_MultipleExecutionsOneSplit() {
-        System.out.println("testCaseStudyToXMLFile");
 
         DatasetLoader<? extends Rating> datasetLoader = ConfiguredDatasetsFactory.getInstance().getDatasetLoader("ml-100k");
 
@@ -80,7 +77,6 @@ public class CaseStudyXMLTest {
 
     @Test
     public void testCaseStudyToXMLFile_OneExecutionMultipleSplits() {
-        System.out.println("testCaseStudyToXMLFile");
 
         DatasetLoader<? extends Rating> datasetLoader = ConfiguredDatasetsFactory.getInstance().getDatasetLoader("ml-100k");
 
@@ -107,7 +103,6 @@ public class CaseStudyXMLTest {
 
     @Test
     public void testCaseStudyToXMLFile_MultipleExecutionsMultipleSplits() {
-        System.out.println("testCaseStudyToXMLFile");
 
         DatasetLoader<? extends Rating> datasetLoader = ConfiguredDatasetsFactory.getInstance().getDatasetLoader("ml-100k");
 

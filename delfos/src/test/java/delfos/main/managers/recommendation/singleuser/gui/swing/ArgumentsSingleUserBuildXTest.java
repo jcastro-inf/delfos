@@ -45,7 +45,6 @@ public class ArgumentsSingleUserBuildXTest extends DelfosTest {
 
     @Test
     public void test_BuildX_isRightManager() throws Exception {
-        System.out.println("test_BuildX_manageCaseUse");
 
         createConfigurationFile();
         String[] consoleArguments = {
@@ -59,7 +58,6 @@ public class ArgumentsSingleUserBuildXTest extends DelfosTest {
 
     @Test
     public void test_SingleUser_BuildX_callFromCommandLine() throws Exception {
-        System.out.println("test_SingleUser_BuildRecommendationModel_manageCaseUse");
 
         createConfigurationFile();
         ConsoleParameters consoleParameters = ConsoleParameters.parseArguments(

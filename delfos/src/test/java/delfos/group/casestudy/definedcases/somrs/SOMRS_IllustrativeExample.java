@@ -170,6 +170,5 @@ public class SOMRS_IllustrativeExample {
                 }
             }
         }
-        System.out.println("Exito!");
     }
 }

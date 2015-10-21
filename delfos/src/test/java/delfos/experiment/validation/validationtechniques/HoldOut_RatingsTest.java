@@ -1,17 +1,18 @@
 package delfos.experiment.validation.validationtechniques;
 
+import delfos.common.Global;
+import delfos.configureddatasets.ConfiguredDatasetsFactory;
+import delfos.dataset.basic.loader.types.DatasetLoader;
+import delfos.dataset.basic.rating.Rating;
+import delfos.dataset.basic.rating.RatingsDataset;
+import delfos.dataset.storage.memory.BothIndexRatingsDataset;
+import delfos.dataset.storage.validationdatasets.PairOfTrainTestRatingsDataset;
+import delfos.dataset.util.DatasetPrinter;
 import delfos.experiment.validation.validationtechnique.HoldOut_Ratings;
 import java.util.ArrayList;
 import java.util.Collection;
 import static org.junit.Assert.fail;
 import org.junit.Test;
-import delfos.configureddatasets.ConfiguredDatasetsFactory;
-import delfos.dataset.basic.rating.Rating;
-import delfos.dataset.basic.rating.RatingsDataset;
-import delfos.dataset.basic.loader.types.DatasetLoader;
-import delfos.dataset.storage.memory.BothIndexRatingsDataset;
-import delfos.dataset.storage.validationdatasets.PairOfTrainTestRatingsDataset;
-import delfos.dataset.util.DatasetPrinter;
 
 /**
  *
@@ -27,27 +28,26 @@ public class HoldOut_RatingsTest {
      */
     @Test
     public void testShuffle() {
-        System.out.println("shuffle");
         DatasetLoader<? extends Rating> datasetLoader = ConfiguredDatasetsFactory.getInstance().getDatasetLoader("complete-5u-10i");
         HoldOut_Ratings instance = new HoldOut_Ratings();
         instance.setSeedValue(123456789);
 
         PairOfTrainTestRatingsDataset[] shuffle = instance.shuffle(datasetLoader);
-        System.out.println(" ============================ TEST ============================");
-        System.out.println(DatasetPrinter.printCompactRatingTable(shuffle[0].test));
-        System.out.println(" ==============================================================");
+        Global.showln(" ============================ TEST ============================");
+        Global.showln(DatasetPrinter.printCompactRatingTable(shuffle[0].test));
+        Global.showln(" ==============================================================");
 
         RatingsDataset<? extends Rating> expResultTest = shuffleExpectedTestSet();
         RatingsDataset<? extends Rating> resultTest = shuffle[0].test;
 
         if (!expResultTest.equals(resultTest)) {
 
-            System.out.println(" ============================ TEST COMPUTED ===================");
-            System.out.println(DatasetPrinter.printCompactRatingTable(resultTest));
-            System.out.println(" ==============================================================");
-            System.out.println(" ============================ TEST EXPECTED ===================");
-            System.out.println(DatasetPrinter.printCompactRatingTable(expResultTest));
-            System.out.println(" ==============================================================");
+            Global.showln(" ============================ TEST COMPUTED ===================");
+            Global.showln(DatasetPrinter.printCompactRatingTable(resultTest));
+            Global.showln(" ==============================================================");
+            Global.showln(" ============================ TEST EXPECTED ===================");
+            Global.showln(DatasetPrinter.printCompactRatingTable(expResultTest));
+            Global.showln(" ==============================================================");
 
             fail("The test set is different to the expected value.");
         }

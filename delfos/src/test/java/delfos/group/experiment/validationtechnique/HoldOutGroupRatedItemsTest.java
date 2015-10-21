@@ -1,18 +1,19 @@
 package delfos.group.experiment.validationtechnique;
 
+import delfos.common.Global;
+import delfos.configureddatasets.ConfiguredDatasetsFactory;
+import delfos.dataset.basic.loader.types.DatasetLoader;
+import delfos.dataset.basic.rating.Rating;
+import delfos.dataset.basic.rating.RatingsDataset;
+import delfos.dataset.storage.memory.BothIndexRatingsDataset;
+import delfos.dataset.storage.validationdatasets.PairOfTrainTestRatingsDataset;
+import delfos.dataset.util.DatasetPrinter;
 import delfos.group.experiment.validation.validationtechniques.HoldOutGroupRatedItems;
+import delfos.group.groupsofusers.GroupOfUsers;
 import java.util.LinkedList;
 import java.util.List;
 import static org.junit.Assert.assertEquals;
 import org.junit.Test;
-import delfos.configureddatasets.ConfiguredDatasetsFactory;
-import delfos.dataset.basic.rating.Rating;
-import delfos.dataset.basic.rating.RatingsDataset;
-import delfos.dataset.basic.loader.types.DatasetLoader;
-import delfos.dataset.storage.memory.BothIndexRatingsDataset;
-import delfos.dataset.storage.validationdatasets.PairOfTrainTestRatingsDataset;
-import delfos.group.groupsofusers.GroupOfUsers;
-import delfos.dataset.util.DatasetPrinter;
 
 /**
  *
@@ -29,7 +30,6 @@ public class HoldOutGroupRatedItemsTest {
      */
     @Test
     public void testWithDatasetComplete5U10I() {
-        System.out.println("getNumberOfSplits");
         DatasetLoader datasetLoader = ConfiguredDatasetsFactory.getInstance().getDatasetLoader("complete-5u-10i");
 
         List<GroupOfUsers> groupsOfUsers = new LinkedList<>();
@@ -41,14 +41,14 @@ public class HoldOutGroupRatedItemsTest {
         PairOfTrainTestRatingsDataset[] pairOfTrainTestRatingsDatasets = instance.shuffle(datasetLoader, groupsOfUsers);
 
         String trainDatasetString = DatasetPrinter.printCompactRatingTable(pairOfTrainTestRatingsDatasets[0].train);
-        System.out.println("============ TRAINING =================");
-        System.out.println(trainDatasetString);
-        System.out.println("=======================================");
+        Global.showln("============ TRAINING =================");
+        Global.showln(trainDatasetString);
+        Global.showln("=======================================");
 
         String testDatasetString = DatasetPrinter.printCompactRatingTable(pairOfTrainTestRatingsDatasets[0].test);
-        System.out.println("============ TEST =================");
-        System.out.println(testDatasetString);
-        System.out.println("=======================================");
+        Global.showln("============ TEST =================");
+        Global.showln(testDatasetString);
+        Global.showln("=======================================");
 
         List<Rating> expectedRatings = new LinkedList<>();
         expectedRatings.add(new Rating(1, 6, 1));

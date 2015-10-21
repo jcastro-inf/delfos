@@ -5,17 +5,17 @@
  */
 package delfos.group.grs.penalty;
 
-import delfos.group.grs.penalty.PenaltyMethods;
+import delfos.common.Global;
+import delfos.common.aggregationoperators.AggregationOperator;
+import delfos.common.aggregationoperators.Mean;
+import delfos.common.aggregationoperators.Median;
+import delfos.common.aggregationoperators.RMSMean;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 import org.junit.Test;
-import delfos.common.aggregationoperators.AggregationOperator;
-import delfos.common.aggregationoperators.Mean;
-import delfos.common.aggregationoperators.Median;
-import delfos.common.aggregationoperators.RMSMean;
 
 /**
  *
@@ -42,7 +42,7 @@ public class PenaltyMethodsTest {
         List<Map<Integer, AggregationOperator>> allCombinations = PenaltyMethods.getAllCombinations(itemSet, allAggregationOperators);
 
         for (Map<Integer, AggregationOperator> combination : allCombinations) {
-            System.out.println(combination);
+            Global.showln(combination.toString());
         }
     }
 

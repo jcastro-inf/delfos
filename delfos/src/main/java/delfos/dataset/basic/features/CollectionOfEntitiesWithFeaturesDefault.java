@@ -52,10 +52,6 @@ public abstract class CollectionOfEntitiesWithFeaturesDefault<Entity extends Ent
     @Override
     public final boolean add(Entity entity) {
 
-        if (entity instanceof Item && entity.getId() == 268) {
-            System.out.print("Debug here..");
-        }
-
         Map<Feature, Object> featureValues_thisEntity = new TreeMap<>();
         for (Feature feature : entity.getFeatures()) {
 

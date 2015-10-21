@@ -2,6 +2,7 @@ package delfos.view.neighborhood;
 
 import delfos.common.Chronometer;
 import delfos.common.DateCollapse;
+import delfos.common.Global;
 import delfos.common.exceptions.dataset.CannotLoadUsersDataset;
 import delfos.common.parameters.ParameterListener;
 import delfos.configureddatasets.ConfiguredDataset;
@@ -482,7 +483,7 @@ public class RecommendationsExplainedWindow extends JFrame {
     };
 
     public void addRecommenderSystemGUI(RecommenderSystem recommenderSystem) {
-        System.out.println("ADD rs: " + recommenderSystem.getAlias());
+        Global.showln("ADD rs: " + recommenderSystem.getAlias());
 
         this.remove(resultsPanel.getComponent());
 
@@ -503,7 +504,7 @@ public class RecommendationsExplainedWindow extends JFrame {
     }
 
     public void removeRecommenderSystemGUI(RecommenderSystem recommenderSystem) {
-        System.out.println("REMOVE rs: " + recommenderSystem.getAlias());
+        Global.showln("REMOVE rs: " + recommenderSystem.getAlias());
 
         recommenderSystem.removeParammeterListener(recommenderSystemParameterListener);
         this.remove(resultsPanel.getComponent());
@@ -568,7 +569,7 @@ public class RecommendationsExplainedWindow extends JFrame {
 
     private RecommendationsGUI getRecommenderSystemRecommendationGUI(RecommenderSystem recommenderSystem) {
 
-        System.out.println("Updating interface for: " + recommenderSystem);
+        Global.showln("Updating interface for: " + recommenderSystem);
 
         if (recommenderSystem instanceof KnnMemoryBasedCFRS) {
             return new KnnMemoryCFRSRecommendationsGUI(this);

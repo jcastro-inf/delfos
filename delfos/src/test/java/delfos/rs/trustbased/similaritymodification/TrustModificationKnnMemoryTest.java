@@ -1,7 +1,5 @@
 package delfos.rs.trustbased.similaritymodification;
 
-import delfos.rs.trustbased.similaritymodification.TrustModificationKnnMemory;
-import org.junit.Test;
 import delfos.constants.DelfosTest;
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
@@ -18,6 +16,7 @@ import static delfos.rs.collaborativefiltering.knn.KnnCollaborativeRecommender.S
 import delfos.rs.trustbased.belieffunctions.LinearBelief;
 import static delfos.rs.trustbased.similaritymodification.TrustModificationKnnMemory.BELIEF_DERIVATION;
 import delfos.similaritymeasures.PearsonCorrelationCoefficient;
+import org.junit.Test;
 
 /**
  *
@@ -31,7 +30,6 @@ public class TrustModificationKnnMemoryTest extends DelfosTest {
 
     @Test
     public void linearModification() {
-        System.out.println("linearModification");
 
         DatasetLoader<? extends Rating> datasetLoader;
         //datasetLoaer = ConfiguredDatasetsFactory.getInstance().getDatasetLoader("ml-100k");
