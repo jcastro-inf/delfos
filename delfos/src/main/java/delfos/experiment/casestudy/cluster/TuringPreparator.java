@@ -124,6 +124,10 @@ public class TuringPreparator implements ExperimentPreparator {
                 });
     }
 
+    public int sizeOfAllExperimentsInDirectory(File directory) {
+        return Arrays.asList(directory.listFiles()).size();
+    }
+
     public void executeAllExperimentsInDirectory(File directory, int numExec, int maxCPU) {
         Arrays.asList(directory.listFiles())
                 .stream()
