@@ -14,7 +14,6 @@ import jxl.Workbook;
 import jxl.WorkbookSettings;
 import jxl.format.Alignment;
 import jxl.format.UnderlineStyle;
-import jxl.write.Formula;
 import jxl.write.Label;
 import jxl.write.NumberFormat;
 import jxl.write.WritableCellFormat;
@@ -65,6 +64,7 @@ public class AggregateResultsMatrixExcelWriter {
             }
 
             WritableSheet allExperiments = workbook.createSheet(CaseStudyExcel.ALL_EXPERIMENTS_SHEET_NAME, 0);
+
             createLabel(allExperiments);
 
             //Seet the content.
@@ -149,34 +149,6 @@ public class AggregateResultsMatrixExcelWriter {
         }
     }
 
-    private static void createContent(WritableSheet sheet) throws WriteException,
-            RowsExceededException {
-        // Write a few number
-        for (int i = 1; i < 10; i++) {
-            // First column
-            addNumber(sheet, 0, i, i + 10);
-            // Second column
-            addNumber(sheet, 1, i, i * i);
-        }
-        // Lets calculate the sum of it
-        StringBuffer buf = new StringBuffer();
-        buf.append("SUM(A2:A10)");
-        Formula f = new Formula(0, 10, buf.toString());
-        sheet.addCell(f);
-        buf = new StringBuffer();
-        buf.append("SUM(B2:B10)");
-        f = new Formula(1, 10, buf.toString());
-        sheet.addCell(f);
-
-        // now a bit of text
-        for (int i = 12; i < 20; i++) {
-            // First column
-            addText(sheet, 0, i, "Boring text " + i);
-            // Second column
-            addText(sheet, 1, i, "Another text");
-        }
-    }
-
     private static void addTitleText(WritableSheet sheet, int column, int row, String s)
             throws RowsExceededException, WriteException {
         Label label;
@@ -200,8 +172,14 @@ public class AggregateResultsMatrixExcelWriter {
 
     private static void addText(WritableSheet sheet, int column, int row, String s)
             throws WriteException, RowsExceededException {
-        Label label;
-        label = new Label(column, row, s, defaultFormat);
-        sheet.addCell(label);
+
+        try {
+            //Smartly check if it should be a number instead of text.
+            double number = Double.parseDouble(s);
+            addNumber(sheet, column, row, number);
+        } catch (NumberFormatException ex) {
+            Label label = new Label(column, row, s, defaultFormat);
+            sheet.addCell(label);
+        }
     }
 }
