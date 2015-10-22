@@ -4,7 +4,7 @@
 #PBS -M jcastro@ujaen.es
 #PBS -r y
 
-#PBS -l nodes=1:ppn=5
+#PBS -l nodes=1:ppn=12
 hostname
 cd $PBS_O_WORKDIR
 
