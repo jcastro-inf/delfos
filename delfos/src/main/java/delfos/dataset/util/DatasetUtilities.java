@@ -111,7 +111,7 @@ public class DatasetUtilities {
 
     public static Map<Integer, Map<Integer, Number>> getMembersRatings_byUser(GroupOfUsers groupOfUsers, DatasetLoader<? extends Rating> datasetLoader) throws CannotLoadRatingsDataset, UserNotFound {
         Map<Integer, Map<Integer, Number>> membersRatings = new TreeMap<>();
-        for (int idUser : groupOfUsers.getGroupMembers()) {
+        for (int idUser : groupOfUsers.getIdMembers()) {
             Map<Integer, ? extends Rating> userRatingsRated = datasetLoader.getRatingsDataset().getUserRatingsRated(idUser);
             membersRatings.put(idUser, new TreeMap<>());
             userRatingsRated.keySet().stream().forEach((Integer idItem) -> {

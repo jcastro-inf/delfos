@@ -47,16 +47,16 @@ public class OutliersRatingsStandardDeviationFilterTest {
             }
         }
         Global.showInfoMessage("Original ratings of group\n");
-        DatasetPrinterDeprecated.printCompactRatingTable(new BothIndexRatingsDataset(groupRatings), group.getGroupMembers(), items);
+        DatasetPrinterDeprecated.printCompactRatingTable(new BothIndexRatingsDataset(groupRatings), group.getIdMembers(), items);
 
         Map<Integer, Map<Integer, Rating>> filteredRatings = instance.getFilteredRatings(ratingsDataset, group);
         assertNotNull(filteredRatings);
 
         Global.showInfoMessage("Original ratings of group\n");
-        DatasetPrinterDeprecated.printCompactRatingTable(new BothIndexRatingsDataset(groupRatings), group.getGroupMembers(), items);
+        DatasetPrinterDeprecated.printCompactRatingTable(new BothIndexRatingsDataset(groupRatings), group.getIdMembers(), items);
 
         Global.showInfoMessage("Filtered ratings of group\n");
-        DatasetPrinterDeprecated.printCompactRatingTable(DatasetUtilities.getMapOfMaps_Number(filteredRatings), group.getGroupMembers(), items);
+        DatasetPrinterDeprecated.printCompactRatingTable(DatasetUtilities.getMapOfMaps_Number(filteredRatings), group.getIdMembers(), items);
     }
 
     @Test
@@ -81,15 +81,15 @@ public class OutliersRatingsStandardDeviationFilterTest {
             }
         }
         Global.showInfoMessage("Original ratings of group\n");
-        DatasetPrinterDeprecated.printCompactRatingTable(new BothIndexRatingsDataset(groupRatings), group.getGroupMembers(), items);
+        DatasetPrinterDeprecated.printCompactRatingTable(new BothIndexRatingsDataset(groupRatings), group.getIdMembers(), items);
 
         Map<Integer, Map<Integer, Rating>> filteredRatings = instance.getFilteredRatings(ratingsDataset, group);
         assertNotNull(filteredRatings);
 
         Global.showInfoMessage("Original ratings of group\n");
-        DatasetPrinterDeprecated.printCompactRatingTable(new BothIndexRatingsDataset(groupRatings), group.getGroupMembers(), items);
+        DatasetPrinterDeprecated.printCompactRatingTable(new BothIndexRatingsDataset(groupRatings), group.getIdMembers(), items);
 
         Global.showInfoMessage("Filtered ratings of group\n");
-        DatasetPrinterDeprecated.printCompactRatingTable(DatasetUtilities.getMapOfMaps_Number(filteredRatings), group.getGroupMembers(), items);
+        DatasetPrinterDeprecated.printCompactRatingTable(DatasetUtilities.getMapOfMaps_Number(filteredRatings), group.getIdMembers(), items);
     }
 }

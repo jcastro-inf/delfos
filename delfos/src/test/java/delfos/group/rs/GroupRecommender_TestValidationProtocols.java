@@ -81,7 +81,7 @@ public class GroupRecommender_TestValidationProtocols extends GroupRecommenderSy
         }
 
         //Compruebo si en el dataset actual se tienen las valoraciones a predecir
-        for (int idUser : groupOfUsers.getGroupMembers()) {
+        for (int idUser : groupOfUsers.getIdMembers()) {
             boolean error = false;
             Collection<Integer> userRated = datasetLoader.getRatingsDataset().getUserRated(idUser);
             for (int idItem : candidateItems) {
@@ -99,7 +99,7 @@ public class GroupRecommender_TestValidationProtocols extends GroupRecommenderSy
         }
 
         //Compruebo si en el dataset de construcción del modelo del grupo estaba la valoración
-        for (int idUser : groupOfUsers.getGroupMembers()) {
+        for (int idUser : groupOfUsers.getIdMembers()) {
             boolean error = false;
             Collection<Integer> userRated = datasetsEnConstruccionModeloGrupo.get(groupOfUsers).getUserRated(idUser);
             for (int idItem : candidateItems) {
@@ -117,7 +117,7 @@ public class GroupRecommender_TestValidationProtocols extends GroupRecommenderSy
         }
 
         //Compruebo si en el dataset de construcción del modelo general estaba la valoración
-        for (int idUser : groupOfUsers.getGroupMembers()) {
+        for (int idUser : groupOfUsers.getIdMembers()) {
             boolean error = false;
             Collection<Integer> userRated = datasetEnBuild.getUserRated(idUser);
             for (int idItem : candidateItems) {

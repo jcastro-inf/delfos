@@ -1,5 +1,6 @@
 package delfos.group.grouplevelcasestudy.parallel;
 
+import delfos.common.Global;
 import delfos.common.exceptions.dataset.CannotLoadContentDataset;
 import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
 import delfos.common.exceptions.dataset.items.ItemNotFound;
@@ -47,11 +48,11 @@ public class GroupLevelCaseStudy_parallel {
 
         final RelevanceCriteria relevanceCriteria = datasetLoader.getDefaultRelevanceCriteria();
 
-        System.out.println("");
-        System.out.println("===============================================================");
-        System.out.println("===================== RESULTADOS POR GRUPO ====================");
-        System.out.println("===============================================================");
-        System.out.println("");
+        Global.showln("");
+        Global.showln("===============================================================");
+        Global.showln("===================== RESULTADOS POR GRUPO ====================");
+        Global.showln("===============================================================");
+        Global.showln("");
 
         {
             //Línea de cabecera.
@@ -66,7 +67,7 @@ public class GroupLevelCaseStudy_parallel {
                     line.append("\t").append(groupRecommenderSystem.getAlias()).append("-->").append(groupEvaluationMeasure.getAlias());
                 }
             }
-            System.out.println(line);
+            Global.showln(line.toString());
         }
 
         List<SingleGroupTask> tasks = new ArrayList<>();

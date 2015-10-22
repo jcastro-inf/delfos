@@ -24,7 +24,7 @@ public class NeverRatedItems extends RecomendableItemTechnique {
     public Collection<Integer> getRecommendableItems(GroupOfUsers groupOfUsers, RatingsDataset<? extends Rating> ratingsDataset, ContentDataset contentDataset) {
         Set<Integer> ret = new TreeSet<Integer>(contentDataset.allID());
 
-        for (int idUser : groupOfUsers.getGroupMembers()) {
+        for (int idUser : groupOfUsers.getIdMembers()) {
             try {
                 ret.removeAll(ratingsDataset.getUserRated(idUser));
             } catch (UserNotFound ex) {

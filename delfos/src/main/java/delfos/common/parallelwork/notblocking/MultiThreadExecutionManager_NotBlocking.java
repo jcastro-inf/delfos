@@ -105,8 +105,7 @@ public class MultiThreadExecutionManager_NotBlocking<TaskType extends Task> impl
                     Parallelisation.waitUntilFreeSlots();
                 }
             } catch (InterruptedException ex) {
-                //Esta hebra ha sido interrumpida, hay que parar.
-                System.out.println("Execution finished signal received.");
+                Global.showThreadMessageAnnoying("Execution finished signal received.");
                 break;
             }
 
@@ -207,7 +206,7 @@ public class MultiThreadExecutionManager_NotBlocking<TaskType extends Task> impl
             //TODO: Vuelvo a comportarme como un worker (Vuelvo a reservar una hebra).
             Parallelisation.iAmNotAWorkerCreator();
         } catch (InterruptedException ex) {
-            System.out.println("Execution finished signal received.");
+            Global.showThreadMessageAnnoying("Execution finished signal received.");
         }
 
         Global.showThreadMessageAnnoyingTimestamped("Task " + taskName + " finished.\n");

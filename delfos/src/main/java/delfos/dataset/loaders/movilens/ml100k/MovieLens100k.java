@@ -86,20 +86,6 @@ public class MovieLens100k extends CompleteDatasetLoaderAbstract<Rating> {
             getUsersDataset();
             getContentDataset();
 
-            int i = 1;
-            for (Item item : getContentDataset()) {
-                if (item.getId() != i) {
-                    System.out.print("EEEEEEE\t");
-                } else {
-                    System.out.println("\t\t");
-                }
-                System.out.print("id: " + item.getId() + "\t");
-
-                System.out.println("\t" + item.getName());
-                i++;
-            }
-            getContentDataset().stream().forEachOrdered((item -> System.out.println("Item: " + item.getId())));
-
             try {
                 List<Rating> ratings = new LinkedList<>();
 
@@ -235,14 +221,10 @@ public class MovieLens100k extends CompleteDatasetLoaderAbstract<Rating> {
                                 nominalFeatures.keySet().toArray(new Feature[0]),
                                 nominalFeatures.values().toArray());
 
-                        if (idItem == 268) {
-                            System.out.println("AAAAAAAAAAA");
-                            boolean contains = items.contains(item);
-
-                            System.out.println("cococooccocntains???");
-                        }
                         boolean added = items.add(item);
-                        System.out.println("sdsdgdfwg");
+                        if (!added) {
+                            throw new IllegalStateException("The item '" + item + "' was already added!.");
+                        }
 
                     }
                 }

@@ -43,7 +43,7 @@ public class RandomGroupRecommender
 
     @Override
     public GroupOfUsers buildGroupModel(DatasetLoader<? extends Rating> datasetLoader, RandomRecommendationModel<GroupOfUsers> RecommendationModel, GroupOfUsers groupOfUsers) throws UserNotFound {
-        return new GroupOfUsers(groupOfUsers.getGroupMembers());
+        return new GroupOfUsers(groupOfUsers.getIdMembers());
     }
 
     @Override

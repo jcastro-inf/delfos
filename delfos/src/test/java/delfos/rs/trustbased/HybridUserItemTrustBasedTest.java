@@ -127,6 +127,5 @@ public class HybridUserItemTrustBasedTest extends DelfosTest {
         assertEquals("The data predicted does not match the paper data.", 2.71, predictionUser4Item5, delta);
         assertEquals("The data predicted does not match the paper data.", 1.33, predictionUser4Item6, delta);
 
-        System.out.println("Fin del test.");
     }
 }

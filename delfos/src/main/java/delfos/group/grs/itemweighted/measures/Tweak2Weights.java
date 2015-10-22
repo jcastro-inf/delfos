@@ -1,17 +1,17 @@
 package delfos.group.grs.itemweighted.measures;
 
-import java.util.Collection;
-import java.util.Map;
-import java.util.TreeMap;
 import delfos.common.Global;
 import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
 import delfos.common.exceptions.dataset.users.UserNotFound;
 import delfos.common.statisticalfuncions.StandardDeviation;
-import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.loader.types.DatasetLoader;
+import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.util.DatasetPrinter;
 import delfos.dataset.util.DatasetUtilities;
 import delfos.group.groupsofusers.GroupOfUsers;
+import java.util.Collection;
+import java.util.Map;
+import java.util.TreeMap;
 
 public class Tweak2Weights extends GroupItemWeight {
 
@@ -54,7 +54,7 @@ public class Tweak2Weights extends GroupItemWeight {
             ratingsAndWeight.put(4444, stddev_results.get(WEIGHTS));
 
             String ratingsAndWeight_CompactRatingTable = DatasetPrinter.printCompactRatingTable(ratingsAndWeight);
-            System.out.println(ratingsAndWeight_CompactRatingTable);
+            Global.showln(ratingsAndWeight_CompactRatingTable);
             System.out.flush();
         }
 
@@ -76,8 +76,8 @@ public class Tweak2Weights extends GroupItemWeight {
             standardDeviationMinimum = Math.min(standardDeviationMinimum, standardDeviation.doubleValue());
         }
 
-        System.out.println(standardDeviationMaximum);
-        System.out.println(standardDeviationMinimum);
+        Global.showln(Double.toString(standardDeviationMaximum));
+        Global.showln(Double.toString(standardDeviationMinimum));
 
         for (int idItem : standardDeviations.keySet()) {
 

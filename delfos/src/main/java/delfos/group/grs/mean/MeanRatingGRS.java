@@ -65,7 +65,7 @@ public class MeanRatingGRS extends GroupRecommenderSystemAdapter<MeanRatingRSMod
 
     @Override
     public GroupOfUsers buildGroupModel(DatasetLoader<? extends Rating> datasetLoader, MeanRatingRSModel RecommendationModel, GroupOfUsers groupOfUsers) throws UserNotFound {
-        return new GroupOfUsers(groupOfUsers.getGroupMembers());
+        return new GroupOfUsers(groupOfUsers.getIdMembers());
     }
 
     @Override

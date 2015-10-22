@@ -43,10 +43,10 @@ public class RandomRecommender extends CollaborativeRecommender<RandomRecommenda
     @Override
     public RandomRecommendationModel<Integer> buildRecommendationModel(DatasetLoader<? extends Rating> datasetLoader) throws CannotLoadRatingsDataset {
 
-        System.out.println("Dataset Alias: " + datasetLoader.getAlias());
-        System.out.println("#Ratings: \t" + datasetLoader.getRatingsDataset().getNumRatings());
-        System.out.println("#Users:   \t" + datasetLoader.getRatingsDataset().allUsers().size());
-        System.out.println("#Items:   \t" + datasetLoader.getRatingsDataset().allRatedItems().size());
+        Global.showln("Dataset Alias: " + datasetLoader.getAlias());
+        Global.showln("#Ratings: \t" + datasetLoader.getRatingsDataset().getNumRatings());
+        Global.showln("#Users:   \t" + datasetLoader.getRatingsDataset().allUsers().size());
+        Global.showln("#Items:   \t" + datasetLoader.getRatingsDataset().allRatedItems().size());
 
         HistogramNumbersSmart histogramSmart = new HistogramNumbersSmart(0.5);
         for (Rating rating : datasetLoader.getRatingsDataset()) {

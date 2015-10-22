@@ -59,10 +59,10 @@ public class OutliersRatingsFilterTest extends DelfosTest {
         assertNotNull(filteredRatings);
 
         Global.showInfoMessage("Original ratings of group\n");
-        DatasetPrinterDeprecated.printCompactRatingTable(new BothIndexRatingsDataset(groupRatings), group.getGroupMembers(), items);
+        DatasetPrinterDeprecated.printCompactRatingTable(new BothIndexRatingsDataset(groupRatings), group.getIdMembers(), items);
 
         Global.showInfoMessage("Filtered ratings of group\n");
-        DatasetPrinterDeprecated.printCompactRatingTable(DatasetUtilities.getMapOfMaps_Number(filteredRatings), group.getGroupMembers(), items);
+        DatasetPrinterDeprecated.printCompactRatingTable(DatasetUtilities.getMapOfMaps_Number(filteredRatings), group.getIdMembers(), items);
     }
 
     /**
@@ -104,12 +104,12 @@ public class OutliersRatingsFilterTest extends DelfosTest {
             assertNotNull(filteredRatings);
 
             Global.showInfoMessage("Original ratings of group\n");
-            DatasetPrinterDeprecated.printCompactRatingTable(new BothIndexRatingsDataset(groupRatings), group.getGroupMembers(), items);
+            DatasetPrinterDeprecated.printCompactRatingTable(new BothIndexRatingsDataset(groupRatings), group.getIdMembers(), items);
 
             Global.showInfoMessage("Removed ratings of group\n");
 
             Global.showInfoMessage("Final ratings of group\n");
-            DatasetPrinterDeprecated.printCompactRatingTable(DatasetUtilities.getMapOfMaps_Number(filteredRatings), group.getGroupMembers(), items);
+            DatasetPrinterDeprecated.printCompactRatingTable(DatasetUtilities.getMapOfMaps_Number(filteredRatings), group.getIdMembers(), items);
             Global.showInfoMessage("\n\n========================================================================\n");
         }
     }

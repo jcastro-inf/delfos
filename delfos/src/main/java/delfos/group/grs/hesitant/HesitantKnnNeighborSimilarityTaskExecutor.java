@@ -4,6 +4,7 @@ import delfos.common.parallelwork.SingleTaskExecute;
 import delfos.dataset.basic.item.Item;
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
+import delfos.dataset.basic.user.User;
 import delfos.rs.collaborativefiltering.knn.RecommendationEntity;
 import delfos.rs.collaborativefiltering.profile.Neighbor;
 import es.jcastro.hesitant.HesitantValuation;
@@ -20,12 +21,12 @@ public final class HesitantKnnNeighborSimilarityTaskExecutor implements SingleTa
 
     @Override
     public void executeSingleTask(HesitantKnnNeighborSimilarityTask task) {
-        int idNeighbor = task.idNeighbor;
+        User neighborUser = task.neighborUser;
 
         DatasetLoader<? extends Rating> datasetLoader = task.datasetLoader;
         HesitantValuation<Item, Double> hesitantGroupModel = task.groupModel;
         HesitantValuation<Item, Double> neighborProfile
-                = HesitantKnnGroupUser.getHesitantProfile(datasetLoader, Arrays.asList(idNeighbor));
+                = HesitantKnnGroupUser.getHesitantProfile(datasetLoader, Arrays.asList(neighborUser));
         HesitantSimilarity hesitantSimilarity = task.hesitantSimilarity;
 
         Set<Item> intersection = new TreeSet<>();
@@ -36,7 +37,7 @@ public final class HesitantKnnNeighborSimilarityTaskExecutor implements SingleTa
                 hesitantGroupModel.select(intersection),
                 neighborProfile.select(intersection));
 
-        Neighbor neighbor = new Neighbor(RecommendationEntity.USER, idNeighbor, sim);
+        Neighbor neighbor = new Neighbor(RecommendationEntity.USER, neighborUser, sim);
         task.setNeighbor(neighbor);
     }
 }

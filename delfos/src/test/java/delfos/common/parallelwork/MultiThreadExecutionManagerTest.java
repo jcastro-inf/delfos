@@ -1,13 +1,13 @@
 package delfos.common.parallelwork;
 
-import delfos.common.parallelwork.MultiThreadExecutionManager;
+import delfos.common.Global;
+import delfos.common.parallelwork.mock.MockSingleTaskExecutor;
+import delfos.common.parallelwork.mock.MockTask;
+import delfos.constants.DelfosTest;
 import java.util.ArrayList;
 import java.util.Collection;
 import static org.junit.Assert.fail;
 import org.junit.Test;
-import delfos.common.parallelwork.mock.MockSingleTaskExecutor;
-import delfos.common.parallelwork.mock.MockTask;
-import delfos.constants.DelfosTest;
 
 /**
  *
@@ -46,12 +46,8 @@ public class MultiThreadExecutionManagerTest extends DelfosTest {
         }
     }
 
-    /**
-     * Test of run method, of class MultiThreadExecutionManager.
-     */
     @Test
     public void testRun() throws InterruptedException {
-        System.out.println("run");
         Collection<MockTask> listOfTasks = new ArrayList<>();
         listOfTasks.add(new MockTask(0, false));
         listOfTasks.add(new MockTask(800, false));
@@ -68,7 +64,7 @@ public class MultiThreadExecutionManagerTest extends DelfosTest {
      */
     @Test
     public void testRunFailed() {
-        System.out.println("Run with failures.");
+        Global.showln("Run with failures.");
         Collection<MockTask> listOfTasks = new ArrayList<>();
         listOfTasks.add(new MockTask(0, true));
         listOfTasks.add(new MockTask(800, false));

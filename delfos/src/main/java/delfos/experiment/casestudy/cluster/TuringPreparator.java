@@ -2,6 +2,7 @@ package delfos.experiment.casestudy.cluster;
 
 import delfos.Constants;
 import delfos.common.FileUtilities;
+import delfos.common.Global;
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
 import delfos.experiment.casestudy.CaseStudy;
@@ -119,8 +120,12 @@ public class TuringPreparator implements ExperimentPreparator {
 
                     Main.mainWithExceptions(args);
 
-                    System.out.println("==============================");
+                    Global.show("==============================\n");
                 });
+    }
+
+    public int sizeOfAllExperimentsInDirectory(File directory) {
+        return Arrays.asList(directory.listFiles()).size();
     }
 
     public void executeAllExperimentsInDirectory(File directory, int numExec, int maxCPU) {
@@ -138,7 +143,7 @@ public class TuringPreparator implements ExperimentPreparator {
 
                     Main.mainWithExceptions(args);
 
-                    System.out.println("==============================");
+                    Global.show("==============================\n");
                 });
     }
 }

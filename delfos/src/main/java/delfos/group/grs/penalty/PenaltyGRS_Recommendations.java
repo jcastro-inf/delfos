@@ -100,7 +100,7 @@ public class PenaltyGRS_Recommendations extends GroupRecommenderSystemAdapter<Si
 
     @Override
     public GroupOfUsers buildGroupModel(DatasetLoader<? extends Rating> datasetLoader, SingleRecommendationModel RecommendationModel, GroupOfUsers groupOfUsers) throws UserNotFound, CannotLoadRatingsDataset {
-        return new GroupOfUsers(groupOfUsers.getGroupMembers());
+        return new GroupOfUsers(groupOfUsers.getIdMembers());
     }
 
     @Override
@@ -112,7 +112,7 @@ public class PenaltyGRS_Recommendations extends GroupRecommenderSystemAdapter<Si
         RecommenderSystem singleUserRecommender = getSingleUserRecommender();
         Map<Integer, Collection<Recommendation>> recommendationsLists_byMember
                 = performSingleUserRecommendations(
-                        groupOfUsers.getGroupMembers(),
+                        groupOfUsers.getIdMembers(),
                         singleUserRecommender, datasetLoader,
                         RecommendationModel,
                         candidateItems);

@@ -131,7 +131,7 @@ public class CheckCoverageTest {
         caseStudy.addExecutionProgressListener(new ExecutionProgressListener_default(System.out, 10000));
 
         caseStudy.addExecutionProgressListener((String proceso, int percent, long remainingMiliSeconds) -> {
-            System.out.println(proceso + " --> " + percent + "% (" + DateCollapse.collapse(remainingMiliSeconds) + ")");
+            Global.showln(proceso + " --> " + percent + "% (" + DateCollapse.collapse(remainingMiliSeconds) + ")");
         });
 
         String defaultFileName = GroupCaseStudyXML.getDefaultFileName(caseStudy);

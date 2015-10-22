@@ -122,7 +122,7 @@ public class HoldOutGroupMemberTemporalRatings extends GroupValidationTechnique 
 
                 Set<Integer> allUsers = new TreeSet<>();
                 for (GroupOfUsers g : groupsOfUsers) {
-                    allUsers.addAll(g.getGroupMembers());
+                    allUsers.addAll(g.getIdMembers());
                 }
 
                 Global.showInfoMessage("Dataset de training.\n");
@@ -162,7 +162,7 @@ public class HoldOutGroupMemberTemporalRatings extends GroupValidationTechnique 
     private Set<Integer> getUsersInGroups(Iterable<GroupOfUsers> groupsOfUsers) {
         Set<Integer> usersInGroups = new TreeSet<>();
         for (GroupOfUsers groupOfUsers : groupsOfUsers) {
-            usersInGroups.addAll(groupOfUsers.getGroupMembers());
+            usersInGroups.addAll(groupOfUsers.getIdMembers());
         }
         return usersInGroups;
     }

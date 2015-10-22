@@ -1,7 +1,19 @@
 package delfos.similaritymeasures.useruser;
 
-import delfos.similaritymeasures.useruser.UserUserMultipleCorrelationCoefficient;
-import delfos.similaritymeasures.useruser.UserUserSimilarityWrapper;
+import delfos.common.Chronometer;
+import delfos.common.FileUtilities;
+import delfos.common.Global;
+import delfos.common.datastructures.histograms.HistogramNumbersSmart;
+import delfos.common.exceptions.CouldNotComputeSimilarity;
+import delfos.common.exceptions.dataset.users.UserNotFound;
+import delfos.constants.TestConstants;
+import delfos.dataset.basic.loader.types.DatasetLoader;
+import delfos.dataset.basic.rating.Rating;
+import delfos.dataset.generated.random.RandomDatasetLoader;
+import delfos.dataset.util.DatasetPrinter;
+import delfos.similaritymeasures.BasicSimilarityMeasure;
+import delfos.similaritymeasures.CosineCoefficient;
+import delfos.similaritymeasures.PearsonCorrelationCoefficient;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -11,19 +23,6 @@ import java.util.Random;
 import static org.junit.Assert.assertEquals;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import delfos.common.Chronometer;
-import delfos.common.FileUtilities;
-import delfos.common.datastructures.histograms.HistogramNumbersSmart;
-import delfos.common.exceptions.CouldNotComputeSimilarity;
-import delfos.common.exceptions.dataset.users.UserNotFound;
-import delfos.constants.TestConstants;
-import delfos.dataset.basic.rating.Rating;
-import delfos.dataset.generated.random.RandomDatasetLoader;
-import delfos.dataset.basic.loader.types.DatasetLoader;
-import delfos.dataset.util.DatasetPrinter;
-import delfos.similaritymeasures.BasicSimilarityMeasure;
-import delfos.similaritymeasures.CosineCoefficient;
-import delfos.similaritymeasures.PearsonCorrelationCoefficient;
 
 /**
  *
@@ -44,7 +43,6 @@ public class UserUserMultipleCorrelationCoefficientTest {
 
     @Test
     public void testWrapper_PearsonCorrelationCoefficient() throws Exception {
-        System.out.println("testWrapper_PearsonCorrelationCoefficient");
 
         PearsonCorrelationCoefficient pcc = new PearsonCorrelationCoefficient();
         int idUser1 = 54;
@@ -57,7 +55,6 @@ public class UserUserMultipleCorrelationCoefficientTest {
 
     @Test
     public void testWrapper_CosineCorrelationCoefficient() throws Exception {
-        System.out.println("testWrapper_CosineCorrelationCoefficient");
 
         BasicSimilarityMeasure basicSimilarityMeasure = new CosineCoefficient();
         int idUser1 = 54;
@@ -69,7 +66,6 @@ public class UserUserMultipleCorrelationCoefficientTest {
     }
 
     public void testWrapper_PearsonCorrelationCoefficient_HISTOGRAMS() throws Exception {
-        System.out.println("testWrapper_PearsonCorrelationCoefficient_HISTOGRAMS");
 
         PearsonCorrelationCoefficient pcc = new PearsonCorrelationCoefficient();
 
@@ -79,7 +75,7 @@ public class UserUserMultipleCorrelationCoefficientTest {
         HistogramNumbersSmart histogramPccMulti = new HistogramNumbersSmart(.1);
         HistogramNumbersSmart histogramPCC = new HistogramNumbersSmart(.1);
 
-        System.out.println("idUser\tidNeighbor\tpcc\tpccMulti");
+        Global.showln("idUser\tidNeighbor\tpcc\tpccMulti");
 
         for (int idUser : datasetLoader.getRatingsDataset().allUsers()) {
             for (int idNeighbor : datasetLoader.getRatingsDataset().allUsers()) {
@@ -102,7 +98,7 @@ public class UserUserMultipleCorrelationCoefficientTest {
                     pccValue = 0;
                 }
 
-                System.out.println(idUser + "\t" + idNeighbor + "\t" + pccValue + "\t" + pccMultiValue);
+                Global.showln(idUser + "\t" + idNeighbor + "\t" + pccValue + "\t" + pccMultiValue);
                 histogramPCC.addValue(pccValue);
                 histogramPccMulti.addValue(pccMultiValue);
             }
@@ -114,7 +110,6 @@ public class UserUserMultipleCorrelationCoefficientTest {
 
     //@Test
     public void computeRValue_testMetodico() throws IOException, UserNotFound {
-        System.out.println("computeRValue_testMetodico");
 
         PearsonCorrelationCoefficient pcc = new PearsonCorrelationCoefficient();
 
@@ -154,14 +149,10 @@ public class UserUserMultipleCorrelationCoefficientTest {
                 }
             }
         }
-
-        System.out.println("computeRValue_testMetodico Finished");
-
     }
 
     //@Test
     public void computeRValue_test() throws UserNotFound, IOException {
-        System.out.println("computeRValue_test");
 
         PearsonCorrelationCoefficient pcc = new PearsonCorrelationCoefficient();
 
@@ -267,12 +258,12 @@ public class UserUserMultipleCorrelationCoefficientTest {
 
                         double computeRValue = pcc_multi.computeRValueFromSimilarities(simAB, simAC_i, simBC_i);
                         String contentLine = -1 + "\t" + -1 + "\t" + -1 + "\t" + computeRValue + "\t" + simAB + "\t" + simAC_i + "\t" + simBC_i + "\n";
-                        System.out.print(contentLine);
+                        Global.show(contentLine);
 
                         histogramPccMulti.addValue(computeRValue);
                     } catch (CouldNotComputeSimilarity ex) {
                         String contentLine = -1 + "\t" + -1 + "\t" + -1 + "\tNaN\t??\t??\t??\n";
-                        System.out.print(contentLine);
+                        Global.show(contentLine);
                     }
                 }
             }

@@ -5,7 +5,6 @@
  */
 package delfos.similaritymeasures;
 
-import delfos.similaritymeasures.PearsonCorrelationCoefficient;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -24,7 +23,6 @@ public class PearsonCorrelationCoefficientTest {
 
     @Test
     public void testPerfectNegativeCorrelation() throws Exception {
-        System.out.println("testPerfectNegativeCorrelation");
 
         Float[] array1 = {1.0f, 2.0f, 3.0f, 4.0f, 5.0f};
         Float[] array2 = {5.0f, 4.0f, 3.0f, 2.0f, 1.0f};
@@ -40,7 +38,6 @@ public class PearsonCorrelationCoefficientTest {
 
     @Test
     public void testPerfectCorrelation() throws Exception {
-        System.out.println("testPerfectCorrelation");
 
         Float[] array1 = {1.0f, 2.0f, 3.0f, 4.0f, 5.0f};
         Float[] array2 = {1.0f, 2.0f, 3.0f, 4.0f, 5.0f};
@@ -56,7 +53,6 @@ public class PearsonCorrelationCoefficientTest {
 
     @Test
     public void testPerfectNegativeCorrelation_weighted() throws Exception {
-        System.out.println("testPerfectNegativeCorrelation");
 
         Float[] array1 = {1.0f, 2.0f, 3.0f, 4.0f, 5.0f};
         Float[] array2 = {5.0f, 4.0f, 3.0f, 2.0f, 1.0f};
@@ -75,7 +71,6 @@ public class PearsonCorrelationCoefficientTest {
 
     @Test
     public void testPerfectCorrelation_weighted() throws Exception {
-        System.out.println("testPerfectCorrelation");
 
         Float[] array1 = {1.0f, 2.0f, 3.0f, 4.0f, 5.0f};
         Float[] array2 = {1.0f, 2.0f, 3.0f, 4.0f, 5.0f};

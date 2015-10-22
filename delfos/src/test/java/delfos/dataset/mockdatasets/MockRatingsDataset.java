@@ -1,5 +1,11 @@
 package delfos.dataset.mockdatasets;
 
+import delfos.common.exceptions.dataset.items.ItemNotFound;
+import delfos.common.exceptions.dataset.users.UserNotFound;
+import delfos.dataset.basic.rating.Rating;
+import delfos.dataset.basic.rating.RatingsDataset;
+import delfos.dataset.basic.rating.domain.DecimalDomain;
+import delfos.dataset.basic.rating.domain.Domain;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -9,12 +15,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
-import delfos.common.exceptions.dataset.items.ItemNotFound;
-import delfos.common.exceptions.dataset.users.UserNotFound;
-import delfos.dataset.basic.rating.Rating;
-import delfos.dataset.basic.rating.RatingsDataset;
-import delfos.dataset.basic.rating.domain.DecimalDomain;
-import delfos.dataset.basic.rating.domain.Domain;
 
 /**
  * Clase que implementa un Mock de un dataset de valoraciones. Valoraciones que
@@ -172,13 +172,14 @@ public class MockRatingsDataset implements RatingsDataset<Rating> {
         checkItem(idItem);
         Collection<Rating> itemRatings = getItemRatingsRated(idItem).values();
 
-        float mean = 0;
+        double mean = 0;
         mean = itemRatings.stream()
-                .map((ratingValue) -> ratingValue.getRatingValue().floatValue())
-                .reduce(mean, (accumulator, _item) -> accumulator + _item);
+                .mapToDouble(rating -> rating.getRatingValue().doubleValue())
+                .average()
+                .getAsDouble();
 
         mean = mean / itemRatings.size();
-        return mean;
+        return (float) mean;
     }
 
     @Override
@@ -187,13 +188,14 @@ public class MockRatingsDataset implements RatingsDataset<Rating> {
 
         Collection<Rating> userRatings = getUserRatingsRated(idUser).values();
 
-        float mean = 0;
+        double mean = 0;
         mean = userRatings.stream()
-                .map((ratingValue) -> ratingValue.getRatingValue().floatValue())
-                .reduce(mean, (accumulator, _item) -> accumulator + _item);
+                .mapToDouble(rating -> rating.getRatingValue().doubleValue())
+                .average()
+                .getAsDouble();
 
         mean = mean / userRatings.size();
-        return mean;
+        return (float) mean;
     }
 
     @Override

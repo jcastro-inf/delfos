@@ -1,5 +1,20 @@
 package delfos.casestudy.fromxmlfiles;
 
+import delfos.ERROR_CODES;
+import delfos.common.FileUtilities;
+import delfos.common.Global;
+import delfos.common.exceptions.dataset.CannotLoadContentDataset;
+import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
+import delfos.common.filefilters.FileFilterByExtension;
+import delfos.common.parallelwork.notblocking.MultiThreadExecutionManager_NotBlocking;
+import delfos.dataset.basic.loader.types.DatasetLoader;
+import delfos.dataset.basic.rating.Rating;
+import delfos.experiment.casestudy.CaseStudyConfiguration;
+import delfos.factories.EvaluationMeasuresFactory;
+import delfos.group.io.excel.casestudy.GroupCaseStudyExcel;
+import delfos.io.excel.casestudy.CaseStudyExcel;
+import delfos.io.xml.casestudy.CaseStudyXML;
+import delfos.results.evaluationmeasures.EvaluationMeasure;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
@@ -8,27 +23,12 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import jxl.write.WriteException;
 import org.jdom2.JDOMException;
-import delfos.ERROR_CODES;
-import delfos.common.FileUtilities;
-import delfos.common.Global;
-import delfos.common.exceptions.dataset.CannotLoadContentDataset;
-import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
-import delfos.common.filefilters.FileFilterByExtension;
-import delfos.common.parallelwork.notblocking.MultiThreadExecutionManager_NotBlocking;
-import delfos.dataset.basic.rating.Rating;
-import delfos.dataset.basic.loader.types.DatasetLoader;
-import delfos.experiment.casestudy.CaseStudyConfiguration;
-import delfos.factories.EvaluationMeasuresFactory;
-import delfos.group.io.excel.casestudy.GroupCaseStudyExcel;
-import delfos.io.excel.casestudy.CaseStudyExcel;
-import delfos.io.xml.casestudy.CaseStudyXML;
-import delfos.results.evaluationmeasures.EvaluationMeasure;
 
 /**
  * Ejecuta los experimentos que hay definidos en el directorio indicado, leyendo
  * los XML que existen para generar los casos de estudio.
  *
-* @author Jorge Castro Gallardo
+ * @author Jorge Castro Gallardo
  *
  * @version 1.0 14-May-2013
  */
@@ -131,7 +131,5 @@ public class XMLexperimentsExecution {
         } catch (WriteException ex) {
             ERROR_CODES.CANNOT_WRITE_CASE_STUDY_XML.exit(ex);
         }
-
-        System.out.println("Finished.");
     }
 }

@@ -13,7 +13,7 @@ import java.util.Locale;
 /**
  * Histograma con precisión exacta.
  *
-* @author Jorge Castro Gallardo
+ * @author Jorge Castro Gallardo
  *
  * @version 2-julio-2014
  */
@@ -137,11 +137,7 @@ public class HistogramSmart_bigDecimal {
         int[] binValue = new int[numberOfBins];
         for (BigDecimal value : values) {
             int bin = getBin(value);
-            try {
-                binValue[bin]++;
-            } catch (ArrayIndexOutOfBoundsException ex) {
-                System.out.println("bin: " + bin);
-            }
+            binValue[bin]++;
         }
 
         String[] binName = new String[numberOfBins];
@@ -204,11 +200,7 @@ public class HistogramSmart_bigDecimal {
         int[] binValue = new int[numberOfBins];
         for (BigDecimal value : values) {
             int bin = getBin(value);
-            try {
-                binValue[bin]++;
-            } catch (ArrayIndexOutOfBoundsException ex) {
-                System.out.println("bin: " + bin);
-            }
+            binValue[bin]++;
         }
 
         String[] binName = new String[numberOfBins];

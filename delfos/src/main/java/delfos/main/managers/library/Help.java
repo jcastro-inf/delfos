@@ -42,7 +42,7 @@ public class Help {
             case 1:
                 final CaseUseMode selectedCaseUseManager = suitableCaseUseManagers.get(0);
                 Global.showInfoMessage("Requested help for " + selectedCaseUseManager);
-                System.out.println(selectedCaseUseManager.getUserFriendlyHelpForThisCaseUse());
+                Global.showln(selectedCaseUseManager.getUserFriendlyHelpForThisCaseUse());
                 break;
             default:
                 Main.manyCaseUseActivated(consoleParameters, suitableCaseUseManagers);

@@ -199,7 +199,7 @@ public class ConsensusGRS extends GroupRecommenderSystemAdapter<SingleRecommenda
         RatingsDataset<? extends Rating> ratingsDataset = datasetLoader.getRatingsDataset();
 
         Map<Integer, Map<Integer, Rating>> membersRatings = DatasetOperations.selectRatings((RatingsDataset<Rating>) ratingsDataset,
-                groupOfUsers.getGroupMembers()
+                groupOfUsers.getIdMembers()
         );
 
         saveGroupInputDataAndRequests(
@@ -209,7 +209,7 @@ public class ConsensusGRS extends GroupRecommenderSystemAdapter<SingleRecommenda
 
         Map<Integer, Collection<Recommendation>> membersRecommendationsList
                 = AggregationOfIndividualRecommendations.performSingleUserRecommendations(
-                        groupOfUsers.getGroupMembers(),
+                        groupOfUsers.getIdMembers(),
                         singleUserRecommenderSystem,
                         datasetLoader,
                         RecommendationModel,
@@ -379,7 +379,7 @@ public class ConsensusGRS extends GroupRecommenderSystemAdapter<SingleRecommenda
         //Generate groupProfile:
         Map<Integer, List<Number>> groupRatingsList = new TreeMap<>();
 
-        for (int idUser : groupOfUsers.getGroupMembers()) {
+        for (int idUser : groupOfUsers.getIdMembers()) {
             Map<Integer, ? extends Rating> userRatingsRated = datasetLoader.getRatingsDataset().getUserRatingsRated(idUser);
             for (int idItem : userRatingsRated.keySet()) {
                 if (!groupRatingsList.containsKey(idItem)) {
@@ -431,7 +431,7 @@ public class ConsensusGRS extends GroupRecommenderSystemAdapter<SingleRecommenda
             final String outputFileNameNoExtension = consensusOutputFile.getName().substring(0, consensusOutputFile.getName().lastIndexOf("."));
             if (outputFileNameNoExtension.startsWith(consensusInputXMLFileNameNoExtension) && outputFileNameNoExtension.contains("Consenso")) {
                 try {
-                    System.out.println(consensusOutputFile.getAbsolutePath());
+                    Global.showln(consensusOutputFile.getAbsolutePath());
                     double thisFileConsensusDegree = ConsensusOfIndividualRecommendationsToXML.readConsensusOutputXML(consensusOutputFile).consensusDegree;
 
                     queue.add(new PriorityItem<>(consensusOutputFile, thisFileConsensusDegree));

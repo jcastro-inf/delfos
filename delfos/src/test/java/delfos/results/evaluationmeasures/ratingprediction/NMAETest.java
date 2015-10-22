@@ -1,19 +1,18 @@
 package delfos.results.evaluationmeasures.ratingprediction;
 
-import delfos.results.evaluationmeasures.ratingprediction.NMAE;
+import delfos.common.exceptions.dataset.users.UserNotFound;
+import delfos.dataset.basic.rating.Rating;
+import delfos.dataset.basic.rating.RatingsDataset;
+import delfos.dataset.basic.rating.RelevanceCriteria;
+import delfos.results.MeasureResult;
+import delfos.results.RecommendationResults;
+import delfos.results.evaluationmeasures.RatingsDatasetMock;
+import delfos.rs.recommendation.Recommendation;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Map;
 import static org.junit.Assert.assertEquals;
 import org.junit.Test;
-import delfos.common.exceptions.dataset.users.UserNotFound;
-import delfos.dataset.basic.rating.Rating;
-import delfos.dataset.basic.rating.RatingsDataset;
-import delfos.dataset.basic.rating.RelevanceCriteria;
-import delfos.results.RecommendationResults;
-import delfos.results.MeasureResult;
-import delfos.results.evaluationmeasures.RatingsDatasetMock;
-import delfos.rs.recommendation.Recommendation;
 
 /**
  * Implementa tests para {@link NMAE}.
@@ -31,7 +30,6 @@ public class NMAETest {
      */
     @Test
     public void test_noRecommendations_NMAEequalsNaN() {
-        System.out.println("test_noRecommendations_NMAEequalsNaN");
 
         //Phase 1: Preparation
         RatingsDataset<? extends Rating> testDataset = new RatingsDatasetMock();
@@ -53,7 +51,6 @@ public class NMAETest {
 
     @Test
     public void test_allMovedOne_NMAEEquals0point25() {
-        System.out.println("test_allMovedOne_NMAEEquals1");
 
         //Phase 1: Preparation
         RatingsDataset<? extends Rating> testDataset = new RatingsDatasetMock();
@@ -101,7 +98,6 @@ public class NMAETest {
 
     @Test
     public void test_allMovedTwo_NMAEEquals0point5() {
-        System.out.println("test_allMovedTwo_NMAEEquals2");
 
         //Phase 1: Preparation
         RatingsDataset<? extends Rating> testDataset = new RatingsDatasetMock();
@@ -149,7 +145,6 @@ public class NMAETest {
 
     @Test
     public void test_perfectPrediction_NMAEequals0() {
-        System.out.println("test_perfectPrediction_NMAEequals0");
 
         //Phase 1: Preparation
         RatingsDataset<? extends Rating> testDataset = new RatingsDatasetMock();

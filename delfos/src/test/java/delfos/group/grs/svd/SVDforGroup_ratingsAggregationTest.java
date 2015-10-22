@@ -43,7 +43,7 @@ public class SVDforGroup_ratingsAggregationTest {
         }
         Collection<Recommendation> recommendOnly = grs.recommendOnly(randomDataset, RecommendationModel, groupModel, group, candidateItems);
 
-        Global.showInfoMessage(DatasetPrinter.printCompactRatingTable(randomDataset.getRatingsDataset(), group.getGroupMembers(), candidateItems));
+        Global.showInfoMessage(DatasetPrinter.printCompactRatingTable(randomDataset.getRatingsDataset(), group.getIdMembers(), candidateItems));
 
         RecommendationsOutputStandardRaw output = new RecommendationsOutputStandardRaw();
         output.writeRecommendations(new GroupRecommendations(group, recommendOnly, RecommendationComputationDetails.EMPTY_DETAILS));

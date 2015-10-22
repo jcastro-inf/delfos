@@ -17,6 +17,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import static org.junit.Assert.fail;
 import org.junit.Test;
 
 /**
@@ -34,7 +35,6 @@ public class PRSpaceGroupsTest {
      */
     @Test
     public void testGetMeasureResult() {
-        System.out.println("getMeasureResult");
 
         List<Rating> ratings = new ArrayList<>(20);
 
@@ -103,7 +103,7 @@ public class PRSpaceGroupsTest {
         //TODO: Finalizar test.
         // TODO implement this test
         if (1 == 1) {
-            System.out.println("You must implement this test.");
+            fail("You must implement this test.");
             return;
         }
     }

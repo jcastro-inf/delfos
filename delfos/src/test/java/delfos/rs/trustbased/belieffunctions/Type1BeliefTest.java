@@ -1,9 +1,8 @@
 package delfos.rs.trustbased.belieffunctions;
 
-import delfos.rs.trustbased.belieffunctions.Type1Belief;
+import delfos.constants.DelfosTest;
 import static org.junit.Assert.assertEquals;
 import org.junit.Test;
-import delfos.constants.DelfosTest;
 
 /**
  *
@@ -20,7 +19,6 @@ public class Type1BeliefTest extends DelfosTest {
      */
     @Test
     public void testBeliefZeroPointFive() {
-        System.out.println("testBeliefZeroPointFive");
         double correlation = 0.5;
         Type1Belief instance = new Type1Belief();
         double expResult = 0.85355;
@@ -33,7 +31,6 @@ public class Type1BeliefTest extends DelfosTest {
      */
     @Test
     public void testBeliefZeroPointEight() {
-        System.out.println("testBeliefZeroPointEight");
         double correlation = 0.8;
         Type1Belief instance = new Type1Belief();
         double expResult = 0.97552825;

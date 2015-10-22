@@ -1,5 +1,6 @@
 package delfos.io.csv.dataset.rating;
 
+import delfos.common.Global;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -12,7 +13,7 @@ import java.util.regex.Pattern;
 
 /**
  *
-* @author Jorge Castro Gallardo
+ * @author Jorge Castro Gallardo
  *
  * @version 12-mar-2014
  */
@@ -51,9 +52,9 @@ public class CSVReader {
             Matcher ma = Pattern.compile("(?:\\s*(?:\\\"([^\\\"]*)\\\"|([^,]+))\\s*,?)+?").matcher(rawRecord);
             while (ma.find()) {
                 if (ma.group(1) == null) {
-                    System.out.println(ma.group(2));
+                    Global.showln(ma.group(2));
                 } else {
-                    System.out.println(ma.group(1));
+                    Global.showln(ma.group(1));
                 }
             }
         }
