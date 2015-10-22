@@ -18,11 +18,11 @@ then
       do
          if [ $((q%3)) == 0 ]
          then
-            qsub -q queue1 -v experimentFolder=${i} numExec=$2 ./delfos-qsub-group-job.sh;
-            echo "qsub -q queue1 -v experimentFolder=${i} numExec=$2 ./delfos-qsub-group-job.sh" >> $DELFOS_LOG_FILE
+            qsub -q queue1 -v experimentFolder=${i},numExec=$2 ./delfos-qsub-group-job.sh;
+            echo "qsub -q queue1 -v experimentFolder=${i},numExec=$2 ./delfos-qsub-group-job.sh" >> $DELFOS_LOG_FILE
          else
-            qsub -q queue2 -v experimentFolder=${i} numExec=$2 ./delfos-qsub-group-job.sh;
-            echo "qsub -q queue2 -v experimentFolder=${i} numExec=$2 ./delfos-qsub-group-job.sh" >> $DELFOS_LOG_FILE
+            qsub -q queue2 -v experimentFolder=${i},numExec=$2 ./delfos-qsub-group-job.sh;
+            echo "qsub -q queue2 -v experimentFolder=${i},numExec=$2 ./delfos-qsub-group-job.sh" >> $DELFOS_LOG_FILE
          fi
          let q++
          sleep 0.2s
