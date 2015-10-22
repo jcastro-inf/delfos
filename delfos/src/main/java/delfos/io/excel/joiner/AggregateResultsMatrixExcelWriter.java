@@ -175,11 +175,18 @@ public class AggregateResultsMatrixExcelWriter {
 
         try {
             //Smartly check if it should be a number instead of text.
-            double number = Double.parseDouble(s);
+            long number = Long.parseLong(s);
             addNumber(sheet, column, row, number);
         } catch (NumberFormatException ex) {
-            Label label = new Label(column, row, s, defaultFormat);
-            sheet.addCell(label);
+
+            try {
+                double numberD = Double.parseDouble(s);
+                addNumber(sheet, column, row, numberD);
+            } catch (NumberFormatException ex2) {
+
+                Label label = new Label(column, row, s, defaultFormat);
+                sheet.addCell(label);
+            }
         }
     }
 }
