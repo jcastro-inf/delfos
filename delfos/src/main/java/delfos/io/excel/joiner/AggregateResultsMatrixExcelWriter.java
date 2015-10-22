@@ -37,14 +37,13 @@ public class AggregateResultsMatrixExcelWriter {
     private static WritableCellFormat integerFormat;
     private static final int titleCellWidth = 3 - 1;
 
-    public static void writeExcelFromMatrix(File outputFile, Map<String, Map<String, Object>> valores) {
+    public static void writeExcelFromMatrix(File outputFile, Map<String, Map<String, Object>> valuesByExperimentAndColumnName) {
 
         Map<String, Integer> indexColumn = new TreeMap<>();
         indexColumn.put(CaseStudyExcel.EXPERIMENT_NAME_COLUMN_NAME, 0);
-        indexColumn.put(CaseStudyExcel.DATASET_LOADER_COLUMN_NAME, 1);
 
-        for (String key : valores.keySet()) {
-            for (String columnName : valores.get(key).keySet()) {
+        for (String key : valuesByExperimentAndColumnName.keySet()) {
+            for (String columnName : valuesByExperimentAndColumnName.get(key).keySet()) {
 
                 if (!indexColumn.containsKey(columnName)) {
                     indexColumn.put(columnName, indexColumn.size());
@@ -83,14 +82,14 @@ public class AggregateResultsMatrixExcelWriter {
             }
 
             {
-                for (String experimentName : valores.keySet()) {
+                for (String experimentName : valuesByExperimentAndColumnName.keySet()) {
 
                     addText(allExperiments, 0, row, experimentName);
 
-                    Map<String, Object> experimentResults = valores.get(experimentName);
+                    Map<String, Object> experimentResults = valuesByExperimentAndColumnName.get(experimentName);
                     for (String metricName : experimentResults.keySet()) {
 
-                        Object value = valores.get(experimentName).get(metricName);
+                        Object value = valuesByExperimentAndColumnName.get(experimentName).get(metricName);
 
                         if (value instanceof Number) {
                             Number number = (Number) value;
@@ -99,7 +98,9 @@ public class AggregateResultsMatrixExcelWriter {
                             addNumber(allExperiments, column, row, metricValue);
                         } else {
                             int column = indexColumn.get(metricName) + 1;
-                            addText(allExperiments, column, row, value.toString());
+                            if (value != null) {
+                                addText(allExperiments, column, row, value.toString());
+                            }
                         }
                     }
                     row++;

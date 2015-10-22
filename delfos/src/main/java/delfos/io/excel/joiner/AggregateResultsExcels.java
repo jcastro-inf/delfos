@@ -67,9 +67,10 @@ public class AggregateResultsExcels {
     public void join(Collection<File> files) {
         Map<String, Map<String, Object>> values = new TreeMap<>();
 
+        int i = 1;
         for (File file : files) {
             try {
-                System.out.println("Reading file " + file);
+                System.out.println("(" + (i++) + " of " + files.size() + "): " + "Reading file " + file);
                 Map<String, Object> valuesThisFile = extractMapFromFile(file);
                 values.put(valuesThisFile.get(EXPERIMENT_NAME_COLUMN_NAME).toString(), valuesThisFile);
             } catch (Throwable ex) {

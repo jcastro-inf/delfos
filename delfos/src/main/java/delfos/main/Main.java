@@ -106,6 +106,7 @@ public class Main {
         caseUse.add(delfos.main.managers.gui.neighborhood.NeighborhoodGUI.getInstance());
 
         caseUse.add(delfos.main.managers.experiment.join.excel.ExcelJoin.getInstance());
+        caseUse.add(delfos.main.managers.experiment.join.xml.XMLJoin.getInstance());
 
         return caseUse;
     }
