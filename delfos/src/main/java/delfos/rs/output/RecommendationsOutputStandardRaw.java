@@ -1,5 +1,6 @@
 package delfos.rs.output;
 
+import delfos.common.Global;
 import delfos.common.parameters.Parameter;
 import delfos.common.parameters.restriction.ObjectParameter;
 import delfos.rs.output.sort.SortBy;
@@ -67,9 +68,9 @@ public class RecommendationsOutputStandardRaw extends RecommendationsOutputMetho
             topNrecommendations = topNrecommendations.subList(0, Math.min(topNrecommendations.size(), getNumberOfRecommendations()));
         }
 
-        System.out.println("Target '" + idTarget + "' recommendations:");
+        Global.showln("Target '" + idTarget + "' recommendations:");
         for (Recommendation r : topNrecommendations) {
-            System.out.println("\t" + r.getIdItem() + "," + r.getItem().getName() + "," + r.getPreference());
+            Global.showln("\t" + r.getItem() + "," + r.getItem().getName() + "," + r.getPreference());
         }
     }
 }

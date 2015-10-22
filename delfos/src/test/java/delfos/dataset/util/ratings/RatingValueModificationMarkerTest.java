@@ -1,10 +1,9 @@
 package delfos.dataset.util.ratings;
 
-import delfos.dataset.util.ratings.RatingValueModificationMarker;
+import delfos.dataset.basic.rating.domain.DecimalDomain;
 import java.util.List;
 import org.junit.Assert;
 import org.junit.Test;
-import delfos.dataset.basic.rating.domain.DecimalDomain;
 
 /**
  *
@@ -21,7 +20,6 @@ public class RatingValueModificationMarkerTest {
      */
     @Test
     public void testGetRatingModificationMarkers() {
-        System.out.println("getRatingModificationMarker");
 
         List<String> markers = RatingValueModificationMarker.generateDefaultMarkers("+", "==", "-", 4);
         RatingValueModificationMarker instance = new RatingValueModificationMarker(new DecimalDomain(1, 5), markers);

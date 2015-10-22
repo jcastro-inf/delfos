@@ -67,7 +67,7 @@ public class GroupRecommendationMemberRatingsComparison extends GroupEvaluationM
                 membersRatings.put(9999, Recommendation.convertToMapOfNumbers(recommendations));
 
                 groupOfUsers
-                        .getGroupMembers().stream().forEach((idMember) -> {
+                        .getIdMembers().stream().forEach((idMember) -> {
                             Map<Integer, Number> thisMemberRatings = new TreeMap<>();
 
                             try {

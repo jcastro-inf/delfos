@@ -95,7 +95,7 @@ public class CrossFoldValidation_Ratings extends GroupValidationTechnique {
             int numUsersInGroups = 0;
 
             for (GroupOfUsers g : groupsOfUsers) {
-                users.addAll(g.getGroupMembers());
+                users.addAll(g.getIdMembers());
                 numUsersInGroups += g.size();
             }
 
@@ -166,10 +166,9 @@ public class CrossFoldValidation_Ratings extends GroupValidationTechnique {
                         allItems = new TreeSet<>(datasetLoader.getRatingsDataset().allRatedItems());
                     }
 
-                    Global.showInfoMessage("==================================================== \n");
+                    Global.showInfoMessage("==================================================== \n\n");
 
                     Set<Integer> allUsers = new TreeSet<>(datasetLoader.getRatingsDataset().allUsers());
-                    System.out.println("");
 
                     Global.showInfoMessage("Dataset de training " + idPartition + ".\n");
                     DatasetPrinterDeprecated.printCompactRatingTable(

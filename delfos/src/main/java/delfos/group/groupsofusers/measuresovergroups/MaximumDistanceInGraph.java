@@ -48,12 +48,12 @@ public class MaximumDistanceInGraph extends GroupMeasureAdapter {
     public double getMeasure(DatasetLoader<? extends Rating> datasetLoader, GroupOfUsers group) throws CannotLoadRatingsDataset {
 
 
-        WeightedGraphAdapter<Integer> trustNetwork = getWeightedGraphCalculation().computeTrustValues(datasetLoader, group.getGroupMembers());
+        WeightedGraphAdapter<Integer> trustNetwork = getWeightedGraphCalculation().computeTrustValues(datasetLoader, group.getIdMembers());
 
         double maxDistance = 0;
 
-        for (int idMember1 : group.getGroupMembers()) {
-            for (int idMember2 : group.getGroupMembers()) {
+        for (int idMember1 : group.getIdMembers()) {
+            for (int idMember2 : group.getIdMembers()) {
                 double distance;
                 distance = trustNetwork.geodesicDistance(idMember1, idMember2);
 

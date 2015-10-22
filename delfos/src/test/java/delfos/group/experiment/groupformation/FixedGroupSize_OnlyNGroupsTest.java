@@ -1,6 +1,12 @@
 package delfos.group.experiment.groupformation;
 
+import delfos.common.Global;
+import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
+import delfos.dataset.basic.loader.types.DatasetLoader;
+import delfos.dataset.basic.rating.Rating;
+import delfos.dataset.generated.random.RandomDatasetLoader;
 import delfos.group.experiment.validation.groupformation.FixedGroupSize_OnlyNGroups;
+import delfos.group.groupsofusers.GroupOfUsers;
 import java.util.Collection;
 import org.junit.After;
 import org.junit.AfterClass;
@@ -8,11 +14,6 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
-import delfos.dataset.basic.rating.Rating;
-import delfos.dataset.generated.random.RandomDatasetLoader;
-import delfos.dataset.basic.loader.types.DatasetLoader;
-import delfos.group.groupsofusers.GroupOfUsers;
 
 /**
  * Clase para testear la implemnetación de {@link FixedGroupSize_OnlyNGroups}.
@@ -87,7 +88,7 @@ public class FixedGroupSize_OnlyNGroupsTest {
         int numGroups = 100;
 
         for (int groupSize : groupTams) {
-            System.out.println("testGroupsSizes --> size = " + groupSize);
+            Global.showln("testGroupsSizes --> size = " + groupSize);
             FixedGroupSize_OnlyNGroups fixedGroupSize_OnlyNGroups = new FixedGroupSize_OnlyNGroups(numGroups, groupSize);
 
             Collection<GroupOfUsers> groups = fixedGroupSize_OnlyNGroups.shuffle(datasetLoader);
@@ -105,7 +106,6 @@ public class FixedGroupSize_OnlyNGroupsTest {
      */
     @Test(expected = IllegalArgumentException.class)
     public void testIllegalNumGroups() throws CannotLoadRatingsDataset {
-        System.out.println("testIllegalNumGroups");
 
         FixedGroupSize_OnlyNGroups fixedGroupSize_OnlyNGroups = new FixedGroupSize_OnlyNGroups(0, 5);
         fixedGroupSize_OnlyNGroups.shuffle(datasetLoader);
@@ -117,7 +117,6 @@ public class FixedGroupSize_OnlyNGroupsTest {
      */
     @Test(expected = IllegalArgumentException.class)
     public void testIllegalGroupSize() throws CannotLoadRatingsDataset {
-        System.out.println("testIllegalGroupSize");
 
         FixedGroupSize_OnlyNGroups fixedGroupSize_OnlyNGroups = new FixedGroupSize_OnlyNGroups(500, 0);
         fixedGroupSize_OnlyNGroups.shuffle(datasetLoader);

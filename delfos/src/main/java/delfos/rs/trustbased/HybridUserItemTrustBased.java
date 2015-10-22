@@ -354,7 +354,7 @@ public class HybridUserItemTrustBased extends CollaborativeRecommender<HybridUse
         Map<Integer, ? extends Rating> userRatings = ratingsDataset.getUserRatingsRated(idUser);
         double mediaItem = ratingsDataset.getMeanRatingItem(idItem);
 
-        System.out.println("USER " + idUser + " ITEM " + idItem + " (Item prediction)");
+        Global.showln("USER " + idUser + " ITEM " + idItem + " (Item prediction)");
 
         double numerador = 0;
         double denominador = 0;
@@ -411,7 +411,7 @@ public class HybridUserItemTrustBased extends CollaborativeRecommender<HybridUse
         if (denominador > 0) {
             double prediccion = numerador / denominador;
             double prediccionConMedia = prediccion + mediaItem;
-            System.out.println("USER " + idUser + " ITEM " + idItem + " (Item prediction) --> NumVecinosUsados: " + numVecinosUsados + "  \tpredicción: " + prediccion + "  \tpredicción ajustada: " + prediccionConMedia);
+            Global.showln("USER " + idUser + " ITEM " + idItem + " (Item prediction) --> NumVecinosUsados: " + numVecinosUsados + "  \tpredicción: " + prediccion + "  \tpredicción ajustada: " + prediccionConMedia);
             return prediccionConMedia;
         } else {
             return 0;

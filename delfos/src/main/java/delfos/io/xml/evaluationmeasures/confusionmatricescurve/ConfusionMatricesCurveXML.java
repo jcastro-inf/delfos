@@ -1,16 +1,16 @@
 package delfos.io.xml.evaluationmeasures.confusionmatricescurve;
 
-import java.util.ArrayList;
-import java.util.List;
-import org.jdom2.Element;
 import delfos.io.xml.UnrecognizedElementException;
 import delfos.results.evaluationmeasures.confusionmatrix.ConfusionMatricesCurve;
 import delfos.results.evaluationmeasures.confusionmatrix.ConfusionMatrix;
+import java.util.ArrayList;
+import java.util.List;
+import org.jdom2.Element;
 
 /**
  * Clase para efectuar la entrada/salida en xml de curvas ROC.
  *
-* @author Jorge Castro Gallardo
+ * @author Jorge Castro Gallardo
  *
  * @version 1.0 (10-01-2013)s
  *
@@ -32,6 +32,8 @@ public class ConfusionMatricesCurveXML {
     public static final String FALSE_NEGATIVE = "falseNegative";
     public static final String TRUE_POSITIVE = "truePositive";
     public static final String TRUE_NEGATIVE = "trueNegative";
+
+    public final static String CONFUSION_MATRIX_CURVE_ELEMENT_NAME = ConfusionMatricesCurve.class.getSimpleName();
     public final static String CURVE_ELEMENT = ConfusionMatricesCurve.class.getSimpleName();
 
     /**

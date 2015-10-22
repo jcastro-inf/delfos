@@ -102,7 +102,7 @@ public class RSBuilderFrame extends Frame {
             @Override
             public void windowClosing(WindowEvent e) {
                 super.windowClosed(e);
-                System.out.println("Exiting");
+                Global.showln("Exiting");
                 System.exit(0);
             }
         });
@@ -428,7 +428,6 @@ public class RSBuilderFrame extends Frame {
                             Object model = rs.buildRecommendationModel(loader);
                             rs.saveRecommendationModel(filePersistence, model);
                         } else {
-                            System.out.println("");
                             if (persistenceTechnique instanceof DatabasePersistence) {
                                 DatabasePersistence databasePersistence = (DatabasePersistence) persistenceTechnique;
                                 buildingProgressChanged(actualJob, 0, -1);

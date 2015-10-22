@@ -1,5 +1,6 @@
 package delfos.rs.bias;
 
+import delfos.common.Global;
 import delfos.common.datastructures.histograms.HistogramNumbersSmart;
 import delfos.common.statisticalfuncions.MeanIterative;
 import delfos.configureddatasets.ConfiguredDatasetsFactory;
@@ -35,7 +36,6 @@ public class PredictUserItemBiasTest {
 
     @Test
     public void testRecommendOnly() throws Exception {
-        System.out.println("testRecommendOnly");
 
         DatasetLoader<? extends Rating> datasetLoader = ConfiguredDatasetsFactory.getInstance().getDatasetLoader("ml-100k");
 
@@ -54,7 +54,7 @@ public class PredictUserItemBiasTest {
                 datasetLoader.getRatingsDataset().getUserRatingsRated(user.getId())
         );
 
-        System.out.println("User " + user.getTargetId() + " mae is '" + userMAE.getMean() + "'");
+        Global.showln("User " + user.getTargetId() + " mae is '" + userMAE.getMean() + "'");
 
     }
 
@@ -83,20 +83,20 @@ public class PredictUserItemBiasTest {
                 fail("No user should get a coverage lower than 1.");
             }
 
-            System.out.println("User " + user.getTargetId() + " coverage '" + userCoverage.getMean() + "' mae '" + userMAE.getMean() + "'");
+            Global.showln("User " + user.getTargetId() + " coverage '" + userCoverage.getMean() + "' mae '" + userMAE.getMean() + "'");
 
             histogramMAE.addValue(userMAE.getMean());
             histogramCoverage.addValue(userCoverage.getMean());
         }
 
-        System.out.println("==============================================================");
-        System.out.println("==== mae histogram for ml-100k and bias recommender ==========");
-        System.out.println("==============================================================");
+        Global.showln("==============================================================");
+        Global.showln("==== mae histogram for ml-100k and bias recommender ==========");
+        Global.showln("==============================================================");
 
         histogramMAE.printHistogram(System.out);
-        System.out.println("==============================================================");
-        System.out.println("==== coverage histogram for ml-100k and bias recommender ==========");
-        System.out.println("==============================================================");
+        Global.showln("==============================================================");
+        Global.showln("==== coverage histogram for ml-100k and bias recommender ==========");
+        Global.showln("==============================================================");
 
         histogramCoverage.printHistogram(System.out);
 

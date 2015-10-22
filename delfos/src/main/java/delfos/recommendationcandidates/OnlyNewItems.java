@@ -44,7 +44,7 @@ public class OnlyNewItems extends RecommendationCandidatesSelector {
 
         Set<Integer> candidateItems = new TreeSet<>();
 
-        Iterator<Integer> it = groupOfUsers.getGroupMembers().iterator();
+        Iterator<Integer> it = groupOfUsers.getIdMembers().iterator();
 
         candidateItems.addAll(candidateItems(datasetLoader, new User(it.next())));
 

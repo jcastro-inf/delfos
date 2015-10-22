@@ -1,32 +1,33 @@
 package delfos.group.grouplevelcasestudy;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
 import delfos.common.Chronometer;
 import delfos.common.DateCollapse;
+import delfos.common.Global;
 import delfos.common.exceptions.dataset.CannotLoadContentDataset;
 import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
 import delfos.common.exceptions.dataset.items.ItemNotFound;
 import delfos.common.exceptions.dataset.users.UserNotFound;
 import delfos.common.exceptions.ratings.NotEnoughtUserInformation;
+import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RelevanceCriteria;
-import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.storage.validationdatasets.PairOfTrainTestRatingsDataset;
+import delfos.group.experiment.validation.groupformation.GroupFormationTechnique;
+import delfos.group.experiment.validation.predictionvalidation.GroupPredictionProtocol;
+import delfos.group.experiment.validation.predictionvalidation.GroupRecommendationRequest;
+import delfos.group.experiment.validation.validationtechniques.GroupValidationTechnique;
 import delfos.group.groupsofusers.GroupOfUsers;
 import delfos.group.groupsofusers.measuresovergroups.GroupMeasure;
 import delfos.group.grs.GroupRecommenderSystem;
 import delfos.group.results.groupevaluationmeasures.GroupEvaluationMeasure;
 import delfos.group.results.groupevaluationmeasures.GroupMeasureResult;
 import delfos.group.results.grouprecomendationresults.GroupRecommendationResult;
-import delfos.group.experiment.validation.validationtechniques.GroupValidationTechnique;
-import delfos.group.experiment.validation.groupformation.GroupFormationTechnique;
-import delfos.group.experiment.validation.predictionvalidation.GroupPredictionProtocol;
-import delfos.group.experiment.validation.predictionvalidation.GroupRecommendationRequest;
 import delfos.rs.recommendation.Recommendation;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 /**
  * Realiza un caso de estudio a nivel de grupo, es decir, aplica las medidas de
@@ -58,11 +59,11 @@ public class GroupLevelCaseStudy {
         int numSplit = validationTechnique.getNumberOfSplits();
         Map<GroupOfUsers, Map<Integer, GroupLevelResults>> allResultsCaseStudy = new TreeMap<>();
 
-        System.out.println("");
-        System.out.println("===============================================================");
-        System.out.println("===================== RESULTADOS POR GRUPO ====================");
-        System.out.println("===============================================================");
-        System.out.println("");
+        Global.showln("");
+        Global.showln("===============================================================");
+        Global.showln("===================== RESULTADOS POR GRUPO ====================");
+        Global.showln("===============================================================");
+        Global.showln("");
 
         {
             //Línea de cabecera.
@@ -77,7 +78,7 @@ public class GroupLevelCaseStudy {
                     line.append("\t").append(groupRecommenderSystem.getAlias()).append("-->").append(groupEvaluationMeasure.getAlias());
                 }
             }
-            System.out.println(line);
+            Global.showln(line.toString());
         }
 
         int i = 0;
@@ -155,7 +156,7 @@ public class GroupLevelCaseStudy {
                     }
 
                     line.append("\t").append(DateCollapse.collapse(timeElapsed));
-                    System.out.println(line);
+                    Global.showln(line.toString());
                 }
             }
 

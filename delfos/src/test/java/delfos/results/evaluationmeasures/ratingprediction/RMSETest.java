@@ -1,19 +1,18 @@
 package delfos.results.evaluationmeasures.ratingprediction;
 
-import delfos.results.evaluationmeasures.ratingprediction.RMSE;
+import delfos.common.exceptions.dataset.users.UserNotFound;
+import delfos.dataset.basic.rating.Rating;
+import delfos.dataset.basic.rating.RatingsDataset;
+import delfos.dataset.basic.rating.RelevanceCriteria;
+import delfos.results.MeasureResult;
+import delfos.results.RecommendationResults;
+import delfos.results.evaluationmeasures.RatingsDatasetMock;
+import delfos.rs.recommendation.Recommendation;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Map;
 import static org.junit.Assert.assertEquals;
 import org.junit.Test;
-import delfos.common.exceptions.dataset.users.UserNotFound;
-import delfos.dataset.basic.rating.Rating;
-import delfos.dataset.basic.rating.RatingsDataset;
-import delfos.dataset.basic.rating.RelevanceCriteria;
-import delfos.results.RecommendationResults;
-import delfos.results.MeasureResult;
-import delfos.results.evaluationmeasures.RatingsDatasetMock;
-import delfos.rs.recommendation.Recommendation;
 
 /**
  * Implementa tests para comprobar que el RMSE se está calculando correctamente.
@@ -31,7 +30,6 @@ public class RMSETest {
      */
     @Test
     public void test_noRecommendations_RMSEequalsNaN() {
-        System.out.println("test_noRecommendations_RMSEequalsNaN");
 
         //Phase 1: Preparation
         int idUser = 1;
@@ -52,7 +50,6 @@ public class RMSETest {
 
     @Test
     public void test_allMovedOne_RMSEequals1() {
-        System.out.println("test_allMovedOne_RMSEequals1");
 
         //Phase 1: Preparation
         RatingsDataset<? extends Rating> testDataset = new RatingsDatasetMock();
@@ -61,7 +58,7 @@ public class RMSETest {
         int i = 0;
         for (int idUser : testDataset.allUsers()) {
             try {
-                ArrayList<Recommendation> recommendations = new ArrayList<Recommendation>();
+                ArrayList<Recommendation> recommendations = new ArrayList<>();
                 for (Map.Entry<Integer, ? extends Rating> entry : testDataset.getUserRatingsRated(idUser).entrySet()) {
                     final int idItem = entry.getKey();
                     final Rating rating = entry.getValue();
@@ -94,7 +91,6 @@ public class RMSETest {
 
     @Test
     public void test_allMovedTwo_RMSEequals2() {
-        System.out.println("test_allMovedTwo_RMSEequals1dot41");
 
         //Phase 1: Preparation
         RatingsDataset<? extends Rating> testDataset = new RatingsDatasetMock();
@@ -103,7 +99,7 @@ public class RMSETest {
         int i = 0;
         for (int idUser : testDataset.allUsers()) {
             try {
-                ArrayList<Recommendation> recommendations = new ArrayList<Recommendation>();
+                ArrayList<Recommendation> recommendations = new ArrayList<>();
                 for (Map.Entry<Integer, ? extends Rating> entry : testDataset.getUserRatingsRated(idUser).entrySet()) {
                     final int idItem = entry.getKey();
                     final Rating rating = entry.getValue();
@@ -136,7 +132,6 @@ public class RMSETest {
 
     @Test
     public void test_perfectPrediction_RMSEequals0() {
-        System.out.println("test_perfectPrediction_RMSEequals0");
 
         //Phase 1: Preparation
         RatingsDataset<? extends Rating> testDataset = new RatingsDatasetMock();
@@ -144,7 +139,7 @@ public class RMSETest {
         RecommendationResults recommendationResults = new RecommendationResults();
         for (int idUser : testDataset.allUsers()) {
             try {
-                ArrayList<Recommendation> recommendations = new ArrayList<Recommendation>();
+                ArrayList<Recommendation> recommendations = new ArrayList<>();
                 for (Map.Entry<Integer, ? extends Rating> entry : testDataset.getUserRatingsRated(idUser).entrySet()) {
                     final int idItem = entry.getKey();
                     final Rating rating = entry.getValue();
@@ -171,7 +166,6 @@ public class RMSETest {
 
     @Test
     public void test_perfectPredictionButOneMovedBy3_RMSEequals1dot732() {
-        System.out.println("test_perfectPrediction_RMSEequals0");
 
         //Phase 1: Preparation
         RatingsDataset<? extends Rating> testDataset = new RatingsDatasetMock();
@@ -180,7 +174,7 @@ public class RMSETest {
 
         int idUser = 1;
 
-        ArrayList<Recommendation> recommendations = new ArrayList<Recommendation>();
+        ArrayList<Recommendation> recommendations = new ArrayList<>();
         recommendations.add(new Recommendation(10, 4));
         recommendations.add(new Recommendation(12, 5));
         recommendations.add(new Recommendation(13, 2));

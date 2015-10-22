@@ -1,20 +1,19 @@
 package delfos.results.evaluationmeasures.ratingprediction;
 
-import delfos.results.evaluationmeasures.ratingprediction.NRMSE;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Map;
-import static org.junit.Assert.assertEquals;
-import org.junit.Test;
 import delfos.ERROR_CODES;
 import delfos.common.exceptions.dataset.users.UserNotFound;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RatingsDataset;
 import delfos.dataset.basic.rating.RelevanceCriteria;
-import delfos.results.RecommendationResults;
 import delfos.results.MeasureResult;
+import delfos.results.RecommendationResults;
 import delfos.results.evaluationmeasures.RatingsDatasetMock;
 import delfos.rs.recommendation.Recommendation;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Map;
+import static org.junit.Assert.assertEquals;
+import org.junit.Test;
 
 /**
  * Implementa tests para {@link NRMSE}.
@@ -32,7 +31,6 @@ public class NRMSETest {
      */
     @Test
     public void test_noRecommendations_NRMSEequalsNaN() {
-        System.out.println("test_noRecommendations_NRMSEequalsNaN");
 
         //Phase 1: Preparation
         int idUser = 1;
@@ -53,7 +51,6 @@ public class NRMSETest {
 
     @Test
     public void test_allMovedOne_NRMSEequals0point25() {
-        System.out.println("test_allMovedOne_NRMSEequals0point25");
 
         //Phase 1: Preparation
         RatingsDataset<? extends Rating> testDataset = new RatingsDatasetMock();
@@ -103,7 +100,6 @@ public class NRMSETest {
 
     @Test
     public void test_allMovedTwo_NRMSEequals0point5() {
-        System.out.println("test_allMovedTwo_NRMSEequals0point5");
 
         //Phase 1: Preparation
         RatingsDataset<? extends Rating> testDataset = new RatingsDatasetMock();
@@ -154,7 +150,6 @@ public class NRMSETest {
 
     @Test
     public void test_perfectPrediction_NMAEequals0() {
-        System.out.println("test_perfectPrediction_NMAEequals0");
 
         //Phase 1: Preparation
         RatingsDataset<? extends Rating> testDataset = new RatingsDatasetMock();
@@ -189,7 +184,6 @@ public class NRMSETest {
 
     @Test
     public void test_perfectPredictionButOneMovedBy3_NMAEequals0dot433() {
-        System.out.println("test_perfectPrediction_NMAEequals0");
 
         //Phase 1: Preparation
         RatingsDataset<? extends Rating> testDataset = new RatingsDatasetMock();

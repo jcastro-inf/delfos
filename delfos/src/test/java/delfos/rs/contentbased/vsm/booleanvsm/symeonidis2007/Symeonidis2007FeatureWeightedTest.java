@@ -41,7 +41,6 @@ public class Symeonidis2007FeatureWeightedTest extends DelfosTest {
 
     @Test
     public void test_makeFFUserProfile_User1Profile() throws Exception {
-        System.out.println("Testing the building of User 1 Feature Frequency profile");
         //Step1: Data preparation
         DatasetLoaderSymeonidisMock datasetLoader = new DatasetLoaderSymeonidisMock();
         Symeonidis2007FeatureWeighted instance = new Symeonidis2007FeatureWeighted();
@@ -71,7 +70,6 @@ public class Symeonidis2007FeatureWeightedTest extends DelfosTest {
 
     @Test
     public void testBuild() throws Exception {
-        System.out.println("Testing the whole building proccess.");
 
         //Step1: Data preparation
         DatasetLoader<? extends Rating> datasetLoader = new DatasetLoaderSymeonidisMock();
@@ -159,8 +157,6 @@ public class Symeonidis2007FeatureWeightedTest extends DelfosTest {
     @Test
     public void testGetUserNeighbors() throws Exception {
 
-        System.out.println("recommendOnly");
-
         //Step1: Data preparation
         final int idUser = 2;
         DatasetLoader<? extends Rating> datasetLoader = new DatasetLoaderSymeonidisMock();
@@ -183,8 +179,6 @@ public class Symeonidis2007FeatureWeightedTest extends DelfosTest {
 
     @Test
     public void testRecommendOnly() throws Exception {
-
-        System.out.println("recommendOnly");
 
         //Step1: Data preparation
         final int idUser = 2;

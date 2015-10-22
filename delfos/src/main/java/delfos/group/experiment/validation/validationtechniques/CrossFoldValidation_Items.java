@@ -99,7 +99,7 @@ public class CrossFoldValidation_Items extends GroupValidationTechnique {
             int numUsersInGroups = 0;
 
             for (GroupOfUsers g : groupsOfUsers) {
-                users.addAll(g.getGroupMembers());
+                users.addAll(g.getIdMembers());
                 numUsersInGroups += g.size();
             }
 
@@ -176,7 +176,7 @@ public class CrossFoldValidation_Items extends GroupValidationTechnique {
 
                     Set<Integer> allUsers = new TreeSet<>();
                     for (GroupOfUsers g : groupsOfUsers) {
-                        allUsers.addAll(g.getGroupMembers());
+                        allUsers.addAll(g.getIdMembers());
                     }
 
                     Global.showInfoMessage("Dataset de training " + idPartition + ".\n");

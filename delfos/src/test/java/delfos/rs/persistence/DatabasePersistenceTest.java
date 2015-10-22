@@ -2,6 +2,7 @@ package delfos.rs.persistence;
 
 import delfos.common.Chronometer;
 import delfos.common.FileUtilities;
+import delfos.common.Global;
 import delfos.common.exceptions.dataset.CannotLoadContentDataset;
 import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
 import delfos.configfile.rs.single.RecommenderSystemConfigurationFileParser;
@@ -107,7 +108,7 @@ public class DatabasePersistenceTest extends DelfosTest {
 
             Chronometer c = new Chronometer();
             SingleUserRecommendation.buildRecommendationModel(configFile);
-            System.out.println("Built model of '" + recommenderSystem + "' in " + c.printTotalElapsed());
+            Global.showln("Built model of '" + recommenderSystem + "' in " + c.printTotalElapsed());
 
             c.reset();
             datasetLoader.getRatingsDataset()
@@ -117,7 +118,7 @@ public class DatabasePersistenceTest extends DelfosTest {
                         SingleUserRecommendation.recommendToUser(configFile, idUser);
                     });
 
-            System.out.print("Recommended with '" + recommenderSystem + "' to " + datasetLoader.getRatingsDataset().allUsers().size() + " in " + c.printTotalElapsed() + "\n");
+            Global.show("Recommended with '" + recommenderSystem + "' to " + datasetLoader.getRatingsDataset().allUsers().size() + " in " + c.printTotalElapsed() + "\n");
         }
     }
 

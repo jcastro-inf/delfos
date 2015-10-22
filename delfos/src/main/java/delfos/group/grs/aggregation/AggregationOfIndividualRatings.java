@@ -174,7 +174,7 @@ public class AggregationOfIndividualRatings
         //Generate groupProfile:
         Map<Integer, List<Number>> groupRatingsList = new TreeMap<>();
 
-        for (int idUser : groupOfUsers.getGroupMembers()) {
+        for (int idUser : groupOfUsers.getIdMembers()) {
             Map<Integer, ? extends Rating> userRatingsRated = datasetLoader.getRatingsDataset().getUserRatingsRated(idUser);
             userRatingsRated.keySet().stream().map((idItem) -> {
                 if (!groupRatingsList.containsKey(idItem)) {
@@ -212,7 +212,7 @@ public class AggregationOfIndividualRatings
         //Generate groupProfile:
         Map<Integer, List<Number>> groupRatingsList = new TreeMap<>();
 
-        for (int idUser : groupOfUsers.getGroupMembers()) {
+        for (int idUser : groupOfUsers.getIdMembers()) {
             Map<Integer, ? extends Rating> userRatingsRated = datasetLoader.getRatingsDataset().getUserRatingsRated(idUser);
             userRatingsRated.keySet().stream().map((idItem) -> {
                 if (!groupRatingsList.containsKey(idItem)) {

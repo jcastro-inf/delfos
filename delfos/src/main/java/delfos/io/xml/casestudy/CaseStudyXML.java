@@ -50,12 +50,14 @@ public class CaseStudyXML {
     private static int meanRecommendationTime;
     public static String RESULT_EXTENSION = "xml";
     public static final String CASE_ROOT_ELEMENT_NAME = "Case";
+    public static final String AGGREGATE_VALUES_ELEMENT_NAME = "Aggregate_values";
+    public static final String EXECUTIONS_RESULTS_ELEMENT_NAME = "Executions";
 
     private static Element getResultsElement(CaseStudy c) {
         meanBuildTime = 0;
         meanRecommendationTime = 0;
 
-        Element ejecuciones = new Element("Executions");
+        Element ejecuciones = new Element(EXECUTIONS_RESULTS_ELEMENT_NAME);
         Element ejecucion;
         int numExecutions = c.getNumExecutions();
         int numSplits = c.getNumberOfSplits();
@@ -87,7 +89,7 @@ public class CaseStudyXML {
     }
 
     private static Element getAggregatedResultsElement(CaseStudy c) {
-        Element mediaMedidas = new Element("Aggregate_values");
+        Element mediaMedidas = new Element(AGGREGATE_VALUES_ELEMENT_NAME);
         for (EvaluationMeasure em : c.getEvaluationMeasures()) {
             Element element = c.getMeasureResult(em).getXMLElement();
             mediaMedidas.addContent(element);

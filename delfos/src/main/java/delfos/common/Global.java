@@ -135,6 +135,10 @@ public class Global {
         System.out.print(message);
     }
 
+    public static void showln(String message) {
+        System.out.println(message);
+    }
+
     public enum MessageLevel {
 
         /**

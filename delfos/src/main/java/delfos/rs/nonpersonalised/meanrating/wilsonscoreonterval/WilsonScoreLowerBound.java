@@ -81,7 +81,7 @@ public class WilsonScoreLowerBound extends NonPersonalisedRecommender<Collection
                 if (Global.isVerboseAnnoying()) {
                     String pRounded = NumberRounder.round_str(p);
                     String preferenceRounded = NumberRounder.round_str(preference);
-                    System.out.println("n=" + n + " pos=" + pRounded + "\t --> \t" + preferenceRounded);
+                    Global.showln("n=" + n + " pos=" + pRounded + "\t --> \t" + preferenceRounded);
                 }
 
                 recommendationModel1.add(new Recommendation(idItem, preference));
@@ -92,9 +92,9 @@ public class WilsonScoreLowerBound extends NonPersonalisedRecommender<Collection
         }
 
         if (Global.isVerboseAnnoying()) {
-            System.out.println("================= Recommendation model for " + this.getName() + "==============");
-            System.out.println(recommendationModel1);
-            System.out.println("=================");
+            Global.showln("================= Recommendation model for " + this.getName() + "==============");
+            Global.showln(recommendationModel1.toString());
+            Global.showln("=================");
 
         }
         return recommendationModel1;

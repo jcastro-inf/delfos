@@ -37,7 +37,6 @@ public class GroupCaseStudyExcelTest {
      */
     @Test
     public void testSaveCaseResults() throws Exception {
-        System.out.println("saveCaseResults");
 
         GroupCaseStudy caseStudyGroup = new DefaultGroupCaseStudy(
                 new RandomDatasetLoader(),

@@ -72,7 +72,7 @@ public class GroupPartialOrder_Collaborative extends GroupRecommenderSystemAdapt
 
         //Calculo el orden de preferencia de cada miembro
         int i = 0;
-        for (int idUser : groupOfUsers.getGroupMembers()) {
+        for (int idUser : groupOfUsers.getIdMembers()) {
             //Pruebo inicialmente como no bipolar, por eficiencia de los métodos
             Map<Integer, ? extends Rating> userRatingsRated = datasetLoader.getRatingsDataset().getUserRatingsRated(idUser);
             Preff<Integer> preff = new RatingBasedPref(RecommendationEntity.USER, userRatingsRated.values());
@@ -148,7 +148,7 @@ public class GroupPartialOrder_Collaborative extends GroupRecommenderSystemAdapt
         PseudoUserRatingsDataset pseudoUserRatingsDataset = new PseudoUserRatingsDataset<>(
                 ratingsDataset,
                 DatasetUtilities.getUserMap_Rating(-1, groupRatings),
-                groupOfUsers.getGroupMembers());
+                groupOfUsers.getIdMembers());
 
         int idPseudoUser = pseudoUserRatingsDataset.getIdPseudoUser();
 

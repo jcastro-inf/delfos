@@ -34,6 +34,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;
+import static org.junit.Assert.fail;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -91,7 +92,7 @@ public class GroupFormationTechniquesTest {
     public void testRandomFormationEquality() throws CannotLoadContentDataset, CannotLoadRatingsDataset, UserNotFound, ItemNotFound {
         // TODO implement this test
         if (1 == 1) {
-            System.out.println("You must implement this test.");
+            fail("You must implement this test.");
             return;
         }
 

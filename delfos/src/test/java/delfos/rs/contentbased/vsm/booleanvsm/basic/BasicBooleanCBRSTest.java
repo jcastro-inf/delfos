@@ -1,24 +1,22 @@
 package delfos.rs.contentbased.vsm.booleanvsm.basic;
 
-import delfos.rs.contentbased.vsm.booleanvsm.basic.BasicBooleanCBRS;
-import delfos.rs.contentbased.vsm.booleanvsm.basic.BasicBooleanCBRSModel;
-import java.util.Collection;
-import java.util.List;
-import org.grouplens.lenskit.vectors.SparseVector;
-import org.junit.Test;
-import static org.junit.Assert.*;
-import delfos.dataset.mockdatasets.MockContentDataset;
-import delfos.dataset.mockdatasets.MockRatingsDataset;
-import delfos.dataset.basic.loader.types.DatasetLoader;
-import delfos.rs.recommendation.Recommendation;
-import delfos.constants.DelfosTest;
-import delfos.dataset.basic.item.ContentDataset;
-import delfos.dataset.basic.rating.Rating;
-import delfos.dataset.basic.rating.RatingsDataset;
-import delfos.dataset.basic.loader.types.DatasetLoaderAbstract;
-import delfos.dataset.basic.loader.types.ContentDatasetLoader;
 import delfos.common.exceptions.dataset.CannotLoadContentDataset;
 import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
+import delfos.constants.DelfosTest;
+import delfos.dataset.basic.item.ContentDataset;
+import delfos.dataset.basic.loader.types.ContentDatasetLoader;
+import delfos.dataset.basic.loader.types.DatasetLoader;
+import delfos.dataset.basic.loader.types.DatasetLoaderAbstract;
+import delfos.dataset.basic.rating.Rating;
+import delfos.dataset.basic.rating.RatingsDataset;
+import delfos.dataset.mockdatasets.MockContentDataset;
+import delfos.dataset.mockdatasets.MockRatingsDataset;
+import delfos.rs.recommendation.Recommendation;
+import java.util.Collection;
+import org.grouplens.lenskit.vectors.SparseVector;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
+import org.junit.Test;
 
 public class BasicBooleanCBRSTest extends DelfosTest {
 
@@ -47,11 +45,10 @@ public class BasicBooleanCBRSTest extends DelfosTest {
     public void testBuild() throws Exception {
         // TODO implement this test
         if (1 == 1) {
-            System.out.println("You must implement this test.");
+            fail("You must implement this test.");
             return;
         }
 
-        System.out.println("build");
         DatasetLoader<? extends Rating> datasetLoader = new MockDatasetLoader();
         BasicBooleanCBRS instance = new BasicBooleanCBRS();
         BasicBooleanCBRSModel expResult = null;
@@ -71,11 +68,10 @@ public class BasicBooleanCBRSTest extends DelfosTest {
 
         // TODO implement this test
         if (1 == 1) {
-            System.out.println("You must implement this test.");
+            fail("You must implement this test.");
             return;
         }
 
-        System.out.println("recommendOnly");
         DatasetLoader<? extends Rating> datasetLoader = null;
         BasicBooleanCBRSModel model = null;
         SparseVector userProfile = null;
@@ -97,11 +93,10 @@ public class BasicBooleanCBRSTest extends DelfosTest {
     public void testMakeUserProfile() throws Exception {
         // TODO implement this test
         if (1 == 1) {
-            System.out.println("You must implement this test.");
+            fail("You must implement this test.");
             return;
         }
 
-        System.out.println("makeUserProfile");
         int idUser = 0;
         DatasetLoader<? extends Rating> datasetLoader = null;
         BasicBooleanCBRSModel model = null;

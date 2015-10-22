@@ -1,19 +1,17 @@
 package delfos.experiment.casestudy.defaultcase;
 
-import delfos.experiment.casestudy.defaultcase.DefaultCaseStudy;
+import delfos.constants.DelfosTest;
+import delfos.dataset.basic.rating.RelevanceCriteria;
+import delfos.dataset.generated.random.RandomDatasetLoader;
+import delfos.experiment.validation.predictionprotocol.NoPredictionProtocol;
+import delfos.experiment.validation.validationtechnique.HoldOut_Ratings;
+import delfos.factories.EvaluationMeasuresFactory;
+import delfos.rs.collaborativefiltering.knn.memorybased.nwr.KnnMemoryBasedNWR;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import delfos.constants.DelfosTest;
-import delfos.dataset.basic.rating.RelevanceCriteria;
-import delfos.dataset.generated.random.RandomDatasetLoader;
-import delfos.factories.EvaluationMeasuresFactory;
-import delfos.experiment.validation.predictionprotocol.NoPredictionProtocol;
-import delfos.experiment.validation.validationtechnique.HoldOut_Ratings;
-import delfos.results.evaluationmeasures.EvaluationMeasure;
-import delfos.rs.collaborativefiltering.knn.memorybased.nwr.KnnMemoryBasedNWR;
 
 /**
  *
@@ -46,7 +44,6 @@ public class DefaultCaseStudyTest extends DelfosTest {
      */
     @Test
     public void testExecute() {
-        System.out.println("DefaultCaseStudyTest.execute()");
         DefaultCaseStudy instance = new DefaultCaseStudy(
                 new KnnMemoryBasedNWR(),
                 new RandomDatasetLoader(),

@@ -1,12 +1,12 @@
 package delfos.dataset.datasetloaders.movilens.ml1m;
 
+import delfos.configureddatasets.ConfiguredDatasetsFactory;
+import delfos.constants.DelfosTest;
+import delfos.dataset.basic.item.ContentDataset;
 import delfos.dataset.loaders.movilens.ml1m.MovieLens1Million;
 import delfos.dataset.loaders.movilens.ml1m.MovieLens1MillionContentDatasetToCSV;
 import java.io.File;
 import org.junit.Test;
-import delfos.configureddatasets.ConfiguredDatasetsFactory;
-import delfos.constants.DelfosTest;
-import delfos.dataset.basic.item.ContentDataset;
 
 /**
  *
@@ -25,7 +25,6 @@ public class MovieLens1MillionContentDatasetToCSVTest extends DelfosTest {
      */
     @Test
     public void testReadContentDataset() throws Exception {
-        System.out.println("readContentDataset");
 
         MovieLens1Million ml_1m = ConfiguredDatasetsFactory.getInstance().getDatasetLoader("ml-1m", MovieLens1Million.class);
 

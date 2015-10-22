@@ -46,7 +46,6 @@ public class ArgumentsSingleUserRecommendationTest extends DelfosTest {
 
     @Test
     public void test_SingleUser_BuildRecommendationModel_manageCaseUse() throws Exception {
-        System.out.println("test_SingleUser_BuildRecommendationModel_manageCaseUse");
 
         createConfigurationFile();
         String[] consoleArguments = {
@@ -60,7 +59,6 @@ public class ArgumentsSingleUserRecommendationTest extends DelfosTest {
 
     @Test
     public void test_SingleUser_Recommend_manageCaseUse() throws Exception {
-        System.out.println("test_SingleUser_Recommend_manageCaseUse");
 
         createConfigurationFile();
 
@@ -82,7 +80,6 @@ public class ArgumentsSingleUserRecommendationTest extends DelfosTest {
 
     @Test
     public void test_SingleUser_BuildRecommendationModel_callFromCommandLine() throws Exception {
-        System.out.println("test_SingleUser_BuildRecommendationModel_manageCaseUse");
 
         createConfigurationFile();
         ConsoleParameters consoleParameters = ConsoleParameters.parseArguments(
@@ -97,7 +94,6 @@ public class ArgumentsSingleUserRecommendationTest extends DelfosTest {
 
     @Test
     public void test_SingleUser_Recommend_callFromCommandLine() throws Exception {
-        System.out.println("test_SingleUser_Recommend_callFromCommandLine");
 
         createConfigurationFile();
 

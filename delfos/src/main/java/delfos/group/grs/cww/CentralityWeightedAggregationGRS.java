@@ -156,7 +156,7 @@ public class CentralityWeightedAggregationGRS extends GroupRecommenderSystemAdap
         PseudoUserRatingsDataset<Rating> ratingsDataset_withPseudoUser = new PseudoUserRatingsDataset<>(
                 datasetLoader.getRatingsDataset(),
                 DatasetUtilities.getUserMap_Rating(-1, groupModel.getRatings()),
-                groupOfUsers.getGroupMembers());
+                groupOfUsers.getIdMembers());
         int idGroup = ratingsDataset_withPseudoUser.getIdPseudoUser();
 
         if (Global.isVerboseAnnoying()) {
@@ -200,7 +200,7 @@ public class CentralityWeightedAggregationGRS extends GroupRecommenderSystemAdap
 
     public Map<Integer, Number> getGroupRatings(DatasetLoader<? extends Rating> datasetLoader, GroupOfUsers groupOfUsers, WeightedGraphCalculation userTrustGenerator) throws UserNotFound, CannotLoadRatingsDataset {
         // Generate group social network.
-        WeightedGraphAdapter<Integer> userTrust = userTrustGenerator.computeTrustValues(datasetLoader, groupOfUsers.getGroupMembers());
+        WeightedGraphAdapter<Integer> userTrust = userTrustGenerator.computeTrustValues(datasetLoader, groupOfUsers.getIdMembers());
 
         if (Global.isVerboseAnnoying()) {
             DatasetPrinterDeprecated.printWeightedGraph(userTrust);
@@ -237,7 +237,7 @@ public class CentralityWeightedAggregationGRS extends GroupRecommenderSystemAdap
             WeightedAggregationOperator aggregationOperator = new WeightedSumAggregation();
             Map<Integer, Map<Integer, ? extends Rating>> groupMembersRatings = new TreeMap<Integer, Map<Integer, ? extends Rating>>();
             Set<Integer> itemsRatedByGroup = new TreeSet<Integer>();
-            for (int idUser : groupOfUsers.getGroupMembers()) {
+            for (int idUser : groupOfUsers.getIdMembers()) {
                 groupMembersRatings.put(idUser, datasetLoader.getRatingsDataset().getUserRatingsRated(idUser));
                 itemsRatedByGroup.addAll(groupMembersRatings.get(idUser).keySet());
             }

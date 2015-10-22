@@ -39,7 +39,7 @@ public class AllPossibleGroups extends GroupFormationTechnique {
             Set<GroupOfUsers> gruposAAñadir = new TreeSet<GroupOfUsers>(groupsSet);
 
             for (GroupOfUsers groupOfUsers : gruposAAñadir) {
-                Set<Integer> members = new TreeSet<Integer>(groupOfUsers.getGroupMembers());
+                Set<Integer> members = new TreeSet<Integer>(groupOfUsers.getIdMembers());
 
                 members.add(idUser);
                 groupsSet.add(new GroupOfUsers(members.toArray(new Integer[0])));

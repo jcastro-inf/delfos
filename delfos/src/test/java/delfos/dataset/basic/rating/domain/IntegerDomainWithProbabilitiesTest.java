@@ -1,6 +1,5 @@
 package delfos.dataset.basic.rating.domain;
 
-import delfos.dataset.basic.rating.domain.IntegerDomainWithProbabilities;
 import java.util.Arrays;
 import org.junit.Assert;
 import org.junit.Test;
@@ -18,7 +17,6 @@ public class IntegerDomainWithProbabilitiesTest {
 
     @Test
     public void noUniqueValuesMustFail() {
-        System.out.println("noUniqueValuesMustFail");
 
         try {
             IntegerDomainWithProbabilities instance = new IntegerDomainWithProbabilities(
@@ -37,7 +35,6 @@ public class IntegerDomainWithProbabilitiesTest {
 
     @Test
     public void noCorrelativeValuesMustFail() {
-        System.out.println("noCorrelativeValuesMustFail");
 
         try {
             IntegerDomainWithProbabilities instance = new IntegerDomainWithProbabilities(
@@ -56,7 +53,6 @@ public class IntegerDomainWithProbabilitiesTest {
 
     @Test
     public void noMinimumEqualMaximumMustFail() {
-        System.out.println("noMinimumEqualMaximumMustFail");
 
         try {
             IntegerDomainWithProbabilities instance = new IntegerDomainWithProbabilities(
@@ -71,7 +67,6 @@ public class IntegerDomainWithProbabilitiesTest {
 
     @Test
     public void testMovieLens100kDistribution() {
-        System.out.println("testMovieLens100kDistribution");
 
         IntegerDomainWithProbabilities ml100k = new IntegerDomainWithProbabilities(
                 Arrays.asList(

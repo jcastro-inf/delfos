@@ -1,20 +1,20 @@
 package delfos.group.casestudy.definedcases.jrs2014;
 
+import delfos.common.exceptions.CouldNotComputeSimilarity;
+import delfos.common.exceptions.dataset.users.UserNotFound;
+import delfos.dataset.basic.loader.types.DatasetLoader;
+import delfos.dataset.basic.rating.Rating;
+import delfos.similaritymeasures.CosineCoefficient;
+import delfos.similaritymeasures.WeightedSimilarityMeasure;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
-import delfos.common.exceptions.CouldNotComputeSimilarity;
-import delfos.common.exceptions.dataset.users.UserNotFound;
-import delfos.dataset.basic.rating.Rating;
-import delfos.dataset.basic.loader.types.DatasetLoader;
-import delfos.similaritymeasures.CosineCoefficient;
-import delfos.similaritymeasures.WeightedSimilarityMeasure;
 
 /**
  * Calcula la confianza entre dos usuarios.
  *
-* @author Jorge Castro Gallardo
+ * @author Jorge Castro Gallardo
  *
  * @version 24-feb-2014
  */
@@ -24,8 +24,6 @@ public class CosineWithPenalty implements PairwiseUserTrust {
 
     public CosineWithPenalty(int penalty) {
         this.penalty = penalty;
-        System.out.println("");
-
     }
 
     /**

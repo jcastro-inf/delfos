@@ -145,10 +145,6 @@ public class DAOEntropyDependenceCBRSModel {
 
                     String insertItemProfileFeatureValue = "Insert into " + getITEM_PROFILES_TABLE_NAME_TEMP(databasePersistence) + " (" + ITEM_PROFILES_FIELD_ID_ITEM + "," + ITEM_PROFILES_FIELD_FEATURE + "," + ITEM_PROFILES_FIELD_FEATURE_VALUE + ") \n"
                             + " values (" + idItem + ",'" + featureName + "','" + featureValue + "')";
-                    //System.out.println("=========================================");
-                    //System.out.println(insertItemProfileFeatureValue);
-                    //System.out.println("=========================================");
-                    //System.out.println();
                     statement.executeUpdate(insertItemProfileFeatureValue);
                 }
             }

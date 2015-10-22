@@ -62,7 +62,7 @@ public class PRSpace_EachMember extends GroupEvaluationMeasure {
             }
 
             Element groupElement = new Element(GROUP_OF_USERS_ELEMENT);
-            groupElement.setAttribute(USERS_ATTRIBUTE, group.getGroupMembers().toString());
+            groupElement.setAttribute(USERS_ATTRIBUTE, group.getIdMembers().toString());
 
             List<ConfusionMatrix> matrices = new ArrayList<ConfusionMatrix>();
 
@@ -88,7 +88,7 @@ public class PRSpace_EachMember extends GroupEvaluationMeasure {
 
             Map<Integer, ConfusionMatricesCurve> matricesParaCadaMiembro = new TreeMap<Integer, ConfusionMatricesCurve>();
 
-            for (int idUser : group.getGroupMembers()) {
+            for (int idUser : group.getIdMembers()) {
                 Element userElement = new Element("User");
                 userElement.setAttribute("idUser", Integer.toString(idUser));
 

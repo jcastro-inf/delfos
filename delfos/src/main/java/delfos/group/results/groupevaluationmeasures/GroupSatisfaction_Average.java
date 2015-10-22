@@ -59,7 +59,7 @@ public class GroupSatisfaction_Average extends GroupEvaluationMeasure {
             }
 
             //Calculo las recomendaciones individuales de cada miembro del grupo
-            for (int idUser : next.getKey().getGroupMembers()) {
+            for (int idUser : next.getKey().getIdMembers()) {
                 try {
                     MeanIterative maeActual = new MeanIterative();
 

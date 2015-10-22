@@ -1,19 +1,18 @@
 package delfos.results.evaluationmeasures.ratingprediction;
 
-import delfos.results.evaluationmeasures.ratingprediction.MAE;
+import delfos.common.exceptions.dataset.users.UserNotFound;
+import delfos.dataset.basic.rating.Rating;
+import delfos.dataset.basic.rating.RatingsDataset;
+import delfos.dataset.basic.rating.RelevanceCriteria;
+import delfos.results.MeasureResult;
+import delfos.results.RecommendationResults;
+import delfos.results.evaluationmeasures.RatingsDatasetMock;
+import delfos.rs.recommendation.Recommendation;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Map;
 import static org.junit.Assert.assertEquals;
 import org.junit.Test;
-import delfos.common.exceptions.dataset.users.UserNotFound;
-import delfos.dataset.basic.rating.Rating;
-import delfos.dataset.basic.rating.RatingsDataset;
-import delfos.dataset.basic.rating.RelevanceCriteria;
-import delfos.results.RecommendationResults;
-import delfos.results.MeasureResult;
-import delfos.results.evaluationmeasures.RatingsDatasetMock;
-import delfos.rs.recommendation.Recommendation;
 
 /**
  * Implementa tests para comprobar que el mae se está calculando correctamente.
@@ -31,7 +30,6 @@ public class MAETest {
      */
     @Test
     public void test_noRecommendations_MAEequalsNaN() {
-        System.out.println("test_noRecommendations_MAEequalsNaN");
 
         //Phase 1: Preparation
         int idUser = 1;
@@ -54,7 +52,6 @@ public class MAETest {
 
     @Test
     public void test_allMovedOne_MAEequals1() throws UserNotFound {
-        System.out.println("test_allMovedOne_MAEequals1");
 
         //Phase 1: Preparation
         RatingsDataset<? extends Rating> testDataset = new RatingsDatasetMock();
@@ -100,7 +97,6 @@ public class MAETest {
 
     @Test
     public void test_perfectPrediction_MAEequals0() throws UserNotFound {
-        System.out.println("test_perfectPrediction_MAEequals0");
 
         //Phase 1: Preparation
         RatingsDataset<? extends Rating> testDataset = new RatingsDatasetMock();

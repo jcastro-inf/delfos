@@ -76,7 +76,7 @@ public class NormalizedIndividualSatisfaction extends GroupEvaluationMeasure {
             });
 
             MeanIterative groupNIS = new MeanIterative();
-            for (int idUser : grupo.getGroupMembers()) {
+            for (int idUser : grupo.getIdMembers()) {
                 Element userElement = new Element("User");
                 userElement.setAttribute("idUser", Integer.toString(idUser));
 

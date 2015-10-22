@@ -47,11 +47,12 @@ public class SingleUserExperimentGUI extends CaseUseMode {
     public String getUserFriendlyHelpForThisCaseUse() {
         if (1 == 1) {
             throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        } else {
+            Global.show("\tEXPERIMENTATION\n");
+            Global.show("\t\t" + EXPERIMENT_GUI_ARGUMENT + ": The option " + EXPERIMENT_GUI_ARGUMENT + " is used to indicate that "
+                    + "you want to use " + Constants.LIBRARY_NAME + " with GUI\n");
+            Global.show("\t\n");
+            return null;
         }
-        System.out.print("\tEXPERIMENTATION\n");
-        System.out.print("\t\t" + EXPERIMENT_GUI_ARGUMENT + ": The option " + EXPERIMENT_GUI_ARGUMENT + " is used to indicate that "
-                + "you want to use " + Constants.LIBRARY_NAME + " with GUI\n");
-        System.out.print("\t\n");
-        return null;
     }
 }

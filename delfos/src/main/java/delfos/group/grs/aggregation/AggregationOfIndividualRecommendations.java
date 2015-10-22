@@ -123,14 +123,14 @@ public class AggregationOfIndividualRecommendations extends GroupRecommenderSyst
 
     @Override
     public GroupOfUsers buildGroupModel(DatasetLoader<? extends Rating> datasetLoader, SingleRecommendationModel RecommendationModel, GroupOfUsers groupOfUsers) throws UserNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset {
-        return new GroupOfUsers(groupOfUsers.getGroupMembers());
+        return new GroupOfUsers(groupOfUsers.getIdMembers());
     }
 
     @Override
     public Collection<Recommendation> recommendOnly(DatasetLoader<? extends Rating> datasetLoader, SingleRecommendationModel RecommendationModel, GroupOfUsers groupModel, GroupOfUsers groupOfUsers, java.util.Set<Integer> candidateItems) throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset {
 
         RecommenderSystem singleUserRecommender = getSingleUserRecommender();
-        Map<Integer, Collection<Recommendation>> recommendationsLists_byMember = performSingleUserRecommendations(groupOfUsers.getGroupMembers(), singleUserRecommender, datasetLoader, RecommendationModel, candidateItems);
+        Map<Integer, Collection<Recommendation>> recommendationsLists_byMember = performSingleUserRecommendations(groupOfUsers.getIdMembers(), singleUserRecommender, datasetLoader, RecommendationModel, candidateItems);
 
         Collection<Recommendation> groupRecommendations = aggregateLists(getAggregationOperator(), recommendationsLists_byMember);
         return groupRecommendations;

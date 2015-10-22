@@ -18,28 +18,24 @@ public class RecommendationsOutputStandardRawTest extends DelfosTest {
 
     @Test
     public void testWriteRecommendations_defaultConstructor() {
-        System.out.println("testWriteRecommendations_defaultConstructor");
         RecommendationsOutputStandardRaw instance = new RecommendationsOutputStandardRaw();
         instance.writeRecommendations(getRecommendations());
     }
 
     @Test
     public void testWriteRecommendations_sortByIdItem() {
-        System.out.println("testWriteRecommendations_sortByIdItem");
         RecommendationsOutputStandardRaw instance = new RecommendationsOutputStandardRaw(SortBy.SORT_BY_ID_ITEM);
         instance.writeRecommendations(getRecommendations());
     }
 
     @Test
     public void testWriteRecommendations_sortByPreference() {
-        System.out.println("testWriteRecommendations_sortByPreference");
         RecommendationsOutputStandardRaw instance = new RecommendationsOutputStandardRaw(SortBy.SORT_BY_PREFERENCE);
         instance.writeRecommendations(getRecommendations());
     }
 
     @Test
     public void testWriteRecommendations_topFive() {
-        System.out.println("testWriteRecommendations_topFive");
 
         RecommendationsOutputStandardRaw instance = new RecommendationsOutputStandardRaw(5);
         instance.writeRecommendations(getRecommendations());

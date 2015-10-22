@@ -1,5 +1,6 @@
 package delfos.group.experiment.groupformation;
 
+import delfos.common.Global;
 import delfos.configureddatasets.ConfiguredDatasetsFactory;
 import delfos.constants.DelfosTest;
 import delfos.constants.TestConstants;
@@ -40,14 +41,12 @@ public class SimilarMembers_exceptTest extends DelfosTest {
         final int numGroupsValue = 1;
         final int numMembersCandidate = 1;
 
-        System.out.println(SimilarMembers_exceptTest.class + ".testShuffle()");
-
         DatasetLoader<? extends Rating> datasetLoader = ConfiguredDatasetsFactory.getInstance().getDatasetLoader("ml-100k");
         datasetLoader.getRatingsDataset();
 
         SimilarMembers_except instance = new SimilarMembers_except(numGroupsValue, groupSizeValue, numMembersCandidate);
         instance.addListener((String message, int progress) -> {
-            System.out.println(progress + "% " + message);
+            Global.showln(progress + "% " + message);
         });
         instance.setSeedValue(seed);
         Collection<GroupOfUsers> result = instance.shuffle(datasetLoader);
@@ -66,14 +65,12 @@ public class SimilarMembers_exceptTest extends DelfosTest {
         final int numGroupsValue = 10;
         final int numMembersCandidate = 1;
 
-        System.out.println(SimilarMembers_exceptTest.class + ".testShuffle()");
-
         DatasetLoader<? extends Rating> datasetLoader = ConfiguredDatasetsFactory.getInstance().getDatasetLoader("ml-100k");
         datasetLoader.getRatingsDataset();
 
         SimilarMembers_except instance = new SimilarMembers_except(numGroupsValue, groupSizeValue, numMembersCandidate);
         instance.addListener((String message, int progress) -> {
-            System.out.println(progress + "% " + message);
+            Global.showln(progress + "% " + message);
         });
         instance.setSeedValue(seed);
 
@@ -84,16 +81,16 @@ public class SimilarMembers_exceptTest extends DelfosTest {
         }
 
         //Collections.sort(groups);
-        System.out.println("Grupos generados: ");
+        Global.showln("Grupos generados: ");
         groups.stream().forEach((group) -> {
-            System.out.println("\t" + group);
+            Global.showln("\t" + group);
         });
 
         groups.stream().forEach((group1) -> {
             groups.stream().filter((group2) -> !(group1 == group2)).forEach((group2) -> {
                 Set<Integer> intersection = new TreeSet<>();
-                intersection.addAll(group1.getGroupMembers());
-                intersection.retainAll(group2.getGroupMembers());
+                intersection.addAll(group1.getIdMembers());
+                intersection.retainAll(group2.getIdMembers());
                 if (!intersection.isEmpty()) {
                     Assert.fail("Group " + group1 + " is sharing users with group " + group2 + "  ( intersection" + intersection + ")");
                 }
@@ -109,8 +106,6 @@ public class SimilarMembers_exceptTest extends DelfosTest {
         final int groupSizeValue = 5;
         final int numGroupsValue = 189;
         final int numMembersCandidate = 1;
-
-        System.out.println(SimilarMembers_exceptTest.class + ".testShuffle()");
 
         DatasetLoader<? extends Rating> datasetLoader = ConfiguredDatasetsFactory.getInstance().getDatasetLoader("ml-100k");
         datasetLoader.getRatingsDataset();

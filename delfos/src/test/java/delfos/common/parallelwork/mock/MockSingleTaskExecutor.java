@@ -1,8 +1,9 @@
 package delfos.common.parallelwork.mock;
 
+import delfos.common.Global;
+import delfos.common.parallelwork.SingleTaskExecute;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import delfos.common.parallelwork.SingleTaskExecute;
 
 /**
  *
@@ -21,7 +22,7 @@ public class MockSingleTaskExecutor implements SingleTaskExecute<MockTask> {
                 Logger.getLogger(MockSingleTaskExecutor.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
-        System.out.println("Finished '" + task.toString() + "'");
+        Global.showln("Finished '" + task.toString() + "'");
     }
 
 }

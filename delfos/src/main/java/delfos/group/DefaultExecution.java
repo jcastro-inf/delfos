@@ -1,24 +1,25 @@
 package delfos.group;
 
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
 import delfos.ERROR_CODES;
 import delfos.common.Global;
 import delfos.common.exceptions.dataset.CannotLoadContentDataset;
 import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
 import delfos.common.exceptions.dataset.items.ItemNotFound;
 import delfos.common.exceptions.dataset.users.UserNotFound;
+import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RelevanceCriteria;
 import delfos.dataset.loaders.jester.Jester;
-import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.experiment.ExperimentListerner_default;
 import delfos.experiment.casestudy.ExecutionProgressListener_default;
 import delfos.group.casestudy.GroupCaseStudy;
 import delfos.group.casestudy.defaultcase.DefaultGroupCaseStudy;
+import delfos.group.experiment.validation.groupformation.FixedGroupSize_OnlyNGroups;
+import delfos.group.experiment.validation.groupformation.GroupFormationTechnique;
+import delfos.group.experiment.validation.predictionvalidation.GroupPredictionProtocol;
+import delfos.group.experiment.validation.predictionvalidation.NoPredictionProtocol;
+import delfos.group.experiment.validation.validationtechniques.GroupValidationTechnique;
+import delfos.group.experiment.validation.validationtechniques.HoldOutGroupRatedItems;
 import delfos.group.factories.GroupEvaluationMeasuresFactory;
 import delfos.group.grs.GroupRecommenderSystem;
 import delfos.group.grs.RandomGroupRecommender;
@@ -26,13 +27,12 @@ import delfos.group.grs.aggregation.AggregationOfIndividualRatings;
 import delfos.group.grs.aggregation.AggregationOfIndividualRecommendations;
 import delfos.group.io.xml.casestudy.GroupCaseStudyXML;
 import delfos.group.results.groupevaluationmeasures.GroupEvaluationMeasure;
-import delfos.group.experiment.validation.validationtechniques.GroupValidationTechnique;
-import delfos.group.experiment.validation.validationtechniques.HoldOutGroupRatedItems;
-import delfos.group.experiment.validation.groupformation.FixedGroupSize_OnlyNGroups;
-import delfos.group.experiment.validation.groupformation.GroupFormationTechnique;
-import delfos.group.experiment.validation.predictionvalidation.GroupPredictionProtocol;
-import delfos.group.experiment.validation.predictionvalidation.NoPredictionProtocol;
 import delfos.rs.collaborativefiltering.knn.modelbased.KnnModelBasedCFRS;
+import java.util.Collection;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 /**
  *
@@ -77,9 +77,9 @@ public class DefaultExecution {
                                 caseStudyGroupRecommendation.addExperimentListener(new ExperimentListerner_default(System.out, 10000));
                                 caseStudyGroupRecommendation.addExecutionProgressListener(new ExecutionProgressListener_default(System.out, 10000));
                                 caseStudyGroupRecommendation.execute();
-                                System.out.println("-----------------------------------------------");
+                                Global.show("-----------------------------------------------\n");
                                 for (GroupEvaluationMeasure groupEvaluationMeasure : groupEvaluationMeasures) {
-                                    System.out.println(caseStudyGroupRecommendation.getGroupRecommenderSystem().getName() + " --> " + caseStudyGroupRecommendation.getAggregateMeasureResult(groupEvaluationMeasure).toString());
+                                    Global.showln(caseStudyGroupRecommendation.getGroupRecommenderSystem().getName() + " --> " + caseStudyGroupRecommendation.getAggregateMeasureResult(groupEvaluationMeasure).toString());
                                     resultadosPorTamGrupos.get(groupFormationTechnique).put(groupEvaluationMeasure, caseStudyGroupRecommendation.getAggregateMeasureResult(groupEvaluationMeasure).toString());
                                 }
 
@@ -99,11 +99,11 @@ public class DefaultExecution {
                                 ERROR_CODES.ITEM_NOT_FOUND.exit(ex);
                             }
 
-                            System.out.println(groupRecommenderSystem.getNameWithParameters());
+                            Global.show(groupRecommenderSystem.getNameWithParameters());
                             for (GroupFormationTechnique gft : resultadosPorTamGrupos.keySet()) {
-                                System.out.println("\t" + gft.getNameWithParameters());
+                                Global.showln("\t" + gft.getNameWithParameters());
                                 for (GroupEvaluationMeasure gem : resultadosPorTamGrupos.get(gft).keySet()) {
-                                    System.out.println("\t\t" + resultadosPorTamGrupos.get(gft).get(gem));
+                                    Global.showln("\t\t" + resultadosPorTamGrupos.get(gft).get(gem));
                                 }
                             }
                         }

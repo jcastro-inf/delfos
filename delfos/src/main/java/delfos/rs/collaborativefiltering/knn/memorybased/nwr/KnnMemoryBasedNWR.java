@@ -6,9 +6,12 @@ import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
 import delfos.common.exceptions.dataset.items.ItemNotFound;
 import delfos.common.exceptions.dataset.users.UserNotFound;
 import delfos.common.parallelwork.MultiThreadExecutionManager;
+import delfos.dataset.basic.item.ContentDataset;
+import delfos.dataset.basic.item.Item;
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RatingsDataset;
+import delfos.dataset.basic.user.User;
 import delfos.rs.collaborativefiltering.knn.KnnCollaborativeRecommender;
 import delfos.rs.collaborativefiltering.knn.MatchRating;
 import delfos.rs.collaborativefiltering.knn.RecommendationEntity;
@@ -27,6 +30,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Sistema de recomendación basado en el filtrado colaborativo basado en
@@ -139,7 +143,7 @@ public class KnnMemoryBasedNWR extends KnnCollaborativeRecommender<KnnMemoryMode
             List<Neighbor> neighbors;
             neighbors = getNeighbors(datasetLoader.getRatingsDataset(), idUser);
 
-            Collection<Recommendation> ret = recommendWithNeighbors(datasetLoader.getRatingsDataset(), idUser, neighbors, neighborhoodSize, candidateItems, predictionTechnique);
+            Collection<Recommendation> ret = recommendWithNeighbors(datasetLoader, idUser, neighbors, neighborhoodSize, candidateItems, predictionTechnique);
             if (Global.isVerboseAnnoying()) {
                 Global.showInfoMessage("Finished recommendations for user '" + idUser + "'\n");
             }
@@ -198,12 +202,13 @@ public class KnnMemoryBasedNWR extends KnnCollaborativeRecommender<KnnMemoryMode
      * indicados por parámetro, para el usuario activo a partir de los vecinos
      * indicados por parámetro
      *
-     * @param ratingsDataset Conjunto de valoraciones.
+     * @param datasetLoader Input data.
      * @param idUser Id del usuario activo
      * @param neighborhood Vecinos del usuario activo
      * @param neighborhoodSize
-     * @param candidateItems Lista de productos que se consideran recomendables,
-     * es decir, que podrían ser recomendados si la predicción es alta
+     * @param candidateIdItems Lista de productos que se consideran
+     * recomendables, es decir, que podrían ser recomendados si la predicción es
+     * alta
      * @param predictionTechnique
      * @return Lista de recomendaciones para el usuario, ordenadas por
      * valoracion predicha.
@@ -211,29 +216,34 @@ public class KnnMemoryBasedNWR extends KnnCollaborativeRecommender<KnnMemoryMode
      * indicados no se encuentra en el dataset.
      */
     public static Collection<Recommendation> recommendWithNeighbors(
-            RatingsDataset<? extends Rating> ratingsDataset,
+            DatasetLoader<? extends Rating> datasetLoader,
             Integer idUser,
             List<Neighbor> neighborhood,
             int neighborhoodSize,
-            Collection<Integer> candidateItems,
+            Collection<Integer> candidateIdItems,
             PredictionTechnique predictionTechnique)
             throws UserNotFound {
 
-        //Predicción de la valoración
+        RatingsDataset ratingsDataset = datasetLoader.getRatingsDataset();
+        ContentDataset contentDataset = datasetLoader.getContentDataset();
+
         Collection<Recommendation> recommendationList = new LinkedList<>();
 
-        for (int idItem : candidateItems) {
+        List<Item> candidateItems = candidateIdItems.stream()
+                .map(idItem -> contentDataset.get(idItem))
+                .collect(Collectors.toList());
+
+        for (Item item : candidateItems) {
+
             Collection<MatchRating> match = new LinkedList<>();
-
             int numNeighborsUsed = 0;
-
             try {
-                Map<Integer, ? extends Rating> itemRatingsRated = ratingsDataset.getItemRatingsRated(idItem);
+                Map<Integer, ? extends Rating> itemRatingsRated = ratingsDataset.getItemRatingsRated(item.getId());
                 for (Neighbor ss : neighborhood) {
 
                     Rating rating = itemRatingsRated.get(ss.getIdNeighbor());
                     if (rating != null) {
-                        match.add(new MatchRating(RecommendationEntity.ITEM, ss.getIdNeighbor(), idItem, rating.getRatingValue(), ss.getSimilarity()));
+                        match.add(new MatchRating(RecommendationEntity.ITEM, (User) ss.getNeighbor(), item, rating.getRatingValue(), ss.getSimilarity()));
                         numNeighborsUsed++;
                     }
 
@@ -243,8 +253,8 @@ public class KnnMemoryBasedNWR extends KnnCollaborativeRecommender<KnnMemoryMode
                 }
 
                 try {
-                    float predicted = predictionTechnique.predictRating(idUser, idItem, match, ratingsDataset);
-                    recommendationList.add(new Recommendation(idItem, predicted));
+                    float predicted = predictionTechnique.predictRating(idUser, item.getId(), match, ratingsDataset);
+                    recommendationList.add(new Recommendation(item, predicted));
 
                 } catch (CouldNotPredictRating ex) {
                 }

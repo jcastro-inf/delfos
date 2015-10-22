@@ -62,9 +62,9 @@ public class PositiveRatingPercent extends NonPersonalisedRecommender<Collection
         }
 
         if (Global.isVerboseAnnoying()) {
-            System.out.println("================= Recommendation model for " + this.getName() + "==============");
-            System.out.println(recommendationModel1);
-            System.out.println("=================");
+            Global.showln("================= Recommendation model for " + this.getName() + "==============");
+            Global.showln(recommendationModel1.toString());
+            Global.showln("=================");
 
         }
         return recommendationModel1;

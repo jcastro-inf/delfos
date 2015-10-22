@@ -134,14 +134,14 @@ public class SimilarMembers_except extends GroupFormationTechnique {
 
         ArrayList<Integer> usersRemainToSelect = new ArrayList<>(datasetLoader.getRatingsDataset().allUsers());
         groupsOfSimilarMembers.stream().forEach((group) -> {
-            usersRemainToSelect.removeAll(group.getGroupMembers());
+            usersRemainToSelect.removeAll(group.getIdMembers());
         });
 
         Collection<GroupOfUsers> ret = new ArrayList<>(numGroups);
 
         //A cada grupo le añado los usuarios no similares.
         for (GroupOfUsers group : groupsOfSimilarMembers) {
-            Set<Integer> usersGrupoActual = new TreeSet<>(group.getGroupMembers());
+            Set<Integer> usersGrupoActual = new TreeSet<>(group.getIdMembers());
 
             while (usersGrupoActual.size() < groupSize) {
                 int index = random.nextInt(usersRemainToSelect.size());

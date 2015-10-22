@@ -59,7 +59,7 @@ public class GroupSatisfaction_StdDev extends GroupEvaluationMeasure {
             //Calculo las recomendaciones individuales de cada miembro del grupo
             List<Double> listaMaes = new LinkedList<Double>();
 
-            for (int idUser : next.getKey().getGroupMembers()) {
+            for (int idUser : next.getKey().getIdMembers()) {
                 try {
                     MeanIterative maeActual = new MeanIterative();
                     Map<Integer, ? extends Rating> userRated = testDataset.getUserRatingsRated(idUser);

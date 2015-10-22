@@ -2,6 +2,7 @@ package delfos.group.casestudy.fromxmlfiles;
 
 import delfos.ERROR_CODES;
 import delfos.common.FileUtilities;
+import delfos.common.Global;
 import delfos.common.exceptions.dataset.CannotLoadContentDataset;
 import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
 import delfos.common.filefilters.FileFilterByExtension;
@@ -85,8 +86,8 @@ public class GroupXMLexperimentsExecution {
         File[] datasetFiles = datasetsDirectoryDirectory.listFiles(new FileFilterByExtension(false, "xml"));
         if (datasetFiles.length == 0) {
             try {
-                System.out.println("-------------------- Sleeping 2seconds --------------------");
-                System.err.println("-------------------- Sleeping 2seconds --------------------");
+                Global.showln("-------------------- Sleeping 2seconds --------------------");
+                Global.showWarning("-------------------- Sleeping 2seconds --------------------");
                 Thread.sleep(2000);
             } catch (InterruptedException ex) {
 
@@ -144,6 +145,6 @@ public class GroupXMLexperimentsExecution {
             Logger.getLogger(GroupXMLexperimentsExecution.class.getName()).log(Level.SEVERE, null, ex);
         }
 
-        System.out.println("Finished.");
+        Global.showln("Finished.");
     }
 }

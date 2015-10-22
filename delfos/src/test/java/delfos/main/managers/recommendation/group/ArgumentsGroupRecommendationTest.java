@@ -115,7 +115,6 @@ public class ArgumentsGroupRecommendationTest extends DelfosTest {
 
     @Test
     public void test_Group_BuildRecommendationModel_callFromCommandLine() throws Exception {
-        System.out.println("test_Group_BuildRecommendationModel_manageCaseUse");
 
         createConfigurationFile();
         ConsoleParameters consoleParameters = ConsoleParameters.parseArguments(
@@ -131,7 +130,6 @@ public class ArgumentsGroupRecommendationTest extends DelfosTest {
 
     @Test
     public void test_Group_Recommend_callFromCommandLine() throws Exception {
-        System.out.println("test_Group_Recommend_callFromCommandLine");
 
         createConfigurationFile();
 

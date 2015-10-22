@@ -47,7 +47,7 @@ public class HoldOutPrediction extends GroupPredictionProtocol {
 
         Random random = new Random(getSeedValue());
         Set<Integer> ratedProducts = new TreeSet<>();
-        for (int idUser : group.getGroupMembers()) {
+        for (int idUser : group.getIdMembers()) {
             try {
                 ratedProducts.addAll(datasetLoader.getRatingsDataset().getUserRated(idUser));
             } catch (UserNotFound ex) {

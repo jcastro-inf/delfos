@@ -1,6 +1,7 @@
 package delfos.dataset.memory.validationdatasets;
 
 import delfos.ERROR_CODES;
+import delfos.common.Global;
 import delfos.common.exceptions.dataset.items.ItemNotFound;
 import delfos.common.exceptions.dataset.users.UserNotFound;
 import delfos.common.test.RatingsDatasetTest;
@@ -75,7 +76,7 @@ public class TestRatingsDatasetTest extends DelfosTest {
         }
         BothIndexRatingsDataset ratingsDataset = new BothIndexRatingsDataset(ratings);
 
-        System.out.println(DatasetPrinter.printCompactRatingTable(ratingsDataset));
+        Global.showln(DatasetPrinter.printCompactRatingTable(ratingsDataset));
 
         Map<Integer, Set<Integer>> testRatings = new TreeMap<>();
         Set<Integer> listaItems = new TreeSet<>();
@@ -85,7 +86,7 @@ public class TestRatingsDatasetTest extends DelfosTest {
 
         TestRatingsDataset testRatingsDataset = ValidationDatasets.getInstance().createTestDataset(ratingsDataset, testRatings);
 
-        System.out.println(DatasetPrinter.printCompactRatingTable(testRatingsDataset));
+        Global.showln(DatasetPrinter.printCompactRatingTable(testRatingsDataset));
         assert testRatingsDataset.getRating(3, 1).getRatingValue().intValue() == 3;
         assert testRatingsDataset.getRating(3, 2).getRatingValue().intValue() == 3;
 

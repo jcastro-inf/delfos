@@ -75,7 +75,7 @@ public class PrintNeighborsToXML extends GroupEvaluationMeasure {
                 datasetToShow.put(8888, Recommendation.convertToMapOfNumbers_onlyRankPreference(groupRecommendation));
 
                 groupOfUsers
-                        .getGroupMembers().stream().forEach((idMember) -> {
+                        .getIdMembers().stream().forEach((idMember) -> {
                             Map<Integer, Number> thisMemberRatings = new TreeMap<>();
 
                             try {
