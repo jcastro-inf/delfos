@@ -31,17 +31,17 @@ import java.util.List;
 import java.util.stream.Collectors;
 import org.junit.Test;
 
-public class HesitantGRS_CaseStudy extends DelfosTest {
+public class HesitantGRS_1_CaseStudy_InitialGroupFormation extends DelfosTest {
 
-    public HesitantGRS_CaseStudy() {
+    public HesitantGRS_1_CaseStudy_InitialGroupFormation() {
     }
 
     public static final long SEED_VALUE = 123456L;
-    public static final int NUM_GROUPS = 1;
+    public static final int NUM_GROUPS = 90;
 
     File experimentDirectory = new File(Constants.getTempDirectory().getAbsolutePath() + File.separator
             + "experiments" + File.separator
-            + "HesitantGRS" + File.separator);
+            + "0-HesitantGRS-90groups" + File.separator);
 
     private Collection<GroupFormationTechnique> getGroupFormationTechnique() {
         return Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 15, 20, 25, 50, 100, 200, 500).stream()
