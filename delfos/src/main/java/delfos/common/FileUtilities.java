@@ -3,6 +3,8 @@ package delfos.common;
 import delfos.ERROR_CODES;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  *
@@ -138,5 +140,28 @@ public class FileUtilities {
             FileUtilities.deleteDirectoryRecursive(directory);
         }
         directory.mkdirs();
+    }
+
+    /**
+     * Returns all files and directories under the specified one.
+     *
+     * @param directory
+     * @return
+     */
+    public static List<File> findInDirectory(File directory) {
+        if (!directory.isDirectory()) {
+            throw new IllegalArgumentException("The argument must be a directory! '" + directory + "'");
+        }
+
+        List<File> childs = new LinkedList<>();
+        for (File child : directory.listFiles()) {
+            childs.add(child);
+
+            if (child.isDirectory()) {
+                childs.addAll(findInDirectory(child));
+            }
+        }
+
+        return childs;
     }
 }
