@@ -138,9 +138,14 @@ public class AggregateResultsXML {
 
         if (elementName.equals(CASE_ROOT_ELEMENT_NAME)) {
             String numExec = element.getAttributeValue(NUM_EXEC_ATTRIBUTE_NAME);
-            valuesByColumnName.put(CaseStudyXML.CASE_ROOT_ELEMENT_NAME + "." + NUM_EXEC_ATTRIBUTE_NAME, Integer.parseInt(numExec));
+            if (numExec != null) {
+                valuesByColumnName.put(CaseStudyXML.CASE_ROOT_ELEMENT_NAME + "." + NUM_EXEC_ATTRIBUTE_NAME, Integer.parseInt(numExec));
+            }
+
             String seed = element.getAttributeValue(SEED_ATTRIBUTE_NAME);
-            valuesByColumnName.put(CaseStudyXML.CASE_ROOT_ELEMENT_NAME + "." + SEED_ATTRIBUTE_NAME, Long.parseLong(seed));
+            if (seed != null) {
+                valuesByColumnName.put(CaseStudyXML.CASE_ROOT_ELEMENT_NAME + "." + SEED_ATTRIBUTE_NAME, Long.parseLong(seed));
+            }
         }
 
         if (elementName.equals(RelevanceCriteriaXML.ELEMENT_NAME)) {
