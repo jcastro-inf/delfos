@@ -4,9 +4,12 @@ import delfos.ERROR_CODES;
 import delfos.group.results.groupevaluationmeasures.AreaUnderRoc;
 import delfos.io.excel.joiner.AggregateResultsMatrixExcelWriter;
 import delfos.io.xml.UnrecognizedElementException;
+import delfos.io.xml.casestudy.CaseStudyXML;
 import static delfos.io.xml.casestudy.CaseStudyXML.AGGREGATE_VALUES_ELEMENT_NAME;
 import static delfos.io.xml.casestudy.CaseStudyXML.CASE_ROOT_ELEMENT_NAME;
 import static delfos.io.xml.casestudy.CaseStudyXML.EXECUTIONS_RESULTS_ELEMENT_NAME;
+import static delfos.io.xml.casestudy.CaseStudyXML.NUM_EXEC_ATTRIBUTE_NAME;
+import static delfos.io.xml.casestudy.CaseStudyXML.SEED_ATTRIBUTE_NAME;
 import delfos.io.xml.dataset.RelevanceCriteriaXML;
 import delfos.io.xml.evaluationmeasures.NDCGXML;
 import delfos.io.xml.evaluationmeasures.confusionmatricescurve.ConfusionMatricesCurveXML;
@@ -131,6 +134,13 @@ public class AggregateResultsXML {
         String elementName = element.getName();
         if (element.getAttribute("name") != null) {
             elementName = elementName + "." + element.getAttributeValue("name");
+        }
+
+        if (elementName.equals(CASE_ROOT_ELEMENT_NAME)) {
+            String numExec = element.getAttributeValue(NUM_EXEC_ATTRIBUTE_NAME);
+            valuesByColumnName.put(CaseStudyXML.CASE_ROOT_ELEMENT_NAME + "." + NUM_EXEC_ATTRIBUTE_NAME, Integer.parseInt(numExec));
+            String seed = element.getAttributeValue(SEED_ATTRIBUTE_NAME);
+            valuesByColumnName.put(CaseStudyXML.CASE_ROOT_ELEMENT_NAME + "." + SEED_ATTRIBUTE_NAME, Long.parseLong(seed));
         }
 
         if (elementName.equals(RelevanceCriteriaXML.ELEMENT_NAME)) {
