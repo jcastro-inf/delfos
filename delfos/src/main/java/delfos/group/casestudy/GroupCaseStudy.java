@@ -1,23 +1,24 @@
 package delfos.group.casestudy;
 
-import java.util.Collection;
-import java.util.LinkedList;
 import delfos.common.exceptions.dataset.CannotLoadContentDataset;
 import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
 import delfos.common.exceptions.dataset.items.ItemNotFound;
 import delfos.common.exceptions.dataset.users.UserNotFound;
 import delfos.common.parameters.ParameterOwnerType;
+import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RelevanceCriteria;
-import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.experiment.ExperimentAdapter;
 import delfos.experiment.casestudy.CaseStudyParameterChangedListener;
+import delfos.group.experiment.validation.groupformation.GroupFormationTechnique;
+import delfos.group.experiment.validation.predictionvalidation.GroupPredictionProtocol;
+import delfos.group.experiment.validation.validationtechniques.GroupValidationTechnique;
 import delfos.group.grs.GroupRecommenderSystem;
 import delfos.group.results.groupevaluationmeasures.GroupEvaluationMeasure;
 import delfos.group.results.groupevaluationmeasures.GroupMeasureResult;
-import delfos.group.experiment.validation.validationtechniques.GroupValidationTechnique;
-import delfos.group.experiment.validation.groupformation.GroupFormationTechnique;
-import delfos.group.experiment.validation.predictionvalidation.GroupPredictionProtocol;
+import java.util.Collection;
+import java.util.LinkedList;
+import java.util.Objects;
 
 /**
  * Clase que encapsula el funcionamiento general de un caso de estudio dedicado
@@ -199,4 +200,15 @@ public abstract class GroupCaseStudy extends ExperimentAdapter {
      * @return
      */
     public abstract long getAggregateRecommendationTime();
+
+    public int hashCodeWithoutGroupRecommenderSystem() {
+        int hash = 7;
+        hash = 97 * hash + Objects.hashCode(this.getSeedValue());
+        hash = 97 * hash + Objects.hashCode(this.getDatasetLoader());
+        hash = 97 * hash + Objects.hashCode(this.getGroupFormationTechnique());
+        hash = 97 * hash + Objects.hashCode(this.getRelevanceCriteria());
+        hash = 97 * hash + Objects.hashCode(this.getGroupPredictionProtocol());
+        hash = 97 * hash + Objects.hashCode(this.getGroupValidationTechnique());
+        return hash;
+    }
 }

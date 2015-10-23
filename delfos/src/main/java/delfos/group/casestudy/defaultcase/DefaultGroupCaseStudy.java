@@ -118,9 +118,37 @@ public class DefaultGroupCaseStudy extends GroupCaseStudy {
         setAlias(groupRecommenderSystem.getAlias());
     }
 
+    public DefaultGroupCaseStudy(
+            DatasetLoader<? extends Rating> datasetLoader,
+            GroupRecommenderSystem groupRecommenderSystem,
+            GroupFormationTechnique groupFormationTechnique,
+            GroupValidationTechnique groupValidationTechniqueValue,
+            GroupPredictionProtocol groupPredictionProtocol,
+            Collection<GroupEvaluationMeasure> evaluationMeasures,
+            RelevanceCriteria criteria,
+            int numEjecuciones, long seedValue) {
+
+        if (datasetLoader == null) {
+            this.datasetLoader = new RandomDatasetLoader(50, 50, 0.5);
+        } else {
+            this.datasetLoader = datasetLoader;
+        }
+        this.groupRecommenderSystem = groupRecommenderSystem;
+        this.groupFormationTechnique = groupFormationTechnique;
+        this.numEjecuciones = numEjecuciones;
+        this.groupEvaluationMeasures = evaluationMeasures;
+        this.relevanceCriteria = criteria;
+        this.groupPredictionProtocol = groupPredictionProtocol;
+        this.groupValidationTechnique = groupValidationTechniqueValue;
+        setSeedValue(seedValue);
+
+        setAlias(groupRecommenderSystem.getAlias());
+    }
+
     @Override
     public int hashCode() {
         int hash = 7;
+        hash = 97 * hash + Objects.hashCode(this.getSeedValue());
         hash = 97 * hash + Objects.hashCode(this.datasetLoader);
         hash = 97 * hash + Objects.hashCode(this.groupRecommenderSystem);
         hash = 97 * hash + Objects.hashCode(this.groupFormationTechnique);

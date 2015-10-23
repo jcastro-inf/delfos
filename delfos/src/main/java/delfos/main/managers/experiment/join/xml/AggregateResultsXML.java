@@ -8,8 +8,6 @@ import delfos.io.xml.casestudy.CaseStudyXML;
 import static delfos.io.xml.casestudy.CaseStudyXML.AGGREGATE_VALUES_ELEMENT_NAME;
 import static delfos.io.xml.casestudy.CaseStudyXML.CASE_ROOT_ELEMENT_NAME;
 import static delfos.io.xml.casestudy.CaseStudyXML.EXECUTIONS_RESULTS_ELEMENT_NAME;
-import static delfos.io.xml.casestudy.CaseStudyXML.NUM_EXEC_ATTRIBUTE_NAME;
-import static delfos.io.xml.casestudy.CaseStudyXML.SEED_ATTRIBUTE_NAME;
 import delfos.io.xml.dataset.RelevanceCriteriaXML;
 import delfos.io.xml.evaluationmeasures.NDCGXML;
 import delfos.io.xml.evaluationmeasures.confusionmatricescurve.ConfusionMatricesCurveXML;
@@ -32,6 +30,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import org.apache.commons.io.FileUtils;
+import org.jdom2.Attribute;
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
@@ -138,14 +137,10 @@ public class AggregateResultsXML {
         }
 
         if (elementName.equals(CASE_ROOT_ELEMENT_NAME)) {
-            String numExec = element.getAttributeValue(NUM_EXEC_ATTRIBUTE_NAME);
-            if (numExec != null) {
-                valuesByColumnName.put(CaseStudyXML.CASE_ROOT_ELEMENT_NAME + "." + NUM_EXEC_ATTRIBUTE_NAME, Integer.parseInt(numExec));
-            }
-
-            String seed = element.getAttributeValue(SEED_ATTRIBUTE_NAME);
-            if (seed != null) {
-                valuesByColumnName.put(CaseStudyXML.CASE_ROOT_ELEMENT_NAME + "." + SEED_ATTRIBUTE_NAME, Long.parseLong(seed));
+            for (Attribute attribute : element.getAttributes()) {
+                String name = CaseStudyXML.CASE_ROOT_ELEMENT_NAME + "." + attribute.getName();
+                String value = attribute.getValue();
+                valuesByColumnName.put(name, value);
             }
         }
 

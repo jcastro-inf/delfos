@@ -49,6 +49,8 @@ public class GroupCaseStudyXML {
     private static int meanBuildTime;
     private static int meanRecommendationTime;
     public static String RESULT_EXTENSION = "xml";
+    public static final String HASH_ATTRIBUTE_NAME = "hashAll";
+    public static final String HASH_WITHOUT_GRS_ATTRIBUTE_NAME = "hashConfiguration";
 
     private GroupCaseStudyXML() {
     }
@@ -198,6 +200,12 @@ public class GroupCaseStudyXML {
         Document doc = new Document();
         Element casoDeUso = new Element("Case");
 
+        casoDeUso.setAttribute("seed", Long.toString(caseStudyGroup.getSeedValue()));
+        casoDeUso.setAttribute("numExec", Integer.toString(caseStudyGroup.getNumExecutions()));
+
+        casoDeUso.setAttribute(HASH_ATTRIBUTE_NAME, Integer.toString(caseStudyGroup.hashCode()));
+        casoDeUso.setAttribute(HASH_WITHOUT_GRS_ATTRIBUTE_NAME, Integer.toString(caseStudyGroup.hashCode()));
+
         casoDeUso.addContent(GroupRecommenderSystemXML.getElement(caseStudyGroup.getGroupRecommenderSystem()));
         casoDeUso.addContent(DatasetLoaderXML.getElement(caseStudyGroup.getDatasetLoader()));
 
@@ -228,6 +236,9 @@ public class GroupCaseStudyXML {
 
         casoDeUso.setAttribute("seed", Long.toString(caseStudyGroup.getSeedValue()));
         casoDeUso.setAttribute("numExec", Integer.toString(caseStudyGroup.getNumExecutions()));
+
+        casoDeUso.setAttribute(HASH_ATTRIBUTE_NAME, Integer.toString(caseStudyGroup.hashCode()));
+        casoDeUso.setAttribute(HASH_WITHOUT_GRS_ATTRIBUTE_NAME, Integer.toString(caseStudyGroup.hashCode()));
 
         casoDeUso.addContent(GroupRecommenderSystemXML.getElement(caseStudyGroup.getGroupRecommenderSystem()));
         casoDeUso.addContent(DatasetLoaderXML.getElement(caseStudyGroup.getDatasetLoader()));
