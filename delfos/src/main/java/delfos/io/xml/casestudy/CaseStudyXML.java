@@ -112,6 +112,9 @@ public class CaseStudyXML {
         Document doc = new Document();
         Element casoDeUso = new Element(CASE_ROOT_ELEMENT_NAME);
 
+        casoDeUso.setAttribute("seed", Long.toString(c.getSeedValue()));
+        casoDeUso.setAttribute("numExec", Integer.toString(c.getNumExecutions()));
+
         casoDeUso.addContent(RecommenderSystemXML.getElement(c.getRecommenderSystem()));
         casoDeUso.addContent(ValidationTechniqueXML.getElement(c.getValidationTechnique()));
         casoDeUso.addContent(PredictionProtocolXML.getElement(c.getPredictionProtocol()));
