@@ -104,37 +104,39 @@ public class CaseStudyXML {
         return mediaMedidas;
     }
 
-    public synchronized static void caseStudyToXMLFile(CaseStudy c, File f) {
-        if (!c.isFinished()) {
+    public synchronized static void caseStudyToXMLFile(CaseStudy caseStudy, File file) {
+        if (!caseStudy.isFinished()) {
             throw new UnsupportedOperationException("No se ha ejecutado el caso de uso todavía");
         }
 
         Document doc = new Document();
         Element casoDeUso = new Element(CASE_ROOT_ELEMENT_NAME);
 
-        casoDeUso.setAttribute("seed", Long.toString(c.getSeedValue()));
-        casoDeUso.setAttribute("numExec", Integer.toString(c.getNumExecutions()));
+        casoDeUso.setAttribute(SEED_ATTRIBUTE_NAME, Long.toString(caseStudy.getSeedValue()));
+        casoDeUso.setAttribute(NUM_EXEC_ATTRIBUTE_NAME, Integer.toString(caseStudy.getNumExecutions()));
 
-        casoDeUso.addContent(RecommenderSystemXML.getElement(c.getRecommenderSystem()));
-        casoDeUso.addContent(ValidationTechniqueXML.getElement(c.getValidationTechnique()));
-        casoDeUso.addContent(PredictionProtocolXML.getElement(c.getPredictionProtocol()));
+        casoDeUso.addContent(RecommenderSystemXML.getElement(caseStudy.getRecommenderSystem()));
+        casoDeUso.addContent(ValidationTechniqueXML.getElement(caseStudy.getValidationTechnique()));
+        casoDeUso.addContent(PredictionProtocolXML.getElement(caseStudy.getPredictionProtocol()));
 
-        casoDeUso.addContent(RelevanceCriteriaXML.getElement(c.getRelevanceCriteria()));
-        casoDeUso.addContent(DatasetLoaderXML.getElement(c.getDatasetLoader()));
+        casoDeUso.addContent(RelevanceCriteriaXML.getElement(caseStudy.getRelevanceCriteria()));
+        casoDeUso.addContent(DatasetLoaderXML.getElement(caseStudy.getDatasetLoader()));
 
-        casoDeUso.addContent(getResultsElement(c));
-        casoDeUso.addContent(getAggregatedResultsElement(c));
+        casoDeUso.addContent(getResultsElement(caseStudy));
+        casoDeUso.addContent(getAggregatedResultsElement(caseStudy));
         doc.addContent(casoDeUso);
 
         XMLOutputter outputter = new XMLOutputter(Constants.getXMLFormat());
 
-        try (FileWriter fileWriter = new FileWriter(f)) {
+        try (FileWriter fileWriter = new FileWriter(file)) {
             outputter.output(doc, fileWriter);
 
         } catch (IOException ex) {
             ERROR_CODES.CANNOT_WRITE_RESULTS_FILE.exit(ex);
         }
     }
+    public static final String SEED_ATTRIBUTE_NAME = "seed";
+    public static final String NUM_EXEC_ATTRIBUTE_NAME = "numExec";
 
     public static void saveCaseResults(CaseStudy caseStudy) {
         Date date = new Date();
@@ -286,6 +288,9 @@ public class CaseStudyXML {
 
         Document doc = new Document();
         Element casoDeUso = new Element("Case");
+
+        casoDeUso.setAttribute("seed", Long.toString(caseStudy.getSeedValue()));
+        casoDeUso.setAttribute("numExec", Integer.toString(caseStudy.getNumExecutions()));
 
         casoDeUso.addContent(RecommenderSystemXML.getElement(caseStudy.getRecommenderSystem()));
         casoDeUso.addContent(ValidationTechniqueXML.getElement(caseStudy.getValidationTechnique()));

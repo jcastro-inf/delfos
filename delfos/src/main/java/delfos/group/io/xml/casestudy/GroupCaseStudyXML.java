@@ -226,6 +226,9 @@ public class GroupCaseStudyXML {
         Document doc = new Document();
         Element casoDeUso = new Element("Case");
 
+        casoDeUso.setAttribute("seed", Long.toString(caseStudyGroup.getSeedValue()));
+        casoDeUso.setAttribute("numExec", Integer.toString(caseStudyGroup.getNumExecutions()));
+
         casoDeUso.addContent(GroupRecommenderSystemXML.getElement(caseStudyGroup.getGroupRecommenderSystem()));
         casoDeUso.addContent(DatasetLoaderXML.getElement(caseStudyGroup.getDatasetLoader()));
 
