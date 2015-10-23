@@ -42,14 +42,12 @@ public class HesitantGRS_3_CaseStudy_FixedGroupSize extends DelfosTest {
             + "experiments" + File.separator
             + "3-HesitantGRS-allGroups" + File.separator);
 
-    public static long timestamp = System.currentTimeMillis();
+    private final static long timestamp = System.currentTimeMillis();
 
     private Collection<GroupFormationTechnique> getGroupFormationTechnique() {
         return Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 15, 20, 25, 50, 100, 200, 500).stream()
                 .map((groupSize) -> {
-                    GroupFormationTechnique gft = new FixedGroupSize(groupSize);
-                    gft.setSeedValue(SEED_VALUE);
-                    return gft;
+                    return new FixedGroupSize(groupSize);
                 }).collect(Collectors.toList());
 
     }
@@ -129,13 +127,21 @@ public class HesitantGRS_3_CaseStudy_FixedGroupSize extends DelfosTest {
                         null,
                         groupRecommenderSystem,
                         groupFormationTechnique,
-                        new HoldOutGroupRatedItems(SEED_VALUE),
-                        new NoPredictionProtocol(SEED_VALUE),
+                        new HoldOutGroupRatedItems(),
+                        new NoPredictionProtocol(),
                         GroupEvaluationMeasuresFactory.getInstance().getAllClasses(),
-                        new RelevanceCriteria(4), 1);
+                        new RelevanceCriteria(4),
+                        1,
+                        SEED_VALUE
+                );
 
-                groupCaseStudy.setAlias("t=" + timestamp + "_" + groupRecommenderSystem.getAlias());
-                groupCaseStudy.setSeedValue(SEED_VALUE);
+                groupCaseStudy.setAlias(
+                        //"t=" + timestamp+
+                        "_methodHash=" + groupCaseStudy.hashCodeWithoutGroupRecommenderSystem()
+                        + "_" + groupRecommenderSystem.getAlias()
+                        + "_allHash=" + groupCaseStudy.hashCode()
+                );
+
                 groupCaseStudys.add(groupCaseStudy);
             }
         }
@@ -153,6 +159,6 @@ public class HesitantGRS_3_CaseStudy_FixedGroupSize extends DelfosTest {
         createCaseStudyXML();
 
         Global.show("This case study has " + new TuringPreparator().sizeOfAllExperimentsInDirectory(experimentDirectory) + " experiments");
-//        new TuringPreparator().executeAllExperimentsInDirectory(directory, 1);
+//        new TuringPreparator().executeAllExperimentsInDirectory(experimentDirectory, 1);
     }
 }
