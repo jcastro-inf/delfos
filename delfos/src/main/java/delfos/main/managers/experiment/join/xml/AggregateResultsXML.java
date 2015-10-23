@@ -1,6 +1,6 @@
 package delfos.main.managers.experiment.join.xml;
 
-import delfos.ERROR_CODES;
+import delfos.common.Global;
 import delfos.group.results.groupevaluationmeasures.AreaUnderRoc;
 import delfos.io.excel.joiner.AggregateResultsMatrixExcelWriter;
 import delfos.io.xml.UnrecognizedElementException;
@@ -74,9 +74,10 @@ public class AggregateResultsXML {
 
                 values.put(experimentName, valuesThisFile);
 
-            } catch (JDOMException | IOException ex) {
-                System.out.println("ERROR AT --> Reading file " + file);
-                ERROR_CODES.CANNOT_READ_CASE_STUDY_EXCEL.exit(ex);
+            } catch (Exception ex) {
+                Global.show("ERROR AT --> Reading file " + file);
+                Global.showWarning("ERROR AT --> Reading file " + file);
+                Global.showError(ex);
             }
         }
         writeFinalExcel(values);
