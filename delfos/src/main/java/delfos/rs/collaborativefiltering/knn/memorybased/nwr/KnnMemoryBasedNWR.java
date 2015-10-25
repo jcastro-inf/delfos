@@ -205,7 +205,7 @@ public class KnnMemoryBasedNWR extends KnnCollaborativeRecommender<KnnMemoryMode
      *
      * @param datasetLoader Input data.
      * @param idUser Id del usuario activo
-     * @param neighborhood Vecinos del usuario activo
+     * @param _neighborhood Vecinos del usuario activo
      * @param neighborhoodSize
      * @param candidateIdItems Lista de productos que se consideran
      * recomendables, es decir, que podrían ser recomendados si la predicción es
@@ -225,7 +225,10 @@ public class KnnMemoryBasedNWR extends KnnCollaborativeRecommender<KnnMemoryMode
             PredictionTechnique predictionTechnique)
             throws UserNotFound {
 
-        List<Neighbor> neighborhood = _neighborhood.stream().collect(Collectors.toList());
+        List<Neighbor> neighborhood = _neighborhood.stream()
+                .filter(neighbor -> !Float.isNaN(neighbor.getSimilarity()))
+                .filter(neighbor -> neighbor.getSimilarity() > 0)
+                .collect(Collectors.toList());
 
         neighborhood.sort(Neighbor.BY_SIMILARITY_DESC);
 
