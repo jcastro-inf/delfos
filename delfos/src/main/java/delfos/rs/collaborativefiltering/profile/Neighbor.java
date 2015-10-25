@@ -123,15 +123,8 @@ public class Neighbor implements Comparable<Neighbor>, Serializable {
     }
 
     @Override
-    public int compareTo(Neighbor t) {
-        if (this.recommendationEntity.compareTo(t.getRecommendationEntity()) == 0) {
-            if (BY_ID.compare(this, t) == 0) {
-                return BY_SIMILARITY_DESC.compare(this, t);
-            } else {
-                return BY_ID.compare(this, t);
-            }
-        }
-        return this.recommendationEntity.compareTo(t.getRecommendationEntity());
+    public int compareTo(Neighbor neighbor) {
+        return Neighbor.BY_SIMILARITY_DESC.compare(this, neighbor);
     }
 
     @Override

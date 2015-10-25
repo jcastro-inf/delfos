@@ -31,7 +31,7 @@ public class BordaCount extends GroupRecommendationsSelector {
 
         for (int idUser : membersRecommendations.keySet()) {
             List<Recommendation> reverseList = new ArrayList<>(membersRecommendations.get(idUser));
-            Collections.sort(reverseList, Recommendation.getRecommendationPreferenceComparator());
+            Collections.sort(reverseList, Recommendation.BY_PREFERENCE_DESC);
             Collections.reverse(reverseList);
 
             int index = 1;

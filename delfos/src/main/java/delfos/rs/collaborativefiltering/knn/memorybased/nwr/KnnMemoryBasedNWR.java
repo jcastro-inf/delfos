@@ -192,7 +192,8 @@ public class KnnMemoryBasedNWR extends KnnCollaborativeRecommender<KnnMemoryMode
         multiThreadExecutionManager.getAllFinishedTasks().parallelStream().map((task) -> task.getNeighbor()).filter((neighbor) -> (neighbor != null)).forEach((neighbor) -> {
             ret.add(neighbor);
         });
-        Collections.sort(ret);
+
+        ret.sort(Neighbor.BY_SIMILARITY_DESC);
 
         return ret;
     }

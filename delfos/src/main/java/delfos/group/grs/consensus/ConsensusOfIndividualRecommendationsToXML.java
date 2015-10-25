@@ -44,7 +44,7 @@ public class ConsensusOfIndividualRecommendationsToXML {
             thisMemberElement.setAttribute(MEMBER_ELEMENT_NAME_ID_ATTRIBUTE_NAME, Integer.toString(idMember));
 
             ArrayList<Recommendation> sortedRecommendations = new ArrayList<>(singleUserRecommendations.get(idMember));
-            Collections.sort(sortedRecommendations, Recommendation.getRecommendationPreferenceComparator());
+            Collections.sort(sortedRecommendations, Recommendation.BY_PREFERENCE_DESC);
 
             int rank = 1;
             for (Recommendation r : sortedRecommendations) {
@@ -67,7 +67,7 @@ public class ConsensusOfIndividualRecommendationsToXML {
         int rank = 1;
 
         ArrayList<Recommendation> sortedGroupRecommendations = new ArrayList<>(groupRecommendations);
-        Collections.sort(sortedGroupRecommendations, Recommendation.getRecommendationPreferenceComparator());
+        Collections.sort(sortedGroupRecommendations, Recommendation.BY_PREFERENCE_DESC);
         for (Recommendation r : sortedGroupRecommendations) {
 
             Element recommendation = new Element(RECOMMENDATION_ELEMENT_NAME);

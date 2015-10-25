@@ -181,8 +181,7 @@ public class Recommendation implements Comparable<Recommendation>, Serializable 
 
     @Override
     public int compareTo(Recommendation o) {
-        Comparator<Recommendation> comparator = getRecommendationPreferenceComparator();
-        return comparator.compare(this, o);
+        return BY_PREFERENCE_DESC.compare(this, o);
     }
 
     @Override
@@ -204,22 +203,6 @@ public class Recommendation implements Comparable<Recommendation>, Serializable 
         hash = 37 * hash + this.getIdItem();
         hash = 37 * hash + (this.preference != null ? this.preference.hashCode() : 0);
         return hash;
-    }
-
-    public static Comparator<Recommendation> getRecommendationPreferenceComparator() {
-        Comparator<Recommendation> comparator = (Recommendation o1, Recommendation o2) -> {
-            int compare = Double.compare(o1.preference.doubleValue(), o2.preference.doubleValue());
-            if (compare != 0) {
-                return compare;
-            } else {
-                return Integer.compare(o1.getIdItem(), o2.getIdItem());
-            }
-        };
-
-        comparator = comparator.reversed();
-
-        return comparator;
-
     }
 
     /**
