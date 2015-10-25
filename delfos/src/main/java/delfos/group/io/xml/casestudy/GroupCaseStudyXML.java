@@ -238,7 +238,7 @@ public class GroupCaseStudyXML {
         casoDeUso.setAttribute("numExec", Integer.toString(caseStudyGroup.getNumExecutions()));
 
         casoDeUso.setAttribute(HASH_ATTRIBUTE_NAME, Integer.toString(caseStudyGroup.hashCode()));
-        casoDeUso.setAttribute(HASH_WITHOUT_GRS_ATTRIBUTE_NAME, Integer.toString(caseStudyGroup.hashCode()));
+        casoDeUso.setAttribute(HASH_WITHOUT_GRS_ATTRIBUTE_NAME, Integer.toString(caseStudyGroup.hashCodeWithoutGroupRecommenderSystem()));
 
         casoDeUso.addContent(GroupRecommenderSystemXML.getElement(caseStudyGroup.getGroupRecommenderSystem()));
         casoDeUso.addContent(DatasetLoaderXML.getElement(caseStudyGroup.getDatasetLoader()));
