@@ -1,4 +1,4 @@
-package delfos.group.casestudy.definedcases.hesitant;
+package delfos.group.casestudy.definedcases.hesitant.experiment1;
 
 import delfos.Constants;
 import delfos.common.FileUtilities;
@@ -136,8 +136,7 @@ public class HesitantGRS_3_CaseStudy_FixedGroupSize extends DelfosTest {
                 );
 
                 groupCaseStudy.setAlias(
-                        //"t=" + timestamp+
-                        "_methodHash=" + groupCaseStudy.hashCodeWithoutGroupRecommenderSystem()
+                        "methodHash=" + groupCaseStudy.hashCodeWithoutGroupRecommenderSystem()
                         + "_" + groupRecommenderSystem.getAlias()
                         + "_allHash=" + groupCaseStudy.hashCode()
                 );

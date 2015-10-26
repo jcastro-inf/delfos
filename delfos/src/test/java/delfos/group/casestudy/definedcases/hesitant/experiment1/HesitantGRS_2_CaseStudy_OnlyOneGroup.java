@@ -1,4 +1,4 @@
-package delfos.group.casestudy.definedcases.hesitant;
+package delfos.group.casestudy.definedcases.hesitant.experiment1;
 
 import delfos.Constants;
 import delfos.common.FileUtilities;
@@ -31,25 +31,22 @@ import java.util.List;
 import java.util.stream.Collectors;
 import org.junit.Test;
 
-public class HesitantGRS_1_CaseStudy_InitialGroupFormation extends DelfosTest {
+public class HesitantGRS_2_CaseStudy_OnlyOneGroup extends DelfosTest {
 
-    public HesitantGRS_1_CaseStudy_InitialGroupFormation() {
+    public HesitantGRS_2_CaseStudy_OnlyOneGroup() {
     }
 
     public static final long SEED_VALUE = 123456L;
-    public static final int NUM_GROUPS = 90;
-
-    private final static long timestamp = System.currentTimeMillis();
+    public static final int NUM_GROUPS = 1;
 
     File experimentDirectory = new File(Constants.getTempDirectory().getAbsolutePath() + File.separator
             + "experiments" + File.separator
-            + "0-HesitantGRS-90groups" + File.separator);
+            + "1-HesitantGRS-1group" + File.separator);
 
     private Collection<GroupFormationTechnique> getGroupFormationTechnique() {
         return Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 15, 20, 25, 50, 100, 200, 500).stream()
                 .map((groupSize) -> {
                     GroupFormationTechnique gft = new FixedGroupSize_OnlyNGroups(NUM_GROUPS, groupSize);
-
                     return gft;
                 }).collect(Collectors.toList());
 
@@ -135,12 +132,10 @@ public class HesitantGRS_1_CaseStudy_InitialGroupFormation extends DelfosTest {
                         GroupEvaluationMeasuresFactory.getInstance().getAllClasses(),
                         new RelevanceCriteria(4),
                         1,
-                        SEED_VALUE
-                );
+                        SEED_VALUE);
 
                 groupCaseStudy.setAlias(
-                        //"t=" + timestamp+
-                        "_methodHash=" + groupCaseStudy.hashCodeWithoutGroupRecommenderSystem()
+                        "methodHash=" + groupCaseStudy.hashCodeWithoutGroupRecommenderSystem()
                         + "_" + groupRecommenderSystem.getAlias()
                         + "_allHash=" + groupCaseStudy.hashCode()
                 );
