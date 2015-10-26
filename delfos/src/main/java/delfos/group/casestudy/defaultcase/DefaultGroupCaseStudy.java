@@ -630,23 +630,24 @@ public class DefaultGroupCaseStudy extends GroupCaseStudy {
      * @param loop Vuelta actual
      */
     private void setNextSeedToSeedHolders(int loop) {
+        final long caseStudySeed = getSeedValue();
 
-        long seedValue = getSeedValue() + loop;
+        long thisLoopSeed = caseStudySeed + loop;
 
         if (groupRecommenderSystem instanceof SeedHolder) {
             SeedHolder seedHolder = (SeedHolder) groupRecommenderSystem;
-            seedHolder.setSeedValue(seedValue);
+            seedHolder.setSeedValue(thisLoopSeed);
             Global.showInfoMessage("Reset GRS seed to " + seedHolder.getSeedValue() + "\n");
 
         }
 
-        groupFormationTechnique.setSeedValue(seedValue);
+        groupFormationTechnique.setSeedValue(thisLoopSeed);
         Global.showInfoMessage("Reset groupFormationTechnique seed to " + groupFormationTechnique.getSeedValue() + "\n");
 
-        groupValidationTechnique.setSeedValue(seedValue);
+        groupValidationTechnique.setSeedValue(thisLoopSeed);
         Global.showInfoMessage("Reset groupValidationTechnique seed to " + groupValidationTechnique.getSeedValue() + "\n");
 
-        groupPredictionProtocol.setSeedValue(seedValue);
+        groupPredictionProtocol.setSeedValue(thisLoopSeed);
         Global.showInfoMessage("Reset groupPredictionProtocol seed to " + groupPredictionProtocol.getSeedValue() + "\n");
     }
 }
