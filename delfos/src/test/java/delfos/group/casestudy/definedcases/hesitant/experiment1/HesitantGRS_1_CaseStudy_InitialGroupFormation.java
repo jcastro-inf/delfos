@@ -4,7 +4,6 @@ import delfos.Constants;
 import delfos.common.FileUtilities;
 import delfos.common.Global;
 import delfos.configureddatasets.ConfiguredDatasetLoader;
-import delfos.configureddatasets.ConfiguredDatasetsFactory;
 import delfos.constants.DelfosTest;
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.RelevanceCriteria;
@@ -41,32 +40,19 @@ public class HesitantGRS_1_CaseStudy_InitialGroupFormation extends DelfosTest {
 
     File experimentDirectory = new File(Constants.getTempDirectory().getAbsolutePath() + File.separator
             + "experiments" + File.separator
-            + "0-HesitantGRS-90groups" + File.separator);
+            + "1-HesitantGRS-90groups" + File.separator);
 
     private Collection<GroupFormationTechnique> getGroupFormationTechnique() {
         return Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 15, 20, 25, 50, 100, 200, 500).stream()
                 .map((groupSize) -> {
                     GroupFormationTechnique gft = new FixedGroupSize_OnlyNGroups(NUM_GROUPS, groupSize);
-
                     return gft;
                 }).collect(Collectors.toList());
 
     }
 
     private Collection<ConfiguredDatasetLoader> getDatasetLoader() {
-        if (1 == 1) {
-            return Arrays.asList(
-                    new ConfiguredDatasetLoader("ml-100k"));
-        }
-
-        return ConfiguredDatasetsFactory.getInstance()
-                .keySet()
-                .stream()
-                .map((datasetName) -> {
-                    return new ConfiguredDatasetLoader(datasetName);
-                })
-                .collect(Collectors.toList());
-
+        return Arrays.asList(new ConfiguredDatasetLoader("ml-100k"));
     }
 
     private List<GroupRecommenderSystem> getGRSs() {
@@ -154,10 +140,9 @@ public class HesitantGRS_1_CaseStudy_InitialGroupFormation extends DelfosTest {
     @Test
     public void testExecute() throws Exception {
         FileUtilities.deleteDirectoryRecursive(experimentDirectory);
-
         createCaseStudyXML();
-
-        Global.show("This case study has " + new TuringPreparator().sizeOfAllExperimentsInDirectory(experimentDirectory) + " experiments");
-//        new TuringPreparator().executeAllExperimentsInDirectory(experimentDirectory, 1);
+        Global.show("This case study has " + new TuringPreparator()
+                .sizeOfAllExperimentsInDirectory(experimentDirectory)
+                + " experiments");
     }
 }
