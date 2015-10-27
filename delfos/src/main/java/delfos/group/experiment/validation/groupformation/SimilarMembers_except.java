@@ -1,22 +1,21 @@
 package delfos.group.experiment.validation.groupformation;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Random;
-import java.util.Set;
-import java.util.TreeSet;
 import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
 import delfos.common.parameters.Parameter;
 import delfos.common.parameters.restriction.IntegerParameter;
 import delfos.common.parameters.restriction.ParameterOwnerRestriction;
-import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.loader.types.DatasetLoader;
-import delfos.group.groupsofusers.GroupOfUsers;
+import delfos.dataset.basic.rating.Rating;
 import delfos.group.groupsofusers.GroupOfUsers;
 import delfos.similaritymeasures.PearsonCorrelationCoefficient;
 import delfos.similaritymeasures.useruser.UserUserSimilarity;
 import delfos.similaritymeasures.useruser.UserUserSimilarityWrapper;
 import delfos.similaritymeasures.useruser.UserUserSimilarityWrapper_relevanceFactor;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Random;
+import java.util.Set;
+import java.util.TreeSet;
 
 /**
  * Crea grupos buscando similitudes entre los miembros, excepto cierto numero de
@@ -25,7 +24,7 @@ import delfos.similaritymeasures.useruser.UserUserSimilarityWrapper_relevanceFac
  * vacío.
  *
  * @version 25-Junio-2014
-* @author Jorge Castro Gallardo
+ * @author Jorge Castro Gallardo
  */
 public class SimilarMembers_except extends GroupFormationTechnique {
 
@@ -123,9 +122,9 @@ public class SimilarMembers_except extends GroupFormationTechnique {
         }
         UserUserSimilarity similarityMeasure = (UserUserSimilarity) getParameterValue(SIMILARITY_MEASURE);
 
-        SimilarMembers similarMembers = new SimilarMembers(numGroups, numMembersSimilar, numMembersCandidate);
+        SimilarMembers_OnlyNGroups similarMembers = new SimilarMembers_OnlyNGroups(numGroups, numMembersSimilar, numMembersCandidate);
         similarMembers.setSeedValue(getSeedValue());
-        similarMembers.setParameterValue(SimilarMembers.SIMILARITY_MEASURE, similarityMeasure);
+        similarMembers.setParameterValue(SimilarMembers_OnlyNGroups.SIMILARITY_MEASURE, similarityMeasure);
         similarMembers.addListener((String message, int progress) -> {
             progressChanged(message, progress);
         });

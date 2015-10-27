@@ -7,7 +7,7 @@ import delfos.group.experiment.validation.groupformation.FixedGroupSize_OnlyNGro
 import delfos.group.experiment.validation.groupformation.GivenGroups;
 import delfos.group.experiment.validation.groupformation.GroupFormationTechnique;
 import delfos.group.experiment.validation.groupformation.ProbabilityDistributionOfSizes;
-import delfos.group.experiment.validation.groupformation.SimilarMembers;
+import delfos.group.experiment.validation.groupformation.SimilarMembers_OnlyNGroups;
 import delfos.group.experiment.validation.groupformation.SimilarMembers_except;
 
 /**
@@ -37,7 +37,7 @@ public class GroupFormationTechniquesFactory extends Factory<GroupFormationTechn
 
         instance.addClass(GivenGroups.class);
 
-        instance.addClass(SimilarMembers.class);
+        instance.addClass(SimilarMembers_OnlyNGroups.class);
         instance.addClass(SimilarMembers_except.class);
     }
 

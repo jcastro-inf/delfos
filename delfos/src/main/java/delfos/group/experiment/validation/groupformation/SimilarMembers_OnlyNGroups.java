@@ -32,16 +32,11 @@ import java.util.TreeSet;
  * @version 10-abr-2014
  * @author Jorge Castro Gallardo
  */
-public class SimilarMembers extends GroupFormationTechnique {
+public class SimilarMembers_OnlyNGroups extends GroupFormationTechnique {
 
     static {
 
-        UserUserSimilarity defaultSimilarity = new UserUserSimilarityWrapper_relevanceFactor(
-                new UserUserSimilarityWrapper(
-                        new PearsonCorrelationCoefficient()
-                ),
-                20
-        );
+        UserUserSimilarity defaultSimilarity = new UserUserSimilarityWrapper_relevanceFactor(new UserUserSimilarityWrapper(new PearsonCorrelationCoefficient()), 5);
 
         ParameterOwnerRestriction parameterOwnerRestriction = new ParameterOwnerRestriction(
                 UserUserSimilarity.class,
@@ -56,6 +51,7 @@ public class SimilarMembers extends GroupFormationTechnique {
      * generados con esta validación de grupos
      */
     public static final Parameter GROUP_SIZE_PARAMETER = new Parameter("groupSize", new IntegerParameter(1, 10000, 5));
+    public static final Parameter NUM_GROUPS_PARAMETER = new Parameter("numGroups", new IntegerParameter(1, 1000000, 5));
     public static final Parameter N_CANDIDATES_PARAMETER = new Parameter("numCandidates", new IntegerParameter(1, 1000000, 5));
     public static final Parameter SIMILARITY_MEASURE;
 
@@ -63,17 +59,19 @@ public class SimilarMembers extends GroupFormationTechnique {
      * Genera una validación de usuarios que genera grupos de tamaño fijo. Por
      * defecto, el tamaño de los grupos es de cuatro miembros.
      */
-    public SimilarMembers() {
+    public SimilarMembers_OnlyNGroups() {
         super();
         addParameter(GROUP_SIZE_PARAMETER);
+        addParameter(NUM_GROUPS_PARAMETER);
         addParameter(N_CANDIDATES_PARAMETER);
         addParameter(SIMILARITY_MEASURE);
 
         addParammeterListener(() -> {
+            int numGroupsValue = (Integer) getParameterValue(NUM_GROUPS_PARAMETER);
             int groupSizeValue = (Integer) getParameterValue(GROUP_SIZE_PARAMETER);
 
             String oldAlias = getAlias();
-            String newAlias = this.getClass().getSimpleName() + "(size=" + groupSizeValue + ")";
+            String newAlias = this.getClass().getSimpleName() + "(num=" + numGroupsValue + " size=" + groupSizeValue + ")";
 
             if (!oldAlias.equals(newAlias)) {
                 setAlias(newAlias);
@@ -82,16 +80,30 @@ public class SimilarMembers extends GroupFormationTechnique {
     }
 
     /**
+     * Genera una técnica de generación de grupos que genera
+     * <b>numGroupsValue</b> de tamaño <b>groupSizeValue</b> y con
+     *
+     * @param groupSizeValue Tamaño de los grupos generados
+     * @param numGroupsValue Número de grupos considerados
+     */
+    public SimilarMembers_OnlyNGroups(int numGroupsValue, int groupSizeValue) {
+        this(numGroupsValue, groupSizeValue, 20);
+
+    }
+
+    /**
      * Genera una validación de usuarios que genera grupos de tamaño fijo. Por
      * defecto, el tamaño de los grupos es de cuatro miembros.
      *
      * @param groupSizeValue Tamaño de los grupos generados
+     * @param numGroupsValue Número de grupos considerados
      * @param numCandidates Número de vecinos candidatos que se consideran al
      * seleccionar el siguiente miembro del grupo aleatoriamente.
      */
-    public SimilarMembers(int groupSizeValue, int numCandidates) {
+    public SimilarMembers_OnlyNGroups(int numGroupsValue, int groupSizeValue, int numCandidates) {
         this();
         setParameterValue(GROUP_SIZE_PARAMETER, groupSizeValue);
+        setParameterValue(NUM_GROUPS_PARAMETER, numGroupsValue);
         setParameterValue(N_CANDIDATES_PARAMETER, numCandidates);
 
     }
@@ -105,7 +117,12 @@ public class SimilarMembers extends GroupFormationTechnique {
 
         final int numMembersCandidate = (Integer) getParameterValue(N_CANDIDATES_PARAMETER);
         final int groupSize = (Integer) getParameterValue(GROUP_SIZE_PARAMETER);
+        final int numGroups = (Integer) getParameterValue(NUM_GROUPS_PARAMETER);
         final int maximumGroups = datasetLoader.getRatingsDataset().allUsers().size() / groupSize;
+
+        if (maximumGroups < numGroups) {
+            throw new IllegalArgumentException("The number of groups * groupSize exceed the number of users (" + numGroups + " * " + groupSize + " > " + datasetLoader.getRatingsDataset().allUsers().size());
+        }
 
         UserUserSimilarity similarityMeasure = (UserUserSimilarity) getParameterValue(SIMILARITY_MEASURE);
 
@@ -113,7 +130,7 @@ public class SimilarMembers extends GroupFormationTechnique {
         ArrayList<Integer> usersRemainToSelect = new ArrayList<>(datasetLoader.getRatingsDataset().allUsers());
 
         int numGruposGenerados = 0;
-        while (groupsGenerated.size() >= groupSize) {
+        while (groupsGenerated.size() < numGroups) {
 
             TreeSet<Integer> usersGrupoActual = new TreeSet<>();
             {
@@ -162,9 +179,12 @@ public class SimilarMembers extends GroupFormationTechnique {
             }
             groupsGenerated.add(new GroupOfUsers(usersGrupoActual));
             numGruposGenerados++;
-            progressChanged("Group generation", (numGruposGenerados * 100) / maximumGroups);
+            progressChanged("Group generation", (numGruposGenerados * 100) / numGroups);
         }
 
+        while (groupsGenerated.size() > numGroups) {
+            groupsGenerated.remove(random.nextInt(groupsGenerated.size()));
+        }
         GroupOfUsers[] gruposGenerados = new GroupOfUsers[groupsGenerated.size()];
 
         numGruposGenerados = 0;
