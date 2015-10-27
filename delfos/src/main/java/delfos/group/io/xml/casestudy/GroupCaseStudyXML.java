@@ -51,6 +51,9 @@ public class GroupCaseStudyXML {
     public static String RESULT_EXTENSION = "xml";
     public static final String HASH_ATTRIBUTE_NAME = "hashAll";
     public static final String HASH_WITHOUT_GRS_ATTRIBUTE_NAME = "hashConfiguration";
+    public static final String NUM_EXEC_ATTRIBUTE_NAME = "numExec";
+    public static final String FULL_RESULT_SUFFIX = "_FULL";
+    public static final String AGGR_RESULT_SUFFIX = "_AGGR";
 
     private GroupCaseStudyXML() {
     }
@@ -183,11 +186,11 @@ public class GroupCaseStudyXML {
         File fileFile = FileUtilities.addPrefix(new File(file), descriptivePrefix);
         if (Constants.isPrintFullXML()) {
 
-            File fullFile = FileUtilities.addSufix(fileFile, "_FULL");
+            File fullFile = FileUtilities.addSufix(fileFile, FULL_RESULT_SUFFIX);
             GroupCaseStudyXML.caseStudyToXMLFile(caseStudyGroup, "", fullFile);
         }
 
-        File aggrFile = FileUtilities.addSufix(fileFile, "_AGGR");
+        File aggrFile = FileUtilities.addSufix(fileFile, AGGR_RESULT_SUFFIX);
         GroupCaseStudyXML.caseStudyToXMLFile_onlyAggregate(caseStudyGroup, descriptivePrefix, aggrFile);
     }
 
@@ -198,10 +201,10 @@ public class GroupCaseStudyXML {
         }
 
         Document doc = new Document();
-        Element casoDeUso = new Element("Case");
+        Element casoDeUso = new Element(CASE_ROOT_ELEMENT_NAME);
 
         casoDeUso.setAttribute("seed", Long.toString(caseStudyGroup.getSeedValue()));
-        casoDeUso.setAttribute("numExec", Integer.toString(caseStudyGroup.getNumExecutions()));
+        casoDeUso.setAttribute(NUM_EXEC_ATTRIBUTE_NAME, Integer.toString(caseStudyGroup.getNumExecutions()));
 
         casoDeUso.setAttribute(HASH_ATTRIBUTE_NAME, Integer.toString(caseStudyGroup.hashCode()));
         casoDeUso.setAttribute(HASH_WITHOUT_GRS_ATTRIBUTE_NAME, Integer.toString(caseStudyGroup.hashCode()));
@@ -232,10 +235,11 @@ public class GroupCaseStudyXML {
         }
 
         Document doc = new Document();
-        Element casoDeUso = new Element("Case");
+        Element casoDeUso = new Element(CASE_ROOT_ELEMENT_NAME);
 
         casoDeUso.setAttribute("seed", Long.toString(caseStudyGroup.getSeedValue()));
-        casoDeUso.setAttribute("numExec", Integer.toString(caseStudyGroup.getNumExecutions()));
+
+        casoDeUso.setAttribute(NUM_EXEC_ATTRIBUTE_NAME, Integer.toString(caseStudyGroup.getNumExecutions()));
 
         casoDeUso.setAttribute(HASH_ATTRIBUTE_NAME, Integer.toString(caseStudyGroup.hashCode()));
         casoDeUso.setAttribute(HASH_WITHOUT_GRS_ATTRIBUTE_NAME, Integer.toString(caseStudyGroup.hashCodeWithoutGroupRecommenderSystem()));
@@ -294,5 +298,19 @@ public class GroupCaseStudyXML {
         DatasetLoader<? extends Rating> datasetLoader = DatasetLoaderXML.getDatasetLoader(caseStudy.getChild(DatasetLoaderXML.ELEMENT_NAME));
 
         return new GroupCaseStudyConfiguration(groupRecommenderSystem, datasetLoader, groupFormationTechnique, groupValidationTechnique, groupPredictionProtocol, relevanceCriteria);
+    }
+
+    public static int extractResultNumExec(File aggregateResultXML) throws JDOMException, IOException {
+        SAXBuilder builder = new SAXBuilder();
+
+        Document doc = builder.build(aggregateResultXML);
+        Element caseStudy = doc.getRootElement();
+        if (!caseStudy.getName().equals(CASE_ROOT_ELEMENT_NAME)) {
+            throw new IllegalArgumentException("The XML does not contains a Case Study.");
+        }
+
+        Integer numExec = new Integer(caseStudy.getAttributeValue(NUM_EXEC_ATTRIBUTE_NAME));
+
+        return numExec;
     }
 }
