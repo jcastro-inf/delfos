@@ -36,7 +36,7 @@ public class HesitantGRS_2_CaseStudy_OnlyOneGroup extends DelfosTest {
     public static final int NUM_GROUPS = 1;
 
     File experimentDirectory = new File(Constants.getTempDirectory().getAbsolutePath() + File.separator
-            + "experiments" + File.separator
+            + "HesitantGRS.experiment2" + File.separator
             + "2-HesitantGRS-1group" + File.separator);
 
     private Collection<GroupFormationTechnique> getGroupFormationTechnique() {
@@ -52,41 +52,32 @@ public class HesitantGRS_2_CaseStudy_OnlyOneGroup extends DelfosTest {
     }
 
     private List<GroupRecommenderSystem> getGRSs() {
-        final List<Integer> neighborsTried = Arrays.asList(10, 20, 30, 40, 50, 100, 150, 200, 500);
+        int neighborhoodSize = 100;
         List<GroupRecommenderSystem> ret = new ArrayList<>();
-        List<List<HesitantKnnGroupUser>> lists = HesitantSimilarityFactory.getAll()
+        ret.addAll(HesitantSimilarityFactory.getAll()
                 .stream()
                 .map((hesitantSimilarity) -> {
-                    return neighborsTried.stream()
-                    .map((neighborhoodSize)
-                            -> {
-                        DecimalFormat format = new DecimalFormat("000");
-                        HesitantKnnGroupUser grs = new HesitantKnnGroupUser();
-                        grs.setAlias(hesitantSimilarity.getName() + "_neighborhoodSize=" + format.format(neighborhoodSize));
-                        grs.setParameterValue(HesitantKnnGroupUser.NEIGHBORHOOD_SIZE, neighborhoodSize);
-                        grs.setParameterValue(HesitantKnnGroupUser.HESITANT_SIMILARITY_MEASURE, hesitantSimilarity);
-                        return grs;
-                    })
-                    .collect(Collectors.toList());
-                }).collect(Collectors.toList());
 
-        lists.stream().forEach((list) -> {
-            ret.addAll(list);
-        });
+                    DecimalFormat format = new DecimalFormat("000");
+                    HesitantKnnGroupUser grs = new HesitantKnnGroupUser();
+                    grs.setAlias(hesitantSimilarity.getName() + "_neighborhoodSize=" + format.format(neighborhoodSize));
+                    grs.setParameterValue(HesitantKnnGroupUser.NEIGHBORHOOD_SIZE, neighborhoodSize);
+                    grs.setParameterValue(HesitantKnnGroupUser.HESITANT_SIMILARITY_MEASURE, hesitantSimilarity);
+                    return grs;
+
+                }).collect(Collectors.toList()));
+
         {
             HesitantSimilarity hesitantSimilarity = new HesitantPearson();
-            List<HesitantKnnGroupUser> collect = neighborsTried.stream()
-                    .map((neighborhoodSize)
-                            -> {
-                        NumberFormat format = new DecimalFormat("000");
-                        HesitantKnnGroupUser grs = new HesitantKnnGroupUser();
-                        grs.setAlias(hesitantSimilarity.getName() + "_deleteRepeated" + "_neighborhoodSize=" + format.format(neighborhoodSize));
-                        grs.setParameterValue(HesitantKnnGroupUser.NEIGHBORHOOD_SIZE, neighborhoodSize);
-                        grs.setParameterValue(HesitantKnnGroupUser.HESITANT_SIMILARITY_MEASURE, hesitantSimilarity);
-                        grs.setParameterValue(HesitantKnnGroupUser.DELETE_REPEATED, true);
-                        return grs;
-                    }).collect(Collectors.toList());
-            ret.addAll(collect);
+
+            NumberFormat format = new DecimalFormat("000");
+            HesitantKnnGroupUser grs = new HesitantKnnGroupUser();
+            grs.setAlias(hesitantSimilarity.getName() + "_deleteRepeated" + "_neighborhoodSize=" + format.format(neighborhoodSize));
+            grs.setParameterValue(HesitantKnnGroupUser.NEIGHBORHOOD_SIZE, neighborhoodSize);
+            grs.setParameterValue(HesitantKnnGroupUser.HESITANT_SIMILARITY_MEASURE, hesitantSimilarity);
+            grs.setParameterValue(HesitantKnnGroupUser.DELETE_REPEATED, true);
+
+            ret.add(grs);
 
         }
         return ret;
