@@ -2,11 +2,14 @@ package delfos.group.factories;
 
 import delfos.factories.Factory;
 import delfos.group.experiment.validation.groupformation.AllPossibleGroups;
+import delfos.group.experiment.validation.groupformation.DissimilarMembers;
+import delfos.group.experiment.validation.groupformation.DissimilarMembers_OnlyNGroups;
 import delfos.group.experiment.validation.groupformation.FixedGroupSize;
 import delfos.group.experiment.validation.groupformation.FixedGroupSize_OnlyNGroups;
 import delfos.group.experiment.validation.groupformation.GivenGroups;
 import delfos.group.experiment.validation.groupformation.GroupFormationTechnique;
 import delfos.group.experiment.validation.groupformation.ProbabilityDistributionOfSizes;
+import delfos.group.experiment.validation.groupformation.SimilarMembers;
 import delfos.group.experiment.validation.groupformation.SimilarMembers_OnlyNGroups;
 import delfos.group.experiment.validation.groupformation.SimilarMembers_except;
 
@@ -39,6 +42,10 @@ public class GroupFormationTechniquesFactory extends Factory<GroupFormationTechn
 
         instance.addClass(SimilarMembers_OnlyNGroups.class);
         instance.addClass(SimilarMembers_except.class);
+        instance.addClass(SimilarMembers.class);
+
+        instance.addClass(DissimilarMembers.class);
+        instance.addClass(DissimilarMembers_OnlyNGroups.class);
     }
 
     protected GroupFormationTechniquesFactory() {
