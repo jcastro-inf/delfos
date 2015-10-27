@@ -78,10 +78,8 @@ public class GroupXMLexperimentsExecution {
         File experimentsDirectoryDirectory = new File(experimentsDirectory);
         File datasetsDirectoryDirectory = new File(datasetsDirectory);
         File resultsDirectory = new File(experimentsDirectory + File.separator + "results" + File.separator);
-        if (resultsDirectory.exists()) {
-            FileUtilities.deleteDirectoryRecursive(resultsDirectory);
-        }
-        resultsDirectory.mkdirs();
+
+        FileUtilities.createDirectoryPath(resultsDirectory);
 
         File[] datasetFiles = datasetsDirectoryDirectory.listFiles(new FileFilterByExtension(false, "xml"));
         if (datasetFiles.length == 0) {

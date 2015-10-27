@@ -258,9 +258,7 @@ public class GroupCaseStudyXML {
 
         XMLOutputter outputter = new XMLOutputter(Constants.getXMLFormat());
 
-        if (!file.getParentFile().exists()) {
-            file.getParentFile().mkdirs();
-        }
+        FileUtilities.createDirectoriesForFile(file);
 
         try (FileWriter fileWriter = new FileWriter(file)) {
             outputter.output(doc, fileWriter);
