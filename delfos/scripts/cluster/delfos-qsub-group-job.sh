@@ -21,4 +21,15 @@ DATE=`date +%Y-%m-%d_%H.%M.%S`
 logFileStd=$logDirectory$DATE"-log-std.txt"
 logFileErr=$logDirectory$DATE"-log-err.txt"
 
-~/java-8-oracle/bin/java -Xms16g -Xmx32g -jar delfos.jar --execute-group-xml -seed 123456 -directory ${experimentFolder} -num-exec $numExec > $logFileStd 2> $logFileErr
+echo "$DATE executing" $experimentFolder
+echo "$DATE executing" $experimentFolder >> $logFileStd 2>> $logFileErr
+
+echo "$DATE Executed in node `(hostname)`"
+echo "$DATE Executed in node `(hostname)`" >> $logFileStd 2>> $logFileErr
+
+
+~/java-8-oracle/bin/java -Xms16g -Xmx32g -jar delfos.jar --execute-group-xml -seed 123456 -directory ${experimentFolder} -num-exec $numExec >> $logFileStd 2>> $logFileErr
+
+
+echo "$DATE Finished" $experimentFolder
+echo "$DATE Finished" $experimentFolder >> $logFileStd 2>> $logFileErr
