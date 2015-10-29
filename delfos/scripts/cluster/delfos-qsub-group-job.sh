@@ -28,7 +28,7 @@ echo "$DATE_START Executed in node `(hostname)`"
 echo "$DATE_START Executed in node `(hostname)`" >> $logFileStd 2>> $logFileErr
 
 
-~/java-8-oracle/bin/java -Xms16g -Xmx32g -jar delfos.jar --execute-group-xml -seed 123456 -directory ${experimentFolder} -num-exec $numExec >> $logFileStd 2>> $logFileErr
+~/java-8-oracle/bin/java -XX:+HeapDumpOnOutOfMemoryError -Xmx16g -jar delfos.jar --execute-group-xml -seed 123456 -directory ${experimentFolder} -num-exec $numExec >> $logFileStd 2>> $logFileErr
 
 cat $logFileStd >&1
 cat $logFileErr >&2
