@@ -26,6 +26,7 @@ import delfos.group.casestudy.parallelisation.SingleGroupRecommendation;
 import delfos.group.casestudy.parallelisation.SingleGroupRecommendationTask;
 import delfos.group.experiment.validation.groupformation.FixedGroupSize_OnlyNGroups;
 import delfos.group.experiment.validation.groupformation.GroupFormationTechnique;
+import delfos.group.experiment.validation.groupformation.GroupFormationTechniqueProgressListener_default;
 import delfos.group.experiment.validation.predictionvalidation.GroupPredictionProtocol;
 import delfos.group.experiment.validation.predictionvalidation.GroupRecommendationRequest;
 import delfos.group.experiment.validation.predictionvalidation.NoPredictionProtocol;
@@ -230,6 +231,7 @@ public class DefaultGroupCaseStudy extends GroupCaseStudy {
         initTimes(numEjecuciones, numParticiones);
 
         MeanIterative tiempoParticion = new MeanIterative();
+        groupFormationTechnique.addListener(new GroupFormationTechniqueProgressListener_default(System.out, 5000));
 
         loadDataset(datasetLoader);
 

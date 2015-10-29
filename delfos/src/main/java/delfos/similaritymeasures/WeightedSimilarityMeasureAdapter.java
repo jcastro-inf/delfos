@@ -1,14 +1,13 @@
 package delfos.similaritymeasures;
 
+import delfos.dataset.basic.rating.Rating;
+import delfos.dataset.basic.rating.RatingsDataset;
+import delfos.rs.RecommenderSystemAdapter;
+import delfos.rs.collaborativefiltering.knn.CommonRating;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
-import delfos.common.exceptions.CouldNotComputeSimilarity;
-import delfos.rs.collaborativefiltering.knn.CommonRating;
-import delfos.dataset.basic.rating.Rating;
-import delfos.dataset.basic.rating.RatingsDataset;
-import delfos.rs.RecommenderSystemAdapter;
 
 /**
  * Clase que adapta las medidas de similitud completando los métodos de medida
@@ -32,7 +31,7 @@ import delfos.rs.RecommenderSystemAdapter;
 public abstract class WeightedSimilarityMeasureAdapter extends SimilarityMeasureAdapter implements BasicSimilarityMeasure, WeightedSimilarityMeasure, CollaborativeSimilarityMeasure {
 
     @Override
-    public final float similarity(float[] v1, float[] v2) throws CouldNotComputeSimilarity {
+    public final float similarity(float[] v1, float[] v2) {
 
         if (v1.length != v2.length) {
             throw new IllegalArgumentException("The length of vectors is different");
@@ -51,7 +50,7 @@ public abstract class WeightedSimilarityMeasureAdapter extends SimilarityMeasure
     }
 
     @Override
-    public final float weightedSimilarity(float[] v1, float[] v2, float[] weights) throws CouldNotComputeSimilarity {
+    public final float weightedSimilarity(float[] v1, float[] v2, float[] weights) {
 
         if (v1.length != v2.length || v1.length != weights.length) {
             throw new IllegalArgumentException("The length of vectors is different");
@@ -70,7 +69,7 @@ public abstract class WeightedSimilarityMeasureAdapter extends SimilarityMeasure
     }
 
     @Override
-    public float similarity(List<Float> v1, List<Float> v2) throws CouldNotComputeSimilarity {
+    public float similarity(List<Float> v1, List<Float> v2) {
         List<Float> weights = new ArrayList<>(v1.size());
         for (int i = 0; i < v1.size(); i++) {
             weights.add((float) (1.0 / v1.size()));
@@ -79,7 +78,7 @@ public abstract class WeightedSimilarityMeasureAdapter extends SimilarityMeasure
     }
 
     @Override
-    public float similarity(Collection<CommonRating> commonRatings, RatingsDataset<? extends Rating> ratings) throws CouldNotComputeSimilarity {
+    public float similarity(Collection<CommonRating> commonRatings, RatingsDataset<? extends Rating> ratings) {
         Iterator<CommonRating> it = commonRatings.iterator();
         if (it.hasNext()) {
             if (it.next().isWeighted()) {
@@ -108,7 +107,7 @@ public abstract class WeightedSimilarityMeasureAdapter extends SimilarityMeasure
                 return similarity(v1, v2);
             }
         } else {
-            throw new CouldNotComputeSimilarity("Not enouth common ratings");
+            return Float.NaN;
         }
     }
 

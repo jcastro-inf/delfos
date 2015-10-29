@@ -1,28 +1,22 @@
 package delfos.group.experiment.validation.groupformation;
 
-import delfos.ERROR_CODES;
 import delfos.common.Global;
-import delfos.common.exceptions.CouldNotComputeSimilarity;
 import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
-import delfos.common.exceptions.dataset.users.UserNotFound;
 import delfos.common.parameters.Parameter;
 import delfos.common.parameters.restriction.IntegerParameter;
-import delfos.common.parameters.restriction.ParameterOwnerRestriction;
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
 import delfos.group.groupsofusers.GroupOfUsers;
 import delfos.rs.collaborativefiltering.knn.RecommendationEntity;
 import delfos.rs.collaborativefiltering.profile.Neighbor;
-import delfos.similaritymeasures.PearsonCorrelationCoefficient;
 import delfos.similaritymeasures.useruser.UserUserSimilarity;
-import delfos.similaritymeasures.useruser.UserUserSimilarityWrapper;
-import delfos.similaritymeasures.useruser.UserUserSimilarityWrapper_relevanceFactor;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
+import java.util.List;
 import java.util.Random;
 import java.util.TreeSet;
+import java.util.stream.Collectors;
 
 /**
  * Crea grupos buscando similitudes entre las preferencias de los miembros. Los
@@ -34,26 +28,11 @@ import java.util.TreeSet;
  */
 public class SimilarMembers_OnlyNGroups extends GroupFormationTechnique {
 
-    static {
+    public static final Parameter GROUP_SIZE_PARAMETER = SimilarMembers.GROUP_SIZE_PARAMETER;
+    public static final Parameter N_CANDIDATES_PARAMETER = SimilarMembers.N_CANDIDATES_PARAMETER;
+    public static final Parameter SIMILARITY_MEASURE = SimilarMembers.SIMILARITY_MEASURE;
 
-        UserUserSimilarity defaultSimilarity = new UserUserSimilarityWrapper_relevanceFactor(new UserUserSimilarityWrapper(new PearsonCorrelationCoefficient()), 5);
-
-        ParameterOwnerRestriction parameterOwnerRestriction = new ParameterOwnerRestriction(
-                UserUserSimilarity.class,
-                defaultSimilarity);
-        SIMILARITY_MEASURE = new Parameter(
-                "SIMILARITY_MEASURE",
-                parameterOwnerRestriction);
-    }
-
-    /**
-     * Parámetro para establecer el número de usuarios que tendrán los grupos
-     * generados con esta validación de grupos
-     */
-    public static final Parameter GROUP_SIZE_PARAMETER = new Parameter("groupSize", new IntegerParameter(1, 10000, 5));
     public static final Parameter NUM_GROUPS_PARAMETER = new Parameter("numGroups", new IntegerParameter(1, 1000000, 5));
-    public static final Parameter N_CANDIDATES_PARAMETER = new Parameter("numCandidates", new IntegerParameter(1, 1000000, 5));
-    public static final Parameter SIMILARITY_MEASURE;
 
     /**
      * Genera una validación de usuarios que genera grupos de tamaño fijo. Por
@@ -139,43 +118,53 @@ public class SimilarMembers_OnlyNGroups extends GroupFormationTechnique {
                 usersGrupoActual.add(idUser);
             }
 
+            List<Neighbor> similaritiesToGroupStablished = usersRemainToSelect.parallelStream()
+                    .map(idCandidateMember -> {
+                        Double similarityToGroup = usersGrupoActual.parallelStream()
+                        .map(idMember -> similarityMeasure.similarity(datasetLoader, idCandidateMember, idMember))
+                        .map(similarity -> {
+                            if (similarity <= 0) {
+                                return 0.0;
+                            } else {
+                                return similarity;
+                            }
+                        })
+                        .reduce((similarityA, similarityB) -> similarityA * similarityB).get();
+                        return new Neighbor(RecommendationEntity.USER, idCandidateMember, similarityToGroup);
+                    })
+                    .sorted(Neighbor.BY_SIMILARITY_DESC)
+                    .collect(Collectors.toList());
+
             while (usersGrupoActual.size() < groupSize) {
 
-                // Calculo la métrica greedy para elegir el siguiente miembro.
-                ArrayList<Neighbor> similaritiesToGroup = new ArrayList<>(usersRemainToSelect.size());
-
-                for (int idCandidateMember : usersRemainToSelect) {
-
-                    double similarityToGroup = 1;
-                    for (int idMember : usersGrupoActual) {
-                        try {
-                            double thisMemberSimilarity = similarityMeasure.similarity(datasetLoader, idCandidateMember, idMember);
-                            similarityToGroup = similarityToGroup * thisMemberSimilarity;
-                        } catch (UserNotFound ex) {
-                            ERROR_CODES.USER_NOT_FOUND.exit(ex);
-                        } catch (CouldNotComputeSimilarity ex) {
-
-                        }
-                    }
-
-                    similaritiesToGroup.add(new Neighbor(RecommendationEntity.USER, idCandidateMember, similarityToGroup));
-                }
-
-                //Los ordeno por su similitud al grupo
-                Collections.sort(similaritiesToGroup);
-
                 //Elijo aleatoriamente el siguiente entre los n con mayor similitud.
-                int indexSelected = random.nextInt(Math.min(similaritiesToGroup.size(), numMembersCandidate));
-                Neighbor neighborSelected = similaritiesToGroup.remove(indexSelected);
-                Integer idUser = neighborSelected.getIdNeighbor();
+                int indexSelected = random.nextInt(Math.min(similaritiesToGroupStablished.size(), numMembersCandidate));
+                Neighbor neighborSelected = similaritiesToGroupStablished.remove(indexSelected);
+                int idNewMember = neighborSelected.getIdNeighbor();
                 double similarity = neighborSelected.getSimilarity();
 
                 if (Global.isVerboseAnnoying()) {
-                    Global.showInfoMessage("Selected user " + idUser + ", similarity of " + similarity + " --> Group: " + usersGrupoActual + "\n");
+                    Global.showInfoMessage("Selected user " + idNewMember + ", similarity of " + similarity + " --> Group: " + usersGrupoActual + "\n");
                 }
 
-                boolean removed = usersRemainToSelect.remove(idUser);
-                usersGrupoActual.add(idUser);
+                boolean removed = usersRemainToSelect.remove((Integer) idNewMember);
+
+                //update neighbors
+                similaritiesToGroupStablished = similaritiesToGroupStablished.parallelStream()
+                        .map(idCandidateMember -> {
+                            double similarityWithNewMember = similarityMeasure.similarity(datasetLoader, idCandidateMember.getIdNeighbor(), idNewMember);
+
+                            if (similarityWithNewMember <= 0) {
+                                similarityWithNewMember = 0;
+                            }
+
+                            similarityWithNewMember *= idCandidateMember.getSimilarity();
+                            return new Neighbor(RecommendationEntity.USER, idCandidateMember.getIdNeighbor(), similarityWithNewMember);
+                        })
+                        .sorted(Neighbor.BY_SIMILARITY_DESC)
+                        .collect(Collectors.toList());
+
+                usersGrupoActual.add(idNewMember);
             }
             groupsGenerated.add(new GroupOfUsers(usersGrupoActual));
             numGruposGenerados++;

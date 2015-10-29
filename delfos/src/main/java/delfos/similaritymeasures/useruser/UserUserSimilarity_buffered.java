@@ -10,8 +10,6 @@ import java.io.ObjectOutputStream;
 import java.util.Map;
 import delfos.ERROR_CODES;
 import delfos.common.Global;
-import delfos.common.exceptions.CouldNotComputeSimilarity;
-import delfos.common.exceptions.dataset.users.UserNotFound;
 import delfos.common.parameters.Parameter;
 import delfos.common.parameters.restriction.DirectoryParameter;
 import delfos.common.parameters.restriction.ParameterOwnerRestriction;
@@ -63,7 +61,7 @@ public class UserUserSimilarity_buffered extends SimilarityMeasureAdapter implem
     }
 
     @Override
-    public double similarity(DatasetLoader<? extends Rating> datasetLoader, int idUser1, int idUser2) throws UserNotFound, CouldNotComputeSimilarity {
+    public double similarity(DatasetLoader<? extends Rating> datasetLoader, int idUser1, int idUser2) {
 
         Map<Integer, ? extends Rating> user1Ratings = datasetLoader.getRatingsDataset().getUserRatingsRated(idUser1);
         Map<Integer, ? extends Rating> user2Ratings = datasetLoader.getRatingsDataset().getUserRatingsRated(idUser2);

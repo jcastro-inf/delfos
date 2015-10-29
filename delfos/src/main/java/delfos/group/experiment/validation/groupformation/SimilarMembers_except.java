@@ -125,8 +125,8 @@ public class SimilarMembers_except extends GroupFormationTechnique {
         SimilarMembers_OnlyNGroups similarMembers = new SimilarMembers_OnlyNGroups(numGroups, numMembersSimilar, numMembersCandidate);
         similarMembers.setSeedValue(getSeedValue());
         similarMembers.setParameterValue(SimilarMembers_OnlyNGroups.SIMILARITY_MEASURE, similarityMeasure);
-        similarMembers.addListener((String message, int progress) -> {
-            progressChanged(message, progress);
+        similarMembers.addListener((String message, int progress, long remainingTimeInMS) -> {
+            progressChanged(message, progress, remainingTimeInMS);
         });
 
         Collection<GroupOfUsers> groupsOfSimilarMembers = similarMembers.shuffle(datasetLoader);

@@ -4,7 +4,6 @@ import delfos.common.Chronometer;
 import delfos.common.FileUtilities;
 import delfos.common.Global;
 import delfos.common.datastructures.histograms.HistogramNumbersSmart;
-import delfos.common.exceptions.CouldNotComputeSimilarity;
 import delfos.common.exceptions.dataset.users.UserNotFound;
 import delfos.constants.TestConstants;
 import delfos.dataset.basic.loader.types.DatasetLoader;
@@ -86,17 +85,9 @@ public class UserUserMultipleCorrelationCoefficientTest {
                 double pccMultiValue;
                 double pccValue;
 
-                try {
-                    pccMultiValue = pcc_multi.similarity(datasetLoader, idUser, idNeighbor);
-                } catch (CouldNotComputeSimilarity ex) {
-                    pccMultiValue = 0;
-                }
+                pccMultiValue = pcc_multi.similarity(datasetLoader, idUser, idNeighbor);
 
-                try {
-                    pccValue = pcc_wrapped.similarity(datasetLoader, idUser, idNeighbor);
-                } catch (CouldNotComputeSimilarity ex) {
-                    pccValue = 0;
-                }
+                pccValue = pcc_wrapped.similarity(datasetLoader, idUser, idNeighbor);
 
                 Global.showln(idUser + "\t" + idNeighbor + "\t" + pccValue + "\t" + pccMultiValue);
                 histogramPCC.addValue(pccValue);
@@ -137,14 +128,10 @@ public class UserUserMultipleCorrelationCoefficientTest {
             for (double simAB : values) {
                 for (double simAC_i : values) {
                     for (double simBC_i : values) {
-                        try {
-                            double computeRValue = pcc_multi.computeRValueFromSimilarities(simAB, simAC_i, simBC_i);
-                            String contentLine = -1 + "\t" + -1 + "\t" + -1 + "\t" + computeRValue + "\t" + simAB + "\t" + simAC_i + "\t" + simBC_i + "\n";
-                            stdOutput.write(contentLine);
-                        } catch (CouldNotComputeSimilarity ex) {
-                            String contentLine = -1 + "\t" + -1 + "\t" + -1 + "\tNaN\t" + simAB + "\t" + simAC_i + "\t" + simBC_i + "\n";
-                            stdOutput.write(contentLine);
-                        }
+                        double computeRValue = pcc_multi.computeRValueFromSimilarities(simAB, simAC_i, simBC_i);
+                        String contentLine = -1 + "\t" + -1 + "\t" + -1 + "\t" + computeRValue + "\t" + simAB + "\t" + simAC_i + "\t" + simBC_i + "\n";
+                        stdOutput.write(contentLine);
+
                     }
                 }
             }
@@ -187,40 +174,36 @@ public class UserUserMultipleCorrelationCoefficientTest {
                     continue;
                 }
 
-                try {
-                    double computeRValue = pcc_multi.computeRValue(datasetLoader, idTargetUser, idNeighborUser, idFriendOfNeighborUser);
+                double computeRValue = pcc_multi.computeRValue(datasetLoader, idTargetUser, idNeighborUser, idFriendOfNeighborUser);
 
-                    double simAB = pcc_wrapped.similarity(datasetLoader, idTargetUser, idNeighborUser);
-                    double simAC = pcc_wrapped.similarity(datasetLoader, idTargetUser, idFriendOfNeighborUser);
-                    double simBC = pcc_wrapped.similarity(datasetLoader, idNeighborUser, idFriendOfNeighborUser);
+                double simAB = pcc_wrapped.similarity(datasetLoader, idTargetUser, idNeighborUser);
+                double simAC = pcc_wrapped.similarity(datasetLoader, idTargetUser, idFriendOfNeighborUser);
+                double simBC = pcc_wrapped.similarity(datasetLoader, idNeighborUser, idFriendOfNeighborUser);
 
-                    String contentLine = idTargetUser + "\t" + idNeighborUser + "\t" + idFriendOfNeighborUser + "\t" + computeRValue + "\t" + simAB + "\t" + simAC + "\t" + simBC + "\n";
+                String contentLine = idTargetUser + "\t" + idNeighborUser + "\t" + idFriendOfNeighborUser + "\t" + computeRValue + "\t" + simAB + "\t" + simAC + "\t" + simBC + "\n";
 
-                    if (computeRValue <= 1 && computeRValue >= 0) {
-                        stdOutput.write(contentLine);
-                        histogramPccMulti.addValue(computeRValue);
-                    } else {
-                        Collection<Integer> users = new ArrayList<>();
-                        users.add(idTargetUser);
-                        users.add(idNeighborUser);
-                        users.add(idFriendOfNeighborUser);
+                if (computeRValue <= 1 && computeRValue >= 0) {
+                    stdOutput.write(contentLine);
+                    histogramPccMulti.addValue(computeRValue);
+                } else {
+                    Collection<Integer> users = new ArrayList<>();
+                    users.add(idTargetUser);
+                    users.add(idNeighborUser);
+                    users.add(idFriendOfNeighborUser);
 
-                        String ratingsTable = DatasetPrinter.printCompactRatingTable(datasetLoader.getRatingsDataset(), users);
+                    String ratingsTable = DatasetPrinter.printCompactRatingTable(datasetLoader.getRatingsDataset(), users);
 
-                        {
-                            errOutput.write(contentLine);
-                            errOutput.flush();
-                        }
-                        {
-                            errExplainedOutput.write(headerLine);
-                            errExplainedOutput.write(contentLine);
-                            errExplainedOutput.write("\n");
-                            errExplainedOutput.write(ratingsTable);
-                            errExplainedOutput.write("\n......................................................................................\n");
-                        }
+                    {
+                        errOutput.write(contentLine);
+                        errOutput.flush();
                     }
-                } catch (CouldNotComputeSimilarity ex) {
-                    //
+                    {
+                        errExplainedOutput.write(headerLine);
+                        errExplainedOutput.write(contentLine);
+                        errExplainedOutput.write("\n");
+                        errExplainedOutput.write(ratingsTable);
+                        errExplainedOutput.write("\n......................................................................................\n");
+                    }
                 }
 
                 //Ejecuto durante 3 minutos
@@ -250,21 +233,17 @@ public class UserUserMultipleCorrelationCoefficientTest {
                             || idNeighbor == idFriendOfNeighbor) {
                         continue;
                     }
-                    try {
 
-                        double simAB = pcc_wrapped.similarity(randomDataset, idUser, idNeighbor);
-                        double simAC_i = pcc_wrapped.similarity(randomDataset, idUser, idFriendOfNeighbor);
-                        double simBC_i = pcc_wrapped.similarity(randomDataset, idNeighbor, idFriendOfNeighbor);
+                    double simAB = pcc_wrapped.similarity(randomDataset, idUser, idNeighbor);
+                    double simAC_i = pcc_wrapped.similarity(randomDataset, idUser, idFriendOfNeighbor);
+                    double simBC_i = pcc_wrapped.similarity(randomDataset, idNeighbor, idFriendOfNeighbor);
 
-                        double computeRValue = pcc_multi.computeRValueFromSimilarities(simAB, simAC_i, simBC_i);
-                        String contentLine = -1 + "\t" + -1 + "\t" + -1 + "\t" + computeRValue + "\t" + simAB + "\t" + simAC_i + "\t" + simBC_i + "\n";
-                        Global.show(contentLine);
+                    double computeRValue = pcc_multi.computeRValueFromSimilarities(simAB, simAC_i, simBC_i);
+                    String contentLine = -1 + "\t" + -1 + "\t" + -1 + "\t" + computeRValue + "\t" + simAB + "\t" + simAC_i + "\t" + simBC_i + "\n";
+                    Global.show(contentLine);
 
-                        histogramPccMulti.addValue(computeRValue);
-                    } catch (CouldNotComputeSimilarity ex) {
-                        String contentLine = -1 + "\t" + -1 + "\t" + -1 + "\tNaN\t??\t??\t??\n";
-                        Global.show(contentLine);
-                    }
+                    histogramPccMulti.addValue(computeRValue);
+
                 }
             }
         }

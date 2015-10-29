@@ -1,9 +1,9 @@
-package delfos.rs;
+package delfos.group.experiment.validation.groupformation;
 
-import java.io.PrintStream;
-import java.util.Date;
 import delfos.common.Chronometer;
 import delfos.common.DateCollapse;
+import java.io.PrintStream;
+import java.util.Date;
 
 /**
  * Listener por defecto que imprime los eventos de cambio en un Stream de
@@ -13,12 +13,12 @@ import delfos.common.DateCollapse;
  * @author Jorge Castro Gallardo (Universidad de Jaén, Sinbad2)
  * @version 1.0 23-Jan-2013
  */
-public class RecommenderSystemBuildingProgressListener_default implements RecommendationModelBuildingProgressListener {
+public class GroupFormationTechniqueProgressListener_default implements GroupFormationTechniqueProgressListener {
 
     /**
      * Cronómetro para controlar el tiempo entre escrituras.
      */
-    private Chronometer chronometer;
+    private final Chronometer chronometer;
     /**
      * Stream de salida para escribir los mensajes.
      */
@@ -34,7 +34,7 @@ public class RecommenderSystemBuildingProgressListener_default implements Recomm
     /**
      * Tiempo mínimo que transcurre entre escrituras.
      */
-    private long verbosePeriod;
+    private final long verbosePeriod;
     private boolean beginPrinted;
     private boolean endPrinted;
 
@@ -43,47 +43,45 @@ public class RecommenderSystemBuildingProgressListener_default implements Recomm
      * información de progreso y se limita el número de escrituras por tiempo.
      *
      * @param out Stream de salida en el que se escriben los mensajes.
-     * @param verbosePeriod Tiempo mínimo entre escrituras.
+     * @param verbosePeriodInMS Tiempo mínimo entre escrituras.
      */
-    public RecommenderSystemBuildingProgressListener_default(PrintStream out, long verbosePeriod) {
+    public GroupFormationTechniqueProgressListener_default(PrintStream out, long verbosePeriodInMS) {
         this.out = out;
-        this.verbosePeriod = verbosePeriod;
+        this.verbosePeriod = verbosePeriodInMS;
         chronometer = new Chronometer();
     }
 
-    @Override
-    public synchronized void buildingProgressChanged(String actualJob, int percent, long remainingTime) {
-
-        if (percent == 0) {
-            printInfo(actualJob, percent, remainingTime);
-            beginPrinted = true;
-        } else {
-            beginPrinted = false;
-            if (percent == 100) {
-                printInfo(actualJob, percent, remainingTime);
-                endPrinted = true;
-            } else {
-                endPrinted = false;
-            }
-        }
-
-        boolean repeated = percent == lastProgressPercent && actualJob.equals(lastProgressJob);
-        boolean timeTrigger = chronometer.getTotalElapsed() >= verbosePeriod;
-        if (!repeated || timeTrigger) {
-
-            printInfo(actualJob, percent, remainingTime);
-
-        }
-    }
-
-    private void printInfo(String actualJob, int percent, long remainingTime) {
-        String message = new Date().toString()+": "+actualJob + " --> "
+    private void printInfo(String actualJob, int percent, long remainingTimeInMS) {
+        String message = new Date().toString() + ": " + actualJob + " --> "
                 + percent + "% --> "
-                + DateCollapse.collapse(remainingTime);
+                + DateCollapse.collapse(remainingTimeInMS);
         out.println(message);
         chronometer.reset();
         lastProgressJob = actualJob;
         lastProgressPercent = percent;
 
     }
+
+    @Override
+    public void progressChanged(String message, int progressPercent, long remainingTimeInMS) {
+        if (progressPercent == 0) {
+            printInfo(message, progressPercent, remainingTimeInMS);
+            beginPrinted = true;
+        } else {
+            beginPrinted = false;
+            if (progressPercent == 100) {
+                printInfo(message, progressPercent, remainingTimeInMS);
+                endPrinted = true;
+            } else {
+                endPrinted = false;
+            }
+        }
+
+        boolean repeated = progressPercent == lastProgressPercent && message.equals(lastProgressJob);
+        boolean timeTrigger = chronometer.getTotalElapsed() >= verbosePeriod;
+        if (!repeated || timeTrigger) {
+            printInfo(message, progressPercent, remainingTimeInMS);
+        }
+    }
+
 }

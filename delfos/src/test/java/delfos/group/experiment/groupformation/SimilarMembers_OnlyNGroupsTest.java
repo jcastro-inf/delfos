@@ -1,5 +1,6 @@
 package delfos.group.experiment.groupformation;
 
+import delfos.common.DateCollapse;
 import delfos.common.Global;
 import delfos.configureddatasets.ConfiguredDatasetsFactory;
 import delfos.constants.DelfosTest;
@@ -45,8 +46,8 @@ public class SimilarMembers_OnlyNGroupsTest extends DelfosTest {
         datasetLoader.getRatingsDataset();
 
         SimilarMembers_OnlyNGroups instance = new SimilarMembers_OnlyNGroups(numGroupsValue, groupSizeValue, numMembersCandidate);
-        instance.addListener((String message, int progress) -> {
-            Global.showln(progress + "% " + message);
+        instance.addListener((String message, int progress, long remainingTimeInMS) -> {
+            Global.showln(progress + "% " + message + " remainingTime: " + DateCollapse.collapse(remainingTimeInMS));
         });
         instance.setSeedValue(seed);
         Collection<GroupOfUsers> result = instance.shuffle(datasetLoader);
@@ -77,8 +78,8 @@ public class SimilarMembers_OnlyNGroupsTest extends DelfosTest {
 //                (UserUserSimilarity) instance.getParameterValue(SimilarMembers_OnlyNGroups.SIMILARITY_MEASURE)
 //        );
 //        instance.setParameterValue(SimilarMembers_OnlyNGroups.SIMILARITY_MEASURE, bufferedSimilarity);
-        instance.addListener((String message, int progress) -> {
-            Global.showln(progress + "% " + message);
+        instance.addListener((String message, int progress, long remainingTimeInMS) -> {
+            Global.showln(progress + "% " + message + " remainingTime: " + DateCollapse.collapse(remainingTimeInMS));
         });
         instance.setSeedValue(seed);
 
