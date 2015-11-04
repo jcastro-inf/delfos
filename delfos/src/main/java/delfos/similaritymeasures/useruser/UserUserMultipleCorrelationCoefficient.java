@@ -1,11 +1,5 @@
 package delfos.similaritymeasures.useruser;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeMap;
-import java.util.TreeSet;
 import delfos.common.Global;
 import delfos.common.datastructures.histograms.HistogramNumbersSmart;
 import delfos.common.exceptions.CouldNotComputeSimilarity;
@@ -13,15 +7,21 @@ import delfos.common.exceptions.dataset.users.UserNotFound;
 import delfos.common.parameters.Parameter;
 import delfos.common.parameters.restriction.ParameterOwnerRestriction;
 import delfos.common.statisticalfuncions.MeanIterative;
+import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RatingsDataset;
 import delfos.dataset.loaders.given.DatasetLoaderGivenRatingsDataset;
-import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.storage.memory.BothIndexRatingsDataset;
 import delfos.similaritymeasures.BasicSimilarityMeasure;
 import delfos.similaritymeasures.PearsonCorrelationCoefficient;
 import delfos.similaritymeasures.SimilarityMeasure;
 import delfos.similaritymeasures.SimilarityMeasureAdapter;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
+import java.util.TreeSet;
 
 /**
  *
@@ -56,7 +56,7 @@ public class UserUserMultipleCorrelationCoefficient extends SimilarityMeasureAda
     }
 
     @Override
-    public double similarity(DatasetLoader<? extends Rating> datasetLoader, int idUser1, int idUser2) throws UserNotFound, CouldNotComputeSimilarity {
+    public double similarity(DatasetLoader<? extends Rating> datasetLoader, int idUser1, int idUser2) {
 
         Map<Integer, Double> values = new TreeMap<>();
         MeanIterative mean = new MeanIterative();
@@ -81,7 +81,7 @@ public class UserUserMultipleCorrelationCoefficient extends SimilarityMeasureAda
             }
         }
         if (mean.isEmpty()) {
-            throw new CouldNotComputeSimilarity("No r similarities computed.");
+            return Double.NaN;
         }
 
         if (Global.isVerboseAnnoying()) {

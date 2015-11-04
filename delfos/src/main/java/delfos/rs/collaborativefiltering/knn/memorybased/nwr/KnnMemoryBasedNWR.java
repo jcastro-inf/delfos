@@ -192,7 +192,8 @@ public class KnnMemoryBasedNWR extends KnnCollaborativeRecommender<KnnMemoryMode
         multiThreadExecutionManager.getAllFinishedTasks().parallelStream().map((task) -> task.getNeighbor()).filter((neighbor) -> (neighbor != null)).forEach((neighbor) -> {
             ret.add(neighbor);
         });
-        Collections.sort(ret);
+
+        ret.sort(Neighbor.BY_SIMILARITY_DESC);
 
         return ret;
     }
@@ -204,7 +205,7 @@ public class KnnMemoryBasedNWR extends KnnCollaborativeRecommender<KnnMemoryMode
      *
      * @param datasetLoader Input data.
      * @param idUser Id del usuario activo
-     * @param neighborhood Vecinos del usuario activo
+     * @param _neighborhood Vecinos del usuario activo
      * @param neighborhoodSize
      * @param candidateIdItems Lista de productos que se consideran
      * recomendables, es decir, que podrían ser recomendados si la predicción es
@@ -218,11 +219,18 @@ public class KnnMemoryBasedNWR extends KnnCollaborativeRecommender<KnnMemoryMode
     public static Collection<Recommendation> recommendWithNeighbors(
             DatasetLoader<? extends Rating> datasetLoader,
             Integer idUser,
-            List<Neighbor> neighborhood,
+            List<Neighbor> _neighborhood,
             int neighborhoodSize,
             Collection<Integer> candidateIdItems,
             PredictionTechnique predictionTechnique)
             throws UserNotFound {
+
+        List<Neighbor> neighborhood = _neighborhood.stream()
+                .filter(neighbor -> !Float.isNaN(neighbor.getSimilarity()))
+                .filter(neighbor -> neighbor.getSimilarity() > 0)
+                .collect(Collectors.toList());
+
+        neighborhood.sort(Neighbor.BY_SIMILARITY_DESC);
 
         RatingsDataset ratingsDataset = datasetLoader.getRatingsDataset();
         ContentDataset contentDataset = datasetLoader.getContentDataset();
@@ -239,11 +247,11 @@ public class KnnMemoryBasedNWR extends KnnCollaborativeRecommender<KnnMemoryMode
             int numNeighborsUsed = 0;
             try {
                 Map<Integer, ? extends Rating> itemRatingsRated = ratingsDataset.getItemRatingsRated(item.getId());
-                for (Neighbor ss : neighborhood) {
+                for (Neighbor neighbor : neighborhood) {
 
-                    Rating rating = itemRatingsRated.get(ss.getIdNeighbor());
+                    Rating rating = itemRatingsRated.get(neighbor.getIdNeighbor());
                     if (rating != null) {
-                        match.add(new MatchRating(RecommendationEntity.ITEM, (User) ss.getNeighbor(), item, rating.getRatingValue(), ss.getSimilarity()));
+                        match.add(new MatchRating(RecommendationEntity.ITEM, (User) neighbor.getNeighbor(), item, rating.getRatingValue(), neighbor.getSimilarity()));
                         numNeighborsUsed++;
                     }
 

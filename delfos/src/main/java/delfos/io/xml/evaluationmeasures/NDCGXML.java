@@ -1,9 +1,10 @@
 package delfos.io.xml.evaluationmeasures;
 
+import delfos.Constants;
+import delfos.common.statisticalfuncions.MeanIterative;
 import java.util.Collections;
 import java.util.List;
 import org.jdom2.Element;
-import delfos.common.statisticalfuncions.MeanIterative;
 
 /**
  * @author Jorge Castro Gallardo
@@ -40,15 +41,15 @@ public class NDCGXML {
         element.setAttribute(NDCG_PERCENTILE_75_ATTRIBUTE_NAME, Double.toString(percentile75));
         element.setAttribute(NDCG_MAX_ATTRIBUTE_NAME, Double.toString(max));
 
-        Element ndcgValuesElement = new Element("ndcg_values");
-
-        for (double value : ndcgValues) {
-            Element ndcgValueElement = new Element(NDCG_VALUE_ELEMENT_NAME);
-            ndcgValueElement.setAttribute(NDCG_VALUE_ELEMENT_NAME, Double.toString(value));
-            ndcgValuesElement.addContent(ndcgValueElement);
+        if (Constants.isRawResultDefined()) {
+            Element ndcgValuesElement = new Element("ndcg_values");
+            for (double value : ndcgValues) {
+                Element ndcgValueElement = new Element(NDCG_VALUE_ELEMENT_NAME);
+                ndcgValueElement.setAttribute(NDCG_VALUE_ELEMENT_NAME, Double.toString(value));
+                ndcgValuesElement.addContent(ndcgValueElement);
+            }
+            element.addContent(ndcgValuesElement);
         }
-
-        element.addContent(ndcgValuesElement);
         return element;
     }
 

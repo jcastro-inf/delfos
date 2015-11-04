@@ -2,7 +2,6 @@ package delfos.similaritymeasures;
 
 import java.util.List;
 import java.util.ListIterator;
-import delfos.common.exceptions.CouldNotComputeSimilarity;
 
 /**
  * Medida de similitud que utiliza el coeficiente de correlación de pearson para
@@ -19,14 +18,14 @@ import delfos.common.exceptions.CouldNotComputeSimilarity;
 public class PearsonCorrelationCoefficient extends WeightedSimilarityMeasureAdapter {
 
     @Override
-    public float similarity(List<Float> v1, List<Float> v2) throws CouldNotComputeSimilarity {
+    public float similarity(List<Float> v1, List<Float> v2) {
         double pcc = pearsonCorrelationCoefficient(v1, v2);
 
         return (float) pcc;
     }
 
     @Override
-    public float weightedSimilarity(List<Float> v1, List<Float> v2, List<Float> weights) throws CouldNotComputeSimilarity {
+    public float weightedSimilarity(List<Float> v1, List<Float> v2, List<Float> weights) {
         double pcc = pearsonCorrelationCoefficient_weighted(v1, v2, weights);
 
         return (float) pcc;
@@ -40,50 +39,54 @@ public class PearsonCorrelationCoefficient extends WeightedSimilarityMeasureAdap
      * @param v1
      * @param v2
      * @return
-     * @throws CouldNotComputeSimilarity Si las listas están vacías.
      */
-    public double pearsonCorrelationCoefficient(List<? extends Number> v1, List<? extends Number> v2) throws CouldNotComputeSimilarity {
+    public double pearsonCorrelationCoefficient(List<? extends Number> v1, List<? extends Number> v2) {
 
         validateInputParameters(v1, v2);
 
         double avg1 = 0;
         double avg2 = 0;
 
-        ListIterator<? extends Number> i1 = v1.listIterator();
-        ListIterator<? extends Number> i2 = v2.listIterator();
-        do {
+        double ret;
 
-            double value1 = i1.next().doubleValue();
-            double value2 = i2.next().doubleValue();
-
-            avg1 += value1 / v1.size();
-            avg2 += value2 / v2.size();
-        } while (i1.hasNext());
-
-        double numerador = 0;
-        double denominador1 = 0;
-        double denominador2 = 0;
-        i1 = v1.listIterator();
-        i2 = v2.listIterator();
-        do {
-            double value1 = i1.next().doubleValue();
-            double value2 = i2.next().doubleValue();
-
-            numerador += (value1 - avg1) * (value2 - avg2);
-            denominador1 += (value1 - avg1) * (value1 - avg1);
-            denominador2 += (value2 - avg2) * (value2 - avg2);
-        } while (i1.hasNext());
-
-        //Cálculo del denominador
-        double denominador = Math.sqrt(denominador1 * denominador2);
-
-        double ret = 0;
-        if (denominador == 0) {
-            throw new CouldNotComputeSimilarity("Cannot compute PCC between " + v1.toString() + " and " + v2.toString());
+        if (v1.isEmpty()) {
+            ret = Double.NaN;
         } else {
-            ret = numerador / denominador;
-        }
 
+            ListIterator<? extends Number> i1 = v1.listIterator();
+            ListIterator<? extends Number> i2 = v2.listIterator();
+            do {
+
+                double value1 = i1.next().doubleValue();
+                double value2 = i2.next().doubleValue();
+
+                avg1 += value1 / v1.size();
+                avg2 += value2 / v2.size();
+            } while (i1.hasNext());
+
+            double numerador = 0;
+            double denominador1 = 0;
+            double denominador2 = 0;
+            i1 = v1.listIterator();
+            i2 = v2.listIterator();
+            do {
+                double value1 = i1.next().doubleValue();
+                double value2 = i2.next().doubleValue();
+
+                numerador += (value1 - avg1) * (value2 - avg2);
+                denominador1 += (value1 - avg1) * (value1 - avg1);
+                denominador2 += (value2 - avg2) * (value2 - avg2);
+            } while (i1.hasNext());
+
+            //Cálculo del denominador
+            double denominador = Math.sqrt(denominador1 * denominador2);
+
+            if (denominador == 0) {
+                return Double.NaN;
+            } else {
+                ret = numerador / denominador;
+            }
+        }
         return ret;
     }
 
@@ -100,6 +103,10 @@ public class PearsonCorrelationCoefficient extends WeightedSimilarityMeasureAdap
     }
 
     public double weightedCovariance(List<? extends Number> v1, List<? extends Number> v2, List<? extends Number> weights) {
+
+        if (v1.isEmpty()) {
+            return Double.NaN;
+        }
         double weightedMean_v1 = weightedMean(v1, weights);
         double weightedMean_v2 = weightedMean(v2, weights);
 
@@ -120,8 +127,12 @@ public class PearsonCorrelationCoefficient extends WeightedSimilarityMeasureAdap
         return numerator / denominator;
     }
 
-    public double pearsonCorrelationCoefficient_weighted(List<? extends Number> v1, List<? extends Number> v2, List<? extends Number> weights) throws IllegalArgumentException, CouldNotComputeSimilarity {
+    public double pearsonCorrelationCoefficient_weighted(List<? extends Number> v1, List<? extends Number> v2, List<? extends Number> weights) throws IllegalArgumentException {
         validateInputParameters(v1, v2, weights);
+
+        if (v1.isEmpty()) {
+            return Double.NaN;
+        }
 
         double numerator = weightedCovariance(v1, v2, weights);
 
@@ -131,14 +142,14 @@ public class PearsonCorrelationCoefficient extends WeightedSimilarityMeasureAdap
         double denominator = Math.sqrt(denominator1 * denominator2);
 
         if (denominator == 0) {
-            throw new CouldNotComputeSimilarity("Cannot compute PCC between " + v1.toString() + " and " + v2.toString() + "with weigts " + weights.toString());
+            return Double.NaN;
         }
         double pcc_weighted = numerator / denominator;
 
         return pcc_weighted;
     }
 
-    private void validateInputParameters(List<? extends Number> v1, List<? extends Number> v2) throws IllegalArgumentException, CouldNotComputeSimilarity {
+    private void validateInputParameters(List<? extends Number> v1, List<? extends Number> v2) throws IllegalArgumentException {
         if (v1 == null) {
             throw new IllegalArgumentException("The list v1 cannot be null.");
         }
@@ -148,12 +159,9 @@ public class PearsonCorrelationCoefficient extends WeightedSimilarityMeasureAdap
         if (v1.size() != v2.size()) {
             throw new IllegalArgumentException("The lists have different size: " + v1.size() + " != " + v2.size());
         }
-        if (v1.isEmpty()) {
-            throw new CouldNotComputeSimilarity("The lists are empty, cannot compute pearson correlation coefficient.");
-        }
     }
 
-    private void validateInputParameters(List<? extends Number> v1, List<? extends Number> v2, List<? extends Number> weights) throws IllegalArgumentException, CouldNotComputeSimilarity {
+    private void validateInputParameters(List<? extends Number> v1, List<? extends Number> v2, List<? extends Number> weights) throws IllegalArgumentException {
         if (v1 == null) {
             throw new IllegalArgumentException("The list v1 cannot be null.");
         }
@@ -167,9 +175,6 @@ public class PearsonCorrelationCoefficient extends WeightedSimilarityMeasureAdap
                 || v1.size() != weights.size()
                 || v2.size() != weights.size()) {
             throw new IllegalArgumentException("The lists have different size: " + v1.size() + " != " + v2.size() + " != " + weights.size());
-        }
-        if (v1.isEmpty()) {
-            throw new CouldNotComputeSimilarity("The lists are empty, cannot compute pearson correlation coefficient.");
         }
     }
 }

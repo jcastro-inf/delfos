@@ -1,7 +1,5 @@
 package delfos.similaritymeasures.useruser;
 
-import delfos.common.exceptions.CouldNotComputeSimilarity;
-import delfos.common.exceptions.dataset.users.UserNotFound;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.similaritymeasures.SimilarityMeasure;
@@ -21,5 +19,5 @@ public interface UserUserSimilarity extends SimilarityMeasure {
      * @param idUser2
      * @return
      */
-    public double similarity(DatasetLoader<? extends Rating> datasetLoader, int idUser1, int idUser2) throws UserNotFound, CouldNotComputeSimilarity;
+    public double similarity(DatasetLoader<? extends Rating> datasetLoader, int idUser1, int idUser2);
 }

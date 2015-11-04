@@ -1,15 +1,15 @@
 package delfos.group.experiment.validation.groupformation;
 
-import java.util.Collection;
-import java.util.LinkedList;
 import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
 import delfos.common.parameters.ParameterListener;
 import delfos.common.parameters.ParameterOwnerAdapter;
 import delfos.common.parameters.ParameterOwnerType;
-import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.loader.types.DatasetLoader;
-import delfos.group.groupsofusers.GroupOfUsers;
+import delfos.dataset.basic.rating.Rating;
 import delfos.experiment.SeedHolder;
+import delfos.group.groupsofusers.GroupOfUsers;
+import java.util.Collection;
+import java.util.LinkedList;
 
 /**
  * Clase abstracta que define los métodos que se utilizan para generar los
@@ -21,7 +21,7 @@ import delfos.experiment.SeedHolder;
  * que se implementen al método super(), para realizar las inicializaciones
  * pertinentes.
  *
-* @author Jorge Castro Gallardo
+ * @author Jorge Castro Gallardo
  */
 public abstract class GroupFormationTechnique extends ParameterOwnerAdapter implements SeedHolder {
 
@@ -67,16 +67,20 @@ public abstract class GroupFormationTechnique extends ParameterOwnerAdapter impl
 
     public void addListener(GroupFormationTechniqueProgressListener listener) {
         listeners.add(listener);
-        listener.progressChanged("", 0);
+        listener.progressChanged("", 0, -1);
     }
 
     public void removeListener(GroupFormationTechniqueProgressListener listener) {
         listeners.remove(listener);
     }
 
-    protected void progressChanged(String message, int percent) {
+    protected void progressChanged(String message, int progressPercent) {
+        progressChanged(message, progressPercent, -1);
+    }
+
+    protected void progressChanged(String message, int progressPercent, long remainingTimeInMS) {
         listeners.stream().forEach((listener) -> {
-            listener.progressChanged(message, percent);
+            listener.progressChanged(message, progressPercent, remainingTimeInMS);
         });
     }
 

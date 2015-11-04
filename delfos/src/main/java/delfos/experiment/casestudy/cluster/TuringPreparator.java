@@ -71,8 +71,7 @@ public class TuringPreparator implements ExperimentPreparator {
 
                 String experimentName
                         = "[" + datasetLoader.getAlias() + "]_"
-                        + groupCaseStudy.getAlias()
-                        + "_hash=" + groupCaseStudy.hashCode();
+                        + groupCaseStudy.getAlias();
 
                 //Clean directory
                 File finalDirectoryRS = new File(experimentBaseDirectory.getAbsolutePath() + File.separator + experimentName);

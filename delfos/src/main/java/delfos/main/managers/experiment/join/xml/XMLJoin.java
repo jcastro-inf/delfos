@@ -6,7 +6,6 @@ import delfos.UndefinedParameterException;
 import delfos.common.FileUtilities;
 import delfos.main.managers.CaseUseMode;
 import java.io.File;
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -53,7 +52,7 @@ public class XMLJoin extends CaseUseMode {
     }
 
     public static void manageCaseUse(List<String> resultsPaths) {
-        List<File> files = new ArrayList<>();
+
         AggregateResultsXML aggregateResultsXML = new AggregateResultsXML();
 
         List<File> allFiles = new LinkedList<>();

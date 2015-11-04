@@ -4,20 +4,38 @@
 #PBS -M jcastro@ujaen.es
 #PBS -r y
 
-#PBS -l nodes=1:ppn=5
+#PBS -l nodes=1:ppn=12
 hostname
 cd $PBS_O_WORKDIR
 
 idJob=${PBS_JOBID%%.*}
 
 experimentFolderNoBars=${experimentFolder//"/"/.}
-resultsFile=${experimentFolder}results/aggregateResults.xls
 
-if [ -a $resultsFile ] 
-then
-	echo "Experimento $experimentFolder ejecutado aqui" >  $PBS_JOBNAME.o$idJob.$HOSTNAME.${experimentFolderNoBars}.yaHabiaSidoEjecutado	
-else
-	echo "Experimento $experimentFolder ejecutado aqui" >  $PBS_JOBNAME.o$idJob.$HOSTNAME.${experimentFolderNoBars}ejecutando
-	~/java-8-oracle/bin/java -Xms8g -jar delfos.jar --execute-group-xml -seed 123456 -directory ${experimentFolder} -num-exec 20
-	echo "Experimento $experimentFolder ejecutado aqui" >  $PBS_JOBNAME.o$idJob.$HOSTNAME.${experimentFolderNoBars}finalizado
+logDirectory=$experimentFolder"/log/"
+if [ ! -d $logDirectory ]; then
+   mkdir $logDirectory
 fi
+
+DATE_START=`date +%Y-%m-%d_%H.%M.%S`
+logFileStd=$logDirectory$DATE_START"-log-std.txt"
+logFileErr=$logDirectory$DATE_START"-log-err.txt"
+
+echo "$DATE_START executing" $experimentFolder
+echo "$DATE_START executing" $experimentFolder >> $logFileStd 2>> $logFileErr
+
+echo "$DATE_START Executed in node `(hostname)`"
+echo "$DATE_START Executed in node `(hostname)`" >> $logFileStd 2>> $logFileErr
+
+
+~/java-8-oracle/bin/java -XX:+HeapDumpOnOutOfMemoryError -Xmx16g -jar delfos.jar --execute-group-xml -seed 123456 -directory ${experimentFolder} -num-exec $numExec >> $logFileStd 2>> $logFileErr
+
+cat $logFileStd >&1
+cat $logFileErr >&2
+
+
+echo "$DATE_START executing" $experimentFolder
+echo "$DATE_START executing" $experimentFolder >> $logFileStd 2>> $logFileErr
+DATE_FINISH=`date +%Y-%m-%d_%H.%M.%S`
+echo "$DATE_FINISH Finished" $experimentFolder
+echo "$DATE_FINISH Finished" $experimentFolder >> $logFileStd 2>> $logFileErr

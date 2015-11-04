@@ -4,7 +4,7 @@ package delfos.common;
  * Clase con métodos estáticos para convertir el tiempo en una cadena amigable
  * al usuario
  *
-* @author Jorge Castro Gallardo
+ * @author Jorge Castro Gallardo
  */
 public class DateCollapse {
 
@@ -23,7 +23,7 @@ public class DateCollapse {
      */
     public static String collapse(long miliseconds) {
         if (miliseconds <= 0) {
-            return "";
+            return "unknown";
         }
         String ret = new String();
 

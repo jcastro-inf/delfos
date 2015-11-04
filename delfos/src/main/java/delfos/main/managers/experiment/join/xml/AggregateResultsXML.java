@@ -1,9 +1,10 @@
 package delfos.main.managers.experiment.join.xml;
 
-import delfos.ERROR_CODES;
+import delfos.common.Global;
 import delfos.group.results.groupevaluationmeasures.AreaUnderRoc;
 import delfos.io.excel.joiner.AggregateResultsMatrixExcelWriter;
 import delfos.io.xml.UnrecognizedElementException;
+import delfos.io.xml.casestudy.CaseStudyXML;
 import static delfos.io.xml.casestudy.CaseStudyXML.AGGREGATE_VALUES_ELEMENT_NAME;
 import static delfos.io.xml.casestudy.CaseStudyXML.CASE_ROOT_ELEMENT_NAME;
 import static delfos.io.xml.casestudy.CaseStudyXML.EXECUTIONS_RESULTS_ELEMENT_NAME;
@@ -29,6 +30,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import org.apache.commons.io.FileUtils;
+import org.jdom2.Attribute;
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
@@ -71,9 +73,10 @@ public class AggregateResultsXML {
 
                 values.put(experimentName, valuesThisFile);
 
-            } catch (JDOMException | IOException ex) {
-                System.out.println("ERROR AT --> Reading file " + file);
-                ERROR_CODES.CANNOT_READ_CASE_STUDY_EXCEL.exit(ex);
+            } catch (Exception ex) {
+                Global.show("ERROR AT --> Reading file " + file);
+                Global.showWarning("ERROR AT --> Reading file " + file);
+                Global.showError(ex);
             }
         }
         writeFinalExcel(values);
@@ -131,6 +134,14 @@ public class AggregateResultsXML {
         String elementName = element.getName();
         if (element.getAttribute("name") != null) {
             elementName = elementName + "." + element.getAttributeValue("name");
+        }
+
+        if (elementName.equals(CASE_ROOT_ELEMENT_NAME)) {
+            for (Attribute attribute : element.getAttributes()) {
+                String name = CaseStudyXML.CASE_ROOT_ELEMENT_NAME + "." + attribute.getName();
+                String value = attribute.getValue();
+                valuesByColumnName.put(name, value);
+            }
         }
 
         if (elementName.equals(RelevanceCriteriaXML.ELEMENT_NAME)) {
