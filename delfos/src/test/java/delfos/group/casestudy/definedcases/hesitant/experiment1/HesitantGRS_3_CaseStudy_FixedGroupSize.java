@@ -17,9 +17,9 @@ import delfos.group.experiment.validation.validationtechniques.HoldOutGroupRated
 import delfos.group.factories.GroupEvaluationMeasuresFactory;
 import delfos.group.grs.GroupRecommenderSystem;
 import delfos.group.grs.hesitant.HesitantKnnGroupUser;
-import es.jcastro.hesitant.similarity.HesitantPearson;
-import es.jcastro.hesitant.similarity.HesitantSimilarity;
-import es.jcastro.hesitant.similarity.factory.HesitantSimilarityFactory;
+import delfos.utils.hesitant.similarity.HesitantPearson;
+import delfos.utils.hesitant.similarity.HesitantSimilarity;
+import delfos.utils.hesitant.similarity.factory.HesitantSimilarityFactory;
 import java.io.File;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
