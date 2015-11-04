@@ -10,7 +10,7 @@ import delfos.recommendationcandidates.RecommendationCandidatesSelector;
 import delfos.rs.output.RecommendationsOutputStandardRaw;
 import delfos.rs.output.sort.SortBy;
 import delfos.rs.recommendation.Recommendation;
-import es.jcastro.hesitant.HesitantValuation;
+import delfos.utils.hesitant.HesitantValuation;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Set;

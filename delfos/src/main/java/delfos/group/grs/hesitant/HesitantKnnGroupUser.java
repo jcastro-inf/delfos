@@ -29,10 +29,10 @@ import delfos.rs.collaborativefiltering.predictiontechniques.PredictionTechnique
 import delfos.rs.collaborativefiltering.profile.Neighbor;
 import delfos.rs.recommendation.Recommendation;
 import delfos.rs.recommendation.RecommendationWithNeighbors;
-import es.jcastro.hesitant.HesitantValuation;
-import es.jcastro.hesitant.similarity.HesitantPearson;
-import es.jcastro.hesitant.similarity.HesitantSimilarity;
-import es.jcastro.hesitant.similarity.factory.HesitantSimilarityFactory;
+import delfos.utils.hesitant.HesitantValuation;
+import delfos.utils.hesitant.similarity.HesitantPearson;
+import delfos.utils.hesitant.similarity.HesitantSimilarity;
+import delfos.utils.hesitant.similarity.factory.HesitantSimilarityFactory;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
