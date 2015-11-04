@@ -8,8 +8,8 @@ import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.user.User;
 import delfos.group.groupsofusers.GroupOfUsers;
 import delfos.rs.collaborativefiltering.profile.Neighbor;
-import es.jcastro.hesitant.HesitantValuation;
-import es.jcastro.hesitant.similarity.HesitantSimilarity;
+import delfos.utils.hesitant.HesitantValuation;
+import delfos.utils.hesitant.similarity.HesitantSimilarity;
 
 /**
  * Clase que almacena los datos necesarios para ejecutar paralelamente el
