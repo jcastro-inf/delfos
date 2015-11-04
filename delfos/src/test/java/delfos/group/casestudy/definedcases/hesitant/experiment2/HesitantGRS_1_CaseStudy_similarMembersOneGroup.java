@@ -130,7 +130,6 @@ public class HesitantGRS_1_CaseStudy_similarMembersOneGroup extends DelfosTest {
         Global.show("This case study has " + new TuringPreparator()
                 .sizeOfAllExperimentsInDirectory(experimentDirectory)
                 + " experiments");
-        new TuringPreparator().executeAllExperimentsInDirectory(experimentDirectory, 2);
     }
 
 }
