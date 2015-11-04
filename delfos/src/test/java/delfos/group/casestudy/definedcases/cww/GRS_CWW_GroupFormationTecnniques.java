@@ -10,7 +10,7 @@ import delfos.group.casestudy.GroupCaseStudy;
 import delfos.group.casestudy.defaultcase.DefaultGroupCaseStudy;
 import delfos.group.experiment.validation.groupformation.FixedGroupSize_OnlyNGroups;
 import delfos.group.experiment.validation.groupformation.GroupFormationTechnique;
-import delfos.group.experiment.validation.groupformation.SimilarMembers;
+import delfos.group.experiment.validation.groupformation.SimilarMembers_OnlyNGroups;
 import delfos.group.experiment.validation.groupformation.SimilarMembers_except;
 import delfos.group.experiment.validation.predictionvalidation.GroupPredictionProtocol;
 import delfos.group.experiment.validation.predictionvalidation.NoPredictionProtocol;
@@ -79,7 +79,7 @@ public class GRS_CWW_GroupFormationTecnniques extends DelfosTest {
         final GroupValidationTechnique groupValidationTechniqueValue = new CrossFoldValidation_Ratings();
 
         final GroupFormationTechnique[] groupFormationTechniques = {
-            new SimilarMembers(numGroups, groupSize),
+            new SimilarMembers_OnlyNGroups(numGroups, groupSize),
             new SimilarMembers_except(numGroups, groupSize, 1),
             new SimilarMembers_except(numGroups, groupSize, 2),
             new SimilarMembers_except(numGroups, groupSize, 3),

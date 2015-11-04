@@ -44,6 +44,9 @@
             <id>group-execute-xml</id>
         </profile>
         <profile>
+            <id>group-xml-joiner</id>
+        </profile>
+        <profile>
             <id>result-analysis-gui</id>
         </profile>
         <profile>

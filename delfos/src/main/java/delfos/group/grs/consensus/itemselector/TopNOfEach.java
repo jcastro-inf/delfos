@@ -27,7 +27,7 @@ public class TopNOfEach extends GroupRecommendationsSelector {
 
         membersRecommendations.entrySet().stream().forEach((entry) -> {
             LinkedList<Recommendation> sortedRemovableRecommendation = new LinkedList<>(entry.getValue());
-            Collections.sort(sortedRemovableRecommendation, Recommendation.getRecommendationPreferenceComparator());
+            Collections.sort(sortedRemovableRecommendation, Recommendation.BY_PREFERENCE_DESC);
             removableRecommendations.put(entry.getKey(), sortedRemovableRecommendation);
         });
 

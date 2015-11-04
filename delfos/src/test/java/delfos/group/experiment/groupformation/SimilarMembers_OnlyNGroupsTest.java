@@ -1,12 +1,13 @@
 package delfos.group.experiment.groupformation;
 
+import delfos.common.DateCollapse;
 import delfos.common.Global;
 import delfos.configureddatasets.ConfiguredDatasetsFactory;
 import delfos.constants.DelfosTest;
 import delfos.constants.TestConstants;
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
-import delfos.group.experiment.validation.groupformation.SimilarMembers;
+import delfos.group.experiment.validation.groupformation.SimilarMembers_OnlyNGroups;
 import delfos.group.groupsofusers.GroupOfUsers;
 import java.io.File;
 import java.util.ArrayList;
@@ -23,17 +24,17 @@ import org.junit.Test;
  * @version 10-abr-2014
  * @author Jorge Castro Gallardo (Universidad de Jaén, Sinbad2)
  */
-public class SimilarMembersTest extends DelfosTest {
+public class SimilarMembers_OnlyNGroupsTest extends DelfosTest {
 
     private static final long seed = 65465654;
 
-    private final static String similarityMeasureBufferDirectory = TestConstants.TEST_DATA_DIRECTORY + SimilarMembersTest.class.getSimpleName() + File.separator;
+    private final static String similarityMeasureBufferDirectory = TestConstants.TEST_DATA_DIRECTORY + SimilarMembers_OnlyNGroupsTest.class.getSimpleName() + File.separator;
 
-    public SimilarMembersTest() {
+    public SimilarMembers_OnlyNGroupsTest() {
     }
 
     /**
-     * Test of shuffle method, of class SimilarMembers.
+     * Test of shuffle method, of class SimilarMembers_OnlyNGroups.
      */
     @Test
     public void testShuffle() {
@@ -44,9 +45,9 @@ public class SimilarMembersTest extends DelfosTest {
         DatasetLoader<? extends Rating> datasetLoader = ConfiguredDatasetsFactory.getInstance().getDatasetLoader("ml-100k");
         datasetLoader.getRatingsDataset();
 
-        SimilarMembers instance = new SimilarMembers(numGroupsValue, groupSizeValue, numMembersCandidate);
-        instance.addListener((String message, int progress) -> {
-            Global.showln(progress + "% " + message);
+        SimilarMembers_OnlyNGroups instance = new SimilarMembers_OnlyNGroups(numGroupsValue, groupSizeValue, numMembersCandidate);
+        instance.addListener((String message, int progress, long remainingTimeInMS) -> {
+            Global.showln(progress + "% " + message + " remainingTime: " + DateCollapse.collapse(remainingTimeInMS));
         });
         instance.setSeedValue(seed);
         Collection<GroupOfUsers> result = instance.shuffle(datasetLoader);
@@ -59,7 +60,7 @@ public class SimilarMembersTest extends DelfosTest {
     }
 
     /**
-     * Test of shuffle method, of class SimilarMembers.
+     * Test of shuffle method, of class SimilarMembers_OnlyNGroups.
      */
     @Test
     public void testSharingUsers() {
@@ -70,15 +71,15 @@ public class SimilarMembersTest extends DelfosTest {
         DatasetLoader<? extends Rating> datasetLoader = ConfiguredDatasetsFactory.getInstance().getDatasetLoader("ml-100k");
         datasetLoader.getRatingsDataset();
 
-        SimilarMembers instance = new SimilarMembers(numGroupsValue, groupSizeValue, numMembersCandidate);
+        SimilarMembers_OnlyNGroups instance = new SimilarMembers_OnlyNGroups(numGroupsValue, groupSizeValue, numMembersCandidate);
 
 //        UserUserSimilarity bufferedSimilarity = new UserUserSimilarity_buffered(
 //                new File(similarityMeasureBufferDirectory),
-//                (UserUserSimilarity) instance.getParameterValue(SimilarMembers.SIMILARITY_MEASURE)
+//                (UserUserSimilarity) instance.getParameterValue(SimilarMembers_OnlyNGroups.SIMILARITY_MEASURE)
 //        );
-//        instance.setParameterValue(SimilarMembers.SIMILARITY_MEASURE, bufferedSimilarity);
-        instance.addListener((String message, int progress) -> {
-            Global.showln(progress + "% " + message);
+//        instance.setParameterValue(SimilarMembers_OnlyNGroups.SIMILARITY_MEASURE, bufferedSimilarity);
+        instance.addListener((String message, int progress, long remainingTimeInMS) -> {
+            Global.showln(progress + "% " + message + " remainingTime: " + DateCollapse.collapse(remainingTimeInMS));
         });
         instance.setSeedValue(seed);
 
@@ -107,7 +108,7 @@ public class SimilarMembersTest extends DelfosTest {
     }
 
     /**
-     * Test of shuffle method, of class SimilarMembers.
+     * Test of shuffle method, of class SimilarMembers_OnlyNGroups.
      */
     @Test(expected = IllegalArgumentException.class)
     public void testTooManyGroupsAsked() {
@@ -118,7 +119,7 @@ public class SimilarMembersTest extends DelfosTest {
         DatasetLoader<? extends Rating> datasetLoader = ConfiguredDatasetsFactory.getInstance().getDatasetLoader("ml-100k");
         datasetLoader.getRatingsDataset();
 
-        SimilarMembers instance = new SimilarMembers(numGroupsValue, groupSizeValue, numMembersCandidate);
+        SimilarMembers_OnlyNGroups instance = new SimilarMembers_OnlyNGroups(numGroupsValue, groupSizeValue, numMembersCandidate);
 
         Collection<GroupOfUsers> result = instance.shuffle(datasetLoader);
     }

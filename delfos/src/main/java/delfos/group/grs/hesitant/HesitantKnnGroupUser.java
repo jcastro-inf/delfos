@@ -35,7 +35,6 @@ import es.jcastro.hesitant.similarity.HesitantSimilarity;
 import es.jcastro.hesitant.similarity.factory.HesitantSimilarityFactory;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -164,8 +163,7 @@ public class HesitantKnnGroupUser
                 })
                 .collect(Collectors.toList());
 
-        Collections.sort(neighbors);
-
+        neighbors.sort(Neighbor.BY_SIMILARITY_DESC);
         return neighbors;
     }
 

@@ -2,15 +2,10 @@ package delfos.group.experiment.validation.groupformation;
 
 import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
 import delfos.common.parameters.Parameter;
-import delfos.common.parameters.restriction.IntegerParameter;
-import delfos.common.parameters.restriction.ParameterOwnerRestriction;
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
 import delfos.group.groupsofusers.GroupOfUsers;
-import delfos.similaritymeasures.PearsonCorrelationCoefficient;
 import delfos.similaritymeasures.useruser.UserUserSimilarity;
-import delfos.similaritymeasures.useruser.UserUserSimilarityWrapper;
-import delfos.similaritymeasures.useruser.UserUserSimilarityWrapper_relevanceFactor;
 import java.util.Collection;
 import java.util.Random;
 
@@ -22,38 +17,17 @@ import java.util.Random;
  * @version 10-abr-2014
  * @author Jorge Castro Gallardo
  */
-public class SimilarMembers extends GroupFormationTechnique {
+public class DissimilarMembers extends GroupFormationTechnique {
 
-    static {
-
-        UserUserSimilarity defaultSimilarity = new UserUserSimilarityWrapper_relevanceFactor(
-                new UserUserSimilarityWrapper(
-                        new PearsonCorrelationCoefficient()
-                ),
-                20
-        );
-
-        ParameterOwnerRestriction parameterOwnerRestriction = new ParameterOwnerRestriction(
-                UserUserSimilarity.class,
-                defaultSimilarity);
-        SIMILARITY_MEASURE = new Parameter(
-                "SIMILARITY_MEASURE",
-                parameterOwnerRestriction);
-    }
-
-    /**
-     * Parámetro para establecer el número de usuarios que tendrán los grupos
-     * generados con esta validación de grupos
-     */
-    public static final Parameter GROUP_SIZE_PARAMETER = new Parameter("groupSize", new IntegerParameter(1, 10000, 5));
-    public static final Parameter N_CANDIDATES_PARAMETER = new Parameter("numCandidates", new IntegerParameter(1, 1000000, 5));
-    public static final Parameter SIMILARITY_MEASURE;
+    public static final Parameter GROUP_SIZE_PARAMETER = DissimilarMembers_OnlyNGroups.GROUP_SIZE_PARAMETER;
+    public static final Parameter N_CANDIDATES_PARAMETER = DissimilarMembers_OnlyNGroups.N_CANDIDATES_PARAMETER;
+    public static final Parameter SIMILARITY_MEASURE = DissimilarMembers_OnlyNGroups.SIMILARITY_MEASURE;
 
     /**
      * Genera una validación de usuarios que genera grupos de tamaño fijo. Por
      * defecto, el tamaño de los grupos es de cuatro miembros.
      */
-    public SimilarMembers() {
+    public DissimilarMembers() {
         super();
         addParameter(GROUP_SIZE_PARAMETER);
         addParameter(N_CANDIDATES_PARAMETER);
@@ -79,16 +53,14 @@ public class SimilarMembers extends GroupFormationTechnique {
      * @param numCandidates Número de vecinos candidatos que se consideran al
      * seleccionar el siguiente miembro del grupo aleatoriamente.
      */
-    public SimilarMembers(int groupSizeValue, int numCandidates) {
+    public DissimilarMembers(int groupSizeValue, int numCandidates) {
         this();
         setParameterValue(GROUP_SIZE_PARAMETER, groupSizeValue);
         setParameterValue(N_CANDIDATES_PARAMETER, numCandidates);
-
     }
 
     @Override
     public Collection<GroupOfUsers> shuffle(DatasetLoader<? extends Rating> datasetLoader) throws CannotLoadRatingsDataset {
-
         if (datasetLoader == null) {
             throw new IllegalStateException("The datasetLoader is null.");
         }
@@ -99,12 +71,12 @@ public class SimilarMembers extends GroupFormationTechnique {
         final int maximumGroups = datasetLoader.getRatingsDataset().allUsers().size() / groupSize;
         UserUserSimilarity similarityMeasure = (UserUserSimilarity) getParameterValue(SIMILARITY_MEASURE);
 
-        SimilarMembers_OnlyNGroups similarMembers_OnlyNGroups = new SimilarMembers_OnlyNGroups(maximumGroups, groupSize, numMembersCandidate);
-        similarMembers_OnlyNGroups.setParameterValue(SimilarMembers_OnlyNGroups.SIMILARITY_MEASURE, similarityMeasure);
+        DissimilarMembers_OnlyNGroups dissimilarMembers_OnlyNGroups = new DissimilarMembers_OnlyNGroups(maximumGroups, groupSize, numMembersCandidate);
+        dissimilarMembers_OnlyNGroups.setParameterValue(DissimilarMembers_OnlyNGroups.SIMILARITY_MEASURE, similarityMeasure);
 
-        similarMembers_OnlyNGroups.addListener(this::progressChanged);
+        dissimilarMembers_OnlyNGroups.addListener(this::progressChanged);
 
-        Collection<GroupOfUsers> result = similarMembers_OnlyNGroups.shuffle(datasetLoader);
+        Collection<GroupOfUsers> result = dissimilarMembers_OnlyNGroups.shuffle(datasetLoader);
 
         return result;
     }

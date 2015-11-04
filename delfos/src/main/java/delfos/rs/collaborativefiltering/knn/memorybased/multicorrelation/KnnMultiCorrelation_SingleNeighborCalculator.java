@@ -1,8 +1,5 @@
 package delfos.rs.collaborativefiltering.knn.memorybased.multicorrelation;
 
-import delfos.ERROR_CODES;
-import delfos.common.exceptions.CouldNotComputeSimilarity;
-import delfos.common.exceptions.dataset.users.UserNotFound;
 import delfos.common.parallelwork.SingleTaskExecute;
 import delfos.rs.collaborativefiltering.knn.RecommendationEntity;
 import delfos.dataset.basic.rating.Rating;
@@ -28,16 +25,9 @@ public final class KnnMultiCorrelation_SingleNeighborCalculator implements Singl
         }
         UserUserSimilarity userUserSimilarity = (UserUserSimilarity) rs.getParameterValue(KnnMultiCorrelation.MULTI_CORRELATION_SIMILARITY_MEASURE);
 
-        double similarity;
-        try {
-            similarity = userUserSimilarity.similarity(task.datasetLoader, idUser, idNeighbor);
-            Neighbor neighbor = new Neighbor(RecommendationEntity.USER, idNeighbor, similarity);
-            task.setNeighbor(neighbor);
-        } catch (UserNotFound ex) {
-            ERROR_CODES.USER_NOT_FOUND.exit(ex);
-        } catch (CouldNotComputeSimilarity ex) {
-
-        }
+        double similarity = userUserSimilarity.similarity(task.datasetLoader, idUser, idNeighbor);
+        Neighbor neighbor = new Neighbor(RecommendationEntity.USER, idNeighbor, similarity);
+        task.setNeighbor(neighbor);
 
     }
 }

@@ -1,5 +1,6 @@
 package delfos.group.experiment.groupformation;
 
+import delfos.common.DateCollapse;
 import delfos.common.Global;
 import delfos.configureddatasets.ConfiguredDatasetsFactory;
 import delfos.constants.DelfosTest;
@@ -45,8 +46,8 @@ public class SimilarMembers_exceptTest extends DelfosTest {
         datasetLoader.getRatingsDataset();
 
         SimilarMembers_except instance = new SimilarMembers_except(numGroupsValue, groupSizeValue, numMembersCandidate);
-        instance.addListener((String message, int progress) -> {
-            Global.showln(progress + "% " + message);
+        instance.addListener((String message, int progress, long remainingTimeInMS) -> {
+            Global.showln(progress + "% " + message + " remainingTime: " + DateCollapse.collapse(remainingTimeInMS));
         });
         instance.setSeedValue(seed);
         Collection<GroupOfUsers> result = instance.shuffle(datasetLoader);
@@ -69,8 +70,8 @@ public class SimilarMembers_exceptTest extends DelfosTest {
         datasetLoader.getRatingsDataset();
 
         SimilarMembers_except instance = new SimilarMembers_except(numGroupsValue, groupSizeValue, numMembersCandidate);
-        instance.addListener((String message, int progress) -> {
-            Global.showln(progress + "% " + message);
+        instance.addListener((String message, int progress, long remainingTimeInMS) -> {
+            Global.showln(progress + "% " + message + " remainingTime: " + DateCollapse.collapse(remainingTimeInMS));
         });
         instance.setSeedValue(seed);
 

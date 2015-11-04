@@ -26,6 +26,7 @@ import delfos.group.casestudy.parallelisation.SingleGroupRecommendation;
 import delfos.group.casestudy.parallelisation.SingleGroupRecommendationTask;
 import delfos.group.experiment.validation.groupformation.FixedGroupSize_OnlyNGroups;
 import delfos.group.experiment.validation.groupformation.GroupFormationTechnique;
+import delfos.group.experiment.validation.groupformation.GroupFormationTechniqueProgressListener_default;
 import delfos.group.experiment.validation.predictionvalidation.GroupPredictionProtocol;
 import delfos.group.experiment.validation.predictionvalidation.GroupRecommendationRequest;
 import delfos.group.experiment.validation.predictionvalidation.NoPredictionProtocol;
@@ -118,9 +119,37 @@ public class DefaultGroupCaseStudy extends GroupCaseStudy {
         setAlias(groupRecommenderSystem.getAlias());
     }
 
+    public DefaultGroupCaseStudy(
+            DatasetLoader<? extends Rating> datasetLoader,
+            GroupRecommenderSystem groupRecommenderSystem,
+            GroupFormationTechnique groupFormationTechnique,
+            GroupValidationTechnique groupValidationTechniqueValue,
+            GroupPredictionProtocol groupPredictionProtocol,
+            Collection<GroupEvaluationMeasure> evaluationMeasures,
+            RelevanceCriteria criteria,
+            int numEjecuciones, long seedValue) {
+
+        if (datasetLoader == null) {
+            this.datasetLoader = new RandomDatasetLoader(50, 50, 0.5);
+        } else {
+            this.datasetLoader = datasetLoader;
+        }
+        this.groupRecommenderSystem = groupRecommenderSystem;
+        this.groupFormationTechnique = groupFormationTechnique;
+        this.numEjecuciones = numEjecuciones;
+        this.groupEvaluationMeasures = evaluationMeasures;
+        this.relevanceCriteria = criteria;
+        this.groupPredictionProtocol = groupPredictionProtocol;
+        this.groupValidationTechnique = groupValidationTechniqueValue;
+        setSeedValue(seedValue);
+
+        setAlias(groupRecommenderSystem.getAlias());
+    }
+
     @Override
     public int hashCode() {
         int hash = 7;
+        hash = 97 * hash + Objects.hashCode(this.getSeedValue());
         hash = 97 * hash + Objects.hashCode(this.datasetLoader);
         hash = 97 * hash + Objects.hashCode(this.groupRecommenderSystem);
         hash = 97 * hash + Objects.hashCode(this.groupFormationTechnique);
@@ -202,6 +231,7 @@ public class DefaultGroupCaseStudy extends GroupCaseStudy {
         initTimes(numEjecuciones, numParticiones);
 
         MeanIterative tiempoParticion = new MeanIterative();
+        groupFormationTechnique.addListener(new GroupFormationTechniqueProgressListener_default(System.out, 5000));
 
         loadDataset(datasetLoader);
 
@@ -602,23 +632,24 @@ public class DefaultGroupCaseStudy extends GroupCaseStudy {
      * @param loop Vuelta actual
      */
     private void setNextSeedToSeedHolders(int loop) {
+        final long caseStudySeed = getSeedValue();
 
-        long seedValue = getSeedValue() + loop;
+        long thisLoopSeed = caseStudySeed + loop;
 
         if (groupRecommenderSystem instanceof SeedHolder) {
             SeedHolder seedHolder = (SeedHolder) groupRecommenderSystem;
-            seedHolder.setSeedValue(seedValue);
+            seedHolder.setSeedValue(thisLoopSeed);
             Global.showInfoMessage("Reset GRS seed to " + seedHolder.getSeedValue() + "\n");
 
         }
 
-        groupFormationTechnique.setSeedValue(seedValue);
+        groupFormationTechnique.setSeedValue(thisLoopSeed);
         Global.showInfoMessage("Reset groupFormationTechnique seed to " + groupFormationTechnique.getSeedValue() + "\n");
 
-        groupValidationTechnique.setSeedValue(seedValue);
+        groupValidationTechnique.setSeedValue(thisLoopSeed);
         Global.showInfoMessage("Reset groupValidationTechnique seed to " + groupValidationTechnique.getSeedValue() + "\n");
 
-        groupPredictionProtocol.setSeedValue(seedValue);
+        groupPredictionProtocol.setSeedValue(thisLoopSeed);
         Global.showInfoMessage("Reset groupPredictionProtocol seed to " + groupPredictionProtocol.getSeedValue() + "\n");
     }
 }

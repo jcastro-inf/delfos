@@ -24,6 +24,7 @@ public class ExecuteXML extends CaseUseMode {
     public static final String XML_DIRECTORY = "-directory";
     public static final String SEED_PARAMETER = "-seed";
     public static final String NUM_EXEC_PARAMETER = "-num-exec";
+    public static final String FORCE_EXECUTION = "--force-execution";
 
     @Override
     public String getModeParameter() {

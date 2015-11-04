@@ -1,7 +1,7 @@
 package delfos.similaritymeasures;
 
-import java.util.List;
 import delfos.common.exceptions.CouldNotComputeSimilarity;
+import java.util.List;
 
 /**
  * Interfaz que extiende la funcionalidad de las medidas de similitud para que
@@ -37,7 +37,7 @@ public interface WeightedSimilarityMeasure extends BasicSimilarityMeasure {
      * @throws IllegalArgumentException Si los vectores no tienen la misma
      * dimensión o la suma de las ponderaciones es mayor que 1.
      */
-    public float weightedSimilarity(float[] v1, float[] v2, float[] weights) throws CouldNotComputeSimilarity;
+    public float weightedSimilarity(float[] v1, float[] v2, float[] weights);
 
     /**
      * Calcula la medida de similitud entre los vectores v1 y v2 utilizando la
@@ -53,5 +53,5 @@ public interface WeightedSimilarityMeasure extends BasicSimilarityMeasure {
      * @throws IllegalArgumentException Si los vectores no tienen la misma
      * dimensión o la suma de las ponderaciones es mayor que 1.
      */
-    public float weightedSimilarity(List<Float> v1, List<Float> v2, List<Float> weights) throws CouldNotComputeSimilarity;
+    public float weightedSimilarity(List<Float> v1, List<Float> v2, List<Float> weights);
 }
