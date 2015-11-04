@@ -31,7 +31,7 @@ public class GroupMeasureResult {
     public GroupMeasureResult(GroupEvaluationMeasure groupEvaluationMeasure, double value) {
         this.groupEvaluationMeasure = groupEvaluationMeasure;
         element = ParameterOwnerXML.getElement(groupEvaluationMeasure);
-        element.setAttribute(EvaluationMeasure.VALUE, Double.toString(value));
+        element.setAttribute(EvaluationMeasure.VALUE_ATTRIBUTE_NAME, Double.toString(value));
         this.value = value;
         this.detailedResult = null;
     }

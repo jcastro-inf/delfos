@@ -92,10 +92,10 @@ public abstract class GroupEvaluationMeasure extends ParameterOwnerAdapter imple
 
         if (mean.getNumValues() == 0) {
             aggregatedValue = Float.POSITIVE_INFINITY;
-            aggregatedElement.setAttribute(EvaluationMeasure.VALUE, Float.toString(Float.POSITIVE_INFINITY));
+            aggregatedElement.setAttribute(EvaluationMeasure.VALUE_ATTRIBUTE_NAME, Float.toString(Float.POSITIVE_INFINITY));
         } else {
             aggregatedValue = (float) mean.getMean();
-            aggregatedElement.setAttribute(EvaluationMeasure.VALUE, Double.toString(mean.getMean()));
+            aggregatedElement.setAttribute(EvaluationMeasure.VALUE_ATTRIBUTE_NAME, Double.toString(mean.getMean()));
         }
         return new GroupMeasureResult(this, aggregatedValue, aggregatedElement);
     }
