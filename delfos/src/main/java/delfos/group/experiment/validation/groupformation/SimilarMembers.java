@@ -74,10 +74,8 @@ public class SimilarMembers extends GroupFormationTechnique {
      * defecto, el tamaño de los grupos es de cuatro miembros.
      *
      * @param groupSizeValue Tamaño de los grupos generados
-     * @param numCandidates Número de vecinos candidatos que se consideran al
-     * seleccionar el siguiente miembro del grupo aleatoriamente.
      */
-    public SimilarMembers(int groupSizeValue, int numCandidates) {
+    public SimilarMembers(int groupSizeValue) {
         this();
         setParameterValue(GROUP_SIZE_PARAMETER, groupSizeValue);
     }
