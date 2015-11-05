@@ -1,11 +1,10 @@
-package delfos.group.experiment.groupformation;
+package delfos.group.experiment.validation.groupformation;
 
 import delfos.common.Global;
 import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.generated.random.RandomDatasetLoader;
-import delfos.group.experiment.validation.groupformation.FixedGroupSize_OnlyNGroups;
 import delfos.group.groupsofusers.GroupOfUsers;
 import java.util.Collection;
 import org.junit.After;
