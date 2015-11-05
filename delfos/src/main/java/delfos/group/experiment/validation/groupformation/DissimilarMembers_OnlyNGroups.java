@@ -114,16 +114,13 @@ public class DissimilarMembers_OnlyNGroups extends GroupFormationTechnique {
 
             List<Neighbor> usersToAdd = similarityToFirstUser.subList(0, groupSize - 1);
 
-            System.out.print("Group: " + firstMember.getId());
             for (Neighbor newMember : usersToAdd) {
                 usersThisGroup.add(newMember.getIdNeighbor());
                 boolean remove = usersRemainToSelect.remove(newMember.getNeighbor());
-                System.out.print(", " + newMember.getIdNeighbor() + "[" + newMember.getSimilarity() + "]");
                 if (!remove) {
                     throw new IllegalStateException("asdfasdf");
                 }
             }
-            System.out.println("");
 
             groupsGenerated.add(new GroupOfUsers(usersThisGroup));
             numGruposGenerados++;
