@@ -1,7 +1,6 @@
 package delfos.group.casestudy.fromxmlfiles;
 
 import delfos.ERROR_CODES;
-import delfos.common.FileUtilities;
 import delfos.common.Global;
 import delfos.common.exceptions.dataset.CannotLoadContentDataset;
 import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
@@ -76,16 +75,13 @@ public class GroupCaseStudy_SingleTaskExecute implements SingleTaskExecute<Execu
             throw new IllegalStateException(ex);
         }
 
-        File fileToSaveResults = new File(
+        File resultsDirectory = new File(
                 experimentsDirectory.getAbsolutePath() + File.separator
                 + "results" + File.separator
-                + caseName);
+        );
 
-        File excelFile = FileUtilities.changeExtension(fileToSaveResults, "xls");
-        File xmlFile = FileUtilities.changeExtension(fileToSaveResults, "xml");
-
-        GroupCaseStudyXML.saveCaseResults(caseStudyGroupRecommendation, "", xmlFile.getAbsolutePath());
-        GroupCaseStudyExcel.saveCaseResults(caseStudyGroupRecommendation, excelFile);
+        GroupCaseStudyXML.saveCaseResults(caseStudyGroupRecommendation, resultsDirectory);
+        GroupCaseStudyExcel.saveCaseResults(caseStudyGroupRecommendation, resultsDirectory);
 
     }
 

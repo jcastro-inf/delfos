@@ -1,5 +1,6 @@
 package delfos.group.results.groupevaluationmeasures.coveragetestpackage;
 
+import delfos.Constants;
 import delfos.common.DateCollapse;
 import delfos.common.Global;
 import delfos.common.exceptions.dataset.CannotLoadContentDataset;
@@ -50,6 +51,8 @@ public class CheckCoverageTest {
     private static final FilePersistence filePersistence = new FilePersistence("modeloParaEvaluarCoverage_forGroups", "dat");
     private static final int NUM_EJECUCIONES = 1;
     private static final long SEED = 6288;
+
+    private static final File experimentResultsDirectory = new File(Constants.getTempDirectory().getAbsolutePath() + File.separator);
 
     public CheckCoverageTest() {
     }
@@ -102,13 +105,13 @@ public class CheckCoverageTest {
         caseStudy.addExperimentListener(new ExperimentListerner_default(System.out, 10000));
         caseStudy.addExecutionProgressListener(new ExecutionProgressListener_default(System.out, 10000));
 
-        String defaultFileName = GroupCaseStudyXML.getDefaultFileName(caseStudy);
-        String prefix = "CheckCoverageTest_";
+        String caseStudyAlias = "CheckCoverageTest_" + GroupCaseStudyXML.getCaseStudyFileNameTimestamped(caseStudy);
 
+        caseStudy.setAlias(caseStudyAlias);
         caseStudy.setSeedValue(SEED);
         caseStudy.execute();
 
-        GroupCaseStudyXML.saveCaseResults(caseStudy, prefix, defaultFileName);
+        GroupCaseStudyXML.saveCaseResults(caseStudy, experimentResultsDirectory);
         Global.showInfoMessage("================ FIN CON FILTRO=================== \n");
     }
 
@@ -134,13 +137,14 @@ public class CheckCoverageTest {
             Global.showln(proceso + " --> " + percent + "% (" + DateCollapse.collapse(remainingMiliSeconds) + ")");
         });
 
-        String defaultFileName = GroupCaseStudyXML.getDefaultFileName(caseStudy);
-        String prefix = "CheckCoverageTest_";
+        String defaultFileName = GroupCaseStudyXML.getCaseStudyFileNameTimestamped(caseStudy);
+
+        caseStudy.setAlias("CheckCoverageTest_noFilter_" + defaultFileName);
 
         caseStudy.setSeedValue(SEED);
         caseStudy.execute();
 
-        GroupCaseStudyXML.saveCaseResults(caseStudy, prefix, defaultFileName);
+        GroupCaseStudyXML.saveCaseResults(caseStudy, experimentResultsDirectory);
 
         Global.showInfoMessage("================ FIN SIN FILTRO=================== \n");
     }

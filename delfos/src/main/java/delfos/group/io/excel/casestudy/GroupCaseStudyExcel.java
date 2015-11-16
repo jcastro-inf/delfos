@@ -1,5 +1,24 @@
 package delfos.group.io.excel.casestudy;
 
+import delfos.ERROR_CODES;
+import delfos.common.FileUtilities;
+import delfos.common.Global;
+import delfos.common.decimalnumbers.NumberRounder;
+import delfos.common.parameters.Parameter;
+import delfos.common.parameters.ParameterOwner;
+import delfos.dataset.basic.loader.types.DatasetLoader;
+import delfos.dataset.basic.rating.Rating;
+import delfos.dataset.basic.rating.RelevanceCriteria;
+import delfos.group.casestudy.GroupCaseStudy;
+import delfos.group.experiment.validation.groupformation.GroupFormationTechnique;
+import delfos.group.experiment.validation.predictionvalidation.GroupPredictionProtocol;
+import delfos.group.experiment.validation.validationtechniques.GroupValidationTechnique;
+import delfos.group.grs.GroupRecommenderSystem;
+import delfos.group.io.xml.casestudy.GroupCaseStudyXML;
+import delfos.group.results.groupevaluationmeasures.GroupEvaluationMeasure;
+import delfos.group.results.groupevaluationmeasures.GroupMeasureResult;
+import delfos.group.results.groupevaluationmeasures.precisionrecall.PRSpaceGroups;
+import delfos.io.excel.casestudy.CaseStudyExcel;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -27,29 +46,12 @@ import jxl.write.WritableSheet;
 import jxl.write.WritableWorkbook;
 import jxl.write.WriteException;
 import jxl.write.biff.RowsExceededException;
-import delfos.ERROR_CODES;
-import delfos.common.FileUtilities;
-import delfos.common.decimalnumbers.NumberRounder;
-import delfos.common.parameters.Parameter;
-import delfos.common.parameters.ParameterOwner;
-import delfos.dataset.basic.rating.Rating;
-import delfos.dataset.basic.rating.RelevanceCriteria;
-import delfos.dataset.basic.loader.types.DatasetLoader;
-import delfos.group.casestudy.GroupCaseStudy;
-import delfos.group.grs.GroupRecommenderSystem;
-import delfos.group.results.groupevaluationmeasures.GroupEvaluationMeasure;
-import delfos.group.results.groupevaluationmeasures.GroupMeasureResult;
-import delfos.group.results.groupevaluationmeasures.precisionrecall.PRSpaceGroups;
-import delfos.group.experiment.validation.validationtechniques.GroupValidationTechnique;
-import delfos.group.experiment.validation.groupformation.GroupFormationTechnique;
-import delfos.group.experiment.validation.predictionvalidation.GroupPredictionProtocol;
-import delfos.io.excel.casestudy.CaseStudyExcel;
 
 /**
  * Clase encargada de hacer la entrada/salida de los resultados de la ejeución
  * de un caso de uso concreto.
  *
-* @author Jorge Castro Gallardo
+ * @author Jorge Castro Gallardo
  *
  * @version 1.0 Unknown date
  * @version 1.1 (3-Mayo-2013)
@@ -140,34 +142,38 @@ public class GroupCaseStudyExcel {
 
                 Sheet aggregateResults = workbook.getSheet(AGGREGATE_RESULTS);
 
-                for (int columnIndex = 0; columnIndex < aggregateResults.getColumns(); columnIndex++) {
-                    String measureName = aggregateResults.getCell(columnIndex, 0).getContents();
+                if (aggregateResults != null) {
 
-                    if (!indexColumn.containsKey(measureName)) {
-                        int index = indexColumn.size();
-                        indexColumn.put(measureName, index);
+                    for (int columnIndex = 0; columnIndex < aggregateResults.getColumns(); columnIndex++) {
+                        String measureName = aggregateResults.getCell(columnIndex, 0).getContents();
+
+                        if (!indexColumn.containsKey(measureName)) {
+                            int index = indexColumn.size();
+                            indexColumn.put(measureName, index);
+                        }
+                        CellType type = aggregateResults.getCell(columnIndex, 1).getType();
+                        Cell cell = aggregateResults.getCell(columnIndex, 1);
+
+                        String measureValueString = cell.getContents();
+                        if (type == CellType.NUMBER) {
+                            NumberCell numberRecord = (NumberCell) aggregateResults.getCell(columnIndex, 1);
+
+                            Double measureValue = numberRecord.getValue();
+                            valoresDeMetricas.put(measureName, measureValue);
+                        } else {
+                            throw new IllegalStateException("Cannot recognize cell type");
+                        }
                     }
-                    CellType type = aggregateResults.getCell(columnIndex, 1).getType();
-                    Cell cell = aggregateResults.getCell(columnIndex, 1);
 
-                    String measureValueString = cell.getContents();
-                    if (type == CellType.NUMBER) {
-                        NumberCell numberRecord = (NumberCell) aggregateResults.getCell(columnIndex, 1);
+                    metricValues_byCase.put(inputFile.getName(), valoresDeMetricas);
 
-                        Double measureValue = numberRecord.getValue();
-                        valoresDeMetricas.put(measureName, measureValue);
-                    } else {
-                        throw new IllegalStateException("Cannot recognize cell type");
-                    }
+                    otherValues_byCase.put(inputFile.getName(), new TreeMap<>());
+
+                    String datasetLoaderName = getConfiguredDatasetLoaderName(workbook.getSheet(CASE_DEFINITION_SHEET_NAME));
+                    otherValues_byCase.get(inputFile.getName()).put(DATASET_LOADER_COLUMN_NAME, datasetLoaderName);
+                } else {
+                    Global.showWarning("The file '" + inputFile.getAbsolutePath() + "' does not have a proper caseStudyResult");
                 }
-
-                metricValues_byCase.put(inputFile.getName(), valoresDeMetricas);
-
-                otherValues_byCase.put(inputFile.getName(), new TreeMap<>());
-
-                String datasetLoaderName = getConfiguredDatasetLoaderName(workbook.getSheet(CASE_DEFINITION_SHEET_NAME));
-                otherValues_byCase.get(inputFile.getName()).put(DATASET_LOADER_COLUMN_NAME, datasetLoaderName);
-
             } catch (IOException | BiffException ex) {
                 ERROR_CODES.CANNOT_READ_CASE_STUDY_EXCEL.exit(ex);
             }
@@ -261,7 +267,22 @@ public class GroupCaseStudyExcel {
     private GroupCaseStudyExcel() {
     }
 
-    public synchronized static void saveCaseResults(GroupCaseStudy caseStudyGroup, File file) {
+    public synchronized static void saveCaseResults(GroupCaseStudy caseStudyGroup, File directory) {
+        if (!directory.isDirectory()) {
+            throw new IllegalStateException("GroupCaseStudy save to spreadsheet: Not a directory (" + directory.toString() + ")");
+        }
+
+        String caseStudyFileName = GroupCaseStudyXML.getCaseStudyFileName(caseStudyGroup);
+
+        File file = new File(directory.getPath() + File.separator + caseStudyFileName + ".xls");
+        caseStudyToSpreadsheetFile_results(caseStudyGroup, file);
+    }
+
+    public synchronized static void caseStudyToSpreadsheetFile_results(GroupCaseStudy caseStudyGroup, File file) {
+
+        if (file.isDirectory()) {
+            throw new IllegalStateException("GroupCaseStudy save to spreadsheet: Not a file (" + file.toString() + ")");
+        }
 
         if (!caseStudyGroup.isFinished()) {
             throw new UnsupportedOperationException("No se ha ejecutado el caso de uso todavía");

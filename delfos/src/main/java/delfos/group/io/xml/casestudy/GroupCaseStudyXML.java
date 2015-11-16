@@ -123,7 +123,7 @@ public class GroupCaseStudyXML {
         return mediaMedidas;
     }
 
-    public synchronized static void caseStudyToXMLFile(GroupCaseStudy caseStudyGroup, String descriptiveName, File f) {
+    public synchronized static void caseStudyToXMLFile_fullResults(GroupCaseStudy caseStudyGroup, File file) {
         if (!caseStudyGroup.isFinished()) {
             throw new UnsupportedOperationException("No se ha ejecutado el caso de uso todavía");
         }
@@ -149,15 +149,15 @@ public class GroupCaseStudyXML {
 
         XMLOutputter outputter = new XMLOutputter(Constants.getXMLFormat());
 
-        FileUtilities.createDirectoriesForFile(f);
-        try (FileWriter fileWriter = new FileWriter(f)) {
+        FileUtilities.createDirectoriesForFile(file);
+        try (FileWriter fileWriter = new FileWriter(file)) {
             outputter.output(doc, fileWriter);
         } catch (IOException ex) {
             ERROR_CODES.CANNOT_WRITE_RESULTS_FILE.exit(ex);
         }
     }
 
-    public static String getDefaultFileName(GroupCaseStudy caseStudyGroup) {
+    public static String getCaseStudyFileNameTimestamped(GroupCaseStudy caseStudyGroup) {
         Date date = new Date();
         String dateBasedName = "aux";
         try {
@@ -168,33 +168,53 @@ public class GroupCaseStudyXML {
             Global.showWarning("Cannot get timestamp" + ex.getMessage() + "\n");
         }
 
-        dateBasedName = dateBasedName + " seed=" + caseStudyGroup.getSeedValue() + "." + CaseStudyXML.RESULT_EXTENSION;
+        dateBasedName = dateBasedName + "_seed=" + caseStudyGroup.getSeedValue() + "." + CaseStudyXML.RESULT_EXTENSION;
 
         File f = new File(Constants.getTempDirectory().getAbsolutePath() + File.separator + dateBasedName);
         return f.getAbsolutePath();
     }
 
-    public static void saveCaseDescription(GroupCaseStudy caseStudyGroup, String file) {
-        GroupCaseStudyXML.caseStudyToXMLFile_onlyDescription(caseStudyGroup, new File(file));
+    public static String getCaseStudyFileName(GroupCaseStudy caseStudyGroup) {
+        return caseStudyGroup.getAlias() + "_seed=" + caseStudyGroup.getSeedValue() + "_numExec=" + caseStudyGroup.getNumExecutions();
     }
 
-    public static void saveCaseDescription(GroupCaseStudy caseStudyGroup, File file) {
+    /**
+     * Saves the xml with the description of the case study in de file
+     * specified.
+     *
+     * @param caseStudyGroup Group case study whose description is saved.
+     * @param directory File in which the description is saved.
+     */
+    public static void saveCaseDescription(GroupCaseStudy caseStudyGroup, File directory) {
+        File file = new File(directory.getPath() + File.separator + caseStudyGroup.getAlias() + ".xml");
         GroupCaseStudyXML.caseStudyToXMLFile_onlyDescription(caseStudyGroup, file);
     }
 
-    public static void saveCaseResults(GroupCaseStudy caseStudyGroup, String descriptivePrefix, String file) {
-        File fileFile = FileUtilities.addPrefix(new File(file), descriptivePrefix);
-        if (Constants.isPrintFullXML()) {
+    public static void saveCaseResults(GroupCaseStudy caseStudyGroup, File directory) {
+        if (!directory.isDirectory()) {
+            throw new IllegalStateException("GroupCaseStudy save to XML: Not a directory (" + directory.toString() + ")");
+        }
+        FileUtilities.createDirectoryPathIfNotExists(directory);
 
-            File fullFile = FileUtilities.addSufix(fileFile, FULL_RESULT_SUFFIX);
-            GroupCaseStudyXML.caseStudyToXMLFile(caseStudyGroup, "", fullFile);
+        String fileName = getCaseStudyFileName(caseStudyGroup);
+
+        if (Constants.isPrintFullXML()) {
+            File caseStudyFullXML = new File(directory.getPath() + File.separator + fileName + FULL_RESULT_SUFFIX + ".xml");
+            GroupCaseStudyXML.caseStudyToXMLFile_fullResults(caseStudyGroup, caseStudyFullXML);
         }
 
-        File aggrFile = FileUtilities.addSufix(fileFile, AGGR_RESULT_SUFFIX);
-        GroupCaseStudyXML.caseStudyToXMLFile_onlyAggregate(caseStudyGroup, descriptivePrefix, aggrFile);
+        File caseStudyAggrXML = new File(directory.getPath() + File.separator + fileName + AGGR_RESULT_SUFFIX + ".xml");
+        GroupCaseStudyXML.caseStudyToXMLFile_aggregateResults(caseStudyGroup, caseStudyAggrXML);
     }
 
-    private static void caseStudyToXMLFile_onlyDescription(GroupCaseStudy caseStudyGroup, File file) {
+    /**
+     * Saves the xml with the description of the case study in de file
+     * specified.
+     *
+     * @param caseStudyGroup Group case study whose description is saved.
+     * @param file File in which the description is saved.
+     */
+    public static void caseStudyToXMLFile_onlyDescription(GroupCaseStudy caseStudyGroup, File file) {
 
         if (caseStudyGroup.isFinished()) {
             throw new IllegalArgumentException("Ya se ha ejecutado el caso de estudio!");
@@ -229,7 +249,7 @@ public class GroupCaseStudyXML {
         }
     }
 
-    private static void caseStudyToXMLFile_onlyAggregate(GroupCaseStudy caseStudyGroup, String descriptivePrefix, File file) {
+    private static void caseStudyToXMLFile_aggregateResults(GroupCaseStudy caseStudyGroup, File file) {
         if (!caseStudyGroup.isFinished()) {
             throw new UnsupportedOperationException("No se ha ejecutado el caso de uso todavía");
         }
@@ -298,10 +318,10 @@ public class GroupCaseStudyXML {
         return new GroupCaseStudyConfiguration(groupRecommenderSystem, datasetLoader, groupFormationTechnique, groupValidationTechnique, groupPredictionProtocol, relevanceCriteria);
     }
 
-    public static int extractResultNumExec(File aggregateResultXML) throws JDOMException, IOException {
+    public static int extractResultNumExec(File groupCaseStudyXML) throws JDOMException, IOException {
         SAXBuilder builder = new SAXBuilder();
 
-        Document doc = builder.build(aggregateResultXML);
+        Document doc = builder.build(groupCaseStudyXML);
         Element caseStudy = doc.getRootElement();
         if (!caseStudy.getName().equals(CASE_ROOT_ELEMENT_NAME)) {
             throw new IllegalArgumentException("The XML does not contains a Case Study.");

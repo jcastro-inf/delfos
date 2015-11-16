@@ -89,7 +89,7 @@ public class ExperimentsISKE2014 {
                     groupCaseStudy.setSeedValue(seed);
                     String fileName = groupRecommenderSystem.getAlias() + "_groupSize-" + groupSize + ".xml";
                     File file = new File(directory + File.separator + fileName);
-                    GroupCaseStudyXML.saveCaseDescription(groupCaseStudy, file.getAbsolutePath());
+                    GroupCaseStudyXML.caseStudyToXMLFile_onlyDescription(groupCaseStudy, file);
                     i++;
                 }
             }
@@ -105,7 +105,7 @@ public class ExperimentsISKE2014 {
                     new RelevanceCriteria(), 1);
 
             File file = new File(directory + File.separator + "dataset" + File.separator + "ml-100k.xml");
-            GroupCaseStudyXML.saveCaseDescription(groupCaseStudy, file.getAbsolutePath());
+            GroupCaseStudyXML.caseStudyToXMLFile_onlyDescription(groupCaseStudy, file);
         }
 
     }

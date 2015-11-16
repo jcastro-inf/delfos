@@ -41,6 +41,8 @@ import java.util.logging.Logger;
  */
 public class FilterCaseStudy implements Runnable {
 
+    private static final File resultsDirectory = new File(Constants.getTempDirectory().getPath() + File.separator);
+
     private static DatasetLoader[] datasets;
     /**
      * ============== CONSTANTS ====================
@@ -100,10 +102,15 @@ public class FilterCaseStudy implements Runnable {
                 caseStudy.addExperimentListener(new ExperimentListerner_default(System.out, 10000));
 
                 caseStudy.setSeedValue(SEED);
-                String defaultFileName = GroupCaseStudyXML.getDefaultFileName(caseStudy);
-                GroupCaseStudyXML.saveCaseDescription(caseStudy, defaultFileName + ".tmp");
+
+                String caseStudyAlias = GroupCaseStudyXML.getCaseStudyFileNameTimestamped(caseStudy);
+                String caseStudyAliasTemp = caseStudyAlias + caseStudy.getGroupRecommenderSystem().getAlias() + ".tmp";
+                caseStudy.setAlias(caseStudyAliasTemp);
+                GroupCaseStudyXML.saveCaseDescription(caseStudy, resultsDirectory);
+
+                caseStudy.setAlias(caseStudyAlias);
                 caseStudy.execute();
-                GroupCaseStudyXML.saveCaseResults(caseStudy, caseStudy.getGroupRecommenderSystem().getAlias(), defaultFileName);
+                GroupCaseStudyXML.saveCaseResults(caseStudy, resultsDirectory);
 
                 Global.showInfoMessage("================ FIN Sistema " + i + " de " + grsList.size() + "=================== \n");
                 i++;
