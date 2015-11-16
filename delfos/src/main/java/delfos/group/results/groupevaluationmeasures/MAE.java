@@ -43,6 +43,8 @@ public class MAE extends GroupEvaluationMeasure {
         elementMae = ParameterOwnerXML.getElement(this);
 
         MeanIterative maeGeneral = new MeanIterative();
+        TreeMap<GroupOfUsers, MeanIterative> maeGroups = new TreeMap<>();
+        TreeMap<Integer, MeanIterative> maeAllMembers = new TreeMap<>();
 
         for (Entry<GroupOfUsers, List<Recommendation>> entry : recommendationResults) {
             GroupOfUsers groupOfUsers = entry.getKey();
@@ -78,6 +80,9 @@ public class MAE extends GroupEvaluationMeasure {
                 }
             }
 
+            maeGroups.put(groupOfUsers, maeGroup);
+            maeAllMembers.putAll(maeMembers);
+
             Element groupElement = getGroupElement(groupOfUsers, maeGroup, maeMembers);
             elementMae.addContent(groupElement);
 
@@ -86,6 +91,9 @@ public class MAE extends GroupEvaluationMeasure {
         elementMae.setAttribute(EvaluationMeasure.VALUE_ATTRIBUTE_NAME, Double.toString(maeGeneral.getMean()));
         elementMae.setAttribute("numPredicted",
                 Long.toString(maeGeneral.getNumValues()));
+
+        elementMae.addContent(getRawGroupMAEsElement(maeGroups));
+        elementMae.addContent(getRawAllMembersMAEsElement(maeAllMembers));
 
         if (maeGeneral.isEmpty()) {
             return new GroupMeasureResult(this, Double.NaN, elementMae);
@@ -127,5 +135,43 @@ public class MAE extends GroupEvaluationMeasure {
         }
 
         return groupElement;
+    }
+
+    private Element getRawGroupMAEsElement(TreeMap<GroupOfUsers, MeanIterative> maeGroups) {
+        Element element = new Element("MAE_group_raw");
+
+        StringBuilder str = new StringBuilder();
+
+        str.append("\n");
+        str.append("group\tmae\tnumValues\n");
+
+        for (GroupOfUsers groupOfUsers : maeGroups.keySet()) {
+            str.append(groupOfUsers.getIdMembers().toString()).append("\t");
+            str.append(maeGroups.get(groupOfUsers).getMean()).append("\t");
+            str.append(maeGroups.get(groupOfUsers).getNumValues()).append("\n");
+        }
+
+        element.addContent(str.toString());
+
+        return element;
+    }
+
+    private Element getRawAllMembersMAEsElement(TreeMap<Integer, MeanIterative> maeAllMembers) {
+        Element element = new Element("MAE_allMembers_raw");
+
+        StringBuilder str = new StringBuilder();
+
+        str.append("\n");
+        str.append("idMember\tmae\tnumValues\n");
+
+        for (Integer idMember : maeAllMembers.keySet()) {
+            str.append(idMember).append("\t");
+            str.append(maeAllMembers.get(idMember).getMean()).append("\t");
+            str.append(maeAllMembers.get(idMember).getNumValues()).append("\n");
+        }
+
+        element.addContent(str.toString());
+
+        return element;
     }
 }
