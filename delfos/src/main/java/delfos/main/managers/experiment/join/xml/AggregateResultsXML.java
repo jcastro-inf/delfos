@@ -55,11 +55,14 @@ public class AggregateResultsXML {
         return returnFiles;
     }
 
-    public void join(Collection<File> files) {
+    public void joinAndWrite(Collection<File> files, File outputFile) {
+        Map<String, Map<String, Object>> values = join(files);
+        writeFinalExcel(values, outputFile);
+    }
+
+    public Map<String, Map<String, Object>> join(Collection<File> files) {
         Map<String, Map<String, Object>> values = new TreeMap<>();
-
         int i = 1;
-
         for (File file : files) {
             try {
                 System.out.println("(" + (i++) + " of " + files.size() + "): " + "Reading file " + file.getName());
@@ -79,7 +82,7 @@ public class AggregateResultsXML {
                 Global.showError(ex);
             }
         }
-        writeFinalExcel(values);
+        return values;
     }
 
     public Map<String, Object> extractMapFromFile(File inputFile) throws JDOMException, IOException {
@@ -251,9 +254,9 @@ public class AggregateResultsXML {
         return ret;
     }
 
-    private void writeFinalExcel(Map<String, Map<String, Object>> values) {
+    private void writeFinalExcel(Map<String, Map<String, Object>> values, File outputFile) {
 
-        AggregateResultsMatrixExcelWriter.writeExcelFromMatrix(new File("AggregateExperimentResults.xls"), values);
+        AggregateResultsMatrixExcelWriter.writeExcelFromMatrix(values, outputFile);
     }
 
 }

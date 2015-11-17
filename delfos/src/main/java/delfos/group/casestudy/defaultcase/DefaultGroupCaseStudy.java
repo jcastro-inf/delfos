@@ -575,7 +575,7 @@ public class DefaultGroupCaseStudy extends GroupCaseStudy {
     }
 
     @Override
-    public void setSeedValue(long seedValue) {
+    public final void setSeedValue(long seedValue) {
         setParameterValue(SEED, seedValue);
 
         if (datasetLoader instanceof SeedHolder) {

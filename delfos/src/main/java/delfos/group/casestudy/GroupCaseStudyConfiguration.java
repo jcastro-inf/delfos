@@ -1,18 +1,18 @@
 package delfos.group.casestudy;
 
+import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RelevanceCriteria;
-import delfos.dataset.basic.loader.types.DatasetLoader;
-import delfos.group.grs.GroupRecommenderSystem;
 import delfos.group.experiment.validation.groupformation.GroupFormationTechnique;
-import delfos.group.experiment.validation.validationtechniques.GroupValidationTechnique;
 import delfos.group.experiment.validation.predictionvalidation.GroupPredictionProtocol;
+import delfos.group.experiment.validation.validationtechniques.GroupValidationTechnique;
+import delfos.group.grs.GroupRecommenderSystem;
 
 /**
  * Almacena los valores de un caso de estudio de sistemas de recomendación para
  * grupos de usuarios.
  *
-* @author Jorge Castro Gallardo
+ * @author Jorge Castro Gallardo
  *
  * @version 9-Enero-2014
  */
@@ -24,6 +24,7 @@ public class GroupCaseStudyConfiguration {
     private final GroupValidationTechnique groupValidationTechnique;
     private final GroupPredictionProtocol groupPredictionProtocol;
     private final RelevanceCriteria relevanceCriteria;
+    private final String caseStudyAlias;
 
     public GroupCaseStudyConfiguration(
             GroupRecommenderSystem<Object, Object> groupRecommenderSystem,
@@ -31,7 +32,8 @@ public class GroupCaseStudyConfiguration {
             GroupFormationTechnique groupFormationTechnique,
             GroupValidationTechnique groupValidationTechnique,
             GroupPredictionProtocol groupPredictionProtocol,
-            RelevanceCriteria relevanceCriteria) {
+            RelevanceCriteria relevanceCriteria,
+            String caseStudyAlias) {
 
         this.groupRecommenderSystem = groupRecommenderSystem;
         this.groupFormationTechnique = groupFormationTechnique;
@@ -40,6 +42,7 @@ public class GroupCaseStudyConfiguration {
         this.datasetLoader = datasetLoader;
         this.relevanceCriteria = relevanceCriteria;
 
+        this.caseStudyAlias = caseStudyAlias;
     }
 
     public GroupRecommenderSystem<Object, Object> getGroupRecommenderSystem() {
@@ -64,6 +67,10 @@ public class GroupCaseStudyConfiguration {
 
     public RelevanceCriteria getRelevanceCriteria() {
         return relevanceCriteria;
+    }
+
+    public String getCaseStudyAlias() {
+        return caseStudyAlias;
     }
 
 }

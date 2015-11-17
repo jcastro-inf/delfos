@@ -11,7 +11,7 @@ import java.util.List;
 
 /**
  *
- * Case use to join many excel of many experiment in a single one.
+ * Case use to joinAndWrite many excel of many experiment in a single one.
  *
  * @version 21-oct-2014
  * @author Jorge Castro Gallardo
@@ -20,6 +20,8 @@ public class XMLJoin extends CaseUseMode {
 
     public static final String MODE_PARAMETER = "--xml-join";
     public static final String RESULTS_PATH_PARAMETER = "-results";
+
+    public static final String OUTPUT_FILE_PARAMETER = "-o";
 
     @Override
     public String getModeParameter() {
@@ -42,8 +44,25 @@ public class XMLJoin extends CaseUseMode {
     public void manageCaseUse(ConsoleParameters consoleParameters) {
         try {
             List<String> resultsPaths = consoleParameters.getValues(RESULTS_PATH_PARAMETER);
+
+            File outputFile;
+            if (consoleParameters.isParameterDefined(OUTPUT_FILE_PARAMETER)) {
+                outputFile = new File(consoleParameters.getValue(OUTPUT_FILE_PARAMETER));
+            } else {
+                String firstPath = resultsPaths.get(0);
+
+                if (firstPath.endsWith(File.separator)) {
+                    firstPath = firstPath.substring(0, firstPath.length() - 1);
+                }
+
+                String firstPathCleaned = firstPath
+                        .replace(File.separatorChar, '.');
+
+                outputFile = new File(firstPathCleaned + ".xls");
+            }
+
             consoleParameters.printUnusedParameters(System.err);
-            manageCaseUse(resultsPaths);
+            manageCaseUse(resultsPaths, outputFile);
         } catch (UndefinedParameterException ex) {
             ERROR_CODES.COMMAND_LINE_PARAMETER_IS_NOT_DEFINED.exit(ex);
 
@@ -51,7 +70,7 @@ public class XMLJoin extends CaseUseMode {
         }
     }
 
-    public static void manageCaseUse(List<String> resultsPaths) {
+    public static void manageCaseUse(List<String> resultsPaths, File outputFile) {
 
         AggregateResultsXML aggregateResultsXML = new AggregateResultsXML();
 
@@ -67,7 +86,7 @@ public class XMLJoin extends CaseUseMode {
 
         System.out.println("Detected " + relevantFiles.size() + " results files");
 
-        aggregateResultsXML.join(relevantFiles);
+        aggregateResultsXML.joinAndWrite(relevantFiles, outputFile);
 
         System.out.println("Finished parsing " + relevantFiles.size() + " results files.");
     }

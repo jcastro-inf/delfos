@@ -114,7 +114,8 @@ public class HesitantGRS_3_CaseStudy_FixedGroupSize extends DelfosTest {
                 );
 
                 groupCaseStudy.setAlias(
-                        "methodHash=" + groupCaseStudy.hashCodeWithoutGroupRecommenderSystem()
+                        "_dataValidation=" + groupCaseStudy.hashCodeWithoutGroupRecommenderSystem()
+                        + "_technique=" + groupCaseStudy.hashCodeOfTheRecommenderSystem()
                         + "_" + groupRecommenderSystem.getAlias()
                         + "_allHash=" + groupCaseStudy.hashCode()
                 );

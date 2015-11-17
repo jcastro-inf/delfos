@@ -211,4 +211,8 @@ public abstract class GroupCaseStudy extends ExperimentAdapter {
         hash = 97 * hash + Objects.hashCode(this.getGroupValidationTechnique());
         return hash;
     }
+
+    public int hashCodeOfTheRecommenderSystem() {
+        return this.getGroupRecommenderSystem().hashCode();
+    }
 }

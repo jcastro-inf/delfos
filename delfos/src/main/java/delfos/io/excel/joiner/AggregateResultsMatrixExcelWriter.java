@@ -1,6 +1,7 @@
 package delfos.io.excel.joiner;
 
 import delfos.ERROR_CODES;
+import delfos.common.Global;
 import delfos.common.decimalnumbers.NumberRounder;
 import delfos.io.excel.casestudy.CaseStudyExcel;
 import java.io.File;
@@ -36,7 +37,12 @@ public class AggregateResultsMatrixExcelWriter {
     private static WritableCellFormat integerFormat;
     private static final int titleCellWidth = 3 - 1;
 
-    public static void writeExcelFromMatrix(File outputFile, Map<String, Map<String, Object>> valuesByExperimentAndColumnName) {
+    public static void writeExcelFromMatrix(Map<String, Map<String, Object>> valuesByExperimentAndColumnName, File outputFile) {
+
+        if (!outputFile.getName().endsWith(".xls")) {
+            outputFile = new File(outputFile.getPath() + ".xls");
+            Global.showWarning("Spreadsheet file renamed to include XLS extension [" + outputFile.getPath() + "]");
+        }
 
         Map<String, Integer> indexColumn = new TreeMap<>();
         indexColumn.put(CaseStudyExcel.EXPERIMENT_NAME_COLUMN_NAME, 0);
@@ -108,6 +114,8 @@ public class AggregateResultsMatrixExcelWriter {
             }
 
             autoSizeColumns(allExperiments);
+
+            Global.showMessageTimestamped("Results saved in " + outputFile.getAbsolutePath());
             workbook.write();
             workbook.close();
 

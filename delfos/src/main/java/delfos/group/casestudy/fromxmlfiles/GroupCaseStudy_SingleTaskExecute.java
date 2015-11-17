@@ -62,6 +62,8 @@ public class GroupCaseStudy_SingleTaskExecute implements SingleTaskExecute<Execu
                 relevanceCriteria,
                 numExecutions);
 
+        caseStudyGroupRecommendation.setAlias("[" + datasetLoader.getAlias() + "]" + caseStudyConfiguration.getCaseStudyAlias());
+
         String threadName = Thread.currentThread().getName();
         Thread.currentThread().setName(threadName + "_" + caseStudyGroupRecommendation.getAlias());
 

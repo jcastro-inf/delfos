@@ -4,9 +4,11 @@ import delfos.Constants;
 import delfos.ERROR_CODES;
 import delfos.common.FileUtilities;
 import delfos.common.Global;
+import delfos.common.parameters.ParameterOwner;
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RelevanceCriteria;
+import delfos.experiment.SeedHolder;
 import delfos.group.casestudy.GroupCaseStudy;
 import delfos.group.casestudy.GroupCaseStudyConfiguration;
 import delfos.group.experiment.validation.groupformation.GroupFormationTechnique;
@@ -49,8 +51,9 @@ public class GroupCaseStudyXML {
     private static int meanBuildTime;
     private static int meanRecommendationTime;
     public static String RESULT_EXTENSION = "xml";
-    public static final String HASH_ATTRIBUTE_NAME = "hashAll";
-    public static final String HASH_WITHOUT_GRS_ATTRIBUTE_NAME = "hashConfiguration";
+    public static final String HASH_ATTRIBUTE_NAME = "hash";
+    public static final String HASH_DATA_VALIDATION_ATTRIBUTE_NAME = "hash_DataValidation";
+    public static final String HASH_TECHNIQUE_ATTRIBUTE_NAME = "hash_Technique";
     public static final String NUM_EXEC_ATTRIBUTE_NAME = "numExec";
     public static final String FULL_RESULT_SUFFIX = "_FULL";
     public static final String AGGR_RESULT_SUFFIX = "_AGGR";
@@ -131,8 +134,9 @@ public class GroupCaseStudyXML {
         Document doc = new Document();
         Element casoDeUso = new Element("Case");
 
-        casoDeUso.setAttribute("seed", Long.toString(caseStudyGroup.getSeedValue()));
-        casoDeUso.setAttribute("numExec", Integer.toString(caseStudyGroup.getNumExecutions()));
+        casoDeUso.setAttribute(SeedHolder.SEED.getName(), Long.toString(caseStudyGroup.getSeedValue()));
+        casoDeUso.setAttribute(NUM_EXEC_ATTRIBUTE_NAME, Integer.toString(caseStudyGroup.getNumExecutions()));
+        casoDeUso.setAttribute(ParameterOwner.ALIAS.getName(), caseStudyGroup.getAlias());
 
         casoDeUso.addContent(GroupRecommenderSystemXML.getElement(caseStudyGroup.getGroupRecommenderSystem()));
         casoDeUso.addContent(DatasetLoaderXML.getElement(caseStudyGroup.getDatasetLoader()));
@@ -223,11 +227,12 @@ public class GroupCaseStudyXML {
         Document doc = new Document();
         Element casoDeUso = new Element(CASE_ROOT_ELEMENT_NAME);
 
-        casoDeUso.setAttribute("seed", Long.toString(caseStudyGroup.getSeedValue()));
+        casoDeUso.setAttribute(SeedHolder.SEED.getName(), Long.toString(caseStudyGroup.getSeedValue()));
         casoDeUso.setAttribute(NUM_EXEC_ATTRIBUTE_NAME, Integer.toString(caseStudyGroup.getNumExecutions()));
+        casoDeUso.setAttribute(ParameterOwner.ALIAS.getName(), caseStudyGroup.getAlias());
 
         casoDeUso.setAttribute(HASH_ATTRIBUTE_NAME, Integer.toString(caseStudyGroup.hashCode()));
-        casoDeUso.setAttribute(HASH_WITHOUT_GRS_ATTRIBUTE_NAME, Integer.toString(caseStudyGroup.hashCode()));
+        casoDeUso.setAttribute(HASH_DATA_VALIDATION_ATTRIBUTE_NAME, Integer.toString(caseStudyGroup.hashCode()));
 
         casoDeUso.addContent(GroupRecommenderSystemXML.getElement(caseStudyGroup.getGroupRecommenderSystem()));
         casoDeUso.addContent(DatasetLoaderXML.getElement(caseStudyGroup.getDatasetLoader()));
@@ -257,12 +262,13 @@ public class GroupCaseStudyXML {
         Document doc = new Document();
         Element casoDeUso = new Element(CASE_ROOT_ELEMENT_NAME);
 
-        casoDeUso.setAttribute("seed", Long.toString(caseStudyGroup.getSeedValue()));
-
+        casoDeUso.setAttribute(SeedHolder.SEED.getName(), Long.toString(caseStudyGroup.getSeedValue()));
         casoDeUso.setAttribute(NUM_EXEC_ATTRIBUTE_NAME, Integer.toString(caseStudyGroup.getNumExecutions()));
+        casoDeUso.setAttribute(ParameterOwner.ALIAS.getName(), caseStudyGroup.getAlias());
 
         casoDeUso.setAttribute(HASH_ATTRIBUTE_NAME, Integer.toString(caseStudyGroup.hashCode()));
-        casoDeUso.setAttribute(HASH_WITHOUT_GRS_ATTRIBUTE_NAME, Integer.toString(caseStudyGroup.hashCodeWithoutGroupRecommenderSystem()));
+        casoDeUso.setAttribute(HASH_DATA_VALIDATION_ATTRIBUTE_NAME, Integer.toString(caseStudyGroup.hashCodeWithoutGroupRecommenderSystem()));
+        casoDeUso.setAttribute(HASH_TECHNIQUE_ATTRIBUTE_NAME, Integer.toString(caseStudyGroup.hashCodeOfTheRecommenderSystem()));
 
         casoDeUso.addContent(GroupRecommenderSystemXML.getElement(caseStudyGroup.getGroupRecommenderSystem()));
         casoDeUso.addContent(DatasetLoaderXML.getElement(caseStudyGroup.getDatasetLoader()));
@@ -315,7 +321,8 @@ public class GroupCaseStudyXML {
 
         DatasetLoader<? extends Rating> datasetLoader = DatasetLoaderXML.getDatasetLoader(caseStudy.getChild(DatasetLoaderXML.ELEMENT_NAME));
 
-        return new GroupCaseStudyConfiguration(groupRecommenderSystem, datasetLoader, groupFormationTechnique, groupValidationTechnique, groupPredictionProtocol, relevanceCriteria);
+        String caseStudyAlias = caseStudy.getAttributeValue(ParameterOwner.ALIAS.getName());
+        return new GroupCaseStudyConfiguration(groupRecommenderSystem, datasetLoader, groupFormationTechnique, groupValidationTechnique, groupPredictionProtocol, relevanceCriteria, caseStudyAlias);
     }
 
     public static int extractResultNumExec(File groupCaseStudyXML) throws JDOMException, IOException {

@@ -109,7 +109,8 @@ public class HesitantGRS_3_CaseStudy_dissimilarMembersOneGroup extends DelfosTes
                 );
 
                 groupCaseStudy.setAlias(
-                        "_methodHash=" + groupCaseStudy.hashCodeWithoutGroupRecommenderSystem()
+                        "_dataValidation=" + groupCaseStudy.hashCodeWithoutGroupRecommenderSystem()
+                        + "_technique=" + groupCaseStudy.hashCodeOfTheRecommenderSystem()
                         + "_" + groupRecommenderSystem.getAlias()
                         + "_allHash=" + groupCaseStudy.hashCode()
                 );
