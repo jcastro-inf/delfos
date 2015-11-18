@@ -7,7 +7,7 @@ import delfos.dataset.basic.rating.RatingsDataset;
 import delfos.dataset.basic.rating.RelevanceCriteria;
 import delfos.group.groupsofusers.GroupOfUsers;
 import delfos.group.results.groupevaluationmeasures.GroupEvaluationMeasure;
-import delfos.group.results.groupevaluationmeasures.GroupMeasureResult;
+import delfos.group.results.groupevaluationmeasures.GroupEvaluationMeasureResult;
 import delfos.group.results.grouprecomendationresults.GroupRecommendationResult;
 import delfos.io.xml.UnrecognizedElementException;
 import delfos.io.xml.evaluationmeasures.confusionmatricescurve.ConfusionMatricesCurveXML;
@@ -46,7 +46,7 @@ public class PRSpace_EachMember extends GroupEvaluationMeasure {
     }
 
     @Override
-    public GroupMeasureResult getMeasureResult(GroupRecommendationResult recommendationResults, RatingsDataset<? extends Rating> testDataset, RelevanceCriteria relevanceCriteria) {
+    public GroupEvaluationMeasureResult getMeasureResult(GroupRecommendationResult recommendationResults, RatingsDataset<? extends Rating> testDataset, RelevanceCriteria relevanceCriteria) {
         Map<GroupOfUsers, ConfusionMatricesCurve> groupsCurves = new TreeMap<>();
 
         Element measureElement = new Element(getName());
@@ -189,14 +189,14 @@ public class PRSpace_EachMember extends GroupEvaluationMeasure {
         ConfusionMatricesCurve curvaTotal = ConfusionMatricesCurve.mergeCurves(groupsCurves.values());
 
         measureElement.addContent(ConfusionMatricesCurveXML.getElement(curvaTotal));
-        return new GroupMeasureResult(this, curvaTotal.getAreaUnderROC(), measureElement);
+        return new GroupEvaluationMeasureResult(this, curvaTotal.getAreaUnderROC(), measureElement);
     }
 
     @Override
-    public GroupMeasureResult agregateResults(Collection<GroupMeasureResult> results) {
+    public GroupEvaluationMeasureResult agregateResults(Collection<GroupEvaluationMeasureResult> results) {
         ArrayList<ConfusionMatricesCurve> curves = new ArrayList<ConfusionMatricesCurve>();
 
-        for (GroupMeasureResult r : results) {
+        for (GroupEvaluationMeasureResult r : results) {
             Element e = r.getXMLElement();
             e.getChild(ConfusionMatricesCurveXML.CURVE_ELEMENT);
             try {
@@ -207,6 +207,6 @@ public class PRSpace_EachMember extends GroupEvaluationMeasure {
         }
 
         ConfusionMatricesCurve mergeCurves = ConfusionMatricesCurve.mergeCurves(curves);
-        return new GroupMeasureResult(this, mergeCurves.getAreaUnderROC(), ConfusionMatricesCurveXML.getElement(mergeCurves));
+        return new GroupEvaluationMeasureResult(this, mergeCurves.getAreaUnderROC(), ConfusionMatricesCurveXML.getElement(mergeCurves));
     }
 }

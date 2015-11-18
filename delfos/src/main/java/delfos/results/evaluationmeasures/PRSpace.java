@@ -77,7 +77,7 @@ public class PRSpace extends EvaluationMeasure {
         float areaUnderPR = agregada.getAreaPRSpace();
 
         Element element = new Element(this.getName());
-        element.setAttribute(EvaluationMeasure.VALUE, Float.toString(areaUnderPR));
+        element.setAttribute(EvaluationMeasure.VALUE_ATTRIBUTE_NAME, Float.toString(areaUnderPR));
         element.setContent(ConfusionMatricesCurveXML.getElement(agregada));
 
         Map<String, Double> detailedResult = new TreeMap<String, Double>();
@@ -114,7 +114,7 @@ public class PRSpace extends EvaluationMeasure {
         float areaUnderPR = agregada.getAreaPRSpace();
 
         Element element = new Element(this.getName());
-        element.setAttribute(EvaluationMeasure.VALUE, Float.toString(areaUnderPR));
+        element.setAttribute(EvaluationMeasure.VALUE_ATTRIBUTE_NAME, Float.toString(areaUnderPR));
         element.setContent(ConfusionMatricesCurveXML.getElement(agregada));
 
         Map<String, Double> detailedResult = new TreeMap<String, Double>();

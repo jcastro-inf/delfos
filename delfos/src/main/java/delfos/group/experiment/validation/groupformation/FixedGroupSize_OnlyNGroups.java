@@ -1,5 +1,11 @@
 package delfos.group.experiment.validation.groupformation;
 
+import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
+import delfos.common.parameters.Parameter;
+import delfos.common.parameters.restriction.IntegerParameter;
+import delfos.dataset.basic.loader.types.DatasetLoader;
+import delfos.dataset.basic.rating.Rating;
+import delfos.group.groupsofusers.GroupOfUsers;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -7,12 +13,6 @@ import java.util.LinkedList;
 import java.util.Random;
 import java.util.Set;
 import java.util.TreeSet;
-import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
-import delfos.common.parameters.Parameter;
-import delfos.common.parameters.restriction.IntegerParameter;
-import delfos.dataset.basic.rating.Rating;
-import delfos.dataset.basic.loader.types.DatasetLoader;
-import delfos.group.groupsofusers.GroupOfUsers;
 
 /**
  * Validación de grupos que genera grupos de usuarios, utilizando miembros

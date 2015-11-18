@@ -8,7 +8,7 @@ import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RatingsDataset;
 import delfos.dataset.basic.rating.RelevanceCriteria;
 import delfos.group.results.groupevaluationmeasures.GroupEvaluationMeasure;
-import delfos.group.results.groupevaluationmeasures.GroupMeasureResult;
+import delfos.group.results.groupevaluationmeasures.GroupEvaluationMeasureResult;
 import delfos.group.results.grouprecomendationresults.GroupRecommendationResult;
 
 public class DefaultGroupCaseStudyGroupEvaluationMeasures_Task extends Task {
@@ -22,7 +22,7 @@ public class DefaultGroupCaseStudyGroupEvaluationMeasures_Task extends Task {
     RelevanceCriteria relevanceCriteria;
 
     // Atributos para el resultado.
-    Map<GroupEvaluationMeasure, GroupMeasureResult> groupEvaluationMeasuresResults;
+    Map<GroupEvaluationMeasure, GroupEvaluationMeasureResult> groupEvaluationMeasuresResults;
 
     public DefaultGroupCaseStudyGroupEvaluationMeasures_Task(
             int ejecucion,

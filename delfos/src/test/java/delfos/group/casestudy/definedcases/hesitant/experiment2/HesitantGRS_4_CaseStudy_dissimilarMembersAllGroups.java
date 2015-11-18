@@ -43,7 +43,7 @@ public class HesitantGRS_4_CaseStudy_dissimilarMembersAllGroups extends DelfosTe
     private Collection<GroupFormationTechnique> getGroupFormationTechnique() {
         return Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 15, 20, 25, 50, 100, 200, 500).stream()
                 .map((groupSize) -> {
-                    GroupFormationTechnique gft = new DissimilarMembers(groupSize, 1);
+                    GroupFormationTechnique gft = new DissimilarMembers(groupSize);
                     return gft;
                 }).collect(Collectors.toList());
 
@@ -109,7 +109,8 @@ public class HesitantGRS_4_CaseStudy_dissimilarMembersAllGroups extends DelfosTe
                 );
 
                 groupCaseStudy.setAlias(
-                        "_methodHash=" + groupCaseStudy.hashCodeWithoutGroupRecommenderSystem()
+                        "_dataValidation=" + groupCaseStudy.hashDataValidation()
+                        + "_technique=" + groupCaseStudy.hashTechnique()
                         + "_" + groupRecommenderSystem.getAlias()
                         + "_allHash=" + groupCaseStudy.hashCode()
                 );

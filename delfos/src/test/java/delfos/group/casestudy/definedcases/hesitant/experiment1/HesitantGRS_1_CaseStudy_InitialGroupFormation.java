@@ -123,7 +123,8 @@ public class HesitantGRS_1_CaseStudy_InitialGroupFormation extends DelfosTest {
                 );
 
                 groupCaseStudy.setAlias(
-                        "_methodHash=" + groupCaseStudy.hashCodeWithoutGroupRecommenderSystem()
+                        "_dataValidation=" + groupCaseStudy.hashDataValidation()
+                        + "_technique=" + groupCaseStudy.hashTechnique()
                         + "_" + groupRecommenderSystem.getAlias()
                         + "_allHash=" + groupCaseStudy.hashCode()
                 );

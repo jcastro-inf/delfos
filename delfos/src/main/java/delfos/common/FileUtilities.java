@@ -118,7 +118,7 @@ public class FileUtilities {
         createDirectoryPathIfNotExists(directory);
     }
 
-    private static void createDirectoryPathIfNotExists(File directory) {
+    public static void createDirectoryPathIfNotExists(File directory) {
         if (directory == null) {
             throw new IllegalStateException("Directory for creation is null.");
         }

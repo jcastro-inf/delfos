@@ -10,7 +10,7 @@ import delfos.dataset.basic.rating.RelevanceCriteria;
 import delfos.group.groupsofusers.GroupOfUsers;
 import delfos.group.io.xml.evaluationmeasures.PRSpaceGroupsXML;
 import delfos.group.results.groupevaluationmeasures.GroupEvaluationMeasure;
-import delfos.group.results.groupevaluationmeasures.GroupMeasureResult;
+import delfos.group.results.groupevaluationmeasures.GroupEvaluationMeasureResult;
 import delfos.group.results.grouprecomendationresults.GroupRecommendationResult;
 import delfos.io.xml.UnrecognizedElementException;
 import delfos.results.evaluationmeasures.confusionmatrix.ConfusionMatricesCurve;
@@ -40,7 +40,7 @@ public class PRSpaceGroups extends GroupEvaluationMeasure {
     }
 
     @Override
-    public GroupMeasureResult getMeasureResult(GroupRecommendationResult recommendationResults, RatingsDataset<? extends Rating> testDataset, RelevanceCriteria relevanceCriteria) {
+    public GroupEvaluationMeasureResult getMeasureResult(GroupRecommendationResult recommendationResults, RatingsDataset<? extends Rating> testDataset, RelevanceCriteria relevanceCriteria) {
         Map<GroupOfUsers, ConfusionMatricesCurve> prCurves = new TreeMap<>();
 
         int gruposSinMatriz = 0;
@@ -93,14 +93,14 @@ public class PRSpaceGroups extends GroupEvaluationMeasure {
             detailedResult.put("Precision@" + i, precisionAt);
         }
 
-        return new GroupMeasureResult(this, value, PRSpaceGroupsXML.getElement(agregada), detailedResult);
+        return new GroupEvaluationMeasureResult(this, value, PRSpaceGroupsXML.getElement(agregada), detailedResult);
     }
 
     @Override
-    public GroupMeasureResult agregateResults(Collection<GroupMeasureResult> results) {
+    public GroupEvaluationMeasureResult agregateResults(Collection<GroupEvaluationMeasureResult> results) {
         ArrayList<ConfusionMatricesCurve> curves = new ArrayList<>();
 
-        for (GroupMeasureResult r : results) {
+        for (GroupEvaluationMeasureResult r : results) {
             Element e = r.getXMLElement();
             e.getChild(PRSpaceGroupsXML.MEASURE_ELEMENT);
             try {
@@ -118,7 +118,7 @@ public class PRSpaceGroups extends GroupEvaluationMeasure {
             detailedResult.put("Precision@" + i, precisionAt);
         }
 
-        return new GroupMeasureResult(
+        return new GroupEvaluationMeasureResult(
                 this,
                 mergeCurves.getAreaUnderROC(),
                 PRSpaceGroupsXML.getElement(mergeCurves),

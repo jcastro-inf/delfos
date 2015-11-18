@@ -16,6 +16,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import org.jdom2.Element;
 
 /**
  * Evalúa las recomendaciones de un sistema aplicando nDCG, usando logaritmo en
@@ -43,7 +44,7 @@ public class NDCG extends GroupEvaluationMeasure {
     }
 
     @Override
-    public GroupMeasureResult getMeasureResult(GroupRecommendationResult recommendationResults, RatingsDataset<? extends Rating> testDataset, RelevanceCriteria relevanceCriteria) {
+    public GroupEvaluationMeasureResult getMeasureResult(GroupRecommendationResult recommendationResults, RatingsDataset<? extends Rating> testDataset, RelevanceCriteria relevanceCriteria) {
 
         List<Double> ndcgByMember = new ArrayList<>();
 
@@ -98,22 +99,25 @@ public class NDCG extends GroupEvaluationMeasure {
         double percentile75 = ndcgByMember.get((int) (ndcgByMember.size() * 0.75));
         double max = ndcgByMember.get(ndcgByMember.size() - 1);
 
-        return new GroupMeasureResult(this, mean, NDCGXML.getElement(ndcgByMember), ndcgByMember);
+        return new GroupEvaluationMeasureResult(this, mean, NDCGXML.getElement(ndcgByMember), ndcgByMember);
     }
 
     @Override
-    public GroupMeasureResult agregateResults(Collection<GroupMeasureResult> results) {
+    public GroupEvaluationMeasureResult agregateResults(Collection<GroupEvaluationMeasureResult> results) {
 
         List<Double> ndcgJoin = new ArrayList<>();
 
-        for (GroupMeasureResult result : results) {
+        for (GroupEvaluationMeasureResult result : results) {
             List<Double> ndcgPerUser = (List<Double>) result.getDetailedResult();
             ndcgJoin.addAll(ndcgPerUser);
         }
 
         Collections.sort(ndcgJoin);
 
-        return new GroupMeasureResult(this, new MeanIterative(ndcgJoin).getMean(), NDCGXML.getElement(ndcgJoin), ndcgJoin);
+        Element element = NDCGXML.getElement(ndcgJoin);
+        element.setName(this.getName());
+
+        return new GroupEvaluationMeasureResult(this, new MeanIterative(ndcgJoin).getMean(), element, ndcgJoin);
     }
 
 }

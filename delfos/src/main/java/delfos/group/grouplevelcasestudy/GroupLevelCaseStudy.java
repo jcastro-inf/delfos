@@ -20,7 +20,7 @@ import delfos.group.groupsofusers.GroupOfUsers;
 import delfos.group.groupsofusers.measuresovergroups.GroupMeasure;
 import delfos.group.grs.GroupRecommenderSystem;
 import delfos.group.results.groupevaluationmeasures.GroupEvaluationMeasure;
-import delfos.group.results.groupevaluationmeasures.GroupMeasureResult;
+import delfos.group.results.groupevaluationmeasures.GroupEvaluationMeasureResult;
 import delfos.group.results.grouprecomendationresults.GroupRecommendationResult;
 import delfos.rs.recommendation.Recommendation;
 import java.util.ArrayList;
@@ -129,7 +129,7 @@ public class GroupLevelCaseStudy {
                         Map<GroupOfUsers, Collection<Recommendation>> _recommendations = new TreeMap<>();
                         _recommendations.put(group, allPredictions);
                         GroupRecommendationResult groupRecommendationResult = new GroupRecommendationResult(0, 0, 0, 1, _requests, _recommendations, groupRecommenderSystem.getAlias());
-                        GroupMeasureResult measureResult = evaluationMeasure.getMeasureResult(groupRecommendationResult, testDatasetLoader.getRatingsDataset(), relevanceCriteria);
+                        GroupEvaluationMeasureResult measureResult = evaluationMeasure.getMeasureResult(groupRecommendationResult, testDatasetLoader.getRatingsDataset(), relevanceCriteria);
                         groupLevelResults.setEvaluationMeasure(groupRecommenderSystem, evaluationMeasure, measureResult);
                     }
                 }
@@ -150,7 +150,7 @@ public class GroupLevelCaseStudy {
 
                     for (GroupEvaluationMeasure groupEvaluationMeasure : evaluationMeasures) {
                         for (GroupRecommenderSystem groupRecommenderSystem : groupRecommenderSystems) {
-                            GroupMeasureResult groupMeasureResult = groupLevelResults.getEvaluationMeasureValue(groupRecommenderSystem, groupEvaluationMeasure);
+                            GroupEvaluationMeasureResult groupMeasureResult = groupLevelResults.getEvaluationMeasureValue(groupRecommenderSystem, groupEvaluationMeasure);
                             line.append("\t").append(groupMeasureResult.getValue());
                         }
                     }

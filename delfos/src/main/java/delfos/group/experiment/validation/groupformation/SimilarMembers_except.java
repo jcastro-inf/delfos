@@ -46,7 +46,6 @@ public class SimilarMembers_except extends GroupFormationTechnique {
     public static final Parameter NUM_GROUPS_PARAMETER = new Parameter("numGroups", new IntegerParameter(1, 1000000, 5));
     public static final Parameter GROUP_SIZE_PARAMETER = new Parameter("groupSize", new IntegerParameter(1, 10000, 5));
     public static final Parameter GROUP_SIZE_DIFFERENT_MEMBERS_PARAMETER = new Parameter("groupSize_differentMembers", new IntegerParameter(1, 10000, 1));
-    public static final Parameter N_CANDIDATES_PARAMETER = new Parameter("numCandidates", new IntegerParameter(1, 1000000, 5));
     public static final Parameter SIMILARITY_MEASURE;
 
     /**
@@ -58,7 +57,6 @@ public class SimilarMembers_except extends GroupFormationTechnique {
         addParameter(GROUP_SIZE_PARAMETER);
         addParameter(GROUP_SIZE_DIFFERENT_MEMBERS_PARAMETER);
         addParameter(NUM_GROUPS_PARAMETER);
-        addParameter(N_CANDIDATES_PARAMETER);
         addParameter(SIMILARITY_MEASURE);
 
         addParammeterListener(() -> {
@@ -92,7 +90,6 @@ public class SimilarMembers_except extends GroupFormationTechnique {
 
         setParameterValue(NUM_GROUPS_PARAMETER, numGroupsValue);
         setParameterValue(GROUP_SIZE_PARAMETER, groupSizeValue);
-        setParameterValue(N_CANDIDATES_PARAMETER, 20);
         setParameterValue(GROUP_SIZE_DIFFERENT_MEMBERS_PARAMETER, groupSize_differentMembers);
     }
 
@@ -104,7 +101,6 @@ public class SimilarMembers_except extends GroupFormationTechnique {
 
         Random random = new Random(getSeedValue());
 
-        final int numMembersCandidate = (Integer) getParameterValue(N_CANDIDATES_PARAMETER);
         final int groupSize = (Integer) getParameterValue(GROUP_SIZE_PARAMETER);
         final int numGroups = (Integer) getParameterValue(NUM_GROUPS_PARAMETER);
 
@@ -122,7 +118,7 @@ public class SimilarMembers_except extends GroupFormationTechnique {
         }
         UserUserSimilarity similarityMeasure = (UserUserSimilarity) getParameterValue(SIMILARITY_MEASURE);
 
-        SimilarMembers_OnlyNGroups similarMembers = new SimilarMembers_OnlyNGroups(numGroups, numMembersSimilar, numMembersCandidate);
+        SimilarMembers_OnlyNGroups similarMembers = new SimilarMembers_OnlyNGroups(numGroups, numMembersSimilar);
         similarMembers.setSeedValue(getSeedValue());
         similarMembers.setParameterValue(SimilarMembers_OnlyNGroups.SIMILARITY_MEASURE, similarityMeasure);
         similarMembers.addListener((String message, int progress, long remainingTimeInMS) -> {

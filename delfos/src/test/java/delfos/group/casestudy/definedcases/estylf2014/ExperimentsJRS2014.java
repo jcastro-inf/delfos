@@ -78,7 +78,7 @@ public class ExperimentsJRS2014 {
         for (int groupSize : groupSizeArray) {
 
             final GroupFormationTechnique groupFormationTechnique = new FixedGroupSize_OnlyNGroups(numGroups, groupSize);
-            List<RecommenderSystem> coreRSs = new ArrayList<RecommenderSystem>();
+            List<RecommenderSystem> coreRSs = new ArrayList<>();
 
             coreRSs.add(new KnnMemoryBasedCFRS());
             coreRSs.get(0).setAlias("KnnUU");
@@ -97,7 +97,7 @@ public class ExperimentsJRS2014 {
                     groupCaseStudy.setSeedValue(seed);
                     String fileName = groupRecommenderSystem.getAlias() + "_groupSize-" + groupSize + ".xml";
                     File file = new File(directory + File.separator + fileName);
-                    GroupCaseStudyXML.saveCaseDescription(groupCaseStudy, file.getAbsolutePath());
+                    GroupCaseStudyXML.caseStudyToXMLFile_onlyDescription(groupCaseStudy, file);
                 }
             }
         }
@@ -112,13 +112,13 @@ public class ExperimentsJRS2014 {
                     new RelevanceCriteria(), 1);
 
             File file = new File(directory + File.separator + "dataset" + File.separator + "ml-100k.xml");
-            GroupCaseStudyXML.saveCaseDescription(groupCaseStudy, file.getAbsolutePath());
+            GroupCaseStudyXML.caseStudyToXMLFile_onlyDescription(groupCaseStudy, file);
         }
     }
 
     private static Iterable<GroupRecommenderSystem<? extends Object, ? extends Object>> getGRS(RecommenderSystem singleUserRecommender) {
 
-        LinkedList<GroupRecommenderSystem<? extends Object, ? extends Object>> grsList = new LinkedList<GroupRecommenderSystem<?, ?>>();
+        LinkedList<GroupRecommenderSystem<? extends Object, ? extends Object>> grsList = new LinkedList<>();
 
         int i = 0;
         int stringLength = 3;
@@ -128,7 +128,7 @@ public class ExperimentsJRS2014 {
             AggregationOfIndividualRatings baseline = new AggregationOfIndividualRatings(singleUserRecommender, new Mean());
 
             {
-                String number = new Integer(i).toString();
+                String number = Integer.toString(i);
                 i++;
                 while (number.length() < stringLength) {
                     number = "0" + number;
@@ -137,7 +137,7 @@ public class ExperimentsJRS2014 {
                 grsList.getLast().setAlias(number + "_" + baseline.getName() + "_" + baseline.getSingleUserRecommender().getName() + "_Aggr_" + baseline.getAggregationOperator().getName());
             }
         }
-        ArrayList<WeightedGraphCalculation> graphCalculation = new ArrayList<WeightedGraphCalculation>();
+        ArrayList<WeightedGraphCalculation> graphCalculation = new ArrayList<>();
 
         {
             WeightedGraphCalculation wgc = new ShambourLu_UserBasedImplicitTrustComputation();
@@ -162,7 +162,7 @@ public class ExperimentsJRS2014 {
                             double aStrong = 0;
                             double bStrong = 1;
 
-                            String number = new Integer(i).toString();
+                            String number = Integer.toString(i);
                             i++;
                             while (number.length() < stringLength) {
                                 number = "0" + number;
@@ -199,7 +199,7 @@ public class ExperimentsJRS2014 {
                                 double aStrong = strongDefinitionValues[j - 1];
                                 double bStrong = strongDefinitionValues[j];
 
-                                String number = new Integer(i).toString();
+                                String number = Integer.toString(i);
                                 i++;
                                 while (number.length() < stringLength) {
                                     number = "0" + number;

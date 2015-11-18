@@ -57,7 +57,7 @@ public class AreaUnderRoc extends GroupEvaluationMeasure {
     }
 
     @Override
-    public GroupMeasureResult getMeasureResult(GroupRecommendationResult recommendationResults, RatingsDataset<? extends Rating> testDataset, RelevanceCriteria relevanceCriteria) {
+    public GroupEvaluationMeasureResult getMeasureResult(GroupRecommendationResult recommendationResults, RatingsDataset<? extends Rating> testDataset, RelevanceCriteria relevanceCriteria) {
 
         Map<GroupOfUsers, ConfusionMatricesCurve> prCurves = new TreeMap<>();
 
@@ -110,14 +110,14 @@ public class AreaUnderRoc extends GroupEvaluationMeasure {
 
         areaUnderRocElement.addContent(ConfusionMatricesCurveXML.getElement(curva));
 
-        return new GroupMeasureResult(this, areaUnderRoc, areaUnderRocElement);
+        return new GroupEvaluationMeasureResult(this, areaUnderRoc, areaUnderRocElement);
     }
 
     @Override
-    public GroupMeasureResult agregateResults(Collection<GroupMeasureResult> results) {
+    public GroupEvaluationMeasureResult agregateResults(Collection<GroupEvaluationMeasureResult> results) {
         ArrayList<ConfusionMatricesCurve> curves = new ArrayList<>();
 
-        for (GroupMeasureResult r : results) {
+        for (GroupEvaluationMeasureResult r : results) {
             Element e = r.getXMLElement();
             try {
                 curves.add(ConfusionMatricesCurveXML.getConfusionMatricesCurve(e.getChild(ConfusionMatricesCurveXML.CURVE_ELEMENT)));
@@ -134,6 +134,6 @@ public class AreaUnderRoc extends GroupEvaluationMeasure {
 
         areaUnderRocElement.addContent(ConfusionMatricesCurveXML.getElement(mergeCurves));
 
-        return new GroupMeasureResult(this, areaUnderRoc, areaUnderRocElement);
+        return new GroupEvaluationMeasureResult(this, areaUnderRoc, areaUnderRocElement);
     }
 }

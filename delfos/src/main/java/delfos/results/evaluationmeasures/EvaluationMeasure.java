@@ -28,7 +28,7 @@ public abstract class EvaluationMeasure extends ParameterOwnerAdapter implements
      * Nombre de la característica en que se almacena el valor de la medida de
      * evaluación
      */
-    public final static String VALUE = "value";
+    public final static String VALUE_ATTRIBUTE_NAME = "value";
 
     /**
      * Establece el resultado de una ejecución en base a las recomendaciones
@@ -78,7 +78,7 @@ public abstract class EvaluationMeasure extends ParameterOwnerAdapter implements
             mean.addValue(mr.getValue());
         }
         aggregatedValue = (float) mean.getMean();
-        aggregatedElement.setAttribute(EvaluationMeasure.VALUE, Double.toString(mean.getMean()));
+        aggregatedElement.setAttribute(EvaluationMeasure.VALUE_ATTRIBUTE_NAME, Double.toString(mean.getMean()));
 
         return new MeasureResult(this, aggregatedValue, aggregatedElement);
     }

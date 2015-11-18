@@ -69,8 +69,8 @@ public final class AggregationOfIndividualRatings_itemWeighted
      * Especifica la técnica de agregación para agregar los ratings de los
      * usuarios y formar el perfil del grupo.
      */
-    public static final Parameter AGGREGATION_OPPERATOR = new Parameter(
-            "AGGREGATION_OPPERATOR",
+    public static final Parameter AGGREGATION_OPERATOR = new Parameter(
+            "AGGREGATION_OPERATOR",
             new ParameterOwnerRestriction(AggregationOperator.class, new Mean()),
             "Especifica la técnica de agregación para agregar los ratings de "
             + "los usuarios y formar el perfil del grupo.");
@@ -100,7 +100,7 @@ public final class AggregationOfIndividualRatings_itemWeighted
     public AggregationOfIndividualRatings_itemWeighted() {
         super();
         addParameter(SINGLE_USER_RECOMMENDER);
-        addParameter(AGGREGATION_OPPERATOR);
+        addParameter(AGGREGATION_OPERATOR);
 
         addParameter(GROUP_ITEM_WEIGHT);
         addParameter(COMPLETE_PREFERENCES);
@@ -108,7 +108,7 @@ public final class AggregationOfIndividualRatings_itemWeighted
         addParameter(COMPLETE_PREFERENCES_RECOMMENDER_SYSTEM);
 
         addParammeterListener(() -> {
-            AggregationOperator newAggregationOperator = (AggregationOperator) getParameterValue(AGGREGATION_OPPERATOR);
+            AggregationOperator newAggregationOperator = (AggregationOperator) getParameterValue(AGGREGATION_OPERATOR);
             GroupItemWeight newGroupItemWeight = (GroupItemWeight) getParameterValue(GROUP_ITEM_WEIGHT);
             boolean newCompleteUngivenPreferences = isCompletePreferences();
             RelevanceCriteria newCompleteUngivenPreferencesThreshold = getCompletePreferencesThreshold();
@@ -162,7 +162,7 @@ public final class AggregationOfIndividualRatings_itemWeighted
 
         this();
         setParameterValue(SINGLE_USER_RECOMMENDER, singleUserRecommender);
-        setParameterValue(AGGREGATION_OPPERATOR, aggregationOperator);
+        setParameterValue(AGGREGATION_OPERATOR, aggregationOperator);
     }
 
     public AggregationOfIndividualRatings_itemWeighted(
@@ -173,7 +173,7 @@ public final class AggregationOfIndividualRatings_itemWeighted
 
         this();
         setParameterValue(SINGLE_USER_RECOMMENDER, singleUserRecommender);
-        setParameterValue(AGGREGATION_OPPERATOR, aggregationOperator);
+        setParameterValue(AGGREGATION_OPERATOR, aggregationOperator);
         setParameterValue(GROUP_ITEM_WEIGHT, groupItemWeight);
         if (completePreferencesThreshold == null) {
             setParameterValue(COMPLETE_PREFERENCES, false);
@@ -320,7 +320,7 @@ public final class AggregationOfIndividualRatings_itemWeighted
     }
 
     public AggregationOperator getAggregationOperator() {
-        return (AggregationOperator) getParameterValue(AGGREGATION_OPPERATOR);
+        return (AggregationOperator) getParameterValue(AGGREGATION_OPERATOR);
     }
 
     public GroupItemWeight getGroupItemWeight() {

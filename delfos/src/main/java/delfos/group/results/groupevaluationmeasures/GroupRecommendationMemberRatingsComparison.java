@@ -43,7 +43,7 @@ public class GroupRecommendationMemberRatingsComparison extends GroupEvaluationM
             + "test-set" + File.separator);
 
     @Override
-    public GroupMeasureResult getMeasureResult(GroupRecommendationResult recommendationResults, RatingsDataset<? extends Rating> testDataset, RelevanceCriteria relevanceCriteria) {
+    public GroupEvaluationMeasureResult getMeasureResult(GroupRecommendationResult recommendationResults, RatingsDataset<? extends Rating> testDataset, RelevanceCriteria relevanceCriteria) {
 
         FileUtilities.createDirectoryPath(TEST_SET_DIRECTORY);
 
@@ -101,7 +101,7 @@ public class GroupRecommendationMemberRatingsComparison extends GroupEvaluationM
             Logger.getLogger(GroupRecommendationMemberRatingsComparison.class.getName()).log(Level.SEVERE, null, ex);
         }
 
-        return new GroupMeasureResult(this, 1.0);
+        return new GroupEvaluationMeasureResult(this, 1.0);
     }
 
     private StringBuilder printRawOutput(GroupOfUsers groupOfUsers, List<Recommendation> recommendations, Map<Integer, Map<Integer, Number>> membersRatings) {

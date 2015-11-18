@@ -6,7 +6,7 @@ import delfos.group.groupsofusers.GroupOfUsers;
 import delfos.group.groupsofusers.measuresovergroups.GroupMeasure;
 import delfos.group.grs.GroupRecommenderSystem;
 import delfos.group.results.groupevaluationmeasures.GroupEvaluationMeasure;
-import delfos.group.results.groupevaluationmeasures.GroupMeasureResult;
+import delfos.group.results.groupevaluationmeasures.GroupEvaluationMeasureResult;
 
 /**
  *
@@ -16,7 +16,7 @@ import delfos.group.results.groupevaluationmeasures.GroupMeasureResult;
 public class GroupLevelResults {
 
     private final Map<GroupMeasure, Double> groupMeasures = new TreeMap<GroupMeasure, Double>();
-    private final Map<GroupRecommenderSystem,Map<GroupEvaluationMeasure, GroupMeasureResult>> evaluationMeasures = new TreeMap<GroupRecommenderSystem, Map<GroupEvaluationMeasure, GroupMeasureResult>>();
+    private final Map<GroupRecommenderSystem,Map<GroupEvaluationMeasure, GroupEvaluationMeasureResult>> evaluationMeasures = new TreeMap<GroupRecommenderSystem, Map<GroupEvaluationMeasure, GroupEvaluationMeasureResult>>();
     private final GroupOfUsers group;
 
     public GroupLevelResults(GroupOfUsers group) {
@@ -28,9 +28,9 @@ public class GroupLevelResults {
         groupMeasures.put(groupMeasure, groupMeasureValue);
     }
 
-    public void setEvaluationMeasure(GroupRecommenderSystem groupRecommenderSystem, GroupEvaluationMeasure evaluationMeasure, GroupMeasureResult measureResult) {
+    public void setEvaluationMeasure(GroupRecommenderSystem groupRecommenderSystem, GroupEvaluationMeasure evaluationMeasure, GroupEvaluationMeasureResult measureResult) {
         if(!this.evaluationMeasures.containsKey(groupRecommenderSystem)){
-            this.evaluationMeasures.put(groupRecommenderSystem, new TreeMap<GroupEvaluationMeasure, GroupMeasureResult>());
+            this.evaluationMeasures.put(groupRecommenderSystem, new TreeMap<GroupEvaluationMeasure, GroupEvaluationMeasureResult>());
         }
         this.evaluationMeasures.get(groupRecommenderSystem).put(evaluationMeasure, measureResult);
     }
@@ -39,7 +39,7 @@ public class GroupLevelResults {
         return groupMeasures.get(groupMeasure);
     }
 
-    public GroupMeasureResult getEvaluationMeasureValue(GroupRecommenderSystem groupRecommenderSystem, GroupEvaluationMeasure groupEvaluationMeasure) {
+    public GroupEvaluationMeasureResult getEvaluationMeasureValue(GroupRecommenderSystem groupRecommenderSystem, GroupEvaluationMeasure groupEvaluationMeasure) {
         return evaluationMeasures.get(groupRecommenderSystem).get(groupEvaluationMeasure);
     }
 }

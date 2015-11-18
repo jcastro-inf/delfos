@@ -32,7 +32,6 @@ public class DissimilarMembersTest {
         );
 
         dissimilarMembers.setParameterValue(DissimilarMembers.SIMILARITY_MEASURE, defaultSimilarity);
-        dissimilarMembers.setParameterValue(DissimilarMembers.N_CANDIDATES_PARAMETER, 1);
         Collection<GroupOfUsers> result = dissimilarMembers.shuffle(datasetLoader);
     }
 

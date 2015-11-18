@@ -20,7 +20,7 @@ import delfos.dataset.basic.rating.RatingsDataset;
 import delfos.dataset.basic.rating.RelevanceCriteria;
 import delfos.rs.contentbased.ContentBasedRecommender;
 import static delfos.rs.contentbased.vsm.ContentBasedVSMRS.SIMILARITY_MEASURE;
-import static delfos.rs.contentbased.vsm.multivalued.entropydependence.EntropyDependenceCBRS.AGGREGATION_OPPERATOR;
+import static delfos.rs.contentbased.vsm.multivalued.entropydependence.EntropyDependenceCBRS.AGGREGATION_OPERATOR;
 import delfos.rs.contentbased.vsm.multivalued.profile.BasicMultivaluedUserProfile;
 import delfos.rs.contentbased.vsm.multivalued.profile.MultivaluedUserProfile;
 import delfos.rs.recommendation.Recommendation;
@@ -58,7 +58,7 @@ public class BasicMultivaluedCBRS extends ContentBasedRecommender<MultivaluedUse
         super();
 
         addParameter(SIMILARITY_MEASURE);
-        addParameter(AGGREGATION_OPPERATOR);
+        addParameter(AGGREGATION_OPERATOR);
     }
 
     @Override
@@ -81,7 +81,7 @@ public class BasicMultivaluedCBRS extends ContentBasedRecommender<MultivaluedUse
         Map<Integer, MultivaluedUserProfile> userProfiles = new TreeMap<>();
 
         //Creando los perfiles
-        AggregationOperator condensationFormula_ = (AggregationOperator) getParameterValue(AGGREGATION_OPPERATOR);
+        AggregationOperator condensationFormula_ = (AggregationOperator) getParameterValue(AGGREGATION_OPERATOR);
         int i = 0;
         for (int idUser : allUsers) {
             try {
@@ -131,7 +131,7 @@ public class BasicMultivaluedCBRS extends ContentBasedRecommender<MultivaluedUse
         }
         RelevanceCriteria relevanceCriteria = datasetLoader.getDefaultRelevanceCriteria();
 
-        AggregationOperator condensationFormula_ = (AggregationOperator) getParameterValue(AGGREGATION_OPPERATOR);
+        AggregationOperator condensationFormula_ = (AggregationOperator) getParameterValue(AGGREGATION_OPERATOR);
 
         BasicMultivaluedUserProfile profile = new BasicMultivaluedUserProfile(idUser);
 

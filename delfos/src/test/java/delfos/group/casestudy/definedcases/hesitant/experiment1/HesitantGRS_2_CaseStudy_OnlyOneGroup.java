@@ -110,7 +110,8 @@ public class HesitantGRS_2_CaseStudy_OnlyOneGroup extends DelfosTest {
                         SEED_VALUE);
 
                 groupCaseStudy.setAlias(
-                        "methodHash=" + groupCaseStudy.hashCodeWithoutGroupRecommenderSystem()
+                        "_dataValidation=" + groupCaseStudy.hashDataValidation()
+                        + "_technique=" + groupCaseStudy.hashTechnique()
                         + "_" + groupRecommenderSystem.getAlias()
                         + "_allHash=" + groupCaseStudy.hashCode()
                 );

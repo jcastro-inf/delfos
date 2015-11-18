@@ -20,7 +20,6 @@ import java.util.Random;
 public class DissimilarMembers extends GroupFormationTechnique {
 
     public static final Parameter GROUP_SIZE_PARAMETER = DissimilarMembers_OnlyNGroups.GROUP_SIZE_PARAMETER;
-    public static final Parameter N_CANDIDATES_PARAMETER = DissimilarMembers_OnlyNGroups.N_CANDIDATES_PARAMETER;
     public static final Parameter SIMILARITY_MEASURE = DissimilarMembers_OnlyNGroups.SIMILARITY_MEASURE;
 
     /**
@@ -30,7 +29,6 @@ public class DissimilarMembers extends GroupFormationTechnique {
     public DissimilarMembers() {
         super();
         addParameter(GROUP_SIZE_PARAMETER);
-        addParameter(N_CANDIDATES_PARAMETER);
         addParameter(SIMILARITY_MEASURE);
 
         addParammeterListener(() -> {
@@ -50,13 +48,10 @@ public class DissimilarMembers extends GroupFormationTechnique {
      * defecto, el tamaño de los grupos es de cuatro miembros.
      *
      * @param groupSizeValue Tamaño de los grupos generados
-     * @param numCandidates Número de vecinos candidatos que se consideran al
-     * seleccionar el siguiente miembro del grupo aleatoriamente.
      */
-    public DissimilarMembers(int groupSizeValue, int numCandidates) {
+    public DissimilarMembers(int groupSizeValue) {
         this();
         setParameterValue(GROUP_SIZE_PARAMETER, groupSizeValue);
-        setParameterValue(N_CANDIDATES_PARAMETER, numCandidates);
     }
 
     @Override
@@ -66,12 +61,11 @@ public class DissimilarMembers extends GroupFormationTechnique {
         }
         Random random = new Random(getSeedValue());
 
-        final int numMembersCandidate = (Integer) getParameterValue(N_CANDIDATES_PARAMETER);
         final int groupSize = (Integer) getParameterValue(GROUP_SIZE_PARAMETER);
         final int maximumGroups = datasetLoader.getRatingsDataset().allUsers().size() / groupSize;
         UserUserSimilarity similarityMeasure = (UserUserSimilarity) getParameterValue(SIMILARITY_MEASURE);
 
-        DissimilarMembers_OnlyNGroups dissimilarMembers_OnlyNGroups = new DissimilarMembers_OnlyNGroups(maximumGroups, groupSize, numMembersCandidate);
+        DissimilarMembers_OnlyNGroups dissimilarMembers_OnlyNGroups = new DissimilarMembers_OnlyNGroups(maximumGroups, groupSize);
         dissimilarMembers_OnlyNGroups.setParameterValue(DissimilarMembers_OnlyNGroups.SIMILARITY_MEASURE, similarityMeasure);
 
         dissimilarMembers_OnlyNGroups.addListener(this::progressChanged);

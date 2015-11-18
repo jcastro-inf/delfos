@@ -15,9 +15,10 @@ import delfos.group.experiment.validation.predictionvalidation.GroupPredictionPr
 import delfos.group.experiment.validation.validationtechniques.GroupValidationTechnique;
 import delfos.group.grs.GroupRecommenderSystem;
 import delfos.group.results.groupevaluationmeasures.GroupEvaluationMeasure;
-import delfos.group.results.groupevaluationmeasures.GroupMeasureResult;
+import delfos.group.results.groupevaluationmeasures.GroupEvaluationMeasureResult;
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -81,7 +82,7 @@ public abstract class GroupCaseStudy extends ExperimentAdapter {
      * @param groupMeasureResult Resultado de la medida
      * @deprecated Está previsto eliminar este método.
      */
-    public abstract void putResult(int ejecucion, int split, GroupEvaluationMeasure e, GroupMeasureResult groupMeasureResult);
+    public abstract void putResult(int ejecucion, int split, GroupEvaluationMeasure e, GroupEvaluationMeasureResult groupMeasureResult);
 
     /**
      * Método que realiza la ejecución del caso de estudio, con la configuración
@@ -109,7 +110,7 @@ public abstract class GroupCaseStudy extends ExperimentAdapter {
      * @return Objeto que encapsula los resultados de la aplicación de la medida
      * a las recomendaciones del sistema.
      */
-    public abstract GroupMeasureResult getAggregateMeasureResult(GroupEvaluationMeasure em);
+    public abstract GroupEvaluationMeasureResult getAggregateMeasureResult(GroupEvaluationMeasure em);
 
     /**
      * Devuelve el resultado de la medida de evaluación de GRS que se indica por
@@ -122,7 +123,7 @@ public abstract class GroupCaseStudy extends ExperimentAdapter {
      * @return Objeto que encapsula los resultados de la aplicación de la medida
      * a las recomendaciones del sistema.
      */
-    public abstract GroupMeasureResult getMeasureResult(GroupEvaluationMeasure em, int numExec, int split);
+    public abstract GroupEvaluationMeasureResult getMeasureResult(GroupEvaluationMeasure em, int numExec, int split);
 
     /**
      * Devuelve la técnica utilizada para generar los grupos que se evaluarán en
@@ -201,7 +202,7 @@ public abstract class GroupCaseStudy extends ExperimentAdapter {
      */
     public abstract long getAggregateRecommendationTime();
 
-    public int hashCodeWithoutGroupRecommenderSystem() {
+    public int hashDataValidation() {
         int hash = 7;
         hash = 97 * hash + Objects.hashCode(this.getSeedValue());
         hash = 97 * hash + Objects.hashCode(this.getDatasetLoader());
@@ -211,4 +212,10 @@ public abstract class GroupCaseStudy extends ExperimentAdapter {
         hash = 97 * hash + Objects.hashCode(this.getGroupValidationTechnique());
         return hash;
     }
+
+    public int hashTechnique() {
+        return this.getGroupRecommenderSystem().hashCode();
+    }
+
+    public abstract void setAggregateResults(Map<GroupEvaluationMeasure, GroupEvaluationMeasureResult> groupEvaluationMeasuresResults);
 }

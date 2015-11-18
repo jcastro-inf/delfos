@@ -20,14 +20,12 @@ import org.junit.Test;
  */
 public class GroupCaseStudyExcelTest {
 
-    public static final String TEST_DIRECTORY = TestConstants.TEST_DATA_DIRECTORY + "GroupCaseStudyToExcel" + File.separator;
+    public static final File TEST_DIRECTORY = new File(TestConstants.TEST_DATA_DIRECTORY + "GroupCaseStudyToExcel" + File.separator);
 
     @BeforeClass
     public static void setUpClass() {
-        //Creo el directorio de test
-        File testDirectory = new File(TEST_DIRECTORY);
-        testDirectory.mkdirs();
-        testDirectory.deleteOnExit();
+        TEST_DIRECTORY.mkdirs();
+        TEST_DIRECTORY.deleteOnExit();
     }
 
     /**
@@ -46,8 +44,8 @@ public class GroupCaseStudyExcelTest {
                 new RelevanceCriteria(4), 7);
 
         caseStudyGroup.execute();
+        caseStudyGroup.setAlias("GroupCaseStudyExcelTest_testCase");
 
-        File file = new File(TEST_DIRECTORY + "caseResults.xls");
-        GroupCaseStudyExcel.saveCaseResults(caseStudyGroup, file);
+        GroupCaseStudyExcel.saveCaseResults(caseStudyGroup, TEST_DIRECTORY);
     }
 }

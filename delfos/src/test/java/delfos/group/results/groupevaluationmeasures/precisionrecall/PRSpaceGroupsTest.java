@@ -5,7 +5,7 @@ import delfos.dataset.basic.rating.RatingsDataset;
 import delfos.dataset.basic.rating.RelevanceCriteria;
 import delfos.dataset.storage.memory.BothIndexRatingsDataset;
 import delfos.group.groupsofusers.GroupOfUsers;
-import delfos.group.results.groupevaluationmeasures.GroupMeasureResult;
+import delfos.group.results.groupevaluationmeasures.GroupEvaluationMeasureResult;
 import delfos.group.results.grouprecomendationresults.GroupRecommendationResult;
 import delfos.io.xml.evaluationmeasures.confusionmatricescurve.ConfusionMatricesCurveXML;
 import delfos.results.evaluationmeasures.confusionmatrix.ConfusionMatricesCurve;
@@ -95,10 +95,10 @@ public class PRSpaceGroupsTest {
         matrices[4] = new ConfusionMatrix(2, 0, 2, 1);
         matrices[5] = new ConfusionMatrix(3, 0, 2, 0);
 
-        GroupMeasureResult expResult = new GroupMeasureResult(instance, 1, ConfusionMatricesCurveXML.getElement(new ConfusionMatricesCurve(matrices)));
+        GroupEvaluationMeasureResult expResult = new GroupEvaluationMeasureResult(instance, 1, ConfusionMatricesCurveXML.getElement(new ConfusionMatricesCurve(matrices)));
 
         GroupRecommendationResult groupRecommendationResult = new GroupRecommendationResult(-9999999, 1, 1, 1, requests_byGroup, recommendations_byGroup, "TestCaseAlias");
-        GroupMeasureResult result = instance.getMeasureResult(groupRecommendationResult, ratingsDataset, relevanceCriteria);
+        GroupEvaluationMeasureResult result = instance.getMeasureResult(groupRecommendationResult, ratingsDataset, relevanceCriteria);
 
         //TODO: Finalizar test.
         // TODO implement this test

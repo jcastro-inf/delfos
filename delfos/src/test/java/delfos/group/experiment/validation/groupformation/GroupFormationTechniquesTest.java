@@ -1,4 +1,4 @@
-package delfos.group.experiment.groupformation;
+package delfos.group.experiment.validation.groupformation;
 
 import delfos.common.exceptions.dataset.CannotLoadContentDataset;
 import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;

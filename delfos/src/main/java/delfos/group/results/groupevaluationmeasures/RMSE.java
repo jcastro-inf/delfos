@@ -34,7 +34,7 @@ import java.util.TreeMap;
 public class RMSE extends GroupEvaluationMeasure {
 
     @Override
-    public GroupMeasureResult getMeasureResult(GroupRecommendationResult recommendationResults, RatingsDataset<? extends Rating> testDataset, RelevanceCriteria relevanceCriteria) {
+    public GroupEvaluationMeasureResult getMeasureResult(GroupRecommendationResult recommendationResults, RatingsDataset<? extends Rating> testDataset, RelevanceCriteria relevanceCriteria) {
 
         MeanIterative rmse = new MeanIterative();
         for (Entry<GroupOfUsers, List<Recommendation>> entry : recommendationResults) {
@@ -63,10 +63,10 @@ public class RMSE extends GroupEvaluationMeasure {
         }
 
         if (rmse.getNumValues() == 0) {
-            return new GroupMeasureResult(this, Double.NaN);
+            return new GroupEvaluationMeasureResult(this, Double.NaN);
         } else {
             float rmseValue = (float) Math.sqrt(rmse.getMean());
-            return new GroupMeasureResult(this, rmseValue);
+            return new GroupEvaluationMeasureResult(this, rmseValue);
         }
 
     }

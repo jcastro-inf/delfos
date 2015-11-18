@@ -2,7 +2,7 @@ package delfos.group.casestudy.defaultcase;
 
 import delfos.common.parallelwork.SingleTaskExecute;
 import delfos.group.results.groupevaluationmeasures.GroupEvaluationMeasure;
-import delfos.group.results.groupevaluationmeasures.GroupMeasureResult;
+import delfos.group.results.groupevaluationmeasures.GroupEvaluationMeasureResult;
 
 public class DefaultGroupCaseStudyGroupEvaluationMeasures_SingleTaskExecutor implements SingleTaskExecute<DefaultGroupCaseStudyGroupEvaluationMeasures_Task> {
 
@@ -12,7 +12,7 @@ public class DefaultGroupCaseStudyGroupEvaluationMeasures_SingleTaskExecutor imp
     @Override
     public void executeSingleTask(DefaultGroupCaseStudyGroupEvaluationMeasures_Task task) {
         for (GroupEvaluationMeasure groupEvaluationMeasure : task.groupEvaluationMeasures) {
-            GroupMeasureResult groupMeasureResult = groupEvaluationMeasure.getMeasureResult(
+            GroupEvaluationMeasureResult groupMeasureResult = groupEvaluationMeasure.getMeasureResult(
                     task.groupRecommendationResult,
                     task.testSet,
                     task.relevanceCriteria);

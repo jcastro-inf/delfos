@@ -67,7 +67,7 @@ public class CaseComputingWithWordsCentralityAggregation {
                 GroupCaseStudy groupCaseStudy = new DefaultGroupCaseStudy(datasetLoader, groupRecommenderSystem, groupFormationTechnique, groupValidationTechniqueValue, groupPredictionProtocol, evaluationMeasures, criteria, numEjecuciones);
                 String fileName = groupRecommenderSystem.getAlias() + "_group-" + groupSize + ".xml";
                 File file = new File(directory + File.separator + fileName);
-                GroupCaseStudyXML.saveCaseDescription(groupCaseStudy, file.getAbsolutePath());
+                GroupCaseStudyXML.caseStudyToXMLFile_onlyDescription(groupCaseStudy, file);
             }
         }
     }
