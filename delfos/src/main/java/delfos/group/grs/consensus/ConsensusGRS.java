@@ -74,7 +74,7 @@ public class ConsensusGRS extends GroupRecommenderSystemAdapter<SingleRecommenda
      * Especifica la técnica de agregación para agregar los ratings de los
      * usuarios y formar el perfil del grupo.
      */
-    public static final Parameter AGGREGATION_OPPERATOR = new Parameter(
+    public static final Parameter AGGREGATION_OPERATOR = new Parameter(
             "AGGREGATION_METHOD",
             new ParameterOwnerRestriction(AggregationOperator.class, new MinimumValue()),
             "Especifica la técnica de agregación para agregar los ratings de "
@@ -114,7 +114,7 @@ public class ConsensusGRS extends GroupRecommenderSystemAdapter<SingleRecommenda
     public ConsensusGRS() {
         super();
         addParameter(SINGLE_USER_RECOMMENDER);
-        addParameter(AGGREGATION_OPPERATOR);
+        addParameter(AGGREGATION_OPERATOR);
         addParameter(ITEM_SELECTOR);
         addParameter(APPLY_CONSENSUS);
         addParameter(CONSENSUS_DEGREE);
@@ -129,7 +129,7 @@ public class ConsensusGRS extends GroupRecommenderSystemAdapter<SingleRecommenda
 
         this();
         setParameterValue(SINGLE_USER_RECOMMENDER, singleUserRecommender);
-        setParameterValue(AGGREGATION_OPPERATOR, aggregationOperator);
+        setParameterValue(AGGREGATION_OPERATOR, aggregationOperator);
         setParameterValue(ITEM_SELECTOR, itemSelector);
 
         setParameterValue(APPLY_CONSENSUS, isApplyConsensus);
@@ -367,7 +367,7 @@ public class ConsensusGRS extends GroupRecommenderSystemAdapter<SingleRecommenda
     }
 
     public AggregationOperator getAggregationOperator() {
-        return (AggregationOperator) getParameterValue(AGGREGATION_OPPERATOR);
+        return (AggregationOperator) getParameterValue(AGGREGATION_OPERATOR);
     }
 
     public RecommenderSystem getSingleUserRecommender() {

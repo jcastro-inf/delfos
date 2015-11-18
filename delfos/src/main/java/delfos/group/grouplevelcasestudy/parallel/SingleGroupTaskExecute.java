@@ -20,7 +20,7 @@ import delfos.group.groupsofusers.GroupOfUsers;
 import delfos.group.groupsofusers.measuresovergroups.GroupMeasure;
 import delfos.group.grs.GroupRecommenderSystem;
 import delfos.group.results.groupevaluationmeasures.GroupEvaluationMeasure;
-import delfos.group.results.groupevaluationmeasures.GroupMeasureResult;
+import delfos.group.results.groupevaluationmeasures.GroupEvaluationMeasureResult;
 import delfos.group.results.grouprecomendationresults.GroupRecommendationResult;
 import delfos.group.experiment.validation.validationtechniques.GroupValidationTechnique;
 import delfos.group.experiment.validation.predictionvalidation.GroupPredictionProtocol;
@@ -119,7 +119,7 @@ public class SingleGroupTaskExecute implements SingleTaskExecute<SingleGroupTask
                     Map<GroupOfUsers, Collection<Recommendation>> _recommendations = new TreeMap<>();
                     _recommendations.put(group, allPredictions);
                     GroupRecommendationResult groupRecommendationResult = new GroupRecommendationResult(0, 0, 0, 1, _requests, _recommendations, groupRecommenderSystem.getAlias());
-                    GroupMeasureResult measureResult = evaluationMeasure.getMeasureResult(groupRecommendationResult, testDatasetLoader.getRatingsDataset(), datasetLoader.getDefaultRelevanceCriteria());
+                    GroupEvaluationMeasureResult measureResult = evaluationMeasure.getMeasureResult(groupRecommendationResult, testDatasetLoader.getRatingsDataset(), datasetLoader.getDefaultRelevanceCriteria());
                     groupLevelResults.setEvaluationMeasure(groupRecommenderSystem, evaluationMeasure, measureResult);
                 }
             }

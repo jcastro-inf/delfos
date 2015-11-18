@@ -14,13 +14,14 @@ import delfos.group.casestudy.GroupCaseStudyConfiguration;
 import delfos.group.experiment.validation.groupformation.GroupFormationTechnique;
 import delfos.group.experiment.validation.predictionvalidation.GroupPredictionProtocol;
 import delfos.group.experiment.validation.validationtechniques.GroupValidationTechnique;
+import delfos.group.factories.GroupEvaluationMeasuresFactory;
 import delfos.group.grs.GroupRecommenderSystem;
 import delfos.group.io.xml.groupformationtechnique.GroupFormationTechniqueXML;
 import delfos.group.io.xml.grs.GroupRecommenderSystemXML;
 import delfos.group.io.xml.predictionprotocol.GroupPredictionProtocolXML;
 import delfos.group.io.xml.validationtechnique.GroupValidationTechniqueXML;
 import delfos.group.results.groupevaluationmeasures.GroupEvaluationMeasure;
-import delfos.group.results.groupevaluationmeasures.GroupMeasureResult;
+import delfos.group.results.groupevaluationmeasures.GroupEvaluationMeasureResult;
 import delfos.io.xml.casestudy.CaseStudyXML;
 import static delfos.io.xml.casestudy.CaseStudyXML.CASE_ROOT_ELEMENT_NAME;
 import delfos.io.xml.dataset.DatasetLoaderXML;
@@ -31,6 +32,8 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
+import java.util.Map;
+import java.util.TreeMap;
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
@@ -58,6 +61,8 @@ public class GroupCaseStudyXML {
     public static final String FULL_RESULT_SUFFIX = "_FULL";
     public static final String AGGR_RESULT_SUFFIX = "_AGGR";
 
+    public static final String AGGREGATE_VALUES_ELEMENT_NAME = CaseStudyXML.AGGREGATE_VALUES_ELEMENT_NAME;
+
     private GroupCaseStudyXML() {
     }
 
@@ -75,7 +80,7 @@ public class GroupCaseStudyXML {
                 Element split = new Element("Split");
                 for (GroupEvaluationMeasure em : c.getEvaluationMeasures()) {
 
-                    GroupMeasureResult mr = c.getMeasureResult(em, nexecution, nSplit);
+                    GroupEvaluationMeasureResult mr = c.getMeasureResult(em, nexecution, nSplit);
                     split.addContent((Element) mr.getXMLElement().clone());
                 }
 
@@ -267,8 +272,8 @@ public class GroupCaseStudyXML {
         casoDeUso.setAttribute(ParameterOwner.ALIAS.getName(), caseStudyGroup.getAlias());
 
         casoDeUso.setAttribute(HASH_ATTRIBUTE_NAME, Integer.toString(caseStudyGroup.hashCode()));
-        casoDeUso.setAttribute(HASH_DATA_VALIDATION_ATTRIBUTE_NAME, Integer.toString(caseStudyGroup.hashCodeWithoutGroupRecommenderSystem()));
-        casoDeUso.setAttribute(HASH_TECHNIQUE_ATTRIBUTE_NAME, Integer.toString(caseStudyGroup.hashCodeOfTheRecommenderSystem()));
+        casoDeUso.setAttribute(HASH_DATA_VALIDATION_ATTRIBUTE_NAME, Integer.toString(caseStudyGroup.hashDataValidation()));
+        casoDeUso.setAttribute(HASH_TECHNIQUE_ATTRIBUTE_NAME, Integer.toString(caseStudyGroup.hashTechnique()));
 
         casoDeUso.addContent(GroupRecommenderSystemXML.getElement(caseStudyGroup.getGroupRecommenderSystem()));
         casoDeUso.addContent(DatasetLoaderXML.getElement(caseStudyGroup.getDatasetLoader()));
@@ -321,8 +326,66 @@ public class GroupCaseStudyXML {
 
         DatasetLoader<? extends Rating> datasetLoader = DatasetLoaderXML.getDatasetLoader(caseStudy.getChild(DatasetLoaderXML.ELEMENT_NAME));
 
+        long seed = Long.parseLong(caseStudy.getAttributeValue(SeedHolder.SEED.getName()));
+        int numExecutions = Integer.parseInt(caseStudy.getAttributeValue(NUM_EXEC_ATTRIBUTE_NAME));
         String caseStudyAlias = caseStudy.getAttributeValue(ParameterOwner.ALIAS.getName());
-        return new GroupCaseStudyConfiguration(groupRecommenderSystem, datasetLoader, groupFormationTechnique, groupValidationTechnique, groupPredictionProtocol, relevanceCriteria, caseStudyAlias);
+
+        return new GroupCaseStudyConfiguration(
+                groupRecommenderSystem, datasetLoader,
+                groupFormationTechnique,
+                groupValidationTechnique,
+                groupPredictionProtocol,
+                relevanceCriteria,
+                caseStudyAlias,
+                numExecutions,
+                seed,
+                null);
+    }
+
+    /**
+     * Carga la descripción de un caso de estudio para sistemas de recomendación
+     * para grupos.
+     *
+     * @param file Archivo donde se encuentra almacenado el caso de estudio.
+     * @return Caso de estudio recuperado del archivo.
+     * @throws org.jdom2.JDOMException Cuando se intenta cargar un xml que no
+     * tiene la estructura esperada. Chequear si esta desfasada la versión.
+     * @throws IOException Cuando no se puede leer el archivo indicado o existe
+     * algun fallo de conversión de datos al leer el contenido del mismo.
+     */
+    public static GroupCaseStudyConfiguration loadGroupCaseWithResults(File file) throws JDOMException, IOException {
+        SAXBuilder builder = new SAXBuilder();
+
+        Document doc = builder.build(file);
+        Element caseStudy = doc.getRootElement();
+        if (!caseStudy.getName().equals(CASE_ROOT_ELEMENT_NAME)) {
+            throw new IllegalArgumentException("The XML does not contains a Case Study.");
+        }
+        GroupRecommenderSystem<Object, Object> groupRecommenderSystem = GroupRecommenderSystemXML.getGroupRecommenderSystem(caseStudy.getChild(GroupRecommenderSystemXML.ELEMENT_NAME));
+
+        GroupFormationTechnique groupFormationTechnique = GroupFormationTechniqueXML.getGroupFormationTechnique(caseStudy.getChild(GroupFormationTechniqueXML.ELEMENT_NAME));
+        GroupValidationTechnique groupValidationTechnique = GroupValidationTechniqueXML.getGroupValidationTechnique(caseStudy.getChild(GroupValidationTechniqueXML.ELEMENT_NAME));
+        GroupPredictionProtocol groupPredictionProtocol = GroupPredictionProtocolXML.getGroupPredictionProtocol(caseStudy.getChild(GroupPredictionProtocolXML.ELEMENT_NAME));
+        RelevanceCriteria relevanceCriteria = RelevanceCriteriaXML.getRelevanceCriteria(caseStudy.getChild(RelevanceCriteriaXML.ELEMENT_NAME));
+
+        DatasetLoader<? extends Rating> datasetLoader = DatasetLoaderXML.getDatasetLoader(caseStudy.getChild(DatasetLoaderXML.ELEMENT_NAME));
+
+        Map<GroupEvaluationMeasure, GroupEvaluationMeasureResult> groupEvaluationMeasuresResults = getEvaluationMeasures(caseStudy);
+
+        long seed = Long.parseLong(caseStudy.getAttributeValue(SeedHolder.SEED.getName()));
+        int numExecutions = Integer.parseInt(caseStudy.getAttributeValue(NUM_EXEC_ATTRIBUTE_NAME));
+        String caseStudyAlias = caseStudy.getAttributeValue(ParameterOwner.ALIAS.getName());
+
+        return new GroupCaseStudyConfiguration(
+                groupRecommenderSystem, datasetLoader,
+                groupFormationTechnique,
+                groupValidationTechnique,
+                groupPredictionProtocol,
+                relevanceCriteria,
+                caseStudyAlias,
+                numExecutions,
+                seed,
+                groupEvaluationMeasuresResults);
     }
 
     public static int extractResultNumExec(File groupCaseStudyXML) throws JDOMException, IOException {
@@ -338,4 +401,36 @@ public class GroupCaseStudyXML {
 
         return numExec;
     }
+
+    private static Map<GroupEvaluationMeasure, GroupEvaluationMeasureResult> getEvaluationMeasures(Element caseStudy) {
+
+        Map<GroupEvaluationMeasure, GroupEvaluationMeasureResult> groupEvaluationMeasures = new TreeMap<>();
+
+        Element aggregateValues = caseStudy.getChild(AGGREGATE_VALUES_ELEMENT_NAME);
+
+        if (aggregateValues == null) {
+            throw new IllegalStateException("Unable to load a case study description only, the XML must have results details.");
+        }
+
+        for (Element groupEvaluationMeasureResultElement : aggregateValues.getChildren()) {
+            String name = groupEvaluationMeasureResultElement.getName();
+
+            GroupEvaluationMeasure groupEvaluationMeasure = GroupEvaluationMeasuresFactory.getInstance().getClassByName(name);
+            if (groupEvaluationMeasure == null) {
+
+                if (name.equals("Build_time")) {
+                    Global.showWarning("Build_time should be implemented as a proper evaluation measure");
+                } else if (name.equals("Recommendation_time")) {
+                    Global.showWarning("Recommendation_time should be implemented as a proper evaluation measure");
+                } else {
+                    throw new IllegalStateException("The group evaluation measure '" + name + "' does not exists in delfos' factory");
+                }
+            } else {
+                groupEvaluationMeasures.put(groupEvaluationMeasure, groupEvaluationMeasure.getGroupEvaluationMeasureResultFromXML(groupEvaluationMeasureResultElement));
+            }
+        }
+
+        return groupEvaluationMeasures;
+    }
+
 }

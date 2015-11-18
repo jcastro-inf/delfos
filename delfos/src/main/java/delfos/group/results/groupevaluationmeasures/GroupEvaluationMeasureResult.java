@@ -10,25 +10,25 @@ import delfos.results.evaluationmeasures.EvaluationMeasure;
 * @author Jorge Castro Gallardo
  * @version 1.0 (28 Octubre 2012)
  */
-public class GroupMeasureResult {
+public class GroupEvaluationMeasureResult {
 
     private final Element element;
     private final double value;
     private final GroupEvaluationMeasure groupEvaluationMeasure;
     private final Object detailedResult;
 
-    public GroupMeasureResult(GroupEvaluationMeasure groupEvaluationMeasure, double value, Element element, Object detailedResult) {
+    public GroupEvaluationMeasureResult(GroupEvaluationMeasure groupEvaluationMeasure, double value, Element element, Object detailedResult) {
         this.element = element;
         this.value = value;
         this.groupEvaluationMeasure = groupEvaluationMeasure;
         this.detailedResult = detailedResult;
     }
 
-    public GroupMeasureResult(GroupEvaluationMeasure groupEvaluationMeasure, double value, Element element) {
+    public GroupEvaluationMeasureResult(GroupEvaluationMeasure groupEvaluationMeasure, double value, Element element) {
         this(groupEvaluationMeasure, value, element, null);
     }
 
-    public GroupMeasureResult(GroupEvaluationMeasure groupEvaluationMeasure, double value) {
+    public GroupEvaluationMeasureResult(GroupEvaluationMeasure groupEvaluationMeasure, double value) {
         this.groupEvaluationMeasure = groupEvaluationMeasure;
         element = ParameterOwnerXML.getElement(groupEvaluationMeasure);
         element.setAttribute(EvaluationMeasure.VALUE_ATTRIBUTE_NAME, Double.toString(value));

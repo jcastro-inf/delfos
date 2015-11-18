@@ -71,8 +71,8 @@ public class NoPenalty extends PenaltyFunction {
 
     @Override
     public double penaltyThisItem(Number aggregatedValue, Iterable<Number> referenceValues) {
-        AggregationOperator aggregationOpperator = (AggregationOperator) getParameterValue(AGGREGATION);
-        double aggregatedValueExpected = aggregationOpperator.aggregateValues(referenceValues);
+        AggregationOperator aggregationOperator = (AggregationOperator) getParameterValue(AGGREGATION);
+        double aggregatedValueExpected = aggregationOperator.aggregateValues(referenceValues);
 
         if (aggregatedValue.doubleValue() == aggregatedValueExpected) {
             return 0;

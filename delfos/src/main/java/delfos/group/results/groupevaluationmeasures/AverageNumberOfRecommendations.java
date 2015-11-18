@@ -22,7 +22,7 @@ import java.util.Map.Entry;
 public class AverageNumberOfRecommendations extends GroupEvaluationMeasure {
 
     @Override
-    public GroupMeasureResult getMeasureResult(GroupRecommendationResult recommendationResults, RatingsDataset<? extends Rating> testDataset, RelevanceCriteria relevanceCriteria) {
+    public GroupEvaluationMeasureResult getMeasureResult(GroupRecommendationResult recommendationResults, RatingsDataset<? extends Rating> testDataset, RelevanceCriteria relevanceCriteria) {
 
         MeanIterative mean = new MeanIterative();
 
@@ -31,7 +31,7 @@ public class AverageNumberOfRecommendations extends GroupEvaluationMeasure {
             mean.addValue(recommendationsToGroup.size());
 
         }
-        return new GroupMeasureResult(this, mean.getMean());
+        return new GroupEvaluationMeasureResult(this, mean.getMean());
     }
 
     @Override

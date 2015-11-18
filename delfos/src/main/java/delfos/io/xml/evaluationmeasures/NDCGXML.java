@@ -2,6 +2,9 @@ package delfos.io.xml.evaluationmeasures;
 
 import delfos.Constants;
 import delfos.common.statisticalfuncions.MeanIterative;
+import delfos.io.xml.parameterowner.ParameterOwnerXML;
+import delfos.results.evaluationmeasures.EvaluationMeasure;
+import delfos.results.evaluationmeasures.NDCG;
 import java.util.Collections;
 import java.util.List;
 import org.jdom2.Element;
@@ -26,7 +29,7 @@ public class NDCGXML {
     public static final String NDCG_VALUE_ATTRIBUTE_NAME = "value";
 
     public static Element getElement(List<Double> ndcgValues) {
-        Element element = new Element(NDCG_ELEMENT_NAME);
+        Element element = ParameterOwnerXML.getElement(new NDCG());
 
         Collections.sort(ndcgValues);
         double min = ndcgValues.get(0);
@@ -40,6 +43,7 @@ public class NDCGXML {
         element.setAttribute(NDCG_MEAN_ATTRIBUTE_NAME, Double.toString(mean));
         element.setAttribute(NDCG_PERCENTILE_75_ATTRIBUTE_NAME, Double.toString(percentile75));
         element.setAttribute(NDCG_MAX_ATTRIBUTE_NAME, Double.toString(max));
+        element.setAttribute(EvaluationMeasure.VALUE_ATTRIBUTE_NAME, Double.toString(mean));
 
         if (Constants.isRawResultDefined()) {
             Element ndcgValuesElement = new Element("ndcg_values");

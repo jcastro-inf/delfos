@@ -66,7 +66,7 @@ public class GroupRecommenderSystemWithPostFilter extends GroupRecommenderSystem
      * Especifica la técnica de agregación para agregar los ratings de los
      * usuarios y formar el perfil del grupo.
      */
-    public static final Parameter AGGREGATION_OPPERATOR = new Parameter(
+    public static final Parameter AGGREGATION_OPERATOR = new Parameter(
             "aggregationOperator",
             new ObjectParameter(AggregationOperatorFactory.getInstance().getAllAggregationOperators(), new Mean()),
             "Especifica la técnica de agregación para agregar los ratings de "
@@ -75,7 +75,7 @@ public class GroupRecommenderSystemWithPostFilter extends GroupRecommenderSystem
     public GroupRecommenderSystemWithPostFilter() {
         super();
         addParameter(FILTER);
-        addParameter(AGGREGATION_OPPERATOR);
+        addParameter(AGGREGATION_OPERATOR);
         addParameter(RECOMMENDER_SYSTEM);
 
         ParameterListener keepMaintainRecommender = new ParameterListener() {
@@ -111,7 +111,7 @@ public class GroupRecommenderSystemWithPostFilter extends GroupRecommenderSystem
 
         setParameterValue(RECOMMENDER_SYSTEM, rs);
         setParameterValue(FILTER, filter);
-        setParameterValue(AGGREGATION_OPPERATOR, aggregationOperator);
+        setParameterValue(AGGREGATION_OPERATOR, aggregationOperator);
     }
 
     @Override
@@ -238,6 +238,6 @@ public class GroupRecommenderSystemWithPostFilter extends GroupRecommenderSystem
     }
 
     private AggregationOperator getAggregationOperator() {
-        return (AggregationOperator) getParameterValue(AGGREGATION_OPPERATOR);
+        return (AggregationOperator) getParameterValue(AGGREGATION_OPERATOR);
     }
 }

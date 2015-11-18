@@ -44,7 +44,7 @@ public class PrintNeighborsToXML extends GroupEvaluationMeasure {
             + "test-set" + File.separator);
 
     @Override
-    public GroupMeasureResult getMeasureResult(GroupRecommendationResult recommendationResults, RatingsDataset<? extends Rating> testDataset, RelevanceCriteria relevanceCriteria) {
+    public GroupEvaluationMeasureResult getMeasureResult(GroupRecommendationResult recommendationResults, RatingsDataset<? extends Rating> testDataset, RelevanceCriteria relevanceCriteria) {
 
         FileUtilities.createDirectoryPath(TEST_SET_DIRECTORY);
 
@@ -105,7 +105,7 @@ public class PrintNeighborsToXML extends GroupEvaluationMeasure {
             Logger.getLogger(PrintNeighborsToXML.class.getName()).log(Level.SEVERE, null, ex);
         }
 
-        return new GroupMeasureResult(this, 1.0);
+        return new GroupEvaluationMeasureResult(this, 1.0);
     }
 
 }

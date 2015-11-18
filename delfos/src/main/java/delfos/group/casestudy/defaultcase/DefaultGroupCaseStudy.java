@@ -37,7 +37,7 @@ import delfos.group.groupsofusers.GroupOfUsers;
 import delfos.group.grs.GroupRecommenderSystem;
 import delfos.group.grs.RandomGroupRecommender;
 import delfos.group.results.groupevaluationmeasures.GroupEvaluationMeasure;
-import delfos.group.results.groupevaluationmeasures.GroupMeasureResult;
+import delfos.group.results.groupevaluationmeasures.GroupEvaluationMeasureResult;
 import delfos.group.results.grouprecomendationresults.GroupRecommendationResult;
 import delfos.rs.RecommenderSystemBuildingProgressListener_default;
 import delfos.rs.recommendation.Recommendation;
@@ -73,7 +73,7 @@ public class DefaultGroupCaseStudy extends GroupCaseStudy {
     protected final GroupValidationTechnique groupValidationTechnique;
     // ================== VARIABLES QUE CAMBIAN EN LA EJECUCION ================
     protected int ejecucionActual;
-    protected Map<GroupEvaluationMeasure, GroupMeasureResult>[][] executionsResult;
+    protected Map<GroupEvaluationMeasure, GroupEvaluationMeasureResult>[][] executionsResult;
     protected Integer recommenderListSize = null;
     protected boolean finished = false;
     private long[][] buildTimes;//executionTimes[ejecucion][conjunto]
@@ -375,7 +375,7 @@ public class DefaultGroupCaseStudy extends GroupCaseStudy {
         multiThreadExecutionManagerEvaluationMeasures.getAllFinishedTasks().stream().forEach((task) -> {
             task.groupEvaluationMeasuresResults.entrySet().stream().forEach((entry) -> {
                 GroupEvaluationMeasure groupEvaluationMeasure = entry.getKey();
-                GroupMeasureResult groupMeasureResult = entry.getValue();
+                GroupEvaluationMeasureResult groupMeasureResult = entry.getValue();
 
                 this.executionsResult[task.ejecucion][task.particion].put(groupEvaluationMeasure, groupMeasureResult);
             });
@@ -405,12 +405,12 @@ public class DefaultGroupCaseStudy extends GroupCaseStudy {
     }
 
     @Override
-    public GroupMeasureResult getMeasureResult(GroupEvaluationMeasure em, int execution, int split) {
+    public GroupEvaluationMeasureResult getMeasureResult(GroupEvaluationMeasure em, int execution, int split) {
 
-        Map<GroupEvaluationMeasure, GroupMeasureResult> thisExecution_evaluationMeasuresValues = this.executionsResult[execution][split];
+        Map<GroupEvaluationMeasure, GroupEvaluationMeasureResult> thisExecution_evaluationMeasuresValues = this.executionsResult[execution][split];
 
         if (thisExecution_evaluationMeasuresValues.containsKey(em)) {
-            GroupMeasureResult groupMeasureResult = thisExecution_evaluationMeasuresValues.get(em);
+            GroupEvaluationMeasureResult groupMeasureResult = thisExecution_evaluationMeasuresValues.get(em);
             return groupMeasureResult;
         } else {
             throw new IllegalArgumentException("The evaluation measure " + em + " has no value.");
@@ -425,24 +425,6 @@ public class DefaultGroupCaseStudy extends GroupCaseStudy {
     @Override
     public GroupRecommenderSystem getGroupRecommenderSystem() {
         return groupRecommenderSystem;
-    }
-
-    /**
-     * Método que devuelve el resultado agregado de una medida de evaluación.
-     *
-     * @param em Medida de evaluación
-     * @return Resultado de la medida de evaluación
-     */
-    @Override
-    public GroupMeasureResult getAggregateMeasureResult(GroupEvaluationMeasure em) {
-        List<GroupMeasureResult> measureResult = new ArrayList<>();
-        for (int execution = 0; execution < getNumExecutions(); execution++) {
-            for (int split = 0; split < getGroupValidationTechnique().getNumberOfSplits(); split++) {
-                measureResult.add(getMeasureResult(em, execution, split));
-            }
-
-        }
-        return em.agregateResults(measureResult);
     }
 
     /**
@@ -508,7 +490,7 @@ public class DefaultGroupCaseStudy extends GroupCaseStudy {
     }
 
     @Override
-    public void putResult(int ejecucion, int split, GroupEvaluationMeasure e, GroupMeasureResult groupMeasureResult) {
+    public void putResult(int ejecucion, int split, GroupEvaluationMeasure e, GroupEvaluationMeasureResult groupMeasureResult) {
         executionsResult[ejecucion][split].put(e, groupMeasureResult);
     }
 
@@ -652,4 +634,37 @@ public class DefaultGroupCaseStudy extends GroupCaseStudy {
         groupPredictionProtocol.setSeedValue(thisLoopSeed);
         Global.showInfoMessage("Reset groupPredictionProtocol seed to " + groupPredictionProtocol.getSeedValue() + "\n");
     }
+
+    private Map<GroupEvaluationMeasure, GroupEvaluationMeasureResult> groupEvaluationMeasuresResults = null;
+
+    /**
+     * Método que devuelve el resultado agregado de una medida de evaluación.
+     *
+     * @param em Medida de evaluación
+     * @return Resultado de la medida de evaluación
+     */
+    @Override
+    public GroupEvaluationMeasureResult getAggregateMeasureResult(GroupEvaluationMeasure em) {
+
+        if (groupEvaluationMeasuresResults != null) {
+            if (groupEvaluationMeasuresResults.containsKey(em)) {
+                return groupEvaluationMeasuresResults.get(em);
+            }
+        }
+
+        List<GroupEvaluationMeasureResult> measureResult = new ArrayList<>();
+        for (int execution = 0; execution < getNumExecutions(); execution++) {
+            for (int split = 0; split < getGroupValidationTechnique().getNumberOfSplits(); split++) {
+                measureResult.add(getMeasureResult(em, execution, split));
+            }
+
+        }
+        return em.agregateResults(measureResult);
+    }
+
+    @Override
+    public void setAggregateResults(Map<GroupEvaluationMeasure, GroupEvaluationMeasureResult> groupEvaluationMeasuresResults) {
+        this.groupEvaluationMeasuresResults = groupEvaluationMeasuresResults;
+    }
+
 }

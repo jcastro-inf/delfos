@@ -7,6 +7,7 @@ import delfos.dataset.basic.rating.RelevanceCriteria;
 import delfos.group.groupsofusers.GroupOfUsers;
 import delfos.group.results.grouprecomendationresults.GroupRecommendationResult;
 import delfos.io.xml.parameterowner.ParameterOwnerXML;
+import delfos.results.evaluationmeasures.EvaluationMeasure;
 import delfos.rs.recommendation.Recommendation;
 import java.util.Collection;
 import java.util.List;
@@ -25,7 +26,7 @@ import org.jdom2.Element;
 public class NumberOfRecommendations extends GroupEvaluationMeasure {
 
     @Override
-    public GroupMeasureResult getMeasureResult(GroupRecommendationResult recommendationResults, RatingsDataset<? extends Rating> testDataset, RelevanceCriteria relevanceCriteria) {
+    public GroupEvaluationMeasureResult getMeasureResult(GroupRecommendationResult recommendationResults, RatingsDataset<? extends Rating> testDataset, RelevanceCriteria relevanceCriteria) {
 
         Element ret = ParameterOwnerXML.getElement(this);
         int recomendadas = 0;
@@ -45,15 +46,17 @@ public class NumberOfRecommendations extends GroupEvaluationMeasure {
             ret.addContent(groupRequests);
         }
         ret.setAttribute("value", Integer.toString(recomendadas));
-        return new GroupMeasureResult(this, recomendadas, ret);
+        return new GroupEvaluationMeasureResult(this, recomendadas, ret);
     }
 
     @Override
-    public GroupMeasureResult agregateResults(Collection<GroupMeasureResult> results) {
-        float sumOfAggregated = 0;
+    public GroupEvaluationMeasureResult agregateResults(Collection<GroupEvaluationMeasureResult> results) {
+        Element aggregatedElement = new Element(this.getName());
 
-        for (GroupMeasureResult mr : results) {
-            double value = mr.getValue();
+        long sumOfAggregated = 0;
+
+        for (GroupEvaluationMeasureResult mr : results) {
+            long value = (long) mr.getValue();
             if (Double.isNaN(value)) {
                 Global.showWarning("The value for the measure " + this.getName() + " is NaN");
             } else {
@@ -65,7 +68,9 @@ public class NumberOfRecommendations extends GroupEvaluationMeasure {
             }
         }
 
-        return new GroupMeasureResult(this, sumOfAggregated);
+        aggregatedElement.setAttribute(EvaluationMeasure.VALUE_ATTRIBUTE_NAME, Long.toString(sumOfAggregated));
+
+        return new GroupEvaluationMeasureResult(this, sumOfAggregated, aggregatedElement);
     }
 
     @Override

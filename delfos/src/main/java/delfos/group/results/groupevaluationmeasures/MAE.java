@@ -38,7 +38,7 @@ import org.jdom2.Element;
 public class MAE extends GroupEvaluationMeasure {
 
     @Override
-    public GroupMeasureResult getMeasureResult(GroupRecommendationResult recommendationResults, RatingsDataset<? extends Rating> testDataset, RelevanceCriteria relevanceCriteria) {
+    public GroupEvaluationMeasureResult getMeasureResult(GroupRecommendationResult recommendationResults, RatingsDataset<? extends Rating> testDataset, RelevanceCriteria relevanceCriteria) {
         Element elementMae = new Element(this.getClass().getSimpleName());
         elementMae = ParameterOwnerXML.getElement(this);
 
@@ -96,10 +96,10 @@ public class MAE extends GroupEvaluationMeasure {
         elementMae.addContent(getRawAllMembersMAEsElement(maeAllMembers));
 
         if (maeGeneral.isEmpty()) {
-            return new GroupMeasureResult(this, Double.NaN, elementMae);
+            return new GroupEvaluationMeasureResult(this, Double.NaN, elementMae);
         } else {
             double mae = maeGeneral.getMean();
-            return new GroupMeasureResult(this, mae, elementMae);
+            return new GroupEvaluationMeasureResult(this, mae, elementMae);
         }
     }
 

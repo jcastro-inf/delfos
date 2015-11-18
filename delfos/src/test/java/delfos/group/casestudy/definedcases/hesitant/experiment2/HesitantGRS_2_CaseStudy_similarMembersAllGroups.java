@@ -109,8 +109,8 @@ public class HesitantGRS_2_CaseStudy_similarMembersAllGroups extends DelfosTest 
                 );
 
                 groupCaseStudy.setAlias(
-                        "_dataValidation=" + groupCaseStudy.hashCodeWithoutGroupRecommenderSystem()
-                        + "_technique=" + groupCaseStudy.hashCodeOfTheRecommenderSystem()
+                        "_dataValidation=" + groupCaseStudy.hashDataValidation()
+                        + "_technique=" + groupCaseStudy.hashTechnique()
                         + "_" + groupRecommenderSystem.getAlias()
                         + "_allHash=" + groupCaseStudy.hashCode()
                 );

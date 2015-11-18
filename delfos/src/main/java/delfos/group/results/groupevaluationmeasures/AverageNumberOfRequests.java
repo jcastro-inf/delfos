@@ -24,7 +24,7 @@ import java.util.Map.Entry;
 public class AverageNumberOfRequests extends GroupEvaluationMeasure {
 
     @Override
-    public GroupMeasureResult getMeasureResult(GroupRecommendationResult recommendationResults, RatingsDataset<? extends Rating> testDataset, RelevanceCriteria relevanceCriteria) {
+    public GroupEvaluationMeasureResult getMeasureResult(GroupRecommendationResult recommendationResults, RatingsDataset<? extends Rating> testDataset, RelevanceCriteria relevanceCriteria) {
         MeanIterative mean = new MeanIterative();
         for (Entry<GroupOfUsers, List<Recommendation>> entry : recommendationResults) {
             GroupOfUsers group = entry.getKey();
@@ -36,7 +36,7 @@ public class AverageNumberOfRequests extends GroupEvaluationMeasure {
                 mean.addValue(requestsToGroup.size());
             }
         }
-        return new GroupMeasureResult(this, mean.getMean());
+        return new GroupEvaluationMeasureResult(this, mean.getMean());
     }
 
     @Override

@@ -176,8 +176,8 @@ public class CaseStudyAllBaselines {
     private Collection<GroupRecommenderSystem> getAgregationOfIndividualRecommendationsGRSs(RecommenderSystem coreRS) {
         Collection<GroupRecommenderSystem> groupRecommenderSystems = new ArrayList<>();
 
-        getAggregationOpperators().stream().forEach((aggregationOpperator) -> {
-            GroupRecommenderSystem grs = new AggregationOfIndividualRecommendations(coreRS, aggregationOpperator);
+        getAggregationOperators().stream().forEach((aggregationOperator) -> {
+            GroupRecommenderSystem grs = new AggregationOfIndividualRecommendations(coreRS, aggregationOperator);
             grs.setAlias(grs.getAlias() + "_" + coreRS.getAlias());
             groupRecommenderSystems.add(grs);
         });
@@ -188,8 +188,8 @@ public class CaseStudyAllBaselines {
     private Collection<GroupRecommenderSystem> getAgregationOfIndividualRatingsGRSs(RecommenderSystem coreRS) {
         Collection<GroupRecommenderSystem> groupRecommenderSystems = new ArrayList<>();
 
-        getAggregationOpperators().stream().forEach((aggregationOpperator) -> {
-            GroupRecommenderSystem grs = new AggregationOfIndividualRatings(coreRS, aggregationOpperator);
+        getAggregationOperators().stream().forEach((aggregationOperator) -> {
+            GroupRecommenderSystem grs = new AggregationOfIndividualRatings(coreRS, aggregationOperator);
             grs.setAlias(grs.getAlias() + "_" + coreRS.getAlias());
             groupRecommenderSystems.add(grs);
         });
@@ -197,7 +197,7 @@ public class CaseStudyAllBaselines {
         return groupRecommenderSystems;
     }
 
-    private static Collection<AggregationOperator> getAggregationOpperators() {
+    private static Collection<AggregationOperator> getAggregationOperators() {
 
         return Arrays.asList(
                 //Bound aggregations.

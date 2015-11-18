@@ -3,10 +3,14 @@ package delfos.group.casestudy;
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RelevanceCriteria;
+import delfos.group.casestudy.defaultcase.DefaultGroupCaseStudy;
 import delfos.group.experiment.validation.groupformation.GroupFormationTechnique;
 import delfos.group.experiment.validation.predictionvalidation.GroupPredictionProtocol;
 import delfos.group.experiment.validation.validationtechniques.GroupValidationTechnique;
 import delfos.group.grs.GroupRecommenderSystem;
+import delfos.group.results.groupevaluationmeasures.GroupEvaluationMeasure;
+import delfos.group.results.groupevaluationmeasures.GroupEvaluationMeasureResult;
+import java.util.Map;
 
 /**
  * Almacena los valores de un caso de estudio de sistemas de recomendación para
@@ -24,7 +28,11 @@ public class GroupCaseStudyConfiguration {
     private final GroupValidationTechnique groupValidationTechnique;
     private final GroupPredictionProtocol groupPredictionProtocol;
     private final RelevanceCriteria relevanceCriteria;
+    private final Map<GroupEvaluationMeasure, GroupEvaluationMeasureResult> groupEvaluationMeasuresResults;
+
     private final String caseStudyAlias;
+    private final int numExecutions;
+    private final long seed;
 
     public GroupCaseStudyConfiguration(
             GroupRecommenderSystem<Object, Object> groupRecommenderSystem,
@@ -33,7 +41,10 @@ public class GroupCaseStudyConfiguration {
             GroupValidationTechnique groupValidationTechnique,
             GroupPredictionProtocol groupPredictionProtocol,
             RelevanceCriteria relevanceCriteria,
-            String caseStudyAlias) {
+            String caseStudyAlias,
+            int numExecutions,
+            long seed,
+            Map<GroupEvaluationMeasure, GroupEvaluationMeasureResult> groupEvaluationMeasuresResults) {
 
         this.groupRecommenderSystem = groupRecommenderSystem;
         this.groupFormationTechnique = groupFormationTechnique;
@@ -43,6 +54,9 @@ public class GroupCaseStudyConfiguration {
         this.relevanceCriteria = relevanceCriteria;
 
         this.caseStudyAlias = caseStudyAlias;
+        this.numExecutions = numExecutions;
+        this.seed = seed;
+        this.groupEvaluationMeasuresResults = groupEvaluationMeasuresResults;
     }
 
     public GroupRecommenderSystem<Object, Object> getGroupRecommenderSystem() {
@@ -73,4 +87,23 @@ public class GroupCaseStudyConfiguration {
         return caseStudyAlias;
     }
 
+    public GroupCaseStudy createGroupCaseStudy() {
+
+        GroupCaseStudy caseStudyGroupRecommendation = new DefaultGroupCaseStudy(
+                datasetLoader,
+                groupRecommenderSystem,
+                groupFormationTechnique,
+                groupValidationTechnique,
+                groupPredictionProtocol,
+                groupEvaluationMeasuresResults.keySet(),
+                relevanceCriteria,
+                numExecutions,
+                seed);
+
+        caseStudyGroupRecommendation.setAggregateResults(groupEvaluationMeasuresResults);
+
+        caseStudyGroupRecommendation.setAlias(caseStudyAlias);
+
+        return caseStudyGroupRecommendation;
+    }
 }

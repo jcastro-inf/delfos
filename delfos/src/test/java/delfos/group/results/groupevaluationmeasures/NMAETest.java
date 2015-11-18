@@ -53,7 +53,7 @@ public class NMAETest {
         NMAE instance = new NMAE();
 
         //Phase 2: Execution
-        GroupMeasureResult result = instance.getMeasureResult(groupRecommendationResult, testDataset, relevanceCriteria);
+        GroupEvaluationMeasureResult result = instance.getMeasureResult(groupRecommendationResult, testDataset, relevanceCriteria);
 
         //Phase 3: Result checking
         float expResult = Float.NaN;

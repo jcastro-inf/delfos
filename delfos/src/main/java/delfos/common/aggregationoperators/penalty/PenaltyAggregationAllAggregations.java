@@ -34,8 +34,8 @@ public class PenaltyAggregationAllAggregations extends AggregationOperator {
     static {
         allAggregationOperators.addAll(AggregationOperatorFactory.getInstance().getAllAggregationOperators());
         for (Iterator<AggregationOperator> it = allAggregationOperators.iterator(); it.hasNext();) {
-            AggregationOperator agregationOpperator = it.next();
-            if (agregationOpperator.getClass().equals(PenaltyAggregationAllAggregations.class)) {
+            AggregationOperator agregationOperator = it.next();
+            if (agregationOperator.getClass().equals(PenaltyAggregationAllAggregations.class)) {
                 it.remove();
             }
         }

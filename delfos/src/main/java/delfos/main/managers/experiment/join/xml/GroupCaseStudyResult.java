@@ -1,59 +1,77 @@
 package delfos.main.managers.experiment.join.xml;
 
-import delfos.common.decimalnumbers.NumberRounder;
 import delfos.group.casestudy.GroupCaseStudy;
-import delfos.group.results.groupevaluationmeasures.GroupEvaluationMeasure;
-import delfos.group.results.groupevaluationmeasures.GroupMeasureResult;
-import delfos.group.results.groupevaluationmeasures.precisionrecall.PRSpaceGroups;
-import java.util.List;
+import delfos.group.io.excel.casestudy.GroupCaseStudyExcel;
+import java.util.Comparator;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeMap;
 import java.util.TreeSet;
-import jxl.write.WritableSheet;
-import jxl.write.WriteException;
 
 public class GroupCaseStudyResult {
 
-    int caseStudyHash;
-    int techniqueHash;
-    int dataValidationHash;
+    public static final Comparator<GroupCaseStudyResult> dataValidationComparator = (GroupCaseStudyResult o1, GroupCaseStudyResult o2) -> {
 
-    List<String> dataValidationParametersOrder;
-    List<String> techniqueParametersOrder;
-    List<String> evaluationMeasuresOrder;
+        int datasetCompare = o1.groupCaseStudy.getDatasetLoader().compareTo(o2.groupCaseStudy.getDatasetLoader());
+        if (datasetCompare != 0) {
+            return datasetCompare;
+        }
 
-    Map<String, String> dataValidationParameters;
-    Map<String, String> techniqueParameters;
-    Map<String, Number> evaluationMeasuresValues;
+        int groupFormationCompare = o1.groupCaseStudy.getGroupFormationTechnique().compareTo(o2.groupCaseStudy.getGroupFormationTechnique());
+        if (groupFormationCompare != 0) {
+            return groupFormationCompare;
+        }
 
+        int groupValidationTechniqueCompare = o1.groupCaseStudy.getGroupValidationTechnique().compareTo(o2.groupCaseStudy.getGroupValidationTechnique());
+        if (groupValidationTechniqueCompare != 0) {
+            return groupValidationTechniqueCompare;
+        }
+
+        int groupPredictionProtocolCompare = o1.groupCaseStudy.getGroupPredictionProtocol().compareTo(o2.groupCaseStudy.getGroupPredictionProtocol());
+        if (groupPredictionProtocolCompare != 0) {
+            return groupPredictionProtocolCompare;
+        }
+        return 0;
+    };
+
+    public static final Comparator<GroupCaseStudyResult> techniqueComparator = (GroupCaseStudyResult o1, GroupCaseStudyResult o2) -> {
+
+        int groupRecommenderSystemCompare = o1.groupCaseStudy.getGroupRecommenderSystem().compareTo(o2.groupCaseStudy.getGroupRecommenderSystem());
+        return groupRecommenderSystemCompare;
+
+    };
+
+    private final int caseStudyHash;
+    private final int techniqueHash;
+    private final int dataValidationHash;
+    private final int numExecutions;
+    private final String alias;
+
+    private final Map<String, Object> dataValidationParameters;
+    private final Map<String, Object> techniqueParameters;
+    private final Map<String, Number> evaluationMeasuresValues;
+    private final long seed;
+    private final GroupCaseStudy groupCaseStudy;
+
+    /**
+     *
+     * @param groupCaseStudy
+     */
     public GroupCaseStudyResult(GroupCaseStudy groupCaseStudy) {
 
-        dataValidationParametersOrder = extractDataValidationParametersOrder(groupCaseStudy);
-        dataValidationParameters = extractDataValidationParameters(groupCaseStudy);
+        this.groupCaseStudy = groupCaseStudy;
 
-        techniqueParametersOrder = extractTechniqueParametersOrder(groupCaseStudy);
-        techniqueParameters = extractTechniqueParameters(groupCaseStudy);
+        caseStudyHash = groupCaseStudy.hashCode();
+        techniqueHash = groupCaseStudy.hashTechnique();
+        dataValidationHash = groupCaseStudy.hashDataValidation();
+        numExecutions = groupCaseStudy.getNumExecutions();
+        alias = groupCaseStudy.getAlias();
+        seed = groupCaseStudy.getSeedValue();
 
-        evaluationMeasuresOrder = extractEvaluationMeasuresOrder(groupCaseStudy);
-        evaluationMeasuresValues = extractEvaluationMeasuresValues(groupCaseStudy);
+        dataValidationParameters = GroupCaseStudyExcel.extractDataValidationParameters(groupCaseStudy);
 
-    }
+        techniqueParameters = GroupCaseStudyExcel.extractTechniqueParameters(groupCaseStudy);
 
-    public void setDataValidationParametersOrder(List<String> orderedDataValidationParameters) {
-        this.dataValidationParametersOrder = orderedDataValidationParameters;
-    }
-
-    public void setOrderedDataValidationParameters(List<String> orderedDataValidationParameters) {
-        this.dataValidationParametersOrder = orderedDataValidationParameters;
-    }
-
-    public void setOrderedEvaluationMeasures(List<String> orderedEvaluationMeasures) {
-        this.evaluationMeasuresOrder = orderedEvaluationMeasures;
-    }
-
-    public void setOrderedTechniqueParameters(List<String> orderedTechniqueParameters) {
-        this.techniqueParametersOrder = orderedTechniqueParameters;
+        evaluationMeasuresValues = GroupCaseStudyExcel.extractEvaluationMeasuresValues(groupCaseStudy);
     }
 
     public Set<String> getDefinedDataValidationParameters() {
@@ -64,90 +82,36 @@ public class GroupCaseStudyResult {
         return new TreeSet<>(techniqueParameters.keySet());
     }
 
-    public Set<String> getDefinedEvaluationMeasuresValues() {
+    public Set<String> getDefinedEvaluationMeasures() {
         return new TreeSet<>(evaluationMeasuresValues.keySet());
     }
 
-    private static void createAggregateResultsSheet(GroupCaseStudy caseStudyGroup, WritableSheet sheet) throws WriteException {
-        int row = 0;
-
-        PRSpaceGroups pRSpaceGroups = null;
-        Map<String, Integer> indexOfMeasures = new TreeMap<>();
-        Map<String, GroupEvaluationMeasure> metricsByName = new TreeMap<>();
-        {
-            int i = 0;
-            for (GroupEvaluationMeasure groupEvaluationMeasure : caseStudyGroup.getEvaluationMeasures()) {
-                indexOfMeasures.put(groupEvaluationMeasure.getName(), i++);
-
-                metricsByName.put(groupEvaluationMeasure.getName(), groupEvaluationMeasure);
-
-                if (groupEvaluationMeasure instanceof PRSpaceGroups) {
-                    pRSpaceGroups = (PRSpaceGroups) groupEvaluationMeasure;
-                    for (int listSize = 1; listSize <= maxListSize; listSize++) {
-                        indexOfMeasures.put("Precision@" + listSize, i++);
-                    }
-                }
-            }
-            indexOfMeasures.put("BuildTime", i++);
-            indexOfMeasures.put("GroupModelBuildTime", i++);
-            indexOfMeasures.put("RecommendationTime", i++);
-        }
-
-        for (Map.Entry<String, Integer> entry : indexOfMeasures.entrySet()) {
-            String name = entry.getKey();
-            int column = entry.getValue();
-            addTitleText(sheet, column, row, name);
-        }
-
-        row++;
-
-        //Ahora los valores agregados de cada metrica.
-        for (Map.Entry<String, Integer> entry : indexOfMeasures.entrySet()) {
-            String name = entry.getKey();
-            int column = entry.getValue();
-
-            final double value;
-
-            if (name.equals("BuildTime")) {
-                value = caseStudyGroup.getAggregateBuildTime();
-            } else {
-                if (name.equals("GroupModelBuildTime")) {
-                    value = caseStudyGroup.getAggregateGroupBuildTime();
-                } else {
-                    if (name.equals("RecommendationTime")) {
-                        value = caseStudyGroup.getAggregateRecommendationTime();
-                    } else {
-                        if (name.startsWith("Precision@")) {
-                            GroupMeasureResult measureResult = caseStudyGroup.getAggregateMeasureResult(pRSpaceGroups);
-                            Map<String, Double> detailedResult = (Map<String, Double>) measureResult.getDetailedResult();
-
-                            Double get = detailedResult.get(name);
-
-                            if (get == null) {
-                                //No se llegan a recomendar tantos productos.
-                                value = Double.NaN;
-                            } else {
-                                value = get;
-                            }
-                        } else {
-                            //Es una medida cualquiera.
-                            GroupEvaluationMeasure groupEvaluationMeasure = metricsByName.get(name);
-                            value = caseStudyGroup.getAggregateMeasureResult(groupEvaluationMeasure).getValue();
-                        }
-                    }
-                }
-            }
-
-            if (!Double.isNaN(value)) {
-                double decimalTrimmedValue = NumberRounder.round(value, 5);
-                addNumber(sheet, column, row, decimalTrimmedValue);
-            } else {
-                addText(sheet, column, row, "");
-            }
-            double decimalTrimmedValue = NumberRounder.round(value, 5);
-
-            addNumber(sheet, column, row, decimalTrimmedValue);
-        }
-
+    public String getGroupCaseStudyAlias() {
+        return alias;
     }
+
+    public int getNumExecutions() {
+        return numExecutions;
+    }
+
+    public long getGroupCaseStudySeed() {
+        return seed;
+    }
+
+    public GroupCaseStudy getGroupCaseStudy() {
+        return groupCaseStudy;
+    }
+
+    public Object getDataValidationParameterValue(String dataValidationParameter) {
+        return dataValidationParameters.get(dataValidationParameter);
+    }
+
+    public Object getTechniqueParameterValue(String techniqueParameter) {
+        return techniqueParameters.get(techniqueParameter);
+    }
+
+    public Object getEvaluationMeasureValue(String evaluationMeasure) {
+        return evaluationMeasuresValues.get(evaluationMeasure);
+    }
+
 }

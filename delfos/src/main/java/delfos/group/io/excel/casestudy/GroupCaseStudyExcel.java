@@ -16,15 +16,20 @@ import delfos.group.experiment.validation.validationtechniques.GroupValidationTe
 import delfos.group.grs.GroupRecommenderSystem;
 import delfos.group.io.xml.casestudy.GroupCaseStudyXML;
 import delfos.group.results.groupevaluationmeasures.GroupEvaluationMeasure;
-import delfos.group.results.groupevaluationmeasures.GroupMeasureResult;
+import delfos.group.results.groupevaluationmeasures.GroupEvaluationMeasureResult;
 import delfos.group.results.groupevaluationmeasures.precisionrecall.PRSpaceGroups;
 import delfos.io.excel.casestudy.CaseStudyExcel;
+import delfos.io.excel.parameterowner.ParameterOwnerExcel;
+import delfos.main.managers.experiment.join.xml.GroupCaseStudyResult;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
+import java.util.TreeSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import jxl.Cell;
@@ -215,15 +220,15 @@ public class GroupCaseStudyExcel {
 
                     String datasetLoaderName = otherValues_byCase.get(experimentName).get(DATASET_LOADER_COLUMN_NAME);
 
-                    addText(allExperiments, EXPERIMENT_NAME_COLUMN, row, experimentName);
+                    setCellText(allExperiments, EXPERIMENT_NAME_COLUMN, row, experimentName);
 
-                    addText(allExperiments, DATASET_LOADER_ALIAS_COLUMN, row, datasetLoaderName);
+                    setCellText(allExperiments, DATASET_LOADER_ALIAS_COLUMN, row, datasetLoaderName);
 
                     Map<String, Double> experimentResults = metricValues_byCase.get(experimentName);
                     for (String metricName : experimentResults.keySet()) {
                         double metricValue = metricValues_byCase.get(experimentName).get(metricName);
                         int column = indexColumn.get(metricName) + GROUP_EVALUATION_MEASURES_OFFSET;
-                        addNumber(allExperiments, column, row, metricValue);
+                        setCellFloatNumber(allExperiments, column, row, metricValue);
                     }
                     row++;
                 }
@@ -262,9 +267,6 @@ public class GroupCaseStudyExcel {
             throw new IllegalArgumentException("Cannot find the datasetLoader alias");
         }
         return datasetLoaderAlias;
-    }
-
-    private GroupCaseStudyExcel() {
     }
 
     public synchronized static void saveCaseResults(GroupCaseStudy caseStudyGroup, File directory) {
@@ -352,7 +354,7 @@ public class GroupCaseStudyExcel {
             sheet.mergeCells(column + 0, row, column + titleCellWidth, row);
             addTitleText(sheet, column, row, "Group Recommender System");
             row++;
-            addText(sheet, column, row, groupRecommenderSystem.getName());
+            setCellText(sheet, column, row, groupRecommenderSystem.getName());
             row++;
             for (Parameter parameter : groupRecommenderSystem.getParameters()) {
                 Object parameterValue = groupRecommenderSystem.getParameterValue(parameter);
@@ -368,7 +370,7 @@ public class GroupCaseStudyExcel {
             sheet.mergeCells(column + 0, row, column + titleCellWidth, row);
             addTitleText(sheet, column, row, DATASET_LOADER_CELL_CONTENT);
             row++;
-            addText(sheet, column, row, datasetLoader.getName());
+            setCellText(sheet, column, row, datasetLoader.getName());
             row++;
             for (Parameter parameter : datasetLoader.getParameters()) {
                 Object parameterValue = datasetLoader.getParameterValue(parameter);
@@ -384,7 +386,7 @@ public class GroupCaseStudyExcel {
             sheet.mergeCells(column + 0, row, column + titleCellWidth, row);
             addTitleText(sheet, column, row, "Group Formation Technique");
             row++;
-            addText(sheet, column, row, groupFormationTechnique.getName());
+            setCellText(sheet, column, row, groupFormationTechnique.getName());
             row++;
             for (Parameter parameter : groupFormationTechnique.getParameters()) {
                 Object parameterValue = groupFormationTechnique.getParameterValue(parameter);
@@ -400,7 +402,7 @@ public class GroupCaseStudyExcel {
             sheet.mergeCells(column + 0, row, column + titleCellWidth, row);
             addTitleText(sheet, column, row, "Group Validation Technique");
             row++;
-            addText(sheet, column, row, groupValidationTechnique.getName());
+            setCellText(sheet, column, row, groupValidationTechnique.getName());
             row++;
             for (Parameter parameter : groupValidationTechnique.getParameters()) {
                 Object parameterValue = groupValidationTechnique.getParameterValue(parameter);
@@ -416,7 +418,7 @@ public class GroupCaseStudyExcel {
             sheet.mergeCells(column + 0, row, column + titleCellWidth, row);
             addTitleText(sheet, column, row, "Group Prediction Protocol");
             row++;
-            addText(sheet, column, row, groupPredictionProtocol.getName());
+            setCellText(sheet, column, row, groupPredictionProtocol.getName());
             row++;
             for (Parameter parameter : groupPredictionProtocol.getParameters()) {
                 Object parameterValue = groupPredictionProtocol.getParameterValue(parameter);
@@ -453,25 +455,25 @@ public class GroupCaseStudyExcel {
     private static int writeParameterAndValue(Parameter parameter, Object parameterValue, WritableSheet sheet, int column, int row) throws WriteException {
 
         //First write the parameter line
-        addText(sheet, column, row, "Parameter");
-        addText(sheet, column + parameterNameOffset, row, parameter.getName());
-        addText(sheet, column + parameterTypeOffset, row, parameter.getRestriction().getName());
+        setCellText(sheet, column, row, "Parameter");
+        setCellText(sheet, column + parameterNameOffset, row, parameter.getName());
+        setCellText(sheet, column + parameterTypeOffset, row, parameter.getRestriction().getName());
 
         if (parameterValue instanceof ParameterOwner) {
             ParameterOwner parameterOwner = (ParameterOwner) parameterValue;
-            addText(sheet, column + parameterValueOffset, row, parameterOwner.getName());
+            setCellText(sheet, column + parameterValueOffset, row, parameterOwner.getName());
         } else {
             if (parameterValue instanceof java.lang.Number) {
 
                 if ((parameterValue instanceof java.lang.Integer) || (parameterValue instanceof java.lang.Long)) {
                     java.lang.Long number = ((java.lang.Number) parameterValue).longValue();
-                    addNumber(sheet, column + parameterValueOffset, row, number);
+                    setCellIntegerNumber(sheet, column + parameterValueOffset, row, number);
                 } else {
                     java.lang.Number number = (java.lang.Number) parameterValue;
-                    addNumber(sheet, column + parameterValueOffset, row, number.doubleValue());
+                    setCellFloatNumber(sheet, column + parameterValueOffset, row, number.doubleValue());
                 }
             } else {
-                addText(sheet, column + parameterValueOffset, row, parameterValue.toString());
+                setCellText(sheet, column + parameterValueOffset, row, parameterValue.toString());
             }
         }
 
@@ -546,9 +548,9 @@ public class GroupCaseStudyExcel {
             for (int thisSplit = 0; thisSplit < numSplits; thisSplit++) {
 
                 //Escribo la linea de esta ejecución concreta
-                addNumber(sheet, vueltaColumn, row, vuelta);
-                addNumber(sheet, executionColumn, row, thisExecution + 1);
-                addNumber(sheet, splitColumn, row, thisSplit + 1);
+                setCellIntegerNumber(sheet, vueltaColumn, row, vuelta);
+                setCellIntegerNumber(sheet, executionColumn, row, thisExecution + 1);
+                setCellIntegerNumber(sheet, splitColumn, row, thisSplit + 1);
 
                 //Ahora los valores de cada metrica.
                 for (Map.Entry<String, Integer> entry : indexOfMeasures.entrySet()) {
@@ -566,7 +568,7 @@ public class GroupCaseStudyExcel {
                                 value = caseStudyGroup.getRecommendationTime(thisExecution, thisSplit);
                             } else {
                                 if (name.startsWith("Precision@")) {
-                                    GroupMeasureResult measureResult = caseStudyGroup.getMeasureResult(pRSpaceGroups, thisExecution, thisSplit);
+                                    GroupEvaluationMeasureResult measureResult = caseStudyGroup.getMeasureResult(pRSpaceGroups, thisExecution, thisSplit);
                                     Map<String, Double> detailedResult = (Map<String, Double>) measureResult.getDetailedResult();
 
                                     Double get = detailedResult.get(name);
@@ -588,9 +590,9 @@ public class GroupCaseStudyExcel {
 
                     if (!Double.isNaN(value)) {
                         double decimalTrimmedValue = NumberRounder.round(value, 5);
-                        addNumber(sheet, column, row, decimalTrimmedValue);
+                        setCellFloatNumber(sheet, column, row, decimalTrimmedValue);
                     } else {
-                        addText(sheet, column, row, "");
+                        setCellText(sheet, column, row, "");
                     }
                 }
 
@@ -652,7 +654,7 @@ public class GroupCaseStudyExcel {
                         value = caseStudyGroup.getAggregateRecommendationTime();
                     } else {
                         if (name.startsWith("Precision@")) {
-                            GroupMeasureResult measureResult = caseStudyGroup.getAggregateMeasureResult(pRSpaceGroups);
+                            GroupEvaluationMeasureResult measureResult = caseStudyGroup.getAggregateMeasureResult(pRSpaceGroups);
                             Map<String, Double> detailedResult = (Map<String, Double>) measureResult.getDetailedResult();
 
                             Double get = detailedResult.get(name);
@@ -674,13 +676,13 @@ public class GroupCaseStudyExcel {
 
             if (!Double.isNaN(value)) {
                 double decimalTrimmedValue = NumberRounder.round(value, 5);
-                addNumber(sheet, column, row, decimalTrimmedValue);
+                setCellFloatNumber(sheet, column, row, decimalTrimmedValue);
             } else {
-                addText(sheet, column, row, "");
+                setCellText(sheet, column, row, "");
             }
             double decimalTrimmedValue = NumberRounder.round(value, 5);
 
-            addNumber(sheet, column, row, decimalTrimmedValue);
+            setCellFloatNumber(sheet, column, row, decimalTrimmedValue);
         }
 
     }
@@ -709,7 +711,7 @@ public class GroupCaseStudyExcel {
         sheet.addCell(label);
     }
 
-    private static void addNumber(WritableSheet sheet, int column, int row,
+    private static void setCellFloatNumber(WritableSheet sheet, int column, int row,
             double value) throws WriteException, RowsExceededException {
         double rounded = NumberRounder.round(value, 8);
 
@@ -717,16 +719,380 @@ public class GroupCaseStudyExcel {
         sheet.addCell(number);
     }
 
-    private static void addNumber(WritableSheet sheet, int column, int row,
+    private static void setCellIntegerNumber(WritableSheet sheet, int column, int row,
             long integer) throws WriteException, RowsExceededException {
         Number number = new Number(column, row, integer, integerFormat);
         sheet.addCell(number);
     }
 
-    private static void addText(WritableSheet sheet, int column, int row, String s)
+    private static void setCellContent(WritableSheet sheet, int column, int row,
+            Object content) throws WriteException, RowsExceededException {
+
+        if (content instanceof Long) {
+            setCellIntegerNumber(sheet, column, row, (Long) content);
+        } else if (content instanceof Integer) {
+            setCellIntegerNumber(sheet, column, row, (Integer) content);
+        } else if (content instanceof Double) {
+            setCellFloatNumber(sheet, column, row, (Double) content);
+        } else if (content instanceof Float) {
+            setCellFloatNumber(sheet, column, row, (Float) content);
+        } else {
+            setCellText(sheet, column, row, content.toString());
+        }
+    }
+
+    private static void setCellText(WritableSheet sheet, int column, int row, String s)
             throws WriteException, RowsExceededException {
         Label label;
         label = new Label(column, row, s, defaultFormat);
         sheet.addCell(label);
     }
+
+    /**
+     * Converts the parameter structure of the case study definition
+     * (dataset,groupFormation and validations) into a plain key-> value map.
+     *
+     * @param groupCaseStudy
+     * @return
+     */
+    public static Map<String, Object> extractDataValidationParameters(GroupCaseStudy groupCaseStudy) {
+
+        Map<String, Object> caseStudyParameters = new TreeMap<>();
+
+        Map<String, Object> datasetLoaderParameters = ParameterOwnerExcel
+                .extractParameterValues(groupCaseStudy.getDatasetLoader());
+        caseStudyParameters.putAll(datasetLoaderParameters);
+
+        Map<String, Object> groupFormationTechniqueParameters = ParameterOwnerExcel
+                .extractParameterValues(groupCaseStudy.getGroupFormationTechnique());
+        caseStudyParameters.putAll(groupFormationTechniqueParameters);
+
+        Map<String, Object> groupValidationTechniqueParameters = ParameterOwnerExcel
+                .extractParameterValues(groupCaseStudy.getGroupValidationTechnique());
+        caseStudyParameters.putAll(groupValidationTechniqueParameters);
+
+        Map<String, Object> groupPredictionProtocolParameters = ParameterOwnerExcel
+                .extractParameterValues(groupCaseStudy.getGroupPredictionProtocol());
+        caseStudyParameters.putAll(groupPredictionProtocolParameters);
+
+        return caseStudyParameters;
+    }
+
+    /**
+     * Converts the parameter structure of the case study technique
+     * (groupRecommenderSystem) into a plain key-> value map.
+     *
+     * @param groupCaseStudy
+     * @return
+     */
+    public static Map<String, Object> extractTechniqueParameters(GroupCaseStudy groupCaseStudy) {
+        Map<String, Object> techniqueParameters = new TreeMap<>();
+
+        Map<String, Object> groupRecommenderSystemParameters = ParameterOwnerExcel
+                .extractParameterValues(groupCaseStudy.getGroupRecommenderSystem());
+        techniqueParameters.putAll(groupRecommenderSystemParameters);
+
+        return techniqueParameters;
+    }
+
+    public static Map<String, java.lang.Number> extractEvaluationMeasuresValues(GroupCaseStudy groupCaseStudy) {
+
+        Map<String, java.lang.Number> evaluationMeasuresValues = new TreeMap<>();
+
+        for (GroupEvaluationMeasure evaluationMeasure : groupCaseStudy.getEvaluationMeasures()) {
+
+            GroupEvaluationMeasureResult measureResult = groupCaseStudy.getAggregateMeasureResult(evaluationMeasure);
+            double measureValue = measureResult.getValue();
+            evaluationMeasuresValues.put(evaluationMeasure.getName(), measureValue);
+
+            Map<String, java.lang.Number> extendedPerformances = evaluationMeasure.agregateResultsExtendedPerformance(measureResult);
+
+            for (String extendedPerformance : extendedPerformances.keySet()) {
+                java.lang.Number extendedPerformanceValue = extendedPerformances.get(extendedPerformance);
+
+                evaluationMeasuresValues.put(evaluationMeasure.getName() + "." + extendedPerformance, extendedPerformanceValue);
+            }
+        }
+
+        return evaluationMeasuresValues;
+    }
+
+    public static void writeGeneralFile(List<GroupCaseStudyResult> groupCaseStudyResults, List<String> dataValidationParametersOrder, List<String> techniqueParametersOrder, List<String> evaluationMeasuresOrder, File file) {
+
+        if (file.isDirectory()) {
+            throw new IllegalStateException("GroupCaseStudy save to spreadsheet: Not a file (" + file.toString() + ")");
+        }
+
+        try {
+            WorkbookSettings wbSettings = new WorkbookSettings();
+
+            wbSettings.setLocale(new Locale("en", "EN"));
+
+            WritableWorkbook workbook = null;
+
+            {
+                boolean created = false;
+                int i = 0;
+                while (!created) {
+                    String suffix = "_" + i;
+                    File actualFile = FileUtilities.addSufix(file, suffix);
+                    if (!actualFile.exists()) {
+                        try {
+                            workbook = Workbook.createWorkbook(actualFile, wbSettings);
+                            created = true;
+                        } catch (IOException ex) {
+                            created = false;
+                        }
+                    }
+                    i++;
+                }
+            }
+            if (workbook == null) {
+                ERROR_CODES.CANNOT_WRITE_FILE.exit(new FileNotFoundException("Cannot access file " + file.getAbsolutePath() + "."));
+                return;
+            }
+
+            WritableSheet allCasesAggregateResults = workbook.createSheet("AllCasesAggregateResults", 0);
+            createLabel(allCasesAggregateResults);
+
+            {
+
+                int column = 0;
+                final int titlesRow = 0;
+
+                //ExperimentNamesColumn
+                addTitleText(allCasesAggregateResults, column, titlesRow, EXPERIMENT_NAME_COLUMN_NAME);
+                for (int index = 0; index < groupCaseStudyResults.size(); index++) {
+                    int row = index + 1;
+                    setCellText(allCasesAggregateResults, column, row, groupCaseStudyResults.get(index).getGroupCaseStudyAlias());
+                }
+                column++;
+
+                //General hash
+                addTitleText(allCasesAggregateResults, column, titlesRow, "hash");
+                for (int index = 0; index < groupCaseStudyResults.size(); index++) {
+                    int row = index + 1;
+                    setCellIntegerNumber(allCasesAggregateResults, column, row, groupCaseStudyResults.get(index).getGroupCaseStudy().hashCode());
+                }
+                column++;
+
+                //dataValidation hash
+                addTitleText(allCasesAggregateResults, column, titlesRow, "hashDataValidation");
+                for (int index = 0; index < groupCaseStudyResults.size(); index++) {
+                    int row = index + 1;
+                    setCellIntegerNumber(allCasesAggregateResults, column, row, groupCaseStudyResults.get(index).getGroupCaseStudy().hashDataValidation());
+                }
+                column++;
+
+                for (String dataValidationParameter : dataValidationParametersOrder) {
+
+                    addTitleText(allCasesAggregateResults, column, titlesRow, dataValidationParameter);
+                    for (int index = 0; index < groupCaseStudyResults.size(); index++) {
+                        int row = index + 1;
+
+                        GroupCaseStudyResult groupCaseStudyResult = groupCaseStudyResults.get(index);
+                        if (groupCaseStudyResult.getDefinedDataValidationParameters().contains(dataValidationParameter)) {
+
+                            Object dataValidationParameterValue = groupCaseStudyResult.getDataValidationParameterValue(dataValidationParameter);
+                            setCellContent(allCasesAggregateResults, column, row, dataValidationParameterValue);
+                        }
+                    }
+                    column++;
+                }
+
+                //technique hash
+                addTitleText(allCasesAggregateResults, column, titlesRow, "hashTechnique");
+                for (int index = 0; index < groupCaseStudyResults.size(); index++) {
+                    int row = index + 1;
+                    setCellIntegerNumber(allCasesAggregateResults, column, row, groupCaseStudyResults.get(index).getGroupCaseStudy().hashTechnique());
+                }
+                column++;
+
+                for (String techniqueParameter : techniqueParametersOrder) {
+
+                    addTitleText(allCasesAggregateResults, column, titlesRow, techniqueParameter);
+                    for (int index = 0; index < groupCaseStudyResults.size(); index++) {
+                        int row = index + 1;
+                        GroupCaseStudyResult groupCaseStudyResult = groupCaseStudyResults.get(index);
+                        if (groupCaseStudyResult.getDefinedTechniqueParameters().contains(techniqueParameter)) {
+                            Object techniqueParameterValue = groupCaseStudyResult.getTechniqueParameterValue(techniqueParameter);
+                            setCellContent(allCasesAggregateResults, column, row, techniqueParameterValue);
+                        }
+                    }
+                    column++;
+                }
+
+                for (String evaluationMeasure : evaluationMeasuresOrder) {
+
+                    addTitleText(allCasesAggregateResults, column, titlesRow, evaluationMeasure);
+                    for (int index = 0; index < groupCaseStudyResults.size(); index++) {
+                        int row = index + 1;
+                        GroupCaseStudyResult groupCaseStudyResult = groupCaseStudyResults.get(index);
+                        if (groupCaseStudyResult.getDefinedEvaluationMeasures().contains(evaluationMeasure)) {
+                            Object evaluationMeasureValue = groupCaseStudyResult.getEvaluationMeasureValue(evaluationMeasure);
+                            setCellContent(allCasesAggregateResults, column, row, evaluationMeasureValue);
+                        }
+                    }
+                    column++;
+                }
+            }
+
+            autoSizeColumns(allCasesAggregateResults);
+
+            workbook.write();
+            workbook.close();
+
+        } catch (WriteException | IOException ex) {
+            ERROR_CODES.CANNOT_WRITE_FILE.exit(ex);
+        }
+
+    }
+
+    public static void writeEvaluationMeasureSpecificFile(List<GroupCaseStudyResult> groupCaseStudyResults, List<String> dataValidationParametersOrder, List<String> techniqueParametersOrder, String evaluationMeasure, File file) {
+        Set<GroupCaseStudyResult> dataValidationAliases = new TreeSet<>(
+                GroupCaseStudyResult.dataValidationComparator);
+        Set<GroupCaseStudyResult> techniqueAliases = new TreeSet<>(
+                GroupCaseStudyResult.techniqueComparator);
+
+        dataValidationAliases.addAll(groupCaseStudyResults);
+        techniqueAliases.addAll(groupCaseStudyResults);
+
+        System.out.println("\n\nDataValidation aliases");
+        for (GroupCaseStudyResult groupCaseStudyResult : dataValidationAliases) {
+            System.out.println(getDataValidationAlias(groupCaseStudyResult.getGroupCaseStudy()));
+        }
+
+        System.out.println("\n\nTechnique aliases");
+        for (GroupCaseStudyResult groupCaseStudyResult : techniqueAliases) {
+            System.out.println(groupCaseStudyResult.getGroupCaseStudy().getGroupRecommenderSystem().getNameWithParameters());
+        }
+
+        if (file.isDirectory()) {
+            throw new IllegalStateException("GroupCaseStudy save to spreadsheet: Not a file (" + file.toString() + ")");
+        }
+
+        try {
+            WorkbookSettings wbSettings = new WorkbookSettings();
+
+            wbSettings.setLocale(new Locale("en", "EN"));
+
+            WritableWorkbook workbook = null;
+
+            {
+                boolean created = false;
+                int i = 0;
+                while (!created) {
+                    String suffix = "_" + i;
+                    File actualFile = FileUtilities.addSufix(file, suffix);
+                    if (!actualFile.exists()) {
+                        try {
+                            workbook = Workbook.createWorkbook(actualFile, wbSettings);
+                            created = true;
+                        } catch (IOException ex) {
+                            created = false;
+                        }
+                    }
+                    i++;
+                }
+            }
+            if (workbook == null) {
+                ERROR_CODES.CANNOT_WRITE_FILE.exit(new FileNotFoundException("Cannot access file " + file.getAbsolutePath() + "."));
+                return;
+            }
+
+            WritableSheet allCasesAggregateResults = workbook.createSheet("AllCasesAggregateResults", 0);
+            createLabel(allCasesAggregateResults);
+
+            {
+
+                int column = 0;
+                final int titlesRow = 0;
+
+                //ExperimentNamesColumn
+                addTitleText(allCasesAggregateResults, column, titlesRow, EXPERIMENT_NAME_COLUMN_NAME);
+                for (int index = 0; index < groupCaseStudyResults.size(); index++) {
+                    int row = index + 1;
+                    setCellText(allCasesAggregateResults, column, row, groupCaseStudyResults.get(index).getGroupCaseStudyAlias());
+                }
+                column++;
+
+                //General hash
+                addTitleText(allCasesAggregateResults, column, titlesRow, "hash");
+                for (int index = 0; index < groupCaseStudyResults.size(); index++) {
+                    int row = index + 1;
+                    setCellIntegerNumber(allCasesAggregateResults, column, row, groupCaseStudyResults.get(index).getGroupCaseStudy().hashCode());
+                }
+                column++;
+
+                //dataValidation hash
+                addTitleText(allCasesAggregateResults, column, titlesRow, "hashDataValidation");
+                for (int index = 0; index < groupCaseStudyResults.size(); index++) {
+                    int row = index + 1;
+                    setCellIntegerNumber(allCasesAggregateResults, column, row, groupCaseStudyResults.get(index).getGroupCaseStudy().hashDataValidation());
+                }
+                column++;
+
+                for (String dataValidationParameter : dataValidationParametersOrder) {
+
+                    addTitleText(allCasesAggregateResults, column, titlesRow, dataValidationParameter);
+                    for (int index = 0; index < groupCaseStudyResults.size(); index++) {
+                        int row = index + 1;
+
+                        GroupCaseStudyResult groupCaseStudyResult = groupCaseStudyResults.get(index);
+                        if (groupCaseStudyResult.getDefinedDataValidationParameters().contains(dataValidationParameter)) {
+
+                            Object dataValidationParameterValue = groupCaseStudyResult.getDataValidationParameterValue(dataValidationParameter);
+                            setCellContent(allCasesAggregateResults, column, row, dataValidationParameterValue);
+                        }
+                    }
+                    column++;
+                }
+
+                //technique hash
+                addTitleText(allCasesAggregateResults, column, titlesRow, "hashTechnique");
+                for (int index = 0; index < groupCaseStudyResults.size(); index++) {
+                    int row = index + 1;
+                    setCellIntegerNumber(allCasesAggregateResults, column, row, groupCaseStudyResults.get(index).getGroupCaseStudy().hashTechnique());
+                }
+                column++;
+
+                for (String techniqueParameter : techniqueParametersOrder) {
+
+                    addTitleText(allCasesAggregateResults, column, titlesRow, techniqueParameter);
+                    for (int index = 0; index < groupCaseStudyResults.size(); index++) {
+                        int row = index + 1;
+                        GroupCaseStudyResult groupCaseStudyResult = groupCaseStudyResults.get(index);
+                        if (groupCaseStudyResult.getDefinedTechniqueParameters().contains(techniqueParameter)) {
+                            Object techniqueParameterValue = groupCaseStudyResult.getTechniqueParameterValue(techniqueParameter);
+                            setCellContent(allCasesAggregateResults, column, row, techniqueParameterValue);
+                        }
+                    }
+                    column++;
+                }
+            }
+
+            autoSizeColumns(allCasesAggregateResults);
+
+            workbook.write();
+            workbook.close();
+
+        } catch (WriteException | IOException ex) {
+            ERROR_CODES.CANNOT_WRITE_FILE.exit(ex);
+        }
+    }
+
+    private static String getDataValidationAlias(GroupCaseStudy groupCaseStudy) {
+        StringBuilder str = new StringBuilder();
+
+        str.append(groupCaseStudy.getDatasetLoader().getNameWithParameters()).append("_");
+        str.append(groupCaseStudy.getGroupFormationTechnique().getNameWithParameters()).append("_");
+        str.append(groupCaseStudy.getGroupValidationTechnique().getNameWithParameters()).append("_");
+        str.append(groupCaseStudy.getGroupPredictionProtocol().getNameWithParameters());
+
+        return str.toString();
+    }
+
+    private GroupCaseStudyExcel() {
+    }
+
 }
