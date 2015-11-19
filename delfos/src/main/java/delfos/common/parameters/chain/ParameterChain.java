@@ -101,7 +101,7 @@ public class ParameterChain {
         List<ParameterChain> parameterChains = new ArrayList<>();
 
         parameterChains.add(new ParameterChain(rootName, parameterOwner));
-        a;
+
         return parameterChains;
     }
 }

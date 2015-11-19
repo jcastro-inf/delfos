@@ -127,12 +127,6 @@ public class HesitantGRS_CaseStudy_deepAnalysis extends DelfosTest {
         Global.show("This case study has " + new TuringPreparator()
                 .sizeOfAllExperimentsInDirectory(experimentDirectory)
                 + " experiments");
-
-        new TuringPreparator().executeAllExperimentsInDirectory_withSeed(experimentDirectory, 1, 123456);
-        new TuringPreparator().executeAllExperimentsInDirectory_withSeed(experimentDirectory, 1, 654321);
-        new TuringPreparator().executeAllExperimentsInDirectory_withSeed(experimentDirectory, 1, 147258);
-        new TuringPreparator().executeAllExperimentsInDirectory_withSeed(experimentDirectory, 1, 852741);
-        new TuringPreparator().executeAllExperimentsInDirectory_withSeed(experimentDirectory, 1, 987654);
     }
 
 }
