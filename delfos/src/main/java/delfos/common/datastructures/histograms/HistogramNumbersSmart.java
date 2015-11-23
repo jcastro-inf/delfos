@@ -8,6 +8,7 @@ import java.text.DecimalFormatSymbols;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.stream.Collectors;
 
 /**
  *
@@ -166,6 +167,11 @@ public class HistogramNumbersSmart {
 
         stream.println("Histogram of [" + min + "," + max + "] with " + numberOfBins + " bins");
 
+        double minimumValue = new ArrayList<>(values).stream().sorted().collect(Collectors.toList()).get(0);
+        double maximumValue = new ArrayList<>(values).stream().sorted().collect(Collectors.toList()).get(values.size() - 1);
+
+        stream.println("Minimum = " + minimumValue);
+        stream.println("Maximum = " + maximumValue);
         for (int i = 0; i < numberOfBins; i++) {
             stream.println(i + "\t" + binName[i] + "\t" + binValue[i]);
         }
