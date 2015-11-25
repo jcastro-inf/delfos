@@ -8,16 +8,10 @@ import delfos.common.parameters.ParameterOwner;
  */
 public class Root {
 
-    private final String rootName;
     private final ParameterOwner parameterOwner;
 
-    public Root(String rootName, ParameterOwner parameterOwner) {
-        this.rootName = rootName;
+    public Root(ParameterOwner parameterOwner) {
         this.parameterOwner = parameterOwner;
-    }
-
-    public String getRootName() {
-        return rootName;
     }
 
     public ParameterOwner getParameterOwner() {

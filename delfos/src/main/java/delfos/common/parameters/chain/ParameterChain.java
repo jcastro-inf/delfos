@@ -5,6 +5,7 @@ import delfos.common.parameters.ParameterOwner;
 import delfos.experiment.casestudy.CaseStudy;
 import delfos.group.casestudy.defaultcase.GroupCaseStudy;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -36,22 +37,52 @@ public class ParameterChain {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
-    public static List<ParameterChain> obtainAllParameterChains(GroupCaseStudy groupCaseStudy) {
+    public static List<ParameterChain> obtainDataValidationParameterChains(GroupCaseStudy groupCaseStudy) {
+        List<ParameterChain> allParameterChains = obtainAllParameterChains(groupCaseStudy);
+
+        List<ParameterChain> dataValidationParameterChains
+                = allParameterChains.stream()
+                .filter(chain -> chain.nodes.isEmpty() || chain.nodes.get(0).getParameter() != GroupCaseStudy.GROUP_RECOMMENDER_SYSTEM
+                ).collect(Collectors.toList());
+
+        return dataValidationParameterChains;
+    }
+
+    public static List<ParameterChain> obtainAllParameterChains(ParameterOwner rootParameterOwner) {
 
         List<ParameterChain> allParameterChains = new ArrayList<>();
 
-        List<ParameterChain> rootParameterChains = new ArrayList<>();
-        rootParameterChains.add(new ParameterChain(null, groupCaseStudy));
+        ParameterChain rootChain = new ParameterChain(rootParameterOwner);
 
-        throw new IllegalStateException("arg");
+        Collection<Parameter> groupCaseStudyParameters = rootParameterOwner.getParameters();
+
+        for (Parameter parameter : groupCaseStudyParameters) {
+            Object parameterValue = rootParameterOwner.getParameterValue(parameter);
+
+            if (parameterValue instanceof ParameterOwner) {
+                ParameterOwner parameterValueParameterOwner = (ParameterOwner) parameterValue;
+
+                List<ParameterChain> chains
+                        = obtainAllParameterChains(parameterValueParameterOwner);
+
+                for (ParameterChain chain : chains) {
+                    ParameterChain newChain = rootChain.addChain(chain, parameter);
+                    allParameterChains.add(newChain);
+                }
+            } else {
+                allParameterChains.add(rootChain.createWithLeaf(parameter, parameterValue));
+            }
+        }
+
+        return allParameterChains;
     }
 
     private final Root root;
     private final List<Node> nodes;
     private final Leaf leaf;
 
-    public ParameterChain(String rootName, ParameterOwner parameterOwner) {
-        this.root = new Root(rootName, parameterOwner);
+    public ParameterChain(ParameterOwner parameterOwner) {
+        this.root = new Root(parameterOwner);
         this.nodes = Collections.unmodifiableList(new ArrayList<>());
         this.leaf = null;
     }
@@ -128,10 +159,10 @@ public class ParameterChain {
         }
     }
 
-    public List<ParameterChain> createAllTerminalParameterChains(String rootName, ParameterOwner parameterOwner) {
+    public List<ParameterChain> createAllTerminalParameterChains(ParameterOwner parameterOwner) {
         List<ParameterChain> parameterChains = new ArrayList<>();
 
-        parameterChains.add(new ParameterChain(rootName, parameterOwner));
+        parameterChains.add(new ParameterChain(parameterOwner));
 
         return parameterChains;
     }
@@ -146,6 +177,55 @@ public class ParameterChain {
 
     public boolean isCompatibleWithGroupCaseStudy(GroupCaseStudy groupCaseStudy) {
         throw new IllegalStateException("arg");
+    }
+
+    private ParameterChain createWithChain(ParameterChain parameterChain) {
+        throw new IllegalStateException("arg");
+    }
+
+    /**
+     * Adds the specified chain to the current chain nodes. It moves the root
+     * element of the parameter chain to this chain nodes as the first node.
+     *
+     * @param chain
+     * @return
+     */
+    private ParameterChain addChain(ParameterChain chain, Parameter parameter) {
+
+        Root newRoot = this.root;
+
+        List<Node> newNodes = new ArrayList<>(chain.nodes);
+        newNodes.add(0, new Node(parameter, chain.root.getParameterOwner()));
+
+        Leaf newLeaf = chain.leaf;
+
+        return new ParameterChain(newRoot, newNodes, newLeaf);
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder str = new StringBuilder();
+
+        str.append(this.root.getParameterOwner().getName()).append(" ==> ");
+
+        if (!nodes.isEmpty()) {
+            for (Node node : nodes) {
+                str.append(node.getParameter().getName());
+                str.append(" = ");
+                str.append(node.getParameterOwner().getName());
+
+                str.append(" -> ");
+            }
+
+            str.delete(str.length() - 4, str.length());
+            str.append(" ==> ");
+        }
+
+        str.append(leaf.getParameter().getName());
+        str.append(" = ");
+        str.append(leaf.getParameterValue().toString());
+
+        return str.toString();
     }
 
 }

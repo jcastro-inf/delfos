@@ -755,36 +755,11 @@ public class GroupCaseStudy extends ExperimentAdapter {
         this.groupEvaluationMeasuresResults = groupEvaluationMeasuresResults;
     }
 
-    public static Parameter getALIAS() {
-        return ALIAS;
-    }
-
     public long[][] getBuildTimes() {
         return buildTimes;
     }
 
-    public static int getCHARACTER_LENGTH_ALIAS_WARNING() {
-        return CHARACTER_LENGTH_ALIAS_WARNING;
+    public void setGroupRecommenderSystem(GroupRecommenderSystem<? extends Object, ? extends Object> groupRecommenderSystem) {
+        setParameterValue(GROUP_RECOMMENDER_SYSTEM, groupRecommenderSystem);
     }
-
-    public static Parameter getDATASET_LOADER() {
-        return DATASET_LOADER;
-    }
-
-    public static Parameter getGROUP_FORMATION_TECHNIQUE() {
-        return GROUP_FORMATION_TECHNIQUE;
-    }
-
-    public static Parameter getGROUP_PREDICTION_PROTOCOL() {
-        return GROUP_PREDICTION_PROTOCOL;
-    }
-
-    public static Parameter getGROUP_RECOMMENDER_SYSTEM() {
-        return GROUP_RECOMMENDER_SYSTEM;
-    }
-
-    public static Parameter getGROUP_VALIDATION_TECHNIQUE() {
-        return GROUP_VALIDATION_TECHNIQUE;
-    }
-
 }
