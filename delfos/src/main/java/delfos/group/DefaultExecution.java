@@ -13,8 +13,8 @@ import delfos.dataset.basic.rating.RelevanceCriteria;
 import delfos.dataset.loaders.jester.Jester;
 import delfos.experiment.ExperimentListerner_default;
 import delfos.experiment.casestudy.ExecutionProgressListener_default;
-import delfos.group.casestudy.GroupCaseStudy;
-import delfos.group.casestudy.defaultcase.DefaultGroupCaseStudy;
+import delfos.group.casestudy.defaultcase.GroupCaseStudy;
+import delfos.group.casestudy.defaultcase.GroupCaseStudy;
 import delfos.group.experiment.validation.groupformation.FixedGroupSize_OnlyNGroups;
 import delfos.group.experiment.validation.groupformation.GroupFormationTechnique;
 import delfos.group.experiment.validation.predictionvalidation.GroupPredictionProtocol;
@@ -67,7 +67,7 @@ public class DefaultExecution {
                         for (GroupFormationTechnique groupFormationTechnique : groupFormationTechniques) {
                             try {
                                 resultadosPorTamGrupos.put(groupFormationTechnique, new TreeMap<>());
-                                GroupCaseStudy caseStudyGroupRecommendation = new DefaultGroupCaseStudy(
+                                GroupCaseStudy caseStudyGroupRecommendation = new GroupCaseStudy(
                                         datasetLoader,
                                         groupRecommenderSystem,
                                         groupFormationTechnique,

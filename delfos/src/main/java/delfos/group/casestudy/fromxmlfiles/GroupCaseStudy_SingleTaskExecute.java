@@ -12,9 +12,8 @@ import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RelevanceCriteria;
 import delfos.experiment.ExperimentListerner_default;
 import delfos.experiment.casestudy.ExecutionProgressListener_default;
-import delfos.group.casestudy.GroupCaseStudy;
 import delfos.group.casestudy.GroupCaseStudyConfiguration;
-import delfos.group.casestudy.defaultcase.DefaultGroupCaseStudy;
+import delfos.group.casestudy.defaultcase.GroupCaseStudy;
 import delfos.group.experiment.validation.groupformation.GroupFormationTechnique;
 import delfos.group.experiment.validation.predictionvalidation.GroupPredictionProtocol;
 import delfos.group.experiment.validation.validationtechniques.GroupValidationTechnique;
@@ -45,7 +44,7 @@ public class GroupCaseStudy_SingleTaskExecute implements SingleTaskExecute<Execu
             long seed)
             throws CannotLoadContentDataset, JDOMException, IOException, CannotLoadRatingsDataset {
 
-        GroupRecommenderSystem<Object, Object> groupRecommenderSystem = caseStudyConfiguration.getGroupRecommenderSystem();
+        GroupRecommenderSystem<? extends Object, ? extends Object> groupRecommenderSystem = caseStudyConfiguration.getGroupRecommenderSystem();
 
         GroupFormationTechnique groupFormationTechnique = caseStudyConfiguration.getGroupFormationTechnique();
         GroupPredictionProtocol groupPredictionProtocol = caseStudyConfiguration.getGroupPredictionProtocol();
@@ -53,7 +52,7 @@ public class GroupCaseStudy_SingleTaskExecute implements SingleTaskExecute<Execu
 
         RelevanceCriteria relevanceCriteria = caseStudyConfiguration.getRelevanceCriteria();
 
-        GroupCaseStudy caseStudyGroupRecommendation = new DefaultGroupCaseStudy(
+        GroupCaseStudy caseStudyGroupRecommendation = new GroupCaseStudy(
                 datasetLoader,
                 groupRecommenderSystem,
                 groupFormationTechnique,

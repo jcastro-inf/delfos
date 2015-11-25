@@ -2,6 +2,8 @@ package delfos.common.parameters.chain;
 
 import delfos.common.parameters.Parameter;
 import delfos.common.parameters.ParameterOwner;
+import delfos.experiment.casestudy.CaseStudy;
+import delfos.group.casestudy.defaultcase.GroupCaseStudy;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -14,6 +16,35 @@ import java.util.stream.Collectors;
  *
  */
 public class ParameterChain {
+
+    /**
+     * Returns the parameter chains that are common to at least two
+     * groupCaseStudyResults and also have at least two case study with
+     * different value for the terminal value.
+     *
+     * @param groupCaseStudys
+     * @return
+     */
+    public static List<ParameterChain> obtainDataValidationDifferentChains(List<GroupCaseStudy> groupCaseStudys) {
+
+        List<ParameterChain> parameterChains = new ArrayList<>();
+
+        for (GroupCaseStudy groupCaseStudy : groupCaseStudys) {
+            List<ParameterChain> obtainAllParameterChains = obtainAllParameterChains(groupCaseStudy);
+            parameterChains.addAll(obtainAllParameterChains);
+        }
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    public static List<ParameterChain> obtainAllParameterChains(GroupCaseStudy groupCaseStudy) {
+
+        List<ParameterChain> allParameterChains = new ArrayList<>();
+
+        List<ParameterChain> rootParameterChains = new ArrayList<>();
+        rootParameterChains.add(new ParameterChain(null, groupCaseStudy));
+
+        throw new IllegalStateException("arg");
+    }
 
     private final Root root;
     private final List<Node> nodes;
@@ -104,4 +135,17 @@ public class ParameterChain {
 
         return parameterChains;
     }
+
+    public boolean isCompatibleWith(ParameterOwner parameterOwner) {
+        throw new IllegalStateException("arg");
+    }
+
+    public boolean isCompatibleWithCaseStudy(CaseStudy caseStudy) {
+        throw new IllegalStateException("arg");
+    }
+
+    public boolean isCompatibleWithGroupCaseStudy(GroupCaseStudy groupCaseStudy) {
+        throw new IllegalStateException("arg");
+    }
+
 }

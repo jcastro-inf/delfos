@@ -8,8 +8,8 @@ import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RelevanceCriteria;
 import delfos.dataset.generated.random.RandomDatasetLoader;
 import delfos.dataset.loaders.movilens.ml100k.MovieLens100k;
-import delfos.group.casestudy.GroupCaseStudy;
-import delfos.group.casestudy.defaultcase.DefaultGroupCaseStudy;
+import delfos.group.casestudy.defaultcase.GroupCaseStudy;
+import delfos.group.casestudy.defaultcase.GroupCaseStudy;
 import delfos.group.experiment.validation.groupformation.FixedGroupSize_OnlyNGroups;
 import delfos.group.experiment.validation.groupformation.GroupFormationTechnique;
 import delfos.group.experiment.validation.predictionvalidation.GroupPredictionProtocol;
@@ -85,7 +85,7 @@ public class ExperimentsJRS2014 {
 
             for (RecommenderSystem coreRS : coreRSs) {
                 for (GroupRecommenderSystem groupRecommenderSystem : getGRS(coreRS)) {
-                    GroupCaseStudy groupCaseStudy = new DefaultGroupCaseStudy(
+                    GroupCaseStudy groupCaseStudy = new GroupCaseStudy(
                             datasetLoader,
                             groupRecommenderSystem,
                             groupFormationTechnique,
@@ -104,7 +104,7 @@ public class ExperimentsJRS2014 {
 
         //generateDatasetFile
         {
-            GroupCaseStudy groupCaseStudy = new DefaultGroupCaseStudy(
+            GroupCaseStudy groupCaseStudy = new GroupCaseStudy(
                     new MovieLens100k(new File("C:\\Dropbox\\Datasets\\MovieLens\\0 - MovieLens-100k ratings\\ml-100k")),
                     new RandomGroupRecommender(),
                     new FixedGroupSize_OnlyNGroups(1, 1), new NoValidation(), new NoPredictionProtocol(),

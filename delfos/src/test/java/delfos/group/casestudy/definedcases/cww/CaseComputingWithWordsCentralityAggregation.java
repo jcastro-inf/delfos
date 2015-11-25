@@ -6,8 +6,8 @@ import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RelevanceCriteria;
 import delfos.dataset.generated.random.RandomDatasetLoader;
-import delfos.group.casestudy.GroupCaseStudy;
-import delfos.group.casestudy.defaultcase.DefaultGroupCaseStudy;
+import delfos.group.casestudy.defaultcase.GroupCaseStudy;
+import delfos.group.casestudy.defaultcase.GroupCaseStudy;
 import delfos.group.experiment.validation.groupformation.FixedGroupSize_OnlyNGroups;
 import delfos.group.experiment.validation.groupformation.GroupFormationTechnique;
 import delfos.group.experiment.validation.predictionvalidation.GroupPredictionProtocol;
@@ -64,7 +64,7 @@ public class CaseComputingWithWordsCentralityAggregation {
             final GroupFormationTechnique groupFormationTechnique = new FixedGroupSize_OnlyNGroups(numGroups, groupSize);
 
             for (GroupRecommenderSystem<? extends Object, ? extends Object> groupRecommenderSystem : getGRS()) {
-                GroupCaseStudy groupCaseStudy = new DefaultGroupCaseStudy(datasetLoader, groupRecommenderSystem, groupFormationTechnique, groupValidationTechniqueValue, groupPredictionProtocol, evaluationMeasures, criteria, numEjecuciones);
+                GroupCaseStudy groupCaseStudy = new GroupCaseStudy(datasetLoader, groupRecommenderSystem, groupFormationTechnique, groupValidationTechniqueValue, groupPredictionProtocol, evaluationMeasures, criteria, numEjecuciones);
                 String fileName = groupRecommenderSystem.getAlias() + "_group-" + groupSize + ".xml";
                 File file = new File(directory + File.separator + fileName);
                 GroupCaseStudyXML.caseStudyToXMLFile_onlyDescription(groupCaseStudy, file);

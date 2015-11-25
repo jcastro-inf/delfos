@@ -3,8 +3,8 @@ package delfos.group.io.excel.casestudy;
 import delfos.constants.TestConstants;
 import delfos.dataset.basic.rating.RelevanceCriteria;
 import delfos.dataset.generated.random.RandomDatasetLoader;
-import delfos.group.casestudy.GroupCaseStudy;
-import delfos.group.casestudy.defaultcase.DefaultGroupCaseStudy;
+import delfos.group.casestudy.defaultcase.GroupCaseStudy;
+import delfos.group.casestudy.defaultcase.GroupCaseStudy;
 import delfos.group.experiment.validation.groupformation.FixedGroupSize_OnlyNGroups;
 import delfos.group.experiment.validation.predictionvalidation.HoldOutPrediction;
 import delfos.group.experiment.validation.validationtechniques.CrossFoldValidation_Ratings;
@@ -36,7 +36,7 @@ public class GroupCaseStudyExcelTest {
     @Test
     public void testSaveCaseResults() throws Exception {
 
-        GroupCaseStudy caseStudyGroup = new DefaultGroupCaseStudy(
+        GroupCaseStudy caseStudyGroup = new GroupCaseStudy(
                 new RandomDatasetLoader(),
                 new AggregationOfIndividualRatings(),
                 new FixedGroupSize_OnlyNGroups(2, 5), new CrossFoldValidation_Ratings(), new HoldOutPrediction(),

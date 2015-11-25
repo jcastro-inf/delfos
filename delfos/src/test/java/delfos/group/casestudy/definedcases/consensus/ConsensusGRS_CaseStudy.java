@@ -8,8 +8,8 @@ import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RelevanceCriteria;
 import delfos.experiment.casestudy.cluster.TuringPreparator;
-import delfos.group.casestudy.GroupCaseStudy;
-import delfos.group.casestudy.defaultcase.DefaultGroupCaseStudy;
+import delfos.group.casestudy.defaultcase.GroupCaseStudy;
+import delfos.group.casestudy.defaultcase.GroupCaseStudy;
 import delfos.group.experiment.validation.groupformation.FixedGroupSize_OnlyNGroups;
 import delfos.group.experiment.validation.groupformation.GroupFormationTechnique;
 import delfos.group.experiment.validation.predictionvalidation.NoPredictionProtocol;
@@ -123,7 +123,7 @@ public class ConsensusGRS_CaseStudy {
         List<GroupCaseStudy> groupCaseStudys = new ArrayList<>();
 
         for (ConsensusGRS consensusGRS : getAllConsensusGRS()) {
-            DefaultGroupCaseStudy groupCaseStudy = new DefaultGroupCaseStudy(
+            GroupCaseStudy groupCaseStudy = new GroupCaseStudy(
                     getDatasetLoader(),
                     consensusGRS,
                     getGroupFormationTechnique(), new HoldOutGroupRatedItems(SEED_VALUE), new NoPredictionProtocol(), GroupEvaluationMeasuresFactory.getInstance().getAllClasses(),
