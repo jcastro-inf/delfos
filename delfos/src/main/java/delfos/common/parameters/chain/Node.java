@@ -25,4 +25,16 @@ class Node {
         return parameterOwner;
     }
 
+    boolean isCompatibleWith(Node firstChainNode) {
+        boolean parameterOwnerAreSameClass = parameterOwner.getClass().equals(firstChainNode.parameterOwner.getClass());
+
+        if (!parameterOwnerAreSameClass) {
+            return false;
+        }
+
+        boolean nodeParameterAreSame = parameter.equals(firstChainNode.parameter);
+
+        return nodeParameterAreSame;
+    }
+
 }

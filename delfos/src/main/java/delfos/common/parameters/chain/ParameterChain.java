@@ -2,9 +2,9 @@ package delfos.common.parameters.chain;
 
 import delfos.common.parameters.Parameter;
 import delfos.common.parameters.ParameterOwner;
-import delfos.experiment.casestudy.CaseStudy;
 import delfos.group.casestudy.defaultcase.GroupCaseStudy;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -43,6 +43,17 @@ public class ParameterChain {
         List<ParameterChain> dataValidationParameterChains
                 = allParameterChains.stream()
                 .filter(chain -> chain.nodes.isEmpty() || chain.nodes.get(0).getParameter() != GroupCaseStudy.GROUP_RECOMMENDER_SYSTEM
+                ).collect(Collectors.toList());
+
+        return dataValidationParameterChains;
+    }
+
+    public static List<ParameterChain> obtainTechniqueParameterChains(GroupCaseStudy groupCaseStudy) {
+        List<ParameterChain> allParameterChains = obtainAllParameterChains(groupCaseStudy);
+
+        List<ParameterChain> dataValidationParameterChains
+                = allParameterChains.stream()
+                .filter(chain -> !(chain.nodes.isEmpty() || chain.nodes.get(0).getParameter() != GroupCaseStudy.GROUP_RECOMMENDER_SYSTEM)
                 ).collect(Collectors.toList());
 
         return dataValidationParameterChains;
@@ -110,6 +121,10 @@ public class ParameterChain {
         return new ParameterChain(root, nodes, new Leaf(parameter, parameterValue));
     }
 
+    public static boolean areCompatible(ParameterChain... parameterChains) {
+        return areCompatible(Arrays.asList(parameterChains));
+    }
+
     public static boolean areCompatible(List<ParameterChain> parameterChains) {
         if (parameterChains.isEmpty()) {
             return true;
@@ -118,7 +133,7 @@ public class ParameterChain {
         ParameterChain firstChain = parameterChains.iterator().next();
         Root firstRoot = parameterChains.iterator().next().root;
 
-        boolean rootMatch = parameterChains.stream().allMatch(parameterChain -> parameterChain.root.equals(firstRoot));
+        boolean rootMatch = parameterChains.stream().allMatch(parameterChain -> parameterChain.root.isCompatibleWith(firstRoot));
         if (!rootMatch) {
             return false;
         }
@@ -134,12 +149,25 @@ public class ParameterChain {
             final Node firstChainNode = firstChain.nodes.get(thisNodeIndex);
 
             boolean matchesNode = parameterChains.stream()
-                    .allMatch(parameterChain -> parameterChain.nodes.get(thisNodeIndex).equals(firstChainNode));
+                    .allMatch(parameterChain -> parameterChain.nodes.get(thisNodeIndex).isCompatibleWith(firstChainNode));
             if (!matchesNode) {
                 return false;
             }
         }
+
+        Leaf firstLeaf = parameterChains.iterator().next().leaf;
+
+        boolean leafMatch = parameterChains.stream().allMatch(
+                parameterChain -> parameterChain.leaf.isCompatibleWith(firstLeaf)
+        );
+        if (!leafMatch) {
+            return false;
+        }
         return true;
+    }
+
+    public static boolean areSame(ParameterChain... parameterChains) {
+        return areSame(Arrays.asList(parameterChains));
     }
 
     public static boolean areSame(List<ParameterChain> parameterChains) {
@@ -168,19 +196,34 @@ public class ParameterChain {
     }
 
     public boolean isCompatibleWith(ParameterOwner parameterOwner) {
-        throw new IllegalStateException("arg");
-    }
+        List<ParameterChain> allParameterChains = obtainAllParameterChains(parameterOwner);
 
-    public boolean isCompatibleWithCaseStudy(CaseStudy caseStudy) {
-        throw new IllegalStateException("arg");
-    }
+        List<ParameterChain> compatibleParameterChains = new ArrayList<>();
 
-    public boolean isCompatibleWithGroupCaseStudy(GroupCaseStudy groupCaseStudy) {
-        throw new IllegalStateException("arg");
-    }
+        int i = 0;
+        for (ParameterChain parameterChain : allParameterChains) {
 
-    private ParameterChain createWithChain(ParameterChain parameterChain) {
-        throw new IllegalStateException("arg");
+            if (i == 8) {
+                System.out.println("stap!");
+            }
+            System.out.println(i + "\t" + parameterChain.toString());
+            if (areCompatible(this, parameterChain)) {
+                compatibleParameterChains.add(parameterChain);
+            }
+
+            i++;
+        }
+
+        List<ParameterChain> compatibleParameterChains_2 = allParameterChains
+                .stream().filter(parameterChain -> areCompatible(this, parameterChain)).collect(Collectors.toList());
+
+        if (compatibleParameterChains.isEmpty()) {
+            return false;
+        } else if (compatibleParameterChains.size() == 1) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     /**
@@ -226,6 +269,18 @@ public class ParameterChain {
         str.append(leaf.getParameterValue().toString());
 
         return str.toString();
+    }
+
+    protected Leaf getLeaf() {
+        return leaf;
+    }
+
+    protected List<Node> getNodes() {
+        return nodes;
+    }
+
+    protected Root getRoot() {
+        return root;
     }
 
 }

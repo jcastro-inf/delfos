@@ -18,4 +18,7 @@ public class Root {
         return parameterOwner;
     }
 
+    public boolean isCompatibleWith(Root root) {
+        return parameterOwner.getClass().equals(root.getParameterOwner().getClass());
+    }
 }
