@@ -43,7 +43,7 @@ public class XMLJoinTest {
         List<GroupCaseStudy> groupCaseStudys = new ArrayList<>();
 
         List<GroupFormationTechnique> groupFormationTechniques
-                = Arrays.asList(1, 10, 100).stream()
+                = Arrays.asList(1, 10, 90).stream()
                 .map((groupSize -> new FixedGroupSize_OnlyNGroups(10, groupSize)))
                 .collect(Collectors.toList());
 
