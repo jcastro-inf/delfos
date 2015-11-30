@@ -5,6 +5,7 @@ import delfos.common.DateCollapse;
 import delfos.common.Global;
 import delfos.common.exceptions.dataset.CannotLoadUsersDataset;
 import delfos.common.parameters.ParameterListener;
+import delfos.common.parameters.view.EditParameterDialog;
 import delfos.configureddatasets.ConfiguredDataset;
 import delfos.configureddatasets.ConfiguredDatasetsFactory;
 import delfos.dataset.basic.item.Item;
@@ -29,6 +30,8 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.WindowAdapter;
@@ -67,13 +70,49 @@ public class RecommendationsExplainedWindow extends JFrame {
     private JProgressBar progressBar;
 
     private JComboBox<RecommenderSystem> recommenderSystemSelector;
+    private JButton recommenderSystemParametersButton;
+
     private JComboBox<User> userSelector;
-    private JComboBox<ConfiguredDataset> configuredDatasetSelector;
+    private JComboBox<ConfiguredDataset> datasetLoaderSelector;
+    private JButton datasetLoaderParametersButton;
+
     private JSpinner relevanceThresholdSelector;
 
     private RecommendationsGUI resultsPanel = new RecommendationsDefaultGUI();
 
     private RecommendationModelHolder recommendationModelHolder = new RecommendationModelHolder();
+
+    private void addRecommenderSystemParametersButtonBehavior() {
+
+        recommenderSystemParametersButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                EditParameterDialog dialogoParametrosSR = new EditParameterDialog(RecommendationsExplainedWindow.this);
+                RecommenderSystem rs = (RecommenderSystem) recommenderSystemSelected();
+
+                dialogoParametrosSR.setParameterTaker(rs);
+                dialogoParametrosSR.pack();
+                dialogoParametrosSR.setVisible(true);
+            }
+        });
+        recommenderSystemParametersButton.setEnabled(true);
+    }
+
+    private void addDatasetLoaderParametersButtonBehavior() {
+
+        datasetLoaderParametersButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                EditParameterDialog dialogoParametrosSR = new EditParameterDialog(RecommendationsExplainedWindow.this);
+                DatasetLoader<? extends Rating> datasetLoader = configuredDatasetSelected().getDatasetLoader();
+
+                dialogoParametrosSR.setParameterTaker(datasetLoader);
+                dialogoParametrosSR.pack();
+                dialogoParametrosSR.setVisible(true);
+            }
+        });
+        datasetLoaderParametersButton.setEnabled(true);
+    }
 
     public class RecommendationModelHolder {
 
@@ -271,9 +310,8 @@ public class RecommendationsExplainedWindow extends JFrame {
         constraints.gridwidth = 1;
         constraints.gridheight = 1;
         constraints.insets = new Insets(3, 4, 3, 4);
-        JButton recommenderSystemParameters = new JButton("Parameters");
-        recommenderSystemParameters.setEnabled(false);
-        ret.add(recommenderSystemParameters, constraints);
+        recommenderSystemParametersButton = new JButton("Parameters");
+        ret.add(recommenderSystemParametersButton, constraints);
 
         return ret;
     }
@@ -293,8 +331,8 @@ public class RecommendationsExplainedWindow extends JFrame {
         constraints.gridwidth = 1;
         constraints.gridheight = 1;
         constraints.insets = new Insets(3, 4, 3, 4);
-        this.configuredDatasetSelector = new JComboBox<>();
-        ret.add(configuredDatasetSelector, constraints);
+        this.datasetLoaderSelector = new JComboBox<>();
+        ret.add(datasetLoaderSelector, constraints);
 
         constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.anchor = GridBagConstraints.NORTH;
@@ -305,9 +343,8 @@ public class RecommendationsExplainedWindow extends JFrame {
         constraints.gridwidth = 1;
         constraints.gridheight = 1;
         constraints.insets = new Insets(3, 4, 3, 4);
-        JButton datasetLoaderParameters = new JButton("Parameters");
-        datasetLoaderParameters.setEnabled(false);
-        ret.add(datasetLoaderParameters, constraints);
+        datasetLoaderParametersButton = new JButton("Parameters");
+        ret.add(datasetLoaderParametersButton, constraints);
 
         return ret;
     }
@@ -393,7 +430,7 @@ public class RecommendationsExplainedWindow extends JFrame {
     private void fillData() {
         ConfiguredDataset[] configuredDatasets
                 = ConfiguredDatasetsFactory.getInstance().getAllConfiguredDatasets().toArray(new ConfiguredDataset[0]);
-        configuredDatasetSelector.setModel(new DefaultComboBoxModel<>(configuredDatasets));
+        datasetLoaderSelector.setModel(new DefaultComboBoxModel<>(configuredDatasets));
 
         ConfiguredDataset configuredDataset = configuredDatasetSelected();
         reloadUsersSelector(configuredDataset.getDatasetLoader());
@@ -434,12 +471,16 @@ public class RecommendationsExplainedWindow extends JFrame {
 
     private void plugListeners() {
         addDatasetLoaderListener();
+        addDatasetLoaderParametersButtonBehavior();
+
         addRecommenderSystemListener();
+        addRecommenderSystemParametersButtonBehavior();
+
         addUserListener();
     }
 
     private ParameterListener datasetLoaderParameterListener = () -> {
-        ConfiguredDataset selectedItem = configuredDatasetSelector.getItemAt(configuredDatasetSelector.getSelectedIndex());
+        ConfiguredDataset selectedItem = datasetLoaderSelector.getItemAt(datasetLoaderSelector.getSelectedIndex());
         DatasetLoader<? extends Rating> datasetLoader = selectedItem.getDatasetLoader();
 
         recommendationModelHolder.reloadRecommendationModel();
@@ -528,7 +569,7 @@ public class RecommendationsExplainedWindow extends JFrame {
     }
 
     private void addDatasetLoaderListener() {
-        this.configuredDatasetSelector.addItemListener(datasetLoaderSelectedListener);
+        this.datasetLoaderSelector.addItemListener(datasetLoaderSelectedListener);
     }
 
     private void addUserListener() {
@@ -564,7 +605,7 @@ public class RecommendationsExplainedWindow extends JFrame {
     }
 
     public ConfiguredDataset configuredDatasetSelected() {
-        return configuredDatasetSelector.getItemAt(configuredDatasetSelector.getSelectedIndex());
+        return datasetLoaderSelector.getItemAt(datasetLoaderSelector.getSelectedIndex());
     }
 
     private RecommendationsGUI getRecommenderSystemRecommendationGUI(RecommenderSystem recommenderSystem) {
