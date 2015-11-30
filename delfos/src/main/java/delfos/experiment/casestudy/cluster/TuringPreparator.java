@@ -7,8 +7,8 @@ import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
 import delfos.experiment.casestudy.CaseStudy;
 import delfos.experiment.casestudy.defaultcase.DefaultCaseStudy;
-import delfos.group.casestudy.GroupCaseStudy;
-import delfos.group.casestudy.defaultcase.DefaultGroupCaseStudy;
+import delfos.group.casestudy.defaultcase.GroupCaseStudy;
+import delfos.group.casestudy.defaultcase.GroupCaseStudy;
 import delfos.group.io.xml.casestudy.GroupCaseStudyXML;
 import delfos.io.xml.casestudy.CaseStudyXML;
 import delfos.main.Main;
@@ -84,7 +84,7 @@ public class TuringPreparator implements ExperimentPreparator {
                 File datasetConfiguration = new File(finalDirectoryDataset.getAbsolutePath() + File.separator + datasetLoader.getAlias() + ".xml");
 
                 GroupCaseStudyXML.caseStudyToXMLFile_onlyDescription(groupCaseStudy, experimentConfigurationFile);
-                GroupCaseStudyXML.caseStudyToXMLFile_onlyDescription(new DefaultGroupCaseStudy(datasetLoader), datasetConfiguration);
+                GroupCaseStudyXML.caseStudyToXMLFile_onlyDescription(new GroupCaseStudy(datasetLoader), datasetConfiguration);
 
             }
         }

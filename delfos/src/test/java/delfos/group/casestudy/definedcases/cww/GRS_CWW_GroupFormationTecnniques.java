@@ -6,8 +6,8 @@ import delfos.constants.DelfosTest;
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.RelevanceCriteria;
 import delfos.experiment.casestudy.cluster.TuringPreparator;
-import delfos.group.casestudy.GroupCaseStudy;
-import delfos.group.casestudy.defaultcase.DefaultGroupCaseStudy;
+import delfos.group.casestudy.defaultcase.GroupCaseStudy;
+import delfos.group.casestudy.defaultcase.GroupCaseStudy;
 import delfos.group.experiment.validation.groupformation.FixedGroupSize_OnlyNGroups;
 import delfos.group.experiment.validation.groupformation.GroupFormationTechnique;
 import delfos.group.experiment.validation.groupformation.SimilarMembers_OnlyNGroups;
@@ -88,7 +88,7 @@ public class GRS_CWW_GroupFormationTecnniques extends DelfosTest {
 
         for (GroupFormationTechnique groupFormationTechnique : groupFormationTechniques) {
             for (GroupRecommenderSystem groupRecommenderSystem : groupRecommenderSystems) {
-                GroupCaseStudy groupCaseStudy = new DefaultGroupCaseStudy(datasetLoader, groupRecommenderSystem, groupFormationTechnique, groupValidationTechniqueValue, groupPredictionProtocol, evaluationMeasures, criteria, numEjecuciones);
+                GroupCaseStudy groupCaseStudy = new GroupCaseStudy(datasetLoader, groupRecommenderSystem, groupFormationTechnique, groupValidationTechniqueValue, groupPredictionProtocol, evaluationMeasures, criteria, numEjecuciones);
                 groupCaseStudy.setAlias(groupFormationTechnique.getAlias() + "->" + groupRecommenderSystem.getAlias());
                 ret.add(groupCaseStudy);
             }

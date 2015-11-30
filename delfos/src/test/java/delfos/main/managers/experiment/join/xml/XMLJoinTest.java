@@ -1,6 +1,7 @@
 package delfos.main.managers.experiment.join.xml;
 
 import delfos.Constants;
+import delfos.common.FileUtilities;
 import delfos.common.aggregationoperators.MaximumValue;
 import delfos.common.aggregationoperators.Mean;
 import delfos.common.aggregationoperators.MinimumValue;
@@ -8,8 +9,8 @@ import delfos.configureddatasets.ConfiguredDatasetLoader;
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.RelevanceCriteria;
 import delfos.experiment.casestudy.cluster.TuringPreparator;
-import delfos.group.casestudy.GroupCaseStudy;
-import delfos.group.casestudy.defaultcase.DefaultGroupCaseStudy;
+import delfos.group.casestudy.defaultcase.GroupCaseStudy;
+import delfos.group.casestudy.defaultcase.GroupCaseStudy;
 import static delfos.group.casestudy.definedcases.hesitant.experiment0.HesitantGRS_CaseStudy.SEED_VALUE;
 import delfos.group.experiment.validation.groupformation.FixedGroupSize_OnlyNGroups;
 import delfos.group.experiment.validation.groupformation.GroupFormationTechnique;
@@ -43,7 +44,7 @@ public class XMLJoinTest {
         List<GroupCaseStudy> groupCaseStudys = new ArrayList<>();
 
         List<GroupFormationTechnique> groupFormationTechniques
-                = Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10).stream()
+                = Arrays.asList(1, 2).stream()
                 .map((groupSize -> new FixedGroupSize_OnlyNGroups(10, groupSize)))
                 .collect(Collectors.toList());
 
@@ -57,7 +58,7 @@ public class XMLJoinTest {
 
         for (GroupFormationTechnique groupFormationTechnique : groupFormationTechniques) {
             for (GroupRecommenderSystem groupRecommenderSystem : groupRecommenderSystems) {
-                DefaultGroupCaseStudy groupCaseStudy = new DefaultGroupCaseStudy(
+                GroupCaseStudy groupCaseStudy = new GroupCaseStudy(
                         null,
                         groupRecommenderSystem,
                         groupFormationTechnique,
@@ -89,7 +90,7 @@ public class XMLJoinTest {
     public void testXMLJoinerWithASimpleExperiment_groupRecommendation() {
 
         //Data preparation
-        //FileUtilities.deleteDirectoryRecursive(experimentDirectory);
+        FileUtilities.deleteDirectoryRecursive(experimentDirectory);
         if (!experimentDirectory.exists()) {
             createCaseStudyXML();
             new TuringPreparator().executeAllExperimentsInDirectory(experimentDirectory, 1);
@@ -106,5 +107,4 @@ public class XMLJoinTest {
         Assert.assertTrue("The output file for MAE measure does not exists", maeOutput.exists());
 
     }
-
 }

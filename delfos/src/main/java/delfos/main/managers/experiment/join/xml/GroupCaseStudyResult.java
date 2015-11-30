@@ -1,6 +1,6 @@
 package delfos.main.managers.experiment.join.xml;
 
-import delfos.group.casestudy.GroupCaseStudy;
+import delfos.group.casestudy.defaultcase.GroupCaseStudy;
 import delfos.group.io.excel.casestudy.GroupCaseStudyExcel;
 import java.util.Comparator;
 import java.util.Map;

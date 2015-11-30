@@ -3,7 +3,7 @@ package delfos.group.casestudy;
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RelevanceCriteria;
-import delfos.group.casestudy.defaultcase.DefaultGroupCaseStudy;
+import delfos.group.casestudy.defaultcase.GroupCaseStudy;
 import delfos.group.experiment.validation.groupformation.GroupFormationTechnique;
 import delfos.group.experiment.validation.predictionvalidation.GroupPredictionProtocol;
 import delfos.group.experiment.validation.validationtechniques.GroupValidationTechnique;
@@ -22,7 +22,7 @@ import java.util.Map;
  */
 public class GroupCaseStudyConfiguration {
 
-    private final GroupRecommenderSystem<Object, Object> groupRecommenderSystem;
+    private final GroupRecommenderSystem<? extends Object, ? extends Object> groupRecommenderSystem;
     private final DatasetLoader<? extends Rating> datasetLoader;
     private final GroupFormationTechnique groupFormationTechnique;
     private final GroupValidationTechnique groupValidationTechnique;
@@ -59,7 +59,7 @@ public class GroupCaseStudyConfiguration {
         this.groupEvaluationMeasuresResults = groupEvaluationMeasuresResults;
     }
 
-    public GroupRecommenderSystem<Object, Object> getGroupRecommenderSystem() {
+    public GroupRecommenderSystem<? extends Object, ? extends Object> getGroupRecommenderSystem() {
         return groupRecommenderSystem;
     }
 
@@ -89,7 +89,7 @@ public class GroupCaseStudyConfiguration {
 
     public GroupCaseStudy createGroupCaseStudy() {
 
-        GroupCaseStudy caseStudyGroupRecommendation = new DefaultGroupCaseStudy(
+        GroupCaseStudy caseStudyGroupRecommendation = new GroupCaseStudy(
                 datasetLoader,
                 groupRecommenderSystem,
                 groupFormationTechnique,

@@ -8,8 +8,8 @@ import delfos.constants.DelfosTest;
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.RelevanceCriteria;
 import delfos.experiment.casestudy.cluster.TuringPreparator;
-import delfos.group.casestudy.GroupCaseStudy;
-import delfos.group.casestudy.defaultcase.DefaultGroupCaseStudy;
+import delfos.group.casestudy.defaultcase.GroupCaseStudy;
+import delfos.group.casestudy.defaultcase.GroupCaseStudy;
 import delfos.group.experiment.validation.groupformation.GroupFormationTechnique;
 import delfos.group.experiment.validation.groupformation.SimilarMembers;
 import delfos.group.experiment.validation.predictionvalidation.NoPredictionProtocol;
@@ -92,7 +92,7 @@ public class HesitantGRS_CaseStudy_deepAnalysis extends DelfosTest {
 
         for (GroupFormationTechnique groupFormationTechnique : getGroupFormationTechnique()) {
             for (GroupRecommenderSystem groupRecommenderSystem : getGRSs()) {
-                DefaultGroupCaseStudy groupCaseStudy = new DefaultGroupCaseStudy(
+                GroupCaseStudy groupCaseStudy = new GroupCaseStudy(
                         null,
                         groupRecommenderSystem,
                         groupFormationTechnique,
@@ -127,12 +127,6 @@ public class HesitantGRS_CaseStudy_deepAnalysis extends DelfosTest {
         Global.show("This case study has " + new TuringPreparator()
                 .sizeOfAllExperimentsInDirectory(experimentDirectory)
                 + " experiments");
-
-        new TuringPreparator().executeAllExperimentsInDirectory_withSeed(experimentDirectory, 1, 123456);
-        new TuringPreparator().executeAllExperimentsInDirectory_withSeed(experimentDirectory, 1, 654321);
-        new TuringPreparator().executeAllExperimentsInDirectory_withSeed(experimentDirectory, 1, 147258);
-        new TuringPreparator().executeAllExperimentsInDirectory_withSeed(experimentDirectory, 1, 852741);
-        new TuringPreparator().executeAllExperimentsInDirectory_withSeed(experimentDirectory, 1, 987654);
     }
 
 }

@@ -5,7 +5,7 @@ import java.util.List;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.experiment.casestudy.CaseStudy;
-import delfos.group.casestudy.GroupCaseStudy;
+import delfos.group.casestudy.defaultcase.GroupCaseStudy;
 
 /**
  *

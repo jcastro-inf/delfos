@@ -4,7 +4,7 @@ import delfos.ConsoleParameters;
 import delfos.ERROR_CODES;
 import delfos.UndefinedParameterException;
 import delfos.common.FileUtilities;
-import delfos.group.casestudy.GroupCaseStudy;
+import delfos.group.casestudy.defaultcase.GroupCaseStudy;
 import delfos.group.io.excel.casestudy.GroupCaseStudyExcel;
 import delfos.group.io.xml.casestudy.GroupCaseStudyXML;
 import delfos.main.managers.CaseUseMode;
@@ -17,6 +17,7 @@ import java.util.TreeSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
+import jxl.write.WriteException;
 import org.jdom2.JDOMException;
 
 /**
@@ -127,12 +128,30 @@ public class XMLJoin extends CaseUseMode {
         List<String> techniqueParametersOrder = obtainTechniqueParametersOrder(groupCaseStudyResults);
         List<String> evaluationMeasuresOrder = obtainEvaluationMeasuresOrder(groupCaseStudyResults);
 
-        File newOutput = FileUtilities.addSufix(outputFile, "-completeTable");
-        GroupCaseStudyExcel.writeGeneralFile(groupCaseStudyResults, dataValidationParametersOrder, techniqueParametersOrder, evaluationMeasuresOrder, newOutput);
+        try {
+            File newOutput = FileUtilities.addSufix(outputFile, "-completeTable");
+            GroupCaseStudyExcel.writeGeneralFile(
+                    groupCaseStudyResults,
+                    dataValidationParametersOrder,
+                    techniqueParametersOrder,
+                    evaluationMeasuresOrder,
+                    newOutput);
+        } catch (WriteException | IOException ex) {
+            ERROR_CODES.CANNOT_WRITE_FILE.exit(ex);
+        }
 
         for (String evaluationMeasure : evaluationMeasuresOrder) {
             File measureOutput = FileUtilities.addSufix(outputFile, "-" + evaluationMeasure);
-            GroupCaseStudyExcel.writeEvaluationMeasureSpecificFile(groupCaseStudyResults, dataValidationParametersOrder, techniqueParametersOrder, evaluationMeasure, measureOutput);
+            try {
+                GroupCaseStudyExcel.writeEvaluationMeasureSpecificFile(
+                        groupCaseStudyResults,
+                        dataValidationParametersOrder,
+                        techniqueParametersOrder,
+                        evaluationMeasure,
+                        measureOutput);
+            } catch (WriteException | IOException ex) {
+                ERROR_CODES.CANNOT_WRITE_FILE.exit(ex);
+            }
         }
 
     }

@@ -11,8 +11,8 @@ import delfos.dataset.loaders.csv.CSVfileDatasetLoader;
 import delfos.dataset.util.DatasetPrinterDeprecated;
 import delfos.experiment.ExperimentListerner_default;
 import delfos.experiment.casestudy.ExecutionProgressListener_default;
-import delfos.group.casestudy.GroupCaseStudy;
-import delfos.group.casestudy.defaultcase.DefaultGroupCaseStudy;
+import delfos.group.casestudy.defaultcase.GroupCaseStudy;
+import delfos.group.casestudy.defaultcase.GroupCaseStudy;
 import delfos.group.experiment.validation.groupformation.GivenGroups;
 import delfos.group.experiment.validation.groupformation.GroupFormationTechnique;
 import delfos.group.experiment.validation.predictionvalidation.NoPredictionProtocol;
@@ -96,7 +96,7 @@ public class CheckCoverageTest {
 
         Collection<GroupEvaluationMeasure> evaluationMeasures = GroupEvaluationMeasuresFactory.getInstance().getAllClasses();
 
-        GroupCaseStudy caseStudy = new DefaultGroupCaseStudy(
+        GroupCaseStudy caseStudy = new GroupCaseStudy(
                 datasetLoader,
                 rs,
                 groupFormationTechnique, new HoldOutGroupRatedItems(SEED), new NoPredictionProtocol(),
@@ -124,7 +124,7 @@ public class CheckCoverageTest {
 
         Collection<GroupEvaluationMeasure> evaluationMeasures = GroupEvaluationMeasuresFactory.getInstance().getAllClasses();
 
-        GroupCaseStudy caseStudy = new DefaultGroupCaseStudy(
+        GroupCaseStudy caseStudy = new GroupCaseStudy(
                 datasetLoader,
                 rs,
                 groupFormationTechnique, new HoldOutGroupRatedItems(SEED), new NoPredictionProtocol(),

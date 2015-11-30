@@ -11,17 +11,23 @@ import delfos.common.exceptions.dataset.users.UserNotFound;
 import delfos.common.parallelwork.MultiThreadExecutionManager;
 import delfos.common.parallelwork.Parallelisation;
 import delfos.common.parallelwork.notblocking.MultiThreadExecutionManager_NotBlocking;
+import delfos.common.parameters.Parameter;
+import delfos.common.parameters.ParameterOwnerType;
+import delfos.common.parameters.restriction.IntegerParameter;
+import delfos.common.parameters.restriction.ParameterOwnerRestriction;
 import delfos.common.statisticalfuncions.MeanIterative;
+import delfos.configureddatasets.ConfiguredDatasetLoader;
 import delfos.dataset.basic.loader.types.ContentDatasetLoader;
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.loader.types.TrustDatasetLoader;
 import delfos.dataset.basic.loader.types.UsersDatasetLoader;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RelevanceCriteria;
-import delfos.dataset.generated.random.RandomDatasetLoader;
 import delfos.dataset.storage.validationdatasets.PairOfTrainTestRatingsDataset;
+import delfos.experiment.ExperimentAdapter;
 import delfos.experiment.SeedHolder;
-import delfos.group.casestudy.GroupCaseStudy;
+import static delfos.experiment.SeedHolder.SEED;
+import delfos.experiment.casestudy.CaseStudyParameterChangedListener;
 import delfos.group.casestudy.parallelisation.SingleGroupRecommendation;
 import delfos.group.casestudy.parallelisation.SingleGroupRecommendationTask;
 import delfos.group.experiment.validation.groupformation.FixedGroupSize_OnlyNGroups;
@@ -45,6 +51,7 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -59,153 +66,163 @@ import java.util.logging.Logger;
  *
  * @version 1.0 20-Mayo-2013
  */
-public class DefaultGroupCaseStudy extends GroupCaseStudy {
+public class GroupCaseStudy extends ExperimentAdapter {
 
     private static final long serialVersionUID = 1L;
+
+    /*------------------- DATA VALIDATION PARAMETERS -------------------------*/
+    /**
+     * Parameter to store the dataset used in this case study
+     */
+    public static final Parameter DATASET_LOADER = new Parameter(
+            DatasetLoader.class.getSimpleName(),
+            new ParameterOwnerRestriction(DatasetLoader.class, new ConfiguredDatasetLoader("ml-100k")));
+
+    public static final Parameter GROUP_FORMATION_TECHNIQUE = new Parameter(
+            GroupFormationTechnique.class.getSimpleName(),
+            new ParameterOwnerRestriction(GroupFormationTechnique.class, new FixedGroupSize_OnlyNGroups(2, 2)));
+
+    public static final Parameter GROUP_VALIDATION_TECHNIQUE = new Parameter(
+            GroupValidationTechnique.class.getSimpleName(),
+            new ParameterOwnerRestriction(GroupValidationTechnique.class, new HoldOutGroupRatedItems()));
+
+    public static final Parameter GROUP_PREDICTION_PROTOCOL = new Parameter(
+            GroupPredictionProtocol.class.getSimpleName(),
+            new ParameterOwnerRestriction(GroupPredictionProtocol.class, new NoPredictionProtocol()));
+
+    /*------------------------- TECHNIQUE PARAMETERS -------------------------*/
+    public static final Parameter GROUP_RECOMMENDER_SYSTEM = new Parameter(
+            GroupRecommenderSystem.class.getSimpleName(),
+            new ParameterOwnerRestriction(GroupRecommenderSystem.class, new RandomGroupRecommender()));
+
+    public static final Parameter NUM_EXECUTIONS = new Parameter(
+            "numExecutions",
+            new IntegerParameter(1, 100000000, 1));
+
+    protected final LinkedList<CaseStudyParameterChangedListener> propertyListeners = new LinkedList<>();
+
+    public GroupCaseStudy() {
+        addParameter(SEED);
+        addParameter(NUM_EXECUTIONS);
+
+        addParameter(DATASET_LOADER);
+
+        addParameter(GROUP_FORMATION_TECHNIQUE);
+        addParameter(GROUP_VALIDATION_TECHNIQUE);
+        addParameter(GROUP_PREDICTION_PROTOCOL);
+        addParameter(GROUP_RECOMMENDER_SYSTEM);
+    }
+
+    public GroupCaseStudy(DatasetLoader<? extends Rating> datasetLoader) {
+        this();
+
+        setParameterValue(DATASET_LOADER, datasetLoader);
+        setAlias(datasetLoader.getAlias());
+    }
+
+    public GroupCaseStudy(DatasetLoader<? extends Rating> datasetLoader,
+            GroupRecommenderSystem<? extends Object, ? extends Object> groupRecommenderSystem,
+            GroupFormationTechnique groupFormationTechnique,
+            GroupValidationTechnique groupValidationTechnique, GroupPredictionProtocol groupPredictionProtocol,
+            Collection<GroupEvaluationMeasure> groupEvaluationMeasures,
+            RelevanceCriteria relevanceCriteria,
+            int numExecutions) {
+
+        this();
+
+        setParameterValue(NUM_EXECUTIONS, numExecutions);
+
+        setParameterValue(GROUP_FORMATION_TECHNIQUE, groupFormationTechnique);
+        setParameterValue(GROUP_VALIDATION_TECHNIQUE, groupValidationTechnique);
+        setParameterValue(GROUP_PREDICTION_PROTOCOL, groupPredictionProtocol);
+        setParameterValue(GROUP_RECOMMENDER_SYSTEM, groupRecommenderSystem);
+
+        setAlias(groupRecommenderSystem.getAlias());
+    }
+
+    public GroupCaseStudy(DatasetLoader<? extends Rating> datasetLoader,
+            GroupRecommenderSystem<? extends Object, ? extends Object> groupRecommenderSystem,
+            GroupFormationTechnique groupFormationTechnique,
+            GroupValidationTechnique groupValidationTechnique, GroupPredictionProtocol groupPredictionProtocol,
+            Collection<GroupEvaluationMeasure> groupEvaluationMeasures,
+            RelevanceCriteria relevanceCriteria,
+            int numExecutions, long seed) {
+        this(datasetLoader, groupRecommenderSystem, groupFormationTechnique, groupValidationTechnique, groupPredictionProtocol, groupEvaluationMeasures, relevanceCriteria, numExecutions);
+        setSeedValue(seed);
+    }
+
+    /**
+     * Devuelve la técnica utilizada para generar los grupos que se evaluarán en
+     * el caso de estudio.
+     *
+     * @return Técnica de formación de grupos utilizada
+     */
+    public GroupFormationTechnique getGroupFormationTechnique() {
+        return (GroupFormationTechnique) getParameterValue(GROUP_FORMATION_TECHNIQUE);
+    }
+
+    /**
+     * Devuelve la validación que se utiliza en este caso de estudio.
+     *
+     * @return
+     */
+    public GroupValidationTechnique getGroupValidationTechnique() {
+        return (GroupValidationTechnique) getParameterValue(GROUP_VALIDATION_TECHNIQUE);
+    }
+
+    @Override
+    public ParameterOwnerType getParameterOwnerType() {
+        return ParameterOwnerType.GROUP_CASE_STUDY;
+    }
+
+    public GroupPredictionProtocol getGroupPredictionProtocol() {
+        return (GroupPredictionProtocol) getParameterValue(GROUP_PREDICTION_PROTOCOL);
+    }
+
+    public int hashDataValidation() {
+        int hash = 7;
+        hash = 97 * hash + Objects.hashCode(this.getSeedValue());
+        hash = 97 * hash + Objects.hashCode(this.getDatasetLoader());
+        hash = 97 * hash + Objects.hashCode(this.getGroupFormationTechnique());
+        hash = 97 * hash + Objects.hashCode(this.getRelevanceCriteria());
+        hash = 97 * hash + Objects.hashCode(this.getGroupPredictionProtocol());
+        hash = 97 * hash + Objects.hashCode(this.getGroupValidationTechnique());
+        return hash;
+    }
+
+    public int hashTechnique() {
+        return this.getGroupRecommenderSystem().hashCode();
+    }
+
     // ================== VARIABLES QUE NO CAMBIAN EN LA EJECUCION =============
-    protected final DatasetLoader<? extends Rating> datasetLoader;
-    protected final GroupRecommenderSystem groupRecommenderSystem;
-    protected final GroupFormationTechnique groupFormationTechnique;
-    protected final int numEjecuciones;
-    protected final Collection<GroupEvaluationMeasure> groupEvaluationMeasures;
-    protected final RelevanceCriteria relevanceCriteria;
-    protected final GroupPredictionProtocol groupPredictionProtocol;
-    protected final GroupValidationTechnique groupValidationTechnique;
+    private final Collection<GroupEvaluationMeasure> groupEvaluationMeasures = GroupEvaluationMeasuresFactory.getInstance().getAllClasses();
+
     // ================== VARIABLES QUE CAMBIAN EN LA EJECUCION ================
     protected int ejecucionActual;
     protected Map<GroupEvaluationMeasure, GroupEvaluationMeasureResult>[][] executionsResult;
-    protected Integer recommenderListSize = null;
     protected boolean finished = false;
     private long[][] buildTimes;//executionTimes[ejecucion][conjunto]
     private long[][] recommendationTimes;//executionTimes[ejecucion][conjunto]
     private long[][] groupBuildTime;
 
     /**
-     * Crea un caso de estudio para experimentar con sistemas de recomendación a
-     * grupos.
+     * Método que realiza la ejecución del caso de estudio, con la configuración
+     * que se haya
      *
-     * @param datasetLoader
-     * @param groupRecommenderSystem
-     * @param groupFormationTechnique
-     * @param groupValidationTechniqueValue
-     * @param groupPredictionProtocol
-     * @param evaluationMeasures
-     * @param criteria
-     * @param numEjecuciones
+     * @throws CannotLoadContentDataset
+     * @throws CannotLoadRatingsDataset
+     * @throws UserNotFound
+     * @throws ItemNotFound
      */
-    public DefaultGroupCaseStudy(
-            DatasetLoader<? extends Rating> datasetLoader,
-            GroupRecommenderSystem groupRecommenderSystem,
-            GroupFormationTechnique groupFormationTechnique,
-            GroupValidationTechnique groupValidationTechniqueValue,
-            GroupPredictionProtocol groupPredictionProtocol,
-            Collection<GroupEvaluationMeasure> evaluationMeasures,
-            RelevanceCriteria criteria,
-            int numEjecuciones) {
-
-        if (datasetLoader == null) {
-            this.datasetLoader = new RandomDatasetLoader(50, 50, 0.5);
-        } else {
-            this.datasetLoader = datasetLoader;
-        }
-        this.groupRecommenderSystem = groupRecommenderSystem;
-        this.groupFormationTechnique = groupFormationTechnique;
-        this.numEjecuciones = numEjecuciones;
-        this.groupEvaluationMeasures = evaluationMeasures;
-        this.relevanceCriteria = criteria;
-        this.groupPredictionProtocol = groupPredictionProtocol;
-        this.groupValidationTechnique = groupValidationTechniqueValue;
-
-        setAlias(groupRecommenderSystem.getAlias());
-    }
-
-    public DefaultGroupCaseStudy(
-            DatasetLoader<? extends Rating> datasetLoader,
-            GroupRecommenderSystem groupRecommenderSystem,
-            GroupFormationTechnique groupFormationTechnique,
-            GroupValidationTechnique groupValidationTechniqueValue,
-            GroupPredictionProtocol groupPredictionProtocol,
-            Collection<GroupEvaluationMeasure> evaluationMeasures,
-            RelevanceCriteria criteria,
-            int numEjecuciones, long seedValue) {
-
-        if (datasetLoader == null) {
-            this.datasetLoader = new RandomDatasetLoader(50, 50, 0.5);
-        } else {
-            this.datasetLoader = datasetLoader;
-        }
-        this.groupRecommenderSystem = groupRecommenderSystem;
-        this.groupFormationTechnique = groupFormationTechnique;
-        this.numEjecuciones = numEjecuciones;
-        this.groupEvaluationMeasures = evaluationMeasures;
-        this.relevanceCriteria = criteria;
-        this.groupPredictionProtocol = groupPredictionProtocol;
-        this.groupValidationTechnique = groupValidationTechniqueValue;
-        setSeedValue(seedValue);
-
-        setAlias(groupRecommenderSystem.getAlias());
-    }
-
-    @Override
-    public int hashCode() {
-        int hash = 7;
-        hash = 97 * hash + Objects.hashCode(this.getSeedValue());
-        hash = 97 * hash + Objects.hashCode(this.datasetLoader);
-        hash = 97 * hash + Objects.hashCode(this.groupRecommenderSystem);
-        hash = 97 * hash + Objects.hashCode(this.groupFormationTechnique);
-        hash = 97 * hash + Objects.hashCode(this.relevanceCriteria);
-        hash = 97 * hash + Objects.hashCode(this.groupPredictionProtocol);
-        hash = 97 * hash + Objects.hashCode(this.groupValidationTechnique);
-        return hash;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        final DefaultGroupCaseStudy other = (DefaultGroupCaseStudy) obj;
-        if (!Objects.equals(this.datasetLoader, other.datasetLoader)) {
-            return false;
-        }
-        if (!Objects.equals(this.groupRecommenderSystem, other.groupRecommenderSystem)) {
-            return false;
-        }
-        if (!Objects.equals(this.groupFormationTechnique, other.groupFormationTechnique)) {
-            return false;
-        }
-        if (!Objects.equals(this.relevanceCriteria, other.relevanceCriteria)) {
-            return false;
-        }
-        if (!Objects.equals(this.groupPredictionProtocol, other.groupPredictionProtocol)) {
-            return false;
-        }
-        if (!Objects.equals(this.groupValidationTechnique, other.groupValidationTechnique)) {
-            return false;
-        }
-        return true;
-    }
-
-    public DefaultGroupCaseStudy(DatasetLoader<? extends Rating> datasetLoader) {
-
-        this(datasetLoader,
-                new RandomGroupRecommender(),
-                new FixedGroupSize_OnlyNGroups(2, 2), new HoldOutGroupRatedItems(), new NoPredictionProtocol(),
-                GroupEvaluationMeasuresFactory.getInstance().getAllClasses(),
-                new RelevanceCriteria(4), 1);
-        setAlias(datasetLoader.getAlias());
-    }
-
-    @Override
-    public GroupPredictionProtocol getGroupPredictionProtocol() {
-        return groupPredictionProtocol;
-    }
-
-    @Override
     public void execute() throws CannotLoadContentDataset, CannotLoadRatingsDataset, UserNotFound, ItemNotFound {
+
+        final GroupRecommenderSystem groupRecommenderSystem = getGroupRecommenderSystem();
+        final GroupFormationTechnique groupFormationTechnique = getGroupFormationTechnique();
+        final RelevanceCriteria relevanceCriteria = getRelevanceCriteria();
+        final GroupPredictionProtocol groupPredictionProtocol = getGroupPredictionProtocol();
+        final GroupValidationTechnique groupValidationTechnique = getGroupValidationTechnique();
+        final DatasetLoader<? extends Rating> datasetLoader = getDatasetLoader();
+
         initGroupCaseStudy();
 
         MultiThreadExecutionManager_NotBlocking<DefaultGroupCaseStudyGroupEvaluationMeasures_Task> multiThreadExecutionManagerEvaluationMeasures
@@ -217,18 +234,18 @@ public class DefaultGroupCaseStudy extends GroupCaseStudy {
 
         int numVueltas = 1;
         int numParticiones = getGroupValidationTechnique().getNumberOfSplits();
-        int maxVueltas = numParticiones * numEjecuciones;
+        int maxVueltas = numParticiones * getNumExecutions();
 
         setNumVueltas(maxVueltas);
 
-        executionsResult = new Map[numEjecuciones][numParticiones];
-        for (int execution = 0; execution < numEjecuciones; execution++) {
+        executionsResult = new Map[getNumExecutions()][numParticiones];
+        for (int execution = 0; execution < getNumExecutions(); execution++) {
             for (int split = 0; split < numParticiones; split++) {
                 executionsResult[execution][split] = new TreeMap<>();
             }
         }
         groupRecommenderSystem.addRecommendationModelBuildingProgressListener(new RecommenderSystemBuildingProgressListener_default(System.out, 5000));
-        initTimes(numEjecuciones, numParticiones);
+        initTimes(getNumExecutions(), numParticiones);
 
         MeanIterative tiempoParticion = new MeanIterative();
         groupFormationTechnique.addListener(new GroupFormationTechniqueProgressListener_default(System.out, 5000));
@@ -237,7 +254,7 @@ public class DefaultGroupCaseStudy extends GroupCaseStudy {
 
         int loopCount = 0;
         setExperimentProgress(getAlias() + " --> Running Case Study Group", 0, -1);
-        for (ejecucionActual = 0; ejecucionActual < numEjecuciones; ejecucionActual++) {
+        for (ejecucionActual = 0; ejecucionActual < getNumExecutions(); ejecucionActual++) {
             setNextSeedToSeedHolders(loopCount);
 
             Collection<GroupOfUsers> groups = groupFormationTechnique.shuffle(datasetLoader);
@@ -251,7 +268,7 @@ public class DefaultGroupCaseStudy extends GroupCaseStudy {
 
                 setVueltaActual(ejecucionActual * numParticiones + particionActual);
 
-                setExperimentProgress(getAlias() + " --> Executing (ex " + (ejecucionActual + 1) + "/" + numEjecuciones + ") (split " + (particionActual + 1) + "/" + numParticiones + ")", ejecucionActual * numParticiones + particionActual, -1);
+                setExperimentProgress(getAlias() + " --> Executing (ex " + (ejecucionActual + 1) + "/" + getNumExecutions() + ") (split " + (particionActual + 1) + "/" + numParticiones + ")", ejecucionActual * numParticiones + particionActual, -1);
                 setExecutionProgress(getAlias() + " --> Building Recommender System Model", 0, -1);
 
                 DatasetLoader<? extends Rating> trainDatasetLoader = pairsOfTrainTest[particionActual].getTrainingDatasetLoader();
@@ -335,7 +352,7 @@ public class DefaultGroupCaseStudy extends GroupCaseStudy {
                     try {
                         closeable.close();
                     } catch (IOException ex) {
-                        Logger.getLogger(DefaultGroupCaseStudy.class.getName()).log(Level.SEVERE, null, ex);
+                        Logger.getLogger(GroupCaseStudy.class.getName()).log(Level.SEVERE, null, ex);
                     }
                 }
 
@@ -346,7 +363,7 @@ public class DefaultGroupCaseStudy extends GroupCaseStudy {
                 tiempoParticion.addValue(cronometroTiempoParticion.getTotalElapsed());
 
                 long tiempoRestanteExperimento = (long) ((maxVueltas - numVueltas) * tiempoParticion.getMean());
-                setExperimentProgress(getAlias() + " --> Executing (ex " + (ejecucionActual + 1) + "/" + numEjecuciones + ") (split " + (particionActual + 1) + "/" + numParticiones + ")", ejecucionActual * numParticiones + particionActual, tiempoRestanteExperimento);
+                setExperimentProgress(getAlias() + " --> Executing (ex " + (ejecucionActual + 1) + "/" + getNumExecutions() + ") (split " + (particionActual + 1) + "/" + numParticiones + ")", ejecucionActual * numParticiones + particionActual, tiempoRestanteExperimento);
                 numVueltas++;
 
                 GroupRecommendationResult groupRecommendationResult = new GroupRecommendationResult(groupValidationTechnique.getSeedValue(), totalBuildTime, totalGroupBuildTime, totalGroupRecommendationTime, solicitudesPorGrupo, recomendacionesPorGrupo, getAlias());
@@ -369,7 +386,7 @@ public class DefaultGroupCaseStudy extends GroupCaseStudy {
         try {
             multiThreadExecutionManagerEvaluationMeasures.waitUntilFinished();
         } catch (InterruptedException ex) {
-            Logger.getLogger(DefaultGroupCaseStudy.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(GroupCaseStudy.class.getName()).log(Level.SEVERE, null, ex);
         }
 
         multiThreadExecutionManagerEvaluationMeasures.getAllFinishedTasks().stream().forEach((task) -> {
@@ -399,15 +416,30 @@ public class DefaultGroupCaseStudy extends GroupCaseStudy {
         }
     }
 
-    @Override
+    /**
+     * Devuelve las medidas de evaluación que se aplican a los resultados de
+     * ejecución del sistema de recomendación a grupos
+     *
+     * @return Medidas de evaluación aplicadas
+     */
     public Collection<GroupEvaluationMeasure> getEvaluationMeasures() {
         return groupEvaluationMeasures;
     }
 
-    @Override
-    public GroupEvaluationMeasureResult getMeasureResult(GroupEvaluationMeasure em, int execution, int split) {
+    /**
+     * Devuelve el resultado de la medida de evaluación de GRS que se indica por
+     * parámetro en la ejecución indicada.
+     *
+     * @param em Medida de evaluación que se consulta.
+     * @param numExec Ejecución para la que se consulta el resultado de la
+     * medida.
+     * @param split
+     * @return Objeto que encapsula los resultados de la aplicación de la medida
+     * a las recomendaciones del sistema.
+     */
+    public GroupEvaluationMeasureResult getMeasureResult(GroupEvaluationMeasure em, int numExec, int split) {
 
-        Map<GroupEvaluationMeasure, GroupEvaluationMeasureResult> thisExecution_evaluationMeasuresValues = this.executionsResult[execution][split];
+        Map<GroupEvaluationMeasure, GroupEvaluationMeasureResult> thisExecution_evaluationMeasuresValues = this.executionsResult[numExec][split];
 
         if (thisExecution_evaluationMeasuresValues.containsKey(em)) {
             GroupEvaluationMeasureResult groupMeasureResult = thisExecution_evaluationMeasuresValues.get(em);
@@ -417,28 +449,22 @@ public class DefaultGroupCaseStudy extends GroupCaseStudy {
         }
     }
 
-    @Override
+    /**
+     * Obtiene el número de ejecuciones que se realizan
+     *
+     * @return Número de ejecuciones.
+     */
     public int getNumExecutions() {
-        return numEjecuciones;
-    }
-
-    @Override
-    public GroupRecommenderSystem getGroupRecommenderSystem() {
-        return groupRecommenderSystem;
+        return ((Number) getParameterValue(NUM_EXECUTIONS)).intValue();
     }
 
     /**
-     * Devuelve el tiempo de ejecución en milisegundos de una partición concreta
-     * de una ejecución dada.
+     * Obtiene el sistema de recomendación a grupos que se está utilizando.
      *
-     * @param execution Ejecución para la que se quiere conocer el tiempo.
-     * @param split Partición de la ejecución indicada para la que se quiere
-     * conocer el tiempo.
-     * @return tiempo de ejecución en milisegundos.
+     * @return Sistema de recomendación a grupos que se utiliza.
      */
-    @Override
-    public long getBuildTime(int execution, int split) {
-        return buildTimes[execution][split];
+    public GroupRecommenderSystem getGroupRecommenderSystem() {
+        return (GroupRecommenderSystem) getParameterValue(GROUP_RECOMMENDER_SYSTEM);
     }
 
     /**
@@ -446,37 +472,59 @@ public class DefaultGroupCaseStudy extends GroupCaseStudy {
      * de una ejecución dada
      *
      * @param execution Ejecución para la que se quiere conocer el tiempo
-     * @param split Partición de la ejecución indicada para la que se quiere
-     * conocer el tiempo.
+     * @param split
      * @return tiempo de ejecución en milisegundos
      */
-    @Override
+    public long getBuildTime(int execution, int split) {
+        return buildTimes[execution][split];
+    }
+
+    /**
+     * Devuelve el tiempo de recomendación que el algoritmo demoró en la
+     * ejecución indicada. Engloba el cálculo de las recomendaciones para todos
+     * los datos del conjunto de test.
+     *
+     * @param execution Ejecución para la que se consulta el tiempo
+     * @param split
+     * @return Tiempo en milisegundos de la fase de recomendación
+     * @throws IllegalArgumentException Si ex es mayor o igual que el número de
+     * ejecuciones o es menor que cero.
+     *
+     */
     public long getRecommendationTime(int execution, int split) {
         return recommendationTimes[execution][split];
     }
 
-    protected void initTimes(int numEjecuciones, int numParticiones) {
-        buildTimes = new long[numEjecuciones][numParticiones];
-        groupBuildTime = new long[numEjecuciones][numParticiones];
-        recommendationTimes = new long[numEjecuciones][numParticiones];
+    protected void initTimes(int execution, int numParticiones) {
+        buildTimes = new long[execution][numParticiones];
+        groupBuildTime = new long[execution][numParticiones];
+        recommendationTimes = new long[execution][numParticiones];
     }
 
-    protected void setBuildTime(int numEjecuciones, int particionActual, long time) {
-        buildTimes[numEjecuciones][particionActual] = time;
+    protected void setBuildTime(int execution, int particionActual, long time) {
+        buildTimes[execution][particionActual] = time;
     }
 
-    protected void setRecommendationTime(int numEjecuciones, int particionActual, long time) {
-        recommendationTimes[numEjecuciones][particionActual] = time;
+    protected void setRecommendationTime(int execution, int particionActual, long time) {
+        recommendationTimes[execution][particionActual] = time;
     }
 
-    @Override
+    /**
+     * Devuelve el DatasetLoader<? extends Rating> que el experimento utiliza
+     *
+     * @return DatasetLoader<? extends Rating> que el experimento utiliza
+     */
     public DatasetLoader<? extends Rating> getDatasetLoader() {
-        return datasetLoader;
+        return (DatasetLoader<? extends Rating>) getParameterValue(DATASET_LOADER);
     }
 
-    @Override
+    /**
+     * Obtiene el criterio de relevancia utilizado en el caso de estudio.
+     *
+     * @return Criterio de relevancia actual.
+     */
     public RelevanceCriteria getRelevanceCriteria() {
-        return relevanceCriteria;
+        return RelevanceCriteria.DEFAULT_RELEVANCE_CRITERIA;
     }
 
     @Override
@@ -484,26 +532,33 @@ public class DefaultGroupCaseStudy extends GroupCaseStudy {
         return this.finished;
     }
 
-    @Override
-    public GroupFormationTechnique getGroupFormationTechnique() {
-        return groupFormationTechnique;
-    }
-
-    @Override
+    //TODO: Poner una función que
+    /**
+     * Método para asignar al caso de estudio el resultado calculado de una
+     * medida de evaluación sobre una ejecución.
+     *
+     * @param ejecucion Ejecución a la que se refiere el resultado.
+     * @param split
+     * @param e Medida de evaluación
+     * @param groupMeasureResult Resultado de la medida
+     * @deprecated Está previsto eliminar este método.
+     */
     public void putResult(int ejecucion, int split, GroupEvaluationMeasure e, GroupEvaluationMeasureResult groupMeasureResult) {
         executionsResult[ejecucion][split].put(e, groupMeasureResult);
-    }
-
-    @Override
-    public GroupValidationTechnique getGroupValidationTechnique() {
-        return groupValidationTechnique;
     }
 
     protected void setGroupBuildTime(int ejecucionActual, int splitActual, long totalGroupBuildTime) {
         groupBuildTime[ejecucionActual][splitActual] = totalGroupBuildTime;
     }
 
-    @Override
+    /**
+     * Devuelve el tiempo empleado en la construcción del modelo de los grupos
+     * ya formados.
+     *
+     * @param ex
+     * @param split
+     * @return tiempo en milisegundos.
+     */
     public long getGroupBuildTime(int ex, int split) {
         return groupBuildTime[ex][split];
     }
@@ -513,7 +568,12 @@ public class DefaultGroupCaseStudy extends GroupCaseStudy {
         return false;
     }
 
-    @Override
+    /**
+     * Devuelve el tiempo medio de construcción del modelo de recomendación en
+     * milisegundos.
+     *
+     * @return
+     */
     public long getAggregateBuildTime() {
         MeanIterative meanValue = new MeanIterative();
         for (long[] executionTimes : buildTimes) {
@@ -524,7 +584,12 @@ public class DefaultGroupCaseStudy extends GroupCaseStudy {
         return (long) meanValue.getMean();
     }
 
-    @Override
+    /**
+     * Devuelve el tiempo medio de construcción de todos los perfiles de grupo
+     * en milisegundos.
+     *
+     * @return
+     */
     public long getAggregateGroupBuildTime() {
         MeanIterative meanValue = new MeanIterative();
         for (long[] executionTimes : groupBuildTime) {
@@ -535,7 +600,12 @@ public class DefaultGroupCaseStudy extends GroupCaseStudy {
         return (long) meanValue.getMean();
     }
 
-    @Override
+    /**
+     * Devuelve el tiempo medio de cálculo de todas las recomendaciones en
+     * milisegundos.
+     *
+     * @return
+     */
     public long getAggregateRecommendationTime() {
         MeanIterative meanValue = new MeanIterative();
         for (long[] executionTimes : recommendationTimes) {
@@ -559,6 +629,12 @@ public class DefaultGroupCaseStudy extends GroupCaseStudy {
     @Override
     public final void setSeedValue(long seedValue) {
         setParameterValue(SEED, seedValue);
+
+        final GroupRecommenderSystem groupRecommenderSystem = getGroupRecommenderSystem();
+        final GroupFormationTechnique groupFormationTechnique = getGroupFormationTechnique();
+        final GroupPredictionProtocol groupPredictionProtocol = getGroupPredictionProtocol();
+        final GroupValidationTechnique groupValidationTechnique = getGroupValidationTechnique();
+        final DatasetLoader<? extends Rating> datasetLoader = getDatasetLoader();
 
         if (datasetLoader instanceof SeedHolder) {
             SeedHolder seedHolder = (SeedHolder) datasetLoader;
@@ -614,14 +690,26 @@ public class DefaultGroupCaseStudy extends GroupCaseStudy {
      * @param loop Vuelta actual
      */
     private void setNextSeedToSeedHolders(int loop) {
-        final long caseStudySeed = getSeedValue();
+        final GroupRecommenderSystem groupRecommenderSystem = getGroupRecommenderSystem();
+        final GroupFormationTechnique groupFormationTechnique = getGroupFormationTechnique();
+        final RelevanceCriteria relevanceCriteria = getRelevanceCriteria();
+        final GroupPredictionProtocol groupPredictionProtocol = getGroupPredictionProtocol();
+        final GroupValidationTechnique groupValidationTechnique = getGroupValidationTechnique();
+        final DatasetLoader<? extends Rating> datasetLoader = getDatasetLoader();
 
+        final long caseStudySeed = getSeedValue();
         long thisLoopSeed = caseStudySeed + loop;
 
         if (groupRecommenderSystem instanceof SeedHolder) {
             SeedHolder seedHolder = (SeedHolder) groupRecommenderSystem;
             seedHolder.setSeedValue(thisLoopSeed);
             Global.showInfoMessage("Reset GRS seed to " + seedHolder.getSeedValue() + "\n");
+
+        }
+        if (datasetLoader instanceof SeedHolder) {
+            SeedHolder seedHolder = (SeedHolder) datasetLoader;
+            seedHolder.setSeedValue(thisLoopSeed);
+            Global.showInfoMessage("Reset dataset seed to " + seedHolder.getSeedValue() + "\n");
 
         }
 
@@ -638,12 +726,13 @@ public class DefaultGroupCaseStudy extends GroupCaseStudy {
     private Map<GroupEvaluationMeasure, GroupEvaluationMeasureResult> groupEvaluationMeasuresResults = null;
 
     /**
-     * Método que devuelve el resultado agregado de una medida de evaluación.
+     * Devuelve el resultado agregado de la medida de evaluación de GRS que se
+     * indica por parámetro.
      *
-     * @param em Medida de evaluación
-     * @return Resultado de la medida de evaluación
+     * @param em Medida de evaluación que se consulta.
+     * @return Objeto que encapsula los resultados de la aplicación de la medida
+     * a las recomendaciones del sistema.
      */
-    @Override
     public GroupEvaluationMeasureResult getAggregateMeasureResult(GroupEvaluationMeasure em) {
 
         if (groupEvaluationMeasuresResults != null) {
@@ -662,9 +751,15 @@ public class DefaultGroupCaseStudy extends GroupCaseStudy {
         return em.agregateResults(measureResult);
     }
 
-    @Override
     public void setAggregateResults(Map<GroupEvaluationMeasure, GroupEvaluationMeasureResult> groupEvaluationMeasuresResults) {
         this.groupEvaluationMeasuresResults = groupEvaluationMeasuresResults;
     }
 
+    public long[][] getBuildTimes() {
+        return buildTimes;
+    }
+
+    public void setGroupRecommenderSystem(GroupRecommenderSystem<? extends Object, ? extends Object> groupRecommenderSystem) {
+        setParameterValue(GROUP_RECOMMENDER_SYSTEM, groupRecommenderSystem);
+    }
 }

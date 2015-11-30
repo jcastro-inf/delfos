@@ -6,10 +6,11 @@ import delfos.common.Global;
 import delfos.common.decimalnumbers.NumberRounder;
 import delfos.common.parameters.Parameter;
 import delfos.common.parameters.ParameterOwner;
+import delfos.common.parameters.chain.ParameterChain;
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RelevanceCriteria;
-import delfos.group.casestudy.GroupCaseStudy;
+import delfos.group.casestudy.defaultcase.GroupCaseStudy;
 import delfos.group.experiment.validation.groupformation.GroupFormationTechnique;
 import delfos.group.experiment.validation.predictionvalidation.GroupPredictionProtocol;
 import delfos.group.experiment.validation.validationtechniques.GroupValidationTechnique;
@@ -32,6 +33,7 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 import jxl.Cell;
 import jxl.CellType;
 import jxl.CellView;
@@ -817,138 +819,136 @@ public class GroupCaseStudyExcel {
         return evaluationMeasuresValues;
     }
 
-    public static void writeGeneralFile(List<GroupCaseStudyResult> groupCaseStudyResults, List<String> dataValidationParametersOrder, List<String> techniqueParametersOrder, List<String> evaluationMeasuresOrder, File file) {
+    public static void writeGeneralFile(List<GroupCaseStudyResult> groupCaseStudyResults, List<String> dataValidationParametersOrder, List<String> techniqueParametersOrder, List<String> evaluationMeasuresOrder, File file) throws WriteException, IOException {
 
         if (file.isDirectory()) {
             throw new IllegalStateException("GroupCaseStudy save to spreadsheet: Not a file (" + file.toString() + ")");
         }
 
-        try {
-            WorkbookSettings wbSettings = new WorkbookSettings();
+        WorkbookSettings wbSettings = new WorkbookSettings();
 
-            wbSettings.setLocale(new Locale("en", "EN"));
+        wbSettings.setLocale(new Locale("en", "EN"));
 
-            WritableWorkbook workbook = null;
+        WritableWorkbook workbook = null;
 
-            {
-                boolean created = false;
-                int i = 0;
-                while (!created) {
-                    String suffix = "_" + i;
-                    File actualFile = FileUtilities.addSufix(file, suffix);
-                    if (!actualFile.exists()) {
-                        try {
-                            workbook = Workbook.createWorkbook(actualFile, wbSettings);
-                            created = true;
-                        } catch (IOException ex) {
-                            created = false;
-                        }
+        {
+            boolean created = false;
+            int i = 0;
+            while (!created) {
+                String suffix = "_" + i;
+                File actualFile = FileUtilities.addSufix(file, suffix);
+                if (!actualFile.exists()) {
+                    try {
+                        workbook = Workbook.createWorkbook(actualFile, wbSettings);
+                        created = true;
+                    } catch (IOException ex) {
+                        created = false;
                     }
-                    i++;
                 }
+                i++;
             }
-            if (workbook == null) {
-                ERROR_CODES.CANNOT_WRITE_FILE.exit(new FileNotFoundException("Cannot access file " + file.getAbsolutePath() + "."));
-                return;
-            }
-
-            WritableSheet allCasesAggregateResults = workbook.createSheet("AllCasesAggregateResults", 0);
-            createLabel(allCasesAggregateResults);
-
-            {
-
-                int column = 0;
-                final int titlesRow = 0;
-
-                //ExperimentNamesColumn
-                addTitleText(allCasesAggregateResults, column, titlesRow, EXPERIMENT_NAME_COLUMN_NAME);
-                for (int index = 0; index < groupCaseStudyResults.size(); index++) {
-                    int row = index + 1;
-                    setCellText(allCasesAggregateResults, column, row, groupCaseStudyResults.get(index).getGroupCaseStudyAlias());
-                }
-                column++;
-
-                //General hash
-                addTitleText(allCasesAggregateResults, column, titlesRow, "hash");
-                for (int index = 0; index < groupCaseStudyResults.size(); index++) {
-                    int row = index + 1;
-                    setCellIntegerNumber(allCasesAggregateResults, column, row, groupCaseStudyResults.get(index).getGroupCaseStudy().hashCode());
-                }
-                column++;
-
-                //dataValidation hash
-                addTitleText(allCasesAggregateResults, column, titlesRow, "hashDataValidation");
-                for (int index = 0; index < groupCaseStudyResults.size(); index++) {
-                    int row = index + 1;
-                    setCellIntegerNumber(allCasesAggregateResults, column, row, groupCaseStudyResults.get(index).getGroupCaseStudy().hashDataValidation());
-                }
-                column++;
-
-                for (String dataValidationParameter : dataValidationParametersOrder) {
-
-                    addTitleText(allCasesAggregateResults, column, titlesRow, dataValidationParameter);
-                    for (int index = 0; index < groupCaseStudyResults.size(); index++) {
-                        int row = index + 1;
-
-                        GroupCaseStudyResult groupCaseStudyResult = groupCaseStudyResults.get(index);
-                        if (groupCaseStudyResult.getDefinedDataValidationParameters().contains(dataValidationParameter)) {
-
-                            Object dataValidationParameterValue = groupCaseStudyResult.getDataValidationParameterValue(dataValidationParameter);
-                            setCellContent(allCasesAggregateResults, column, row, dataValidationParameterValue);
-                        }
-                    }
-                    column++;
-                }
-
-                //technique hash
-                addTitleText(allCasesAggregateResults, column, titlesRow, "hashTechnique");
-                for (int index = 0; index < groupCaseStudyResults.size(); index++) {
-                    int row = index + 1;
-                    setCellIntegerNumber(allCasesAggregateResults, column, row, groupCaseStudyResults.get(index).getGroupCaseStudy().hashTechnique());
-                }
-                column++;
-
-                for (String techniqueParameter : techniqueParametersOrder) {
-
-                    addTitleText(allCasesAggregateResults, column, titlesRow, techniqueParameter);
-                    for (int index = 0; index < groupCaseStudyResults.size(); index++) {
-                        int row = index + 1;
-                        GroupCaseStudyResult groupCaseStudyResult = groupCaseStudyResults.get(index);
-                        if (groupCaseStudyResult.getDefinedTechniqueParameters().contains(techniqueParameter)) {
-                            Object techniqueParameterValue = groupCaseStudyResult.getTechniqueParameterValue(techniqueParameter);
-                            setCellContent(allCasesAggregateResults, column, row, techniqueParameterValue);
-                        }
-                    }
-                    column++;
-                }
-
-                for (String evaluationMeasure : evaluationMeasuresOrder) {
-
-                    addTitleText(allCasesAggregateResults, column, titlesRow, evaluationMeasure);
-                    for (int index = 0; index < groupCaseStudyResults.size(); index++) {
-                        int row = index + 1;
-                        GroupCaseStudyResult groupCaseStudyResult = groupCaseStudyResults.get(index);
-                        if (groupCaseStudyResult.getDefinedEvaluationMeasures().contains(evaluationMeasure)) {
-                            Object evaluationMeasureValue = groupCaseStudyResult.getEvaluationMeasureValue(evaluationMeasure);
-                            setCellContent(allCasesAggregateResults, column, row, evaluationMeasureValue);
-                        }
-                    }
-                    column++;
-                }
-            }
-
-            autoSizeColumns(allCasesAggregateResults);
-
-            workbook.write();
-            workbook.close();
-
-        } catch (WriteException | IOException ex) {
-            ERROR_CODES.CANNOT_WRITE_FILE.exit(ex);
         }
+        if (workbook == null) {
+            ERROR_CODES.CANNOT_WRITE_FILE.exit(new FileNotFoundException("Cannot access file " + file.getAbsolutePath() + "."));
+            return;
+        }
+
+        WritableSheet allCasesAggregateResults = workbook.createSheet("AllCasesAggregateResults", 0);
+        createLabel(allCasesAggregateResults);
+
+        {
+
+            int column = 0;
+            final int titlesRow = 0;
+
+            //ExperimentNamesColumn
+            addTitleText(allCasesAggregateResults, column, titlesRow, EXPERIMENT_NAME_COLUMN_NAME);
+            for (int index = 0; index < groupCaseStudyResults.size(); index++) {
+                int row = index + 1;
+                setCellText(allCasesAggregateResults, column, row, groupCaseStudyResults.get(index).getGroupCaseStudyAlias());
+            }
+            column++;
+
+            //General hash
+            addTitleText(allCasesAggregateResults, column, titlesRow, "hash");
+            for (int index = 0; index < groupCaseStudyResults.size(); index++) {
+                int row = index + 1;
+                setCellIntegerNumber(allCasesAggregateResults, column, row, groupCaseStudyResults.get(index).getGroupCaseStudy().hashCode());
+            }
+            column++;
+
+            //dataValidation hash
+            addTitleText(allCasesAggregateResults, column, titlesRow, "hashDataValidation");
+            for (int index = 0; index < groupCaseStudyResults.size(); index++) {
+                int row = index + 1;
+                setCellIntegerNumber(allCasesAggregateResults, column, row, groupCaseStudyResults.get(index).getGroupCaseStudy().hashDataValidation());
+            }
+            column++;
+
+            for (String dataValidationParameter : dataValidationParametersOrder) {
+
+                addTitleText(allCasesAggregateResults, column, titlesRow, dataValidationParameter);
+                for (int index = 0; index < groupCaseStudyResults.size(); index++) {
+                    int row = index + 1;
+
+                    GroupCaseStudyResult groupCaseStudyResult = groupCaseStudyResults.get(index);
+                    if (groupCaseStudyResult.getDefinedDataValidationParameters().contains(dataValidationParameter)) {
+
+                        Object dataValidationParameterValue = groupCaseStudyResult.getDataValidationParameterValue(dataValidationParameter);
+                        setCellContent(allCasesAggregateResults, column, row, dataValidationParameterValue);
+                    }
+                }
+                column++;
+            }
+
+            //technique hash
+            addTitleText(allCasesAggregateResults, column, titlesRow, "hashTechnique");
+            for (int index = 0; index < groupCaseStudyResults.size(); index++) {
+                int row = index + 1;
+                setCellIntegerNumber(allCasesAggregateResults, column, row, groupCaseStudyResults.get(index).getGroupCaseStudy().hashTechnique());
+            }
+            column++;
+
+            for (String techniqueParameter : techniqueParametersOrder) {
+
+                addTitleText(allCasesAggregateResults, column, titlesRow, techniqueParameter);
+                for (int index = 0; index < groupCaseStudyResults.size(); index++) {
+                    int row = index + 1;
+                    GroupCaseStudyResult groupCaseStudyResult = groupCaseStudyResults.get(index);
+                    if (groupCaseStudyResult.getDefinedTechniqueParameters().contains(techniqueParameter)) {
+                        Object techniqueParameterValue = groupCaseStudyResult.getTechniqueParameterValue(techniqueParameter);
+                        setCellContent(allCasesAggregateResults, column, row, techniqueParameterValue);
+                    }
+                }
+                column++;
+            }
+
+            for (String evaluationMeasure : evaluationMeasuresOrder) {
+
+                addTitleText(allCasesAggregateResults, column, titlesRow, evaluationMeasure);
+                for (int index = 0; index < groupCaseStudyResults.size(); index++) {
+                    int row = index + 1;
+                    GroupCaseStudyResult groupCaseStudyResult = groupCaseStudyResults.get(index);
+                    if (groupCaseStudyResult.getDefinedEvaluationMeasures().contains(evaluationMeasure)) {
+                        Object evaluationMeasureValue = groupCaseStudyResult.getEvaluationMeasureValue(evaluationMeasure);
+                        setCellContent(allCasesAggregateResults, column, row, evaluationMeasureValue);
+                    }
+                }
+                column++;
+            }
+        }
+
+        autoSizeColumns(allCasesAggregateResults);
+
+        workbook.write();
+        workbook.close();
 
     }
 
-    public static void writeEvaluationMeasureSpecificFile(List<GroupCaseStudyResult> groupCaseStudyResults, List<String> dataValidationParametersOrder, List<String> techniqueParametersOrder, String evaluationMeasure, File file) {
+    public static void writeEvaluationMeasureSpecificFile(List<GroupCaseStudyResult> groupCaseStudyResults, List<String> dataValidationParametersOrder, List<String> techniqueParametersOrder, String evaluationMeasure, File file) throws WriteException, IOException {
+
+        List<GroupCaseStudy> groupCaseStudys = groupCaseStudyResults.stream().map(groupCaseStudyResult -> groupCaseStudyResult.getGroupCaseStudy()).collect(Collectors.toList());
+
         Set<GroupCaseStudyResult> dataValidationAliases = new TreeSet<>(
                 GroupCaseStudyResult.dataValidationComparator);
         Set<GroupCaseStudyResult> techniqueAliases = new TreeSet<>(
@@ -967,118 +967,115 @@ public class GroupCaseStudyExcel {
             System.out.println(groupCaseStudyResult.getGroupCaseStudy().getGroupRecommenderSystem().getNameWithParameters());
         }
 
+        List<ParameterChain> differentChains = ParameterChain.obtainDataValidationDifferentChains(groupCaseStudys);
+
         if (file.isDirectory()) {
             throw new IllegalStateException("GroupCaseStudy save to spreadsheet: Not a file (" + file.toString() + ")");
         }
+        WorkbookSettings wbSettings = new WorkbookSettings();
 
-        try {
-            WorkbookSettings wbSettings = new WorkbookSettings();
+        wbSettings.setLocale(new Locale("en", "EN"));
 
-            wbSettings.setLocale(new Locale("en", "EN"));
+        WritableWorkbook workbook = null;
 
-            WritableWorkbook workbook = null;
-
-            {
-                boolean created = false;
-                int i = 0;
-                while (!created) {
-                    String suffix = "_" + i;
-                    File actualFile = FileUtilities.addSufix(file, suffix);
-                    if (!actualFile.exists()) {
-                        try {
-                            workbook = Workbook.createWorkbook(actualFile, wbSettings);
-                            created = true;
-                        } catch (IOException ex) {
-                            created = false;
-                        }
+        {
+            boolean created = false;
+            int i = 0;
+            while (!created) {
+                String suffix = "_" + i;
+                File actualFile = FileUtilities.addSufix(file, suffix);
+                if (!actualFile.exists()) {
+                    try {
+                        workbook = Workbook.createWorkbook(actualFile, wbSettings);
+                        created = true;
+                    } catch (IOException ex) {
+                        created = false;
                     }
-                    i++;
                 }
+                i++;
             }
-            if (workbook == null) {
-                ERROR_CODES.CANNOT_WRITE_FILE.exit(new FileNotFoundException("Cannot access file " + file.getAbsolutePath() + "."));
-                return;
-            }
-
-            WritableSheet allCasesAggregateResults = workbook.createSheet("AllCasesAggregateResults", 0);
-            createLabel(allCasesAggregateResults);
-
-            {
-
-                int column = 0;
-                final int titlesRow = 0;
-
-                //ExperimentNamesColumn
-                addTitleText(allCasesAggregateResults, column, titlesRow, EXPERIMENT_NAME_COLUMN_NAME);
-                for (int index = 0; index < groupCaseStudyResults.size(); index++) {
-                    int row = index + 1;
-                    setCellText(allCasesAggregateResults, column, row, groupCaseStudyResults.get(index).getGroupCaseStudyAlias());
-                }
-                column++;
-
-                //General hash
-                addTitleText(allCasesAggregateResults, column, titlesRow, "hash");
-                for (int index = 0; index < groupCaseStudyResults.size(); index++) {
-                    int row = index + 1;
-                    setCellIntegerNumber(allCasesAggregateResults, column, row, groupCaseStudyResults.get(index).getGroupCaseStudy().hashCode());
-                }
-                column++;
-
-                //dataValidation hash
-                addTitleText(allCasesAggregateResults, column, titlesRow, "hashDataValidation");
-                for (int index = 0; index < groupCaseStudyResults.size(); index++) {
-                    int row = index + 1;
-                    setCellIntegerNumber(allCasesAggregateResults, column, row, groupCaseStudyResults.get(index).getGroupCaseStudy().hashDataValidation());
-                }
-                column++;
-
-                for (String dataValidationParameter : dataValidationParametersOrder) {
-
-                    addTitleText(allCasesAggregateResults, column, titlesRow, dataValidationParameter);
-                    for (int index = 0; index < groupCaseStudyResults.size(); index++) {
-                        int row = index + 1;
-
-                        GroupCaseStudyResult groupCaseStudyResult = groupCaseStudyResults.get(index);
-                        if (groupCaseStudyResult.getDefinedDataValidationParameters().contains(dataValidationParameter)) {
-
-                            Object dataValidationParameterValue = groupCaseStudyResult.getDataValidationParameterValue(dataValidationParameter);
-                            setCellContent(allCasesAggregateResults, column, row, dataValidationParameterValue);
-                        }
-                    }
-                    column++;
-                }
-
-                //technique hash
-                addTitleText(allCasesAggregateResults, column, titlesRow, "hashTechnique");
-                for (int index = 0; index < groupCaseStudyResults.size(); index++) {
-                    int row = index + 1;
-                    setCellIntegerNumber(allCasesAggregateResults, column, row, groupCaseStudyResults.get(index).getGroupCaseStudy().hashTechnique());
-                }
-                column++;
-
-                for (String techniqueParameter : techniqueParametersOrder) {
-
-                    addTitleText(allCasesAggregateResults, column, titlesRow, techniqueParameter);
-                    for (int index = 0; index < groupCaseStudyResults.size(); index++) {
-                        int row = index + 1;
-                        GroupCaseStudyResult groupCaseStudyResult = groupCaseStudyResults.get(index);
-                        if (groupCaseStudyResult.getDefinedTechniqueParameters().contains(techniqueParameter)) {
-                            Object techniqueParameterValue = groupCaseStudyResult.getTechniqueParameterValue(techniqueParameter);
-                            setCellContent(allCasesAggregateResults, column, row, techniqueParameterValue);
-                        }
-                    }
-                    column++;
-                }
-            }
-
-            autoSizeColumns(allCasesAggregateResults);
-
-            workbook.write();
-            workbook.close();
-
-        } catch (WriteException | IOException ex) {
-            ERROR_CODES.CANNOT_WRITE_FILE.exit(ex);
         }
+        if (workbook == null) {
+            ERROR_CODES.CANNOT_WRITE_FILE.exit(new FileNotFoundException("Cannot access file " + file.getAbsolutePath() + "."));
+            return;
+        }
+
+        WritableSheet allCasesAggregateResults = workbook.createSheet("AllCasesAggregateResults", 0);
+        createLabel(allCasesAggregateResults);
+
+        {
+
+            int column = 0;
+            final int titlesRow = 0;
+
+            //ExperimentNamesColumn
+            addTitleText(allCasesAggregateResults, column, titlesRow, EXPERIMENT_NAME_COLUMN_NAME);
+            for (int index = 0; index < groupCaseStudyResults.size(); index++) {
+                int row = index + 1;
+                setCellText(allCasesAggregateResults, column, row, groupCaseStudyResults.get(index).getGroupCaseStudyAlias());
+            }
+            column++;
+
+            //General hash
+            addTitleText(allCasesAggregateResults, column, titlesRow, "hash");
+            for (int index = 0; index < groupCaseStudyResults.size(); index++) {
+                int row = index + 1;
+                setCellIntegerNumber(allCasesAggregateResults, column, row, groupCaseStudyResults.get(index).getGroupCaseStudy().hashCode());
+            }
+            column++;
+
+            //dataValidation hash
+            addTitleText(allCasesAggregateResults, column, titlesRow, "hashDataValidation");
+            for (int index = 0; index < groupCaseStudyResults.size(); index++) {
+                int row = index + 1;
+                setCellIntegerNumber(allCasesAggregateResults, column, row, groupCaseStudyResults.get(index).getGroupCaseStudy().hashDataValidation());
+            }
+            column++;
+
+            for (String dataValidationParameter : dataValidationParametersOrder) {
+
+                addTitleText(allCasesAggregateResults, column, titlesRow, dataValidationParameter);
+                for (int index = 0; index < groupCaseStudyResults.size(); index++) {
+                    int row = index + 1;
+
+                    GroupCaseStudyResult groupCaseStudyResult = groupCaseStudyResults.get(index);
+                    if (groupCaseStudyResult.getDefinedDataValidationParameters().contains(dataValidationParameter)) {
+
+                        Object dataValidationParameterValue = groupCaseStudyResult.getDataValidationParameterValue(dataValidationParameter);
+                        setCellContent(allCasesAggregateResults, column, row, dataValidationParameterValue);
+                    }
+                }
+                column++;
+            }
+
+            //technique hash
+            addTitleText(allCasesAggregateResults, column, titlesRow, "hashTechnique");
+            for (int index = 0; index < groupCaseStudyResults.size(); index++) {
+                int row = index + 1;
+                setCellIntegerNumber(allCasesAggregateResults, column, row, groupCaseStudyResults.get(index).getGroupCaseStudy().hashTechnique());
+            }
+            column++;
+
+            for (String techniqueParameter : techniqueParametersOrder) {
+
+                addTitleText(allCasesAggregateResults, column, titlesRow, techniqueParameter);
+                for (int index = 0; index < groupCaseStudyResults.size(); index++) {
+                    int row = index + 1;
+                    GroupCaseStudyResult groupCaseStudyResult = groupCaseStudyResults.get(index);
+                    if (groupCaseStudyResult.getDefinedTechniqueParameters().contains(techniqueParameter)) {
+                        Object techniqueParameterValue = groupCaseStudyResult.getTechniqueParameterValue(techniqueParameter);
+                        setCellContent(allCasesAggregateResults, column, row, techniqueParameterValue);
+                    }
+                }
+                column++;
+            }
+        }
+
+        autoSizeColumns(allCasesAggregateResults);
+
+        workbook.write();
+        workbook.close();
+
     }
 
     private static String getDataValidationAlias(GroupCaseStudy groupCaseStudy) {
