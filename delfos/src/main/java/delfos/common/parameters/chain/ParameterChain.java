@@ -126,6 +126,7 @@ public class ParameterChain {
 
         for (Parameter parameter : groupCaseStudyParameters) {
             Object parameterValue = rootParameterOwner.getParameterValue(parameter);
+            allParameterChains.add(rootChain.createWithLeaf(parameter, parameterValue));
 
             if (parameterValue instanceof ParameterOwner) {
                 ParameterOwner parameterValueParameterOwner = (ParameterOwner) parameterValue;
@@ -137,8 +138,6 @@ public class ParameterChain {
                     ParameterChain newChain = rootChain.addChain(chain, parameter);
                     allParameterChains.add(newChain);
                 }
-            } else {
-                allParameterChains.add(rootChain.createWithLeaf(parameter, parameterValue));
             }
         }
 
@@ -343,6 +342,5 @@ public class ParameterChain {
         }
 
         return parameterOwnerToGetValue.getParameterValue(leaf.getParameter());
-
     }
 }
