@@ -8,8 +8,8 @@ import delfos.constants.DelfosTest;
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.RelevanceCriteria;
 import delfos.experiment.casestudy.cluster.TuringPreparator;
-import delfos.group.casestudy.GroupCaseStudy;
-import delfos.group.casestudy.defaultcase.DefaultGroupCaseStudy;
+import delfos.group.casestudy.defaultcase.GroupCaseStudy;
+import delfos.group.casestudy.defaultcase.GroupCaseStudy;
 import delfos.group.experiment.validation.groupformation.FixedGroupSize;
 import delfos.group.experiment.validation.groupformation.GroupFormationTechnique;
 import delfos.group.experiment.validation.predictionvalidation.NoPredictionProtocol;
@@ -101,7 +101,7 @@ public class HesitantGRS_3_CaseStudy_FixedGroupSize extends DelfosTest {
 
         for (GroupFormationTechnique groupFormationTechnique : getGroupFormationTechnique()) {
             for (GroupRecommenderSystem groupRecommenderSystem : getGRSs()) {
-                DefaultGroupCaseStudy groupCaseStudy = new DefaultGroupCaseStudy(
+                GroupCaseStudy groupCaseStudy = new GroupCaseStudy(
                         null,
                         groupRecommenderSystem,
                         groupFormationTechnique,
@@ -114,7 +114,8 @@ public class HesitantGRS_3_CaseStudy_FixedGroupSize extends DelfosTest {
                 );
 
                 groupCaseStudy.setAlias(
-                        "methodHash=" + groupCaseStudy.hashCodeWithoutGroupRecommenderSystem()
+                        "_dataValidation=" + groupCaseStudy.hashDataValidation()
+                        + "_technique=" + groupCaseStudy.hashTechnique()
                         + "_" + groupRecommenderSystem.getAlias()
                         + "_allHash=" + groupCaseStudy.hashCode()
                 );

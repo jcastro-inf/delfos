@@ -16,8 +16,8 @@ import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RelevanceCriteria;
 import delfos.dataset.generated.random.RandomDatasetLoader;
 import delfos.experiment.casestudy.cluster.TuringPreparator;
-import delfos.group.casestudy.GroupCaseStudy;
-import delfos.group.casestudy.defaultcase.DefaultGroupCaseStudy;
+import delfos.group.casestudy.defaultcase.GroupCaseStudy;
+import delfos.group.casestudy.defaultcase.GroupCaseStudy;
 import delfos.group.experiment.validation.groupformation.FixedGroupSize_OnlyNGroups;
 import delfos.group.experiment.validation.groupformation.GroupFormationTechnique;
 import delfos.group.experiment.validation.predictionvalidation.GroupPredictionProtocol;
@@ -96,7 +96,7 @@ public class PenaltyGRSCaseStudy {
 
             for (RecommenderSystem coreRS : coreRSs) {
                 for (GroupRecommenderSystem groupRecommenderSystem : getGRS(coreRS)) {
-                    GroupCaseStudy groupCaseStudy = new DefaultGroupCaseStudy(
+                    GroupCaseStudy groupCaseStudy = new GroupCaseStudy(
                             datasetLoaderDummy,
                             groupRecommenderSystem,
                             groupFormationTechnique,

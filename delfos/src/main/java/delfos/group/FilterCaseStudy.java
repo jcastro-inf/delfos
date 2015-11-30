@@ -13,8 +13,8 @@ import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
 import delfos.experiment.ExperimentListerner_default;
 import delfos.experiment.casestudy.ExecutionProgressListener_onlyChanges;
-import delfos.group.casestudy.GroupCaseStudy;
-import delfos.group.casestudy.defaultcase.DefaultGroupCaseStudy;
+import delfos.group.casestudy.defaultcase.GroupCaseStudy;
+import delfos.group.casestudy.defaultcase.GroupCaseStudy;
 import delfos.group.experiment.validation.groupformation.FixedGroupSize_OnlyNGroups;
 import delfos.group.experiment.validation.predictionvalidation.NoPredictionProtocol;
 import delfos.group.experiment.validation.validationtechniques.CrossFoldValidation_Items;
@@ -40,6 +40,8 @@ import java.util.logging.Logger;
  * @version 1.0 14-May-2013
  */
 public class FilterCaseStudy implements Runnable {
+
+    private static final File resultsDirectory = new File(Constants.getTempDirectory().getPath() + File.separator);
 
     private static DatasetLoader[] datasets;
     /**
@@ -89,7 +91,7 @@ public class FilterCaseStudy implements Runnable {
         int i = 1;
         for (GroupRecommenderSystem groupRecommenderSystem : grsList) {
             for (DatasetLoader<? extends Rating> datasetLoader : datasets) {
-                GroupCaseStudy caseStudy = new DefaultGroupCaseStudy(
+                GroupCaseStudy caseStudy = new GroupCaseStudy(
                         datasetLoader,
                         groupRecommenderSystem,
                         new FixedGroupSize_OnlyNGroups(NUM_GROUPS, SIZE_OF_GROUPS), new CrossFoldValidation_Items(), new NoPredictionProtocol(),
@@ -100,10 +102,15 @@ public class FilterCaseStudy implements Runnable {
                 caseStudy.addExperimentListener(new ExperimentListerner_default(System.out, 10000));
 
                 caseStudy.setSeedValue(SEED);
-                String defaultFileName = GroupCaseStudyXML.getDefaultFileName(caseStudy);
-                GroupCaseStudyXML.saveCaseDescription(caseStudy, defaultFileName + ".tmp");
+
+                String caseStudyAlias = GroupCaseStudyXML.getCaseStudyFileNameTimestamped(caseStudy);
+                String caseStudyAliasTemp = caseStudyAlias + caseStudy.getGroupRecommenderSystem().getAlias() + ".tmp";
+                caseStudy.setAlias(caseStudyAliasTemp);
+                GroupCaseStudyXML.saveCaseDescription(caseStudy, resultsDirectory);
+
+                caseStudy.setAlias(caseStudyAlias);
                 caseStudy.execute();
-                GroupCaseStudyXML.saveCaseResults(caseStudy, caseStudy.getGroupRecommenderSystem().getAlias(), defaultFileName);
+                GroupCaseStudyXML.saveCaseResults(caseStudy, resultsDirectory);
 
                 Global.showInfoMessage("================ FIN Sistema " + i + " de " + grsList.size() + "=================== \n");
                 i++;

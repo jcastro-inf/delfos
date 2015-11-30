@@ -3,8 +3,8 @@ package delfos.group.io.excel.casestudy;
 import delfos.constants.TestConstants;
 import delfos.dataset.basic.rating.RelevanceCriteria;
 import delfos.dataset.generated.random.RandomDatasetLoader;
-import delfos.group.casestudy.GroupCaseStudy;
-import delfos.group.casestudy.defaultcase.DefaultGroupCaseStudy;
+import delfos.group.casestudy.defaultcase.GroupCaseStudy;
+import delfos.group.casestudy.defaultcase.GroupCaseStudy;
 import delfos.group.experiment.validation.groupformation.FixedGroupSize_OnlyNGroups;
 import delfos.group.experiment.validation.predictionvalidation.HoldOutPrediction;
 import delfos.group.experiment.validation.validationtechniques.CrossFoldValidation_Ratings;
@@ -20,14 +20,12 @@ import org.junit.Test;
  */
 public class GroupCaseStudyExcelTest {
 
-    public static final String TEST_DIRECTORY = TestConstants.TEST_DATA_DIRECTORY + "GroupCaseStudyToExcel" + File.separator;
+    public static final File TEST_DIRECTORY = new File(TestConstants.TEST_DATA_DIRECTORY + "GroupCaseStudyToExcel" + File.separator);
 
     @BeforeClass
     public static void setUpClass() {
-        //Creo el directorio de test
-        File testDirectory = new File(TEST_DIRECTORY);
-        testDirectory.mkdirs();
-        testDirectory.deleteOnExit();
+        TEST_DIRECTORY.mkdirs();
+        TEST_DIRECTORY.deleteOnExit();
     }
 
     /**
@@ -38,7 +36,7 @@ public class GroupCaseStudyExcelTest {
     @Test
     public void testSaveCaseResults() throws Exception {
 
-        GroupCaseStudy caseStudyGroup = new DefaultGroupCaseStudy(
+        GroupCaseStudy caseStudyGroup = new GroupCaseStudy(
                 new RandomDatasetLoader(),
                 new AggregationOfIndividualRatings(),
                 new FixedGroupSize_OnlyNGroups(2, 5), new CrossFoldValidation_Ratings(), new HoldOutPrediction(),
@@ -46,8 +44,8 @@ public class GroupCaseStudyExcelTest {
                 new RelevanceCriteria(4), 7);
 
         caseStudyGroup.execute();
+        caseStudyGroup.setAlias("GroupCaseStudyExcelTest_testCase");
 
-        File file = new File(TEST_DIRECTORY + "caseResults.xls");
-        GroupCaseStudyExcel.saveCaseResults(caseStudyGroup, file);
+        GroupCaseStudyExcel.saveCaseResults(caseStudyGroup, TEST_DIRECTORY);
     }
 }

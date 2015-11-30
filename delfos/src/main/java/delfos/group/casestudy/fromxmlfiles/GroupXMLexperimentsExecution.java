@@ -111,7 +111,9 @@ public class GroupXMLexperimentsExecution {
 
                 for (File experimentFile : experimentsDirectoryDirectory.listFiles(new FileFilterByExtension(false, "xml"))) {
 
-                    GroupCaseStudyConfiguration caseStudyConfiguration = GroupCaseStudyXML.loadGroupCaseDescription(experimentFile);
+                    GroupCaseStudyConfiguration caseStudyConfiguration = GroupCaseStudyXML
+                            .loadGroupCaseDescription(experimentFile);
+
                     listOfTasks.add(new ExecuteGroupCaseStudy_Task(
                             experimentsDirectoryDirectory,
                             experimentFile.getName(),

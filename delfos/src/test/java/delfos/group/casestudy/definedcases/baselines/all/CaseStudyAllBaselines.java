@@ -17,8 +17,8 @@ import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RelevanceCriteria;
 import delfos.experiment.casestudy.cluster.TuringPreparator;
-import delfos.group.casestudy.GroupCaseStudy;
-import delfos.group.casestudy.defaultcase.DefaultGroupCaseStudy;
+import delfos.group.casestudy.defaultcase.GroupCaseStudy;
+import delfos.group.casestudy.defaultcase.GroupCaseStudy;
 import delfos.group.experiment.validation.groupformation.FixedGroupSize_OnlyNGroups;
 import delfos.group.experiment.validation.groupformation.GroupFormationTechnique;
 import delfos.group.experiment.validation.predictionvalidation.NoPredictionProtocol;
@@ -111,8 +111,8 @@ public class CaseStudyAllBaselines {
         return groupCaseStudys;
     }
 
-    private DefaultGroupCaseStudy getGroupCaseStudy_HoldOutGroupRatedItems(GroupRecommenderSystem groupRecommenderSystem, GroupFormationTechnique groupFormationTechnique) {
-        DefaultGroupCaseStudy groupCaseStudy = new DefaultGroupCaseStudy(
+    private GroupCaseStudy getGroupCaseStudy_HoldOutGroupRatedItems(GroupRecommenderSystem groupRecommenderSystem, GroupFormationTechnique groupFormationTechnique) {
+        GroupCaseStudy groupCaseStudy = new GroupCaseStudy(
                 getDatasetLoader(),
                 groupRecommenderSystem,
                 groupFormationTechnique,
@@ -126,8 +126,8 @@ public class CaseStudyAllBaselines {
         return groupCaseStudy;
     }
 
-    private DefaultGroupCaseStudy getGroupCaseStudy_HoldOutGroupMemberRatings(GroupRecommenderSystem groupRecommenderSystem, GroupFormationTechnique groupFormationTechnique) {
-        DefaultGroupCaseStudy groupCaseStudy = new DefaultGroupCaseStudy(
+    private GroupCaseStudy getGroupCaseStudy_HoldOutGroupMemberRatings(GroupRecommenderSystem groupRecommenderSystem, GroupFormationTechnique groupFormationTechnique) {
+        GroupCaseStudy groupCaseStudy = new GroupCaseStudy(
                 getDatasetLoader(),
                 groupRecommenderSystem,
                 groupFormationTechnique,
@@ -176,8 +176,8 @@ public class CaseStudyAllBaselines {
     private Collection<GroupRecommenderSystem> getAgregationOfIndividualRecommendationsGRSs(RecommenderSystem coreRS) {
         Collection<GroupRecommenderSystem> groupRecommenderSystems = new ArrayList<>();
 
-        getAggregationOpperators().stream().forEach((aggregationOpperator) -> {
-            GroupRecommenderSystem grs = new AggregationOfIndividualRecommendations(coreRS, aggregationOpperator);
+        getAggregationOperators().stream().forEach((aggregationOperator) -> {
+            GroupRecommenderSystem grs = new AggregationOfIndividualRecommendations(coreRS, aggregationOperator);
             grs.setAlias(grs.getAlias() + "_" + coreRS.getAlias());
             groupRecommenderSystems.add(grs);
         });
@@ -188,8 +188,8 @@ public class CaseStudyAllBaselines {
     private Collection<GroupRecommenderSystem> getAgregationOfIndividualRatingsGRSs(RecommenderSystem coreRS) {
         Collection<GroupRecommenderSystem> groupRecommenderSystems = new ArrayList<>();
 
-        getAggregationOpperators().stream().forEach((aggregationOpperator) -> {
-            GroupRecommenderSystem grs = new AggregationOfIndividualRatings(coreRS, aggregationOpperator);
+        getAggregationOperators().stream().forEach((aggregationOperator) -> {
+            GroupRecommenderSystem grs = new AggregationOfIndividualRatings(coreRS, aggregationOperator);
             grs.setAlias(grs.getAlias() + "_" + coreRS.getAlias());
             groupRecommenderSystems.add(grs);
         });
@@ -197,7 +197,7 @@ public class CaseStudyAllBaselines {
         return groupRecommenderSystems;
     }
 
-    private static Collection<AggregationOperator> getAggregationOpperators() {
+    private static Collection<AggregationOperator> getAggregationOperators() {
 
         return Arrays.asList(
                 //Bound aggregations.

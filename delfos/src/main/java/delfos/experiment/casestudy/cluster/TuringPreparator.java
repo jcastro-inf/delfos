@@ -7,8 +7,8 @@ import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
 import delfos.experiment.casestudy.CaseStudy;
 import delfos.experiment.casestudy.defaultcase.DefaultCaseStudy;
-import delfos.group.casestudy.GroupCaseStudy;
-import delfos.group.casestudy.defaultcase.DefaultGroupCaseStudy;
+import delfos.group.casestudy.defaultcase.GroupCaseStudy;
+import delfos.group.casestudy.defaultcase.GroupCaseStudy;
 import delfos.group.io.xml.casestudy.GroupCaseStudyXML;
 import delfos.io.xml.casestudy.CaseStudyXML;
 import delfos.main.Main;
@@ -24,6 +24,8 @@ import java.util.List;
  * @author Jorge Castro Gallardo
  */
 public class TuringPreparator implements ExperimentPreparator {
+
+    private static final String SEED_DEFAULT = "123456";
 
     @Override
     public void prepareExperiment(File experimentBaseDirectory, List<CaseStudy> caseStudies, DatasetLoader<? extends Rating> datasetLoader) {
@@ -81,8 +83,8 @@ public class TuringPreparator implements ExperimentPreparator {
                 File experimentConfigurationFile = new File(finalDirectoryRS + File.separator + experimentName + ".xml");
                 File datasetConfiguration = new File(finalDirectoryDataset.getAbsolutePath() + File.separator + datasetLoader.getAlias() + ".xml");
 
-                GroupCaseStudyXML.saveCaseDescription(groupCaseStudy, experimentConfigurationFile);
-                GroupCaseStudyXML.saveCaseDescription(new DefaultGroupCaseStudy(datasetLoader), datasetConfiguration);
+                GroupCaseStudyXML.caseStudyToXMLFile_onlyDescription(groupCaseStudy, experimentConfigurationFile);
+                GroupCaseStudyXML.caseStudyToXMLFile_onlyDescription(new GroupCaseStudy(datasetLoader), datasetConfiguration);
 
             }
         }
@@ -137,6 +139,24 @@ public class TuringPreparator implements ExperimentPreparator {
                         ExecuteGroupXML.XML_DIRECTORY, singleExperimentDirectory.getPath(),
                         ExecuteGroupXML.NUM_EXEC_PARAMETER, Integer.toString(numExec),
                         Constants.MAX_CPUS, Integer.toString(maxCPU),
+                        Constants.PRINT_FULL_XML,
+                        Constants.RAW_DATA};
+
+                    Main.mainWithExceptions(args);
+
+                    Global.show("==============================\n");
+                });
+    }
+
+    public void executeAllExperimentsInDirectory_withSeed(File directory, int numExec, int seedValue) {
+        Arrays.asList(directory.listFiles())
+                .stream()
+                .forEach((singleExperimentDirectory) -> {
+                    String[] args = {
+                        ExecuteGroupXML.SEED_PARAMETER, Integer.toString(seedValue),
+                        ExecuteGroupXML.MODE_PARAMETER,
+                        ExecuteGroupXML.XML_DIRECTORY, singleExperimentDirectory.getPath(),
+                        ExecuteGroupXML.NUM_EXEC_PARAMETER, Integer.toString(numExec),
                         Constants.PRINT_FULL_XML,
                         Constants.RAW_DATA};
 

@@ -30,7 +30,7 @@ import java.util.TreeSet;
 public class Coverage extends GroupEvaluationMeasure {
 
     @Override
-    public GroupMeasureResult getMeasureResult(GroupRecommendationResult recommendationResults, RatingsDataset<? extends Rating> testDataset, RelevanceCriteria relevanceCriteria) {
+    public GroupEvaluationMeasureResult getMeasureResult(GroupRecommendationResult recommendationResults, RatingsDataset<? extends Rating> testDataset, RelevanceCriteria relevanceCriteria) {
 
         int predichas = 0;
         int solicitudes = 0;
@@ -61,7 +61,7 @@ public class Coverage extends GroupEvaluationMeasure {
             }
         }
         float ret = predichas / ((float) solicitudes);
-        return new GroupMeasureResult(this, ret);
+        return new GroupEvaluationMeasureResult(this, ret);
     }
 
     @Override

@@ -1,4 +1,4 @@
-package delfos.group.experiment.groupformation;
+package delfos.group.experiment.validation.groupformation;
 
 import delfos.common.exceptions.dataset.CannotLoadContentDataset;
 import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
@@ -14,8 +14,8 @@ import delfos.dataset.basic.user.UsersDatasetAdapter;
 import delfos.dataset.generated.random.RandomContentDataset;
 import delfos.dataset.generated.random.RandomRatingsDatasetFactory;
 import delfos.dataset.loaders.given.DatasetLoaderGivenRatingsContent;
-import delfos.group.casestudy.GroupCaseStudy;
-import delfos.group.casestudy.defaultcase.DefaultGroupCaseStudy;
+import delfos.group.casestudy.defaultcase.GroupCaseStudy;
+import delfos.group.casestudy.defaultcase.GroupCaseStudy;
 import delfos.group.experiment.validation.groupformation.FixedGroupSize_OnlyNGroups;
 import delfos.group.experiment.validation.groupformation.GroupFormationTechnique;
 import delfos.group.experiment.validation.predictionvalidation.GroupPredictionProtocol;
@@ -105,7 +105,7 @@ public class GroupFormationTechniquesTest {
                     for (long seed : getSeeds(numEjecuciones)) {
                         GroupFormationTechnique groupFormationTechnique = new FixedGroupSize_OnlyNGroups(5, 5);
 
-                        GroupCaseStudy caseStudyGroupRecommendation = new DefaultGroupCaseStudy(
+                        GroupCaseStudy caseStudyGroupRecommendation = new GroupCaseStudy(
                                 datasetLoader,
                                 groupRecommenderSystem,
                                 groupFormationTechnique,

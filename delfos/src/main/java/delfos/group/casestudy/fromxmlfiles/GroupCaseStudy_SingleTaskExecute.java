@@ -1,7 +1,6 @@
 package delfos.group.casestudy.fromxmlfiles;
 
 import delfos.ERROR_CODES;
-import delfos.common.FileUtilities;
 import delfos.common.Global;
 import delfos.common.exceptions.dataset.CannotLoadContentDataset;
 import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
@@ -13,9 +12,8 @@ import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RelevanceCriteria;
 import delfos.experiment.ExperimentListerner_default;
 import delfos.experiment.casestudy.ExecutionProgressListener_default;
-import delfos.group.casestudy.GroupCaseStudy;
 import delfos.group.casestudy.GroupCaseStudyConfiguration;
-import delfos.group.casestudy.defaultcase.DefaultGroupCaseStudy;
+import delfos.group.casestudy.defaultcase.GroupCaseStudy;
 import delfos.group.experiment.validation.groupformation.GroupFormationTechnique;
 import delfos.group.experiment.validation.predictionvalidation.GroupPredictionProtocol;
 import delfos.group.experiment.validation.validationtechniques.GroupValidationTechnique;
@@ -46,7 +44,7 @@ public class GroupCaseStudy_SingleTaskExecute implements SingleTaskExecute<Execu
             long seed)
             throws CannotLoadContentDataset, JDOMException, IOException, CannotLoadRatingsDataset {
 
-        GroupRecommenderSystem<Object, Object> groupRecommenderSystem = caseStudyConfiguration.getGroupRecommenderSystem();
+        GroupRecommenderSystem<? extends Object, ? extends Object> groupRecommenderSystem = caseStudyConfiguration.getGroupRecommenderSystem();
 
         GroupFormationTechnique groupFormationTechnique = caseStudyConfiguration.getGroupFormationTechnique();
         GroupPredictionProtocol groupPredictionProtocol = caseStudyConfiguration.getGroupPredictionProtocol();
@@ -54,7 +52,7 @@ public class GroupCaseStudy_SingleTaskExecute implements SingleTaskExecute<Execu
 
         RelevanceCriteria relevanceCriteria = caseStudyConfiguration.getRelevanceCriteria();
 
-        GroupCaseStudy caseStudyGroupRecommendation = new DefaultGroupCaseStudy(
+        GroupCaseStudy caseStudyGroupRecommendation = new GroupCaseStudy(
                 datasetLoader,
                 groupRecommenderSystem,
                 groupFormationTechnique,
@@ -62,6 +60,8 @@ public class GroupCaseStudy_SingleTaskExecute implements SingleTaskExecute<Execu
                 groupEvaluationMeasures,
                 relevanceCriteria,
                 numExecutions);
+
+        caseStudyGroupRecommendation.setAlias("[" + datasetLoader.getAlias() + "]" + caseStudyConfiguration.getCaseStudyAlias());
 
         String threadName = Thread.currentThread().getName();
         Thread.currentThread().setName(threadName + "_" + caseStudyGroupRecommendation.getAlias());
@@ -76,16 +76,13 @@ public class GroupCaseStudy_SingleTaskExecute implements SingleTaskExecute<Execu
             throw new IllegalStateException(ex);
         }
 
-        File fileToSaveResults = new File(
+        File resultsDirectory = new File(
                 experimentsDirectory.getAbsolutePath() + File.separator
                 + "results" + File.separator
-                + caseName);
+        );
 
-        File excelFile = FileUtilities.changeExtension(fileToSaveResults, "xls");
-        File xmlFile = FileUtilities.changeExtension(fileToSaveResults, "xml");
-
-        GroupCaseStudyXML.saveCaseResults(caseStudyGroupRecommendation, "", xmlFile.getAbsolutePath());
-        GroupCaseStudyExcel.saveCaseResults(caseStudyGroupRecommendation, excelFile);
+        GroupCaseStudyXML.saveCaseResults(caseStudyGroupRecommendation, resultsDirectory);
+        GroupCaseStudyExcel.saveCaseResults(caseStudyGroupRecommendation, resultsDirectory);
 
     }
 

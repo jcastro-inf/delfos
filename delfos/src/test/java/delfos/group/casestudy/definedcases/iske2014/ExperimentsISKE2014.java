@@ -7,8 +7,8 @@ import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RelevanceCriteria;
 import delfos.dataset.generated.random.RandomDatasetLoader;
 import delfos.dataset.loaders.movilens.ml100k.MovieLens100k;
-import delfos.group.casestudy.GroupCaseStudy;
-import delfos.group.casestudy.defaultcase.DefaultGroupCaseStudy;
+import delfos.group.casestudy.defaultcase.GroupCaseStudy;
+import delfos.group.casestudy.defaultcase.GroupCaseStudy;
 import delfos.group.experiment.validation.groupformation.FixedGroupSize_OnlyNGroups;
 import delfos.group.experiment.validation.groupformation.GroupFormationTechnique;
 import delfos.group.experiment.validation.predictionvalidation.GroupPredictionProtocol;
@@ -78,7 +78,7 @@ public class ExperimentsISKE2014 {
 
             for (GroupRecommenderSystem coreGRS : coreGRSs) {
                 for (GroupRecommenderSystem groupRecommenderSystem : getGRS(coreGRS)) {
-                    GroupCaseStudy groupCaseStudy = new DefaultGroupCaseStudy(
+                    GroupCaseStudy groupCaseStudy = new GroupCaseStudy(
                             datasetLoader,
                             groupRecommenderSystem,
                             groupFormationTechnique,
@@ -89,7 +89,7 @@ public class ExperimentsISKE2014 {
                     groupCaseStudy.setSeedValue(seed);
                     String fileName = groupRecommenderSystem.getAlias() + "_groupSize-" + groupSize + ".xml";
                     File file = new File(directory + File.separator + fileName);
-                    GroupCaseStudyXML.saveCaseDescription(groupCaseStudy, file.getAbsolutePath());
+                    GroupCaseStudyXML.caseStudyToXMLFile_onlyDescription(groupCaseStudy, file);
                     i++;
                 }
             }
@@ -97,7 +97,7 @@ public class ExperimentsISKE2014 {
 
         //generateDatasetFile
         {
-            GroupCaseStudy groupCaseStudy = new DefaultGroupCaseStudy(
+            GroupCaseStudy groupCaseStudy = new GroupCaseStudy(
                     new MovieLens100k(new File("C:\\Dropbox\\Datasets\\MovieLens\\0 - MovieLens-100k ratings\\ml-100k")),
                     new RandomGroupRecommender(),
                     new FixedGroupSize_OnlyNGroups(1, 1), new NoValidation(), new NoPredictionProtocol(),
@@ -105,7 +105,7 @@ public class ExperimentsISKE2014 {
                     new RelevanceCriteria(), 1);
 
             File file = new File(directory + File.separator + "dataset" + File.separator + "ml-100k.xml");
-            GroupCaseStudyXML.saveCaseDescription(groupCaseStudy, file.getAbsolutePath());
+            GroupCaseStudyXML.caseStudyToXMLFile_onlyDescription(groupCaseStudy, file);
         }
 
     }

@@ -34,7 +34,7 @@ public class PrintNeighbors extends GroupEvaluationMeasure {
     }
 
     @Override
-    public GroupMeasureResult getMeasureResult(GroupRecommendationResult recommendationResults, RatingsDataset<? extends Rating> testDataset, RelevanceCriteria relevanceCriteria) {
+    public GroupEvaluationMeasureResult getMeasureResult(GroupRecommendationResult recommendationResults, RatingsDataset<? extends Rating> testDataset, RelevanceCriteria relevanceCriteria) {
 
         Element neighborsDetails = new Element("NeighborsDetails");
 
@@ -74,13 +74,13 @@ public class PrintNeighbors extends GroupEvaluationMeasure {
 
                     neighborsDetails.addContent(groupResults);
                 } else {
-                    return new GroupMeasureResult(this, 0);
+                    return new GroupEvaluationMeasureResult(this, 0);
                 }
 
             }
         }
 
-        return new GroupMeasureResult(this, 1.0, neighborsDetails);
+        return new GroupEvaluationMeasureResult(this, 1.0, neighborsDetails);
     }
 
 }

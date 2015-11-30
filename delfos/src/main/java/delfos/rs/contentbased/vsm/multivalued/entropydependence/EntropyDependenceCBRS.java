@@ -68,8 +68,8 @@ public class EntropyDependenceCBRS extends ContentBasedRecommender<EntropyDepend
      * Parámetro para almacenar la fórmula que se utiliza para agregar los
      * valores de las características numéricas.
      */
-    public static final Parameter AGGREGATION_OPPERATOR = new Parameter(
-            "Aggregation_opperator",
+    public static final Parameter AGGREGATION_OPERATOR = new Parameter(
+            "Aggregation_operator",
             new ParameterOwnerRestriction(AggregationOperator.class, new Mean()),
             "Parámetro para almacenar la fórmula que se utiliza para agregar "
             + "los valores de las características numéricas."
@@ -82,13 +82,13 @@ public class EntropyDependenceCBRS extends ContentBasedRecommender<EntropyDepend
     public EntropyDependenceCBRS() {
         super();
         addParameter(SIMILARITY_MEASURE);
-        addParameter(AGGREGATION_OPPERATOR);
+        addParameter(AGGREGATION_OPERATOR);
     }
 
     public EntropyDependenceCBRS(WeightedSimilarityMeasure similarityMeasure, AggregationOperator aggregationOperator) {
         this();
         setParameterValue(SIMILARITY_MEASURE, similarityMeasure);
-        setParameterValue(AGGREGATION_OPPERATOR, aggregationOperator);
+        setParameterValue(AGGREGATION_OPERATOR, aggregationOperator);
     }
 
     @Override
@@ -187,7 +187,7 @@ public class EntropyDependenceCBRS extends ContentBasedRecommender<EntropyDepend
         final Map<Feature, Number> _numericalValues = new TreeMap<>();
         final Map<Feature, Number> _weights = new TreeMap<>();
 
-        AggregationOperator condensationFormula_ = (AggregationOperator) getParameterValue(AGGREGATION_OPPERATOR);
+        AggregationOperator condensationFormula_ = (AggregationOperator) getParameterValue(AGGREGATION_OPERATOR);
 
         Map<Integer, ? extends Rating> userRated = ratingsDataset.getUserRatingsRated(idUser);
         if (userRated.isEmpty()) {

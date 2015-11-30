@@ -12,6 +12,8 @@ import java.util.Objects;
  */
 public class RelevanceCriteria {
 
+    public static final RelevanceCriteria DEFAULT_RELEVANCE_CRITERIA = new RelevanceCriteria(4);
+
     private final Number threshold;
 
     /**

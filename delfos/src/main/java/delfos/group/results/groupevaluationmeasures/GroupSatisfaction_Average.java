@@ -45,7 +45,7 @@ public class GroupSatisfaction_Average extends GroupEvaluationMeasure {
     }
 
     @Override
-    public GroupMeasureResult getMeasureResult(GroupRecommendationResult recommendationResults, RatingsDataset<? extends Rating> testDataset, RelevanceCriteria relevanceCriteria) {
+    public GroupEvaluationMeasureResult getMeasureResult(GroupRecommendationResult recommendationResults, RatingsDataset<? extends Rating> testDataset, RelevanceCriteria relevanceCriteria) {
 
         MeanIterative maeTotal = new MeanIterative();
         for (Entry<GroupOfUsers, List<Recommendation>> next : recommendationResults) {
@@ -80,7 +80,7 @@ public class GroupSatisfaction_Average extends GroupEvaluationMeasure {
             }
             maeTotal.addValue(maeGupos.getMean());
         }
-        return new GroupMeasureResult(this, (float) maeTotal.getMean());
+        return new GroupEvaluationMeasureResult(this, (float) maeTotal.getMean());
     }
 
     @Override

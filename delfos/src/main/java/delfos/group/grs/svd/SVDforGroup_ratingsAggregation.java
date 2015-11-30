@@ -43,7 +43,7 @@ public class SVDforGroup_ratingsAggregation extends GroupRecommenderSystemAdapte
      * Especifica la técnica de agregación para agregar los ratings de los
      * usuarios y formar el perfil del grupo.
      */
-    public static final Parameter AGGREGATION_OPPERATOR = new Parameter(
+    public static final Parameter AGGREGATION_OPERATOR = new Parameter(
             "AGGREGATION_METHOD",
             new ParameterOwnerRestriction(AggregationOperator.class, new Mean()),
             "Especifica la técnica de agregación para agregar los ratings de "
@@ -53,7 +53,7 @@ public class SVDforGroup_ratingsAggregation extends GroupRecommenderSystemAdapte
     public SVDforGroup_ratingsAggregation() {
         super();
 
-        addParameter(AGGREGATION_OPPERATOR);
+        addParameter(AGGREGATION_OPERATOR);
         addParameter(TryThisAtHomeSVD.LEARNING_RATE);
         addParameter(TryThisAtHomeSVD.NORMALIZE_WITH_USER_MEAN);
         addParameter(TryThisAtHomeSVD.NUM_FEATURES);
@@ -114,7 +114,7 @@ public class SVDforGroup_ratingsAggregation extends GroupRecommenderSystemAdapte
     }
 
     public AggregationOperator getAggregationOperator() {
-        return (AggregationOperator) getParameterValue(AGGREGATION_OPPERATOR);
+        return (AggregationOperator) getParameterValue(AGGREGATION_OPERATOR);
     }
 
     @Override

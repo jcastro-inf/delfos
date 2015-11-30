@@ -27,7 +27,7 @@ import org.jdom2.Element;
 public class GroupsEvaluatedVerbose extends GroupEvaluationMeasure {
 
     @Override
-    public GroupMeasureResult getMeasureResult(GroupRecommendationResult recommendationResults, RatingsDataset<? extends Rating> testDataset, RelevanceCriteria relevanceCriteria) {
+    public GroupEvaluationMeasureResult getMeasureResult(GroupRecommendationResult recommendationResults, RatingsDataset<? extends Rating> testDataset, RelevanceCriteria relevanceCriteria) {
         MeanIterative meanMembers = new MeanIterative();
         //todo: implementarlo
 
@@ -60,7 +60,7 @@ public class GroupsEvaluatedVerbose extends GroupEvaluationMeasure {
             allGroupsDescribed.setAttribute("members_" + size, Integer.toString(numGroups));
         }
 
-        return new GroupMeasureResult(this, (float) meanMembers.getMean(), allGroupsDescribed);
+        return new GroupEvaluationMeasureResult(this, (float) meanMembers.getMean(), allGroupsDescribed);
     }
 
     @Override

@@ -58,7 +58,7 @@ public class NormalizedIndividualSatisfaction extends GroupEvaluationMeasure {
     }
 
     @Override
-    public GroupMeasureResult getMeasureResult(GroupRecommendationResult recommendationResults, RatingsDataset<? extends Rating> testDataset, RelevanceCriteria relevanceCriteria) {
+    public GroupEvaluationMeasureResult getMeasureResult(GroupRecommendationResult recommendationResults, RatingsDataset<? extends Rating> testDataset, RelevanceCriteria relevanceCriteria) {
 
         MeanIterative media = new MeanIterative();
 
@@ -124,7 +124,7 @@ public class NormalizedIndividualSatisfaction extends GroupEvaluationMeasure {
             measureElement.addContent(groupElement);
         }
         measureElement.setAttribute("value", Double.toString(media.getMean()));
-        return new GroupMeasureResult(this, (float) media.getMean(), measureElement);
+        return new GroupEvaluationMeasureResult(this, (float) media.getMean(), measureElement);
     }
 
     @Override

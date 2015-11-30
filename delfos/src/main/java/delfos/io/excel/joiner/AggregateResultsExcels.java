@@ -136,7 +136,7 @@ public class AggregateResultsExcels {
 
     private void writeFinalExcel(Map<String, Map<String, Object>> values) {
 
-        AggregateResultsMatrixExcelWriter.writeExcelFromMatrix(new File("AggregateExperimentResults.xls"), values);
+        AggregateResultsMatrixExcelWriter.writeExcelFromMatrix(values, new File("AggregateExperimentResults.xls"));
     }
 
 }

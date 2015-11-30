@@ -4,21 +4,24 @@ import delfos.Constants;
 import delfos.ERROR_CODES;
 import delfos.common.FileUtilities;
 import delfos.common.Global;
+import delfos.common.parameters.ParameterOwner;
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RelevanceCriteria;
-import delfos.group.casestudy.GroupCaseStudy;
+import delfos.experiment.SeedHolder;
 import delfos.group.casestudy.GroupCaseStudyConfiguration;
+import delfos.group.casestudy.defaultcase.GroupCaseStudy;
 import delfos.group.experiment.validation.groupformation.GroupFormationTechnique;
 import delfos.group.experiment.validation.predictionvalidation.GroupPredictionProtocol;
 import delfos.group.experiment.validation.validationtechniques.GroupValidationTechnique;
+import delfos.group.factories.GroupEvaluationMeasuresFactory;
 import delfos.group.grs.GroupRecommenderSystem;
 import delfos.group.io.xml.groupformationtechnique.GroupFormationTechniqueXML;
 import delfos.group.io.xml.grs.GroupRecommenderSystemXML;
 import delfos.group.io.xml.predictionprotocol.GroupPredictionProtocolXML;
 import delfos.group.io.xml.validationtechnique.GroupValidationTechniqueXML;
 import delfos.group.results.groupevaluationmeasures.GroupEvaluationMeasure;
-import delfos.group.results.groupevaluationmeasures.GroupMeasureResult;
+import delfos.group.results.groupevaluationmeasures.GroupEvaluationMeasureResult;
 import delfos.io.xml.casestudy.CaseStudyXML;
 import static delfos.io.xml.casestudy.CaseStudyXML.CASE_ROOT_ELEMENT_NAME;
 import delfos.io.xml.dataset.DatasetLoaderXML;
@@ -29,6 +32,8 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
+import java.util.Map;
+import java.util.TreeMap;
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
@@ -49,11 +54,14 @@ public class GroupCaseStudyXML {
     private static int meanBuildTime;
     private static int meanRecommendationTime;
     public static String RESULT_EXTENSION = "xml";
-    public static final String HASH_ATTRIBUTE_NAME = "hashAll";
-    public static final String HASH_WITHOUT_GRS_ATTRIBUTE_NAME = "hashConfiguration";
+    public static final String HASH_ATTRIBUTE_NAME = "hash";
+    public static final String HASH_DATA_VALIDATION_ATTRIBUTE_NAME = "hash_DataValidation";
+    public static final String HASH_TECHNIQUE_ATTRIBUTE_NAME = "hash_Technique";
     public static final String NUM_EXEC_ATTRIBUTE_NAME = "numExec";
     public static final String FULL_RESULT_SUFFIX = "_FULL";
     public static final String AGGR_RESULT_SUFFIX = "_AGGR";
+
+    public static final String AGGREGATE_VALUES_ELEMENT_NAME = CaseStudyXML.AGGREGATE_VALUES_ELEMENT_NAME;
 
     private GroupCaseStudyXML() {
     }
@@ -72,7 +80,7 @@ public class GroupCaseStudyXML {
                 Element split = new Element("Split");
                 for (GroupEvaluationMeasure em : c.getEvaluationMeasures()) {
 
-                    GroupMeasureResult mr = c.getMeasureResult(em, nexecution, nSplit);
+                    GroupEvaluationMeasureResult mr = c.getMeasureResult(em, nexecution, nSplit);
                     split.addContent((Element) mr.getXMLElement().clone());
                 }
 
@@ -123,7 +131,7 @@ public class GroupCaseStudyXML {
         return mediaMedidas;
     }
 
-    public synchronized static void caseStudyToXMLFile(GroupCaseStudy caseStudyGroup, String descriptiveName, File f) {
+    public synchronized static void caseStudyToXMLFile_fullResults(GroupCaseStudy caseStudyGroup, File file) {
         if (!caseStudyGroup.isFinished()) {
             throw new UnsupportedOperationException("No se ha ejecutado el caso de uso todavía");
         }
@@ -131,8 +139,9 @@ public class GroupCaseStudyXML {
         Document doc = new Document();
         Element casoDeUso = new Element("Case");
 
-        casoDeUso.setAttribute("seed", Long.toString(caseStudyGroup.getSeedValue()));
-        casoDeUso.setAttribute("numExec", Integer.toString(caseStudyGroup.getNumExecutions()));
+        casoDeUso.setAttribute(SeedHolder.SEED.getName(), Long.toString(caseStudyGroup.getSeedValue()));
+        casoDeUso.setAttribute(NUM_EXEC_ATTRIBUTE_NAME, Integer.toString(caseStudyGroup.getNumExecutions()));
+        casoDeUso.setAttribute(ParameterOwner.ALIAS.getName(), caseStudyGroup.getAlias());
 
         casoDeUso.addContent(GroupRecommenderSystemXML.getElement(caseStudyGroup.getGroupRecommenderSystem()));
         casoDeUso.addContent(DatasetLoaderXML.getElement(caseStudyGroup.getDatasetLoader()));
@@ -149,15 +158,15 @@ public class GroupCaseStudyXML {
 
         XMLOutputter outputter = new XMLOutputter(Constants.getXMLFormat());
 
-        FileUtilities.createDirectoriesForFile(f);
-        try (FileWriter fileWriter = new FileWriter(f)) {
+        FileUtilities.createDirectoriesForFile(file);
+        try (FileWriter fileWriter = new FileWriter(file)) {
             outputter.output(doc, fileWriter);
         } catch (IOException ex) {
             ERROR_CODES.CANNOT_WRITE_RESULTS_FILE.exit(ex);
         }
     }
 
-    public static String getDefaultFileName(GroupCaseStudy caseStudyGroup) {
+    public static String getCaseStudyFileNameTimestamped(GroupCaseStudy caseStudyGroup) {
         Date date = new Date();
         String dateBasedName = "aux";
         try {
@@ -168,33 +177,53 @@ public class GroupCaseStudyXML {
             Global.showWarning("Cannot get timestamp" + ex.getMessage() + "\n");
         }
 
-        dateBasedName = dateBasedName + " seed=" + caseStudyGroup.getSeedValue() + "." + CaseStudyXML.RESULT_EXTENSION;
+        dateBasedName = dateBasedName + "_seed=" + caseStudyGroup.getSeedValue() + "." + CaseStudyXML.RESULT_EXTENSION;
 
         File f = new File(Constants.getTempDirectory().getAbsolutePath() + File.separator + dateBasedName);
         return f.getAbsolutePath();
     }
 
-    public static void saveCaseDescription(GroupCaseStudy caseStudyGroup, String file) {
-        GroupCaseStudyXML.caseStudyToXMLFile_onlyDescription(caseStudyGroup, new File(file));
+    public static String getCaseStudyFileName(GroupCaseStudy caseStudyGroup) {
+        return caseStudyGroup.getAlias() + "_seed=" + caseStudyGroup.getSeedValue() + "_numExec=" + caseStudyGroup.getNumExecutions();
     }
 
-    public static void saveCaseDescription(GroupCaseStudy caseStudyGroup, File file) {
+    /**
+     * Saves the xml with the description of the case study in de file
+     * specified.
+     *
+     * @param caseStudyGroup Group case study whose description is saved.
+     * @param directory File in which the description is saved.
+     */
+    public static void saveCaseDescription(GroupCaseStudy caseStudyGroup, File directory) {
+        File file = new File(directory.getPath() + File.separator + caseStudyGroup.getAlias() + ".xml");
         GroupCaseStudyXML.caseStudyToXMLFile_onlyDescription(caseStudyGroup, file);
     }
 
-    public static void saveCaseResults(GroupCaseStudy caseStudyGroup, String descriptivePrefix, String file) {
-        File fileFile = FileUtilities.addPrefix(new File(file), descriptivePrefix);
-        if (Constants.isPrintFullXML()) {
+    public static void saveCaseResults(GroupCaseStudy caseStudyGroup, File directory) {
+        if (!directory.isDirectory()) {
+            throw new IllegalStateException("GroupCaseStudy save to XML: Not a directory (" + directory.toString() + ")");
+        }
+        FileUtilities.createDirectoryPathIfNotExists(directory);
 
-            File fullFile = FileUtilities.addSufix(fileFile, FULL_RESULT_SUFFIX);
-            GroupCaseStudyXML.caseStudyToXMLFile(caseStudyGroup, "", fullFile);
+        String fileName = getCaseStudyFileName(caseStudyGroup);
+
+        if (Constants.isPrintFullXML()) {
+            File caseStudyFullXML = new File(directory.getPath() + File.separator + fileName + FULL_RESULT_SUFFIX + ".xml");
+            GroupCaseStudyXML.caseStudyToXMLFile_fullResults(caseStudyGroup, caseStudyFullXML);
         }
 
-        File aggrFile = FileUtilities.addSufix(fileFile, AGGR_RESULT_SUFFIX);
-        GroupCaseStudyXML.caseStudyToXMLFile_onlyAggregate(caseStudyGroup, descriptivePrefix, aggrFile);
+        File caseStudyAggrXML = new File(directory.getPath() + File.separator + fileName + AGGR_RESULT_SUFFIX + ".xml");
+        GroupCaseStudyXML.caseStudyToXMLFile_aggregateResults(caseStudyGroup, caseStudyAggrXML);
     }
 
-    private static void caseStudyToXMLFile_onlyDescription(GroupCaseStudy caseStudyGroup, File file) {
+    /**
+     * Saves the xml with the description of the case study in de file
+     * specified.
+     *
+     * @param caseStudyGroup Group case study whose description is saved.
+     * @param file File in which the description is saved.
+     */
+    public static void caseStudyToXMLFile_onlyDescription(GroupCaseStudy caseStudyGroup, File file) {
 
         if (caseStudyGroup.isFinished()) {
             throw new IllegalArgumentException("Ya se ha ejecutado el caso de estudio!");
@@ -203,11 +232,12 @@ public class GroupCaseStudyXML {
         Document doc = new Document();
         Element casoDeUso = new Element(CASE_ROOT_ELEMENT_NAME);
 
-        casoDeUso.setAttribute("seed", Long.toString(caseStudyGroup.getSeedValue()));
+        casoDeUso.setAttribute(SeedHolder.SEED.getName(), Long.toString(caseStudyGroup.getSeedValue()));
         casoDeUso.setAttribute(NUM_EXEC_ATTRIBUTE_NAME, Integer.toString(caseStudyGroup.getNumExecutions()));
+        casoDeUso.setAttribute(ParameterOwner.ALIAS.getName(), caseStudyGroup.getAlias());
 
         casoDeUso.setAttribute(HASH_ATTRIBUTE_NAME, Integer.toString(caseStudyGroup.hashCode()));
-        casoDeUso.setAttribute(HASH_WITHOUT_GRS_ATTRIBUTE_NAME, Integer.toString(caseStudyGroup.hashCode()));
+        casoDeUso.setAttribute(HASH_DATA_VALIDATION_ATTRIBUTE_NAME, Integer.toString(caseStudyGroup.hashCode()));
 
         casoDeUso.addContent(GroupRecommenderSystemXML.getElement(caseStudyGroup.getGroupRecommenderSystem()));
         casoDeUso.addContent(DatasetLoaderXML.getElement(caseStudyGroup.getDatasetLoader()));
@@ -229,7 +259,7 @@ public class GroupCaseStudyXML {
         }
     }
 
-    private static void caseStudyToXMLFile_onlyAggregate(GroupCaseStudy caseStudyGroup, String descriptivePrefix, File file) {
+    private static void caseStudyToXMLFile_aggregateResults(GroupCaseStudy caseStudyGroup, File file) {
         if (!caseStudyGroup.isFinished()) {
             throw new UnsupportedOperationException("No se ha ejecutado el caso de uso todavía");
         }
@@ -237,12 +267,13 @@ public class GroupCaseStudyXML {
         Document doc = new Document();
         Element casoDeUso = new Element(CASE_ROOT_ELEMENT_NAME);
 
-        casoDeUso.setAttribute("seed", Long.toString(caseStudyGroup.getSeedValue()));
-
+        casoDeUso.setAttribute(SeedHolder.SEED.getName(), Long.toString(caseStudyGroup.getSeedValue()));
         casoDeUso.setAttribute(NUM_EXEC_ATTRIBUTE_NAME, Integer.toString(caseStudyGroup.getNumExecutions()));
+        casoDeUso.setAttribute(ParameterOwner.ALIAS.getName(), caseStudyGroup.getAlias());
 
         casoDeUso.setAttribute(HASH_ATTRIBUTE_NAME, Integer.toString(caseStudyGroup.hashCode()));
-        casoDeUso.setAttribute(HASH_WITHOUT_GRS_ATTRIBUTE_NAME, Integer.toString(caseStudyGroup.hashCodeWithoutGroupRecommenderSystem()));
+        casoDeUso.setAttribute(HASH_DATA_VALIDATION_ATTRIBUTE_NAME, Integer.toString(caseStudyGroup.hashDataValidation()));
+        casoDeUso.setAttribute(HASH_TECHNIQUE_ATTRIBUTE_NAME, Integer.toString(caseStudyGroup.hashTechnique()));
 
         casoDeUso.addContent(GroupRecommenderSystemXML.getElement(caseStudyGroup.getGroupRecommenderSystem()));
         casoDeUso.addContent(DatasetLoaderXML.getElement(caseStudyGroup.getDatasetLoader()));
@@ -295,13 +326,72 @@ public class GroupCaseStudyXML {
 
         DatasetLoader<? extends Rating> datasetLoader = DatasetLoaderXML.getDatasetLoader(caseStudy.getChild(DatasetLoaderXML.ELEMENT_NAME));
 
-        return new GroupCaseStudyConfiguration(groupRecommenderSystem, datasetLoader, groupFormationTechnique, groupValidationTechnique, groupPredictionProtocol, relevanceCriteria);
+        long seed = Long.parseLong(caseStudy.getAttributeValue(SeedHolder.SEED.getName()));
+        int numExecutions = Integer.parseInt(caseStudy.getAttributeValue(NUM_EXEC_ATTRIBUTE_NAME));
+        String caseStudyAlias = caseStudy.getAttributeValue(ParameterOwner.ALIAS.getName());
+
+        return new GroupCaseStudyConfiguration(
+                groupRecommenderSystem, datasetLoader,
+                groupFormationTechnique,
+                groupValidationTechnique,
+                groupPredictionProtocol,
+                relevanceCriteria,
+                caseStudyAlias,
+                numExecutions,
+                seed,
+                null);
     }
 
-    public static int extractResultNumExec(File aggregateResultXML) throws JDOMException, IOException {
+    /**
+     * Carga la descripción de un caso de estudio para sistemas de recomendación
+     * para grupos.
+     *
+     * @param file Archivo donde se encuentra almacenado el caso de estudio.
+     * @return Caso de estudio recuperado del archivo.
+     * @throws org.jdom2.JDOMException Cuando se intenta cargar un xml que no
+     * tiene la estructura esperada. Chequear si esta desfasada la versión.
+     * @throws IOException Cuando no se puede leer el archivo indicado o existe
+     * algun fallo de conversión de datos al leer el contenido del mismo.
+     */
+    public static GroupCaseStudyConfiguration loadGroupCaseWithResults(File file) throws JDOMException, IOException {
         SAXBuilder builder = new SAXBuilder();
 
-        Document doc = builder.build(aggregateResultXML);
+        Document doc = builder.build(file);
+        Element caseStudy = doc.getRootElement();
+        if (!caseStudy.getName().equals(CASE_ROOT_ELEMENT_NAME)) {
+            throw new IllegalArgumentException("The XML does not contains a Case Study.");
+        }
+        GroupRecommenderSystem<Object, Object> groupRecommenderSystem = GroupRecommenderSystemXML.getGroupRecommenderSystem(caseStudy.getChild(GroupRecommenderSystemXML.ELEMENT_NAME));
+
+        GroupFormationTechnique groupFormationTechnique = GroupFormationTechniqueXML.getGroupFormationTechnique(caseStudy.getChild(GroupFormationTechniqueXML.ELEMENT_NAME));
+        GroupValidationTechnique groupValidationTechnique = GroupValidationTechniqueXML.getGroupValidationTechnique(caseStudy.getChild(GroupValidationTechniqueXML.ELEMENT_NAME));
+        GroupPredictionProtocol groupPredictionProtocol = GroupPredictionProtocolXML.getGroupPredictionProtocol(caseStudy.getChild(GroupPredictionProtocolXML.ELEMENT_NAME));
+        RelevanceCriteria relevanceCriteria = RelevanceCriteriaXML.getRelevanceCriteria(caseStudy.getChild(RelevanceCriteriaXML.ELEMENT_NAME));
+
+        DatasetLoader<? extends Rating> datasetLoader = DatasetLoaderXML.getDatasetLoader(caseStudy.getChild(DatasetLoaderXML.ELEMENT_NAME));
+
+        Map<GroupEvaluationMeasure, GroupEvaluationMeasureResult> groupEvaluationMeasuresResults = getEvaluationMeasures(caseStudy);
+
+        long seed = Long.parseLong(caseStudy.getAttributeValue(SeedHolder.SEED.getName()));
+        int numExecutions = Integer.parseInt(caseStudy.getAttributeValue(NUM_EXEC_ATTRIBUTE_NAME));
+        String caseStudyAlias = caseStudy.getAttributeValue(ParameterOwner.ALIAS.getName());
+
+        return new GroupCaseStudyConfiguration(
+                groupRecommenderSystem, datasetLoader,
+                groupFormationTechnique,
+                groupValidationTechnique,
+                groupPredictionProtocol,
+                relevanceCriteria,
+                caseStudyAlias,
+                numExecutions,
+                seed,
+                groupEvaluationMeasuresResults);
+    }
+
+    public static int extractResultNumExec(File groupCaseStudyXML) throws JDOMException, IOException {
+        SAXBuilder builder = new SAXBuilder();
+
+        Document doc = builder.build(groupCaseStudyXML);
         Element caseStudy = doc.getRootElement();
         if (!caseStudy.getName().equals(CASE_ROOT_ELEMENT_NAME)) {
             throw new IllegalArgumentException("The XML does not contains a Case Study.");
@@ -311,4 +401,36 @@ public class GroupCaseStudyXML {
 
         return numExec;
     }
+
+    private static Map<GroupEvaluationMeasure, GroupEvaluationMeasureResult> getEvaluationMeasures(Element caseStudy) {
+
+        Map<GroupEvaluationMeasure, GroupEvaluationMeasureResult> groupEvaluationMeasures = new TreeMap<>();
+
+        Element aggregateValues = caseStudy.getChild(AGGREGATE_VALUES_ELEMENT_NAME);
+
+        if (aggregateValues == null) {
+            throw new IllegalStateException("Unable to load a case study description only, the XML must have results details.");
+        }
+
+        for (Element groupEvaluationMeasureResultElement : aggregateValues.getChildren()) {
+            String name = groupEvaluationMeasureResultElement.getName();
+
+            GroupEvaluationMeasure groupEvaluationMeasure = GroupEvaluationMeasuresFactory.getInstance().getClassByName(name);
+            if (groupEvaluationMeasure == null) {
+
+                if (name.equals("Build_time")) {
+                    Global.showWarning("Build_time should be implemented as a proper evaluation measure");
+                } else if (name.equals("Recommendation_time")) {
+                    Global.showWarning("Recommendation_time should be implemented as a proper evaluation measure");
+                } else {
+                    throw new IllegalStateException("The group evaluation measure '" + name + "' does not exists in delfos' factory");
+                }
+            } else {
+                groupEvaluationMeasures.put(groupEvaluationMeasure, groupEvaluationMeasure.getGroupEvaluationMeasureResultFromXML(groupEvaluationMeasureResultElement));
+            }
+        }
+
+        return groupEvaluationMeasures;
+    }
+
 }

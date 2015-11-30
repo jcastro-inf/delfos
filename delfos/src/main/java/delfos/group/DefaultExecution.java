@@ -1,5 +1,6 @@
 package delfos.group;
 
+import delfos.Constants;
 import delfos.ERROR_CODES;
 import delfos.common.Global;
 import delfos.common.exceptions.dataset.CannotLoadContentDataset;
@@ -12,8 +13,8 @@ import delfos.dataset.basic.rating.RelevanceCriteria;
 import delfos.dataset.loaders.jester.Jester;
 import delfos.experiment.ExperimentListerner_default;
 import delfos.experiment.casestudy.ExecutionProgressListener_default;
-import delfos.group.casestudy.GroupCaseStudy;
-import delfos.group.casestudy.defaultcase.DefaultGroupCaseStudy;
+import delfos.group.casestudy.defaultcase.GroupCaseStudy;
+import delfos.group.casestudy.defaultcase.GroupCaseStudy;
 import delfos.group.experiment.validation.groupformation.FixedGroupSize_OnlyNGroups;
 import delfos.group.experiment.validation.groupformation.GroupFormationTechnique;
 import delfos.group.experiment.validation.predictionvalidation.GroupPredictionProtocol;
@@ -28,6 +29,7 @@ import delfos.group.grs.aggregation.AggregationOfIndividualRecommendations;
 import delfos.group.io.xml.casestudy.GroupCaseStudyXML;
 import delfos.group.results.groupevaluationmeasures.GroupEvaluationMeasure;
 import delfos.rs.collaborativefiltering.knn.modelbased.KnnModelBasedCFRS;
+import java.io.File;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
@@ -41,9 +43,11 @@ import java.util.TreeMap;
  */
 public class DefaultExecution {
 
-    protected static final int numEjecuciones = 1;
-    protected static final int numOfGroups = 100;
-    protected static final long seed = 1358987046897L;
+    private static final int numEjecuciones = 1;
+    private static final int numOfGroups = 100;
+    private static final long seed = 1358987046897L;
+
+    private static final File resultsDirectory = new File(Constants.getTempDirectory().getPath() + File.separator);
 
     public void execute() throws CannotLoadContentDataset, CannotLoadRatingsDataset {
 
@@ -63,7 +67,7 @@ public class DefaultExecution {
                         for (GroupFormationTechnique groupFormationTechnique : groupFormationTechniques) {
                             try {
                                 resultadosPorTamGrupos.put(groupFormationTechnique, new TreeMap<>());
-                                GroupCaseStudy caseStudyGroupRecommendation = new DefaultGroupCaseStudy(
+                                GroupCaseStudy caseStudyGroupRecommendation = new GroupCaseStudy(
                                         datasetLoader,
                                         groupRecommenderSystem,
                                         groupFormationTechnique,
@@ -84,7 +88,10 @@ public class DefaultExecution {
                                 }
 
                                 int tamGrupos = (Integer) groupFormationTechnique.getParameterValue(FixedGroupSize_OnlyNGroups.GROUP_SIZE_PARAMETER);
-                                GroupCaseStudyXML.saveCaseResults(caseStudyGroupRecommendation, "defaultExecution_", "Dataset=" + datasetName + "_tamGroups=" + tamGrupos + "_" + recommenderName + "_" + System.currentTimeMillis());
+
+                                caseStudyGroupRecommendation.setAlias("defaultExecution_" + "Dataset=" + datasetName + "_tamGroups=" + tamGrupos + "_" + recommenderName + "_" + System.currentTimeMillis());
+
+                                GroupCaseStudyXML.saveCaseResults(caseStudyGroupRecommendation, resultsDirectory);
                             } catch (CannotLoadContentDataset ex) {
                                 Global.showError(ex);
                                 ERROR_CODES.CANNOT_LOAD_CONTENT_DATASET.exit(ex);

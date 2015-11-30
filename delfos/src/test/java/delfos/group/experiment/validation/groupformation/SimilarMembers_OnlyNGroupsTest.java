@@ -1,4 +1,4 @@
-package delfos.group.experiment.groupformation;
+package delfos.group.experiment.validation.groupformation;
 
 import delfos.common.DateCollapse;
 import delfos.common.Global;
@@ -7,7 +7,6 @@ import delfos.constants.DelfosTest;
 import delfos.constants.TestConstants;
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
-import delfos.group.experiment.validation.groupformation.SimilarMembers_except;
 import delfos.group.groupsofusers.GroupOfUsers;
 import java.io.File;
 import java.util.ArrayList;
@@ -24,28 +23,26 @@ import org.junit.Test;
  * @version 10-abr-2014
  * @author Jorge Castro Gallardo (Universidad de Jaén, Sinbad2)
  */
-public class SimilarMembers_exceptTest extends DelfosTest {
+public class SimilarMembers_OnlyNGroupsTest extends DelfosTest {
 
     private static final long seed = 65465654;
+    private final static String similarityMeasureBufferDirectory = TestConstants.TEST_DATA_DIRECTORY + SimilarMembers_OnlyNGroupsTest.class.getSimpleName() + File.separator;
 
-    private final static String similarityMeasureBufferDirectory = TestConstants.TEST_DATA_DIRECTORY + SimilarMembers_exceptTest.class.getSimpleName() + File.separator;
-
-    public SimilarMembers_exceptTest() {
+    public SimilarMembers_OnlyNGroupsTest() {
     }
 
     /**
-     * Test of shuffle method, of class SimilarMembers_except.
+     * Test of shuffle method, of class SimilarMembers_OnlyNGroups.
      */
     @Test
     public void testShuffle() {
         final int groupSizeValue = 5;
         final int numGroupsValue = 1;
-        final int numMembersCandidate = 1;
 
         DatasetLoader<? extends Rating> datasetLoader = ConfiguredDatasetsFactory.getInstance().getDatasetLoader("ml-100k");
         datasetLoader.getRatingsDataset();
 
-        SimilarMembers_except instance = new SimilarMembers_except(numGroupsValue, groupSizeValue, numMembersCandidate);
+        SimilarMembers_OnlyNGroups instance = new SimilarMembers_OnlyNGroups(numGroupsValue, groupSizeValue);
         instance.addListener((String message, int progress, long remainingTimeInMS) -> {
             Global.showln(progress + "% " + message + " remainingTime: " + DateCollapse.collapse(remainingTimeInMS));
         });
@@ -53,23 +50,31 @@ public class SimilarMembers_exceptTest extends DelfosTest {
         Collection<GroupOfUsers> result = instance.shuffle(datasetLoader);
 
         Collection<GroupOfUsers> expResult = new ArrayList<>();
-        expResult.add(new GroupOfUsers(5, 12, 16, 260, 886));
+        //expResult.add(new GroupOfUsers(368, 541, 576, 686, 886));
+        //expResult.add(new GroupOfUsers(121, 129, 568, 886, 894));
+        //expResult.add(new GroupOfUsers(33, 88, 245, 571, 886));
+        expResult.add(new GroupOfUsers(121, 541, 568, 582, 886));
         assertEquals(expResult, result);
     }
 
     /**
-     * Test of shuffle method, of class SimilarMembers_except.
+     * Test of shuffle method, of class SimilarMembers_OnlyNGroups.
      */
     @Test
     public void testSharingUsers() {
         final int groupSizeValue = 5;
         final int numGroupsValue = 10;
-        final int numMembersCandidate = 1;
 
         DatasetLoader<? extends Rating> datasetLoader = ConfiguredDatasetsFactory.getInstance().getDatasetLoader("ml-100k");
         datasetLoader.getRatingsDataset();
 
-        SimilarMembers_except instance = new SimilarMembers_except(numGroupsValue, groupSizeValue, numMembersCandidate);
+        SimilarMembers_OnlyNGroups instance = new SimilarMembers_OnlyNGroups(numGroupsValue, groupSizeValue);
+
+//        UserUserSimilarity bufferedSimilarity = new UserUserSimilarity_buffered(
+//                new File(similarityMeasureBufferDirectory),
+//                (UserUserSimilarity) instance.getParameterValue(SimilarMembers_OnlyNGroups.SIMILARITY_MEASURE)
+//        );
+//        instance.setParameterValue(SimilarMembers_OnlyNGroups.SIMILARITY_MEASURE, bufferedSimilarity);
         instance.addListener((String message, int progress, long remainingTimeInMS) -> {
             Global.showln(progress + "% " + message + " remainingTime: " + DateCollapse.collapse(remainingTimeInMS));
         });
@@ -100,18 +105,17 @@ public class SimilarMembers_exceptTest extends DelfosTest {
     }
 
     /**
-     * Test of shuffle method, of class SimilarMembers_except.
+     * Test of shuffle method, of class SimilarMembers_OnlyNGroups.
      */
     @Test(expected = IllegalArgumentException.class)
     public void testTooManyGroupsAsked() {
         final int groupSizeValue = 5;
         final int numGroupsValue = 189;
-        final int numMembersCandidate = 1;
 
         DatasetLoader<? extends Rating> datasetLoader = ConfiguredDatasetsFactory.getInstance().getDatasetLoader("ml-100k");
         datasetLoader.getRatingsDataset();
 
-        SimilarMembers_except instance = new SimilarMembers_except(numGroupsValue, groupSizeValue, numMembersCandidate);
+        SimilarMembers_OnlyNGroups instance = new SimilarMembers_OnlyNGroups(numGroupsValue, groupSizeValue);
 
         Collection<GroupOfUsers> result = instance.shuffle(datasetLoader);
     }

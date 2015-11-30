@@ -44,7 +44,7 @@ public class GroupSatisfaction_StdDev extends GroupEvaluationMeasure {
     }
 
     @Override
-    public GroupMeasureResult getMeasureResult(GroupRecommendationResult recommendationResults, RatingsDataset<? extends Rating> testDataset, RelevanceCriteria relevanceCriteria) {
+    public GroupEvaluationMeasureResult getMeasureResult(GroupRecommendationResult recommendationResults, RatingsDataset<? extends Rating> testDataset, RelevanceCriteria relevanceCriteria) {
         MeanIterative mediaTodasDesviacionesTipicas = new MeanIterative();
         for (Entry<GroupOfUsers, List<Recommendation>> next : recommendationResults) {
             //Recorro todos los grupos
@@ -86,7 +86,7 @@ public class GroupSatisfaction_StdDev extends GroupEvaluationMeasure {
             }
             mediaTodasDesviacionesTipicas.addValue(mediaDesviacionGrupoActual.getMean());
         }
-        return new GroupMeasureResult(this, (float) mediaTodasDesviacionesTipicas.getMean());
+        return new GroupEvaluationMeasureResult(this, (float) mediaTodasDesviacionesTipicas.getMean());
     }
 
     @Override
