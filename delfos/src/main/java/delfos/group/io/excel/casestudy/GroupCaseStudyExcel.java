@@ -6,6 +6,7 @@ import delfos.common.Global;
 import delfos.common.decimalnumbers.NumberRounder;
 import delfos.common.parameters.Parameter;
 import delfos.common.parameters.ParameterOwner;
+import delfos.common.parameters.chain.CaseStudyResultMatrix;
 import delfos.common.parameters.chain.ParameterChain;
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
@@ -968,11 +969,22 @@ public class GroupCaseStudyExcel {
         }
 
         List<ParameterChain> differentChainsWithAliases = ParameterChain.obtainDifferentChains(groupCaseStudys);
+        ParameterChain.printListOfChains(differentChainsWithAliases);
 
         List<ParameterChain> differentChains = differentChainsWithAliases.stream().filter(chain -> !chain.isAlias()).collect(Collectors.toList());
+        ParameterChain.printListOfChains(differentChains);
 
         List<ParameterChain> dataValidationDifferentChains = differentChains.stream().filter(chain -> chain.isDataValidationParameter()).collect(Collectors.toList());
         List<ParameterChain> techniqueDifferentChains = differentChains.stream().filter(chain -> chain.isTechniqueParameter()).collect(Collectors.toList());
+
+        CaseStudyResultMatrix matrix = new CaseStudyResultMatrix(techniqueDifferentChains, dataValidationDifferentChains, evaluationMeasure);
+
+        groupCaseStudyResults.stream().forEach(groupCaseStudyResult -> {
+            java.lang.Number evaluationMeasureValue = groupCaseStudyResult.getEvaluationMeasureValue(evaluationMeasure);
+            matrix.addValue(groupCaseStudyResult.getGroupCaseStudy(), evaluationMeasureValue);
+        });
+
+        System.out.println(matrix.print());
 
         if (file.isDirectory()) {
             throw new IllegalStateException("GroupCaseStudy save to spreadsheet: Not a file (" + file.toString() + ")");
@@ -1011,68 +1023,32 @@ public class GroupCaseStudyExcel {
         {
 
             int column = 0;
-            final int titlesRow = 0;
+            int row = 0;
 
-            //ExperimentNamesColumn
-            addTitleText(allCasesAggregateResults, column, titlesRow, EXPERIMENT_NAME_COLUMN_NAME);
-            for (int index = 0; index < groupCaseStudyResults.size(); index++) {
-                int row = index + 1;
-                setCellText(allCasesAggregateResults, column, row, groupCaseStudyResults.get(index).getGroupCaseStudyAlias());
-            }
+            //Titles ROW
+            addTitleText(allCasesAggregateResults, column, row, evaluationMeasure);
             column++;
 
-            //General hash
-            addTitleText(allCasesAggregateResults, column, titlesRow, "hash");
-            for (int index = 0; index < groupCaseStudyResults.size(); index++) {
-                int row = index + 1;
-                setCellIntegerNumber(allCasesAggregateResults, column, row, groupCaseStudyResults.get(index).getGroupCaseStudy().hashCode());
-            }
-            column++;
-
-            //dataValidation hash
-            addTitleText(allCasesAggregateResults, column, titlesRow, "hashDataValidation");
-            for (int index = 0; index < groupCaseStudyResults.size(); index++) {
-                int row = index + 1;
-                setCellIntegerNumber(allCasesAggregateResults, column, row, groupCaseStudyResults.get(index).getGroupCaseStudy().hashDataValidation());
-            }
-            column++;
-
-            for (String dataValidationParameter : dataValidationParametersOrder) {
-
-                addTitleText(allCasesAggregateResults, column, titlesRow, dataValidationParameter);
-                for (int index = 0; index < groupCaseStudyResults.size(); index++) {
-                    int row = index + 1;
-
-                    GroupCaseStudyResult groupCaseStudyResult = groupCaseStudyResults.get(index);
-                    if (groupCaseStudyResult.getDefinedDataValidationParameters().contains(dataValidationParameter)) {
-
-                        Object dataValidationParameterValue = groupCaseStudyResult.getDataValidationParameterValue(dataValidationParameter);
-                        setCellContent(allCasesAggregateResults, column, row, dataValidationParameterValue);
-                    }
-                }
+            for (String columnName : matrix.getColumnNames()) {
+                setCellContent(allCasesAggregateResults, column, row, columnName);
                 column++;
             }
 
-            //technique hash
-            addTitleText(allCasesAggregateResults, column, titlesRow, "hashTechnique");
-            for (int index = 0; index < groupCaseStudyResults.size(); index++) {
-                int row = index + 1;
-                setCellIntegerNumber(allCasesAggregateResults, column, row, groupCaseStudyResults.get(index).getGroupCaseStudy().hashTechnique());
-            }
-            column++;
+            row++;
 
-            for (String techniqueParameter : techniqueParametersOrder) {
+            //Titles row
+            for (String rowName : matrix.getRowNames()) {
 
-                addTitleText(allCasesAggregateResults, column, titlesRow, techniqueParameter);
-                for (int index = 0; index < groupCaseStudyResults.size(); index++) {
-                    int row = index + 1;
-                    GroupCaseStudyResult groupCaseStudyResult = groupCaseStudyResults.get(index);
-                    if (groupCaseStudyResult.getDefinedTechniqueParameters().contains(techniqueParameter)) {
-                        Object techniqueParameterValue = groupCaseStudyResult.getTechniqueParameterValue(techniqueParameter);
-                        setCellContent(allCasesAggregateResults, column, row, techniqueParameterValue);
-                    }
-                }
+                column = 0;
+                setCellContent(allCasesAggregateResults, column, row, rowName);
                 column++;
+                for (String columnName : matrix.getColumnNames()) {
+
+                    Object value = matrix.getValue(rowName, columnName);
+                    setCellContent(allCasesAggregateResults, column, row, value);
+                    column++;
+                }
+                row++;
             }
         }
 

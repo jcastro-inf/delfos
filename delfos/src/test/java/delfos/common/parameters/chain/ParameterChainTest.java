@@ -191,5 +191,4 @@ public class ParameterChainTest {
         assertTrue(aoiRatingsMeanChain.isApplicableTo(aoiRatingsMinGroupCaseStudy));
 
     }
-
 }

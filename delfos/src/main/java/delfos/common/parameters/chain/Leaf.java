@@ -1,6 +1,7 @@
 package delfos.common.parameters.chain;
 
 import delfos.common.parameters.Parameter;
+import delfos.common.parameters.ParameterOwner;
 import java.util.Objects;
 
 /**
@@ -36,9 +37,15 @@ class Leaf {
         if (obj instanceof Leaf) {
             Leaf leaf = (Leaf) obj;
 
-            boolean valuesAreSame = this.parameterValue.equals(leaf.parameterValue);
+            if (this.parameterValue instanceof ParameterOwner && leaf.parameterValue instanceof ParameterOwner) {
+                ParameterOwner parameterOwner = (ParameterOwner) this.parameterValue;
+                ParameterOwner parameterOwner2 = (ParameterOwner) leaf.parameterValue;
 
-            return valuesAreSame;
+                return parameterOwner.equals(parameterOwner2);
+            } else {
+                boolean valuesAreSame = this.parameterValue.equals(leaf.parameterValue);
+                return valuesAreSame;
+            }
         } else {
             return false;
         }

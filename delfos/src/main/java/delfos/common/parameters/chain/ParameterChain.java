@@ -1,5 +1,6 @@
 package delfos.common.parameters.chain;
 
+import delfos.common.Global;
 import delfos.common.parameters.Parameter;
 import delfos.common.parameters.ParameterOwner;
 import delfos.group.casestudy.defaultcase.GroupCaseStudy;
@@ -87,11 +88,19 @@ public class ParameterChain {
     }
 
     public boolean isDataValidationParameter() {
-        return !nodes.isEmpty() && nodes.get(0).getParameter() != GroupCaseStudy.GROUP_RECOMMENDER_SYSTEM;
+        if (nodes.isEmpty()) {
+            return !leaf.getParameter().equals(GroupCaseStudy.GROUP_RECOMMENDER_SYSTEM);
+        } else {
+            return nodes.get(0).getParameter() != GroupCaseStudy.GROUP_RECOMMENDER_SYSTEM;
+        }
     }
 
     public boolean isTechniqueParameter() {
-        return !nodes.isEmpty() && nodes.get(0).getParameter() == GroupCaseStudy.GROUP_RECOMMENDER_SYSTEM;
+        if (nodes.isEmpty()) {
+            return leaf.getParameter().equals(GroupCaseStudy.GROUP_RECOMMENDER_SYSTEM);
+        } else {
+            return nodes.get(0).getParameter() == GroupCaseStudy.GROUP_RECOMMENDER_SYSTEM;
+        }
     }
 
     public static List<ParameterChain> obtainDataValidationParameterChains(GroupCaseStudy groupCaseStudy) {
@@ -329,7 +338,7 @@ public class ParameterChain {
         return parameterOwnerToGetValue.haveParameter(leaf.getParameter());
     }
 
-    private Object getValueOn(ParameterOwner parameterOwner) {
+    public Object getValueOn(ParameterOwner parameterOwner) {
         if (!isApplicableTo(parameterOwner)) {
             throw new IllegalArgumentException("ParameterOwner is not compatible: " + root.getParameterOwner().getClass() + " != " + parameterOwner.getClass());
         }
@@ -351,11 +360,11 @@ public class ParameterChain {
         allParameterChains.sort((ParameterChain o1, ParameterChain o2)
                 -> o1.toString().compareTo(o2.toString()));
 
-        System.out.println("=====================================================");
-        System.out.println("all chains for now");
+        Global.show("=====================================================\n");
+        Global.show("all chains for now\n");
         for (ParameterChain chain : allParameterChains) {
-            System.out.println(chain);
+            Global.show(chain.toString() + "\n");
         }
-        System.out.println("=====================================================");
+        Global.show("=====================================================\n");
     }
 }

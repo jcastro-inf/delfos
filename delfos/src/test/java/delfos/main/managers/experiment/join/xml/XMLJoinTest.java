@@ -4,7 +4,6 @@ import delfos.Constants;
 import delfos.common.FileUtilities;
 import delfos.common.aggregationoperators.MaximumValue;
 import delfos.common.aggregationoperators.Mean;
-import delfos.common.aggregationoperators.MinimumValue;
 import delfos.configureddatasets.ConfiguredDatasetLoader;
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.RelevanceCriteria;
@@ -44,7 +43,7 @@ public class XMLJoinTest {
         List<GroupCaseStudy> groupCaseStudys = new ArrayList<>();
 
         List<GroupFormationTechnique> groupFormationTechniques
-                = Arrays.asList(1, 2).stream()
+                = Arrays.asList(1, 10, 100).stream()
                 .map((groupSize -> new FixedGroupSize_OnlyNGroups(10, groupSize)))
                 .collect(Collectors.toList());
 
@@ -54,7 +53,7 @@ public class XMLJoinTest {
                 new AggregationOfIndividualRatings(new KnnMemoryBasedNWR(), new Mean()),
                 new AggregationOfIndividualRatings(new KnnMemoryBasedNWR(), new MaximumValue()),
                 new AggregationOfIndividualRecommendations(new KnnMemoryBasedNWR(), new MaximumValue()),
-                new AggregationOfIndividualRatings(new KnnMemoryBasedNWR(), new MinimumValue())
+                new AggregationOfIndividualRecommendations(new KnnMemoryBasedNWR(), new Mean())
         );
 
         for (GroupFormationTechnique groupFormationTechnique : groupFormationTechniques) {
