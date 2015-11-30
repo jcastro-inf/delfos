@@ -34,6 +34,9 @@ public class ParameterChainTest {
         groupCaseStudy.setSeedValue(123456L);
 
         List<ParameterChain> result = ParameterChain.obtainAllParameterChains(groupCaseStudy);
+
+        ParameterChain.printListOfChains(result);
+        System.out.println("===================================");
     }
 
     /**

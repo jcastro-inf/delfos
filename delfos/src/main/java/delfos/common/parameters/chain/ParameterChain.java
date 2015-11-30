@@ -343,4 +343,19 @@ public class ParameterChain {
 
         return parameterOwnerToGetValue.getParameterValue(leaf.getParameter());
     }
+
+    public static void printListOfChains(Collection<ParameterChain> allChains) {
+
+        ArrayList<ParameterChain> allParameterChains = new ArrayList<>(allChains);
+
+        allParameterChains.sort((ParameterChain o1, ParameterChain o2)
+                -> o1.toString().compareTo(o2.toString()));
+
+        System.out.println("=====================================================");
+        System.out.println("all chains for now");
+        for (ParameterChain chain : allParameterChains) {
+            System.out.println(chain);
+        }
+        System.out.println("=====================================================");
+    }
 }
