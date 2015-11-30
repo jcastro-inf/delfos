@@ -10,7 +10,6 @@ import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.RelevanceCriteria;
 import delfos.experiment.casestudy.cluster.TuringPreparator;
 import delfos.group.casestudy.defaultcase.GroupCaseStudy;
-import delfos.group.casestudy.defaultcase.GroupCaseStudy;
 import static delfos.group.casestudy.definedcases.hesitant.experiment0.HesitantGRS_CaseStudy.SEED_VALUE;
 import delfos.group.experiment.validation.groupformation.FixedGroupSize_OnlyNGroups;
 import delfos.group.experiment.validation.groupformation.GroupFormationTechnique;
@@ -19,6 +18,7 @@ import delfos.group.experiment.validation.validationtechniques.HoldOutGroupRated
 import delfos.group.factories.GroupEvaluationMeasuresFactory;
 import delfos.group.grs.GroupRecommenderSystem;
 import delfos.group.grs.aggregation.AggregationOfIndividualRatings;
+import delfos.group.grs.aggregation.AggregationOfIndividualRecommendations;
 import delfos.rs.collaborativefiltering.knn.memorybased.nwr.KnnMemoryBasedNWR;
 import java.io.File;
 import java.util.ArrayList;
@@ -53,6 +53,7 @@ public class XMLJoinTest {
         List<GroupRecommenderSystem> groupRecommenderSystems = Arrays.asList(
                 new AggregationOfIndividualRatings(new KnnMemoryBasedNWR(), new Mean()),
                 new AggregationOfIndividualRatings(new KnnMemoryBasedNWR(), new MaximumValue()),
+                new AggregationOfIndividualRecommendations(new KnnMemoryBasedNWR(), new MaximumValue()),
                 new AggregationOfIndividualRatings(new KnnMemoryBasedNWR(), new MinimumValue())
         );
 

@@ -185,7 +185,7 @@ public class ParameterChainTest {
                 .createWithNode(GroupCaseStudy.GROUP_RECOMMENDER_SYSTEM, aoiRatingsMean)
                 .createWithLeaf(AggregationOfIndividualRatings.AGGREGATION_OPERATOR, new Mean());
 
-        assertTrue(aoiRatingsMeanChain.isCompatibleWith(aoiRatingsMinGroupCaseStudy));
+        assertTrue(aoiRatingsMeanChain.isApplicableTo(aoiRatingsMinGroupCaseStudy));
 
     }
 

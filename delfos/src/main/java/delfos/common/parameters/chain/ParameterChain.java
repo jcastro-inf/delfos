@@ -8,6 +8,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -26,15 +27,71 @@ public class ParameterChain {
      * @param groupCaseStudys
      * @return
      */
-    public static List<ParameterChain> obtainDataValidationDifferentChains(List<GroupCaseStudy> groupCaseStudys) {
+    public static List<ParameterChain> obtainDifferentChains(List<GroupCaseStudy> groupCaseStudys) {
 
-        List<ParameterChain> parameterChains = new ArrayList<>();
+        if (groupCaseStudys.isEmpty()) {
+            return Collections.EMPTY_LIST;
+        }
+
+        List<ParameterChain> allParameterChains = obtainAllParameterChains(
+                groupCaseStudys.iterator().next());
 
         for (GroupCaseStudy groupCaseStudy : groupCaseStudys) {
-            List<ParameterChain> obtainAllParameterChains = obtainAllParameterChains(groupCaseStudy);
-            parameterChains.addAll(obtainAllParameterChains);
+            List<ParameterChain> thisCaseStudyParameterChains
+                    = obtainAllParameterChains(groupCaseStudy);
+
+            List<ParameterChain> notMatchedWithExisting = new ArrayList<>();
+
+            for (ParameterChain parameterChain : thisCaseStudyParameterChains) {
+
+                List<ParameterChain> matchesWith = allParameterChains.stream()
+                        .filter(parameterChain2 -> parameterChain.isCompatible(parameterChain2))
+                        .collect(Collectors.toList());
+
+                if (matchesWith.isEmpty()) {
+                    notMatchedWithExisting.add(parameterChain);
+                }
+            }
+
+            if (!notMatchedWithExisting.isEmpty()) {
+                allParameterChains.addAll(notMatchedWithExisting);
+            }
         }
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+
+        //Delete chains applicable to only one groupCaseStudy
+        List<ParameterChain> chainsApplicableToMoreThanOne = allParameterChains.stream()
+                .filter(parameterChain -> {
+                    List<GroupCaseStudy> applicableTo = groupCaseStudys.stream()
+                    .filter(groupCaseStudy -> parameterChain.isApplicableTo(groupCaseStudy)).collect(Collectors.toList());
+                    boolean applicableToMoreThanOne = applicableTo.size() > 1;
+                    return applicableToMoreThanOne;
+                })
+                .collect(Collectors.toList());
+
+        List<ParameterChain> chainsWithMoreThanOneDifferentValue = chainsApplicableToMoreThanOne.stream()
+                .filter(parameterChain -> {
+                    Set<Object> differentValues = groupCaseStudys.stream()
+                    .filter(groupCaseStudy -> parameterChain.isApplicableTo(groupCaseStudy))
+                    .map(groupCaseStudy -> parameterChain.getValueOn(groupCaseStudy)).collect(Collectors.toSet());
+
+                    if (differentValues.isEmpty()) {
+                        throw new IllegalStateException("There must be at least one different value.");
+                    }
+
+                    boolean moreThanOneDifferentValue = differentValues.size() > 1;
+
+                    return moreThanOneDifferentValue;
+                }).collect(Collectors.toList());
+
+        return chainsWithMoreThanOneDifferentValue;
+    }
+
+    public boolean isDataValidationParameter() {
+        return !nodes.isEmpty() && nodes.get(0).getParameter() != GroupCaseStudy.GROUP_RECOMMENDER_SYSTEM;
+    }
+
+    public boolean isTechniqueParameter() {
+        return !nodes.isEmpty() && nodes.get(0).getParameter() == GroupCaseStudy.GROUP_RECOMMENDER_SYSTEM;
     }
 
     public static List<ParameterChain> obtainDataValidationParameterChains(GroupCaseStudy groupCaseStudy) {
@@ -42,8 +99,8 @@ public class ParameterChain {
 
         List<ParameterChain> dataValidationParameterChains
                 = allParameterChains.stream()
-                .filter(chain -> chain.nodes.isEmpty() || chain.nodes.get(0).getParameter() != GroupCaseStudy.GROUP_RECOMMENDER_SYSTEM
-                ).collect(Collectors.toList());
+                .filter(chain -> chain.isDataValidationParameter())
+                .collect(Collectors.toList());
 
         return dataValidationParameterChains;
     }
@@ -53,8 +110,8 @@ public class ParameterChain {
 
         List<ParameterChain> dataValidationParameterChains
                 = allParameterChains.stream()
-                .filter(chain -> !(chain.nodes.isEmpty() || chain.nodes.get(0).getParameter() != GroupCaseStudy.GROUP_RECOMMENDER_SYSTEM)
-                ).collect(Collectors.toList());
+                .filter(chain -> chain.isTechniqueParameter())
+                .collect(Collectors.toList());
 
         return dataValidationParameterChains;
     }
@@ -121,49 +178,47 @@ public class ParameterChain {
         return new ParameterChain(root, nodes, new Leaf(parameter, parameterValue));
     }
 
-    public static boolean areCompatible(ParameterChain... parameterChains) {
-        return areCompatible(Arrays.asList(parameterChains));
-    }
+    public boolean isCompatible(ParameterChain parameterChain) {
 
-    public static boolean areCompatible(List<ParameterChain> parameterChains) {
-        if (parameterChains.isEmpty()) {
-            return true;
-        }
-
-        ParameterChain firstChain = parameterChains.iterator().next();
-        Root firstRoot = parameterChains.iterator().next().root;
-
-        boolean rootMatch = parameterChains.stream().allMatch(parameterChain -> parameterChain.root.isCompatibleWith(firstRoot));
+        boolean rootMatch = parameterChain.root.isCompatibleWith(this.root);
         if (!rootMatch) {
             return false;
         }
 
-        int firstChainSize = firstChain.nodes.size();
-        boolean nodesSizesMatch = parameterChains.stream().allMatch(parameterChain -> parameterChain.nodes.size() == firstChainSize);
+        int firstChainSize = this.nodes.size();
+        boolean nodesSizesMatch = parameterChain.nodes.size() == firstChainSize;
         if (!nodesSizesMatch) {
             return false;
         }
 
         for (int i = 0; i < firstChainSize; i++) {
             final int thisNodeIndex = i;
-            final Node firstChainNode = firstChain.nodes.get(thisNodeIndex);
+            final Node firstChainNode = this.nodes.get(thisNodeIndex);
 
-            boolean matchesNode = parameterChains.stream()
-                    .allMatch(parameterChain -> parameterChain.nodes.get(thisNodeIndex).isCompatibleWith(firstChainNode));
-            if (!matchesNode) {
+            boolean nodeIsCompatible = parameterChain.nodes.get(thisNodeIndex).isCompatibleWith(firstChainNode);
+            if (!nodeIsCompatible) {
                 return false;
             }
         }
 
-        Leaf firstLeaf = parameterChains.iterator().next().leaf;
-
-        boolean leafMatch = parameterChains.stream().allMatch(
-                parameterChain -> parameterChain.leaf.isCompatibleWith(firstLeaf)
-        );
+        boolean leafMatch = parameterChain.leaf.isCompatibleWith(this.leaf);
         if (!leafMatch) {
             return false;
         }
         return true;
+    }
+
+    public static boolean areCompatible(ParameterChain... parameterChains) {
+        return areCompatible(Arrays.asList(parameterChains));
+    }
+
+    public static boolean areCompatible(List<ParameterChain> parameterChains) {
+
+        return parameterChains.stream()
+                .allMatch(parameterChain
+                        -> parameterChains.stream()
+                        .allMatch(parameterChain2 -> parameterChain.isCompatible(parameterChain2)));
+
     }
 
     public static boolean areSame(ParameterChain... parameterChains) {
@@ -193,37 +248,6 @@ public class ParameterChain {
         parameterChains.add(new ParameterChain(parameterOwner));
 
         return parameterChains;
-    }
-
-    public boolean isCompatibleWith(ParameterOwner parameterOwner) {
-        List<ParameterChain> allParameterChains = obtainAllParameterChains(parameterOwner);
-
-        List<ParameterChain> compatibleParameterChains = new ArrayList<>();
-
-        int i = 0;
-        for (ParameterChain parameterChain : allParameterChains) {
-
-            if (i == 8) {
-                System.out.println("stap!");
-            }
-            System.out.println(i + "\t" + parameterChain.toString());
-            if (areCompatible(this, parameterChain)) {
-                compatibleParameterChains.add(parameterChain);
-            }
-
-            i++;
-        }
-
-        List<ParameterChain> compatibleParameterChains_2 = allParameterChains
-                .stream().filter(parameterChain -> areCompatible(this, parameterChain)).collect(Collectors.toList());
-
-        if (compatibleParameterChains.isEmpty()) {
-            return false;
-        } else if (compatibleParameterChains.size() == 1) {
-            return true;
-        } else {
-            return false;
-        }
     }
 
     /**
@@ -283,4 +307,42 @@ public class ParameterChain {
         return root;
     }
 
+    public boolean isAlias() {
+        return leaf.getParameter().equals(ParameterOwner.ALIAS);
+    }
+
+    public boolean isApplicableTo(ParameterOwner parameterOwner) {
+
+        if (!root.getParameterOwner().getClass().equals(parameterOwner.getClass())) {
+            return false;
+        }
+
+        ParameterOwner parameterOwnerToGetValue = parameterOwner;
+
+        for (Node node : nodes) {
+            if (!parameterOwnerToGetValue.haveParameter(node.getParameter())) {
+                return false;
+            }
+            parameterOwnerToGetValue = (ParameterOwner) parameterOwnerToGetValue.getParameterValue(
+                    node.getParameter());
+        }
+
+        return parameterOwnerToGetValue.haveParameter(leaf.getParameter());
+    }
+
+    private Object getValueOn(ParameterOwner parameterOwner) {
+        if (!isApplicableTo(parameterOwner)) {
+            throw new IllegalArgumentException("ParameterOwner is not compatible: " + root.getParameterOwner().getClass() + " != " + parameterOwner.getClass());
+        }
+
+        ParameterOwner parameterOwnerToGetValue = parameterOwner;
+
+        for (Node node : nodes) {
+            parameterOwnerToGetValue = (ParameterOwner) parameterOwnerToGetValue.getParameterValue(
+                    node.getParameter());
+        }
+
+        return parameterOwnerToGetValue.getParameterValue(leaf.getParameter());
+
+    }
 }

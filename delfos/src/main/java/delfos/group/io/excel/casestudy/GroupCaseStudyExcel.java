@@ -967,7 +967,12 @@ public class GroupCaseStudyExcel {
             System.out.println(groupCaseStudyResult.getGroupCaseStudy().getGroupRecommenderSystem().getNameWithParameters());
         }
 
-        List<ParameterChain> differentChains = ParameterChain.obtainDataValidationDifferentChains(groupCaseStudys);
+        List<ParameterChain> differentChainsWithAliases = ParameterChain.obtainDifferentChains(groupCaseStudys);
+
+        List<ParameterChain> differentChains = differentChainsWithAliases.stream().filter(chain -> !chain.isAlias()).collect(Collectors.toList());
+
+        List<ParameterChain> dataValidationDifferentChains = differentChains.stream().filter(chain -> chain.isDataValidationParameter()).collect(Collectors.toList());
+        List<ParameterChain> techniqueDifferentChains = differentChains.stream().filter(chain -> chain.isTechniqueParameter()).collect(Collectors.toList());
 
         if (file.isDirectory()) {
             throw new IllegalStateException("GroupCaseStudy save to spreadsheet: Not a file (" + file.toString() + ")");
