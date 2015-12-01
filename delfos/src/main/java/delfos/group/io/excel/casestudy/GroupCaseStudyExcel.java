@@ -1,7 +1,6 @@
 package delfos.group.io.excel.casestudy;
 
 import delfos.ERROR_CODES;
-import delfos.common.FileUtilities;
 import delfos.common.Global;
 import delfos.common.decimalnumbers.NumberRounder;
 import delfos.common.parameters.Parameter;
@@ -300,27 +299,11 @@ public class GroupCaseStudyExcel {
 
             WritableWorkbook workbook = null;
 
-            {
-                boolean created = false;
-                int i = 0;
-                while (!created) {
-                    String suffix = "_" + i;
-                    File actualFile = FileUtilities.addSufix(file, suffix);
-                    if (!actualFile.exists()) {
-                        try {
-                            workbook = Workbook.createWorkbook(actualFile, wbSettings);
-                            created = true;
-                        } catch (IOException ex) {
-                            created = false;
-                        }
-                    }
-                    i++;
-                }
+            if (file.exists()) {
+                file.delete();
             }
-            if (workbook == null) {
-                ERROR_CODES.CANNOT_WRITE_FILE.exit(new FileNotFoundException("Cannot access file " + file.getAbsolutePath() + "."));
-                return;
-            }
+
+            workbook = Workbook.createWorkbook(file, wbSettings);
 
             WritableSheet caseDefinitionSheet = workbook.createSheet("CaseDefinition", 0);
             createLabel(caseDefinitionSheet);
@@ -340,7 +323,9 @@ public class GroupCaseStudyExcel {
             workbook.write();
             workbook.close();
 
-        } catch (WriteException | IOException ex) {
+        } catch (WriteException ex) {
+            ERROR_CODES.CANNOT_WRITE_FILE.exit(new FileNotFoundException("Cannot access file " + file.getAbsolutePath() + "."));
+        } catch (IOException ex) {
             ERROR_CODES.CANNOT_WRITE_FILE.exit(ex);
         }
     }
@@ -832,24 +817,9 @@ public class GroupCaseStudyExcel {
 
         WritableWorkbook workbook = null;
 
-        {
-            boolean created = false;
-            int i = 0;
-            while (!created) {
-                String suffix = "_" + i;
-                File actualFile = FileUtilities.addSufix(file, suffix);
-                if (!actualFile.exists()) {
-                    try {
-                        workbook = Workbook.createWorkbook(actualFile, wbSettings);
-                        created = true;
-                    } catch (IOException ex) {
-                        created = false;
-                    }
-                }
-                i++;
-            }
-        }
-        if (workbook == null) {
+        try {
+            workbook = Workbook.createWorkbook(file, wbSettings);
+        } catch (IOException ex) {
             ERROR_CODES.CANNOT_WRITE_FILE.exit(new FileNotFoundException("Cannot access file " + file.getAbsolutePath() + "."));
             return;
         }
@@ -958,16 +928,6 @@ public class GroupCaseStudyExcel {
         dataValidationAliases.addAll(groupCaseStudyResults);
         techniqueAliases.addAll(groupCaseStudyResults);
 
-        System.out.println("\n\nDataValidation aliases");
-        for (GroupCaseStudyResult groupCaseStudyResult : dataValidationAliases) {
-            System.out.println(getDataValidationAlias(groupCaseStudyResult.getGroupCaseStudy()));
-        }
-
-        System.out.println("\n\nTechnique aliases");
-        for (GroupCaseStudyResult groupCaseStudyResult : techniqueAliases) {
-            System.out.println(groupCaseStudyResult.getGroupCaseStudy().getGroupRecommenderSystem().getNameWithParameters());
-        }
-
         List<ParameterChain> differentChainsWithAliases = ParameterChain.obtainDifferentChains(groupCaseStudys);
         ParameterChain.printListOfChains(differentChainsWithAliases);
 
@@ -984,8 +944,6 @@ public class GroupCaseStudyExcel {
             matrix.addValue(groupCaseStudyResult.getGroupCaseStudy(), evaluationMeasureValue);
         });
 
-        System.out.println(matrix.print());
-
         if (file.isDirectory()) {
             throw new IllegalStateException("GroupCaseStudy save to spreadsheet: Not a file (" + file.toString() + ")");
         }
@@ -995,24 +953,13 @@ public class GroupCaseStudyExcel {
 
         WritableWorkbook workbook = null;
 
-        {
-            boolean created = false;
-            int i = 0;
-            while (!created) {
-                String suffix = "_" + i;
-                File actualFile = FileUtilities.addSufix(file, suffix);
-                if (!actualFile.exists()) {
-                    try {
-                        workbook = Workbook.createWorkbook(actualFile, wbSettings);
-                        created = true;
-                    } catch (IOException ex) {
-                        created = false;
-                    }
-                }
-                i++;
-            }
+        if (file.exists()) {
+            file.delete();
         }
-        if (workbook == null) {
+
+        try {
+            workbook = Workbook.createWorkbook(file, wbSettings);
+        } catch (IOException ex) {
             ERROR_CODES.CANNOT_WRITE_FILE.exit(new FileNotFoundException("Cannot access file " + file.getAbsolutePath() + "."));
             return;
         }
@@ -1057,17 +1004,6 @@ public class GroupCaseStudyExcel {
         workbook.write();
         workbook.close();
 
-    }
-
-    private static String getDataValidationAlias(GroupCaseStudy groupCaseStudy) {
-        StringBuilder str = new StringBuilder();
-
-        str.append(groupCaseStudy.getDatasetLoader().getNameWithParameters()).append("_");
-        str.append(groupCaseStudy.getGroupFormationTechnique().getNameWithParameters()).append("_");
-        str.append(groupCaseStudy.getGroupValidationTechnique().getNameWithParameters()).append("_");
-        str.append(groupCaseStudy.getGroupPredictionProtocol().getNameWithParameters());
-
-        return str.toString();
     }
 
     private GroupCaseStudyExcel() {

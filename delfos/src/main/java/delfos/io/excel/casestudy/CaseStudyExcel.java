@@ -1,5 +1,19 @@
 package delfos.io.excel.casestudy;
 
+import delfos.ERROR_CODES;
+import delfos.common.decimalnumbers.NumberRounder;
+import delfos.common.parameters.Parameter;
+import delfos.common.parameters.ParameterOwner;
+import delfos.dataset.basic.loader.types.DatasetLoader;
+import delfos.dataset.basic.rating.Rating;
+import delfos.dataset.basic.rating.RelevanceCriteria;
+import delfos.experiment.casestudy.CaseStudy;
+import delfos.experiment.validation.predictionprotocol.PredictionProtocol;
+import delfos.experiment.validation.validationtechnique.ValidationTechnique;
+import delfos.results.MeasureResult;
+import delfos.results.evaluationmeasures.EvaluationMeasure;
+import delfos.results.evaluationmeasures.PRSpace;
+import delfos.rs.RecommenderSystem;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -26,27 +40,12 @@ import jxl.write.WritableSheet;
 import jxl.write.WritableWorkbook;
 import jxl.write.WriteException;
 import jxl.write.biff.RowsExceededException;
-import delfos.ERROR_CODES;
-import delfos.common.FileUtilities;
-import delfos.common.decimalnumbers.NumberRounder;
-import delfos.common.parameters.Parameter;
-import delfos.common.parameters.ParameterOwner;
-import delfos.dataset.basic.rating.Rating;
-import delfos.dataset.basic.rating.RelevanceCriteria;
-import delfos.dataset.basic.loader.types.DatasetLoader;
-import delfos.experiment.casestudy.CaseStudy;
-import delfos.experiment.validation.predictionprotocol.PredictionProtocol;
-import delfos.experiment.validation.validationtechnique.ValidationTechnique;
-import delfos.results.MeasureResult;
-import delfos.results.evaluationmeasures.EvaluationMeasure;
-import delfos.results.evaluationmeasures.PRSpace;
-import delfos.rs.RecommenderSystem;
 
 /**
  * Clase encargada de hacer la entrada/salida de los resultados de la ejeución
  * de un caso de uso concreto.
  *
-* @author Jorge Castro Gallardo
+ * @author Jorge Castro Gallardo
  *
  * @version 1.0 Unknown date
  * @version 1.1 (3-Mayo-2013)
@@ -183,24 +182,9 @@ public class CaseStudyExcel {
 
             WritableWorkbook workbook = null;
 
-            {
-                boolean created = false;
-                int i = 0;
-                while (!created) {
-                    String suffix = "_" + i;
-                    File actualFile = FileUtilities.addSufix(file, suffix);
-                    if (!actualFile.exists()) {
-                        try {
-                            workbook = Workbook.createWorkbook(actualFile, wbSettings);
-                            created = true;
-                        } catch (IOException ex) {
-                            created = false;
-                        }
-                    }
-                    i++;
-                }
-            }
-            if (workbook == null) {
+            try {
+                workbook = Workbook.createWorkbook(file, wbSettings);
+            } catch (IOException ex) {
                 ERROR_CODES.CANNOT_WRITE_FILE.exit(new FileNotFoundException("Cannot access file " + file.getAbsolutePath() + "."));
                 return;
             }
