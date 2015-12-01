@@ -5,7 +5,7 @@ import delfos.dataset.basic.user.User;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -22,6 +22,30 @@ import java.util.stream.Collectors;
  * @author Jorge Castro Gallardo
  */
 public class GroupOfUsers implements Comparable<GroupOfUsers>, Iterable<Integer> {
+
+    public static Comparator<GroupOfUsers> BY_MEMBERS_ID = (GroupOfUsers o1, GroupOfUsers o2) -> {
+
+        if (o1.size() == o2.size()) {
+            List<Integer> thisMembers = o1.getIdMembers().stream().sorted().collect(Collectors.toList());
+            List<Integer> compareMembers = o2.getIdMembers().stream().sorted().collect(Collectors.toList());
+
+            for (int i = 0; i < thisMembers.size(); i++) {
+                int compareTo = thisMembers.get(i).compareTo(compareMembers.get(i));
+                if (compareTo != 0) {
+                    //Son distintas.
+                    return compareTo;
+                }
+            }
+            //Son iguales
+            return 0;
+        } else if (o1.size() > o2.size()) {
+            return 1;
+        } else if (o1.size() < o2.size()) {
+            return -1;
+        } else {
+            throw new IllegalStateException("This situation is impossible.");
+        }
+    };
 
     /**
      * Conjunto de usuarios que pertenecen al grupo
@@ -102,30 +126,7 @@ public class GroupOfUsers implements Comparable<GroupOfUsers>, Iterable<Integer>
 
     @Override
     public int compareTo(GroupOfUsers o) {
-        if (this.size() > o.size()) {
-            return 1;
-        }
-
-        if (this.size() < o.size()) {
-            return -1;
-        }
-
-        List<Integer> thisMembers = new ArrayList<>(getIdMembers());
-        List<Integer> compareMembers = new ArrayList<>(o.getIdMembers());
-        Collections.sort(thisMembers);
-        Collections.sort(compareMembers);
-
-        for (int i = 0; i < thisMembers.size(); i++) {
-            int compareTo = thisMembers.get(i).compareTo(compareMembers.get(i));
-
-            if (compareTo != 0) {
-                //Son distintas.
-                return compareTo;
-            }
-        }
-
-        //Son iguales
-        return 0;
+        return GroupOfUsers.BY_MEMBERS_ID.compare(this, o);
     }
 
     @Override
