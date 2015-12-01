@@ -4,20 +4,21 @@ import delfos.common.exceptions.dataset.CannotLoadContentDataset;
 import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
 import delfos.common.exceptions.dataset.CannotLoadUsersDataset;
 import delfos.common.parameters.Parameter;
+import delfos.common.parameters.ParameterOwner;
 import delfos.common.parameters.restriction.ObjectParameter;
 import delfos.dataset.basic.item.ContentDataset;
+import delfos.dataset.basic.loader.types.ContentDatasetLoader;
+import delfos.dataset.basic.loader.types.DatasetLoader;
+import delfos.dataset.basic.loader.types.DatasetLoaderAbstract;
+import delfos.dataset.basic.loader.types.UsersDatasetLoader;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RatingsDataset;
 import delfos.dataset.basic.user.UsersDataset;
-import delfos.dataset.basic.loader.types.DatasetLoaderAbstract;
-import delfos.dataset.basic.loader.types.ContentDatasetLoader;
-import delfos.dataset.basic.loader.types.DatasetLoader;
-import delfos.dataset.basic.loader.types.UsersDatasetLoader;
 
 /**
  *
  * @version 22-abr-2014
-* @author Jorge Castro Gallardo
+ * @author Jorge Castro Gallardo
  */
 public class ConfiguredDatasetLoader extends DatasetLoaderAbstract<Rating> implements ContentDatasetLoader, UsersDatasetLoader {
 
@@ -83,4 +84,15 @@ public class ConfiguredDatasetLoader extends DatasetLoaderAbstract<Rating> imple
     public String toString() {
         return ConfiguredDatasetLoader.class.getSimpleName();
     }
+
+    @Override
+    public boolean isSameClass(ParameterOwner parameterOwner) {
+        if (parameterOwner instanceof ConfiguredDatasetLoader) {
+            ConfiguredDatasetLoader configuredDatasetLoader = (ConfiguredDatasetLoader) parameterOwner;
+            return this.getConfiguredDatasetName().equals(configuredDatasetLoader.getConfiguredDatasetName());
+        } else {
+            return super.isSameClass(parameterOwner); //To change body of generated methods, choose Tools | Templates.
+        }
+    }
+
 }

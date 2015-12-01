@@ -1,14 +1,13 @@
 package delfos.common.parameters;
 
 import delfos.common.Global;
+import delfos.common.StringsOrderings;
 import delfos.common.parameters.restriction.CannotParseParameterValue;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Set;
 import java.util.TreeMap;
-import java.util.TreeSet;
 
 /**
  * Clase que define el comportamiento de cualquier objeto al que se le puedan
@@ -296,61 +295,10 @@ public abstract class ParameterOwnerAdapter implements ParameterOwner {
     public int compareTo(Object o) {
         if (o instanceof ParameterOwner) {
             ParameterOwner parameterOwner = (ParameterOwner) o;
-            return compare(this, parameterOwner);
+            return PARAMETERS_DETAILED.compare(this, parameterOwner);
         } else {
-            return this.toString().compareTo(o.toString());
+            return StringsOrderings.getNaturalComparatorIgnoreCaseAscii().compare(this.toString(), o.toString());
         }
-    }
-
-    /**
-     * Comparador por defecto que explora los valores de los parametros
-     * recursivamente.
-     *
-     * @param o1
-     * @param o2
-     * @return
-     */
-    public static int compare(ParameterOwner o1, ParameterOwner o2) {
-        if (!o1.getClass().equals(o2.getClass())) {
-            return o1.getNameWithParameters().compareTo(o2.getNameWithParameters());
-        }
-
-        Set<Parameter> parameters = new TreeSet<>(o1.getParameters());
-
-        parameters.remove(ParameterOwner.ALIAS);
-
-        for (Parameter parameter : parameters) {
-            Object o1Value = o1.getParameterValue(parameter);
-            Object o2Value = o2.getParameterValue(parameter);
-
-            if (o1Value instanceof ParameterOwner || o2Value instanceof ParameterOwner) {
-                ParameterOwner o1ValueParameterOwner = (ParameterOwner) o1Value;
-                ParameterOwner o2ValueParameterOwner = (ParameterOwner) o2Value;
-
-                int compare = compare(o1ValueParameterOwner, o2ValueParameterOwner);
-
-                if (compare != 0) {
-                    return compare;
-                }
-            } else if (o1Value instanceof Number) {
-
-                Number o1ValueNumber = (Number) o1Value;
-                Number o2ValueNumber = (Number) o2Value;
-
-                int compare = Double.compare(o1ValueNumber.doubleValue(), o2ValueNumber.doubleValue());
-
-                if (compare != 0) {
-                    return compare;
-                }
-            } else {
-                int compare = String.CASE_INSENSITIVE_ORDER.compare(o1Value.toString(), o2Value.toString());
-                if (compare != 0) {
-                    return compare;
-                }
-            }
-        }
-
-        return 0;
     }
 
     @Override

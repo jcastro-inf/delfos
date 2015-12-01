@@ -943,7 +943,7 @@ public class GroupCaseStudyExcel {
         }
         if (dataValidationDifferentChains.isEmpty()) {
             ParameterChain datasetLoaderAliasChain = new ParameterChain(groupCaseStudys.get(0))
-                    .createWithNode(GroupCaseStudy.GROUP_RECOMMENDER_SYSTEM, null)
+                    .createWithNode(GroupCaseStudy.DATASET_LOADER, null)
                     .createWithLeaf(ParameterOwner.ALIAS, null);
 
             ParameterChain groupFormationTechniqueAliasChain = new ParameterChain(groupCaseStudys.get(0))

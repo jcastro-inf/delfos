@@ -24,7 +24,7 @@ public class CaseStudyResultMatrix {
     private final List<ParameterChain> rowsChains;
     private final List<ParameterChain> columnsChains;
 
-    private final Map<String, Map<String, Number>> tabulatedValues = new TreeMap<>();
+    private final Map<String, Map<String, Number>> tabulatedValues = new TreeMap<>(StringsOrderings.getNaturalComparator());
 
     public CaseStudyResultMatrix(List<ParameterChain> rowsChains, List<ParameterChain> columnsChains, String evaluationMeasure) {
         validateParameters(rowsChains, columnsChains, evaluationMeasure);
@@ -39,7 +39,7 @@ public class CaseStudyResultMatrix {
         String column = getColumnIdentifier(parameterOwner);
 
         if (!tabulatedValues.containsKey(row)) {
-            tabulatedValues.put(row, new TreeMap<>());
+            tabulatedValues.put(row, new TreeMap<>(StringsOrderings.getNaturalComparator()));
         }
 
         if (tabulatedValues.get(row).containsKey(column)) {
@@ -54,7 +54,8 @@ public class CaseStudyResultMatrix {
 
         for (ParameterChain chain : rowsChains) {
             Object value = chain.getValueOn(parameterOwner);
-            str.append(value.toString()).append("_");
+            String parameterName = chain.getLeaf().getParameter().getName();
+            str.append(parameterName).append("=").append(value.toString()).append("_");
         }
         str.delete(str.length() - 1, str.length());
 
@@ -66,7 +67,8 @@ public class CaseStudyResultMatrix {
 
         for (ParameterChain chain : columnsChains) {
             Object value = chain.getValueOn(parameterOwner);
-            str.append(value.toString()).append("_");
+            String parameterName = chain.getLeaf().getParameter().getName();
+            str.append(parameterName).append("=").append(value.toString()).append("_");
         }
         str.delete(str.length() - 1, str.length());
 

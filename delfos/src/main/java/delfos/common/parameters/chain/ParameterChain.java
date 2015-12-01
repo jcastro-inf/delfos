@@ -9,6 +9,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
+import java.util.TreeSet;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 /**
@@ -68,11 +70,15 @@ public class ParameterChain {
                 })
                 .collect(Collectors.toList());
 
+        //Delete chains with only one value across case studies
         List<ParameterChain> chainsWithMoreThanOneDifferentValue = chainsApplicableToMoreThanOne.stream()
                 .filter(parameterChain -> {
+
+                    Supplier<TreeSet<Object>> supplier = () -> new TreeSet<>(ParameterOwner.SAME_CLASS_COMPARATOR_OBJECT);
+
                     Set<Object> differentValues = groupCaseStudys.stream()
                     .filter(groupCaseStudy -> parameterChain.isApplicableTo(groupCaseStudy))
-                    .map(groupCaseStudy -> parameterChain.getValueOn(groupCaseStudy)).collect(Collectors.toSet());
+                    .map(groupCaseStudy -> parameterChain.getValueOn(groupCaseStudy)).collect(Collectors.toCollection(supplier));
 
                     if (differentValues.isEmpty()) {
                         throw new IllegalStateException("There must be at least one different value.");
