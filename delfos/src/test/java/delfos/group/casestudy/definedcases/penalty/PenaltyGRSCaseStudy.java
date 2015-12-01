@@ -17,7 +17,6 @@ import delfos.dataset.basic.rating.RelevanceCriteria;
 import delfos.dataset.generated.random.RandomDatasetLoader;
 import delfos.experiment.casestudy.cluster.TuringPreparator;
 import delfos.group.casestudy.defaultcase.GroupCaseStudy;
-import delfos.group.casestudy.defaultcase.GroupCaseStudy;
 import delfos.group.experiment.validation.groupformation.FixedGroupSize_OnlyNGroups;
 import delfos.group.experiment.validation.groupformation.GroupFormationTechnique;
 import delfos.group.experiment.validation.predictionvalidation.GroupPredictionProtocol;
@@ -63,7 +62,7 @@ public class PenaltyGRSCaseStudy {
     }
 
     @Test
-    public void generateCaseXML() {
+    public void createCaseStudyExperiments() {
 
         File directory = cleanCaseStudyDirectories();
 
@@ -76,8 +75,6 @@ public class PenaltyGRSCaseStudy {
                 groupCaseStudies,
                 new ConfiguredDatasetLoader("ml-100k")
         );
-
-        //TuringPreparator.executeAllExperimentsInDirectory(directory);
     }
 
     public List<GroupCaseStudy> createPenaltyGroupCaseStudies() {
