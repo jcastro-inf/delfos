@@ -39,7 +39,7 @@ public class HesitantGRS_1_CaseStudy_InitialGroupFormation extends DelfosTest {
 
     File experimentDirectory = new File(Constants.getTempDirectory().getAbsolutePath() + File.separator
             + "HesitantGRS.experiment1" + File.separator
-            + "1-HesitantGRS-90groups" + File.separator);
+            + HesitantGRS_1_CaseStudy_InitialGroupFormation.class.getSimpleName() + File.separator);
 
     private Collection<GroupFormationTechnique> getGroupFormationTechnique() {
         return Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 15, 20, 25, 50, 100, 200, 500).stream()
