@@ -10,6 +10,7 @@ import delfos.group.io.xml.casestudy.GroupCaseStudyXML;
 import delfos.main.managers.CaseUseMode;
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
@@ -73,7 +74,7 @@ public class XMLJoin extends CaseUseMode {
             }
 
             consoleParameters.printUnusedParameters(System.err);
-            manageCaseUse(resultsPaths, outputFile);
+            mergeResultsIntoOutput(resultsPaths, outputFile);
         } catch (UndefinedParameterException ex) {
             ERROR_CODES.COMMAND_LINE_PARAMETER_IS_NOT_DEFINED.exit(ex);
 
@@ -81,7 +82,7 @@ public class XMLJoin extends CaseUseMode {
         }
     }
 
-    public static void manageCaseUse(List<String> resultsPaths, File outputFile) {
+    public static void mergeResultsIntoOutput(List<String> resultsPaths, File outputFile) {
 
         AggregateResultsXML aggregateResultsXML = new AggregateResultsXML();
 
@@ -187,5 +188,10 @@ public class XMLJoin extends CaseUseMode {
 
         List<String> evaluationMeasuresOrder = commonEvaluationMeasures.stream().sorted().collect(Collectors.toList());
         return evaluationMeasuresOrder;
+    }
+
+    public static void joinDirectory(File directory) {
+        File outputFile = new File(directory.getPath() + File.separator + "joined-results");
+        XMLJoin.mergeResultsIntoOutput(Arrays.asList(directory.getPath()), outputFile);
     }
 }

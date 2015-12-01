@@ -43,7 +43,7 @@ public class XMLJoinTest {
         List<GroupCaseStudy> groupCaseStudys = new ArrayList<>();
 
         List<GroupFormationTechnique> groupFormationTechniques
-                = Arrays.asList(1, 10, 90).stream()
+                = Arrays.asList(1, 2, 3).stream()
                 .map((groupSize -> new FixedGroupSize_OnlyNGroups(10, groupSize)))
                 .collect(Collectors.toList());
 
@@ -98,7 +98,7 @@ public class XMLJoinTest {
 
         //Execution of the joiner
         File outputFile = new File(experimentDirectory.getPath() + File.separator + "xml-join-test.xls");
-        XMLJoin.manageCaseUse(Arrays.asList(experimentDirectory.getPath()), outputFile);
+        XMLJoin.mergeResultsIntoOutput(Arrays.asList(experimentDirectory.getPath()), outputFile);
 
         //Check the results correctness
         Assert.assertTrue("The output file does not exists", outputFile.exists());
