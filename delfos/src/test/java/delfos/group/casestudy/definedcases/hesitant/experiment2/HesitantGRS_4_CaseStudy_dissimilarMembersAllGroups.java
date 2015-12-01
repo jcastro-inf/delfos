@@ -9,11 +9,10 @@ import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.RelevanceCriteria;
 import delfos.experiment.casestudy.cluster.TuringPreparator;
 import delfos.group.casestudy.defaultcase.GroupCaseStudy;
-import delfos.group.casestudy.defaultcase.GroupCaseStudy;
 import delfos.group.experiment.validation.groupformation.DissimilarMembers;
 import delfos.group.experiment.validation.groupformation.GroupFormationTechnique;
 import delfos.group.experiment.validation.predictionvalidation.NoPredictionProtocol;
-import delfos.group.experiment.validation.validationtechniques.HoldOutGroupRatedItems;
+import delfos.group.experiment.validation.validationtechniques.CrossFoldValidation_groupRatedItems;
 import delfos.group.factories.GroupEvaluationMeasuresFactory;
 import delfos.group.grs.GroupRecommenderSystem;
 import delfos.group.grs.hesitant.HesitantKnnGroupUser;
@@ -100,7 +99,7 @@ public class HesitantGRS_4_CaseStudy_dissimilarMembersAllGroups extends DelfosTe
                         null,
                         groupRecommenderSystem,
                         groupFormationTechnique,
-                        new HoldOutGroupRatedItems(),
+                        new CrossFoldValidation_groupRatedItems(),
                         new NoPredictionProtocol(),
                         GroupEvaluationMeasuresFactory.getInstance().getAllClasses(),
                         new RelevanceCriteria(4),
