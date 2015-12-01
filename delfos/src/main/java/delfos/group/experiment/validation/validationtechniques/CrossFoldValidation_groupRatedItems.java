@@ -8,20 +8,24 @@ import delfos.common.exceptions.dataset.items.ItemNotFound;
 import delfos.common.exceptions.dataset.users.UserNotFound;
 import delfos.common.parameters.Parameter;
 import delfos.common.parameters.restriction.IntegerParameter;
-import delfos.dataset.basic.loader.types.ContentDatasetLoader;
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
+import delfos.dataset.basic.user.User;
 import delfos.dataset.storage.validationdatasets.PairOfTrainTestRatingsDataset;
 import delfos.dataset.storage.validationdatasets.ValidationDatasets;
 import delfos.dataset.util.DatasetPrinterDeprecated;
+import delfos.dataset.util.DatasetUtilities;
 import delfos.group.groupsofusers.GroupOfUsers;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
+import java.util.stream.Collectors;
 
 /**
  * Validación cruzada para sistemas de recomendación a grupos. Esta validación
@@ -38,10 +42,8 @@ import java.util.TreeSet;
  * @see HoldOutGroupRatedItems
  *
  * @author Jorge Castro Gallardo
- *
- * @version 1.0 19-Mayo-2013
  */
-public class CrossFoldValidation_Items extends GroupValidationTechnique {
+public class CrossFoldValidation_groupRatedItems extends GroupValidationTechnique {
 
     /**
      * Número de particiones.
@@ -51,12 +53,12 @@ public class CrossFoldValidation_Items extends GroupValidationTechnique {
             new IntegerParameter(1, Integer.MAX_VALUE, 5),
             "Número de particiones.");
 
-    public CrossFoldValidation_Items() {
+    public CrossFoldValidation_groupRatedItems() {
         super();
         addParameter(NUMBER_OF_PARTITIONS);
     }
 
-    public CrossFoldValidation_Items(long seed) {
+    public CrossFoldValidation_groupRatedItems(long seed) {
         this();
         setSeedValue(seed);
     }
@@ -82,72 +84,64 @@ public class CrossFoldValidation_Items extends GroupValidationTechnique {
      * distintos grupos.
      */
     @Override
-    public PairOfTrainTestRatingsDataset[] shuffle(DatasetLoader<? extends Rating> datasetLoader, Iterable<GroupOfUsers> groupsOfUsers) throws CannotLoadRatingsDataset, CannotLoadContentDataset {
-        if (datasetLoader == null) {
-            throw new IllegalArgumentException("DatasetLoader<? extends Rating> is null.");
-        }
+    public PairOfTrainTestRatingsDataset[] shuffle(DatasetLoader<? extends Rating> datasetLoader, Iterable<GroupOfUsers> groupsOfUsersIterable) throws CannotLoadRatingsDataset, CannotLoadContentDataset {
 
-        checkGroupsSharingUsers(groupsOfUsers);
+        checkGroupsAreNotSharingUsers(groupsOfUsersIterable);
+        checkDatasetLoaderNotNull(datasetLoader);
+        checkGroupsAreNotSharingUsers(groupsOfUsersIterable);
+
+        List<GroupOfUsers> groupsOfUsers = new ArrayList<>();
+        for (Iterator<GroupOfUsers> iterator = groupsOfUsersIterable.iterator(); iterator.hasNext();) {
+            GroupOfUsers groupOfUsers = iterator.next();
+            groupsOfUsers.add(groupOfUsers);
+        }
+        Collections.sort(groupsOfUsers, GroupOfUsers.BY_MEMBERS_ID);
 
         Random random = new Random(getSeedValue());
 
         PairOfTrainTestRatingsDataset[] ret = new PairOfTrainTestRatingsDataset[getNumberOfSplits()];
 
-        Set<Integer> allItems;
-        if (datasetLoader instanceof ContentDatasetLoader) {
-            ContentDatasetLoader contentDatasetLoader = (ContentDatasetLoader) datasetLoader;
-            allItems = new TreeSet<>(contentDatasetLoader.getContentDataset().allID());
-        } else {
-            allItems = new TreeSet<>(datasetLoader.getRatingsDataset().allRatedItems());
+        Set<Integer> allItems = new TreeSet<>(datasetLoader.getContentDataset().allID());
+
+        Map<GroupOfUsers, List<Set<Integer>>> partitionsByGroup = new TreeMap<>();
+
+        for (GroupOfUsers groupOfUsers : groupsOfUsers) {
+            partitionsByGroup.put(groupOfUsers, new ArrayList<>(getNumberOfSplits()));
+
+            for (int i = 0; i < getNumberOfSplits(); i++) {
+                partitionsByGroup.get(groupOfUsers).add(new TreeSet<>());
+
+            }
+        }
+
+        //Hago las particiones para cada grupo.
+        for (GroupOfUsers groupOfUsers : groupsOfUsers) {
+            List<Integer> groupRatedItems = DatasetUtilities.getMembersRatings_byItem(groupOfUsers, datasetLoader).keySet().stream().collect(Collectors.toList());
+
+            int partition = 0;
+            while (!groupRatedItems.isEmpty()) {
+                Integer item = groupRatedItems.remove(random.nextInt(groupRatedItems.size()));
+                partitionsByGroup.get(groupOfUsers).get(partition).add(item);
+                partition = (partition + 1) % getNumberOfSplits();
+            }
         }
 
         List<Map<Integer, Set<Integer>>> finalTestSets = new ArrayList<>(getNumberOfSplits());
-
-        List<Set<Integer>> itemsTestSets = new ArrayList<>(getNumberOfSplits());
-
         for (int i = 0; i < getNumberOfSplits(); i++) {
             finalTestSets.add(new TreeMap<>());
-            itemsTestSets.add(new TreeSet<>());
         }
 
-        {
-            //Hago la partición de los productos general, sin tener en cuenta valoraciones.
-            Set<Integer> allItems_sub = new TreeSet<>(allItems);
-            int partition = 0;
-            while (!allItems_sub.isEmpty()) {
-
-                int idItem = allItems_sub.toArray(new Integer[0])[random.nextInt(allItems_sub.size())];
-
-                allItems_sub.remove(idItem);
-
-                itemsTestSets.get(partition % getNumberOfSplits()).add(idItem);
-                partition++;
-
-            }
-        }
-
-        {
-            //Construyo los conjuntos de test para cada usuario.
-            for (int idPartition = 0; idPartition < getNumberOfSplits(); idPartition++) {
-                Set<Integer> testItems = itemsTestSets.get(idPartition);
-                if (Global.isVerboseAnnoying()) {
-                    Global.showInfoMessage(testItems + "\n");
-                }
-
-                for (GroupOfUsers group : groupsOfUsers) {
-                    for (int idUser : group) {
-                        Set<Integer> itemsTest_user;
-                        try {
-                            itemsTest_user = new TreeSet<>(datasetLoader.getRatingsDataset().getUserRated(idUser));
-                            itemsTest_user.retainAll(testItems);
-                            finalTestSets.get(idPartition).put(idUser, itemsTest_user);
-                        } catch (UserNotFound ex) {
-                            ERROR_CODES.USER_NOT_FOUND.exit(ex);
-                        }
-                    }
+        for (GroupOfUsers groupOfUsers : groupsOfUsers) {
+            List<Set<Integer>> thisGroupPartitions = partitionsByGroup.get(groupOfUsers);
+            for (User user : groupOfUsers.getMembers()) {
+                for (int partition = 0; partition < getNumberOfSplits(); partition++) {
+                    Set<Integer> testItemsForThisMemberOnThisSplit = new TreeSet<>(datasetLoader.getRatingsDataset().getUserRated(user.getId()));
+                    testItemsForThisMemberOnThisSplit.retainAll(thisGroupPartitions.get(partition));
+                    finalTestSets.get(partition).put(user.getId(), testItemsForThisMemberOnThisSplit);
                 }
             }
         }
+
         for (int idPartition = 0; idPartition < getNumberOfSplits(); idPartition++) {
             try {
 
