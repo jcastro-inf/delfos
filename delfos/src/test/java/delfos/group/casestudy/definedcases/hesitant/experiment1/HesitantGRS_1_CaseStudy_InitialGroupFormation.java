@@ -38,7 +38,7 @@ public class HesitantGRS_1_CaseStudy_InitialGroupFormation extends DelfosTest {
     public static final int NUM_GROUPS = 90;
 
     File experimentDirectory = new File(Constants.getTempDirectory().getAbsolutePath() + File.separator
-            + "experiments" + File.separator
+            + "HesitantGRS.experiment1" + File.separator
             + "1-HesitantGRS-90groups" + File.separator);
 
     private Collection<GroupFormationTechnique> getGroupFormationTechnique() {

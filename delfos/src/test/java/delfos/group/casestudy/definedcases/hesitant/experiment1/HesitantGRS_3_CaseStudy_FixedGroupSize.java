@@ -34,7 +34,7 @@ public class HesitantGRS_3_CaseStudy_FixedGroupSize extends DelfosTest {
     public static final long SEED_VALUE = 123456L;
 
     File experimentDirectory = new File(Constants.getTempDirectory().getAbsolutePath() + File.separator
-            + "experiments" + File.separator
+            + "HesitantGRS.experiment1" + File.separator
             + "3-HesitantGRS-allGroups" + File.separator);
 
     private Collection<GroupFormationTechnique> getGroupFormationTechnique() {
