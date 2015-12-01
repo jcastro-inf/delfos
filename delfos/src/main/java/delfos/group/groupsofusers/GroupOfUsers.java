@@ -31,14 +31,16 @@ public class GroupOfUsers implements Comparable<GroupOfUsers>, Iterable<Integer>
     private final Set<User> members;
 
     public GroupOfUsers() {
-        this.idMembers = new TreeSet<>();
-        this.members = new TreeSet<>();
+        idMembers = new TreeSet<>();
+        members = new TreeSet<>();
     }
 
     @Deprecated
     public GroupOfUsers(Integer... _users) {
-        this();
-        idMembers.addAll(Arrays.asList(_users));
+        idMembers = new TreeSet<>(Arrays.asList(_users));
+        members = idMembers.stream()
+                .map(user -> new User(user))
+                .collect(Collectors.toCollection(TreeSet::new));
 
         if (idMembers.size() > this.idMembers.size()) {
             Global.showWarning("There are repeated users in the origin collection of users");
@@ -46,15 +48,15 @@ public class GroupOfUsers implements Comparable<GroupOfUsers>, Iterable<Integer>
     }
 
     public GroupOfUsers(Set<User> users) {
-        this.members = new TreeSet<>(users);
-        this.idMembers = users.stream().map(user -> user.getId()).collect(Collectors.toCollection(TreeSet::new));
+        members = new TreeSet<>(users);
+        idMembers = users.stream().map(user -> user.getId()).collect(Collectors.toCollection(TreeSet::new));
     }
 
     public GroupOfUsers(Collection<Integer> users) {
-        this.idMembers = new TreeSet<>(users);
-        this.members = users.stream().map(user -> new User(user)).collect(Collectors.toSet());
+        idMembers = new TreeSet<>(users);
+        members = users.stream().map(user -> new User(user)).collect(Collectors.toSet());
 
-        if (users.size() > this.idMembers.size()) {
+        if (users.size() > idMembers.size()) {
             Global.showWarning("There are repeated users in the origin collection of users");
         }
     }
