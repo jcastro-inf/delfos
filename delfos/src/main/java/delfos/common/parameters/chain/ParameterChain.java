@@ -1,6 +1,5 @@
 package delfos.common.parameters.chain;
 
-import delfos.common.Global;
 import delfos.common.parameters.Parameter;
 import delfos.common.parameters.ParameterOwner;
 import delfos.group.casestudy.defaultcase.GroupCaseStudy;
@@ -287,7 +286,12 @@ public class ParameterChain {
             for (Node node : nodes) {
                 str.append(node.getParameter().getName());
                 str.append(" = ");
-                str.append(node.getParameterOwner().getName());
+
+                if (node.getParameterOwner() != null) {
+                    str.append(node.getParameterOwner().getName());
+                } else {
+                    str.append(node.getParameterOwner());
+                }
 
                 str.append(" -> ");
             }
@@ -298,7 +302,12 @@ public class ParameterChain {
 
         str.append(leaf.getParameter().getName());
         str.append(" = ");
-        str.append(leaf.getParameterValue().toString());
+
+        if (leaf.getParameterValue() != null) {
+            str.append(leaf.getParameterValue().toString());
+        } else {
+            str.append(leaf.getParameterValue());
+        }
 
         return str.toString();
     }
@@ -353,18 +362,22 @@ public class ParameterChain {
         return parameterOwnerToGetValue.getParameterValue(leaf.getParameter());
     }
 
-    public static void printListOfChains(Collection<ParameterChain> allChains) {
+    public static String printListOfChains(Collection<ParameterChain> allChains) {
+
+        StringBuilder str = new StringBuilder();
 
         ArrayList<ParameterChain> allParameterChains = new ArrayList<>(allChains);
 
         allParameterChains.sort((ParameterChain o1, ParameterChain o2)
                 -> o1.toString().compareTo(o2.toString()));
 
-        Global.show("=====================================================\n");
-        Global.show("all chains for now\n");
+        str.append("=====================================================\n");
+        str.append("all chains for now\n");
         for (ParameterChain chain : allParameterChains) {
-            Global.show(chain.toString() + "\n");
+            str.append(chain.toString()).append("\n");
         }
-        Global.show("=====================================================\n");
+        str.append("=====================================================\n");
+
+        return str.toString();
     }
 }

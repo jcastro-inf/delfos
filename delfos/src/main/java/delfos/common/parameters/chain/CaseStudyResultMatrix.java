@@ -27,6 +27,8 @@ public class CaseStudyResultMatrix {
     private final Map<String, Map<String, Number>> tabulatedValues = new TreeMap<>();
 
     public CaseStudyResultMatrix(List<ParameterChain> rowsChains, List<ParameterChain> columnsChains, String evaluationMeasure) {
+        validateParameters(rowsChains, columnsChains, evaluationMeasure);
+
         this.rowsChains = Collections.unmodifiableList(rowsChains);
         this.columnsChains = Collections.unmodifiableList(columnsChains);
         this.evaluationMeasure = evaluationMeasure;
@@ -126,5 +128,20 @@ public class CaseStudyResultMatrix {
     public Number getValue(String rowName, String columnName) {
         Number value = tabulatedValues.get(rowName).get(columnName);
         return value;
+    }
+
+    private void validateParameters(List<ParameterChain> rowsChains, List<ParameterChain> columnsChains, String evaluationMeasure) {
+        if (rowsChains == null) {
+            throw new IllegalArgumentException("Rows chains to identify cannot be null");
+        }
+        if (rowsChains.isEmpty()) {
+            throw new IllegalArgumentException("Rows chains to identify cannot be empty");
+        }
+        if (columnsChains == null) {
+            throw new IllegalArgumentException("Columns chains to identify cannot be null");
+        }
+        if (columnsChains.isEmpty()) {
+            throw new IllegalArgumentException("Columns chains to identify cannot be empty");
+        }
     }
 }

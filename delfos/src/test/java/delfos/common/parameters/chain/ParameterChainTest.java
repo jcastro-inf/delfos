@@ -35,7 +35,7 @@ public class ParameterChainTest {
 
         List<ParameterChain> result = ParameterChain.obtainAllParameterChains(groupCaseStudy);
 
-        ParameterChain.printListOfChains(result);
+        System.out.println(ParameterChain.printListOfChains(result));
         System.out.println("===================================");
     }
 
@@ -64,7 +64,7 @@ public class ParameterChainTest {
         List<ParameterChain> result = ParameterChain.obtainTechniqueParameterChains(groupCaseStudy);
 
         for (ParameterChain chain : result) {
-            assertTrue(chain.getNodes().get(0).getParameterOwner() instanceof GroupRecommenderSystem);
+            assertTrue(chain.isTechniqueParameter());
         }
     }
 
