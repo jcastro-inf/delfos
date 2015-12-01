@@ -1,12 +1,5 @@
 package delfos.group.experiment.validation.validationtechniques;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-import java.util.Set;
-import java.util.TreeMap;
-import java.util.TreeSet;
 import delfos.ERROR_CODES;
 import delfos.common.Global;
 import delfos.common.exceptions.dataset.CannotLoadContentDataset;
@@ -15,29 +8,26 @@ import delfos.common.exceptions.dataset.items.ItemNotFound;
 import delfos.common.exceptions.dataset.users.UserNotFound;
 import delfos.common.parameters.Parameter;
 import delfos.common.parameters.restriction.IntegerParameter;
-import delfos.dataset.basic.rating.Rating;
-import delfos.dataset.basic.loader.types.ContentDatasetLoader;
 import delfos.dataset.basic.loader.types.DatasetLoader;
+import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.storage.validationdatasets.PairOfTrainTestRatingsDataset;
 import delfos.dataset.storage.validationdatasets.ValidationDatasets;
 import delfos.dataset.util.DatasetPrinterDeprecated;
 import delfos.group.groupsofusers.GroupOfUsers;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
+import java.util.Set;
+import java.util.TreeMap;
+import java.util.TreeSet;
 
 /**
  * Validación cruzada para sistemas de recomendación a grupos. Esta validación
- * elimina cierto porcentaje de items valorados por el grupo. No tiene en cuenta
- * si los productos han sido valorados por un solo miembro o por varios, por lo
- * que el número de ratings que caen en el conjunto de test no coincide con el
- * porcentaje de test.
+ * elimina cierto porcentaje de items verticalmente. No tiene en cuenta nada más
+ * que el conjunto de productos existentes en el dataset de contenido.
  *
- * Esta validación solo se puede aplicar si los grupos formados no repiten un
- * mismo usuario, es decir, un usuario sólo se encuentra en un grupo. En caso de
- * que se de esta situación, el método {@link CrossFoldValidation_Items#shuffle(java.util.Collection)
- * } informa de esta situación y termina sin realizar la validación.
- *
-* @author Jorge Castro Gallardo
- *
- * @version 1.0 19-Mayo-2013
+ * @author Jorge Castro Gallardo
  */
 public class CrossFoldValidation_Items extends GroupValidationTechnique {
 
@@ -81,41 +71,18 @@ public class CrossFoldValidation_Items extends GroupValidationTechnique {
      */
     @Override
     public PairOfTrainTestRatingsDataset[] shuffle(DatasetLoader<? extends Rating> datasetLoader, Iterable<GroupOfUsers> groupsOfUsers) throws CannotLoadRatingsDataset, CannotLoadContentDataset {
-        if (datasetLoader == null) {
-            throw new IllegalArgumentException("DatasetLoader<? extends Rating> is null.");
-        }
+        checkDatasetLoaderNotNull(datasetLoader);
 
-        if (groupsOfUsers == null) {
-            throw new IllegalArgumentException("The parameter 'groupOfUsers' is null.");
-        }
+        checkGroupsAreNotSharingUsers(groupsOfUsers);
 
         Random random = new Random(getSeedValue());
 
         PairOfTrainTestRatingsDataset[] ret = new PairOfTrainTestRatingsDataset[getNumberOfSplits()];
 
-        {
-            //Compruebo que cada usuario está únicamente en un grupo.
-            Set<Integer> users = new TreeSet<>();
-            int numUsersInGroups = 0;
-
-            for (GroupOfUsers g : groupsOfUsers) {
-                users.addAll(g.getIdMembers());
-                numUsersInGroups += g.size();
-            }
-
-            if (users.size() != numUsersInGroups) {
-                throw new IllegalArgumentException("Groups are sharing users, can't perform this validation.");
-            }
-        }
-        Set<Integer> allItems;
-        if (datasetLoader instanceof ContentDatasetLoader) {
-            ContentDatasetLoader contentDatasetLoader = (ContentDatasetLoader) datasetLoader;
-            allItems = new TreeSet<>(contentDatasetLoader.getContentDataset().allID());
-        } else {
-            allItems = new TreeSet<>(datasetLoader.getRatingsDataset().allRatedItems());
-        }
+        Set<Integer> allItems = new TreeSet<>(datasetLoader.getContentDataset().allID());
 
         List<Map<Integer, Set<Integer>>> finalTestSets = new ArrayList<>(getNumberOfSplits());
+
         List<Set<Integer>> itemsTestSets = new ArrayList<>(getNumberOfSplits());
 
         for (int i = 0; i < getNumberOfSplits(); i++) {
