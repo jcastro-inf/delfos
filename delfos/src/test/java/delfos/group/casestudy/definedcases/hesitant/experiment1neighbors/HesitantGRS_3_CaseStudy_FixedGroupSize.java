@@ -1,4 +1,4 @@
-package delfos.group.casestudy.definedcases.hesitant.experiment1;
+package delfos.group.casestudy.definedcases.hesitant.experiment1neighbors;
 
 import delfos.Constants;
 import delfos.common.FileUtilities;
