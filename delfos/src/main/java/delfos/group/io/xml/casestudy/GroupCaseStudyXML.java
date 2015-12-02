@@ -177,14 +177,16 @@ public class GroupCaseStudyXML {
             Global.showWarning("Cannot get timestamp" + ex.getMessage() + "\n");
         }
 
-        dateBasedName = dateBasedName + "_seed=" + caseStudyGroup.getSeedValue() + "." + CaseStudyXML.RESULT_EXTENSION;
+        dateBasedName = dateBasedName + "_" + GroupCaseStudy.SEED.getName() + "=" + caseStudyGroup.getSeedValue() + "." + CaseStudyXML.RESULT_EXTENSION;
 
         File f = new File(Constants.getTempDirectory().getAbsolutePath() + File.separator + dateBasedName);
         return f.getAbsolutePath();
     }
 
     public static String getCaseStudyFileName(GroupCaseStudy caseStudyGroup) {
-        return caseStudyGroup.getAlias() + "_seed=" + caseStudyGroup.getSeedValue() + "_numExec=" + caseStudyGroup.getNumExecutions();
+        return caseStudyGroup.getAlias()
+                + "_" + SeedHolder.SEED.getName() + "=" + caseStudyGroup.getSeedValue()
+                + "_" + GroupCaseStudy.NUM_EXECUTIONS.getName() + "=" + caseStudyGroup.getNumExecutions();
     }
 
     /**

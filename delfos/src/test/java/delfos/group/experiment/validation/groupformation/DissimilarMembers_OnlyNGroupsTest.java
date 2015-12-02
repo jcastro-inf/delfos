@@ -114,6 +114,7 @@ public class DissimilarMembers_OnlyNGroupsTest extends DelfosTest {
     /**
      * Test of shuffle method, of class DissimilarMembers_OnlyNGroups.
      */
+    @Test
     public void testExactUserPartitionInGroupsAsked() {
         final int groupSizeValue = 23;
         final int numGroupsValue = 41;
@@ -135,9 +136,32 @@ public class DissimilarMembers_OnlyNGroupsTest extends DelfosTest {
     /**
      * Test of shuffle method, of class DissimilarMembers_OnlyNGroups.
      */
+    @Test
     public void testExactUserPartitionInGroupsAsked_changed() {
         final int groupSizeValue = 41;
         final int numGroupsValue = 23;
+
+        DatasetLoader<? extends Rating> datasetLoader = ConfiguredDatasetsFactory.getInstance().getDatasetLoader("ml-100k");
+        datasetLoader.getRatingsDataset();
+
+        DissimilarMembers_OnlyNGroups instance = new DissimilarMembers_OnlyNGroups(numGroupsValue, groupSizeValue);
+
+        Collection<GroupOfUsers> result = instance.shuffle(datasetLoader);
+
+        assertTrue(result.size() == numGroupsValue);
+
+        for (GroupOfUsers groupOfUsers : result) {
+            assertTrue(groupOfUsers.size() == groupSizeValue);
+        }
+    }
+
+    /**
+     * Test of shuffle method, of class SimilarMembers_OnlyNGroups.
+     */
+    @Test
+    public void testAGroupForEachUser() {
+        final int groupSizeValue = 1;
+        final int numGroupsValue = 943;
 
         DatasetLoader<? extends Rating> datasetLoader = ConfiguredDatasetsFactory.getInstance().getDatasetLoader("ml-100k");
         datasetLoader.getRatingsDataset();
