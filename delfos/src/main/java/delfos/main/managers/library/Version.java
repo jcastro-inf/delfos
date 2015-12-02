@@ -1,7 +1,6 @@
 package delfos.main.managers.library;
 
 import delfos.ConsoleParameters;
-import delfos.Constants;
 import delfos.common.Global;
 import delfos.main.Main;
 import delfos.main.managers.CaseUseMode;
@@ -44,12 +43,6 @@ public class Version extends CaseUseMode {
     public void manageCaseUse(ConsoleParameters consoleParameters) {
         String versionfinal = getVersionfinal(Main.class);
         Global.showln("Compile timestamp: " + versionfinal);
-        Global.showln(Constants.LIBRARY_NAME + " environment variables:");
-        Global.showln("\t" + Constants.LIBRARY_NAME + " environment variables:");
-        Global.showln(Constants.LIBRARY_NAME + " environment variables:");
-        Global.showln(Constants.LIBRARY_NAME + " environment variables:");
-        Global.showln(Constants.LIBRARY_NAME + " environment variables:");
-
     }
 
     public static String getVersionfinal(Class classe) {
