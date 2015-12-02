@@ -9,6 +9,7 @@ import delfos.group.io.excel.casestudy.GroupCaseStudyExcel;
 import delfos.group.io.xml.casestudy.GroupCaseStudyXML;
 import delfos.main.managers.CaseUseMode;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.LinkedList;
@@ -90,8 +91,12 @@ public class XMLJoin extends CaseUseMode {
 
         resultsPaths.stream()
                 .map((path) -> new File(path))
-                .forEach((pathFile) -> {
-                    allFiles.addAll(FileUtilities.findInDirectory(pathFile));
+                .forEach((directory) -> {
+                    if (!directory.exists()) {
+                        FileNotFoundException notFound = new FileNotFoundException("Directory '" + directory + "' does not exists [" + directory.getAbsolutePath() + "]");
+                        ERROR_CODES.CANNOT_READ_FILE.exit(notFound);
+                    }
+                    allFiles.addAll(FileUtilities.findInDirectory(directory));
                 });
 
         List<File> relevantFiles = aggregateResultsXML.filterResultsFiles(allFiles);
