@@ -419,9 +419,9 @@ public class GroupCaseStudyXML {
             if (groupEvaluationMeasure == null) {
 
                 if (name.equals("Build_time")) {
-                    Global.showWarning("Build_time should be implemented as a proper evaluation measure");
+                    //Global.showWarning("Build_time should be implemented as a proper evaluation measure");
                 } else if (name.equals("Recommendation_time")) {
-                    Global.showWarning("Recommendation_time should be implemented as a proper evaluation measure");
+                    //Global.showWarning("Recommendation_time should be implemented as a proper evaluation measure");
                 } else {
                     throw new IllegalStateException("The group evaluation measure '" + name + "' does not exists in delfos' factory");
                 }
