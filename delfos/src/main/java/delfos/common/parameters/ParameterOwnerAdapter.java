@@ -31,20 +31,6 @@ public abstract class ParameterOwnerAdapter implements ParameterOwner {
         setParameterValue(ALIAS, getName());
 
         oldAlias = getAlias();
-
-        addParammeterListener(() -> {
-            String newAlias = getAlias();
-
-            if (!oldAlias.equals(newAlias)) {
-                if (!ParameterOwnerAdapter.this.getClass().getSimpleName().equals(newAlias)) {
-                    if (newAlias.length() > CHARACTER_LENGTH_ALIAS_WARNING) {
-                        //Si el alias es seteado por el usuario, avisar si es demasiado largo.
-                        Global.showWarning("Alias '" + newAlias + "' is too long, consider to make it shorter than " + CHARACTER_LENGTH_ALIAS_WARNING + " characters.");
-                    }
-                }
-                oldAlias = newAlias;
-            }
-        });
     }
 
     @Override
