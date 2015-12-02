@@ -1,4 +1,4 @@
-package delfos.group.casestudy.definedcases.hesitant.experiment2;
+package delfos.group.casestudy.definedcases.hesitant.experiment2allGroups;
 
 import delfos.Constants;
 import delfos.common.FileUtilities;
@@ -9,8 +9,8 @@ import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.RelevanceCriteria;
 import delfos.experiment.casestudy.cluster.TuringPreparator;
 import delfos.group.casestudy.defaultcase.GroupCaseStudy;
+import delfos.group.experiment.validation.groupformation.FixedGroupSize;
 import delfos.group.experiment.validation.groupformation.GroupFormationTechnique;
-import delfos.group.experiment.validation.groupformation.SimilarMembers;
 import delfos.group.experiment.validation.predictionvalidation.NoPredictionProtocol;
 import delfos.group.experiment.validation.validationtechniques.CrossFoldValidation_groupRatedItems;
 import delfos.group.factories.GroupEvaluationMeasuresFactory;
@@ -28,21 +28,21 @@ import java.util.List;
 import java.util.stream.Collectors;
 import org.junit.Test;
 
-public class HesitantGRS_2_CaseStudy_similarMembersAllGroups extends DelfosTest {
+public class HesitantGRS_3_allGroups_randomMembers extends DelfosTest {
 
-    public HesitantGRS_2_CaseStudy_similarMembersAllGroups() {
+    public HesitantGRS_3_allGroups_randomMembers() {
     }
 
     public static final long SEED_VALUE = 123456L;
 
     File experimentDirectory = new File(Constants.getTempDirectory().getAbsolutePath() + File.separator
             + "HesitantGRS.experiment2" + File.separator
-            + HesitantGRS_2_CaseStudy_similarMembersAllGroups.class.getSimpleName() + File.separator);
+            + HesitantGRS_3_allGroups_randomMembers.class.getSimpleName() + File.separator);
 
     private Collection<GroupFormationTechnique> getGroupFormationTechnique() {
         return Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 15, 20, 25, 50, 100, 200, 500).stream()
                 .map((groupSize) -> {
-                    GroupFormationTechnique gft = new SimilarMembers(groupSize);
+                    GroupFormationTechnique gft = new FixedGroupSize(groupSize);
                     return gft;
                 }).collect(Collectors.toList());
 

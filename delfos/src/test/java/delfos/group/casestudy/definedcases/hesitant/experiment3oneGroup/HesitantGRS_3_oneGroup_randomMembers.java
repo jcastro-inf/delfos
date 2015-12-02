@@ -1,4 +1,4 @@
-package delfos.group.casestudy.definedcases.hesitant.experiment2;
+package delfos.group.casestudy.definedcases.hesitant.experiment3oneGroup;
 
 import delfos.Constants;
 import delfos.common.FileUtilities;
@@ -28,16 +28,16 @@ import java.util.List;
 import java.util.stream.Collectors;
 import org.junit.Test;
 
-public class HesitantGRS_3_CaseStudy_dissimilarMembersOneGroup extends DelfosTest {
+public class HesitantGRS_3_oneGroup_randomMembers extends DelfosTest {
 
-    public HesitantGRS_3_CaseStudy_dissimilarMembersOneGroup() {
+    public HesitantGRS_3_oneGroup_randomMembers() {
     }
 
     public static final long SEED_VALUE = 123456L;
 
     File experimentDirectory = new File(Constants.getTempDirectory().getAbsolutePath() + File.separator
             + "HesitantGRS.experiment2" + File.separator
-            + HesitantGRS_3_CaseStudy_dissimilarMembersOneGroup.class.getSimpleName() + File.separator);
+            + HesitantGRS_3_oneGroup_randomMembers.class.getSimpleName() + File.separator);
 
     private Collection<GroupFormationTechnique> getGroupFormationTechnique() {
         return Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 15, 20, 25, 50, 100, 200, 500).stream()
