@@ -35,6 +35,8 @@ public class CaseStudyResultMatrix {
     }
 
     public void addValue(ParameterOwner parameterOwner, Number value) {
+        validateParameters(parameterOwner, value);
+
         String row = getRowIdentifier(parameterOwner);
         String column = getColumnIdentifier(parameterOwner);
 
@@ -127,6 +129,16 @@ public class CaseStudyResultMatrix {
         return str.toString();
     }
 
+    public boolean containsValue(String rowName, String columnName) {
+        if (!tabulatedValues.containsKey(rowName)) {
+            return false;
+        } else if (!tabulatedValues.get(rowName).containsKey(columnName)) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
     public Number getValue(String rowName, String columnName) {
         Number value = tabulatedValues.get(rowName).get(columnName);
         return value;
@@ -144,6 +156,15 @@ public class CaseStudyResultMatrix {
         }
         if (columnsChains.isEmpty()) {
             throw new IllegalArgumentException("Columns chains to identify cannot be empty");
+        }
+    }
+
+    private void validateParameters(ParameterOwner parameterOwner, Number value) {
+        if (parameterOwner == null) {
+            throw new IllegalArgumentException("parameterOwner cannot be null");
+        }
+        if (value == null) {
+            throw new IllegalArgumentException("Evaluatio measure value cannot be null");
         }
     }
 }

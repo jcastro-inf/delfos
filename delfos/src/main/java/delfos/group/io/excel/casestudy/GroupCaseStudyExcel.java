@@ -1008,8 +1008,10 @@ public class GroupCaseStudyExcel {
                 column++;
                 for (String columnName : matrix.getColumnNames()) {
 
-                    Object value = matrix.getValue(rowName, columnName);
-                    setCellContent(allCasesAggregateResults, column, row, value);
+                    if (matrix.containsValue(rowName, columnName)) {
+                        Object value = matrix.getValue(rowName, columnName);
+                        setCellContent(allCasesAggregateResults, column, row, value);
+                    }
                     column++;
                 }
                 row++;
