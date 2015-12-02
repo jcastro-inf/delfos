@@ -335,4 +335,8 @@ public abstract class ParameterOwnerAdapter implements ParameterOwner {
 
         return hash;
     }
+
+    public static int compare(ParameterOwner parameterOwner1, ParameterOwner parameterOwner2) {
+        return ParameterOwner.PARAMETERS_DETAILED.compare(parameterOwner1, parameterOwner2);
+    }
 }
