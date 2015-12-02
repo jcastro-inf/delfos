@@ -36,7 +36,7 @@ public class HesitantGRS_3_allGroups_randomMembers extends DelfosTest {
     public static final long SEED_VALUE = 123456L;
 
     File experimentDirectory = new File(Constants.getTempDirectory().getAbsolutePath() + File.separator
-            + "HesitantGRS.experiment2" + File.separator
+            + "HesitantGRS.experiment2allGroups" + File.separator
             + HesitantGRS_3_allGroups_randomMembers.class.getSimpleName() + File.separator);
 
     private Collection<GroupFormationTechnique> getGroupFormationTechnique() {
