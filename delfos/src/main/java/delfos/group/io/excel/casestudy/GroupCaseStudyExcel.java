@@ -25,6 +25,8 @@ import delfos.main.managers.experiment.join.xml.GroupCaseStudyResult;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -912,7 +914,10 @@ public class GroupCaseStudyExcel {
 
         List<ParameterChain> differentChains = differentChainsWithAliases.stream().filter(chain -> !chain.isAlias()).collect(Collectors.toList());
 
-        List<ParameterChain> dataValidationDifferentChains = differentChains.stream().filter(chain -> chain.isDataValidationParameter()).collect(Collectors.toList());
+        List<ParameterChain> dataValidationDifferentChains = differentChains.stream()
+                .filter(chain -> chain.isDataValidationParameter())
+                .filter(chain -> !chain.isNumExecutions())
+                .collect(Collectors.toList());
         List<ParameterChain> techniqueDifferentChains = differentChains.stream().filter(chain -> chain.isTechniqueParameter()).collect(Collectors.toList());
 
         if (techniqueDifferentChains.isEmpty()) {
@@ -936,7 +941,42 @@ public class GroupCaseStudyExcel {
 
         CaseStudyResultMatrix matrix = new CaseStudyResultMatrix(techniqueDifferentChains, dataValidationDifferentChains, evaluationMeasure);
 
-        groupCaseStudyResults.stream().forEach(groupCaseStudyResult -> {
+        matrix.prepareColumnAndRowNames(groupCaseStudyResults);
+
+        List<GroupCaseStudyResult> groupCaseStudyResultsMaxNumExecutions = new ArrayList<>();
+        for (String rowName : matrix.getRowNames()) {
+            for (String columnName : matrix.getColumnNames()) {
+
+                List<GroupCaseStudyResult> thisCellGroupCaseStudys = groupCaseStudyResults.stream()
+                        .filter(groupCaseStudyResult -> matrix.getRow((ParameterOwner) groupCaseStudyResult.getGroupCaseStudy()).equals(rowName))
+                        .filter(groupCaseStudyResult -> matrix.getColumn((ParameterOwner) groupCaseStudyResult.getGroupCaseStudy()).equals(columnName))
+                        .sorted(((groupCaseStudyResult1, groupCaseStudyResult2) -> Integer.compare(groupCaseStudyResult1.getNumExecutions(), groupCaseStudyResult2.getNumExecutions())))
+                        .collect(Collectors.toList());
+                Collections.reverse(thisCellGroupCaseStudys);
+
+                if (thisCellGroupCaseStudys.isEmpty()) {
+                    continue;
+                }
+
+                if (thisCellGroupCaseStudys.size() == 1) {
+                    groupCaseStudyResultsMaxNumExecutions.addAll(thisCellGroupCaseStudys);
+                } else {
+
+                    if (Global.isVerboseAnnoying()) {
+                        String row = matrix.getRow(thisCellGroupCaseStudys.get(0).getGroupCaseStudy());
+                        String column = matrix.getColumn(thisCellGroupCaseStudys.get(0).getGroupCaseStudy());
+                        Global.show("Executions for cell (" + row + "," + column + ")\n");
+                        for (GroupCaseStudyResult groupCaseStudyResultsMaxNumExecution : thisCellGroupCaseStudys) {
+                            Global.show(groupCaseStudyResultsMaxNumExecution.getNumExecutions() + "\n");
+                        }
+                    }
+
+                    groupCaseStudyResultsMaxNumExecutions.add(thisCellGroupCaseStudys.get(0));
+                }
+            }
+        }
+
+        groupCaseStudyResultsMaxNumExecutions.stream().forEach(groupCaseStudyResult -> {
             java.lang.Number evaluationMeasureValue = groupCaseStudyResult.getEvaluationMeasureValue(evaluationMeasure);
             matrix.addValue(groupCaseStudyResult.getGroupCaseStudy(), evaluationMeasureValue);
         });
