@@ -51,8 +51,7 @@ public class HesitantGRS_3_allGroups_randomMembers extends DelfosTest {
     private Collection<ConfiguredDatasetLoader> getDatasetLoader() {
         return Arrays.asList(
                 new ConfiguredDatasetLoader("ml-100k"),
-                new ConfiguredDatasetLoader("ml-1m"),
-                new ConfiguredDatasetLoader("ml-10m")
+                new ConfiguredDatasetLoader("ml-1m")
         );
     }
 
