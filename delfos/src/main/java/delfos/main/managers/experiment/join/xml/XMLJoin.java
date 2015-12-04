@@ -159,9 +159,7 @@ public class XMLJoin extends CaseUseMode {
         List<String> evaluationMeasuresOrder = obtainEvaluationMeasuresOrder(groupCaseStudyResults);
 
         WorkbookSettings wbSettings = new WorkbookSettings();
-
         wbSettings.setLocale(new Locale("en", "EN"));
-
         WritableWorkbook workbook;
 
         if (outputSpreadsheetFile.exists()) {
@@ -183,6 +181,17 @@ public class XMLJoin extends CaseUseMode {
                     evaluationMeasuresOrder,
                     workbook);
         } catch (WriteException | IOException ex) {
+            ERROR_CODES.CANNOT_WRITE_FILE.exit(ex);
+        }
+
+        try {
+            GroupCaseStudyExcel.writeNumExecutionsSheet(
+                    groupCaseStudyResults,
+                    dataValidationParametersOrder,
+                    techniqueParametersOrder,
+                    evaluationMeasuresOrder,
+                    workbook);
+        } catch (WriteException ex) {
             ERROR_CODES.CANNOT_WRITE_FILE.exit(ex);
         }
 

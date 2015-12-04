@@ -334,6 +334,10 @@ public class ParameterChain {
         return leaf.getParameter().equals(ParameterOwner.ALIAS);
     }
 
+    public boolean isNumExecutions() {
+        return leaf.getParameter().equals(GroupCaseStudy.NUM_EXECUTIONS);
+    }
+
     public boolean isApplicableTo(ParameterOwner parameterOwner) {
 
         if (!root.getParameterOwner().getClass().equals(parameterOwner.getClass())) {

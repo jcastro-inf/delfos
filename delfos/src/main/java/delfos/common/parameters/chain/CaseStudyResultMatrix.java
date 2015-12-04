@@ -1,6 +1,5 @@
 package delfos.common.parameters.chain;
 
-import delfos.common.Global;
 import delfos.common.StringsOrderings;
 import delfos.common.parameters.ParameterOwner;
 import java.util.Collections;
@@ -45,10 +44,24 @@ public class CaseStudyResultMatrix {
         }
 
         if (tabulatedValues.get(row).containsKey(column)) {
-            //throw new IllegalArgumentException("The value was already set!");
-            Global.showWarning("The value [" + row + "," + column + "] was already set!");
+            tabulatedValues.get(row).remove(column);
         }
         tabulatedValues.get(row).put(column, value);
+    }
+
+    public Number getValue(ParameterOwner parameterOwner) {
+        validateParameterOwner(parameterOwner);
+
+        String row = getRowIdentifier(parameterOwner);
+        String column = getColumnIdentifier(parameterOwner);
+
+        if (!tabulatedValues.containsKey(row)) {
+            return null;
+        } else if (!tabulatedValues.get(row).containsKey(column)) {
+            return null;
+        } else {
+            return tabulatedValues.get(row).get(column);
+        }
     }
 
     private String getRowIdentifier(ParameterOwner parameterOwner) {
@@ -165,6 +178,12 @@ public class CaseStudyResultMatrix {
         }
         if (value == null) {
             throw new IllegalArgumentException("Evaluatio measure value cannot be null");
+        }
+    }
+
+    private void validateParameterOwner(ParameterOwner parameterOwner) {
+        if (parameterOwner == null) {
+            throw new IllegalArgumentException("parameterOwner cannot be null");
         }
     }
 }

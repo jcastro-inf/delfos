@@ -981,6 +981,101 @@ public class GroupCaseStudyExcel {
         autoSizeColumns(allCasesAggregateResults);
     }
 
+    public static void writeNumExecutionsSheet(List<GroupCaseStudyResult> groupCaseStudyResults, List<String> dataValidationParametersOrder, List<String> techniqueParametersOrder, List<String> evaluationMeasuresOrder, WritableWorkbook workbook) throws WriteException {
+
+        List<GroupCaseStudy> groupCaseStudys = groupCaseStudyResults.stream().map(groupCaseStudyResult -> groupCaseStudyResult.getGroupCaseStudy()).collect(Collectors.toList());
+
+        Set<GroupCaseStudyResult> dataValidationAliases = new TreeSet<>(
+                GroupCaseStudyResult.dataValidationComparator);
+        Set<GroupCaseStudyResult> techniqueAliases = new TreeSet<>(
+                GroupCaseStudyResult.techniqueComparator);
+
+        dataValidationAliases.addAll(groupCaseStudyResults);
+        techniqueAliases.addAll(groupCaseStudyResults);
+
+        List<ParameterChain> differentChainsWithAliases = ParameterChain.obtainDifferentChains(groupCaseStudys);
+
+        List<ParameterChain> differentChains = differentChainsWithAliases.stream().filter(chain -> !chain.isAlias()).collect(Collectors.toList());
+
+        List<ParameterChain> dataValidationDifferentChains = differentChains.stream()
+                .filter(chain -> chain.isDataValidationParameter())
+                .filter(chain -> !chain.isNumExecutions())
+                .collect(Collectors.toList());
+
+        List<ParameterChain> techniqueDifferentChains = differentChains.stream().filter(chain -> chain.isTechniqueParameter()).collect(Collectors.toList());
+
+        if (techniqueDifferentChains.isEmpty()) {
+            ParameterChain grsAliasChain = new ParameterChain(groupCaseStudys.get(0))
+                    .createWithNode(GroupCaseStudy.GROUP_RECOMMENDER_SYSTEM, null)
+                    .createWithLeaf(ParameterOwner.ALIAS, null);
+            techniqueDifferentChains.add(grsAliasChain);
+        }
+        if (dataValidationDifferentChains.isEmpty()) {
+            ParameterChain datasetLoaderAliasChain = new ParameterChain(groupCaseStudys.get(0))
+                    .createWithNode(GroupCaseStudy.DATASET_LOADER, null)
+                    .createWithLeaf(ParameterOwner.ALIAS, null);
+
+            ParameterChain groupFormationTechniqueAliasChain = new ParameterChain(groupCaseStudys.get(0))
+                    .createWithNode(GroupCaseStudy.GROUP_FORMATION_TECHNIQUE, null)
+                    .createWithLeaf(ParameterOwner.ALIAS, null);
+
+            dataValidationDifferentChains.add(datasetLoaderAliasChain);
+            dataValidationDifferentChains.add(groupFormationTechniqueAliasChain);
+        }
+
+        CaseStudyResultMatrix matrix = new CaseStudyResultMatrix(techniqueDifferentChains, dataValidationDifferentChains, GroupCaseStudy.NUM_EXECUTIONS.getName());
+
+        groupCaseStudyResults.stream().forEach(groupCaseStudyResult -> {
+            int numExecutions = groupCaseStudyResult.getNumExecutions();
+            java.lang.Number existingNumExecutions = matrix.getValue(groupCaseStudyResult.getGroupCaseStudy());
+
+            if (existingNumExecutions == null) {
+                matrix.addValue(groupCaseStudyResult.getGroupCaseStudy(), numExecutions);
+            } else if (numExecutions > existingNumExecutions.intValue()) {
+                matrix.addValue(groupCaseStudyResult.getGroupCaseStudy(), numExecutions);
+            }
+        });
+
+        WritableSheet allCasesAggregateResults = workbook.createSheet(GroupCaseStudy.NUM_EXECUTIONS.getName(), workbook.getNumberOfSheets());
+        createLabel(allCasesAggregateResults);
+
+        {
+
+            int column = 0;
+            int row = 0;
+
+            //Titles ROW
+            addTitleText(allCasesAggregateResults, column, row, GroupCaseStudy.NUM_EXECUTIONS.getName());
+            column++;
+
+            for (String columnName : matrix.getColumnNames()) {
+                setCellContent(allCasesAggregateResults, column, row, columnName);
+                column++;
+            }
+
+            row++;
+
+            //Titles row
+            for (String rowName : matrix.getRowNames()) {
+
+                column = 0;
+                setCellContent(allCasesAggregateResults, column, row, rowName);
+                column++;
+                for (String columnName : matrix.getColumnNames()) {
+
+                    if (matrix.containsValue(rowName, columnName)) {
+                        Object value = matrix.getValue(rowName, columnName);
+                        setCellContent(allCasesAggregateResults, column, row, value);
+                    }
+                    column++;
+                }
+                row++;
+            }
+        }
+
+        autoSizeColumns(allCasesAggregateResults);
+    }
+
     private GroupCaseStudyExcel() {
     }
 
