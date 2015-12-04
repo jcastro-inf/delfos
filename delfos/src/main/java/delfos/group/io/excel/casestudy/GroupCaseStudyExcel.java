@@ -805,24 +805,7 @@ public class GroupCaseStudyExcel {
         return evaluationMeasuresValues;
     }
 
-    public static void writeGeneralFile(List<GroupCaseStudyResult> groupCaseStudyResults, List<String> dataValidationParametersOrder, List<String> techniqueParametersOrder, List<String> evaluationMeasuresOrder, File file) throws WriteException, IOException {
-
-        if (file.isDirectory()) {
-            throw new IllegalStateException("GroupCaseStudy save to spreadsheet: Not a file (" + file.toString() + ")");
-        }
-
-        WorkbookSettings wbSettings = new WorkbookSettings();
-
-        wbSettings.setLocale(new Locale("en", "EN"));
-
-        WritableWorkbook workbook = null;
-
-        try {
-            workbook = Workbook.createWorkbook(file, wbSettings);
-        } catch (IOException ex) {
-            ERROR_CODES.CANNOT_WRITE_FILE.exit(new FileNotFoundException("Cannot access file " + file.getAbsolutePath() + "."));
-            return;
-        }
+    public static void writeGeneralSheet(List<GroupCaseStudyResult> groupCaseStudyResults, List<String> dataValidationParametersOrder, List<String> techniqueParametersOrder, List<String> evaluationMeasuresOrder, WritableWorkbook workbook) throws WriteException, IOException {
 
         WritableSheet allCasesAggregateResults = workbook.createSheet("AllCasesAggregateResults", 0);
         createLabel(allCasesAggregateResults);
@@ -911,12 +894,9 @@ public class GroupCaseStudyExcel {
 
         autoSizeColumns(allCasesAggregateResults);
 
-        workbook.write();
-        workbook.close();
-
     }
 
-    public static void writeEvaluationMeasureSpecificFile(List<GroupCaseStudyResult> groupCaseStudyResults, List<String> dataValidationParametersOrder, List<String> techniqueParametersOrder, String evaluationMeasure, File file) throws WriteException, IOException {
+    public static void writeEvaluationMeasureSpecificFile(List<GroupCaseStudyResult> groupCaseStudyResults, List<String> dataValidationParametersOrder, List<String> techniqueParametersOrder, String evaluationMeasure, WritableWorkbook workbook) throws WriteException, IOException {
 
         List<GroupCaseStudy> groupCaseStudys = groupCaseStudyResults.stream().map(groupCaseStudyResult -> groupCaseStudyResult.getGroupCaseStudy()).collect(Collectors.toList());
 
@@ -961,27 +941,7 @@ public class GroupCaseStudyExcel {
             matrix.addValue(groupCaseStudyResult.getGroupCaseStudy(), evaluationMeasureValue);
         });
 
-        if (file.isDirectory()) {
-            throw new IllegalStateException("GroupCaseStudy save to spreadsheet: Not a file (" + file.toString() + ")");
-        }
-        WorkbookSettings wbSettings = new WorkbookSettings();
-
-        wbSettings.setLocale(new Locale("en", "EN"));
-
-        WritableWorkbook workbook = null;
-
-        if (file.exists()) {
-            file.delete();
-        }
-
-        try {
-            workbook = Workbook.createWorkbook(file, wbSettings);
-        } catch (IOException ex) {
-            ERROR_CODES.CANNOT_WRITE_FILE.exit(new FileNotFoundException("Cannot access file " + file.getAbsolutePath() + "."));
-            return;
-        }
-
-        WritableSheet allCasesAggregateResults = workbook.createSheet("AllCasesAggregateResults", 0);
+        WritableSheet allCasesAggregateResults = workbook.createSheet(evaluationMeasure, workbook.getNumberOfSheets());
         createLabel(allCasesAggregateResults);
 
         {
@@ -1019,10 +979,6 @@ public class GroupCaseStudyExcel {
         }
 
         autoSizeColumns(allCasesAggregateResults);
-
-        workbook.write();
-        workbook.close();
-
     }
 
     private GroupCaseStudyExcel() {
