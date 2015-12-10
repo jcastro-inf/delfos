@@ -1,6 +1,5 @@
 package delfos.group.grs.hesitant;
 
-import delfos.common.parallelwork.SingleTaskExecute;
 import delfos.dataset.basic.item.Item;
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
@@ -12,15 +11,16 @@ import delfos.utils.hesitant.similarity.HesitantSimilarity;
 import java.util.Arrays;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.function.Function;
 
-public final class HesitantKnnNeighborSimilarityTaskExecutor implements SingleTaskExecute<HesitantKnnNeighborSimilarityTask> {
+public final class HesitantKnnNeighborSimilarityFunction implements Function<HesitantKnnNeighborSimilarityTask, Neighbor> {
 
-    public HesitantKnnNeighborSimilarityTaskExecutor() {
+    public HesitantKnnNeighborSimilarityFunction() {
         super();
     }
 
     @Override
-    public void executeSingleTask(HesitantKnnNeighborSimilarityTask task) {
+    public Neighbor apply(HesitantKnnNeighborSimilarityTask task) {
         User neighborUser = task.neighborUser;
 
         DatasetLoader<? extends Rating> datasetLoader = task.datasetLoader;
@@ -38,6 +38,6 @@ public final class HesitantKnnNeighborSimilarityTaskExecutor implements SingleTa
                 neighborProfile.select(intersection));
 
         Neighbor neighbor = new Neighbor(RecommendationEntity.USER, neighborUser, sim);
-        task.setNeighbor(neighbor);
+        return neighbor;
     }
 }
