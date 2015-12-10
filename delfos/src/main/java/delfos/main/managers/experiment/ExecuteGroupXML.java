@@ -43,6 +43,13 @@ public class ExecuteGroupXML extends CaseUseMode {
 
     private boolean isAnyResultAggregatedXMLPresent(File xmlExperimentsDirectory) {
         File xmlExperimentResultsDirectory = new File(xmlExperimentsDirectory.getPath() + File.separator + "results" + File.separator);
+        if (!xmlExperimentResultsDirectory.exists()) {
+            return false;
+        }
+        if (!xmlExperimentResultsDirectory.isDirectory()) {
+            throw new IllegalStateException("Results directory not found (is a file) ['" + xmlExperimentResultsDirectory.getAbsolutePath() + "']");
+        }
+
         List<File> aggregateResults = Arrays.asList(xmlExperimentResultsDirectory.listFiles((File dir, String name) -> name.contains("_AGGR.xml")));
         return !aggregateResults.isEmpty();
     }
