@@ -18,5 +18,7 @@ public class DefaultGroupCaseStudyGroupEvaluationMeasures_SingleTaskExecutor imp
                     task.relevanceCriteria);
             task.groupEvaluationMeasuresResults.put(groupEvaluationMeasure, groupMeasureResult);
         }
+
+        task.clear();
     }
 }

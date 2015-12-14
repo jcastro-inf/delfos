@@ -110,7 +110,7 @@ public class GroupCaseStudyResult {
         return techniqueParameters.get(techniqueParameter);
     }
 
-    public Object getEvaluationMeasureValue(String evaluationMeasure) {
+    public Number getEvaluationMeasureValue(String evaluationMeasure) {
         return evaluationMeasuresValues.get(evaluationMeasure);
     }
 

@@ -9,7 +9,6 @@ import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RelevanceCriteria;
 import delfos.experiment.casestudy.cluster.TuringPreparator;
 import delfos.group.casestudy.defaultcase.GroupCaseStudy;
-import delfos.group.casestudy.defaultcase.GroupCaseStudy;
 import delfos.group.experiment.validation.groupformation.FixedGroupSize_OnlyNGroups;
 import delfos.group.experiment.validation.groupformation.GroupFormationTechnique;
 import delfos.group.experiment.validation.predictionvalidation.NoPredictionProtocol;
@@ -136,18 +135,10 @@ public class ConsensusGRS_CaseStudy {
 
         turingPreparator.prepareGroupExperiment(new File(CONSENSUS_GRS_EXPERIMENT_DIRECTORY), groupCaseStudys, getDatasetLoader());
 
-        turingPreparator.executeAllExperimentsInDirectory(new File(CONSENSUS_GRS_EXPERIMENT_DIRECTORY));
     }
 
     @Test
-    public void testExecute() throws Exception {
-
+    public void createCaseStudyExperiments() throws Exception {
         createConsensusCaseStudyXML();
-
-        executeAllExperimentsInDirectory(new File(CONSENSUS_GRS_EXPERIMENT_DIRECTORY));
-    }
-
-    private void executeAllExperimentsInDirectory(File directory) {
-        new TuringPreparator().executeAllExperimentsInDirectory(directory);
     }
 }

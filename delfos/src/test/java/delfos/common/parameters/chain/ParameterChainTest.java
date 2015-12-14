@@ -2,7 +2,6 @@ package delfos.common.parameters.chain;
 
 import delfos.common.aggregationoperators.Mean;
 import delfos.common.aggregationoperators.MinimumValue;
-import delfos.common.parameters.ParameterOwner;
 import delfos.configureddatasets.ConfiguredDatasetLoader;
 import delfos.group.casestudy.defaultcase.GroupCaseStudy;
 import delfos.group.grs.GroupRecommenderSystem;
@@ -10,9 +9,7 @@ import delfos.group.grs.aggregation.AggregationOfIndividualRatings;
 import delfos.group.grs.aggregation.AggregationOfIndividualRecommendations;
 import delfos.rs.collaborativefiltering.knn.memorybased.nwr.KnnMemoryBasedNWR;
 import java.util.List;
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 import org.junit.Test;
 
 /**
@@ -34,6 +31,9 @@ public class ParameterChainTest {
         groupCaseStudy.setSeedValue(123456L);
 
         List<ParameterChain> result = ParameterChain.obtainAllParameterChains(groupCaseStudy);
+
+        System.out.println(ParameterChain.printListOfChains(result));
+        System.out.println("===================================");
     }
 
     /**
@@ -61,7 +61,7 @@ public class ParameterChainTest {
         List<ParameterChain> result = ParameterChain.obtainTechniqueParameterChains(groupCaseStudy);
 
         for (ParameterChain chain : result) {
-            assertTrue(chain.getNodes().get(0).getParameterOwner() instanceof GroupRecommenderSystem);
+            assertTrue(chain.isTechniqueParameter());
         }
     }
 
@@ -155,19 +155,6 @@ public class ParameterChainTest {
     }
 
     /**
-     * Test of createAllTerminalParameterChains method, of class ParameterChain.
-     */
-    public void testCreateAllTerminalParameterChains() {
-        ParameterOwner parameterOwner = null;
-        ParameterChain instance = null;
-        List<ParameterChain> expResult = null;
-        List<ParameterChain> result = instance.createAllTerminalParameterChains(parameterOwner);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
-
-    /**
      * Test of isCompatibleWithGroupCaseStudy method, of class ParameterChain.
      */
     @Test
@@ -185,8 +172,7 @@ public class ParameterChainTest {
                 .createWithNode(GroupCaseStudy.GROUP_RECOMMENDER_SYSTEM, aoiRatingsMean)
                 .createWithLeaf(AggregationOfIndividualRatings.AGGREGATION_OPERATOR, new Mean());
 
-        assertTrue(aoiRatingsMeanChain.isCompatibleWith(aoiRatingsMinGroupCaseStudy));
+        assertTrue(aoiRatingsMeanChain.isApplicableTo(aoiRatingsMinGroupCaseStudy));
 
     }
-
 }

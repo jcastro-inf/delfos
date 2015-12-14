@@ -93,7 +93,7 @@ public class DissimilarMembers_OnlyNGroups extends GroupFormationTechnique {
         while (groupsGenerated.size() < numGroups) {
             TreeSet<Integer> usersThisGroup = new TreeSet<>();
 
-            if (usersRemainToSelect.size() <= groupSize) {
+            if (usersRemainToSelect.size() < groupSize) {
                 throw new IllegalStateException("No more users!!");
             }
 
@@ -116,7 +116,7 @@ public class DissimilarMembers_OnlyNGroups extends GroupFormationTechnique {
 
             for (Neighbor newMember : usersToAdd) {
                 usersThisGroup.add(newMember.getIdNeighbor());
-                boolean remove = usersRemainToSelect.remove(newMember.getNeighbor());
+                boolean remove = usersRemainToSelect.remove((User) newMember.getNeighbor());
                 if (!remove) {
                     throw new IllegalStateException("asdfasdf");
                 }

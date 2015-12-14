@@ -1,19 +1,19 @@
 package delfos.group.experiment.validation.validationtechniques;
 
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.Set;
-import java.util.TreeSet;
 import delfos.common.exceptions.dataset.CannotLoadContentDataset;
 import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
 import delfos.common.parameters.ParameterOwnerAdapter;
 import delfos.common.parameters.ParameterOwnerType;
-import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.loader.types.DatasetLoader;
+import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.storage.validationdatasets.PairOfTrainTestRatingsDataset;
-import delfos.group.groupsofusers.GroupOfUsers;
 import delfos.experiment.SeedHolder;
 import delfos.experiment.validation.validationtechnique.ValidationTechniqueProgressListener;
+import delfos.group.groupsofusers.GroupOfUsers;
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.Set;
+import java.util.TreeSet;
 
 /**
  * Clase abstracta que define los métodos comunes de las distintas técnicas de
@@ -89,7 +89,8 @@ public abstract class GroupValidationTechnique extends ParameterOwnerAdapter imp
         return ParameterOwnerType.GROUP_VALIDATION_TECHNIQUE;
     }
 
-    public static void checkGroupsSharingUsers(Iterable<GroupOfUsers> groupsOfUsers) throws IllegalArgumentException {
+    public static void checkGroupsAreNotSharingUsers(Iterable<GroupOfUsers> groupsOfUsers) throws IllegalArgumentException {
+
         //Compruebo que cada usuario está únicamente en un grupo.
         Set<Integer> users = new TreeSet<>();
         int numUsersInGroups = 0;
@@ -101,6 +102,18 @@ public abstract class GroupValidationTechnique extends ParameterOwnerAdapter imp
 
         if (users.size() != numUsersInGroups) {
             throw new IllegalArgumentException("Groups are sharing users, can't perform this validation.");
+        }
+    }
+
+    public static void checkGroupsOfUsersNotNull(Iterable<GroupOfUsers> groupsOfUsers) throws IllegalArgumentException {
+        if (groupsOfUsers == null) {
+            throw new IllegalArgumentException("The parameter 'groupOfUsers' is null.");
+        }
+    }
+
+    public static void checkDatasetLoaderNotNull(DatasetLoader<? extends Rating> datasetLoader) throws IllegalArgumentException {
+        if (datasetLoader == null) {
+            throw new IllegalArgumentException("DatasetLoader<? extends Rating> is null.");
         }
     }
 }

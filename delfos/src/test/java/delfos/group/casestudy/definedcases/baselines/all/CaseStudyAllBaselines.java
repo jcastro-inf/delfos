@@ -18,7 +18,6 @@ import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RelevanceCriteria;
 import delfos.experiment.casestudy.cluster.TuringPreparator;
 import delfos.group.casestudy.defaultcase.GroupCaseStudy;
-import delfos.group.casestudy.defaultcase.GroupCaseStudy;
 import delfos.group.experiment.validation.groupformation.FixedGroupSize_OnlyNGroups;
 import delfos.group.experiment.validation.groupformation.GroupFormationTechnique;
 import delfos.group.experiment.validation.predictionvalidation.NoPredictionProtocol;
@@ -78,8 +77,7 @@ public class CaseStudyAllBaselines {
     }
 
     @Test
-    public void testExecute() throws Exception {
-
+    public void createCaseStudyExperiments() throws Exception {
         Parallelisation.setMaxCPU(8);
         List<GroupCaseStudy> allGroupCaseStudy = getAllGroupCaseStudy();
 
@@ -87,8 +85,6 @@ public class CaseStudyAllBaselines {
                 new File(EXPERIMENT_DIRECTORY),
                 allGroupCaseStudy,
                 new ConfiguredDatasetLoader("ml-100k"));
-
-        new TuringPreparator().executeAllExperimentsInDirectory(new File(EXPERIMENT_DIRECTORY), 20, 8);
     }
 
     private List<GroupCaseStudy> getAllGroupCaseStudy() {
