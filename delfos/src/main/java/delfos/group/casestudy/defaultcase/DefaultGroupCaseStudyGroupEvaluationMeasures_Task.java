@@ -1,8 +1,5 @@
 package delfos.group.casestudy.defaultcase;
 
-import java.util.Collection;
-import java.util.Map;
-import java.util.TreeMap;
 import delfos.common.parallelwork.Task;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RatingsDataset;
@@ -10,6 +7,9 @@ import delfos.dataset.basic.rating.RelevanceCriteria;
 import delfos.group.results.groupevaluationmeasures.GroupEvaluationMeasure;
 import delfos.group.results.groupevaluationmeasures.GroupEvaluationMeasureResult;
 import delfos.group.results.grouprecomendationresults.GroupRecommendationResult;
+import java.util.Collection;
+import java.util.Map;
+import java.util.TreeMap;
 
 public class DefaultGroupCaseStudyGroupEvaluationMeasures_Task extends Task {
 
@@ -49,5 +49,10 @@ public class DefaultGroupCaseStudyGroupEvaluationMeasures_Task extends Task {
         stringBuilder.append("Exec: ").append(ejecucion).append("\tSplit: ").append(particion);
 
         return stringBuilder.toString();
+    }
+
+    public void clear() {
+        this.testSet = null;
+        this.groupEvaluationMeasures = null;
     }
 }

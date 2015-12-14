@@ -11,6 +11,8 @@ import delfos.group.io.xml.casestudy.GroupCaseStudyXML;
 import delfos.main.managers.CaseUseMode;
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
 import org.jdom2.JDOMException;
 
 /**
@@ -39,26 +41,42 @@ public class ExecuteGroupXML extends CaseUseMode {
         return consoleParameters.isFlagDefined(FORCE_EXECUTION);
     }
 
-    private boolean isAlreadyExecuted(File xmlExperimentsDirectory) {
-        return isResultAggregatedXMLPresent(xmlExperimentsDirectory);
-    }
-
-    private boolean isResultAggregatedXMLPresent(File xmlExperimentsDirectory) {
-        File resultAggregatedXML = new File(xmlExperimentsDirectory.getPath() + File.separator + "results" + File.separator + xmlExperimentsDirectory.getName() + "_AGGR.xml");
-
-        return resultAggregatedXML.exists();
-    }
-
-    private boolean isNumExecGreaterThanTheExisting(File xmlExperimentsDirectory, int NUM_EJECUCIONES) {
-
-        File resultAggregatedXML = new File(xmlExperimentsDirectory.getPath() + File.separator + "results" + File.separator + xmlExperimentsDirectory.getName() + "_AGGR.xml");
-        try {
-            int extractResultNumExec = GroupCaseStudyXML.extractResultNumExec(resultAggregatedXML);
-            return NUM_EJECUCIONES > extractResultNumExec;
-        } catch (JDOMException | IOException ex) {
-            ERROR_CODES.CANNOT_READ_CASE_STUDY_XML.exit(ex);
+    private boolean isAnyResultAggregatedXMLPresent(File xmlExperimentsDirectory) {
+        File xmlExperimentResultsDirectory = new File(xmlExperimentsDirectory.getPath() + File.separator + "results" + File.separator);
+        if (!xmlExperimentResultsDirectory.exists()) {
+            return false;
         }
-        return false;
+        if (!xmlExperimentResultsDirectory.isDirectory()) {
+            throw new IllegalStateException("Results directory not found (is a file) ['" + xmlExperimentResultsDirectory.getAbsolutePath() + "']");
+        }
+
+        List<File> aggregateResults = Arrays.asList(xmlExperimentResultsDirectory.listFiles((File dir, String name) -> name.contains("_AGGR.xml")));
+        return !aggregateResults.isEmpty();
+    }
+
+    private boolean isNumExecGreaterThanAllTheExisting(File xmlExperimentsDirectory, int NUM_EJECUCIONES) {
+
+        File xmlExperimentResultsDirectory = new File(xmlExperimentsDirectory.getPath() + File.separator + "results" + File.separator);
+        List<File> aggregateResults = Arrays.asList(xmlExperimentResultsDirectory.listFiles((File dir, String name) -> name.contains("_AGGR.xml")));
+
+        boolean isNumExecGreaterThanTheExisting = true;
+
+        for (File resultAggregatedXML : aggregateResults) {
+
+            try {
+                int resultAggregatedXML_numExec = GroupCaseStudyXML.extractResultNumExec(resultAggregatedXML);
+
+                if (resultAggregatedXML_numExec >= NUM_EJECUCIONES) {
+                    isNumExecGreaterThanTheExisting = false;
+                }
+            } catch (JDOMException | IOException ex) {
+                ERROR_CODES.CANNOT_READ_CASE_STUDY_XML.exit(ex);
+            }
+
+        }
+
+        return isNumExecGreaterThanTheExisting;
+
     }
 
     private static class Holder {
@@ -141,12 +159,10 @@ public class ExecuteGroupXML extends CaseUseMode {
     public boolean shouldExecuteTheExperiment(File xmlExperimentsDirectory, int NUM_EJECUCIONES, boolean forceReExecution) {
         if (forceReExecution) {
             return true;
-        } else if (!isAlreadyExecuted(xmlExperimentsDirectory)) {
-            return true;
-        } else if (isNumExecGreaterThanTheExisting(xmlExperimentsDirectory, NUM_EJECUCIONES)) {
-            return true;
+        } else if (isAnyResultAggregatedXMLPresent(xmlExperimentsDirectory)) {
+            return isNumExecGreaterThanAllTheExisting(xmlExperimentsDirectory, NUM_EJECUCIONES);
         } else {
-            return false;
+            return true;
         }
     }
 }

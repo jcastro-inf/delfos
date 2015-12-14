@@ -4,6 +4,7 @@ import delfos.ConsoleParameters;
 import delfos.ERROR_CODES;
 import delfos.UndefinedParameterException;
 import delfos.common.FileUtilities;
+import delfos.common.Global;
 import delfos.group.casestudy.defaultcase.GroupCaseStudy;
 import delfos.group.io.excel.casestudy.GroupCaseStudyExcel;
 import delfos.group.io.xml.casestudy.GroupCaseStudyXML;
@@ -14,11 +15,15 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
+import jxl.Workbook;
+import jxl.WorkbookSettings;
+import jxl.write.WritableWorkbook;
 import jxl.write.WriteException;
 import org.jdom2.JDOMException;
 
@@ -85,6 +90,8 @@ public class XMLJoin extends CaseUseMode {
 
     public static void mergeResultsIntoOutput(List<String> resultsPaths, File outputFile) {
 
+        validateResultsPaths(resultsPaths);
+
         AggregateResultsXML aggregateResultsXML = new AggregateResultsXML();
 
         List<File> allFiles = new LinkedList<>();
@@ -101,21 +108,38 @@ public class XMLJoin extends CaseUseMode {
 
         List<File> relevantFiles = aggregateResultsXML.filterResultsFiles(allFiles);
 
-        System.out.println("Detected " + relevantFiles.size() + " results files");
-
         if (relevantFiles.isEmpty()) {
             return;
         }
 
-        aggregateResultsXML.joinAndWrite(relevantFiles, outputFile);
+        if (Global.isInfoPrinted()) {
+            for (int i = 0; i < relevantFiles.size(); i++) {
+                File relevantFile = relevantFiles.get(i);
+                Global.showMessageTimestamped(("(" + i + " of " + relevantFiles.size()) + "): " + relevantFile.getAbsolutePath() + "\n");
+            }
+
+        }
+
+        writeJoinIntoSpreadsheet(relevantFiles, outputFile);
 
         System.out.println("Finished parsing " + relevantFiles.size() + " results files.");
 
-        newXMLJoined(relevantFiles, outputFile);
-
     }
 
-    public static void newXMLJoined(List<File> relevantFiles, File outputFile) {
+    public static void validateResultsPaths(List<String> resultsPaths) throws IllegalArgumentException {
+        for (String resultPath : resultsPaths) {
+            File resultDirectory = new File(resultPath);
+
+            if (!resultDirectory.exists()) {
+                throw new IllegalArgumentException("The directory '" + resultPath + "' does not exist [" + resultDirectory.getAbsolutePath() + "]");
+            }
+            if (!resultDirectory.isDirectory()) {
+                throw new IllegalArgumentException("The path '" + resultPath + "' is not a directory[" + resultDirectory.getAbsolutePath() + "]");
+            }
+        }
+    }
+
+    public static void writeJoinIntoSpreadsheet(List<File> relevantFiles, File outputSpreadsheetFile) {
         List<GroupCaseStudy> groupCaseStudies = relevantFiles.stream().map(file -> {
             try {
                 return GroupCaseStudyXML.loadGroupCaseWithResults(file);
@@ -134,32 +158,62 @@ public class XMLJoin extends CaseUseMode {
         List<String> techniqueParametersOrder = obtainTechniqueParametersOrder(groupCaseStudyResults);
         List<String> evaluationMeasuresOrder = obtainEvaluationMeasuresOrder(groupCaseStudyResults);
 
+        WorkbookSettings wbSettings = new WorkbookSettings();
+        wbSettings.setLocale(new Locale("en", "EN"));
+        WritableWorkbook workbook;
+
+        if (outputSpreadsheetFile.exists()) {
+            outputSpreadsheetFile.delete();
+        }
+
         try {
-            File newOutput = FileUtilities.addSufix(outputFile, "-completeTable");
-            GroupCaseStudyExcel.writeGeneralFile(
+            workbook = Workbook.createWorkbook(outputSpreadsheetFile, wbSettings);
+        } catch (IOException ex) {
+            ERROR_CODES.CANNOT_WRITE_FILE.exit(new FileNotFoundException("Cannot access file " + outputSpreadsheetFile.getAbsolutePath() + "."));
+            return;
+        }
+
+        try {
+            GroupCaseStudyExcel.writeGeneralSheet(
                     groupCaseStudyResults,
                     dataValidationParametersOrder,
                     techniqueParametersOrder,
                     evaluationMeasuresOrder,
-                    newOutput);
+                    workbook);
         } catch (WriteException | IOException ex) {
             ERROR_CODES.CANNOT_WRITE_FILE.exit(ex);
         }
 
+        try {
+            GroupCaseStudyExcel.writeNumExecutionsSheet(
+                    groupCaseStudyResults,
+                    dataValidationParametersOrder,
+                    techniqueParametersOrder,
+                    evaluationMeasuresOrder,
+                    workbook);
+        } catch (WriteException ex) {
+            ERROR_CODES.CANNOT_WRITE_FILE.exit(ex);
+        }
+
         for (String evaluationMeasure : evaluationMeasuresOrder) {
-            File measureOutput = FileUtilities.addSufix(outputFile, "-" + evaluationMeasure);
             try {
                 GroupCaseStudyExcel.writeEvaluationMeasureSpecificFile(
                         groupCaseStudyResults,
                         dataValidationParametersOrder,
                         techniqueParametersOrder,
                         evaluationMeasure,
-                        measureOutput);
+                        workbook);
             } catch (WriteException | IOException ex) {
                 ERROR_CODES.CANNOT_WRITE_FILE.exit(ex);
             }
         }
 
+        try {
+            workbook.write();
+            workbook.close();
+        } catch (IOException | WriteException ex) {
+            ERROR_CODES.CANNOT_WRITE_FILE.exit(ex);
+        }
     }
 
     private static List<String> obtainDataValidationParametersOrder(List<GroupCaseStudyResult> groupCaseStudyResults) {

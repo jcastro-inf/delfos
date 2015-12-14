@@ -1,15 +1,14 @@
 package delfos.common.parameters.chain;
 
-import delfos.common.Global;
 import delfos.common.StringsOrderings;
 import delfos.common.parameters.ParameterOwner;
+import delfos.main.managers.experiment.join.xml.GroupCaseStudyResult;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
-import java.util.stream.Collectors;
 
 /**
  * Stores in a tabular form the results of the groupCaseStudy for a given
@@ -25,6 +24,8 @@ public class CaseStudyResultMatrix {
     private final List<ParameterChain> columnsChains;
 
     private final Map<String, Map<String, Number>> tabulatedValues = new TreeMap<>(StringsOrderings.getNaturalComparator());
+    private final Set<String> rowNames;
+    private final Set<String> columnNames;
 
     public CaseStudyResultMatrix(List<ParameterChain> rowsChains, List<ParameterChain> columnsChains, String evaluationMeasure) {
         validateParameters(rowsChains, columnsChains, evaluationMeasure);
@@ -32,6 +33,9 @@ public class CaseStudyResultMatrix {
         this.rowsChains = Collections.unmodifiableList(rowsChains);
         this.columnsChains = Collections.unmodifiableList(columnsChains);
         this.evaluationMeasure = evaluationMeasure;
+
+        rowNames = new TreeSet<>(StringsOrderings.getNaturalComparator());
+        columnNames = new TreeSet<>(StringsOrderings.getNaturalComparator());
     }
 
     public void addValue(ParameterOwner parameterOwner, Number value) {
@@ -45,10 +49,32 @@ public class CaseStudyResultMatrix {
         }
 
         if (tabulatedValues.get(row).containsKey(column)) {
-            //throw new IllegalArgumentException("The value was already set!");
-            Global.showWarning("The value [" + row + "," + column + "] was already set!");
+            tabulatedValues.get(row).remove(column);
         }
         tabulatedValues.get(row).put(column, value);
+    }
+
+    public Number getValue(ParameterOwner parameterOwner) {
+        validateParameterOwner(parameterOwner);
+
+        String row = getRowIdentifier(parameterOwner);
+        String column = getColumnIdentifier(parameterOwner);
+
+        if (!tabulatedValues.containsKey(row)) {
+            return null;
+        } else if (!tabulatedValues.get(row).containsKey(column)) {
+            return null;
+        } else {
+            return tabulatedValues.get(row).get(column);
+        }
+    }
+
+    public String getRow(ParameterOwner parameterOwner) {
+        return getRowIdentifier(parameterOwner);
+    }
+
+    public String getColumn(ParameterOwner parameterOwner) {
+        return getColumnIdentifier(parameterOwner);
     }
 
     private String getRowIdentifier(ParameterOwner parameterOwner) {
@@ -61,7 +87,13 @@ public class CaseStudyResultMatrix {
         }
         str.delete(str.length() - 1, str.length());
 
-        return str.toString();
+        final String rowName = str.toString();
+
+        if (!rowNames.contains(rowName)) {
+            rowNames.add(rowName);
+        }
+
+        return rowName;
     }
 
     private String getColumnIdentifier(ParameterOwner parameterOwner) {
@@ -74,34 +106,21 @@ public class CaseStudyResultMatrix {
         }
         str.delete(str.length() - 1, str.length());
 
-        return str.toString();
-    }
-
-    public List<String> getColumnNames() {
-
-        Set<String> columnNames = new TreeSet<>();
-
-        for (String row : tabulatedValues.keySet()) {
-            columnNames.addAll(tabulatedValues.get(row).keySet());
+        final String columnName = str.toString();
+        if (!columnNames.contains(columnName)) {
+            columnNames.add(columnName);
         }
 
-        List<String> columnNamesSorted = columnNames.stream().collect(Collectors.toList());
+        return columnName;
 
-        columnNamesSorted.sort(StringsOrderings.getNaturalComparator());
-
-        return columnNamesSorted;
     }
 
-    public List<String> getRowNames() {
+    public Set<String> getColumnNames() {
+        return Collections.unmodifiableSet(columnNames);
+    }
 
-        Set<String> rowNames = new TreeSet<>(tabulatedValues.keySet());
-
-        List<String> rowNamesSorted = rowNames.stream().collect(Collectors.toList());
-
-        rowNamesSorted.sort(StringsOrderings.getNaturalComparator());
-
-        return rowNamesSorted;
-
+    public Set<String> getRowNames() {
+        return Collections.unmodifiableSet(rowNames);
     }
 
     public String print() {
@@ -166,5 +185,17 @@ public class CaseStudyResultMatrix {
         if (value == null) {
             throw new IllegalArgumentException("Evaluatio measure value cannot be null");
         }
+    }
+
+    private void validateParameterOwner(ParameterOwner parameterOwner) {
+        if (parameterOwner == null) {
+            throw new IllegalArgumentException("parameterOwner cannot be null");
+        }
+    }
+
+    public void prepareColumnAndRowNames(List<GroupCaseStudyResult> groupCaseStudyResults) {
+
+        groupCaseStudyResults.stream().map(groupCaseStudyResult -> groupCaseStudyResult.getGroupCaseStudy()).forEach(groupCaseStudy -> this.getColumnIdentifier(groupCaseStudy));
+        groupCaseStudyResults.stream().map(groupCaseStudyResult -> groupCaseStudyResult.getGroupCaseStudy()).forEach(groupCaseStudy -> this.getRowIdentifier(groupCaseStudy));
     }
 }

@@ -8,7 +8,6 @@ import delfos.common.exceptions.dataset.CannotLoadUsersDataset;
 import delfos.common.exceptions.dataset.items.ItemNotFound;
 import delfos.common.exceptions.dataset.users.UserNotFound;
 import delfos.common.exceptions.ratings.NotEnoughtUserInformation;
-import delfos.common.parallelwork.MultiThreadExecutionManager;
 import delfos.common.parameters.Parameter;
 import delfos.common.parameters.restriction.BooleanParameter;
 import delfos.common.parameters.restriction.ObjectParameter;
@@ -23,7 +22,6 @@ import delfos.dataset.util.DatasetUtilities;
 import delfos.group.groupsofusers.GroupOfUsers;
 import delfos.group.grs.GroupRecommenderSystemAdapter;
 import delfos.group.grs.aggregation.AggregationOfIndividualRatings;
-import delfos.rs.collaborativefiltering.knn.RecommendationEntity;
 import delfos.rs.collaborativefiltering.knn.memorybased.nwr.KnnMemoryBasedNWR;
 import delfos.rs.collaborativefiltering.predictiontechniques.PredictionTechnique;
 import delfos.rs.collaborativefiltering.profile.Neighbor;
@@ -139,31 +137,16 @@ public class HesitantKnnGroupUser
 
         HesitantSimilarity similarity = (HesitantSimilarity) getParameterValue(HESITANT_SIMILARITY_MEASURE);
 
-        Stream<HesitantKnnNeighborSimilarityTask> stream = datasetLoader.getUsersDataset()
+        Stream<Neighbor> neighborsStream = datasetLoader.getUsersDataset()
                 .stream()
                 .map(idNeighbor -> new HesitantKnnNeighborSimilarityTask(
-                                datasetLoader, groupOfUsers, groupModel, idNeighbor, similarity));
+                                datasetLoader, groupOfUsers, groupModel, idNeighbor, similarity))
+                .map(new HesitantKnnNeighborSimilarityFunction());
 
-        List<HesitantKnnNeighborSimilarityTask> tasks = stream.collect(Collectors.toList());
-
-        MultiThreadExecutionManager<HesitantKnnNeighborSimilarityTask> executionManager = new MultiThreadExecutionManager<>(
-                "Find neighbors of group " + groupOfUsers,
-                tasks,
-                HesitantKnnNeighborSimilarityTaskExecutor.class);
-
-        executionManager.run();
-
-        List<Neighbor> neighbors = executionManager.getAllFinishedTasks().parallelStream()
-                .map((tarea) -> {
-                    if (tarea.getNeighbor() == null) {
-                        return new Neighbor(RecommendationEntity.USER, tarea.neighborUser, 0);
-                    } else {
-                        return tarea.getNeighbor();
-                    }
-                })
+        List<Neighbor> neighbors = neighborsStream
+                .sorted(Neighbor.BY_SIMILARITY_DESC)
                 .collect(Collectors.toList());
 
-        neighbors.sort(Neighbor.BY_SIMILARITY_DESC);
         return neighbors;
     }
 

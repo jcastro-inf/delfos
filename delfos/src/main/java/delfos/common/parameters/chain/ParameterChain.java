@@ -334,29 +334,49 @@ public class ParameterChain {
         return leaf.getParameter().equals(ParameterOwner.ALIAS);
     }
 
-    public boolean isApplicableTo(ParameterOwner parameterOwner) {
+    public boolean isNumExecutions() {
+        return leaf.getParameter().equals(GroupCaseStudy.NUM_EXECUTIONS);
+    }
+
+    public void validateThatIsApplicableTo(ParameterOwner parameterOwner) {
 
         if (!root.getParameterOwner().getClass().equals(parameterOwner.getClass())) {
-            return false;
+            String message = "Root classes do not match: "
+                    + root.getParameterOwner().getClass() + " and "
+                    + parameterOwner.getClass() + " "
+                    + "[" + this.toString() + "]";
+            throw new IllegalArgumentException(message);
         }
 
         ParameterOwner parameterOwnerToGetValue = parameterOwner;
 
+        int i = 0;
+
         for (Node node : nodes) {
             if (!parameterOwnerToGetValue.haveParameter(node.getParameter())) {
-                return false;
+
+                String message = "Node[" + i + "] "
+                        + "parameter owner '" + parameterOwnerToGetValue + "' does not have the "
+                        + "parameter '" + node.getParameter() + "' "
+                        + "[" + this.toString() + "]";
+                throw new IllegalArgumentException("ParameterOwner is not compatible: " + root.getParameterOwner().getClass() + " != " + parameterOwner.getClass());
             }
             parameterOwnerToGetValue = (ParameterOwner) parameterOwnerToGetValue.getParameterValue(
                     node.getParameter());
+            i++;
         }
 
-        return parameterOwnerToGetValue.haveParameter(leaf.getParameter());
+        if (!parameterOwnerToGetValue.haveParameter(leaf.getParameter())) {
+            String message = "Leaf "
+                    + "parameter owner '" + parameterOwnerToGetValue + "' does not have the "
+                    + "parameter '" + leaf.getParameter() + "' "
+                    + "[" + this.toString() + "]";
+            throw new IllegalArgumentException(message);
+        }
     }
 
     public Object getValueOn(ParameterOwner parameterOwner) {
-        if (!isApplicableTo(parameterOwner)) {
-            throw new IllegalArgumentException("ParameterOwner is not compatible: " + root.getParameterOwner().getClass() + " != " + parameterOwner.getClass());
-        }
+        validateThatIsApplicableTo(parameterOwner);
 
         ParameterOwner parameterOwnerToGetValue = parameterOwner;
 
@@ -385,5 +405,14 @@ public class ParameterChain {
         str.append("=====================================================\n");
 
         return str.toString();
+    }
+
+    boolean isApplicableTo(GroupCaseStudy aoiRatingsMinGroupCaseStudy) {
+        try {
+            validateThatIsApplicableTo(aoiRatingsMinGroupCaseStudy);
+            return true;
+        } catch (IllegalArgumentException ex) {
+            return false;
+        }
     }
 }

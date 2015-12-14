@@ -49,7 +49,10 @@ public class HesitantGRS_2_oneGroup_dissimilarMembers extends DelfosTest {
     }
 
     private Collection<ConfiguredDatasetLoader> getDatasetLoader() {
-        return Arrays.asList(new ConfiguredDatasetLoader("ml-100k"));
+        return Arrays.asList(
+                new ConfiguredDatasetLoader("ml-100k"),
+                new ConfiguredDatasetLoader("ml-1m")
+        );
     }
 
     private List<GroupRecommenderSystem> getGRSs() {
