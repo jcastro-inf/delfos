@@ -8,7 +8,6 @@ import delfos.dataset.basic.rating.Rating;
 import delfos.experiment.casestudy.CaseStudy;
 import delfos.experiment.casestudy.defaultcase.DefaultCaseStudy;
 import delfos.group.casestudy.defaultcase.GroupCaseStudy;
-import delfos.group.casestudy.defaultcase.GroupCaseStudy;
 import delfos.group.io.xml.casestudy.GroupCaseStudyXML;
 import delfos.io.xml.casestudy.CaseStudyXML;
 import delfos.main.Main;

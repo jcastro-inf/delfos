@@ -1,4 +1,4 @@
-package delfos.group.experiment.validationtechnique;
+package delfos.group.experiment.validation.validationtechniques;
 
 import delfos.common.Global;
 import delfos.configureddatasets.ConfiguredDatasetsFactory;
@@ -8,7 +8,6 @@ import delfos.dataset.basic.rating.RatingsDataset;
 import delfos.dataset.storage.memory.BothIndexRatingsDataset;
 import delfos.dataset.storage.validationdatasets.PairOfTrainTestRatingsDataset;
 import delfos.dataset.util.DatasetPrinter;
-import delfos.group.experiment.validation.validationtechniques.HoldOutGroupRatedItems;
 import delfos.group.groupsofusers.GroupOfUsers;
 import java.util.LinkedList;
 import java.util.List;

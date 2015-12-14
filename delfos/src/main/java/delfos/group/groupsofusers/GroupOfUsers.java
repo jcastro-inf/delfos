@@ -5,7 +5,7 @@ import delfos.dataset.basic.user.User;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -23,6 +23,30 @@ import java.util.stream.Collectors;
  */
 public class GroupOfUsers implements Comparable<GroupOfUsers>, Iterable<Integer> {
 
+    public static Comparator<GroupOfUsers> BY_MEMBERS_ID = (GroupOfUsers o1, GroupOfUsers o2) -> {
+
+        if (o1.size() == o2.size()) {
+            List<Integer> thisMembers = o1.getIdMembers().stream().sorted().collect(Collectors.toList());
+            List<Integer> compareMembers = o2.getIdMembers().stream().sorted().collect(Collectors.toList());
+
+            for (int i = 0; i < thisMembers.size(); i++) {
+                int compareTo = thisMembers.get(i).compareTo(compareMembers.get(i));
+                if (compareTo != 0) {
+                    //Son distintas.
+                    return compareTo;
+                }
+            }
+            //Son iguales
+            return 0;
+        } else if (o1.size() > o2.size()) {
+            return 1;
+        } else if (o1.size() < o2.size()) {
+            return -1;
+        } else {
+            throw new IllegalStateException("This situation is impossible.");
+        }
+    };
+
     /**
      * Conjunto de usuarios que pertenecen al grupo
      */
@@ -31,14 +55,16 @@ public class GroupOfUsers implements Comparable<GroupOfUsers>, Iterable<Integer>
     private final Set<User> members;
 
     public GroupOfUsers() {
-        this.idMembers = new TreeSet<>();
-        this.members = new TreeSet<>();
+        idMembers = new TreeSet<>();
+        members = new TreeSet<>();
     }
 
     @Deprecated
     public GroupOfUsers(Integer... _users) {
-        this();
-        idMembers.addAll(Arrays.asList(_users));
+        idMembers = new TreeSet<>(Arrays.asList(_users));
+        members = idMembers.stream()
+                .map(user -> new User(user))
+                .collect(Collectors.toCollection(TreeSet::new));
 
         if (idMembers.size() > this.idMembers.size()) {
             Global.showWarning("There are repeated users in the origin collection of users");
@@ -46,15 +72,15 @@ public class GroupOfUsers implements Comparable<GroupOfUsers>, Iterable<Integer>
     }
 
     public GroupOfUsers(Set<User> users) {
-        this.members = new TreeSet<>(users);
-        this.idMembers = users.stream().map(user -> user.getId()).collect(Collectors.toCollection(TreeSet::new));
+        members = new TreeSet<>(users);
+        idMembers = users.stream().map(user -> user.getId()).collect(Collectors.toCollection(TreeSet::new));
     }
 
     public GroupOfUsers(Collection<Integer> users) {
-        this.idMembers = new TreeSet<>(users);
-        this.members = users.stream().map(user -> new User(user)).collect(Collectors.toSet());
+        idMembers = new TreeSet<>(users);
+        members = users.stream().map(user -> new User(user)).collect(Collectors.toSet());
 
-        if (users.size() > this.idMembers.size()) {
+        if (users.size() > idMembers.size()) {
             Global.showWarning("There are repeated users in the origin collection of users");
         }
     }
@@ -100,30 +126,7 @@ public class GroupOfUsers implements Comparable<GroupOfUsers>, Iterable<Integer>
 
     @Override
     public int compareTo(GroupOfUsers o) {
-        if (this.size() > o.size()) {
-            return 1;
-        }
-
-        if (this.size() < o.size()) {
-            return -1;
-        }
-
-        List<Integer> thisMembers = new ArrayList<>(getIdMembers());
-        List<Integer> compareMembers = new ArrayList<>(o.getIdMembers());
-        Collections.sort(thisMembers);
-        Collections.sort(compareMembers);
-
-        for (int i = 0; i < thisMembers.size(); i++) {
-            int compareTo = thisMembers.get(i).compareTo(compareMembers.get(i));
-
-            if (compareTo != 0) {
-                //Son distintas.
-                return compareTo;
-            }
-        }
-
-        //Son iguales
-        return 0;
+        return GroupOfUsers.BY_MEMBERS_ID.compare(this, o);
     }
 
     @Override

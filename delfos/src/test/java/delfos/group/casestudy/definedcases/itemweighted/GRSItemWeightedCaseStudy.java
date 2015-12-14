@@ -13,7 +13,6 @@ import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RelevanceCriteria;
 import delfos.experiment.casestudy.cluster.TuringPreparator;
 import delfos.group.casestudy.defaultcase.GroupCaseStudy;
-import delfos.group.casestudy.defaultcase.GroupCaseStudy;
 import delfos.group.experiment.validation.groupformation.FixedGroupSize_OnlyNGroups;
 import delfos.group.experiment.validation.groupformation.GroupFormationTechnique;
 import delfos.group.experiment.validation.predictionvalidation.NoPredictionProtocol;
@@ -51,9 +50,8 @@ public class GRSItemWeightedCaseStudy extends DelfosTest {
     private final DatasetLoader<? extends Rating> datasetLoader = new ConfiguredDatasetLoader("ml-100k");
 
     @Test
-    public void testExecute() throws Exception {
+    public void createCaseStudyExperiments() throws Exception {
         createConsensusCaseStudyXML();
-        //TuringPreparator.executeAllExperimentsInDirectory(new File(EXPERIMENT_DIRECTORY));
     }
 
     public void createConsensusCaseStudyXML() {

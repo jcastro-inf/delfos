@@ -235,7 +235,7 @@ public class Global {
         if (messageLevelPrinted.isPrinted(MessageLevel.MESSAGE)) {
             System.out.print(message);
             if (doublePrint) {
-                System.err.println(message);
+                System.err.print(message);
             }
         }
     }

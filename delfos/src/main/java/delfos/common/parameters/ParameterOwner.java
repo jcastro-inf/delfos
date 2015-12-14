@@ -1,9 +1,13 @@
 package delfos.common.parameters;
 
-import java.io.Serializable;
-import java.util.Collection;
+import delfos.common.StringsOrderings;
 import delfos.common.parameters.restriction.StringParameter;
 import delfos.factories.Factory;
+import java.io.Serializable;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.Set;
+import java.util.TreeSet;
 
 /**
  *
@@ -11,6 +15,80 @@ import delfos.factories.Factory;
  * @version 1.0 08-Mar-2013
  */
 public interface ParameterOwner extends Serializable, Comparable<Object> {
+
+    public static final Comparator<Object> SAME_CLASS_COMPARATOR_OBJECT = (Object o1, Object o2) -> {
+        if (o1 instanceof ParameterOwner && o2 instanceof ParameterOwner) {
+            ParameterOwner p1 = (ParameterOwner) o1;
+            ParameterOwner p2 = (ParameterOwner) o2;
+
+            return ParameterOwner.SAME_CLASS_COMPARATOR.compare(p1, p2);
+        } else {
+            return StringsOrderings.getNaturalComparatorIgnoreCaseAscii().compare(o1.toString(), o2.toString());
+        }
+    };
+
+    public static final Comparator<ParameterOwner> SAME_CLASS_COMPARATOR = (ParameterOwner o1, ParameterOwner o2) -> {
+        if (o1 instanceof ParameterOwner && o2 instanceof ParameterOwner) {
+
+            ParameterOwner parameterOwner1 = (ParameterOwner) o1;
+            ParameterOwner parameterOwner2 = (ParameterOwner) o2;
+
+            if (parameterOwner1.isSameClass(parameterOwner2)) {
+                return 0;
+            } else {
+                return parameterOwner1.compareTo(parameterOwner2);
+            }
+        } else {
+            return StringsOrderings.compareNatural(o1.toString(), o2.toString());
+        }
+    };
+
+    public static final Comparator<ParameterOwner> PARAMETERS_DETAILED = new Comparator<ParameterOwner>() {
+
+        @Override
+        public int compare(ParameterOwner o1, ParameterOwner o2) {
+            if (!o1.getClass().equals(o2.getClass())) {
+                return o1.getNameWithParameters().compareTo(o2.getNameWithParameters());
+            }
+
+            Set<Parameter> parameters = new TreeSet<>(o1.getParameters());
+
+            parameters.remove(ParameterOwner.ALIAS);
+
+            for (Parameter parameter : parameters) {
+                Object o1Value = o1.getParameterValue(parameter);
+                Object o2Value = o2.getParameterValue(parameter);
+
+                if (o1Value instanceof ParameterOwner || o2Value instanceof ParameterOwner) {
+                    ParameterOwner o1ValueParameterOwner = (ParameterOwner) o1Value;
+                    ParameterOwner o2ValueParameterOwner = (ParameterOwner) o2Value;
+
+                    int compare = compare(o1ValueParameterOwner, o2ValueParameterOwner);
+
+                    if (compare != 0) {
+                        return compare;
+                    }
+                } else if (o1Value instanceof Number) {
+
+                    Number o1ValueNumber = (Number) o1Value;
+                    Number o2ValueNumber = (Number) o2Value;
+
+                    int compare = Double.compare(o1ValueNumber.doubleValue(), o2ValueNumber.doubleValue());
+
+                    if (compare != 0) {
+                        return compare;
+                    }
+                } else {
+                    int compare = StringsOrderings.getNaturalComparatorIgnoreCaseAscii().compare(o1Value.toString(), o2Value.toString());
+                    if (compare != 0) {
+                        return compare;
+                    }
+                }
+            }
+
+            return 0;
+        }
+    };
 
     public static final Parameter ALIAS = new Parameter("alias", new StringParameter(""));
 
@@ -136,4 +214,11 @@ public interface ParameterOwner extends Serializable, Comparable<Object> {
      */
     public ParameterOwnerType getParameterOwnerType();
 
+    public default boolean isSameClass(ParameterOwner parameterOwner) {
+        if (parameterOwner == null) {
+            return true;
+        }
+
+        return this.getClass().equals(parameterOwner.getClass());
+    }
 }

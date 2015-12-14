@@ -1,4 +1,4 @@
-package delfos.group.casestudy.definedcases.hesitant.experiment0;
+package delfos.group.casestudy.definedcases.hesitant.experiment3oneGroup;
 
 import delfos.Constants;
 import delfos.common.FileUtilities;
@@ -9,16 +9,18 @@ import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.RelevanceCriteria;
 import delfos.experiment.casestudy.cluster.TuringPreparator;
 import delfos.group.casestudy.defaultcase.GroupCaseStudy;
+import delfos.group.experiment.validation.groupformation.DissimilarMembers_OnlyNGroups;
 import delfos.group.experiment.validation.groupformation.GroupFormationTechnique;
-import delfos.group.experiment.validation.groupformation.SimilarMembers_OnlyNGroups;
 import delfos.group.experiment.validation.predictionvalidation.NoPredictionProtocol;
 import delfos.group.experiment.validation.validationtechniques.CrossFoldValidation_groupRatedItems;
 import delfos.group.factories.GroupEvaluationMeasuresFactory;
 import delfos.group.grs.GroupRecommenderSystem;
 import delfos.group.grs.hesitant.HesitantKnnGroupUser;
-import delfos.utils.hesitant.similarity.HesitantSimilarity;
-import delfos.utils.hesitant.similarity.basic.HesitantMeanAggregation;
+import delfos.utils.hesitant.similarity.HesitantPearson;
+import delfos.utils.hesitant.similarity.factory.HesitantSimilarityFactory;
 import java.io.File;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -26,32 +28,31 @@ import java.util.List;
 import java.util.stream.Collectors;
 import org.junit.Test;
 
-public class HesitantGRS_CaseStudy extends DelfosTest {
+public class HesitantGRS_3_oneGroup_randomMembers extends DelfosTest {
 
-    public HesitantGRS_CaseStudy() {
+    public HesitantGRS_3_oneGroup_randomMembers() {
     }
 
-    public static final int numExec = 1;
     public static final long SEED_VALUE = 123456L;
 
-    public static final List<Integer> groupSizes = Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
-    public static final int numGroups = 90;
-
     File experimentDirectory = new File(Constants.getTempDirectory().getAbsolutePath() + File.separator
-            + "HesitantGRS.experiment0" + File.separator);
+            + "HesitantGRS.experiment3oneGroup" + File.separator
+            + HesitantGRS_3_oneGroup_randomMembers.class.getSimpleName() + File.separator);
 
     private Collection<GroupFormationTechnique> getGroupFormationTechnique() {
-        return groupSizes.stream()
+        return Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 15, 20, 25, 50, 100, 200, 500).stream()
                 .map((groupSize) -> {
-                    GroupFormationTechnique gft = new SimilarMembers_OnlyNGroups(
-                            numGroups,
-                            groupSize);
+                    GroupFormationTechnique gft = new DissimilarMembers_OnlyNGroups(1, groupSize);
                     return gft;
                 }).collect(Collectors.toList());
+
     }
 
     private Collection<ConfiguredDatasetLoader> getDatasetLoader() {
-        return Arrays.asList(new ConfiguredDatasetLoader("ml-100k"));
+        return Arrays.asList(
+                new ConfiguredDatasetLoader("ml-100k"),
+                new ConfiguredDatasetLoader("ml-1m")
+        );
     }
 
     private List<GroupRecommenderSystem> getGRSs() {
@@ -59,16 +60,33 @@ public class HesitantGRS_CaseStudy extends DelfosTest {
 
         List<GroupRecommenderSystem> ret = new ArrayList<>();
 
-        HesitantSimilarity hesitantSimilarity = new HesitantMeanAggregation();
-        HesitantKnnGroupUser hesitantGRS = new HesitantKnnGroupUser();
+        ret.addAll(HesitantSimilarityFactory.getAll()
+                .stream()
+                .map((hesitantSimilarity) -> {
 
-        hesitantGRS.setAlias(hesitantSimilarity.getName());
-        hesitantGRS.setParameterValue(HesitantKnnGroupUser.NEIGHBORHOOD_SIZE, neighborhoodSize);
-        hesitantGRS.setParameterValue(HesitantKnnGroupUser.HESITANT_SIMILARITY_MEASURE, hesitantSimilarity);
-        hesitantGRS.setParameterValue(HesitantKnnGroupUser.DELETE_REPEATED, false);
+                    DecimalFormat format = new DecimalFormat("000");
 
-        ret.add(hesitantGRS);
+                    HesitantKnnGroupUser grs = new HesitantKnnGroupUser();
+                    grs.setAlias(hesitantSimilarity.getName() + "_neighborhoodSize=" + format.format(neighborhoodSize));
+                    grs.setParameterValue(HesitantKnnGroupUser.NEIGHBORHOOD_SIZE, neighborhoodSize);
+                    grs.setParameterValue(HesitantKnnGroupUser.HESITANT_SIMILARITY_MEASURE, hesitantSimilarity);
+                    return grs;
 
+                }).collect(Collectors.toList()));
+
+        {
+
+            HesitantPearson hesitantSimilarity = new HesitantPearson();
+            NumberFormat format = new DecimalFormat("000");
+            HesitantKnnGroupUser hesitantGRS = new HesitantKnnGroupUser();
+
+            hesitantGRS.setAlias(hesitantSimilarity.getName() + "_deleteRepeated" + "_neighborhoodSize=" + format.format(neighborhoodSize));
+            hesitantGRS.setParameterValue(HesitantKnnGroupUser.NEIGHBORHOOD_SIZE, neighborhoodSize);
+            hesitantGRS.setParameterValue(HesitantKnnGroupUser.HESITANT_SIMILARITY_MEASURE, hesitantSimilarity);
+            hesitantGRS.setParameterValue(HesitantKnnGroupUser.DELETE_REPEATED, true);
+
+            ret.add(hesitantGRS);
+        }
         return ret;
     }
 
@@ -115,7 +133,5 @@ public class HesitantGRS_CaseStudy extends DelfosTest {
         Global.show("This case study has " + new TuringPreparator()
                 .sizeOfAllExperimentsInDirectory(experimentDirectory)
                 + " experiments");
-
-        new TuringPreparator().executeAllExperimentsInDirectory(experimentDirectory, 1);
     }
 }

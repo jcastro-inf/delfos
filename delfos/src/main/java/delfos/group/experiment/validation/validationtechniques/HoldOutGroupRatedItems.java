@@ -1,10 +1,5 @@
 package delfos.group.experiment.validation.validationtechniques;
 
-import java.util.Map;
-import java.util.Random;
-import java.util.Set;
-import java.util.TreeMap;
-import java.util.TreeSet;
 import delfos.ERROR_CODES;
 import delfos.common.Global;
 import delfos.common.exceptions.dataset.CannotLoadContentDataset;
@@ -13,13 +8,18 @@ import delfos.common.exceptions.dataset.items.ItemNotFound;
 import delfos.common.exceptions.dataset.users.UserNotFound;
 import delfos.common.parameters.Parameter;
 import delfos.common.parameters.restriction.FloatParameter;
-import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.loader.types.DatasetLoader;
+import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.storage.validationdatasets.PairOfTrainTestRatingsDataset;
 import delfos.dataset.storage.validationdatasets.ValidationDatasets;
 import delfos.dataset.util.DatasetOperations;
 import delfos.dataset.util.DatasetPrinterDeprecated;
 import delfos.group.groupsofusers.GroupOfUsers;
+import java.util.Map;
+import java.util.Random;
+import java.util.Set;
+import java.util.TreeMap;
+import java.util.TreeSet;
 
 /**
  * Validación hold out para sistemas de recomendación a grupos. Esta validación
@@ -67,17 +67,12 @@ public class HoldOutGroupRatedItems extends GroupValidationTechnique {
             Iterable<GroupOfUsers> groupsOfUsers)
             throws CannotLoadRatingsDataset, CannotLoadContentDataset {
 
-        if (datasetLoader == null) {
-            throw new IllegalArgumentException("The datasetLoader is null.");
-        }
+        checkDatasetLoaderNotNull(datasetLoader);
+        checkGroupsOfUsersNotNull(groupsOfUsers);
+        checkGroupsAreNotSharingUsers(groupsOfUsers);
 
-        if (groupsOfUsers == null) {
-            throw new IllegalArgumentException("The parameter 'groupOfUsers' is null.");
-        }
         final long seed = getSeedValue();
         Random random = new Random(seed);
-
-        checkGroupsSharingUsers(groupsOfUsers);
 
         Map<Integer, Set<Integer>> testSet = new TreeMap<>();
 
@@ -85,7 +80,7 @@ public class HoldOutGroupRatedItems extends GroupValidationTechnique {
 
         for (GroupOfUsers groupOfUsers : groupsOfUsers) {
 
-            Set<Integer> allRatedItems_thisGroup = getGroupRatedItems(groupOfUsers, datasetLoader);
+            Set<Integer> allRatedItems_thisGroup = getGroupRatedItems(datasetLoader, groupOfUsers);
             allRatedItems_this.addAll(allRatedItems_thisGroup);
 
             double testPercent = 1.0 - getTrainPercent();
@@ -153,7 +148,7 @@ public class HoldOutGroupRatedItems extends GroupValidationTechnique {
         return ret;
     }
 
-    public Set<Integer> getGroupRatedItems(GroupOfUsers groupOfUsers, DatasetLoader<? extends Rating> datasetLoader) throws CannotLoadRatingsDataset, IllegalArgumentException {
+    public Set<Integer> getGroupRatedItems(DatasetLoader<? extends Rating> datasetLoader, GroupOfUsers groupOfUsers) throws CannotLoadRatingsDataset, IllegalArgumentException {
         //Para cada grupo, compruebo qué productos pueden ser candidatos a test
         Set<Integer> allRatedItems_thisGroup = new TreeSet<>();
         {
