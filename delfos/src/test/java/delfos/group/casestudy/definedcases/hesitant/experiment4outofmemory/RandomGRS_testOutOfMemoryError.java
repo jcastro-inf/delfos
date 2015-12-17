@@ -75,11 +75,7 @@ public class RandomGRS_testOutOfMemoryError extends DelfosTest {
         ret.addAll(HesitantSimilarityFactory.getAll()
                 .stream()
                 .map((hesitantSimilarity) -> {
-
-                    DecimalFormat format = new DecimalFormat("000");
-
                     HesitantKnnGroupUser grs = new HesitantKnnGroupUser();
-                    grs.setAlias(hesitantSimilarity.getName() + "_neighborhoodSize=" + format.format(neighborhoodSize));
                     grs.setParameterValue(HesitantKnnGroupUser.NEIGHBORHOOD_SIZE, neighborhoodSize);
                     grs.setParameterValue(HesitantKnnGroupUser.HESITANT_SIMILARITY_MEASURE, hesitantSimilarity);
                     return grs;
@@ -129,15 +125,11 @@ public class RandomGRS_testOutOfMemoryError extends DelfosTest {
                         SEED_VALUE
                 );
 
-                groupCaseStudy.setAlias(
-                        "_dataValidation=" + groupCaseStudy.hashDataValidation()
-                        + "_technique=" + groupCaseStudy.hashTechnique()
-                        + "_" + groupRecommenderSystem.getAlias()
-                        + "_allHash=" + groupCaseStudy.hashCode()
-                );
                 groupCaseStudys.add(groupCaseStudy);
             }
         }
+
+        turingPreparator.renameCaseStudyWithTheMinimumDistinctAlias(groupCaseStudys);
 
         turingPreparator.prepareGroupExperiment(
                 experimentDirectory,
