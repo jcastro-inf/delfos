@@ -11,10 +11,12 @@ import java.util.Objects;
 class Leaf {
 
     private final Parameter parameter;
+    private final ParameterOwner parameterOwner;
     private final Object parameterValue;
 
-    public Leaf(Parameter parameter, Object parameterValue) {
+    public Leaf(ParameterOwner parameterOwner, Parameter parameter, Object parameterValue) {
         this.parameter = parameter;
+        this.parameterOwner = parameterOwner;
         this.parameterValue = parameterValue;
     }
 
@@ -26,10 +28,20 @@ class Leaf {
         return parameterValue;
     }
 
+    public ParameterOwner getParameterOwner() {
+        return parameterOwner;
+    }
+
     boolean isCompatibleWith(Leaf leaf) {
         boolean parameterAreSame = parameter.equals(leaf.parameter);
 
-        return parameterAreSame;
+        if (!parameterAreSame) {
+            return false;
+        }
+
+        boolean parameterOwnerAreSameClass = parameterOwner.getClass().equals(leaf.parameterOwner.getClass());
+
+        return parameterOwnerAreSameClass;
     }
 
     @Override
@@ -37,11 +49,15 @@ class Leaf {
         if (obj instanceof Leaf) {
             Leaf leaf = (Leaf) obj;
 
-            if (this.parameterValue instanceof ParameterOwner && leaf.parameterValue instanceof ParameterOwner) {
-                ParameterOwner parameterOwner = (ParameterOwner) this.parameterValue;
-                ParameterOwner parameterOwner2 = (ParameterOwner) leaf.parameterValue;
+            if (!this.parameterOwner.getClass().equals(leaf.parameterOwner.getClass())) {
+                return false;
+            }
 
-                return parameterOwner.equals(parameterOwner2);
+            if (this.parameterValue instanceof ParameterOwner && leaf.parameterValue instanceof ParameterOwner) {
+                ParameterOwner parameterValueParameterOwner = (ParameterOwner) this.parameterValue;
+                ParameterOwner parameterValueParameterOwner2 = (ParameterOwner) leaf.parameterValue;
+
+                return parameterValueParameterOwner.equals(parameterValueParameterOwner2);
             } else {
                 boolean valuesAreSame = this.parameterValue.equals(leaf.parameterValue);
                 return valuesAreSame;
