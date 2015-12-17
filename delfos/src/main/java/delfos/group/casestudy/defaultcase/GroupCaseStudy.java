@@ -49,6 +49,7 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -236,7 +237,7 @@ public class GroupCaseStudy extends ExperimentAdapter {
         executionsResult = new Map[getNumExecutions()][numParticiones];
         for (int execution = 0; execution < getNumExecutions(); execution++) {
             for (int split = 0; split < numParticiones; split++) {
-                executionsResult[execution][split] = new TreeMap<>();
+                executionsResult[execution][split] = Collections.synchronizedMap(new TreeMap<>());
             }
         }
         groupRecommenderSystem.addRecommendationModelBuildingProgressListener(new RecommenderSystemBuildingProgressListener_default(System.out, 5000));
@@ -362,7 +363,7 @@ public class GroupCaseStudy extends ExperimentAdapter {
                                 taskGroupRecommendationOutput,
                                 getAlias(), ejecucionActual, particionActual);
 
-                groupEvaluationMeasures.forEach(groupEvaluationMeasure -> {
+                groupEvaluationMeasures.parallelStream().forEach(groupEvaluationMeasure -> {
                     GroupEvaluationMeasureResult groupMeasureResult = groupEvaluationMeasure.getMeasureResult(
                             groupRecommendationResult,
                             testDatasetLoader.getRatingsDataset(),
