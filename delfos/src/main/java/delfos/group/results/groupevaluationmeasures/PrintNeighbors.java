@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 import org.jdom2.Element;
 
@@ -58,7 +59,7 @@ public class PrintNeighbors extends GroupEvaluationMeasure {
 
                     ArrayList<Recommendation> recommendationsById = new ArrayList<>(groupRecommendations);
 
-                    Collection<Integer> requests = groupRecommenderSystemResult.getGroupInput(groupOfUsers).getItemsRequested();
+                    Set<Integer> requests = groupRecommenderSystemResult.getGroupInput(groupOfUsers).getItemsRequested().stream().collect(Collectors.toSet());
 
                     requests.removeAll(recommendationsById.stream().map((recommendation) -> recommendation.getIdItem()).collect(Collectors.toList()));
                     recommendationsById.addAll(requests.stream().map((idItem) -> new Recommendation(idItem, Float.NaN)).collect(Collectors.toList()));
