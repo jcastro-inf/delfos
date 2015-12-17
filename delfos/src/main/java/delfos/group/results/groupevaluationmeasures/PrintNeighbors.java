@@ -5,7 +5,7 @@ import delfos.dataset.basic.rating.RatingsDataset;
 import delfos.dataset.basic.rating.RelevanceCriteria;
 import delfos.group.groupsofusers.GroupOfUsers;
 import delfos.group.results.groupevaluationmeasures.detailed.RecommendationsWithNeighborToXML;
-import delfos.group.results.grouprecomendationresults.GroupRecommendationResult;
+import delfos.group.results.grouprecomendationresults.GroupRecommenderSystemResult;
 import delfos.io.xml.recommendations.RecommendationsToXML;
 import delfos.rs.collaborativefiltering.profile.Neighbor;
 import delfos.rs.recommendation.Recommendation;
@@ -15,8 +15,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
-import java.util.TreeSet;
 import java.util.stream.Collectors;
 import org.jdom2.Element;
 
@@ -34,20 +32,19 @@ public class PrintNeighbors extends GroupEvaluationMeasure {
     }
 
     @Override
-    public GroupEvaluationMeasureResult getMeasureResult(GroupRecommendationResult recommendationResults, RatingsDataset<? extends Rating> testDataset, RelevanceCriteria relevanceCriteria) {
+    public GroupEvaluationMeasureResult getMeasureResult(GroupRecommenderSystemResult groupRecommenderSystemResult, RatingsDataset<? extends Rating> testDataset, RelevanceCriteria relevanceCriteria) {
 
         Element neighborsDetails = new Element("NeighborsDetails");
 
-        for (Map.Entry<GroupOfUsers, List<Recommendation>> entry : recommendationResults) {
+        for (GroupOfUsers groupOfUsers : groupRecommenderSystemResult) {
+            Collection<Recommendation> groupRecommendations = groupRecommenderSystemResult.getGroupOutput(groupOfUsers).getRecommendations();
 
-            GroupOfUsers groupOfUsers = entry.getKey();
-            List<Recommendation> groupRecommendation = entry.getValue();
             List<Neighbor> neighbors;
 
-            if (groupRecommendation.isEmpty()) {
+            if (groupRecommendations.isEmpty()) {
             } else {
-                if ((groupRecommendation.iterator().next() instanceof RecommendationWithNeighbors)) {
-                    RecommendationWithNeighbors recommendationWithNeighbors = (RecommendationWithNeighbors) groupRecommendation.iterator().next();
+                if ((groupRecommendations.iterator().next() instanceof RecommendationWithNeighbors)) {
+                    RecommendationWithNeighbors recommendationWithNeighbors = (RecommendationWithNeighbors) groupRecommendations.iterator().next();
                     neighbors = recommendationWithNeighbors.getNeighbors().stream().collect(Collectors.toList());
 
                     Collections.sort(neighbors, Neighbor.BY_ID);
@@ -59,9 +56,10 @@ public class PrintNeighbors extends GroupEvaluationMeasure {
                             neighbors
                     ));
 
-                    ArrayList<Recommendation> recommendationsById = new ArrayList<>(groupRecommendation);
+                    ArrayList<Recommendation> recommendationsById = new ArrayList<>(groupRecommendations);
 
-                    Collection<Integer> requests = new TreeSet<>(recommendationResults.getRequests(groupOfUsers));
+                    Collection<Integer> requests = groupRecommenderSystemResult.getGroupInput(groupOfUsers).getItemsRequested();
+
                     requests.removeAll(recommendationsById.stream().map((recommendation) -> recommendation.getIdItem()).collect(Collectors.toList()));
                     recommendationsById.addAll(requests.stream().map((idItem) -> new Recommendation(idItem, Float.NaN)).collect(Collectors.toList()));
 

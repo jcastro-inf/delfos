@@ -8,7 +8,7 @@ import delfos.dataset.basic.rating.RatingsDataset;
 import delfos.dataset.basic.rating.RelevanceCriteria;
 import delfos.dataset.util.DatasetPrinter;
 import delfos.group.groupsofusers.GroupOfUsers;
-import delfos.group.results.grouprecomendationresults.GroupRecommendationResult;
+import delfos.group.results.grouprecomendationresults.GroupRecommenderSystemResult;
 import delfos.rs.collaborativefiltering.profile.Neighbor;
 import delfos.rs.recommendation.Recommendation;
 import delfos.rs.recommendation.RecommendationWithNeighbors;
@@ -16,6 +16,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -40,22 +41,24 @@ public class PrintNeighborsToXML extends GroupEvaluationMeasure {
 
     public static final File TEST_SET_DIRECTORY = new File(
             Constants.getTempDirectory().getAbsoluteFile() + File.separator
-            + PrintNeighborsToXML.class.getSimpleName() + File.separator
-            + "test-set" + File.separator);
+            + PrintNeighborsToXML.class.getSimpleName() + File.separator);
 
     @Override
-    public GroupEvaluationMeasureResult getMeasureResult(GroupRecommendationResult recommendationResults, RatingsDataset<? extends Rating> testDataset, RelevanceCriteria relevanceCriteria) {
+    public GroupEvaluationMeasureResult getMeasureResult(GroupRecommenderSystemResult groupRecommenderSystemResult, RatingsDataset<? extends Rating> testDataset, RelevanceCriteria relevanceCriteria) {
 
         FileUtilities.createDirectoryPath(TEST_SET_DIRECTORY);
 
-        String fileName = TEST_SET_DIRECTORY.getPath() + File.separator + recommendationResults.getCaseAlias() + "-testSet.xml";
+        String fileName = TEST_SET_DIRECTORY.getPath() + File.separator
+                + groupRecommenderSystemResult.getGroupCaseStudyAlias() + File.separator
+                + "-exec=" + groupRecommenderSystemResult.getThisExecution()
+                + "-split=" + groupRecommenderSystemResult.getThisSplit()
+                + "-testSet.xml";
 
         StringBuilder str = new StringBuilder();
 
-        for (Map.Entry<GroupOfUsers, List<Recommendation>> entry : recommendationResults) {
+        for (GroupOfUsers groupOfUsers : groupRecommenderSystemResult) {
+            Collection<Recommendation> groupRecommendation = groupRecommenderSystemResult.getGroupOutput(groupOfUsers).getRecommendations();
 
-            GroupOfUsers groupOfUsers = entry.getKey();
-            List<Recommendation> groupRecommendation = entry.getValue();
             List<Neighbor> neighbors;
 
             if ((groupRecommendation.iterator().next() instanceof RecommendationWithNeighbors)) {

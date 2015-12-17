@@ -7,7 +7,7 @@ import delfos.common.statisticalfuncions.MeanIterative;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RatingsDataset;
 import delfos.dataset.basic.rating.RelevanceCriteria;
-import delfos.group.results.grouprecomendationresults.GroupRecommendationResult;
+import delfos.group.results.grouprecomendationresults.GroupRecommenderSystemResult;
 import delfos.results.MeasureResult;
 import delfos.results.evaluationmeasures.EvaluationMeasure;
 import java.util.Collection;
@@ -48,7 +48,7 @@ public abstract class GroupEvaluationMeasure extends ParameterOwnerAdapter imple
      * @return Devuelve un objeto GroupEvaluationMeasureResult que almacena el
      * valor de la métrica para cada ejecución
      */
-    public abstract GroupEvaluationMeasureResult getMeasureResult(GroupRecommendationResult recommendationResults, RatingsDataset<? extends Rating> testDataset, RelevanceCriteria relevanceCriteria);
+    public abstract GroupEvaluationMeasureResult getMeasureResult(GroupRecommenderSystemResult groupRecommenderSystemResult, RatingsDataset<? extends Rating> testDataset, RelevanceCriteria relevanceCriteria);
 
     /**
      * Devuelve true si la interpretación correcta de los valores de la medida

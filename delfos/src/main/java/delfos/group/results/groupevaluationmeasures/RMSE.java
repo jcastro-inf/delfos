@@ -7,12 +7,10 @@ import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RatingsDataset;
 import delfos.dataset.basic.rating.RelevanceCriteria;
 import delfos.group.groupsofusers.GroupOfUsers;
-import delfos.group.results.grouprecomendationresults.GroupRecommendationResult;
+import delfos.group.results.grouprecomendationresults.GroupRecommenderSystemResult;
 import delfos.rs.recommendation.Recommendation;
 import java.util.Collection;
-import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.TreeMap;
 
 /**
@@ -34,12 +32,12 @@ import java.util.TreeMap;
 public class RMSE extends GroupEvaluationMeasure {
 
     @Override
-    public GroupEvaluationMeasureResult getMeasureResult(GroupRecommendationResult recommendationResults, RatingsDataset<? extends Rating> testDataset, RelevanceCriteria relevanceCriteria) {
+    public GroupEvaluationMeasureResult getMeasureResult(GroupRecommenderSystemResult groupRecommenderSystemResult, RatingsDataset<? extends Rating> testDataset, RelevanceCriteria relevanceCriteria) {
 
         MeanIterative rmse = new MeanIterative();
-        for (Entry<GroupOfUsers, List<Recommendation>> entry : recommendationResults) {
-            GroupOfUsers group = entry.getKey();
-            Collection<Recommendation> recommendationsToGroup = entry.getValue();
+
+        for (GroupOfUsers group : groupRecommenderSystemResult) {
+            Collection<Recommendation> groupRecommendations = groupRecommenderSystemResult.getGroupOutput(group).getRecommendations();
 
             Map<Integer, Map<Integer, ? extends Rating>> groupTrueRatings = new TreeMap<>();
             for (int idUser : group.getIdMembers()) {
@@ -50,7 +48,7 @@ public class RMSE extends GroupEvaluationMeasure {
                 }
             }
 
-            for (Recommendation r : recommendationsToGroup) {
+            for (Recommendation r : groupRecommendations) {
                 int idItem = r.getIdItem();
                 for (int idUser : group.getIdMembers()) {
                     if (groupTrueRatings.get(idUser).containsKey(idItem)) {

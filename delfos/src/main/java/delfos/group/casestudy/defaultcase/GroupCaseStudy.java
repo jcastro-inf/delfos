@@ -8,9 +8,6 @@ import delfos.common.exceptions.dataset.CannotLoadTrustDataset;
 import delfos.common.exceptions.dataset.CannotLoadUsersDataset;
 import delfos.common.exceptions.dataset.items.ItemNotFound;
 import delfos.common.exceptions.dataset.users.UserNotFound;
-import delfos.common.parallelwork.MultiThreadExecutionManager;
-import delfos.common.parallelwork.Parallelisation;
-import delfos.common.parallelwork.notblocking.MultiThreadExecutionManager_NotBlocking;
 import delfos.common.parameters.Parameter;
 import delfos.common.parameters.ParameterOwnerType;
 import delfos.common.parameters.restriction.IntegerParameter;
@@ -28,8 +25,9 @@ import delfos.experiment.ExperimentAdapter;
 import delfos.experiment.SeedHolder;
 import static delfos.experiment.SeedHolder.SEED;
 import delfos.experiment.casestudy.CaseStudyParameterChangedListener;
-import delfos.group.casestudy.parallelisation.SingleGroupRecommendation;
-import delfos.group.casestudy.parallelisation.SingleGroupRecommendationTask;
+import delfos.group.casestudy.parallelisation.SingleGroupRecommendationFunction;
+import delfos.group.casestudy.parallelisation.SingleGroupRecommendationTaskInput;
+import delfos.group.casestudy.parallelisation.SingleGroupRecommendationTaskOutput;
 import delfos.group.experiment.validation.groupformation.FixedGroupSize_OnlyNGroups;
 import delfos.group.experiment.validation.groupformation.GroupFormationTechnique;
 import delfos.group.experiment.validation.groupformation.GroupFormationTechniqueProgressListener_default;
@@ -44,7 +42,7 @@ import delfos.group.grs.GroupRecommenderSystem;
 import delfos.group.grs.RandomGroupRecommender;
 import delfos.group.results.groupevaluationmeasures.GroupEvaluationMeasure;
 import delfos.group.results.groupevaluationmeasures.GroupEvaluationMeasureResult;
-import delfos.group.results.grouprecomendationresults.GroupRecommendationResult;
+import delfos.group.results.grouprecomendationresults.GroupRecommenderSystemResult;
 import delfos.rs.RecommenderSystemBuildingProgressListener_default;
 import delfos.rs.recommendation.Recommendation;
 import java.io.Closeable;
@@ -55,9 +53,11 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 /**
  * Clase para ejecutar un caso de estudio de sistemas de recomendación a grupos.
@@ -197,8 +197,10 @@ public class GroupCaseStudy extends ExperimentAdapter {
     // ================== VARIABLES QUE NO CAMBIAN EN LA EJECUCION =============
     private final Collection<GroupEvaluationMeasure> groupEvaluationMeasures = GroupEvaluationMeasuresFactory.getInstance().getAllClasses();
 
-    // ================== VARIABLES QUE CAMBIAN EN LA EJECUCION ================
-    protected int ejecucionActual;
+    /**
+     * Matrix of Map with the results of each evaluation measure. The matrix is
+     * indexed by execution and then by split.
+     */
     protected Map<GroupEvaluationMeasure, GroupEvaluationMeasureResult>[][] executionsResult;
     protected boolean finished = false;
     private long[][] buildTimes;//executionTimes[ejecucion][conjunto]
@@ -225,13 +227,6 @@ public class GroupCaseStudy extends ExperimentAdapter {
 
         initGroupCaseStudy();
 
-        MultiThreadExecutionManager_NotBlocking<DefaultGroupCaseStudyGroupEvaluationMeasures_Task> multiThreadExecutionManagerEvaluationMeasures
-                = new MultiThreadExecutionManager_NotBlocking<>(
-                        "DefaultCaseStudy.computeEvaluationMeasures()",
-                        DefaultGroupCaseStudyGroupEvaluationMeasures_SingleTaskExecutor.class
-                );
-        multiThreadExecutionManagerEvaluationMeasures.runInBackground();
-
         int numVueltas = 1;
         int numParticiones = getGroupValidationTechnique().getNumberOfSplits();
         int maxVueltas = numParticiones * getNumExecutions();
@@ -254,13 +249,17 @@ public class GroupCaseStudy extends ExperimentAdapter {
 
         int loopCount = 0;
         setExperimentProgress(getAlias() + " --> Running Case Study Group", 0, -1);
-        for (ejecucionActual = 0; ejecucionActual < getNumExecutions(); ejecucionActual++) {
+        for (int executionIndex = 0; executionIndex < getNumExecutions(); executionIndex++) {
+
+            final int ejecucionActual = executionIndex;
             setNextSeedToSeedHolders(loopCount);
 
             Collection<GroupOfUsers> groups = groupFormationTechnique.shuffle(datasetLoader);
             PairOfTrainTestRatingsDataset[] pairsOfTrainTest = groupValidationTechnique.shuffle(datasetLoader, groups);
 
-            for (int particionActual = 0; particionActual < pairsOfTrainTest.length; particionActual++) {
+            for (int thisPartition = 0; thisPartition < pairsOfTrainTest.length; thisPartition++) {
+
+                final int particionActual = thisPartition;
 
                 setNextSeedToSeedHolders(loopCount);
 
@@ -277,13 +276,13 @@ public class GroupCaseStudy extends ExperimentAdapter {
                 long totalBuildTime;
                 Object groupRecommendationModel;
                 {
-                    Chronometer c = new Chronometer();
+                    Chronometer buildTime = new Chronometer();
                     groupRecommendationModel = groupRecommenderSystem.buildRecommendationModel(trainDatasetLoader);
                     if (groupRecommendationModel == null) {
                         throw new IllegalStateException("The RecommendationModel cannot be null");
                     }
 
-                    long spent = c.getTotalElapsed();
+                    long spent = buildTime.getTotalElapsed();
                     setBuildTime(ejecucionActual, particionActual, spent);
                     totalBuildTime = spent;
                 }
@@ -294,11 +293,11 @@ public class GroupCaseStudy extends ExperimentAdapter {
                 long totalGroupBuildTime = 0;
                 long totalGroupRecommendationTime = 0;
 
-                List<SingleGroupRecommendationTask> taskRecommendGroup = new ArrayList<>(groups.size());
+                List<SingleGroupRecommendationTaskInput> taskGroupRecommendationInput = new ArrayList<>(groups.size());
                 for (GroupOfUsers groupOfUsers : groups) {
                     for (GroupRecommendationRequest groupRecommendationRequest : groupPredictionProtocol.getGroupRecommendationRequests(trainDatasetLoader, testDatasetLoader, groupOfUsers)) {
 
-                        taskRecommendGroup.add(new SingleGroupRecommendationTask(
+                        taskGroupRecommendationInput.add(new SingleGroupRecommendationTaskInput(
                                 groupRecommenderSystem,
                                 groupRecommendationRequest.predictionPhaseDatasetLoader,
                                 groupRecommendationModel,
@@ -308,43 +307,34 @@ public class GroupCaseStudy extends ExperimentAdapter {
                     }
                 }
 
-                MultiThreadExecutionManager<SingleGroupRecommendationTask> groupsModelsRecommendation = new MultiThreadExecutionManager<>(
-                        getAlias() + " --> Group Recomendation",
-                        taskRecommendGroup,
-                        SingleGroupRecommendation.class);
+                taskGroupRecommendationInput.parallelStream().forEach(task -> {
 
-                groupsModelsRecommendation.addExecutionProgressListener((String proceso, int percent, long remainingMiliSeconds) -> {
-                    setExecutionProgress(getAlias() + " --> " + proceso + " " + percent + "%", (int) ((percent / 2.0f) + 50), remainingMiliSeconds);
+                    Set<Integer> groupRequests = task.getItemsRequested();
+                    GroupOfUsers groupOfUsers = task.getGroupOfUsers();
+
+                    if (groupRequests == null) {
+                        throw new IllegalArgumentException("Group request for group '" + groupOfUsers.toString() + "' are null.");
+                    }
+                    if (groupRequests.isEmpty()) {
+                        throw new IllegalArgumentException("Group request for group '" + groupOfUsers.toString() + "' are empty.");
+                    }
                 });
-                groupsModelsRecommendation.run();
 
-                Map<GroupOfUsers, Collection<Recommendation>> recomendacionesPorGrupo = new TreeMap<>();
-                Map<GroupOfUsers, Collection<Integer>> solicitudesPorGrupo = new TreeMap<>();
+                List<SingleGroupRecommendationTaskOutput> taskGroupRecommendationOutput = taskGroupRecommendationInput
+                        .parallelStream()
+                        .map(new SingleGroupRecommendationFunction())
+                        .collect(Collectors.toList());
 
-                Collection<SingleGroupRecommendationTask> allFinishedTasks = groupsModelsRecommendation.getAllFinishedTasks();
-                for (SingleGroupRecommendationTask task : allFinishedTasks) {
-                    GroupOfUsers group = task.getGroup();
-                    if (!recomendacionesPorGrupo.containsKey(group)) {
-                        recomendacionesPorGrupo.put(group, new ArrayList<>());
+                taskGroupRecommendationOutput.parallelStream().forEach(task -> {
+
+                    GroupOfUsers groupOfUsers = task.getGroup();
+                    final Collection<Recommendation> groupRecommendations = task.getRecommendations();
+
+                    if (groupRecommendations == null) {
+                        throw new IllegalStateException("Group recommendations for group '" + groupOfUsers.toString() + "'" + getAlias() + " --> Cannot recommend to group a null recommendations, should be an empty list instead.");
                     }
-                    if (!solicitudesPorGrupo.containsKey(group)) {
-                        solicitudesPorGrupo.put(group, new ArrayList<>());
-                    }
+                });
 
-                    if (task.getRecommendations() == null) {
-                        throw new IllegalStateException(getAlias() + " --> Cannot recommend to group a null recommendations, should be an empty list instead.");
-                    }
-
-                    if (task.getCandidateItems() == null) {
-                        throw new IllegalStateException(getAlias() + " --> Cannot retrieve the group requests.");
-                    }
-
-                    recomendacionesPorGrupo.get(group).addAll(task.getRecommendations());
-                    solicitudesPorGrupo.get(group).addAll(task.getCandidateItems());
-
-                    totalGroupBuildTime += task.getBuildGroupModelTime();
-                    totalGroupRecommendationTime += task.getRecommendationTime();
-                }
                 setExecutionProgress(getAlias() + " --> Recommendation process", 100, -1);
 
                 if (groupRecommenderSystem instanceof Closeable) {
@@ -366,37 +356,27 @@ public class GroupCaseStudy extends ExperimentAdapter {
                 setExperimentProgress(getAlias() + " --> Executing (ex " + (ejecucionActual + 1) + "/" + getNumExecutions() + ") (split " + (particionActual + 1) + "/" + numParticiones + ")", ejecucionActual * numParticiones + particionActual, tiempoRestanteExperimento);
                 numVueltas++;
 
-                GroupRecommendationResult groupRecommendationResult = new GroupRecommendationResult(groupValidationTechnique.getSeedValue(), totalBuildTime, totalGroupBuildTime, totalGroupRecommendationTime, solicitudesPorGrupo, recomendacionesPorGrupo, getAlias());
+                GroupRecommenderSystemResult groupRecommendationResult
+                        = new GroupRecommenderSystemResult(
+                                taskGroupRecommendationInput,
+                                taskGroupRecommendationOutput,
+                                getAlias(), ejecucionActual, particionActual);
 
-                multiThreadExecutionManagerEvaluationMeasures.addTask(
-                        new DefaultGroupCaseStudyGroupEvaluationMeasures_Task(
-                                ejecucionActual,
-                                particionActual,
-                                groupRecommendationResult,
-                                pairsOfTrainTest[particionActual].test,
-                                groupEvaluationMeasures,
-                                relevanceCriteria));
+                groupEvaluationMeasures.forEach(groupEvaluationMeasure -> {
+                    GroupEvaluationMeasureResult groupMeasureResult = groupEvaluationMeasure.getMeasureResult(
+                            groupRecommendationResult,
+                            testDatasetLoader.getRatingsDataset(),
+                            relevanceCriteria);
+
+                    executionsResult[ejecucionActual][particionActual].put(groupEvaluationMeasure, groupMeasureResult);
+
+                });
 
                 loopCount++;
             }
         }
 
         setExperimentProgress(getAlias() + " --> Waiting for evaluation measures values", 0, -1);
-
-        try {
-            multiThreadExecutionManagerEvaluationMeasures.waitUntilFinished();
-        } catch (InterruptedException ex) {
-            Logger.getLogger(GroupCaseStudy.class.getName()).log(Level.SEVERE, null, ex);
-        }
-
-        multiThreadExecutionManagerEvaluationMeasures.getAllFinishedTasks().stream().forEach((task) -> {
-            task.groupEvaluationMeasuresResults.entrySet().stream().forEach((entry) -> {
-                GroupEvaluationMeasure groupEvaluationMeasure = entry.getKey();
-                GroupEvaluationMeasureResult groupMeasureResult = entry.getValue();
-
-                this.executionsResult[task.ejecucion][task.particion].put(groupEvaluationMeasure, groupMeasureResult);
-            });
-        });
 
         setExperimentProgress(getAlias() + " --> Finished evaluation measures values", 100, -1);
         //caseStudyProgressChangedFireEvent(100);
@@ -410,10 +390,6 @@ public class GroupCaseStudy extends ExperimentAdapter {
 
         setExperimentProgress(getAlias() + " --> Starting Case Study Group", 0, -1);
         setExecutionProgress(getAlias() + " --> Starting Case Study Group", 0, -1);
-
-        if (Global.isVerboseAnnoying()) {
-            Parallelisation.printSchedulingInfo(System.out);
-        }
     }
 
     /**

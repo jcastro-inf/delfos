@@ -12,6 +12,8 @@ import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RelevanceCriteria;
 import delfos.dataset.storage.validationdatasets.PairOfTrainTestRatingsDataset;
+import delfos.group.casestudy.parallelisation.SingleGroupRecommendationTaskInput;
+import delfos.group.casestudy.parallelisation.SingleGroupRecommendationTaskOutput;
 import delfos.group.experiment.validation.groupformation.GroupFormationTechnique;
 import delfos.group.experiment.validation.predictionvalidation.GroupPredictionProtocol;
 import delfos.group.experiment.validation.predictionvalidation.GroupRecommendationRequest;
@@ -21,13 +23,16 @@ import delfos.group.groupsofusers.measuresovergroups.GroupMeasure;
 import delfos.group.grs.GroupRecommenderSystem;
 import delfos.group.results.groupevaluationmeasures.GroupEvaluationMeasure;
 import delfos.group.results.groupevaluationmeasures.GroupEvaluationMeasureResult;
-import delfos.group.results.grouprecomendationresults.GroupRecommendationResult;
+import delfos.group.results.grouprecomendationresults.GroupRecommenderSystemResult;
 import delfos.rs.recommendation.Recommendation;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
+import java.util.TreeSet;
 
 /**
  * Realiza un caso de estudio a nivel de grupo, es decir, aplica las medidas de
@@ -96,20 +101,20 @@ public class GroupLevelCaseStudy {
                 DatasetLoader<? extends Rating> testDatasetLoader = pairs[split].getTestDatasetLoader();
 
                 for (GroupRecommenderSystem groupRecommenderSystem : groupRecommenderSystems) {
-                    Object RecommendationModel = groupRecommenderSystem.buildRecommendationModel(trainingDatasetLoader);
+                    Object recommendationModel = groupRecommenderSystem.buildRecommendationModel(trainingDatasetLoader);
                     Collection<Recommendation> allPredictions = new ArrayList<>();
-                    List<Integer> requests = new ArrayList<>();
+                    Set<Integer> requests = new TreeSet<>();
 
                     for (GroupRecommendationRequest groupRecommendationRequest : predictionProtocol.getGroupRecommendationRequests(trainingDatasetLoader, testDatasetLoader, group)) {
 
                         Object groupModel = groupRecommenderSystem.buildGroupModel(
                                 groupRecommendationRequest.predictionPhaseDatasetLoader,
-                                RecommendationModel,
+                                recommendationModel,
                                 group);
 
                         Collection<Recommendation> groupRecommendations = groupRecommenderSystem.recommendOnly(
                                 groupRecommendationRequest.predictionPhaseDatasetLoader,
-                                RecommendationModel,
+                                recommendationModel,
                                 groupModel,
                                 group,
                                 groupRecommendationRequest.itemsToPredict);
@@ -128,7 +133,24 @@ public class GroupLevelCaseStudy {
                         _requests.put(group, requests);
                         Map<GroupOfUsers, Collection<Recommendation>> _recommendations = new TreeMap<>();
                         _recommendations.put(group, allPredictions);
-                        GroupRecommendationResult groupRecommendationResult = new GroupRecommendationResult(0, 0, 0, 1, _requests, _recommendations, groupRecommenderSystem.getAlias());
+
+                        List<SingleGroupRecommendationTaskInput> singleGroupRecommendationInputs = Arrays.asList(
+                                new SingleGroupRecommendationTaskInput(
+                                        groupRecommenderSystem,
+                                        datasetLoader,
+                                        recommendationModel,
+                                        group,
+                                        requests));
+
+                        List<SingleGroupRecommendationTaskOutput> singleGroupRecommendationOutputs = Arrays.asList(
+                                new SingleGroupRecommendationTaskOutput(group, allPredictions, 0, 0)
+                        );
+
+                        GroupRecommenderSystemResult groupRecommendationResult = new GroupRecommenderSystemResult(
+                                singleGroupRecommendationInputs,
+                                singleGroupRecommendationOutputs,
+                                GroupLevelCaseStudy.class.getSimpleName(), 0, 0);
+
                         GroupEvaluationMeasureResult measureResult = evaluationMeasure.getMeasureResult(groupRecommendationResult, testDatasetLoader.getRatingsDataset(), relevanceCriteria);
                         groupLevelResults.setEvaluationMeasure(groupRecommenderSystem, evaluationMeasure, measureResult);
                     }

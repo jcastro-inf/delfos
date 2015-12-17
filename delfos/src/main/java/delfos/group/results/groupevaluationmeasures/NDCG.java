@@ -7,7 +7,7 @@ import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RatingsDataset;
 import delfos.dataset.basic.rating.RelevanceCriteria;
 import delfos.group.groupsofusers.GroupOfUsers;
-import delfos.group.results.grouprecomendationresults.GroupRecommendationResult;
+import delfos.group.results.grouprecomendationresults.GroupRecommenderSystemResult;
 import delfos.io.xml.evaluationmeasures.NDCGXML;
 import static delfos.results.evaluationmeasures.NDCG.computeDCG;
 import delfos.rs.recommendation.Recommendation;
@@ -44,20 +44,18 @@ public class NDCG extends GroupEvaluationMeasure {
     }
 
     @Override
-    public GroupEvaluationMeasureResult getMeasureResult(GroupRecommendationResult recommendationResults, RatingsDataset<? extends Rating> testDataset, RelevanceCriteria relevanceCriteria) {
+    public GroupEvaluationMeasureResult getMeasureResult(GroupRecommenderSystemResult groupRecommenderSystemResult, RatingsDataset<? extends Rating> testDataset, RelevanceCriteria relevanceCriteria) {
 
         List<Double> ndcgByMember = new ArrayList<>();
 
-        for (Map.Entry<GroupOfUsers, List<Recommendation>> entry : recommendationResults) {
+        for (GroupOfUsers group : groupRecommenderSystemResult) {
+            Collection<Recommendation> groupRecommendations = groupRecommenderSystemResult.getGroupOutput(group).getRecommendations();
 
-            GroupOfUsers groupOfUsers = entry.getKey();
-            Collection<Recommendation> recommendations = entry.getValue();
-
-            if (recommendations.isEmpty()) {
+            if (groupRecommendations.isEmpty()) {
                 continue;
             }
 
-            for (int idUser : groupOfUsers) {
+            for (int idUser : group) {
 
                 List<Recommendation> idealRecommendations = new ArrayList<>();
                 List<Recommendation> recommendationsIntersectUserRatings = new ArrayList<>();
@@ -69,7 +67,7 @@ public class NDCG extends GroupEvaluationMeasure {
                     throw new IllegalArgumentException(ex);
                 }
 
-                for (Recommendation recommendation : recommendations) {
+                for (Recommendation recommendation : groupRecommendations) {
                     int idItem = recommendation.getIdItem();
                     if (userRatings.containsKey(idItem)) {
                         idealRecommendations.add(new Recommendation(idItem, userRatings.get(idItem).getRatingValue()));

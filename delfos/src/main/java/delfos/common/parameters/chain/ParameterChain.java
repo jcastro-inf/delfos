@@ -375,13 +375,17 @@ public class ParameterChain {
             i++;
         }
 
-        if (!parameterOwnerToGetValue.getClass().equals(leaf.getParameterOwner().getClass())) {
+        if (leaf.getParameterOwner() == null) {
+            //Any parameter owner is valid
+        } else if (!parameterOwnerToGetValue.getClass().equals(leaf.getParameterOwner().getClass())) {
             String message = "Leaf "
                     + "parameter owner class '" + parameterOwnerToGetValue.getClass()
                     + "' is not the same '"
                     + leaf.getParameterOwner().getClass() + "' "
                     + "[" + this.toString() + "]";
             throw new IllegalArgumentException(message);
+        } else {
+            //Parameter owners have the same class.
         }
 
         if (!parameterOwnerToGetValue.haveParameter(leaf.getParameter())) {

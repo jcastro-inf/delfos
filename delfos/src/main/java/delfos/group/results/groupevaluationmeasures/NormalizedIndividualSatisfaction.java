@@ -7,13 +7,13 @@ import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RatingsDataset;
 import delfos.dataset.basic.rating.RelevanceCriteria;
 import delfos.group.groupsofusers.GroupOfUsers;
-import delfos.group.results.grouprecomendationresults.GroupRecommendationResult;
+import delfos.group.results.grouprecomendationresults.GroupRecommenderSystemResult;
 import delfos.rs.recommendation.Recommendation;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.TreeMap;
 import org.jdom2.Element;
 
@@ -58,25 +58,24 @@ public class NormalizedIndividualSatisfaction extends GroupEvaluationMeasure {
     }
 
     @Override
-    public GroupEvaluationMeasureResult getMeasureResult(GroupRecommendationResult recommendationResults, RatingsDataset<? extends Rating> testDataset, RelevanceCriteria relevanceCriteria) {
+    public GroupEvaluationMeasureResult getMeasureResult(GroupRecommenderSystemResult groupRecommenderSystemResult, RatingsDataset<? extends Rating> testDataset, RelevanceCriteria relevanceCriteria) {
 
         MeanIterative media = new MeanIterative();
 
         Element measureElement = new Element(getName());
-        for (Entry<GroupOfUsers, List<Recommendation>> next : recommendationResults) {
+
+        for (GroupOfUsers groupOfUsers : groupRecommenderSystemResult) {
+            Collection<Recommendation> groupRecommendations = groupRecommenderSystemResult.getGroupOutput(groupOfUsers).getRecommendations();
 
             Element groupElement = new Element("Group");
 
-            GroupOfUsers grupo = next.getKey();
-            List<Recommendation> groupRecommendation = next.getValue();
-
             Map<Integer, Number> predicciones = new TreeMap<>();
-            groupRecommendation.stream().forEach((r) -> {
+            groupRecommendations.stream().forEach((r) -> {
                 predicciones.put(r.getIdItem(), r.getPreference());
             });
 
             MeanIterative groupNIS = new MeanIterative();
-            for (int idUser : grupo.getIdMembers()) {
+            for (int idUser : groupOfUsers) {
                 Element userElement = new Element("User");
                 userElement.setAttribute("idUser", Integer.toString(idUser));
 

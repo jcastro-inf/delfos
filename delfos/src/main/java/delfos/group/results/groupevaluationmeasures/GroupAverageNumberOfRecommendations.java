@@ -5,10 +5,9 @@ import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RatingsDataset;
 import delfos.dataset.basic.rating.RelevanceCriteria;
 import delfos.group.groupsofusers.GroupOfUsers;
-import delfos.group.results.grouprecomendationresults.GroupRecommendationResult;
+import delfos.group.results.grouprecomendationresults.GroupRecommenderSystemResult;
 import delfos.rs.recommendation.Recommendation;
-import java.util.List;
-import java.util.Map.Entry;
+import java.util.Collection;
 
 /**
  * Medida de evaluación para calcular el número de medio de predicciones que se
@@ -19,16 +18,16 @@ import java.util.Map.Entry;
  * @version 1.0 (26-01-2013)
  * @see delfos.Results.EvaluationMeasures.RatingPrediction.MAE_ForGroups
  */
-public class AverageNumberOfRecommendations extends GroupEvaluationMeasure {
+public class GroupAverageNumberOfRecommendations extends GroupEvaluationMeasure {
 
     @Override
-    public GroupEvaluationMeasureResult getMeasureResult(GroupRecommendationResult recommendationResults, RatingsDataset<? extends Rating> testDataset, RelevanceCriteria relevanceCriteria) {
+    public GroupEvaluationMeasureResult getMeasureResult(GroupRecommenderSystemResult groupRecommenderSystemResult, RatingsDataset<? extends Rating> testDataset, RelevanceCriteria relevanceCriteria) {
 
         MeanIterative mean = new MeanIterative();
+        for (GroupOfUsers group : groupRecommenderSystemResult) {
+            Collection<Recommendation> groupRecommendations = groupRecommenderSystemResult.getGroupOutput(group).getRecommendations();
 
-        for (Entry<GroupOfUsers, List<Recommendation>> entry : recommendationResults) {
-            List<Recommendation> recommendationsToGroup = entry.getValue();
-            mean.addValue(recommendationsToGroup.size());
+            mean.addValue(groupRecommendations.size());
 
         }
         return new GroupEvaluationMeasureResult(this, mean.getMean());

@@ -5,11 +5,9 @@ import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RatingsDataset;
 import delfos.dataset.basic.rating.RelevanceCriteria;
 import delfos.group.groupsofusers.GroupOfUsers;
-import delfos.group.results.grouprecomendationresults.GroupRecommendationResult;
+import delfos.group.results.grouprecomendationresults.GroupRecommenderSystemResult;
 import delfos.rs.recommendation.Recommendation;
 import java.util.Collection;
-import java.util.List;
-import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -30,34 +28,31 @@ import java.util.TreeSet;
 public class Coverage extends GroupEvaluationMeasure {
 
     @Override
-    public GroupEvaluationMeasureResult getMeasureResult(GroupRecommendationResult recommendationResults, RatingsDataset<? extends Rating> testDataset, RelevanceCriteria relevanceCriteria) {
+    public GroupEvaluationMeasureResult getMeasureResult(GroupRecommenderSystemResult groupRecommenderSystemResult, RatingsDataset<? extends Rating> testDataset, RelevanceCriteria relevanceCriteria) {
 
         int predichas = 0;
         int solicitudes = 0;
-
-        for (Entry<GroupOfUsers, List<Recommendation>> entry : recommendationResults) {
-            GroupOfUsers group = entry.getKey();
-            Collection<Recommendation> recommendationsToGroup = entry.getValue();
+        for (GroupOfUsers group : groupRecommenderSystemResult) {
+            Collection<Recommendation> groupRecommendations = groupRecommenderSystemResult.getGroupOutput(group).getRecommendations();
 
             {
                 //Compruebo que no hay recomendaciones repetidas.
                 Set<Integer> itemsRecomendados = new TreeSet<>();
-                for (Recommendation r : recommendationsToGroup) {
-                    if (itemsRecomendados.contains(r.getIdItem())) {
-                        Global.showWarning("The group " + group + " has received item " + r.getIdItem() + " as recommendation multiple times.");
+                for (Recommendation recommendation : groupRecommendations) {
+                    if (itemsRecomendados.contains(recommendation.getIdItem())) {
+                        Global.showWarning("The group " + group + " has received item " + recommendation.getIdItem() + " as recommendation multiple times.");
                     } else {
-                        itemsRecomendados.add(r.getIdItem());
+                        itemsRecomendados.add(recommendation.getIdItem());
                     }
                 }
             }
 
-            Collection<Integer> solicitadas = recommendationResults.getRequests(group);
+            Collection<Integer> solicitadas = groupRecommenderSystemResult.getGroupInput(group).getItemsRequested();
             if (solicitadas == null) {
-                Global.showWarning("the group " + group + " has no requests (null), seedOfExecution: " + recommendationResults.getSeed());
-                recommendationResults.getRequests(group);
+                Global.showWarning("the group " + group + " has no requests (null)");
             } else {
                 solicitudes += solicitadas.size();
-                predichas += recommendationsToGroup.size();
+                predichas += groupRecommendations.size();
             }
         }
         float ret = predichas / ((float) solicitudes);

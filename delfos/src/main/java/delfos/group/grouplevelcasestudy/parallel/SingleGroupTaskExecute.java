@@ -1,10 +1,5 @@
 package delfos.group.grouplevelcasestudy.parallel;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
 import delfos.ERROR_CODES;
 import delfos.common.exceptions.dataset.CannotLoadContentDataset;
 import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
@@ -12,25 +7,35 @@ import delfos.common.exceptions.dataset.items.ItemNotFound;
 import delfos.common.exceptions.dataset.users.UserNotFound;
 import delfos.common.exceptions.ratings.NotEnoughtUserInformation;
 import delfos.common.parallelwork.SingleTaskExecute;
-import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.loader.types.DatasetLoader;
+import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.storage.validationdatasets.PairOfTrainTestRatingsDataset;
+import delfos.group.casestudy.parallelisation.SingleGroupRecommendationTaskInput;
+import delfos.group.casestudy.parallelisation.SingleGroupRecommendationTaskOutput;
+import delfos.group.experiment.validation.predictionvalidation.GroupPredictionProtocol;
+import delfos.group.experiment.validation.predictionvalidation.GroupRecommendationRequest;
+import delfos.group.experiment.validation.validationtechniques.GroupValidationTechnique;
+import delfos.group.grouplevelcasestudy.GroupLevelCaseStudy;
 import delfos.group.grouplevelcasestudy.GroupLevelResults;
 import delfos.group.groupsofusers.GroupOfUsers;
 import delfos.group.groupsofusers.measuresovergroups.GroupMeasure;
 import delfos.group.grs.GroupRecommenderSystem;
 import delfos.group.results.groupevaluationmeasures.GroupEvaluationMeasure;
 import delfos.group.results.groupevaluationmeasures.GroupEvaluationMeasureResult;
-import delfos.group.results.grouprecomendationresults.GroupRecommendationResult;
-import delfos.group.experiment.validation.validationtechniques.GroupValidationTechnique;
-import delfos.group.experiment.validation.predictionvalidation.GroupPredictionProtocol;
-import delfos.group.experiment.validation.predictionvalidation.GroupRecommendationRequest;
+import delfos.group.results.grouprecomendationresults.GroupRecommenderSystemResult;
 import delfos.rs.recommendation.Recommendation;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
+import java.util.TreeSet;
 
 /**
  *
  * @author Jorge Castro Gallardo
- * @version 1.0 04-Jun-2013
  */
 public class SingleGroupTaskExecute implements SingleTaskExecute<SingleGroupTask> {
 
@@ -85,21 +90,21 @@ public class SingleGroupTaskExecute implements SingleTaskExecute<SingleGroupTask
 
             for (GroupRecommenderSystem groupRecommenderSystem : groupRecommenderSystems) {
 
-                Object RecommendationModel = groupRecommenderSystem.buildRecommendationModel(trainingDatasetLoader);
+                Object recommendationModel = groupRecommenderSystem.buildRecommendationModel(trainingDatasetLoader);
                 Collection<Recommendation> allPredictions = new ArrayList<>();
-                List<Integer> requests = new ArrayList<>();
+                Set<Integer> requests = new TreeSet<>();
 
                 Collection<GroupRecommendationRequest> allRequests = predictionProtocol.getGroupRecommendationRequests(trainingDatasetLoader, testDatasetLoader, group);
                 for (GroupRecommendationRequest groupRecommendationRequest : allRequests) {
 
                     Object groupModel = groupRecommenderSystem.buildGroupModel(
                             groupRecommendationRequest.predictionPhaseDatasetLoader,
-                            RecommendationModel,
+                            recommendationModel,
                             group);
 
                     Collection<Recommendation> groupRecommendations = groupRecommenderSystem.recommendOnly(
                             groupRecommendationRequest.predictionPhaseDatasetLoader,
-                            RecommendationModel,
+                            recommendationModel,
                             groupModel,
                             group,
                             groupRecommendationRequest.itemsToPredict);
@@ -118,7 +123,24 @@ public class SingleGroupTaskExecute implements SingleTaskExecute<SingleGroupTask
                     _requests.put(group, requests);
                     Map<GroupOfUsers, Collection<Recommendation>> _recommendations = new TreeMap<>();
                     _recommendations.put(group, allPredictions);
-                    GroupRecommendationResult groupRecommendationResult = new GroupRecommendationResult(0, 0, 0, 1, _requests, _recommendations, groupRecommenderSystem.getAlias());
+
+                    List<SingleGroupRecommendationTaskInput> singleGroupRecommendationInputs = Arrays.asList(
+                            new SingleGroupRecommendationTaskInput(
+                                    groupRecommenderSystem,
+                                    datasetLoader,
+                                    recommendationModel,
+                                    group,
+                                    requests));
+
+                    List<SingleGroupRecommendationTaskOutput> singleGroupRecommendationOutputs = Arrays.asList(
+                            new SingleGroupRecommendationTaskOutput(group, allPredictions, 0, 0)
+                    );
+
+                    GroupRecommenderSystemResult groupRecommendationResult = new GroupRecommenderSystemResult(
+                            singleGroupRecommendationInputs,
+                            singleGroupRecommendationOutputs,
+                            GroupLevelCaseStudy.class.getSimpleName(), 0, 0);
+
                     GroupEvaluationMeasureResult measureResult = evaluationMeasure.getMeasureResult(groupRecommendationResult, testDatasetLoader.getRatingsDataset(), datasetLoader.getDefaultRelevanceCriteria());
                     groupLevelResults.setEvaluationMeasure(groupRecommenderSystem, evaluationMeasure, measureResult);
                 }

@@ -5,11 +5,8 @@ import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RatingsDataset;
 import delfos.dataset.basic.rating.RelevanceCriteria;
 import delfos.group.groupsofusers.GroupOfUsers;
-import delfos.group.results.grouprecomendationresults.GroupRecommendationResult;
+import delfos.group.results.grouprecomendationresults.GroupRecommenderSystemResult;
 import delfos.io.xml.parameterowner.ParameterOwnerXML;
-import delfos.rs.recommendation.Recommendation;
-import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TreeMap;
@@ -27,7 +24,7 @@ import org.jdom2.Element;
 public class GroupsEvaluatedVerbose extends GroupEvaluationMeasure {
 
     @Override
-    public GroupEvaluationMeasureResult getMeasureResult(GroupRecommendationResult recommendationResults, RatingsDataset<? extends Rating> testDataset, RelevanceCriteria relevanceCriteria) {
+    public GroupEvaluationMeasureResult getMeasureResult(GroupRecommenderSystemResult groupRecommenderSystemResult, RatingsDataset<? extends Rating> testDataset, RelevanceCriteria relevanceCriteria) {
         MeanIterative meanMembers = new MeanIterative();
         //todo: implementarlo
 
@@ -35,20 +32,17 @@ public class GroupsEvaluatedVerbose extends GroupEvaluationMeasure {
 
         Element allGroupsDescribed = ParameterOwnerXML.getElement(this);
 
-        for (Iterator<Entry<GroupOfUsers, List<Recommendation>>> it = recommendationResults.iterator(); it.hasNext();) {
-            Entry<GroupOfUsers, List<Recommendation>> entry = it.next();
+        for (GroupOfUsers groupOfUsers : groupRecommenderSystemResult) {
 
-            GroupOfUsers group = entry.getKey();
-
-            if (!numGroupsWithKeyMembers.containsKey(group.size())) {
-                numGroupsWithKeyMembers.put(group.size(), 0);
+            if (!numGroupsWithKeyMembers.containsKey(groupOfUsers.size())) {
+                numGroupsWithKeyMembers.put(groupOfUsers.size(), 0);
             }
-            numGroupsWithKeyMembers.put(group.size(), numGroupsWithKeyMembers.get(group.size()) + 1);
+            numGroupsWithKeyMembers.put(groupOfUsers.size(), numGroupsWithKeyMembers.get(groupOfUsers.size()) + 1);
 
-            meanMembers.addValue(group.size());
+            meanMembers.addValue(groupOfUsers.size());
 
             Element groupElement = new Element("group");
-            groupElement.setAttribute("members", group.toString());
+            groupElement.setAttribute("members", groupOfUsers.toString());
 
             allGroupsDescribed.addContent(groupElement);
         }

@@ -8,7 +8,7 @@ import delfos.dataset.basic.rating.RelevanceCriteria;
 import delfos.group.groupsofusers.GroupOfUsers;
 import delfos.group.results.groupevaluationmeasures.GroupEvaluationMeasure;
 import delfos.group.results.groupevaluationmeasures.GroupEvaluationMeasureResult;
-import delfos.group.results.grouprecomendationresults.GroupRecommendationResult;
+import delfos.group.results.grouprecomendationresults.GroupRecommenderSystemResult;
 import delfos.io.xml.UnrecognizedElementException;
 import delfos.io.xml.evaluationmeasures.confusionmatricescurve.ConfusionMatricesCurveXML;
 import delfos.results.evaluationmeasures.confusionmatrix.ConfusionMatricesCurve;
@@ -46,15 +46,13 @@ public class PRSpace_EachMember extends GroupEvaluationMeasure {
     }
 
     @Override
-    public GroupEvaluationMeasureResult getMeasureResult(GroupRecommendationResult recommendationResults, RatingsDataset<? extends Rating> testDataset, RelevanceCriteria relevanceCriteria) {
+    public GroupEvaluationMeasureResult getMeasureResult(GroupRecommenderSystemResult groupRecommenderSystemResult, RatingsDataset<? extends Rating> testDataset, RelevanceCriteria relevanceCriteria) {
         Map<GroupOfUsers, ConfusionMatricesCurve> groupsCurves = new TreeMap<>();
 
         Element measureElement = new Element(getName());
 
-        for (Map.Entry<GroupOfUsers, List<Recommendation>> next : recommendationResults) {
-
-            GroupOfUsers group = next.getKey();
-            Collection<Recommendation> groupRecommendations = next.getValue();
+        for (GroupOfUsers group : groupRecommenderSystemResult) {
+            Collection<Recommendation> groupRecommendations = groupRecommenderSystemResult.getGroupOutput(group).getRecommendations();
 
             Set<Integer> recommendedItems = new TreeSet<>();
             for (Recommendation r : groupRecommendations) {
@@ -64,7 +62,7 @@ public class PRSpace_EachMember extends GroupEvaluationMeasure {
             Element groupElement = new Element(GROUP_OF_USERS_ELEMENT);
             groupElement.setAttribute(USERS_ATTRIBUTE, group.getIdMembers().toString());
 
-            List<ConfusionMatrix> matrices = new ArrayList<ConfusionMatrix>();
+            List<ConfusionMatrix> matrices = new ArrayList<>();
 
             /**
              * Estas variables se utilizan en la generación de la curva para el
@@ -81,12 +79,12 @@ public class PRSpace_EachMember extends GroupEvaluationMeasure {
              * representa cada un conjunto con un booleano si al usuario está
              * satisfecho con esa recomendación.
              */
-            List<Set<Boolean>> relevanteParaUser = new ArrayList<Set<Boolean>>(group.size());
+            List<Set<Boolean>> relevanteParaUser = new ArrayList<>(group.size());
             for (int i = 0; i < groupRecommendations.size(); i++) {
-                relevanteParaUser.add(new TreeSet<Boolean>());
+                relevanteParaUser.add(new TreeSet<>());
             }
 
-            Map<Integer, ConfusionMatricesCurve> matricesParaCadaMiembro = new TreeMap<Integer, ConfusionMatricesCurve>();
+            Map<Integer, ConfusionMatricesCurve> matricesParaCadaMiembro = new TreeMap<>();
 
             for (int idUser : group.getIdMembers()) {
                 Element userElement = new Element("User");
@@ -147,7 +145,7 @@ public class PRSpace_EachMember extends GroupEvaluationMeasure {
                 groupElement.addContent(userElement);
             }
 
-            List<ConfusionMatrix> groupMatrices = new ArrayList<ConfusionMatrix>();
+            List<ConfusionMatrix> groupMatrices = new ArrayList<>();
 
             //Ahora se calcula la curva para el grupo
             for (int i = 0; i < relevanteParaUser.size(); i++) {
@@ -194,7 +192,7 @@ public class PRSpace_EachMember extends GroupEvaluationMeasure {
 
     @Override
     public GroupEvaluationMeasureResult agregateResults(Collection<GroupEvaluationMeasureResult> results) {
-        ArrayList<ConfusionMatricesCurve> curves = new ArrayList<ConfusionMatricesCurve>();
+        ArrayList<ConfusionMatricesCurve> curves = new ArrayList<>();
 
         for (GroupEvaluationMeasureResult r : results) {
             Element e = r.getXMLElement();

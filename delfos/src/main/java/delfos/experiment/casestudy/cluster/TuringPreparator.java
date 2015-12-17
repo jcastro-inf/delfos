@@ -3,6 +3,7 @@ package delfos.experiment.casestudy.cluster;
 import delfos.Constants;
 import delfos.common.FileUtilities;
 import delfos.common.Global;
+import delfos.common.parameters.ParameterOwner;
 import delfos.common.parameters.chain.CaseStudyResultMatrix;
 import delfos.common.parameters.chain.ParameterChain;
 import delfos.dataset.basic.loader.types.DatasetLoader;
@@ -196,6 +197,25 @@ public class TuringPreparator implements ExperimentPreparator {
                 .filter(chain -> !chain.isAlias())
                 .filter(chain -> chain.isTechniqueParameter())
                 .collect(Collectors.toList());
+
+        if (techniqueChains.isEmpty()) {
+            ParameterChain grsAliasChain = new ParameterChain(groupCaseStudys.get(0))
+                    .createWithNode(GroupCaseStudy.GROUP_RECOMMENDER_SYSTEM, null)
+                    .createWithLeaf(ParameterOwner.ALIAS, null);
+            techniqueChains.add(grsAliasChain);
+        }
+        if (dataValidationChains.isEmpty()) {
+            ParameterChain datasetLoaderAliasChain = new ParameterChain(groupCaseStudys.get(0))
+                    .createWithNode(GroupCaseStudy.DATASET_LOADER, null)
+                    .createWithLeaf(ParameterOwner.ALIAS, null);
+
+            ParameterChain groupFormationTechniqueAliasChain = new ParameterChain(groupCaseStudys.get(0))
+                    .createWithNode(GroupCaseStudy.GROUP_FORMATION_TECHNIQUE, null)
+                    .createWithLeaf(ParameterOwner.ALIAS, null);
+
+            dataValidationChains.add(datasetLoaderAliasChain);
+            dataValidationChains.add(groupFormationTechniqueAliasChain);
+        }
 
         CaseStudyResultMatrix caseStudyResultMatrix = new CaseStudyResultMatrix(techniqueChains, dataValidationChains, "null");
 

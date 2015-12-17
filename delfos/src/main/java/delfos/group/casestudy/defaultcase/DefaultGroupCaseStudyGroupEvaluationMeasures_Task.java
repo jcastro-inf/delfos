@@ -6,7 +6,7 @@ import delfos.dataset.basic.rating.RatingsDataset;
 import delfos.dataset.basic.rating.RelevanceCriteria;
 import delfos.group.results.groupevaluationmeasures.GroupEvaluationMeasure;
 import delfos.group.results.groupevaluationmeasures.GroupEvaluationMeasureResult;
-import delfos.group.results.grouprecomendationresults.GroupRecommendationResult;
+import delfos.group.results.grouprecomendationresults.GroupRecommenderSystemResult;
 import java.util.Collection;
 import java.util.Map;
 import java.util.TreeMap;
@@ -17,7 +17,7 @@ public class DefaultGroupCaseStudyGroupEvaluationMeasures_Task extends Task {
     int ejecucion;
     int particion;
     RatingsDataset<? extends Rating> testSet;
-    GroupRecommendationResult groupRecommendationResult;
+    GroupRecommenderSystemResult groupRecommendationResult;
     Collection<GroupEvaluationMeasure> groupEvaluationMeasures;
     RelevanceCriteria relevanceCriteria;
 
@@ -27,7 +27,7 @@ public class DefaultGroupCaseStudyGroupEvaluationMeasures_Task extends Task {
     public DefaultGroupCaseStudyGroupEvaluationMeasures_Task(
             int ejecucion,
             int particion,
-            GroupRecommendationResult groupRecommendationResult,
+            GroupRecommenderSystemResult groupRecommendationResult,
             RatingsDataset<? extends Rating> testSet,
             Collection<GroupEvaluationMeasure> groupEvaluationMeasures,
             RelevanceCriteria relevanceCriteria) {

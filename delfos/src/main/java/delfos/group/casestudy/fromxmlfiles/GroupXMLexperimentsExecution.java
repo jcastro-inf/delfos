@@ -6,7 +6,6 @@ import delfos.common.Global;
 import delfos.common.exceptions.dataset.CannotLoadContentDataset;
 import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
 import delfos.common.filefilters.FileFilterByExtension;
-import delfos.common.parallelwork.MultiThreadExecutionManager;
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
 import delfos.group.casestudy.GroupCaseStudyConfiguration;
@@ -128,13 +127,7 @@ public class GroupXMLexperimentsExecution {
             }
         }
 
-        MultiThreadExecutionManager<ExecuteGroupCaseStudy_Task> multiThreadExecutionManager
-                = new MultiThreadExecutionManager<>(
-                        "Execute group case",
-                        listOfTasks,
-                        GroupCaseStudy_SingleTaskExecute.class);
-
-        multiThreadExecutionManager.run();
+        listOfTasks.stream().forEach(new GroupCaseStudyExecutor());
 
         File aggregateFile = FileUtilities.addSufix(resultsDirectory, File.separator + "aggregateResults.xls");
         try {
