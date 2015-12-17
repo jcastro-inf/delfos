@@ -19,8 +19,6 @@ import delfos.group.grs.hesitant.HesitantKnnGroupUser;
 import delfos.utils.hesitant.similarity.HesitantPearson;
 import delfos.utils.hesitant.similarity.factory.HesitantSimilarityFactory;
 import java.io.File;
-import java.text.DecimalFormat;
-import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -45,7 +43,6 @@ public class HesitantGRS_3_allGroups_randomMembers extends DelfosTest {
                     GroupFormationTechnique gft = new FixedGroupSize(groupSize);
                     return gft;
                 }).collect(Collectors.toList());
-
     }
 
     private Collection<ConfiguredDatasetLoader> getDatasetLoader() {
@@ -63,24 +60,16 @@ public class HesitantGRS_3_allGroups_randomMembers extends DelfosTest {
         ret.addAll(HesitantSimilarityFactory.getAll()
                 .stream()
                 .map((hesitantSimilarity) -> {
-
-                    DecimalFormat format = new DecimalFormat("000");
-
                     HesitantKnnGroupUser grs = new HesitantKnnGroupUser();
-                    grs.setAlias(hesitantSimilarity.getName() + "_neighborhoodSize=" + format.format(neighborhoodSize));
                     grs.setParameterValue(HesitantKnnGroupUser.NEIGHBORHOOD_SIZE, neighborhoodSize);
                     grs.setParameterValue(HesitantKnnGroupUser.HESITANT_SIMILARITY_MEASURE, hesitantSimilarity);
                     return grs;
-
                 }).collect(Collectors.toList()));
 
         {
-
             HesitantPearson hesitantSimilarity = new HesitantPearson();
-            NumberFormat format = new DecimalFormat("000");
             HesitantKnnGroupUser hesitantGRS = new HesitantKnnGroupUser();
 
-            hesitantGRS.setAlias(hesitantSimilarity.getName() + "_deleteRepeated" + "_neighborhoodSize=" + format.format(neighborhoodSize));
             hesitantGRS.setParameterValue(HesitantKnnGroupUser.NEIGHBORHOOD_SIZE, neighborhoodSize);
             hesitantGRS.setParameterValue(HesitantKnnGroupUser.HESITANT_SIMILARITY_MEASURE, hesitantSimilarity);
             hesitantGRS.setParameterValue(HesitantKnnGroupUser.DELETE_REPEATED, true);
@@ -109,16 +98,11 @@ public class HesitantGRS_3_allGroups_randomMembers extends DelfosTest {
                         1,
                         SEED_VALUE
                 );
-
-                groupCaseStudy.setAlias(
-                        "_dataValidation=" + groupCaseStudy.hashDataValidation()
-                        + "_technique=" + groupCaseStudy.hashTechnique()
-                        + "_" + groupRecommenderSystem.getAlias()
-                        + "_allHash=" + groupCaseStudy.hashCode()
-                );
                 groupCaseStudys.add(groupCaseStudy);
             }
         }
+
+        turingPreparator.renameCaseStudyWithTheMinimumDistinctAlias(groupCaseStudys);
 
         turingPreparator.prepareGroupExperiment(
                 experimentDirectory,
