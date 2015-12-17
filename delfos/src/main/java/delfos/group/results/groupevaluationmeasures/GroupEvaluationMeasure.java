@@ -40,9 +40,9 @@ public abstract class GroupEvaluationMeasure extends ParameterOwnerAdapter imple
      * Establece el resultado de una ejecución en base a las recomendaciones
      * hechas y el conjunto de training
      *
-     * @param recommendationResults Vector de resultados de la ejecución en el
-     * que cada elemento es el resultado de la ejecución con una partición del
-     * conjunto
+     * @param groupRecommenderSystemResult Vector de resultados de la ejecución
+     * en el que cada elemento es el resultado de la ejecución con una partición
+     * del conjunto
      * @param testDataset
      * @param relevanceCriteria
      * @return Devuelve un objeto GroupEvaluationMeasureResult que almacena el

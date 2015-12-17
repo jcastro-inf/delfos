@@ -7,7 +7,7 @@ import delfos.group.results.groupevaluationmeasures.GroupAverageNumberOfRequests
 import delfos.group.results.groupevaluationmeasures.Coverage;
 import delfos.group.results.groupevaluationmeasures.GroupEvaluationMeasure;
 import delfos.group.results.groupevaluationmeasures.GroupRecommendationMemberRatingsComparison;
-import delfos.group.results.groupevaluationmeasures.GroupsEvaluatedVerbose;
+import delfos.group.results.groupevaluationmeasures.PrintGroups;
 import delfos.group.results.groupevaluationmeasures.MAE;
 import delfos.group.results.groupevaluationmeasures.NDCG;
 import delfos.group.results.groupevaluationmeasures.NMAE;
@@ -41,7 +41,7 @@ public class GroupEvaluationMeasuresFactory extends Factory<GroupEvaluationMeasu
         instance.addClass(NumberOfRequests.class);
 
         //Grupos evaluados
-        instance.addClass(GroupsEvaluatedVerbose.class);
+        instance.addClass(PrintGroups.class);
 
         //Decision making measures
         instance.addClass(AreaUnderRoc.class);
