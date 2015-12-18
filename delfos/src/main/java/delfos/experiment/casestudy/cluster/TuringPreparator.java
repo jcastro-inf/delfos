@@ -152,8 +152,9 @@ public class TuringPreparator implements ExperimentPreparator {
     }
 
     public void executeAllExperimentsInDirectory_withSeed(File directory, int numExec, int seedValue) {
-        Arrays.asList(directory.listFiles())
-                .stream()
+        List<File> experimentsToBeExecuted = Arrays.asList(directory.listFiles());
+
+        experimentsToBeExecuted.stream()
                 .forEach((singleExperimentDirectory) -> {
                     String[] args = {
                         ExecuteGroupXML.SEED_PARAMETER, Integer.toString(seedValue),

@@ -1,4 +1,4 @@
-package delfos.group.results.groupevaluationmeasures;
+package delfos.group.results.groupevaluationmeasures.printers;
 
 import delfos.Constants;
 import delfos.ERROR_CODES;
@@ -7,6 +7,7 @@ import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RatingsDataset;
 import delfos.dataset.basic.rating.RelevanceCriteria;
 import delfos.group.groupsofusers.GroupOfUsers;
+import delfos.group.results.groupevaluationmeasures.GroupEvaluationMeasureResult;
 import delfos.group.results.grouprecomendationresults.GroupRecommenderSystemResult;
 import java.io.File;
 import java.io.FileWriter;
@@ -20,27 +21,16 @@ import org.jdom2.output.XMLOutputter;
  * estadísticas generales sobre los mismos.
  *
  * @author Jorge Castro Gallardo
- *
- * @version 1.0 15-Jan-2013
  */
-public class PrintGroups extends GroupEvaluationMeasure {
-
-    public static final File TEST_SET_DIRECTORY = new File(
-            Constants.getTempDirectory().getAbsoluteFile() + File.separator
-            + "GroupCaseStudy-Print" + File.separator);
+public class PrintGroups extends GroupEvaluationMeasureInformationPrinter {
 
     @Override
     public GroupEvaluationMeasureResult getMeasureResult(GroupRecommenderSystemResult groupRecommenderSystemResult, RatingsDataset<? extends Rating> testDataset, RelevanceCriteria relevanceCriteria) {
-
-        FileUtilities.createDirectoryPath(TEST_SET_DIRECTORY);
-
-        String fileName = TEST_SET_DIRECTORY.getPath() + File.separator
+        File output = new File(PRINTER_DIRECTORY.getPath() + File.separator
                 + groupRecommenderSystemResult.getGroupCaseStudyAlias() + "__"
-                + "-exec=" + groupRecommenderSystemResult.getThisExecution()
+                + "exec=" + groupRecommenderSystemResult.getThisExecution()
                 + "-split=" + groupRecommenderSystemResult.getThisSplit()
-                + "-groups.xml";
-
-        File file = new File(fileName);
+                + "-groups.xml");
 
         Element groups = new Element("Groups");
 
@@ -50,19 +40,15 @@ public class PrintGroups extends GroupEvaluationMeasure {
             groups.addContent(group);
         }
 
-        XMLOutputter outputter = new XMLOutputter(Constants.getXMLFormat());
-        FileUtilities.createDirectoriesForFile(file);
-        try (FileWriter fileWriter = new FileWriter(file)) {
+        FileUtilities.createDirectoriesForFile(output);
+
+        try (FileWriter fileWriter = new FileWriter(output)) {
+            XMLOutputter outputter = new XMLOutputter(Constants.getXMLFormat());
             outputter.output(groups, fileWriter);
         } catch (IOException ex) {
             ERROR_CODES.CANNOT_WRITE_RESULTS_FILE.exit(ex);
         }
 
         return new GroupEvaluationMeasureResult(this, 1.0);
-    }
-
-    @Override
-    public boolean usesRatingPrediction() {
-        return false;
     }
 }

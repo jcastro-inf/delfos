@@ -2,19 +2,20 @@ package delfos.group.factories;
 
 import delfos.factories.Factory;
 import delfos.group.results.groupevaluationmeasures.AreaUnderRoc;
+import delfos.group.results.groupevaluationmeasures.Coverage;
 import delfos.group.results.groupevaluationmeasures.GroupAverageNumberOfRecommendations;
 import delfos.group.results.groupevaluationmeasures.GroupAverageNumberOfRequests;
-import delfos.group.results.groupevaluationmeasures.Coverage;
 import delfos.group.results.groupevaluationmeasures.GroupEvaluationMeasure;
-import delfos.group.results.groupevaluationmeasures.GroupRecommendationMemberRatingsComparison;
-import delfos.group.results.groupevaluationmeasures.PrintGroups;
+import delfos.group.results.groupevaluationmeasures.printers.PrintTestSet;
 import delfos.group.results.groupevaluationmeasures.MAE;
 import delfos.group.results.groupevaluationmeasures.NDCG;
 import delfos.group.results.groupevaluationmeasures.NMAE;
 import delfos.group.results.groupevaluationmeasures.NRMSE;
 import delfos.group.results.groupevaluationmeasures.NumberOfRecommendations;
 import delfos.group.results.groupevaluationmeasures.NumberOfRequests;
-import delfos.group.results.groupevaluationmeasures.PrintNeighbors;
+import delfos.group.results.groupevaluationmeasures.printers.PrintGroupRatingsToPlainText;
+import delfos.group.results.groupevaluationmeasures.printers.PrintGroups;
+import delfos.group.results.groupevaluationmeasures.printers.PrintNeighborsToXML;
 import delfos.group.results.groupevaluationmeasures.RMSE;
 import delfos.group.results.groupevaluationmeasures.precisionrecall.PRSpaceGroups;
 
@@ -42,6 +43,8 @@ public class GroupEvaluationMeasuresFactory extends Factory<GroupEvaluationMeasu
 
         //Grupos evaluados
         instance.addClass(PrintGroups.class);
+        instance.addClass(PrintNeighborsToXML.class);
+        instance.addClass(PrintGroupRatingsToPlainText.class);
 
         //Decision making measures
         instance.addClass(AreaUnderRoc.class);
@@ -57,8 +60,7 @@ public class GroupEvaluationMeasuresFactory extends Factory<GroupEvaluationMeasu
         instance.addClass(NDCG.class);
 
         //Histogram measures
-        instance.addClass(GroupRecommendationMemberRatingsComparison.class);
-        instance.addClass(PrintNeighbors.class);
+        instance.addClass(PrintTestSet.class);
     }
 
     private GroupEvaluationMeasuresFactory() {

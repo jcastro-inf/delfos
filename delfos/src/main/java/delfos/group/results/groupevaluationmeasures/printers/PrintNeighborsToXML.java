@@ -1,4 +1,4 @@
-package delfos.group.results.groupevaluationmeasures;
+package delfos.group.results.groupevaluationmeasures.printers;
 
 import delfos.Constants;
 import delfos.ERROR_CODES;
@@ -7,6 +7,7 @@ import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RatingsDataset;
 import delfos.dataset.basic.rating.RelevanceCriteria;
 import delfos.group.groupsofusers.GroupOfUsers;
+import delfos.group.results.groupevaluationmeasures.GroupEvaluationMeasureResult;
 import delfos.group.results.groupevaluationmeasures.detailed.RecommendationsWithNeighborToXML;
 import delfos.group.results.grouprecomendationresults.GroupRecommenderSystemResult;
 import delfos.rs.collaborativefiltering.profile.Neighbor;
@@ -28,29 +29,17 @@ import org.jdom2.output.XMLOutputter;
  *
  * @author Jorge Castro Gallardo
  */
-public class PrintNeighbors extends GroupEvaluationMeasure {
-
-    @Override
-    public boolean usesRatingPrediction() {
-        return false;
-    }
-
-    public static final File TEST_SET_DIRECTORY = new File(
-            Constants.getTempDirectory().getAbsoluteFile() + File.separator
-            + "GroupCaseStudy-Print" + File.separator);
+public class PrintNeighborsToXML extends GroupEvaluationMeasureInformationPrinter {
 
     @Override
     public GroupEvaluationMeasureResult getMeasureResult(GroupRecommenderSystemResult groupRecommenderSystemResult, RatingsDataset<? extends Rating> testDataset, RelevanceCriteria relevanceCriteria) {
 
-        FileUtilities.createDirectoryPath(TEST_SET_DIRECTORY);
-
-        String fileName = TEST_SET_DIRECTORY.getPath() + File.separator
+        File output = new File(PRINTER_DIRECTORY.getPath() + File.separator
                 + groupRecommenderSystemResult.getGroupCaseStudyAlias() + "__"
-                + "-exec=" + groupRecommenderSystemResult.getThisExecution()
+                + "exec=" + groupRecommenderSystemResult.getThisExecution()
                 + "-split=" + groupRecommenderSystemResult.getThisSplit()
-                + "-neighbors.xml";
+                + "-neighbors.xml");
 
-        File file = new File(fileName);
         boolean writeFile = false;
 
         Element neighborsDetails = new Element("NeighborsDetails");
@@ -88,8 +77,8 @@ public class PrintNeighbors extends GroupEvaluationMeasure {
         if (writeFile) {
             XMLOutputter outputter = new XMLOutputter(Constants.getXMLFormat());
 
-            FileUtilities.createDirectoriesForFile(file);
-            try (FileWriter fileWriter = new FileWriter(file)) {
+            FileUtilities.createDirectoriesForFile(output);
+            try (FileWriter fileWriter = new FileWriter(output)) {
                 outputter.output(neighborsDetails, fileWriter);
             } catch (IOException ex) {
                 ERROR_CODES.CANNOT_WRITE_RESULTS_FILE.exit(ex);

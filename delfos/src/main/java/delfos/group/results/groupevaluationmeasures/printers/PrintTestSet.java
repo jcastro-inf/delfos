@@ -1,4 +1,4 @@
-package delfos.group.results.groupevaluationmeasures;
+package delfos.group.results.groupevaluationmeasures.printers;
 
 import delfos.Constants;
 import delfos.common.FileUtilities;
@@ -8,6 +8,7 @@ import delfos.dataset.basic.rating.RatingsDataset;
 import delfos.dataset.basic.rating.RelevanceCriteria;
 import delfos.dataset.util.DatasetPrinter;
 import delfos.group.groupsofusers.GroupOfUsers;
+import delfos.group.results.groupevaluationmeasures.GroupEvaluationMeasureResult;
 import delfos.group.results.grouprecomendationresults.GroupRecommenderSystemResult;
 import delfos.rs.recommendation.Recommendation;
 import java.io.BufferedWriter;
@@ -29,32 +30,18 @@ import java.util.stream.Collectors;
  * Writes extended information of the recommendation in an XML file. This
  * information is the test ratings of each group and its recommendations.
  *
- * @version 05-oct-2014
  * @author Jorge Castro Gallardo
  */
-public class GroupRecommendationMemberRatingsComparison extends GroupEvaluationMeasure {
-
-    @Override
-    public boolean usesRatingPrediction() {
-        return false;
-    }
-
-    public static final File TEST_SET_DIRECTORY = new File(
-            Constants.getTempDirectory().getAbsoluteFile() + File.separator
-            + GroupRecommendationMemberRatingsComparison.class.getSimpleName() + File.separator);
+public class PrintTestSet extends GroupEvaluationMeasureInformationPrinter {
 
     @Override
     public GroupEvaluationMeasureResult getMeasureResult(GroupRecommenderSystemResult groupRecommenderSystemResult, RatingsDataset<? extends Rating> testDataset, RelevanceCriteria relevanceCriteria) {
 
-        FileUtilities.createDirectoryPath(TEST_SET_DIRECTORY);
-
-        String fileName = TEST_SET_DIRECTORY.getPath() + File.separator
-                + groupRecommenderSystemResult.getGroupCaseStudyAlias() + File.separator
-                + "-exec=" + groupRecommenderSystemResult.getThisExecution()
+        File output = new File(PRINTER_DIRECTORY.getPath() + File.separator
+                + groupRecommenderSystemResult.getGroupCaseStudyAlias() + "__"
+                + "exec=" + groupRecommenderSystemResult.getThisExecution()
                 + "-split=" + groupRecommenderSystemResult.getThisSplit()
-                + "-testSet.xml";
-
-        File outputFile = new File(fileName);
+                + "-test-set.txt");
 
         StringBuilder str = new StringBuilder();
 
@@ -84,7 +71,7 @@ public class GroupRecommendationMemberRatingsComparison extends GroupEvaluationM
                                     thisMemberRatings.put(rating.getIdItem(), rating.getRatingValue());
                                 });
                             } catch (UserNotFound ex) {
-                                Logger.getLogger(GroupRecommendationMemberRatingsComparison.class.getName()).log(Level.SEVERE, null, ex);
+                                Logger.getLogger(PrintTestSet.class.getName()).log(Level.SEVERE, null, ex);
                             }
                             membersRatings.put(idMember, thisMemberRatings);
                         });
@@ -102,12 +89,12 @@ public class GroupRecommendationMemberRatingsComparison extends GroupEvaluationM
             }
         }
 
-        FileUtilities.createDirectoriesForFile(outputFile);
+        FileUtilities.createDirectoriesForFile(output);
 
-        try (BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(outputFile))) {
+        try (BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(output))) {
             bufferedWriter.write(str.toString());
         } catch (IOException ex) {
-            Logger.getLogger(GroupRecommendationMemberRatingsComparison.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(PrintTestSet.class.getName()).log(Level.SEVERE, null, ex);
         }
 
         return new GroupEvaluationMeasureResult(this, 1.0);
