@@ -8,7 +8,6 @@ import delfos.dataset.basic.rating.RatingsDataset;
 import delfos.dataset.basic.rating.RelevanceCriteria;
 import delfos.group.groupsofusers.GroupOfUsers;
 import delfos.group.results.grouprecomendationresults.GroupRecommenderSystemResult;
-import delfos.io.xml.evaluationmeasures.NDCGXML;
 import static delfos.results.evaluationmeasures.NDCG.computeDCG;
 import delfos.rs.recommendation.Recommendation;
 import java.util.ArrayList;
@@ -16,7 +15,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import org.jdom2.Element;
 
 /**
  * Evalúa las recomendaciones de un sistema aplicando nDCG, usando logaritmo en
@@ -89,33 +87,9 @@ public class NDCG extends GroupEvaluationMeasure {
             }
         }
 
-        Collections.sort(ndcgByMember);
-
-        double min = ndcgByMember.get(0);
-        double percentile25 = ndcgByMember.get((int) (ndcgByMember.size() * 0.25));
         double mean = new MeanIterative(ndcgByMember).getMean();
-        double percentile75 = ndcgByMember.get((int) (ndcgByMember.size() * 0.75));
-        double max = ndcgByMember.get(ndcgByMember.size() - 1);
 
-        return new GroupEvaluationMeasureResult(this, mean, NDCGXML.getElement(ndcgByMember), ndcgByMember);
-    }
-
-    @Override
-    public GroupEvaluationMeasureResult agregateResults(Collection<GroupEvaluationMeasureResult> results) {
-
-        List<Double> ndcgJoin = new ArrayList<>();
-
-        for (GroupEvaluationMeasureResult result : results) {
-            List<Double> ndcgPerUser = (List<Double>) result.getDetailedResult();
-            ndcgJoin.addAll(ndcgPerUser);
-        }
-
-        Collections.sort(ndcgJoin);
-
-        Element element = NDCGXML.getElement(ndcgJoin);
-        element.setName(this.getName());
-
-        return new GroupEvaluationMeasureResult(this, new MeanIterative(ndcgJoin).getMean(), element, ndcgJoin);
+        return new GroupEvaluationMeasureResult(this, mean);
     }
 
 }

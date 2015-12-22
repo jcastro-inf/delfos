@@ -6,13 +6,11 @@ import delfos.common.statisticalfuncions.MeanIterative;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RatingsDataset;
 import delfos.dataset.basic.rating.RelevanceCriteria;
-import delfos.io.xml.evaluationmeasures.NDCGXML;
 import delfos.results.MeasureResult;
 import delfos.results.RecommendationResults;
 import delfos.rs.recommendation.Recommendation;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -60,7 +58,7 @@ public class NDCG extends EvaluationMeasure {
             }
         }
 
-        return new MeasureResult(this, (float) new MeanIterative(ndcgPerUser).getMean(), NDCGXML.getElement(ndcgPerUser), ndcgPerUser);
+        return new MeasureResult(this, (float) new MeanIterative(ndcgPerUser).getMean());
     }
 
     @Override
@@ -94,22 +92,6 @@ public class NDCG extends EvaluationMeasure {
         }
 
         return gain;
-    }
-
-    @Override
-    public MeasureResult agregateResults(Collection<MeasureResult> results) {
-
-        List<Double> ndcgJoin = new ArrayList<>();
-
-        for (MeasureResult result : results) {
-            List<Double> ndcgPerUser = (List<Double>) result.getDetailedResult();
-            ndcgJoin.addAll(ndcgPerUser);
-        }
-
-        Collections.sort(ndcgJoin);
-
-        return new MeasureResult(this, (float) new MeanIterative(ndcgJoin).getMean(), NDCGXML.getElement(ndcgJoin), ndcgJoin);
-
     }
 
 }
