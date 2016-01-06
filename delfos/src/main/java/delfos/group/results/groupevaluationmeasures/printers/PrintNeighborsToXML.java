@@ -3,6 +3,7 @@ package delfos.group.results.groupevaluationmeasures.printers;
 import delfos.Constants;
 import delfos.ERROR_CODES;
 import delfos.common.FileUtilities;
+import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RatingsDataset;
 import delfos.dataset.basic.rating.RelevanceCriteria;
@@ -32,7 +33,13 @@ import org.jdom2.output.XMLOutputter;
 public class PrintNeighborsToXML extends GroupEvaluationMeasureInformationPrinter {
 
     @Override
-    public GroupEvaluationMeasureResult getMeasureResult(GroupRecommenderSystemResult groupRecommenderSystemResult, RatingsDataset<? extends Rating> testDataset, RelevanceCriteria relevanceCriteria) {
+    public GroupEvaluationMeasureResult getMeasureResult(
+            GroupRecommenderSystemResult groupRecommenderSystemResult,
+            DatasetLoader<? extends Rating> originalDatasetLoader,
+            RatingsDataset<? extends Rating> testDataset,
+            RelevanceCriteria relevanceCriteria,
+            DatasetLoader<? extends Rating> trainingDatasetLoader,
+            DatasetLoader<? extends Rating> testDatasetLoader) {
 
         File output = new File(PRINTER_DIRECTORY.getPath() + File.separator
                 + groupRecommenderSystemResult.getGroupCaseStudyAlias() + "__"

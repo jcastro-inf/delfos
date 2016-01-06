@@ -1,6 +1,7 @@
 package delfos.group.casestudy.defaultcase;
 
 import delfos.common.parallelwork.Task;
+import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RatingsDataset;
 import delfos.dataset.basic.rating.RelevanceCriteria;
@@ -21,6 +22,10 @@ public class DefaultGroupCaseStudyGroupEvaluationMeasures_Task extends Task {
     Collection<GroupEvaluationMeasure> groupEvaluationMeasures;
     RelevanceCriteria relevanceCriteria;
 
+    DatasetLoader<? extends Rating> originalDatasetLoader;
+    DatasetLoader<? extends Rating> trainingDatasetLoader;
+    DatasetLoader<? extends Rating> testDatasetLoader;
+
     // Atributos para el resultado.
     Map<GroupEvaluationMeasure, GroupEvaluationMeasureResult> groupEvaluationMeasuresResults;
 
@@ -30,12 +35,18 @@ public class DefaultGroupCaseStudyGroupEvaluationMeasures_Task extends Task {
             GroupRecommenderSystemResult groupRecommendationResult,
             RatingsDataset<? extends Rating> testSet,
             Collection<GroupEvaluationMeasure> groupEvaluationMeasures,
-            RelevanceCriteria relevanceCriteria) {
+            RelevanceCriteria relevanceCriteria,
+            DatasetLoader<? extends Rating> originalDatasetLoader,
+            DatasetLoader<? extends Rating> trainingDatasetLoader,
+            DatasetLoader<? extends Rating> testDatasetLoader) {
 
         this.particion = particion;
         this.groupRecommendationResult = groupRecommendationResult;
         this.testSet = testSet;
         this.ejecucion = ejecucion;
+        this.originalDatasetLoader = originalDatasetLoader;
+        this.trainingDatasetLoader = trainingDatasetLoader;
+        this.testDatasetLoader = testDatasetLoader;
 
         groupEvaluationMeasuresResults = new TreeMap<>();
         this.groupEvaluationMeasures = groupEvaluationMeasures;

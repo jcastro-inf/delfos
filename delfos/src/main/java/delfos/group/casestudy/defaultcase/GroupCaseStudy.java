@@ -224,7 +224,7 @@ public class GroupCaseStudy extends ExperimentAdapter {
         final RelevanceCriteria relevanceCriteria = getRelevanceCriteria();
         final GroupPredictionProtocol groupPredictionProtocol = getGroupPredictionProtocol();
         final GroupValidationTechnique groupValidationTechnique = getGroupValidationTechnique();
-        final DatasetLoader<? extends Rating> datasetLoader = getDatasetLoader();
+        final DatasetLoader<? extends Rating> originalDatasetLoader = getDatasetLoader();
 
         initGroupCaseStudy();
 
@@ -246,7 +246,7 @@ public class GroupCaseStudy extends ExperimentAdapter {
         MeanIterative tiempoParticion = new MeanIterative();
         groupFormationTechnique.addListener(new GroupFormationTechniqueProgressListener_default(System.out, 5000));
 
-        loadDataset(datasetLoader);
+        loadDataset(originalDatasetLoader);
 
         int loopCount = 0;
         setExperimentProgress(getAlias() + " --> Running Case Study Group", 0, -1);
@@ -255,8 +255,8 @@ public class GroupCaseStudy extends ExperimentAdapter {
             final int ejecucionActual = executionIndex;
             setNextSeedToSeedHolders(loopCount);
 
-            Collection<GroupOfUsers> groups = groupFormationTechnique.shuffle(datasetLoader);
-            PairOfTrainTestRatingsDataset[] pairsOfTrainTest = groupValidationTechnique.shuffle(datasetLoader, groups);
+            Collection<GroupOfUsers> groups = groupFormationTechnique.shuffle(originalDatasetLoader);
+            PairOfTrainTestRatingsDataset[] pairsOfTrainTest = groupValidationTechnique.shuffle(originalDatasetLoader, groups);
 
             for (int thisPartition = 0; thisPartition < pairsOfTrainTest.length; thisPartition++) {
 
@@ -364,10 +364,12 @@ public class GroupCaseStudy extends ExperimentAdapter {
                                 getAlias(), ejecucionActual, particionActual);
 
                 groupEvaluationMeasures.parallelStream().forEach(groupEvaluationMeasure -> {
-                    GroupEvaluationMeasureResult groupMeasureResult = groupEvaluationMeasure.getMeasureResult(
-                            groupRecommendationResult,
-                            testDatasetLoader.getRatingsDataset(),
-                            relevanceCriteria);
+                    GroupEvaluationMeasureResult groupMeasureResult
+                            = groupEvaluationMeasure.getMeasureResult(
+                                    groupRecommendationResult,
+                                    originalDatasetLoader,
+                                    testDatasetLoader.getRatingsDataset(),
+                                    relevanceCriteria, trainDatasetLoader, testDatasetLoader);
 
                     executionsResult[ejecucionActual][particionActual].put(groupEvaluationMeasure, groupMeasureResult);
 

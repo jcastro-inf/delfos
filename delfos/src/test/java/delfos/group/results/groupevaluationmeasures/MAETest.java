@@ -75,7 +75,13 @@ public class MAETest {
         MAE instance = new MAE();
 
         //Phase 2: Execution
-        GroupEvaluationMeasureResult groupMaeResult = instance.getMeasureResult(groupRecommenderSystemResult, testDataset, relevanceCriteria);
+        GroupEvaluationMeasureResult groupMaeResult = instance.getMeasureResult(
+                groupRecommenderSystemResult,
+                datasetLoader,
+                testDataset,
+                relevanceCriteria,
+                datasetLoader,
+                datasetLoader);
 
         //Phase 3: Result checking
         float expResult = Float.NaN;

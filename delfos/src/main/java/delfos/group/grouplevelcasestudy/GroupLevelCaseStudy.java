@@ -47,7 +47,7 @@ public class GroupLevelCaseStudy {
     }
 
     public void execute(
-            DatasetLoader<? extends Rating> datasetLoader,
+            DatasetLoader<? extends Rating> originalDatasetLoader,
             GroupFormationTechnique groupFormation,
             GroupRecommenderSystem[] groupRecommenderSystems,
             GroupValidationTechnique validationTechnique,
@@ -56,10 +56,10 @@ public class GroupLevelCaseStudy {
             Collection<GroupEvaluationMeasure> evaluationMeasures)
             throws CannotLoadRatingsDataset, CannotLoadContentDataset, UserNotFound, ItemNotFound, NotEnoughtUserInformation {
 
-        groupFormation.shuffle(datasetLoader);
-        Collection<GroupOfUsers> groups = groupFormation.shuffle(datasetLoader);
+        groupFormation.shuffle(originalDatasetLoader);
+        Collection<GroupOfUsers> groups = groupFormation.shuffle(originalDatasetLoader);
 
-        final RelevanceCriteria relevanceCriteria = datasetLoader.getDefaultRelevanceCriteria();
+        final RelevanceCriteria relevanceCriteria = originalDatasetLoader.getDefaultRelevanceCriteria();
 
         int numSplit = validationTechnique.getNumberOfSplits();
         Map<GroupOfUsers, Map<Integer, GroupLevelResults>> allResultsCaseStudy = new TreeMap<>();
@@ -90,7 +90,7 @@ public class GroupLevelCaseStudy {
         for (GroupOfUsers group : groups) {
             Chronometer c = new Chronometer();
 
-            PairOfTrainTestRatingsDataset[] pairs = validationTechnique.shuffle(datasetLoader, groups);
+            PairOfTrainTestRatingsDataset[] pairs = validationTechnique.shuffle(originalDatasetLoader, groups);
 
             allResultsCaseStudy.put(group, new TreeMap<>());
 
@@ -124,7 +124,7 @@ public class GroupLevelCaseStudy {
                     }
 
                     for (GroupMeasure groupMeasure : grouMeasures) {
-                        double groupMeasureValue = groupMeasure.getMeasure(datasetLoader, group);
+                        double groupMeasureValue = groupMeasure.getMeasure(originalDatasetLoader, group);
                         groupLevelResults.setGroupMeasure(groupMeasure, groupMeasureValue);
                     }
 
@@ -137,7 +137,7 @@ public class GroupLevelCaseStudy {
                         List<SingleGroupRecommendationTaskInput> singleGroupRecommendationInputs = Arrays.asList(
                                 new SingleGroupRecommendationTaskInput(
                                         groupRecommenderSystem,
-                                        datasetLoader,
+                                        originalDatasetLoader,
                                         recommendationModel,
                                         group,
                                         requests));
@@ -151,7 +151,13 @@ public class GroupLevelCaseStudy {
                                 singleGroupRecommendationOutputs,
                                 GroupLevelCaseStudy.class.getSimpleName(), 0, 0);
 
-                        GroupEvaluationMeasureResult measureResult = evaluationMeasure.getMeasureResult(groupRecommendationResult, testDatasetLoader.getRatingsDataset(), relevanceCriteria);
+                        GroupEvaluationMeasureResult measureResult = evaluationMeasure.getMeasureResult(
+                                groupRecommendationResult,
+                                originalDatasetLoader,
+                                testDatasetLoader.getRatingsDataset(),
+                                relevanceCriteria,
+                                trainingDatasetLoader,
+                                testDatasetLoader);
                         groupLevelResults.setEvaluationMeasure(groupRecommenderSystem, evaluationMeasure, measureResult);
                     }
                 }

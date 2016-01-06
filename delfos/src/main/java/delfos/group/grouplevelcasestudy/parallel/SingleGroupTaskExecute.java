@@ -62,7 +62,7 @@ public class SingleGroupTaskExecute implements SingleTaskExecute<SingleGroupTask
     private GroupLevelResults[] computeGroup(
             long seed,
             GroupValidationTechnique validationTechnique,
-            DatasetLoader<? extends Rating> datasetLoader,
+            DatasetLoader<? extends Rating> originalDatasetLoader,
             GroupOfUsers group,
             GroupRecommenderSystem[] groupRecommenderSystems,
             GroupPredictionProtocol predictionProtocol,
@@ -72,7 +72,7 @@ public class SingleGroupTaskExecute implements SingleTaskExecute<SingleGroupTask
 
         GroupOfUsers[] groups = new GroupOfUsers[1];
         groups[0] = group;
-        PairOfTrainTestRatingsDataset[] pairs = validationTechnique.shuffle(datasetLoader, groups);
+        PairOfTrainTestRatingsDataset[] pairs = validationTechnique.shuffle(originalDatasetLoader, groups);
 
         validationTechnique.setSeedValue(seed);
         predictionProtocol.setSeedValue(seed);
@@ -114,7 +114,7 @@ public class SingleGroupTaskExecute implements SingleTaskExecute<SingleGroupTask
                 }
 
                 for (GroupMeasure groupMeasure : grouMeasures) {
-                    double groupMeasureValue = groupMeasure.getMeasure(datasetLoader, group);
+                    double groupMeasureValue = groupMeasure.getMeasure(originalDatasetLoader, group);
                     groupLevelResults.setGroupMeasure(groupMeasure, groupMeasureValue);
                 }
 
@@ -127,7 +127,7 @@ public class SingleGroupTaskExecute implements SingleTaskExecute<SingleGroupTask
                     List<SingleGroupRecommendationTaskInput> singleGroupRecommendationInputs = Arrays.asList(
                             new SingleGroupRecommendationTaskInput(
                                     groupRecommenderSystem,
-                                    datasetLoader,
+                                    originalDatasetLoader,
                                     recommendationModel,
                                     group,
                                     requests));
@@ -141,8 +141,18 @@ public class SingleGroupTaskExecute implements SingleTaskExecute<SingleGroupTask
                             singleGroupRecommendationOutputs,
                             GroupLevelCaseStudy.class.getSimpleName(), 0, 0);
 
-                    GroupEvaluationMeasureResult measureResult = evaluationMeasure.getMeasureResult(groupRecommendationResult, testDatasetLoader.getRatingsDataset(), datasetLoader.getDefaultRelevanceCriteria());
-                    groupLevelResults.setEvaluationMeasure(groupRecommenderSystem, evaluationMeasure, measureResult);
+                    GroupEvaluationMeasureResult measureResult = evaluationMeasure.getMeasureResult(
+                            groupRecommendationResult,
+                            originalDatasetLoader,
+                            testDatasetLoader.getRatingsDataset(),
+                            originalDatasetLoader.getDefaultRelevanceCriteria(),
+                            trainingDatasetLoader,
+                            testDatasetLoader);
+
+                    groupLevelResults.setEvaluationMeasure(
+                            groupRecommenderSystem,
+                            evaluationMeasure,
+                            measureResult);
                 }
             }
         }
