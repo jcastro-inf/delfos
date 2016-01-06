@@ -6,6 +6,7 @@ import delfos.group.results.groupevaluationmeasures.Coverage;
 import delfos.group.results.groupevaluationmeasures.GroupAverageNumberOfRecommendations;
 import delfos.group.results.groupevaluationmeasures.GroupAverageNumberOfRequests;
 import delfos.group.results.groupevaluationmeasures.GroupEvaluationMeasure;
+import delfos.group.results.groupevaluationmeasures.IntraListSimilarity;
 import delfos.group.results.groupevaluationmeasures.MAE;
 import delfos.group.results.groupevaluationmeasures.NDCG;
 import delfos.group.results.groupevaluationmeasures.NMAE;
@@ -61,6 +62,9 @@ public class GroupEvaluationMeasuresFactory extends Factory<GroupEvaluationMeasu
 
         //Histogram measures
         instance.addClass(PrintTestSet.class);
+
+        //Diversidad
+        instance.addClass(IntraListSimilarity.class);
     }
 
     private GroupEvaluationMeasuresFactory() {
