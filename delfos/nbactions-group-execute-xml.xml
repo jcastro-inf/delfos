@@ -10,7 +10,7 @@
                 <goal>org.codehaus.mojo:exec-maven-plugin:1.2.1:exec</goal>
             </goals>
             <properties>
-                <exec.args>-classpath %classpath delfos.main.Main --execute-group-xml -num-exec 1 -seed 123456 --force-execution --raw-data --full-results -directory "temp/HesitantGRS.experiment2allGroups/HesitantGRS_3_allGroups_randomMembers/[ml-100k]_dataValidation_groupSize=10__technique_Delete_repeated=false_SIMILARITY_MEASURE=HesitantPearson"</exec.args>
+                <exec.args>-classpath %classpath delfos.main.Main --execute-group-xml -num-exec 1 -seed 123456 --force-execution --raw-data --full-results -directory "temp/HesitantGRS.experiment2allGroups/HesitantGRS_3_allGroups_randomMembers/[ml-100k]_dataValidation_groupSize=2__technique_Delete_repeated=false_SIMILARITY_MEASURE=HesitantPearson"</exec.args>
                 <exec.executable>java</exec.executable>
             </properties>
         </action>
@@ -24,7 +24,7 @@
                 <goal>org.codehaus.mojo:exec-maven-plugin:1.2.1:exec</goal>
             </goals>
             <properties>
-                <exec.args>-Xdebug -Xrunjdwp:transport=dt_socket,server=n,address=${jpda.address} -classpath %classpath delfos.main.Main --execute-group-xml -num-exec 1 -seed 123456 --force-execution --raw-data --full-results -directory "temp/HesitantGRS.experiment2allGroups/HesitantGRS_3_allGroups_randomMembers/[ml-100k]_dataValidation_groupSize=10__technique_Delete_repeated=false_SIMILARITY_MEASURE=HesitantPearson"</exec.args>
+                <exec.args>-Xdebug -Xrunjdwp:transport=dt_socket,server=n,address=${jpda.address} -classpath %classpath delfos.main.Main --execute-group-xml -num-exec 1 -seed 123456 --force-execution --raw-data --full-results -directory "temp/HesitantGRS.experiment2allGroups/HesitantGRS_3_allGroups_randomMembers/[ml-100k]_dataValidation_groupSize=2__technique_Delete_repeated=false_SIMILARITY_MEASURE=HesitantPearson"</exec.args>
                 <exec.executable>java</exec.executable>
                 <jpda.listen>true</jpda.listen>
             </properties>
@@ -39,7 +39,7 @@
                 <goal>org.codehaus.mojo:exec-maven-plugin:1.2.1:exec</goal>
             </goals>
             <properties>
-                <exec.args>-classpath %classpath delfos.main.Main --execute-group-xml -num-exec 1 -seed 123456 --force-execution --raw-data --full-results -directory "temp/HesitantGRS.experiment2allGroups/HesitantGRS_3_allGroups_randomMembers/[ml-100k]_dataValidation_groupSize=10__technique_Delete_repeated=false_SIMILARITY_MEASURE=HesitantPearson"</exec.args>
+                <exec.args>-classpath %classpath delfos.main.Main --execute-group-xml -num-exec 1 -seed 123456 --force-execution --raw-data --full-results -directory "temp/HesitantGRS.experiment2allGroups/HesitantGRS_3_allGroups_randomMembers/[ml-100k]_dataValidation_groupSize=2__technique_Delete_repeated=false_SIMILARITY_MEASURE=HesitantPearson"</exec.args>
                 <exec.executable>java</exec.executable>
             </properties>
         </action>

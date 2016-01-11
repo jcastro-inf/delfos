@@ -20,7 +20,10 @@ import delfos.rs.persistence.FilePersistence;
 import delfos.rs.recommendation.Recommendation;
 import delfos.similaritymeasures.CosineCoefficient;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.function.BinaryOperator;
 import java.util.stream.Collectors;
 import org.jdom2.Element;
 
@@ -34,7 +37,35 @@ import org.jdom2.Element;
  */
 public class IntraListSimilarity extends GroupEvaluationMeasure {
 
-    class IntraListSimilarityByRecommendationLenght {
+    public static final BinaryOperator<IntraListSimilarityByRecommendationLenght> ILS_JOINER = new BinaryOperator<IntraListSimilarityByRecommendationLenght>() {
+
+        @Override
+        public IntraListSimilarityByRecommendationLenght apply(IntraListSimilarityByRecommendationLenght t, IntraListSimilarityByRecommendationLenght u) {
+            IntraListSimilarityByRecommendationLenght ret = new IntraListSimilarityByRecommendationLenght();
+
+            int maxSize = Math.max(t.meanByListSize.size(), u.meanByListSize.size());
+
+            while (ret.meanByListSize.size() < maxSize) {
+                ret.meanByListSize.add(new MeanIterative());
+            }
+
+            for (int listSize = 1; listSize <= maxSize; listSize++) {
+
+                if (t.contains(listSize)) {
+                    MeanIterative meanIterativeA = t.getMeanILS(listSize);
+                    ret.getMeanILS(listSize).addMean(meanIterativeA);
+                }
+
+                if (u.contains(listSize)) {
+                    MeanIterative meanIterativeB = u.getMeanILS(listSize);
+                    ret.getMeanILS(listSize).addMean(meanIterativeB);
+                }
+            }
+            return ret;
+        }
+    };
+
+    protected static class IntraListSimilarityByRecommendationLenght {
 
         List<MeanIterative> meanByListSize;
 
@@ -64,39 +95,33 @@ public class IntraListSimilarity extends GroupEvaluationMeasure {
             return meanByListSize.get(index);
         }
 
-        public IntraListSimilarityByRecommendationLenght join(IntraListSimilarityByRecommendationLenght a, IntraListSimilarityByRecommendationLenght b) {
-            IntraListSimilarityByRecommendationLenght ret = new IntraListSimilarityByRecommendationLenght();
-
-            int maxSize = Math.max(a.meanByListSize.size(), b.meanByListSize.size());
-
-            while (ret.meanByListSize.size() < maxSize) {
-                ret.meanByListSize.add(new MeanIterative());
-            }
-
-            for (int listSize = 1; listSize <= maxSize; listSize++) {
-
-                if (a.contains(listSize)) {
-                    MeanIterative meanIterativeA = a.getMeanILS(listSize);
-                    ret.getMeanILS(listSize).addMean(meanIterativeA);
-                }
-
-                if (b.contains(listSize)) {
-                    MeanIterative meanIterativeB = b.getMeanILS(listSize);
-                    ret.getMeanILS(listSize).addMean(meanIterativeB);
-                }
-            }
-            return ret;
-        }
-
         private boolean contains(int listSize) {
+            if (this.meanByListSize.isEmpty()) {
+                return false;
+            }
+
             int sizeShouldHave = listSize;
 
-            return (this.meanByListSize.size() <= sizeShouldHave);
+            return (sizeShouldHave <= this.meanByListSize.size());
         }
 
         int size() {
             return this.meanByListSize.size();
         }
+
+        @Override
+        public String toString() {
+            StringBuilder str = new StringBuilder("ILS\n");
+
+            for (int listSize = 1; listSize <= this.meanByListSize.size(); listSize++) {
+                str.append("lenght= ").append(listSize);
+                str.append(" \t\tILS= ").append(getILS(listSize));
+                str.append("\n");
+            }
+
+            return str.toString();
+        }
+
     }
 
     @Override
@@ -108,26 +133,36 @@ public class IntraListSimilarity extends GroupEvaluationMeasure {
             DatasetLoader<? extends Rating> trainingDatasetLoader,
             DatasetLoader<? extends Rating> testDatasetLoader) {
 
-        MeanIterative meanIterative = new MeanIterative();
-        for (GroupOfUsers groupOfUsers : groupRecommenderSystemResult) {
+        IntraListSimilarityByRecommendationLenght ilsAllGroups = groupRecommenderSystemResult
+                .getGroupsOfUsers().parallelStream()
+                .map(groupOfUsers -> {
 
-            SingleGroupRecommendationTaskInput singleGroupRecommendationTaskInput = groupRecommenderSystemResult.getGroupInput(groupOfUsers);;
-            SingleGroupRecommendationTaskOutput singleGroupRecommendationTaskOutput = groupRecommenderSystemResult.getGroupOutput(groupOfUsers);
+                    SingleGroupRecommendationTaskInput singleGroupRecommendationTaskInput = groupRecommenderSystemResult.getGroupInput(groupOfUsers);
+                    SingleGroupRecommendationTaskOutput singleGroupRecommendationTaskOutput = groupRecommenderSystemResult.getGroupOutput(groupOfUsers);
 
-            GroupEvaluationMeasureResult thisGroupResult = getMeasureResultForSingleGroup(
-                    groupOfUsers,
-                    singleGroupRecommendationTaskInput,
-                    singleGroupRecommendationTaskOutput,
-                    originalDatasetLoader,
-                    testDataset,
-                    relevanceCriteria,
-                    trainingDatasetLoader,
-                    testDatasetLoader);
+                    GroupEvaluationMeasureResult thisGroupResult = getMeasureResultForSingleGroup(
+                            groupOfUsers,
+                            singleGroupRecommendationTaskInput,
+                            singleGroupRecommendationTaskOutput,
+                            originalDatasetLoader,
+                            testDataset,
+                            relevanceCriteria,
+                            trainingDatasetLoader,
+                            testDatasetLoader);
 
-            meanIterative.addValue(thisGroupResult.getValue());
+                    return (IntraListSimilarityByRecommendationLenght) thisGroupResult.getDetailedResult();
+                })
+                .reduce(ILS_JOINER)
+                .get();
+
+        double measureValue;
+        if (ilsAllGroups.size() >= 5) {
+            measureValue = ilsAllGroups.getILS(5);
+        } else {
+            measureValue = ilsAllGroups.getILS(ilsAllGroups.size());
         }
 
-        return new GroupEvaluationMeasureResult(this, meanIterative.getMean());
+        return new GroupEvaluationMeasureResult(this, measureValue, getXMLElement(ilsAllGroups), ilsAllGroups);
 
     }
 
@@ -140,7 +175,7 @@ public class IntraListSimilarity extends GroupEvaluationMeasure {
             RelevanceCriteria relevanceCriteria,
             DatasetLoader<? extends Rating> trainingDatasetLoader,
             DatasetLoader<? extends Rating> testDatasetLoader) {
-        IntraListSimilarityByRecommendationLenght result = new IntraListSimilarityByRecommendationLenght();
+        IntraListSimilarityByRecommendationLenght ilsThisGroup = new IntraListSimilarityByRecommendationLenght();
 
         TryThisAtHomeSVDModel svdModel = getSVDModel(originalDatasetLoader);
 
@@ -154,17 +189,17 @@ public class IntraListSimilarity extends GroupEvaluationMeasure {
 
             double intraListSimilarity = intraListSimilarity(svdModel, recommendationSubList);
 
-            result.addILS(intraListSimilarity, listSize);
+            ilsThisGroup.addILS(intraListSimilarity, listSize);
         }
 
         double measureValue;
-        if (result.size() >= 5) {
-            measureValue = result.getILS(5);
+        if (ilsThisGroup.size() >= 5) {
+            measureValue = ilsThisGroup.getILS(5);
         } else {
-            measureValue = result.getILS(result.size());
+            measureValue = ilsThisGroup.getILS(ilsThisGroup.size());
         }
 
-        return new GroupEvaluationMeasureResult(this, measureValue, new Element(this.getClass().getSimpleName()), result);
+        return new GroupEvaluationMeasureResult(this, measureValue, getXMLElement(ilsThisGroup), ilsThisGroup);
     }
 
     private double intraListSimilarity(TryThisAtHomeSVDModel svdModel, List<Recommendation> recommendations) {
@@ -207,14 +242,73 @@ public class IntraListSimilarity extends GroupEvaluationMeasure {
         return false;
     }
 
-    public TryThisAtHomeSVDModel getSVDModel(DatasetLoader<? extends Rating> originalDatasetLoader) throws CannotLoadContentDataset, CannotLoadRatingsDataset {
-        TryThisAtHomeSVD svd = new TryThisAtHomeSVD(20, 20);
-        svd.setParameterValue(TryThisAtHomeSVD.NORMALIZE_WITH_USER_MEAN, true);
+    private final HashMap<DatasetLoader<? extends Rating>, TryThisAtHomeSVDModel> svdModelCache = new HashMap<>();
 
-        RecommenderSystem_fixedFilePersistence rs_persistence = new RecommenderSystem_fixedFilePersistence(svd,
-                new FilePersistence(originalDatasetLoader.getAlias() + "_numFeatures=20_numIter=20_normalised", "svd.model", Constants.getTempDirectory()));
+    public synchronized TryThisAtHomeSVDModel getSVDModel(DatasetLoader<? extends Rating> originalDatasetLoader) throws CannotLoadContentDataset, CannotLoadRatingsDataset {
 
-        TryThisAtHomeSVDModel svdModel = (TryThisAtHomeSVDModel) rs_persistence.buildRecommendationModel(originalDatasetLoader);
-        return svdModel;
+        if (svdModelCache.containsKey(originalDatasetLoader)) {
+            return svdModelCache.get(originalDatasetLoader);
+        } else {
+            TryThisAtHomeSVD svd = new TryThisAtHomeSVD(20, 20);
+            svd.setParameterValue(TryThisAtHomeSVD.NORMALIZE_WITH_USER_MEAN, true);
+
+            RecommenderSystem_fixedFilePersistence rs_persistence = new RecommenderSystem_fixedFilePersistence(svd,
+                    new FilePersistence(originalDatasetLoader.getAlias() + "_numFeatures=20_numIter=20_normalised", "svd.model", Constants.getTempDirectory()));
+
+            TryThisAtHomeSVDModel svdModel = (TryThisAtHomeSVDModel) rs_persistence.buildRecommendationModel(originalDatasetLoader);
+
+            svdModelCache.put(originalDatasetLoader, svdModel);
+
+            return svdModel;
+        }
+    }
+
+    @Override
+    public GroupEvaluationMeasureResult agregateResults(Collection<GroupEvaluationMeasureResult> results) {
+
+        IntraListSimilarityByRecommendationLenght ilsAggregated = results.parallelStream()
+                .map(groupEvaluationMeasureResult -> (IntraListSimilarityByRecommendationLenght) groupEvaluationMeasureResult.getDetailedResult())
+                .reduce(ILS_JOINER)
+                .get();
+
+        double measureValue;
+        if (ilsAggregated.size() >= 5) {
+            measureValue = ilsAggregated.getILS(5);
+        } else {
+            measureValue = ilsAggregated.getILS(ilsAggregated.size());
+        }
+
+        return new GroupEvaluationMeasureResult(this, measureValue, getXMLElement(ilsAggregated), ilsAggregated);
+    }
+
+    private Element getXMLElement(IntraListSimilarityByRecommendationLenght intraListSimilarityByRecommendationLenght) {
+
+        double measureValue;
+        if (intraListSimilarityByRecommendationLenght.size() >= 5) {
+            measureValue = intraListSimilarityByRecommendationLenght.getILS(5);
+        } else {
+            measureValue = intraListSimilarityByRecommendationLenght.getILS(intraListSimilarityByRecommendationLenght.size());
+        }
+
+        Element ilsXMLElement = new Element(IntraListSimilarity.class.getSimpleName());
+        ilsXMLElement.setAttribute(GroupEvaluationMeasure.VALUE, Double.toString(measureValue));
+
+        Element detailedElement = new Element("ILSdetailed");
+        for (int listSize = 1; listSize <= intraListSimilarityByRecommendationLenght.size(); listSize++) {
+
+            double intraListSimilarity = intraListSimilarityByRecommendationLenght.getILS(listSize);
+
+            Element thisListSizeElement = new Element("Size");
+
+            thisListSizeElement.setAttribute("k", Integer.toString(listSize));
+            thisListSizeElement.setAttribute("ils", Double.toString(intraListSimilarity));
+
+            detailedElement.addContent(thisListSizeElement);
+        }
+
+        ilsXMLElement.setContent(detailedElement);
+
+        return ilsXMLElement;
+
     }
 }
