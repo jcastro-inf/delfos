@@ -55,7 +55,7 @@ public class GroupSatisfaction_StdDev extends GroupEvaluationMeasure {
 
         MeanIterative mediaTodasDesviacionesTipicas = new MeanIterative();
 
-        for (GroupOfUsers groupOfUsers : groupRecommenderSystemResult) {
+        for (GroupOfUsers groupOfUsers : groupRecommenderSystemResult.getGroupsOfUsers()) {
             Collection<Recommendation> groupRecommendations = groupRecommenderSystemResult.getGroupOutput(groupOfUsers).getRecommendations();
 
             //Recorro todos los grupos

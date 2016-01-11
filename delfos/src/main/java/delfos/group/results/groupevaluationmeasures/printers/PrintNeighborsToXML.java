@@ -51,7 +51,7 @@ public class PrintNeighborsToXML extends GroupEvaluationMeasureInformationPrinte
 
         Element neighborsDetails = new Element("NeighborsDetails");
 
-        for (GroupOfUsers groupOfUsers : groupRecommenderSystemResult) {
+        for (GroupOfUsers groupOfUsers : groupRecommenderSystemResult.getGroupsOfUsers()) {
             Collection<Recommendation> groupRecommendations = groupRecommenderSystemResult.getGroupOutput(groupOfUsers).getRecommendations();
 
             List<Neighbor> neighbors;

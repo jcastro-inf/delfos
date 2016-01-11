@@ -50,7 +50,7 @@ public class PrintGroupRatingsToPlainText extends GroupEvaluationMeasureInformat
                 + "-group-ratings.txt");
         StringBuilder str = new StringBuilder();
 
-        for (GroupOfUsers groupOfUsers : groupRecommenderSystemResult) {
+        for (GroupOfUsers groupOfUsers : groupRecommenderSystemResult.getGroupsOfUsers()) {
             Collection<Recommendation> groupRecommendation = groupRecommenderSystemResult.getGroupOutput(groupOfUsers).getRecommendations();
 
             List<Neighbor> neighbors;

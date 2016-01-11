@@ -31,7 +31,7 @@ public class GroupAverageNumberOfRecommendations extends GroupEvaluationMeasure 
             DatasetLoader<? extends Rating> testDatasetLoader) {
 
         MeanIterative mean = new MeanIterative();
-        for (GroupOfUsers group : groupRecommenderSystemResult) {
+        for (GroupOfUsers group : groupRecommenderSystemResult.getGroupsOfUsers()) {
             Collection<Recommendation> groupRecommendations = groupRecommenderSystemResult.getGroupOutput(group).getRecommendations();
 
             mean.addValue(groupRecommendations.size());

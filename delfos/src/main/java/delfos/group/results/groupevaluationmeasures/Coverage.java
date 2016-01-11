@@ -39,7 +39,7 @@ public class Coverage extends GroupEvaluationMeasure {
 
         int predichas = 0;
         int solicitudes = 0;
-        for (GroupOfUsers group : groupRecommenderSystemResult) {
+        for (GroupOfUsers group : groupRecommenderSystemResult.getGroupsOfUsers()) {
             Collection<Recommendation> groupRecommendations = groupRecommenderSystemResult.getGroupOutput(group).getRecommendations();
 
             {

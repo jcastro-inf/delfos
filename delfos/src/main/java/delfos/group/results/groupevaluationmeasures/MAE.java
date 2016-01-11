@@ -52,7 +52,7 @@ public class MAE extends GroupEvaluationMeasure {
         TreeMap<GroupOfUsers, MeanIterative> maeGroups = new TreeMap<>();
         TreeMap<Integer, MeanIterative> maeAllMembers = new TreeMap<>();
 
-        for (GroupOfUsers groupOfUsers : groupRecommenderSystemResult) {
+        for (GroupOfUsers groupOfUsers : groupRecommenderSystemResult.getGroupsOfUsers()) {
             Collection<Recommendation> groupRecommendations = groupRecommenderSystemResult.getGroupOutput(groupOfUsers).getRecommendations();
 
             MeanIterative maeGroup = new MeanIterative();

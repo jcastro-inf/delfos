@@ -69,7 +69,7 @@ public class AreaUnderRoc extends GroupEvaluationMeasure {
         Map<GroupOfUsers, ConfusionMatricesCurve> prCurves = new TreeMap<>();
 
         int gruposSinMatriz = 0;
-        for (GroupOfUsers group : groupRecommenderSystemResult) {
+        for (GroupOfUsers group : groupRecommenderSystemResult.getGroupsOfUsers()) {
             Collection<Recommendation> groupRecommendations = groupRecommenderSystemResult.getGroupOutput(group).getRecommendations();
 
             List<Boolean> recommendacionesGrupo = new ArrayList<>(groupRecommendations.size());

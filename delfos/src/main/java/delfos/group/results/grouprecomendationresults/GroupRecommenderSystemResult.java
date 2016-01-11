@@ -4,7 +4,7 @@ import delfos.common.Global;
 import delfos.group.casestudy.parallelisation.SingleGroupRecommendationTaskInput;
 import delfos.group.casestudy.parallelisation.SingleGroupRecommendationTaskOutput;
 import delfos.group.groupsofusers.GroupOfUsers;
-import java.util.Iterator;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
  *
  * @author Jorge Castro Gallardo
  */
-public class GroupRecommenderSystemResult implements Iterable<GroupOfUsers> {
+public class GroupRecommenderSystemResult {
 
     protected List<SingleGroupRecommendationTaskInput> singleGroupRecommendationInputs;
     protected List<SingleGroupRecommendationTaskOutput> singleGroupRecommendationOutputs;
@@ -63,17 +63,16 @@ public class GroupRecommenderSystemResult implements Iterable<GroupOfUsers> {
         }
     }
 
-    @Override
-    public Iterator<GroupOfUsers> iterator() {
-        return singleGroupRecommendationInputs.stream().map(task -> task.getGroupOfUsers()).iterator();
+    public Collection<GroupOfUsers> getGroupsOfUsers() {
+        return singleGroupRecommendationInputs.stream().map(task -> task.getGroupOfUsers()).collect(Collectors.toList());
     }
 
-    public Iterator<SingleGroupRecommendationTaskInput> inputsIterator() {
-        return singleGroupRecommendationInputs.iterator();
+    public Collection<SingleGroupRecommendationTaskInput> inputsIterator() {
+        return singleGroupRecommendationInputs.stream().collect(Collectors.toList());
     }
 
-    public Iterator<SingleGroupRecommendationTaskOutput> outputsIterator() {
-        return singleGroupRecommendationOutputs.iterator();
+    public Collection<SingleGroupRecommendationTaskOutput> outputsIterator() {
+        return singleGroupRecommendationOutputs.stream().collect(Collectors.toList());
     }
 
     public SingleGroupRecommendationTaskInput getGroupInput(GroupOfUsers groupOfUsers) {

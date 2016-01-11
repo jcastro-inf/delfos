@@ -53,7 +53,7 @@ public class NDCG extends GroupEvaluationMeasure {
 
         List<Double> ndcgByMember = new ArrayList<>();
 
-        for (GroupOfUsers group : groupRecommenderSystemResult) {
+        for (GroupOfUsers group : groupRecommenderSystemResult.getGroupsOfUsers()) {
             Collection<Recommendation> groupRecommendations = groupRecommenderSystemResult.getGroupOutput(group).getRecommendations();
 
             if (groupRecommendations.isEmpty()) {

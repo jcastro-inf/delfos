@@ -36,7 +36,7 @@ public class NumberOfRecommendations extends GroupEvaluationMeasure {
         Element ret = ParameterOwnerXML.getElement(this);
         long recomendadas = 0;
 
-        for (GroupOfUsers groupOfUsers : groupRecommenderSystemResult) {
+        for (GroupOfUsers groupOfUsers : groupRecommenderSystemResult.getGroupsOfUsers()) {
             Collection<Recommendation> groupRecommendations = groupRecommenderSystemResult.getGroupOutput(groupOfUsers).getRecommendations();
 
             Element groupRecommendationsElement = new Element("GroupRecommendations");

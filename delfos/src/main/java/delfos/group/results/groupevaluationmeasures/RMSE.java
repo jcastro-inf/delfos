@@ -43,7 +43,7 @@ public class RMSE extends GroupEvaluationMeasure {
 
         MeanIterative rmse = new MeanIterative();
 
-        for (GroupOfUsers group : groupRecommenderSystemResult) {
+        for (GroupOfUsers group : groupRecommenderSystemResult.getGroupsOfUsers()) {
             Collection<Recommendation> groupRecommendations = groupRecommenderSystemResult.getGroupOutput(group).getRecommendations();
 
             Map<Integer, Map<Integer, ? extends Rating>> groupTrueRatings = new TreeMap<>();

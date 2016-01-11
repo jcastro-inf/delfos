@@ -36,7 +36,7 @@ public class NumberOfRequests extends GroupEvaluationMeasure {
         Element ret = ParameterOwnerXML.getElement(this);
         long solicitadas = 0;
 
-        for (GroupOfUsers groupOfUsers : groupRecommenderSystemResult) {
+        for (GroupOfUsers groupOfUsers : groupRecommenderSystemResult.getGroupsOfUsers()) {
             Collection<Recommendation> groupRecommendations = groupRecommenderSystemResult.getGroupOutput(groupOfUsers).getRecommendations();
 
             Collection<Integer> groupRequests = groupRecommenderSystemResult.getGroupInput(groupOfUsers).getItemsRequested();

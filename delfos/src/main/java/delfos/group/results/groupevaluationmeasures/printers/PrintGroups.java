@@ -42,7 +42,7 @@ public class PrintGroups extends GroupEvaluationMeasureInformationPrinter {
 
         Element groups = new Element("Groups");
 
-        for (GroupOfUsers groupOfUsers : groupRecommenderSystemResult) {
+        for (GroupOfUsers groupOfUsers : groupRecommenderSystemResult.getGroupsOfUsers()) {
             Element group = new Element("Group");
             group.setAttribute("group", groupOfUsers.toString());
             groups.addContent(group);

@@ -71,7 +71,7 @@ public class NormalizedIndividualSatisfaction extends GroupEvaluationMeasure {
 
         Element measureElement = new Element(getName());
 
-        for (GroupOfUsers groupOfUsers : groupRecommenderSystemResult) {
+        for (GroupOfUsers groupOfUsers : groupRecommenderSystemResult.getGroupsOfUsers()) {
             Collection<Recommendation> groupRecommendations = groupRecommenderSystemResult.getGroupOutput(groupOfUsers).getRecommendations();
 
             Element groupElement = new Element("Group");

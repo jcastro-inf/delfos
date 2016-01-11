@@ -52,7 +52,7 @@ public class PrintTestSet extends GroupEvaluationMeasureInformationPrinter {
 
         StringBuilder str = new StringBuilder();
 
-        for (GroupOfUsers groupOfUsers : groupRecommenderSystemResult) {
+        for (GroupOfUsers groupOfUsers : groupRecommenderSystemResult.getGroupsOfUsers()) {
             Collection<Recommendation> groupRecommendations = groupRecommenderSystemResult.getGroupOutput(groupOfUsers).getRecommendations();
 
             if (groupRecommendations.isEmpty()) {

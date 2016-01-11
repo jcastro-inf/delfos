@@ -47,7 +47,7 @@ public class NRMSE extends GroupEvaluationMeasure {
 
         Domain originalDomain = testDataset.getRatingsDomain();
 
-        for (GroupOfUsers groupOfUsers : groupRecommenderSystemResult) {
+        for (GroupOfUsers groupOfUsers : groupRecommenderSystemResult.getGroupsOfUsers()) {
             Collection<Recommendation> groupRecommendations = groupRecommenderSystemResult.getGroupOutput(groupOfUsers).getRecommendations();
 
             Map<Integer, Map<Integer, ? extends Rating>> groupTrueRatings = new TreeMap<>();

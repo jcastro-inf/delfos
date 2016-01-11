@@ -31,7 +31,7 @@ public class GroupAverageNumberOfRequests extends GroupEvaluationMeasure {
             DatasetLoader<? extends Rating> testDatasetLoader) {
 
         MeanIterative mean = new MeanIterative();
-        for (GroupOfUsers group : groupRecommenderSystemResult) {
+        for (GroupOfUsers group : groupRecommenderSystemResult.getGroupsOfUsers()) {
             Collection<Integer> requestsToGroup = groupRecommenderSystemResult.getGroupInput(group).getItemsRequested();
             if (requestsToGroup == null) {
                 Global.showWarning("the group " + group + " has no requests (null)");
