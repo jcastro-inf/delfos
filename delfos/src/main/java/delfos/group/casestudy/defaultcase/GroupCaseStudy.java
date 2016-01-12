@@ -45,6 +45,7 @@ import delfos.group.results.groupevaluationmeasures.GroupEvaluationMeasureResult
 import delfos.group.results.grouprecomendationresults.GroupRecommenderSystemResult;
 import delfos.rs.RecommenderSystemBuildingProgressListener_default;
 import delfos.rs.recommendation.Recommendation;
+import delfos.utils.algorithm.progress.ProgressChangedController;
 import java.io.Closeable;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -321,9 +322,18 @@ public class GroupCaseStudy extends ExperimentAdapter {
                     }
                 });
 
+                final ProgressChangedController recommendationProgress = new ProgressChangedController(
+                        "Group recommendation",
+                        taskGroupRecommendationInput.size(),
+                        this::setExecutionProgress);
+
                 List<SingleGroupRecommendationTaskOutput> taskGroupRecommendationOutput = taskGroupRecommendationInput
                         .parallelStream()
                         .map(new SingleGroupRecommendationFunction())
+                        .map(output -> {
+                            recommendationProgress.setTaskFinished();
+                            return output;
+                        })
                         .collect(Collectors.toList());
 
                 taskGroupRecommendationOutput.parallelStream().forEach(task -> {
