@@ -39,6 +39,17 @@ import org.jdom2.Element;
  */
 public class IntraListSimilarity extends GroupEvaluationMeasure {
 
+    protected final int listSizeOfMeasure;
+    protected final int maxlistSizeOfMeasure = 50;
+
+    public IntraListSimilarity() {
+        listSizeOfMeasure = 5;
+    }
+
+    protected IntraListSimilarity(int listSizeOfMeasure) {
+        this.listSizeOfMeasure = listSizeOfMeasure;
+    }
+
     public static final BinaryOperator<IntraListSimilarityByRecommendationLenght> ILS_JOINER = new BinaryOperator<IntraListSimilarityByRecommendationLenght>() {
 
         @Override
@@ -158,8 +169,8 @@ public class IntraListSimilarity extends GroupEvaluationMeasure {
                 .get();
 
         double measureValue;
-        if (ilsAllGroups.size() >= 5) {
-            measureValue = ilsAllGroups.getILS(5);
+        if (ilsAllGroups.size() >= this.listSizeOfMeasure) {
+            measureValue = ilsAllGroups.getILS(this.listSizeOfMeasure);
         } else {
             measureValue = ilsAllGroups.getILS(ilsAllGroups.size());
         }
@@ -183,7 +194,7 @@ public class IntraListSimilarity extends GroupEvaluationMeasure {
 
         List<Recommendation> recommendations = singleGroupRecommendationTaskOutput.getRecommendations().stream().sorted(Recommendation.BY_PREFERENCE_DESC).collect(Collectors.toList());
 
-        recommendations = recommendations.subList(0, Math.min(50, recommendations.size()));
+        recommendations = recommendations.subList(0, Math.min(maxlistSizeOfMeasure, recommendations.size()));
 
         for (int listSize = 1; listSize <= recommendations.size(); listSize++) {
 
@@ -195,8 +206,8 @@ public class IntraListSimilarity extends GroupEvaluationMeasure {
         }
 
         double measureValue;
-        if (ilsThisGroup.size() >= 5) {
-            measureValue = ilsThisGroup.getILS(5);
+        if (ilsThisGroup.size() >= this.listSizeOfMeasure) {
+            measureValue = ilsThisGroup.getILS(this.listSizeOfMeasure);
         } else {
             measureValue = ilsThisGroup.getILS(ilsThisGroup.size());
         }
@@ -274,8 +285,8 @@ public class IntraListSimilarity extends GroupEvaluationMeasure {
                 .get();
 
         double measureValue;
-        if (ilsAggregated.size() >= 5) {
-            measureValue = ilsAggregated.getILS(5);
+        if (ilsAggregated.size() >= this.listSizeOfMeasure) {
+            measureValue = ilsAggregated.getILS(this.listSizeOfMeasure);
         } else {
             measureValue = ilsAggregated.getILS(ilsAggregated.size());
         }
@@ -286,8 +297,8 @@ public class IntraListSimilarity extends GroupEvaluationMeasure {
     private Element getXMLElement(IntraListSimilarityByRecommendationLenght intraListSimilarityByRecommendationLenght) {
 
         double measureValue;
-        if (intraListSimilarityByRecommendationLenght.size() >= 5) {
-            measureValue = intraListSimilarityByRecommendationLenght.getILS(5);
+        if (intraListSimilarityByRecommendationLenght.size() >= this.listSizeOfMeasure) {
+            measureValue = intraListSimilarityByRecommendationLenght.getILS(this.listSizeOfMeasure);
         } else {
             measureValue = intraListSimilarityByRecommendationLenght.getILS(intraListSimilarityByRecommendationLenght.size());
         }
