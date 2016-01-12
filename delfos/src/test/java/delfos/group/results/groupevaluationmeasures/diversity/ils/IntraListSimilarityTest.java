@@ -1,4 +1,4 @@
-package delfos.group.results.groupevaluationmeasures;
+package delfos.group.results.groupevaluationmeasures.diversity.ils;
 
 import delfos.common.aggregationoperators.Mean;
 import delfos.configureddatasets.ConfiguredDatasetsFactory;
@@ -15,6 +15,7 @@ import delfos.group.experiment.validation.validationtechniques.CrossFoldValidati
 import delfos.group.groupsofusers.GroupOfUsers;
 import delfos.group.grs.GroupRecommenderSystem;
 import delfos.group.grs.aggregation.AggregationOfIndividualRatings;
+import delfos.group.results.groupevaluationmeasures.GroupEvaluationMeasureResult;
 import delfos.group.results.grouprecomendationresults.GroupRecommenderSystemResult;
 import delfos.recommendationcandidates.OnlyNewItems;
 import delfos.rs.collaborativefiltering.knn.memorybased.nwr.KnnMemoryBasedNWR;

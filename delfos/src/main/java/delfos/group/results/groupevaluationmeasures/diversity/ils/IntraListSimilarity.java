@@ -1,4 +1,4 @@
-package delfos.group.results.groupevaluationmeasures;
+package delfos.group.results.groupevaluationmeasures.diversity.ils;
 
 import delfos.Constants;
 import delfos.common.exceptions.dataset.CannotLoadContentDataset;
@@ -12,6 +12,8 @@ import delfos.dataset.basic.rating.RelevanceCriteria;
 import delfos.group.casestudy.parallelisation.SingleGroupRecommendationTaskInput;
 import delfos.group.casestudy.parallelisation.SingleGroupRecommendationTaskOutput;
 import delfos.group.groupsofusers.GroupOfUsers;
+import delfos.group.results.groupevaluationmeasures.GroupEvaluationMeasure;
+import delfos.group.results.groupevaluationmeasures.GroupEvaluationMeasureResult;
 import delfos.group.results.grouprecomendationresults.GroupRecommenderSystemResult;
 import delfos.rs.bufferedrecommenders.RecommenderSystem_fixedFilePersistence;
 import delfos.rs.collaborativefiltering.svd.TryThisAtHomeSVD;

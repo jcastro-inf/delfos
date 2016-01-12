@@ -6,7 +6,7 @@ import delfos.group.results.groupevaluationmeasures.Coverage;
 import delfos.group.results.groupevaluationmeasures.GroupAverageNumberOfRecommendations;
 import delfos.group.results.groupevaluationmeasures.GroupAverageNumberOfRequests;
 import delfos.group.results.groupevaluationmeasures.GroupEvaluationMeasure;
-import delfos.group.results.groupevaluationmeasures.IntraListSimilarity;
+import delfos.group.results.groupevaluationmeasures.diversity.ils.IntraListSimilarity;
 import delfos.group.results.groupevaluationmeasures.MAE;
 import delfos.group.results.groupevaluationmeasures.NDCG;
 import delfos.group.results.groupevaluationmeasures.NMAE;
