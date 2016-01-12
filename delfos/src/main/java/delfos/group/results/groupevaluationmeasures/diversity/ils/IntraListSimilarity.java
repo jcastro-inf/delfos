@@ -175,7 +175,7 @@ public class IntraListSimilarity extends GroupEvaluationMeasure {
             measureValue = ilsAllGroups.getILS(ilsAllGroups.size());
         }
 
-        return new GroupEvaluationMeasureResult(this, measureValue, getXMLElement(ilsAllGroups), ilsAllGroups);
+        return new GroupEvaluationMeasureResult(this, measureValue, getXMLElement(this, ilsAllGroups), ilsAllGroups);
 
     }
 
@@ -212,7 +212,7 @@ public class IntraListSimilarity extends GroupEvaluationMeasure {
             measureValue = ilsThisGroup.getILS(ilsThisGroup.size());
         }
 
-        return new GroupEvaluationMeasureResult(this, measureValue, getXMLElement(ilsThisGroup), ilsThisGroup);
+        return new GroupEvaluationMeasureResult(this, measureValue, getXMLElement(this, ilsThisGroup), ilsThisGroup);
     }
 
     private double intraListSimilarity(TryThisAtHomeSVDModel svdModel, List<Recommendation> recommendations) {
@@ -291,30 +291,30 @@ public class IntraListSimilarity extends GroupEvaluationMeasure {
             measureValue = ilsAggregated.getILS(ilsAggregated.size());
         }
 
-        return new GroupEvaluationMeasureResult(this, measureValue, getXMLElement(ilsAggregated), ilsAggregated);
+        return new GroupEvaluationMeasureResult(this, measureValue, getXMLElement(this, ilsAggregated), ilsAggregated);
     }
 
-    private Element getXMLElement(IntraListSimilarityByRecommendationLenght intraListSimilarityByRecommendationLenght) {
+    private static synchronized Element getXMLElement(IntraListSimilarity intraListSimilarity, IntraListSimilarityByRecommendationLenght intraListSimilarityByRecommendationLenght) {
 
         double measureValue;
-        if (intraListSimilarityByRecommendationLenght.size() >= this.listSizeOfMeasure) {
-            measureValue = intraListSimilarityByRecommendationLenght.getILS(this.listSizeOfMeasure);
+        if (intraListSimilarityByRecommendationLenght.size() >= intraListSimilarity.listSizeOfMeasure) {
+            measureValue = intraListSimilarityByRecommendationLenght.getILS(intraListSimilarity.listSizeOfMeasure);
         } else {
             measureValue = intraListSimilarityByRecommendationLenght.getILS(intraListSimilarityByRecommendationLenght.size());
         }
 
-        Element ilsXMLElement = new Element(IntraListSimilarity.class.getSimpleName());
+        Element ilsXMLElement = new Element(intraListSimilarity.getClass().getSimpleName());
         ilsXMLElement.setAttribute(GroupEvaluationMeasure.VALUE, Double.toString(measureValue));
 
         Element detailedElement = new Element("ILSdetailed");
         for (int listSize = 1; listSize <= intraListSimilarityByRecommendationLenght.size(); listSize++) {
 
-            double intraListSimilarity = intraListSimilarityByRecommendationLenght.getILS(listSize);
+            double intraListSimilarityValue = intraListSimilarityByRecommendationLenght.getILS(intraListSimilarity.listSizeOfMeasure);
 
             Element thisListSizeElement = new Element("Size");
 
             thisListSizeElement.setAttribute("k", Integer.toString(listSize));
-            thisListSizeElement.setAttribute("ils", Double.toString(intraListSimilarity));
+            thisListSizeElement.setAttribute("ils", Double.toString(intraListSimilarityValue));
 
             detailedElement.addContent(thisListSizeElement);
         }
