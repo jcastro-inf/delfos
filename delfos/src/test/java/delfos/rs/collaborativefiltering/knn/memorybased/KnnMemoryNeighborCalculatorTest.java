@@ -25,9 +25,9 @@ import org.junit.Test;
  *
  * @author jcastro
  */
-public class KnnMemoryTaskExecutorTest {
+public class KnnMemoryNeighborCalculatorTest {
 
-    public KnnMemoryTaskExecutorTest() {
+    public KnnMemoryNeighborCalculatorTest() {
     }
 
     @Test
@@ -43,13 +43,11 @@ public class KnnMemoryTaskExecutorTest {
         User user = usersDataset.getUser(1);
         User neighborUser = usersDataset.getUser(2);
 
-        KnnMemoryTask task = new KnnMemoryTask(ml100k, user, neighborUser, knnMemory);
+        KnnMemoryNeighborTask task = new KnnMemoryNeighborTask(ml100k, user, neighborUser, knnMemory);
 
-        KnnMemoryTaskExecutor executor = new KnnMemoryTaskExecutor();
+        KnnMemoryNeighborCalculator executor = new KnnMemoryNeighborCalculator();
 
-        executor.executeSingleTask(task);
-
-        Neighbor neighbor = task.getNeighbor();
+        Neighbor neighbor = executor.apply(task);
         Neighbor expectedNeighbor = new Neighbor(RecommendationEntity.USER, neighborUser, 0.9605819);
 
         Assert.assertEquals("Neighbors are not equals", expectedNeighbor, neighbor);
@@ -68,13 +66,11 @@ public class KnnMemoryTaskExecutorTest {
         User user = usersDataset.getUser(1);
         User neighborUser = usersDataset.getUser(2);
 
-        KnnMemoryTask task = new KnnMemoryTask(ml100k, user, neighborUser, knnMemory);
+        KnnMemoryNeighborTask task = new KnnMemoryNeighborTask(ml100k, user, neighborUser, knnMemory);
 
-        KnnMemoryTaskExecutor executor = new KnnMemoryTaskExecutor();
+        KnnMemoryNeighborCalculator executor = new KnnMemoryNeighborCalculator();
 
-        executor.executeSingleTask(task);
-
-        Neighbor neighbor = task.getNeighbor();
+        Neighbor neighbor = executor.apply(task);
         Neighbor expectedNeighbor = new Neighbor(RecommendationEntity.USER, neighborUser, 0.16084123);
 
         Assert.assertEquals("Neighbors are not equals", expectedNeighbor, neighbor);
