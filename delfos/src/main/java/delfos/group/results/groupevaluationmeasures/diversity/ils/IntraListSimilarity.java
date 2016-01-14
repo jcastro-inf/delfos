@@ -308,14 +308,11 @@ public class IntraListSimilarity extends GroupEvaluationMeasure {
 
         Element detailedElement = new Element("ILSdetailed");
         for (int listSize = 1; listSize <= intraListSimilarityByRecommendationLenght.size(); listSize++) {
-
-            double intraListSimilarityValue = intraListSimilarityByRecommendationLenght.getILS(intraListSimilarity.listSizeOfMeasure);
+            double intraListSimilarityValue = intraListSimilarityByRecommendationLenght.getILS(listSize);
 
             Element thisListSizeElement = new Element("Size");
-
             thisListSizeElement.setAttribute("k", Integer.toString(listSize));
             thisListSizeElement.setAttribute("ils", Double.toString(intraListSimilarityValue));
-
             detailedElement.addContent(thisListSizeElement);
         }
 
