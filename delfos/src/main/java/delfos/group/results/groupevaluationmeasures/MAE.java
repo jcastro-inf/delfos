@@ -3,19 +3,18 @@ package delfos.group.results.groupevaluationmeasures;
 import delfos.ERROR_CODES;
 import delfos.common.exceptions.dataset.users.UserNotFound;
 import delfos.common.statisticalfuncions.MeanIterative;
+import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RatingsDataset;
 import delfos.dataset.basic.rating.RelevanceCriteria;
 import delfos.dataset.basic.user.User;
 import delfos.group.groupsofusers.GroupOfUsers;
-import delfos.group.results.grouprecomendationresults.GroupRecommendationResult;
+import delfos.group.results.grouprecomendationresults.GroupRecommenderSystemResult;
 import delfos.io.xml.parameterowner.ParameterOwnerXML;
 import delfos.results.evaluationmeasures.EvaluationMeasure;
 import delfos.rs.recommendation.Recommendation;
 import java.util.Collection;
-import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.TreeMap;
 import org.jdom2.Element;
 
@@ -38,7 +37,14 @@ import org.jdom2.Element;
 public class MAE extends GroupEvaluationMeasure {
 
     @Override
-    public GroupEvaluationMeasureResult getMeasureResult(GroupRecommendationResult recommendationResults, RatingsDataset<? extends Rating> testDataset, RelevanceCriteria relevanceCriteria) {
+    public GroupEvaluationMeasureResult getMeasureResult(
+            GroupRecommenderSystemResult groupRecommenderSystemResult,
+            DatasetLoader<? extends Rating> originalDatasetLoader,
+            RatingsDataset<? extends Rating> testDataset,
+            RelevanceCriteria relevanceCriteria,
+            DatasetLoader<? extends Rating> trainingDatasetLoader,
+            DatasetLoader<? extends Rating> testDatasetLoader) {
+
         Element elementMae = new Element(this.getClass().getSimpleName());
         elementMae = ParameterOwnerXML.getElement(this);
 
@@ -46,8 +52,8 @@ public class MAE extends GroupEvaluationMeasure {
         TreeMap<GroupOfUsers, MeanIterative> maeGroups = new TreeMap<>();
         TreeMap<Integer, MeanIterative> maeAllMembers = new TreeMap<>();
 
-        for (Entry<GroupOfUsers, List<Recommendation>> entry : recommendationResults) {
-            GroupOfUsers groupOfUsers = entry.getKey();
+        for (GroupOfUsers groupOfUsers : groupRecommenderSystemResult.getGroupsOfUsers()) {
+            Collection<Recommendation> groupRecommendations = groupRecommenderSystemResult.getGroupOutput(groupOfUsers).getRecommendations();
 
             MeanIterative maeGroup = new MeanIterative();
             Map<Integer, MeanIterative> maeMembers = new TreeMap<>();
@@ -64,13 +70,12 @@ public class MAE extends GroupEvaluationMeasure {
                 }
             });
 
-            Collection<Recommendation> recommendationsToGroup = entry.getValue();
-            for (Recommendation r : recommendationsToGroup) {
-                int idItem = r.getIdItem();
+            for (Recommendation recommendation : groupRecommendations) {
+                int idItem = recommendation.getIdItem();
                 for (int idUser : groupOfUsers.getIdMembers()) {
                     if (groupTrueRatings.get(idUser).containsKey(idItem)) {
                         double trueRating = groupTrueRatings.get(idUser).get(idItem).getRatingValue().doubleValue();
-                        double predicted = r.getPreference().doubleValue();
+                        double predicted = recommendation.getPreference().doubleValue();
                         double absoluteError = Math.abs(predicted - trueRating);
 
                         maeGeneral.addValue(absoluteError);

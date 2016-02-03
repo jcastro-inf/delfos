@@ -188,7 +188,16 @@ public class ParameterChain {
     }
 
     public ParameterChain createWithLeaf(Parameter parameter, Object parameterValue) {
-        return new ParameterChain(root, nodes, new Leaf(parameter, parameterValue));
+
+        ParameterOwner lastParameterOwner;
+
+        if (nodes.isEmpty()) {
+            lastParameterOwner = root.getParameterOwner();
+        } else {
+            lastParameterOwner = nodes.get(nodes.size() - 1).getParameterOwner();
+        }
+
+        return new ParameterChain(root, nodes, new Leaf(lastParameterOwner, parameter, parameterValue));
     }
 
     public boolean isCompatible(ParameterChain parameterChain) {
@@ -366,7 +375,21 @@ public class ParameterChain {
             i++;
         }
 
+        if (leaf.getParameterOwner() == null) {
+            //Any parameter owner is valid
+        } else if (!parameterOwnerToGetValue.getClass().equals(leaf.getParameterOwner().getClass())) {
+            String message = "Leaf "
+                    + "parameter owner class '" + parameterOwnerToGetValue.getClass()
+                    + "' is not the same '"
+                    + leaf.getParameterOwner().getClass() + "' "
+                    + "[" + this.toString() + "]";
+            throw new IllegalArgumentException(message);
+        } else {
+            //Parameter owners have the same class.
+        }
+
         if (!parameterOwnerToGetValue.haveParameter(leaf.getParameter())) {
+
             String message = "Leaf "
                     + "parameter owner '" + parameterOwnerToGetValue + "' does not have the "
                     + "parameter '" + leaf.getParameter() + "' "
@@ -407,9 +430,9 @@ public class ParameterChain {
         return str.toString();
     }
 
-    boolean isApplicableTo(GroupCaseStudy aoiRatingsMinGroupCaseStudy) {
+    boolean isApplicableTo(ParameterOwner parameterOwner) {
         try {
-            validateThatIsApplicableTo(aoiRatingsMinGroupCaseStudy);
+            validateThatIsApplicableTo(parameterOwner);
             return true;
         } catch (IllegalArgumentException ex) {
             return false;

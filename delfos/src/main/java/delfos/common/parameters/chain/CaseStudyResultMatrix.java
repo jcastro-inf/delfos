@@ -81,6 +81,11 @@ public class CaseStudyResultMatrix {
         StringBuilder str = new StringBuilder();
 
         for (ParameterChain chain : rowsChains) {
+
+            if (!chain.isApplicableTo(parameterOwner)) {
+                continue;
+            }
+
             Object value = chain.getValueOn(parameterOwner);
             String parameterName = chain.getLeaf().getParameter().getName();
             str.append(parameterName).append("=").append(value.toString()).append("_");
@@ -100,6 +105,11 @@ public class CaseStudyResultMatrix {
         StringBuilder str = new StringBuilder();
 
         for (ParameterChain chain : columnsChains) {
+
+            if (!chain.isApplicableTo(parameterOwner)) {
+                continue;
+            }
+
             Object value = chain.getValueOn(parameterOwner);
             String parameterName = chain.getLeaf().getParameter().getName();
             str.append(parameterName).append("=").append(value.toString()).append("_");

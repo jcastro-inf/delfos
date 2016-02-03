@@ -1,7 +1,7 @@
 package delfos.group.grs.penalty.grouper;
 
-import es.sinbad2.jcastro.fuzzyclustering.distance.DistanceFunction;
-import es.sinbad2.jcastro.fuzzyclustering.vector.DataVector;
+import delfos.utils.fuzzyclustering.distance.DistanceFunction;
+import delfos.utils.fuzzyclustering.vector.DataVector;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;

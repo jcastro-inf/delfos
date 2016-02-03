@@ -1,12 +1,13 @@
 package delfos.group.casestudy.defaultcase;
 
 import delfos.common.parallelwork.Task;
+import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RatingsDataset;
 import delfos.dataset.basic.rating.RelevanceCriteria;
 import delfos.group.results.groupevaluationmeasures.GroupEvaluationMeasure;
 import delfos.group.results.groupevaluationmeasures.GroupEvaluationMeasureResult;
-import delfos.group.results.grouprecomendationresults.GroupRecommendationResult;
+import delfos.group.results.grouprecomendationresults.GroupRecommenderSystemResult;
 import java.util.Collection;
 import java.util.Map;
 import java.util.TreeMap;
@@ -17,9 +18,13 @@ public class DefaultGroupCaseStudyGroupEvaluationMeasures_Task extends Task {
     int ejecucion;
     int particion;
     RatingsDataset<? extends Rating> testSet;
-    GroupRecommendationResult groupRecommendationResult;
+    GroupRecommenderSystemResult groupRecommendationResult;
     Collection<GroupEvaluationMeasure> groupEvaluationMeasures;
     RelevanceCriteria relevanceCriteria;
+
+    DatasetLoader<? extends Rating> originalDatasetLoader;
+    DatasetLoader<? extends Rating> trainingDatasetLoader;
+    DatasetLoader<? extends Rating> testDatasetLoader;
 
     // Atributos para el resultado.
     Map<GroupEvaluationMeasure, GroupEvaluationMeasureResult> groupEvaluationMeasuresResults;
@@ -27,15 +32,21 @@ public class DefaultGroupCaseStudyGroupEvaluationMeasures_Task extends Task {
     public DefaultGroupCaseStudyGroupEvaluationMeasures_Task(
             int ejecucion,
             int particion,
-            GroupRecommendationResult groupRecommendationResult,
+            GroupRecommenderSystemResult groupRecommendationResult,
             RatingsDataset<? extends Rating> testSet,
             Collection<GroupEvaluationMeasure> groupEvaluationMeasures,
-            RelevanceCriteria relevanceCriteria) {
+            RelevanceCriteria relevanceCriteria,
+            DatasetLoader<? extends Rating> originalDatasetLoader,
+            DatasetLoader<? extends Rating> trainingDatasetLoader,
+            DatasetLoader<? extends Rating> testDatasetLoader) {
 
         this.particion = particion;
         this.groupRecommendationResult = groupRecommendationResult;
         this.testSet = testSet;
         this.ejecucion = ejecucion;
+        this.originalDatasetLoader = originalDatasetLoader;
+        this.trainingDatasetLoader = trainingDatasetLoader;
+        this.testDatasetLoader = testDatasetLoader;
 
         groupEvaluationMeasuresResults = new TreeMap<>();
         this.groupEvaluationMeasures = groupEvaluationMeasures;

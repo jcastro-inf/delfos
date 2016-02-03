@@ -1,7 +1,7 @@
 package delfos.group.grs.penalty.grouper;
 
-import es.sinbad2.jcastro.fuzzyclustering.FuzzyCMeans;
-import es.sinbad2.jcastro.fuzzyclustering.vector.DataVector;
+import delfos.utils.fuzzyclustering.FuzzyCMeans;
+import delfos.utils.fuzzyclustering.vector.DataVector;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;

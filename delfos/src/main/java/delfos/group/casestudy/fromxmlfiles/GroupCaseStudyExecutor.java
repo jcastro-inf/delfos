@@ -6,7 +6,6 @@ import delfos.common.exceptions.dataset.CannotLoadContentDataset;
 import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
 import delfos.common.exceptions.dataset.items.ItemNotFound;
 import delfos.common.exceptions.dataset.users.UserNotFound;
-import delfos.common.parallelwork.SingleTaskExecute;
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RelevanceCriteria;
@@ -24,6 +23,7 @@ import delfos.group.results.groupevaluationmeasures.GroupEvaluationMeasure;
 import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
+import java.util.function.Consumer;
 import org.jdom2.JDOMException;
 
 /**
@@ -32,7 +32,7 @@ import org.jdom2.JDOMException;
  *
  * @version 27-ene-2014
  */
-public class GroupCaseStudy_SingleTaskExecute implements SingleTaskExecute<ExecuteGroupCaseStudy_Task> {
+public class GroupCaseStudyExecutor implements Consumer<ExecuteGroupCaseStudy_Task> {
 
     private void executeCaseStudy(
             File experimentsDirectory,
@@ -87,7 +87,7 @@ public class GroupCaseStudy_SingleTaskExecute implements SingleTaskExecute<Execu
     }
 
     @Override
-    public void executeSingleTask(ExecuteGroupCaseStudy_Task task) {
+    public void accept(ExecuteGroupCaseStudy_Task task) {
         try {
             executeCaseStudy(
                     task.getExperimentsDirectory(),

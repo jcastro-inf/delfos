@@ -3,12 +3,12 @@ package delfos.group.results.groupevaluationmeasures;
 import delfos.ERROR_CODES;
 import delfos.common.exceptions.dataset.users.UserNotFound;
 import delfos.common.statisticalfuncions.MeanIterative;
+import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RatingsDataset;
 import delfos.dataset.basic.rating.RelevanceCriteria;
 import delfos.group.groupsofusers.GroupOfUsers;
-import delfos.group.results.grouprecomendationresults.GroupRecommendationResult;
-import delfos.io.xml.evaluationmeasures.NDCGXML;
+import delfos.group.results.grouprecomendationresults.GroupRecommenderSystemResult;
 import static delfos.results.evaluationmeasures.NDCG.computeDCG;
 import delfos.rs.recommendation.Recommendation;
 import java.util.ArrayList;
@@ -16,7 +16,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import org.jdom2.Element;
 
 /**
  * Evalúa las recomendaciones de un sistema aplicando nDCG, usando logaritmo en
@@ -44,20 +43,24 @@ public class NDCG extends GroupEvaluationMeasure {
     }
 
     @Override
-    public GroupEvaluationMeasureResult getMeasureResult(GroupRecommendationResult recommendationResults, RatingsDataset<? extends Rating> testDataset, RelevanceCriteria relevanceCriteria) {
+    public GroupEvaluationMeasureResult getMeasureResult(
+            GroupRecommenderSystemResult groupRecommenderSystemResult,
+            DatasetLoader<? extends Rating> originalDatasetLoader,
+            RatingsDataset<? extends Rating> testDataset,
+            RelevanceCriteria relevanceCriteria,
+            DatasetLoader<? extends Rating> trainingDatasetLoader,
+            DatasetLoader<? extends Rating> testDatasetLoader) {
 
         List<Double> ndcgByMember = new ArrayList<>();
 
-        for (Map.Entry<GroupOfUsers, List<Recommendation>> entry : recommendationResults) {
+        for (GroupOfUsers group : groupRecommenderSystemResult.getGroupsOfUsers()) {
+            Collection<Recommendation> groupRecommendations = groupRecommenderSystemResult.getGroupOutput(group).getRecommendations();
 
-            GroupOfUsers groupOfUsers = entry.getKey();
-            Collection<Recommendation> recommendations = entry.getValue();
-
-            if (recommendations.isEmpty()) {
+            if (groupRecommendations.isEmpty()) {
                 continue;
             }
 
-            for (int idUser : groupOfUsers) {
+            for (int idUser : group) {
 
                 List<Recommendation> idealRecommendations = new ArrayList<>();
                 List<Recommendation> recommendationsIntersectUserRatings = new ArrayList<>();
@@ -69,7 +72,7 @@ public class NDCG extends GroupEvaluationMeasure {
                     throw new IllegalArgumentException(ex);
                 }
 
-                for (Recommendation recommendation : recommendations) {
+                for (Recommendation recommendation : groupRecommendations) {
                     int idItem = recommendation.getIdItem();
                     if (userRatings.containsKey(idItem)) {
                         idealRecommendations.add(new Recommendation(idItem, userRatings.get(idItem).getRatingValue()));
@@ -91,33 +94,9 @@ public class NDCG extends GroupEvaluationMeasure {
             }
         }
 
-        Collections.sort(ndcgByMember);
-
-        double min = ndcgByMember.get(0);
-        double percentile25 = ndcgByMember.get((int) (ndcgByMember.size() * 0.25));
         double mean = new MeanIterative(ndcgByMember).getMean();
-        double percentile75 = ndcgByMember.get((int) (ndcgByMember.size() * 0.75));
-        double max = ndcgByMember.get(ndcgByMember.size() - 1);
 
-        return new GroupEvaluationMeasureResult(this, mean, NDCGXML.getElement(ndcgByMember), ndcgByMember);
-    }
-
-    @Override
-    public GroupEvaluationMeasureResult agregateResults(Collection<GroupEvaluationMeasureResult> results) {
-
-        List<Double> ndcgJoin = new ArrayList<>();
-
-        for (GroupEvaluationMeasureResult result : results) {
-            List<Double> ndcgPerUser = (List<Double>) result.getDetailedResult();
-            ndcgJoin.addAll(ndcgPerUser);
-        }
-
-        Collections.sort(ndcgJoin);
-
-        Element element = NDCGXML.getElement(ndcgJoin);
-        element.setName(this.getName());
-
-        return new GroupEvaluationMeasureResult(this, new MeanIterative(ndcgJoin).getMean(), element, ndcgJoin);
+        return new GroupEvaluationMeasureResult(this, mean);
     }
 
 }
