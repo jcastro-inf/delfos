@@ -20,6 +20,7 @@ import delfos.dataset.basic.rating.RatingsDataset;
 import delfos.dataset.basic.rating.RelevanceCriteria;
 import delfos.rs.contentbased.ContentBasedRecommender;
 import static delfos.rs.contentbased.vsm.ContentBasedVSMRS.SIMILARITY_MEASURE;
+import delfos.rs.contentbased.vsm.multivalued.entropydependence.EntropyDependenceCBRS;
 import static delfos.rs.contentbased.vsm.multivalued.entropydependence.EntropyDependenceCBRS.AGGREGATION_OPERATOR;
 import delfos.rs.contentbased.vsm.multivalued.profile.BasicMultivaluedUserProfile;
 import delfos.rs.contentbased.vsm.multivalued.profile.MultivaluedUserProfile;
@@ -33,18 +34,11 @@ import java.util.Set;
 import java.util.TreeMap;
 
 /**
- * Sistema de recomendación similar al {@link EntropyDependenceCBRS} pero sin
- * ponderación de características.
+ * Recommender system Sistema de recomendación similar al
+ * {@link EntropyDependenceCBRS} pero sin ponderación de características.
  *
- * @author Jorge Castro Gallardo (Universidad de Jaén, Sinbad2)
+ * @author Jorge Castro Gallardo
  *
- * @version 1.0 Unknow date
- * @version 1.1 21-Jan-2013
- * @version 1.2 21-Mar-2013 Implementación de las interfaces para la
- * persistencia.
- * @version 2.0 28-Mayo-2013 Refactorización para paralelizar la ejecución de
- * los sistemas de recomendación.
- * @version 2.1 9-Octubre-2013 Incorporación del método makeUserModel
  */
 public class BasicMultivaluedCBRS extends ContentBasedRecommender<MultivaluedUserProfilesModel, MultivaluedUserProfile> {
 

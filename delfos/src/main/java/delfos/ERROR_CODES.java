@@ -1,8 +1,6 @@
 package delfos;
 
 import delfos.common.Global;
-import delfos.common.parameters.ParameterOwner;
-import delfos.dataset.changeable.ChangeableDatasetLoaderAbstract;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -82,7 +80,7 @@ public enum ERROR_CODES {
     DATABASE_CONFIG_FILE_NOT_FOUND(2005),
     /**
      * Código de error que se devuelve cuando no se encuentra el
-     * {@link DatasetLoader} especificado.
+     * {@link delfos.dataset.basic.loader.types.DatasetLoader} especificado.
      */
     DATASET_LOADER_NOT_FOUND(3001),
     /**
@@ -91,16 +89,6 @@ public enum ERROR_CODES {
      */
     RECOMMEND_MODE_USER_NOT_DEFINED(4001),
     USER_ALREADY_EXISTS(4003),
-    /**
-     * Código de error que se devuelve cuando el sistema de recomendación no
-     * implementa {@link RecommenderSystemWithFilePersitence}.
-     */
-    RECOMMENDER_SYSTEM_DONT_IMPLEMENT_FILE_PERSISTENCE(3002),
-    /**
-     * Código de error que se devuelve cuando el sistema de recomendación no
-     * implementa {@link RecommenderSystemWithDatabasePersistence}.
-     */
-    RECOMMENDER_SYSTEM_DONT_IMPLEMENT_DATABASE_PERSISTENCE(3003),
     /**
      * Código de eror que la biblioteca devuelve cuando no se puede cargar el
      * dataset de valoraciones.
@@ -206,8 +194,8 @@ public enum ERROR_CODES {
      */
     UNRECOGNIZED_XML_ELEMENT(30),
     /**
-     * El valor de los parámetros de un {@link ParameterOwner} son
-     * incompatibles.
+     * El valor de los parámetros de un
+     * {@link delfos.common.parameters.ParameterOwner} son incompatibles.
      */
     PARAMETER_VIOLATION(31),
     /**
@@ -223,7 +211,8 @@ public enum ERROR_CODES {
     MANAGE_RATING_DATABASE_CONFIGURATION_FILE_NOT_DEFINED(5001),
     /**
      * Cuando se intenta utilizar un dataset que no implementa
-     * {@link ChangeableDatasetLoaderAbstract} como un dataset modificable.
+     * {@link delfos.dataset.changeable.ChangeableDatasetLoaderAbstract} como un
+     * dataset modificable.
      */
     MANAGE_RATING_DATABASE_DATASET_NOT_CHANGEABLE(5002),
     /**
@@ -288,18 +277,18 @@ public enum ERROR_CODES {
     private static boolean isExitOnFail = true;
 
     /**
-     * Establece si se debe llamar a {@link System#exit(int) } cuando ocurra un
-     * error (true) o sólo lanzar una excepción {@link IllegalStateException}
-     * (false). Esta excepción JAMÁS debe ser capturada en la lógica del
-     * programa.
+     * This method establishes whether the JVM terminates on an error code {@link java.lang.System#exit(int)
+     * } or if it throws an {@link java.lang.IllegalStateException} (false).
+     * This exception must NEVER be caught.
      *
-     * @param isExitOnFail
+     * @param isExitOnFail if true, the JVM will terminate and return the error
+     * code. Otherwise, an exception is thrown.
      */
     public static void setExitOnFail(boolean isExitOnFail) {
         ERROR_CODES.isExitOnFail = isExitOnFail;
     }
     /**
-     * Código de salida del error.
+     * Error code that is shown if the JVM is set to terminate.
      */
     private final int exitValue;
 

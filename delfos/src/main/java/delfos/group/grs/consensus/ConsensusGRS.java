@@ -54,9 +54,22 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.jdom2.JDOMException;
 
 /**
- * @author Jorge Castro Gallardo
+ * Group recommender system proposed in the paper.
+ * <p>
+ * <p>
+ * Castro, Jorge, Francisco J. Quesada, Iván Palomares, and Luis Martínez. "A
+ * Consensus‐Driven Group Recommender System." International Journal of
+ * Intelligent Systems 30, no. 8 (2015): 887-906.
+ * <p>
+ * <p>
+ * This recommender system first computes each member individual
+ * recommendations. After that selects a reduced subset of items using Borda's
+ * count. The individual preferences over this reduced set are fed into a
+ * consensus model, which bring the members' opinions closer and finally
+ * computes the collective preference and returns the final ordering, which
+ * composes the group recommendation.
  *
- * @version 02-Mayo-2014
+ * @author Jorge Castro Gallardo
  */
 public class ConsensusGRS extends GroupRecommenderSystemAdapter<SingleRecommendationModel, GroupModelPseudoUser> {
 

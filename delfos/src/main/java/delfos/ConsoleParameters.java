@@ -17,10 +17,6 @@ import java.util.TreeSet;
  * accesibles en el codigo de una aplicación
  *
  * @author Jorge Castro Gallardo
- *
- * @version 1.0 Unknown date
- * @version 1.1 (18-02-2013) Eliminación del fichero general de conexión de base
- * de datos.
  */
 public class ConsoleParameters {
 
@@ -29,7 +25,8 @@ public class ConsoleParameters {
      * linea de comandos.
      *
      * @param args Argumentos especificados en la llamada al programa.
-     * @return
+     * @return The console parameters object that is later used to access the
+     * command line.
      * @throws delfos.CommandLineParametersError If a parameter has no values or
      * a flag has values.
      */
@@ -58,7 +55,8 @@ public class ConsoleParameters {
      *
      * @param console Vector de cadenas con los parámetros de la línea de
      * comandos
-     * @throws delfos.CommandLineParametersError
+     * @throws delfos.CommandLineParametersError If the parameter specification
+     * does not follow the required syntax.
      */
     protected ConsoleParameters(String... console) throws CommandLineParametersError {
         this.parametersWithValues = new TreeMap<>();
@@ -201,7 +199,7 @@ public class ConsoleParameters {
      * @param flag Flag that this method searches for.
      * @return true if the flag is present, false otherwise.
      * @throws IllegalArgumentException The flag do not have the right syntax.
-     * Check {@link ConsoleParameters#isValidFlag(java.lang.String) function.
+     * Check {@link delfos.ConsoleParameters#isValidFlag(java.lang.String) function.
      */
     public boolean isFlagDefined(String flag) {
         if (isValidFlag(flag)) {

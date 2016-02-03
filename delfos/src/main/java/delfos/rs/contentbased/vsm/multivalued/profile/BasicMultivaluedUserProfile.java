@@ -1,26 +1,19 @@
 package delfos.rs.contentbased.vsm.multivalued.profile;
 
+import delfos.common.aggregationoperators.AggregationOperator;
+import delfos.dataset.basic.features.Feature;
+import delfos.dataset.basic.features.FeatureType;
+import delfos.dataset.basic.item.Item;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
-import delfos.dataset.basic.item.Item;
-import delfos.dataset.basic.features.Feature;
-import delfos.dataset.basic.features.FeatureType;
-import delfos.common.aggregationoperators.AggregationOperator;
 
 /**
  * Perfil de usuario multivaluado. Se utiliza en los sistema de recomendación
- * basados en contenido multivaluados, como {@link EntropyDependenceCBRS} y
- * {@link BasicMultivaluedCBRS}.
+ * basados en contenido multivaluados.
  *
- * @see BasicMultivaluedCBRS
- * @see EntropyDependenceCBRS
- *
- * @author Jorge Castro Gallardo (Universidad de Jaén, Sinbad2)
- *
- * @version 1.1 (1-Jan-2013)
- * @version 1.0 Unknown date
+ * @author Jorge Castro Gallardo
  */
 public class BasicMultivaluedUserProfile implements MultivaluedUserProfile {
 
@@ -50,8 +43,8 @@ public class BasicMultivaluedUserProfile implements MultivaluedUserProfile {
      */
     public BasicMultivaluedUserProfile(int idUser) {
         this._idUser = idUser;
-        _nominalValues = new TreeMap<Feature, Map<Object, Float>>();
-        _numericalValues = new TreeMap<Feature, Float>();
+        _nominalValues = new TreeMap<>();
+        _numericalValues = new TreeMap<>();
     }
 
     /**

@@ -4,7 +4,7 @@ import delfos.common.parameters.ParameterOwnerAdapter;
 import java.util.LinkedList;
 
 /**
- * Adaptador que implementa la interfaz {@link Algorithm}
+ * Adaptador que implementa la interfaz {@link delfos.algorithm.Algorithm}
  *
  * @author Jorge Castro Gallardo
  *

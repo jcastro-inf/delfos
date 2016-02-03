@@ -1,23 +1,21 @@
 package delfos.configfile.rs.single;
 
+import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RelevanceCriteria;
-import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.recommendationcandidates.RecommendationCandidatesSelector;
 import delfos.rs.GenericRecommenderSystem;
 import delfos.rs.output.RecommendationsOutputMethod;
 import delfos.rs.persistence.PersistenceMethod;
 
 /**
- * Clase utilizada para devolver los valores del método {@link ConfigFile#parseFile(java.lang.String)
- * }.
+ * Class used to store the information of a Recommender system. Includes the
+ * algorithm, dataset and all the relevant configuration.
  *
- * @see ConfigFile#parseFile(java.lang.String)
+ * @see
+ * RecommenderSystemConfigurationFileParser#loadConfigFile(java.lang.String)
  *
-* @author Jorge Castro Gallardo
- *
- * @version 1.0 Unknown date
- * @version 1.1 26-Feb-2013
+ * @author Jorge Castro Gallardo
  */
 public class RecommenderSystemConfiguration {
 

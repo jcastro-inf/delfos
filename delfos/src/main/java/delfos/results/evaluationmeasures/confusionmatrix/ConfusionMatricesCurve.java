@@ -260,26 +260,56 @@ public class ConfusionMatricesCurve {
         return matrices.get(index);
     }
 
+    /**
+     *
+     * @param index
+     * @return
+     */
     public int getFalsePositiveAt(int index) {
         return getMatrixAt(index).getFalsePositive();
     }
 
+    /**
+     *
+     * @param index
+     * @return
+     */
     public int getTruePositiveAt(int index) {
         return getMatrixAt(index).getTruePositive();
     }
 
+    /**
+     *
+     * @param index
+     * @return
+     */
     public int getFalseNegativeAt(int index) {
         return getMatrixAt(index).getFalseNegative();
     }
 
+    /**
+     *
+     * @param index
+     * @return
+     */
     public int getTrueNegativeAt(int index) {
         return getMatrixAt(index).getTrueNegative();
     }
 
+    /**
+     *
+     * @param index
+     * @return
+     */
     public float getPrecisionAt(int index) {
         return getMatrixAt(index).getPrecision();
     }
 
+    /**
+     *
+     * @param index
+     * @return
+     */
     public float getRecallAt(int index) {
         return getMatrixAt(index).getRecall();
     }
@@ -350,6 +380,10 @@ public class ConfusionMatricesCurve {
         return hash;
     }
 
+    /**
+     *
+     * @return
+     */
     public float getAreaPRSpace() {
 
         double areaUnderPRSPace = 0;
