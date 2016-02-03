@@ -3,6 +3,9 @@ package delfos.experiment.casestudy.cluster;
 import delfos.Constants;
 import delfos.common.FileUtilities;
 import delfos.common.Global;
+import delfos.common.parameters.ParameterOwner;
+import delfos.common.parameters.chain.CaseStudyResultMatrix;
+import delfos.common.parameters.chain.ParameterChain;
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
 import delfos.experiment.casestudy.CaseStudy;
@@ -16,6 +19,7 @@ import java.io.File;
 import java.text.DecimalFormat;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  *
@@ -148,8 +152,9 @@ public class TuringPreparator implements ExperimentPreparator {
     }
 
     public void executeAllExperimentsInDirectory_withSeed(File directory, int numExec, int seedValue) {
-        Arrays.asList(directory.listFiles())
-                .stream()
+        List<File> experimentsToBeExecuted = Arrays.asList(directory.listFiles());
+
+        experimentsToBeExecuted.stream()
                 .forEach((singleExperimentDirectory) -> {
                     String[] args = {
                         ExecuteGroupXML.SEED_PARAMETER, Integer.toString(seedValue),
@@ -163,5 +168,64 @@ public class TuringPreparator implements ExperimentPreparator {
 
                     Global.show("==============================\n");
                 });
+    }
+
+    /**
+     * Renames the case studys to a default alias with the hash of the technique
+     * and validation and the alias of the GRS.
+     *
+     * @param groupCaseStudys
+     */
+    public void renameGroupCaseStudiesWithDefaultAlias(List<GroupCaseStudy> groupCaseStudys) {
+        groupCaseStudys.stream().forEach(groupCaseStudy -> groupCaseStudy.setAlias(
+                "_dataValidation=" + groupCaseStudy.hashDataValidation()
+                + "_technique=" + groupCaseStudy.hashTechnique()
+                + "_" + groupCaseStudy.getGroupRecommenderSystem().getAlias()
+                + "_allHash=" + groupCaseStudy.hashCode()
+        ));
+    }
+
+    public void renameCaseStudyWithTheMinimumDistinctAlias(List<GroupCaseStudy> groupCaseStudys) {
+
+        List<ParameterChain> dataValidationChains = ParameterChain.obtainDifferentChains(groupCaseStudys)
+                .stream()
+                .filter(chain -> !chain.isAlias())
+                .filter(chain -> chain.isDataValidationParameter())
+                .collect(Collectors.toList());
+
+        List<ParameterChain> techniqueChains = ParameterChain.obtainDifferentChains(groupCaseStudys)
+                .stream()
+                .filter(chain -> !chain.isAlias())
+                .filter(chain -> chain.isTechniqueParameter())
+                .collect(Collectors.toList());
+
+        if (techniqueChains.isEmpty()) {
+            ParameterChain grsAliasChain = new ParameterChain(groupCaseStudys.get(0))
+                    .createWithNode(GroupCaseStudy.GROUP_RECOMMENDER_SYSTEM, null)
+                    .createWithLeaf(ParameterOwner.ALIAS, null);
+            techniqueChains.add(grsAliasChain);
+        }
+        if (dataValidationChains.isEmpty()) {
+            ParameterChain datasetLoaderAliasChain = new ParameterChain(groupCaseStudys.get(0))
+                    .createWithNode(GroupCaseStudy.DATASET_LOADER, null)
+                    .createWithLeaf(ParameterOwner.ALIAS, null);
+
+            ParameterChain groupFormationTechniqueAliasChain = new ParameterChain(groupCaseStudys.get(0))
+                    .createWithNode(GroupCaseStudy.GROUP_FORMATION_TECHNIQUE, null)
+                    .createWithLeaf(ParameterOwner.ALIAS, null);
+
+            dataValidationChains.add(datasetLoaderAliasChain);
+            dataValidationChains.add(groupFormationTechniqueAliasChain);
+        }
+
+        CaseStudyResultMatrix caseStudyResultMatrix = new CaseStudyResultMatrix(techniqueChains, dataValidationChains, "null");
+
+        for (GroupCaseStudy groupCaseStudy : groupCaseStudys) {
+            String dataValidationAlias = caseStudyResultMatrix.getColumn(groupCaseStudy);
+            String techniqueAlias = caseStudyResultMatrix.getRow(groupCaseStudy);
+
+            String newAlias = "dataValidation_" + dataValidationAlias + "__" + "technique_" + techniqueAlias;
+            groupCaseStudy.setAlias(newAlias);
+        }
     }
 }

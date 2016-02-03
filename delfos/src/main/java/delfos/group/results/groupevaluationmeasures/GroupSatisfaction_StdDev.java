@@ -3,17 +3,18 @@ package delfos.group.results.groupevaluationmeasures;
 import delfos.ERROR_CODES;
 import delfos.common.exceptions.dataset.users.UserNotFound;
 import delfos.common.statisticalfuncions.MeanIterative;
+import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RatingsDataset;
 import delfos.dataset.basic.rating.RelevanceCriteria;
 import delfos.group.groupsofusers.GroupOfUsers;
-import delfos.group.results.grouprecomendationresults.GroupRecommendationResult;
+import delfos.group.results.grouprecomendationresults.GroupRecommenderSystemResult;
 import delfos.rs.recommendation.Recommendation;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
 //TODO: revisar si las características e interpretación de la medida son correctas
 /**
@@ -44,22 +45,32 @@ public class GroupSatisfaction_StdDev extends GroupEvaluationMeasure {
     }
 
     @Override
-    public GroupEvaluationMeasureResult getMeasureResult(GroupRecommendationResult recommendationResults, RatingsDataset<? extends Rating> testDataset, RelevanceCriteria relevanceCriteria) {
+    public GroupEvaluationMeasureResult getMeasureResult(
+            GroupRecommenderSystemResult groupRecommenderSystemResult,
+            DatasetLoader<? extends Rating> originalDatasetLoader,
+            RatingsDataset<? extends Rating> testDataset,
+            RelevanceCriteria relevanceCriteria,
+            DatasetLoader<? extends Rating> trainingDatasetLoader,
+            DatasetLoader<? extends Rating> testDatasetLoader) {
+
         MeanIterative mediaTodasDesviacionesTipicas = new MeanIterative();
-        for (Entry<GroupOfUsers, List<Recommendation>> next : recommendationResults) {
+
+        for (GroupOfUsers groupOfUsers : groupRecommenderSystemResult.getGroupsOfUsers()) {
+            Collection<Recommendation> groupRecommendations = groupRecommenderSystemResult.getGroupOutput(groupOfUsers).getRecommendations();
+
             //Recorro todos los grupos
             MeanIterative maeGrupo = new MeanIterative();
 
             /* Hago esta reordenación de los resultados para ganar eficiencia */
-            Map<Integer, Recommendation> recomendacionesAlGrupoReordenadas = new HashMap<Integer, Recommendation>();
-            for (Recommendation r : next.getValue()) {
-                recomendacionesAlGrupoReordenadas.put(r.getIdItem(), r);
+            Map<Integer, Recommendation> recomendacionesAlGrupoReordenadas = new HashMap<>();
+            for (Recommendation recommendation : groupRecommendations) {
+                recomendacionesAlGrupoReordenadas.put(recommendation.getIdItem(), recommendation);
             }
 
             //Calculo las recomendaciones individuales de cada miembro del grupo
-            List<Double> listaMaes = new LinkedList<Double>();
+            List<Double> listaMaes = new LinkedList<>();
 
-            for (int idUser : next.getKey().getIdMembers()) {
+            for (int idUser : groupOfUsers.getIdMembers()) {
                 try {
                     MeanIterative maeActual = new MeanIterative();
                     Map<Integer, ? extends Rating> userRated = testDataset.getUserRatingsRated(idUser);

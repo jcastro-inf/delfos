@@ -39,14 +39,12 @@ public abstract class WeightedSimilarityMeasureAdapter extends SimilarityMeasure
 
         List<Float> v1List = new ArrayList<>(v1.length);
         List<Float> v2List = new ArrayList<>(v2.length);
-        List<Float> weightsList = new ArrayList<>(v1.length);
 
         for (int i = 0; i < v1.length; i++) {
             v1List.add(v1[i]);
             v2List.add(v2[i]);
-            weightsList.add(1.0f / v1.length);
         }
-        return weightedSimilarity(v1List, v2List, weightsList);
+        return similarity(v1List, v2List);
     }
 
     @Override

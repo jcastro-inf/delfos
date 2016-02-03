@@ -1,17 +1,16 @@
 package delfos.group.results.groupevaluationmeasures;
 
 import delfos.common.Global;
+import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RatingsDataset;
 import delfos.dataset.basic.rating.RelevanceCriteria;
 import delfos.group.groupsofusers.GroupOfUsers;
-import delfos.group.results.grouprecomendationresults.GroupRecommendationResult;
+import delfos.group.results.grouprecomendationresults.GroupRecommenderSystemResult;
 import delfos.io.xml.parameterowner.ParameterOwnerXML;
 import delfos.results.evaluationmeasures.EvaluationMeasure;
 import delfos.rs.recommendation.Recommendation;
 import java.util.Collection;
-import java.util.List;
-import java.util.Map.Entry;
 import org.jdom2.Element;
 
 /**
@@ -26,25 +25,34 @@ import org.jdom2.Element;
 public class NumberOfRequests extends GroupEvaluationMeasure {
 
     @Override
-    public GroupEvaluationMeasureResult getMeasureResult(GroupRecommendationResult recommendationResults, RatingsDataset<? extends Rating> testDataset, RelevanceCriteria relevanceCriteria) {
+    public GroupEvaluationMeasureResult getMeasureResult(
+            GroupRecommenderSystemResult groupRecommenderSystemResult,
+            DatasetLoader<? extends Rating> originalDatasetLoader,
+            RatingsDataset<? extends Rating> testDataset,
+            RelevanceCriteria relevanceCriteria,
+            DatasetLoader<? extends Rating> trainingDatasetLoader,
+            DatasetLoader<? extends Rating> testDatasetLoader) {
+
         Element ret = ParameterOwnerXML.getElement(this);
-        int solicitadas = 0;
-        for (Entry<GroupOfUsers, List<Recommendation>> entry : recommendationResults) {
-            GroupOfUsers group = entry.getKey();
-            Collection<Integer> requestsToGroup = recommendationResults.getRequests(group);
-            Element groupRequests = new Element("GroupRequests");
-            groupRequests.setAttribute("group", group.toString());
-            if (requestsToGroup == null) {
-                Global.showWarning("the group " + group + " has no requests (null), seedOfExecution: " + recommendationResults.getSeed());
-                groupRequests.addContent("[]");
-                recommendationResults.getRequests(group);
+        long solicitadas = 0;
+
+        for (GroupOfUsers groupOfUsers : groupRecommenderSystemResult.getGroupsOfUsers()) {
+            Collection<Recommendation> groupRecommendations = groupRecommenderSystemResult.getGroupOutput(groupOfUsers).getRecommendations();
+
+            Collection<Integer> groupRequests = groupRecommenderSystemResult.getGroupInput(groupOfUsers).getItemsRequested();
+
+            Element groupRequestsElement = new Element("GroupRequests");
+            groupRequestsElement.setAttribute("group", groupOfUsers.toString());
+            if (groupRequests == null) {
+                Global.showWarning("the group " + groupOfUsers + " has no requests (null)");
+                groupRequestsElement.addContent("[]");
             } else {
-                solicitadas += requestsToGroup.size();
-                groupRequests.addContent(requestsToGroup.toString());
+                solicitadas += groupRequests.size();
+                groupRequestsElement.addContent(groupRequests.toString());
             }
-            ret.addContent(groupRequests);
+            ret.addContent(groupRequestsElement);
         }
-        ret.setAttribute("value", Integer.toString(solicitadas));
+        ret.setAttribute("value", Long.toString(solicitadas));
         return new GroupEvaluationMeasureResult(this, solicitadas, ret);
     }
 

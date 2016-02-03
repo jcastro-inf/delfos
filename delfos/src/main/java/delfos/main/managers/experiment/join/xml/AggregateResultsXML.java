@@ -9,10 +9,8 @@ import static delfos.io.xml.casestudy.CaseStudyXML.AGGREGATE_VALUES_ELEMENT_NAME
 import static delfos.io.xml.casestudy.CaseStudyXML.CASE_ROOT_ELEMENT_NAME;
 import static delfos.io.xml.casestudy.CaseStudyXML.EXECUTIONS_RESULTS_ELEMENT_NAME;
 import delfos.io.xml.dataset.RelevanceCriteriaXML;
-import delfos.io.xml.evaluationmeasures.NDCGXML;
 import delfos.io.xml.evaluationmeasures.confusionmatricescurve.ConfusionMatricesCurveXML;
 import delfos.io.xml.parameterowner.ParameterOwnerXML;
-import delfos.results.evaluationmeasures.NDCG;
 import delfos.results.evaluationmeasures.confusionmatrix.ConfusionMatricesCurve;
 import delfos.results.evaluationmeasures.roccurve.AreaUnderROC;
 import java.io.BufferedReader;
@@ -230,14 +228,6 @@ public class AggregateResultsXML {
                 } catch (UnrecognizedElementException ex) {
                     Logger.getLogger(AggregateResultsXML.class.getName()).log(Level.SEVERE, null, ex);
                 }
-            }
-
-            if (measureResult.getName().equals(NDCG.class.getSimpleName())) {
-                ret.put(NDCGXML.NDCG_ELEMENT_NAME + "." + NDCGXML.NDCG_MIN_ATTRIBUTE_NAME, measureResult.getAttributeValue(NDCGXML.NDCG_MIN_ATTRIBUTE_NAME));
-                ret.put(NDCGXML.NDCG_ELEMENT_NAME + "." + NDCGXML.NDCG_PERCENTILE_25_ATTRIBUTE_NAME, measureResult.getAttributeValue(NDCGXML.NDCG_PERCENTILE_25_ATTRIBUTE_NAME));
-                ret.put(NDCGXML.NDCG_ELEMENT_NAME + "." + NDCGXML.NDCG_MEAN_ATTRIBUTE_NAME, measureResult.getAttributeValue(NDCGXML.NDCG_MEAN_ATTRIBUTE_NAME));
-                ret.put(NDCGXML.NDCG_ELEMENT_NAME + "." + NDCGXML.NDCG_PERCENTILE_75_ATTRIBUTE_NAME, measureResult.getAttributeValue(NDCGXML.NDCG_PERCENTILE_75_ATTRIBUTE_NAME));
-                ret.put(NDCGXML.NDCG_ELEMENT_NAME + "." + NDCGXML.NDCG_MAX_ATTRIBUTE_NAME, measureResult.getAttributeValue(NDCGXML.NDCG_MAX_ATTRIBUTE_NAME));
             }
 
             if (measureResult.getName().equals(ParameterOwnerXML.PARAMETER_OWNER_ELEMENT_NAME)) {

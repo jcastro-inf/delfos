@@ -152,7 +152,7 @@ public class RecommenderSystem_fixedFilePersistence<RecommendationModel> extends
                 RecommendationModelBuildingProgressListener listener = this::fireBuildingProgressChangedEvent;
 
                 Global.showWarning("Recommendation model not found: " + filePersistenceWithHashSuffix.getCompleteFileName() + "\n");
-                Global.showWarning("REASON");
+                Global.showWarning("REASON: " + ex.getMessage());
                 Global.showWarning(ex);
                 Global.showWarning("\tThe recommender system model needs to be constructed.\n");
                 getRecommenderSystem().addRecommendationModelBuildingProgressListener(listener);

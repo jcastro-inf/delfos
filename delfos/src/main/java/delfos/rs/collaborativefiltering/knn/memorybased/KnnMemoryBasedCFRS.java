@@ -9,7 +9,6 @@ import delfos.common.exceptions.dataset.entity.EntityNotFound;
 import delfos.common.exceptions.dataset.items.ItemNotFound;
 import delfos.common.exceptions.dataset.users.UserNotFound;
 import delfos.common.exceptions.ratings.NotEnoughtUserInformation;
-import delfos.common.parallelwork.MultiThreadExecutionManager;
 import delfos.dataset.basic.item.Item;
 import delfos.dataset.basic.loader.types.ContentDatasetLoader;
 import delfos.dataset.basic.loader.types.DatasetLoader;
@@ -29,9 +28,7 @@ import delfos.rs.recommendation.Recommendation;
 import delfos.rs.recommendation.Recommendations;
 import delfos.rs.recommendation.RecommendationsWithNeighbors;
 import delfos.similaritymeasures.CollaborativeSimilarityMeasure;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -144,38 +141,24 @@ public class KnnMemoryBasedCFRS extends KnnCollaborativeRecommender<KnnMemoryMod
 
         UsersDataset usersDataset = ((UsersDatasetLoader) datasetLoader).getUsersDataset();
 
-        List<KnnMemoryTask> tasks = usersDataset.parallelStream()
+        List<Neighbor> allNeighbors = usersDataset.parallelStream()
                 .filter(user2 -> !user.equals(user2))
-                .map((userNeighbor) -> new KnnMemoryTask(datasetLoader, user, userNeighbor, this))
+                .map((userNeighbor) -> new KnnMemoryNeighborTask(datasetLoader, user, userNeighbor, this))
+                .map(new KnnMemoryNeighborCalculator())
+                .map(neighbor -> {
+                    if (neighbor == null) {
+                        throw new IllegalStateException("Neighbor cannot be null!");
+                    }
+                    return neighbor;
+                })
+                .sorted(Neighbor.BY_SIMILARITY_DESC)
                 .collect(Collectors.toList());
 
-        MultiThreadExecutionManager<KnnMemoryTask> multiThreadExecutionManager = new MultiThreadExecutionManager<>(
-                "Compute neighbors of " + user.getId(),
-                tasks,
-                KnnMemoryTaskExecutor.class);
-
-        multiThreadExecutionManager.run();
-
-        List<Neighbor> allNeighbors = new ArrayList<>();
-        final Collection<KnnMemoryTask> allFinishedTasks = multiThreadExecutionManager.getAllFinishedTasks();
-        //Recompongo los resultados.
-        for (KnnMemoryTask task : allFinishedTasks) {
-            Neighbor neighbor = task.getNeighbor();
-            if (neighbor == null) {
-                allNeighbors.add(new Neighbor(RecommendationEntity.USER, task.neighborUser, Double.NaN));
-            } else {
-                allNeighbors.add(neighbor);
-            }
-        }
-
         if (Global.isVerboseAnnoying()) {
-            Collections.sort(allNeighbors, (Neighbor o1, Neighbor o2) -> o1.getIdNeighbor() - o2.getIdNeighbor());
-
             Global.showMessageTimestamped("============ All users similarity =================");
             printNeighborhood(user.getId(), allNeighbors);
         }
 
-        allNeighbors.sort(Neighbor.BY_SIMILARITY_DESC);
         return allNeighbors;
 
     }

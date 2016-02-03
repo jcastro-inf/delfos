@@ -102,9 +102,5 @@ public class XMLJoinTest {
 
         //Check the results correctness
         Assert.assertTrue("The output file does not exists", outputFile.exists());
-
-        File maeOutput = new File(experimentDirectory.getPath() + File.separator + "xml-join-test-MAE.xls");
-        Assert.assertTrue("The output file for MAE measure does not exists", maeOutput.exists());
-
     }
 }

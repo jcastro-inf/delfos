@@ -47,28 +47,19 @@ public class PearsonCorrelationCoefficient extends WeightedSimilarityMeasureAdap
         double avg1 = 0;
         double avg2 = 0;
 
-        double ret;
+        double similarity;
 
         if (v1.isEmpty()) {
-            ret = Double.NaN;
+            similarity = Double.NaN;
         } else {
-
-            ListIterator<? extends Number> i1 = v1.listIterator();
-            ListIterator<? extends Number> i2 = v2.listIterator();
-            do {
-
-                double value1 = i1.next().doubleValue();
-                double value2 = i2.next().doubleValue();
-
-                avg1 += value1 / v1.size();
-                avg2 += value2 / v2.size();
-            } while (i1.hasNext());
+            avg1 = v1.stream().mapToDouble(number -> number.doubleValue()).average().getAsDouble();
+            avg2 = v2.stream().mapToDouble(number -> number.doubleValue()).average().getAsDouble();
 
             double numerador = 0;
             double denominador1 = 0;
             double denominador2 = 0;
-            i1 = v1.listIterator();
-            i2 = v2.listIterator();
+            ListIterator<? extends Number> i1 = v1.listIterator();
+            ListIterator<? extends Number> i2 = v2.listIterator();
             do {
                 double value1 = i1.next().doubleValue();
                 double value2 = i2.next().doubleValue();
@@ -84,10 +75,10 @@ public class PearsonCorrelationCoefficient extends WeightedSimilarityMeasureAdap
             if (denominador == 0) {
                 return Double.NaN;
             } else {
-                ret = numerador / denominador;
+                similarity = numerador / denominador;
             }
         }
-        return ret;
+        return similarity;
     }
 
     public double weightedMean(List<? extends Number> v, List<? extends Number> weights) {

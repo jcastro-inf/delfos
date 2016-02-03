@@ -4,10 +4,11 @@ import delfos.common.Global;
 import delfos.common.parameters.ParameterOwnerAdapter;
 import delfos.common.parameters.ParameterOwnerType;
 import delfos.common.statisticalfuncions.MeanIterative;
+import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RatingsDataset;
 import delfos.dataset.basic.rating.RelevanceCriteria;
-import delfos.group.results.grouprecomendationresults.GroupRecommendationResult;
+import delfos.group.results.grouprecomendationresults.GroupRecommenderSystemResult;
 import delfos.results.MeasureResult;
 import delfos.results.evaluationmeasures.EvaluationMeasure;
 import java.util.Collection;
@@ -40,15 +41,21 @@ public abstract class GroupEvaluationMeasure extends ParameterOwnerAdapter imple
      * Establece el resultado de una ejecución en base a las recomendaciones
      * hechas y el conjunto de training
      *
-     * @param recommendationResults Vector de resultados de la ejecución en el
-     * que cada elemento es el resultado de la ejecución con una partición del
-     * conjunto
+     * @param groupRecommenderSystemResult Vector de resultados de la ejecución
+     * en el que cada elemento es el resultado de la ejecución con una partición
+     * del conjunto
      * @param testDataset
      * @param relevanceCriteria
      * @return Devuelve un objeto GroupEvaluationMeasureResult que almacena el
      * valor de la métrica para cada ejecución
      */
-    public abstract GroupEvaluationMeasureResult getMeasureResult(GroupRecommendationResult recommendationResults, RatingsDataset<? extends Rating> testDataset, RelevanceCriteria relevanceCriteria);
+    public abstract GroupEvaluationMeasureResult getMeasureResult(
+            GroupRecommenderSystemResult groupRecommenderSystemResult,
+            DatasetLoader<? extends Rating> originalDatasetLoader,
+            RatingsDataset<? extends Rating> testDataset,
+            RelevanceCriteria relevanceCriteria,
+            DatasetLoader<? extends Rating> trainingDatasetLoader,
+            DatasetLoader<? extends Rating> testDatasetLoader);
 
     /**
      * Devuelve true si la interpretación correcta de los valores de la medida

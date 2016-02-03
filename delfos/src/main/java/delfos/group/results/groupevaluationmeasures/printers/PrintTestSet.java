@@ -1,20 +1,23 @@
-package delfos.group.results.groupevaluationmeasures;
+package delfos.group.results.groupevaluationmeasures.printers;
 
 import delfos.Constants;
 import delfos.common.FileUtilities;
 import delfos.common.exceptions.dataset.users.UserNotFound;
+import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RatingsDataset;
 import delfos.dataset.basic.rating.RelevanceCriteria;
 import delfos.dataset.util.DatasetPrinter;
 import delfos.group.groupsofusers.GroupOfUsers;
-import delfos.group.results.grouprecomendationresults.GroupRecommendationResult;
+import delfos.group.results.groupevaluationmeasures.GroupEvaluationMeasureResult;
+import delfos.group.results.grouprecomendationresults.GroupRecommenderSystemResult;
 import delfos.rs.recommendation.Recommendation;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -22,49 +25,45 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 /**
  * Writes extended information of the recommendation in an XML file. This
  * information is the test ratings of each group and its recommendations.
  *
- * @version 05-oct-2014
  * @author Jorge Castro Gallardo
  */
-public class GroupRecommendationMemberRatingsComparison extends GroupEvaluationMeasure {
+public class PrintTestSet extends GroupEvaluationMeasureInformationPrinter {
 
     @Override
-    public boolean usesRatingPrediction() {
-        return false;
-    }
+    public GroupEvaluationMeasureResult getMeasureResult(
+            GroupRecommenderSystemResult groupRecommenderSystemResult,
+            DatasetLoader<? extends Rating> originalDatasetLoader,
+            RatingsDataset<? extends Rating> testDataset,
+            RelevanceCriteria relevanceCriteria,
+            DatasetLoader<? extends Rating> trainingDatasetLoader,
+            DatasetLoader<? extends Rating> testDatasetLoader) {
 
-    public static final File TEST_SET_DIRECTORY = new File(
-            Constants.getTempDirectory().getAbsoluteFile() + File.separator
-            + GroupRecommendationMemberRatingsComparison.class.getSimpleName() + File.separator
-            + "test-set" + File.separator);
-
-    @Override
-    public GroupEvaluationMeasureResult getMeasureResult(GroupRecommendationResult recommendationResults, RatingsDataset<? extends Rating> testDataset, RelevanceCriteria relevanceCriteria) {
-
-        FileUtilities.createDirectoryPath(TEST_SET_DIRECTORY);
-
-        String fileName = TEST_SET_DIRECTORY.getPath() + File.separator + recommendationResults.getCaseAlias() + "-testSet.xml";
+        File output = new File(PRINTER_DIRECTORY.getPath() + File.separator
+                + groupRecommenderSystemResult.getGroupCaseStudyAlias() + "__"
+                + "exec=" + groupRecommenderSystemResult.getThisExecution()
+                + "-split=" + groupRecommenderSystemResult.getThisSplit()
+                + "-test-set.txt");
 
         StringBuilder str = new StringBuilder();
 
-        for (Map.Entry<GroupOfUsers, List<Recommendation>> entry : recommendationResults) {
+        for (GroupOfUsers groupOfUsers : groupRecommenderSystemResult.getGroupsOfUsers()) {
+            Collection<Recommendation> groupRecommendations = groupRecommenderSystemResult.getGroupOutput(groupOfUsers).getRecommendations();
 
-            GroupOfUsers groupOfUsers = entry.getKey();
-            List<Recommendation> recommendations = entry.getValue();
-
-            if (recommendations.isEmpty()) {
+            if (groupRecommendations.isEmpty()) {
                 str.append("No recommendations for group ").append(groupOfUsers).append("\n");
             } else {
-                Set<Integer> items = Recommendation.getSetOfItems(recommendations);
+                Set<Integer> items = Recommendation.getSetOfItems(groupRecommendations);
 
                 Map<Integer, Map<Integer, Number>> membersRatings = new TreeMap<>();
 
-                membersRatings.put(8888, Recommendation.convertToMapOfNumbers_onlyRankPreference(recommendations));
-                membersRatings.put(9999, Recommendation.convertToMapOfNumbers(recommendations));
+                membersRatings.put(8888, Recommendation.convertToMapOfNumbers_onlyRankPreference(groupRecommendations));
+                membersRatings.put(9999, Recommendation.convertToMapOfNumbers(groupRecommendations));
 
                 groupOfUsers
                         .getIdMembers().stream().forEach((idMember) -> {
@@ -79,7 +78,7 @@ public class GroupRecommendationMemberRatingsComparison extends GroupEvaluationM
                                     thisMemberRatings.put(rating.getIdItem(), rating.getRatingValue());
                                 });
                             } catch (UserNotFound ex) {
-                                Logger.getLogger(GroupRecommendationMemberRatingsComparison.class.getName()).log(Level.SEVERE, null, ex);
+                                Logger.getLogger(PrintTestSet.class.getName()).log(Level.SEVERE, null, ex);
                             }
                             membersRatings.put(idMember, thisMemberRatings);
                         });
@@ -90,15 +89,19 @@ public class GroupRecommendationMemberRatingsComparison extends GroupEvaluationM
                 str.append("==============================================================").append("\n");
 
                 if (Constants.isRawResultDefined()) {
-                    str.append(printRawOutput(groupOfUsers, recommendations, membersRatings));
+                    str.append(printRawOutput(groupOfUsers,
+                            groupRecommendations.stream().sorted(Recommendation.BY_PREFERENCE_DESC).collect(Collectors.toList()),
+                            membersRatings));
                 }
             }
         }
 
-        try (BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(new File(fileName)))) {
+        FileUtilities.createDirectoriesForFile(output);
+
+        try (BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(output))) {
             bufferedWriter.write(str.toString());
         } catch (IOException ex) {
-            Logger.getLogger(GroupRecommendationMemberRatingsComparison.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(PrintTestSet.class.getName()).log(Level.SEVERE, null, ex);
         }
 
         return new GroupEvaluationMeasureResult(this, 1.0);

@@ -14,8 +14,11 @@ public class DefaultGroupCaseStudyGroupEvaluationMeasures_SingleTaskExecutor imp
         for (GroupEvaluationMeasure groupEvaluationMeasure : task.groupEvaluationMeasures) {
             GroupEvaluationMeasureResult groupMeasureResult = groupEvaluationMeasure.getMeasureResult(
                     task.groupRecommendationResult,
+                    task.originalDatasetLoader,
                     task.testSet,
-                    task.relevanceCriteria);
+                    task.relevanceCriteria,
+                    task.trainingDatasetLoader,
+                    task.testDatasetLoader);
             task.groupEvaluationMeasuresResults.put(groupEvaluationMeasure, groupMeasureResult);
         }
 

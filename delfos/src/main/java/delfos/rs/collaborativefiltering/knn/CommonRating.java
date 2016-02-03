@@ -1,5 +1,7 @@
 package delfos.rs.collaborativefiltering.knn;
 
+import java.util.Comparator;
+
 /**
  * Entidad que encapsula un rating en común. rating1 y rating2 son valoraciones
  * que tienen en común una entidad <b>commonEntity</b> con id <b> idCommon</b>.
@@ -21,6 +23,12 @@ package delfos.rs.collaborativefiltering.knn;
  * @version 1.2 19-Abril-2013 Completada la documentación de la clase.
  */
 public class CommonRating {
+
+    public static final Comparator<CommonRating> BY_ID_COMMON_ASC
+            = (CommonRating o1, CommonRating o2) -> Integer.compare(o1.idCommon, o2.idCommon);
+
+    public static final Comparator<CommonRating> BY_ID_COMMON_DESC
+            = BY_ID_COMMON_ASC.reversed();
 
     /**
      * Tipo de la entidad común, es decir, tipo al que todos los ratings se

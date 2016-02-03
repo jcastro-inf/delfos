@@ -14,7 +14,7 @@ import delfos.rs.collaborativefiltering.profile.Neighbor;
  *
  * @version 14-Noviembre-2013
  */
-public class KnnMemoryTask extends Task {
+public class KnnMemoryNeighborTask extends Task {
 
     public final User user;
     public final User neighborUser;
@@ -22,7 +22,7 @@ public class KnnMemoryTask extends Task {
     public DatasetLoader<? extends Rating> datasetLoader;
     public Neighbor neighbor = null;
 
-    public KnnMemoryTask(DatasetLoader<? extends Rating> datasetLoader, User user, User neighborUser, KnnMemoryBasedCFRS rs) {
+    public KnnMemoryNeighborTask(DatasetLoader<? extends Rating> datasetLoader, User user, User neighborUser, KnnMemoryBasedCFRS rs) {
         this.datasetLoader = datasetLoader;
         this.user = user;
         this.neighborUser = neighborUser;

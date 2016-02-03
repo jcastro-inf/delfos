@@ -9,6 +9,7 @@ import delfos.group.grs.aggregation.AggregationOfIndividualRatings;
 import delfos.group.grs.aggregation.AggregationOfIndividualRecommendations;
 import delfos.rs.collaborativefiltering.knn.memorybased.nwr.KnnMemoryBasedNWR;
 import java.util.List;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 
@@ -174,5 +175,64 @@ public class ParameterChainTest {
 
         assertTrue(aoiRatingsMeanChain.isApplicableTo(aoiRatingsMinGroupCaseStudy));
 
+    }
+
+    /**
+     * Test of areSame method, of class ParameterChain.
+     */
+    @Test
+    public void testEquals() {
+        AggregationOfIndividualRatings aoiRatingsMean = new AggregationOfIndividualRatings(new KnnMemoryBasedNWR(), new Mean());
+        AggregationOfIndividualRecommendations aoiRecommendations = new AggregationOfIndividualRecommendations(new KnnMemoryBasedNWR(), new Mean());
+
+        GroupCaseStudy aoiRatingsMeanGroupCaseStudy = new GroupCaseStudy();
+        aoiRatingsMeanGroupCaseStudy.setParameterValue(GroupCaseStudy.GROUP_RECOMMENDER_SYSTEM, aoiRatingsMean);
+
+        GroupCaseStudy aoiRecommendationsMeanGroupCaseStudy = new GroupCaseStudy();
+        aoiRecommendationsMeanGroupCaseStudy.setParameterValue(GroupCaseStudy.GROUP_RECOMMENDER_SYSTEM, aoiRecommendations);
+
+        ParameterChain aoiRatingsMeanChain = new ParameterChain(aoiRatingsMeanGroupCaseStudy)
+                .createWithNode(GroupCaseStudy.GROUP_RECOMMENDER_SYSTEM, aoiRatingsMean)
+                .createWithLeaf(AggregationOfIndividualRatings.AGGREGATION_OPERATOR, new Mean());
+
+        ParameterChain aoiRecommendationsMeanChain = new ParameterChain(aoiRecommendationsMeanGroupCaseStudy)
+                .createWithNode(GroupCaseStudy.GROUP_RECOMMENDER_SYSTEM, aoiRecommendations)
+                .createWithLeaf(AggregationOfIndividualRecommendations.AGGREGATION_OPERATOR, new Mean());
+
+        assertTrue("Parameter chains are different same but the method says they are equals",
+                !ParameterChain.areSame(aoiRatingsMeanChain, aoiRecommendationsMeanChain));
+
+        boolean equals = aoiRatingsMeanChain.equals(aoiRecommendationsMeanChain);
+
+        assertTrue("Parameter chains are different same but the method says they are equals", !equals);
+    }
+
+    /**
+     * Test of areSame method, of class ParameterChain.
+     */
+    @Test
+    public void testIsApplicableTo() {
+        AggregationOfIndividualRatings aoiRatingsMean = new AggregationOfIndividualRatings(new KnnMemoryBasedNWR(), new Mean());
+        AggregationOfIndividualRecommendations aoiRecommendations = new AggregationOfIndividualRecommendations(new KnnMemoryBasedNWR(), new Mean());
+
+        GroupCaseStudy aoiRatingsMeanGroupCaseStudy = new GroupCaseStudy();
+        aoiRatingsMeanGroupCaseStudy.setParameterValue(GroupCaseStudy.GROUP_RECOMMENDER_SYSTEM, aoiRatingsMean);
+
+        GroupCaseStudy aoiRecommendationsMeanGroupCaseStudy = new GroupCaseStudy();
+        aoiRecommendationsMeanGroupCaseStudy.setParameterValue(GroupCaseStudy.GROUP_RECOMMENDER_SYSTEM, aoiRecommendations);
+
+        ParameterChain aoiRatingsMeanChain = new ParameterChain(aoiRatingsMeanGroupCaseStudy)
+                .createWithNode(GroupCaseStudy.GROUP_RECOMMENDER_SYSTEM, aoiRatingsMean)
+                .createWithLeaf(AggregationOfIndividualRatings.AGGREGATION_OPERATOR, new Mean());
+
+        ParameterChain aoiRecommendationsMeanChain = new ParameterChain(aoiRecommendationsMeanGroupCaseStudy)
+                .createWithNode(GroupCaseStudy.GROUP_RECOMMENDER_SYSTEM, aoiRecommendations)
+                .createWithLeaf(AggregationOfIndividualRecommendations.AGGREGATION_OPERATOR, new Mean());
+
+        assertTrue("Parameter chain must be applicable to the case study", aoiRatingsMeanChain.isApplicableTo(aoiRatingsMeanGroupCaseStudy));
+        assertTrue("Parameter chain must be applicable to the case study", aoiRecommendationsMeanChain.isApplicableTo(aoiRecommendationsMeanGroupCaseStudy));
+
+        assertFalse("Parameter chain must not be applicable to the case study", aoiRatingsMeanChain.isApplicableTo(aoiRecommendationsMeanGroupCaseStudy));
+        assertFalse("Parameter chain must not be applicable to the case study", aoiRecommendationsMeanChain.isApplicableTo(aoiRatingsMeanGroupCaseStudy));
     }
 }

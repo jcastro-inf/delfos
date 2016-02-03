@@ -4,12 +4,13 @@ import delfos.ERROR_CODES;
 import delfos.common.Global;
 import delfos.common.exceptions.dataset.users.UserNotFound;
 import delfos.common.statisticalfuncions.MeanIterative;
+import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RatingsDataset;
 import delfos.dataset.basic.rating.RelevanceCriteria;
 import delfos.group.groupsofusers.GroupOfUsers;
 import delfos.group.results.groupevaluationmeasures.precisionrecall.PRSpaceGroups;
-import delfos.group.results.grouprecomendationresults.GroupRecommendationResult;
+import delfos.group.results.grouprecomendationresults.GroupRecommenderSystemResult;
 import delfos.io.xml.UnrecognizedElementException;
 import delfos.io.xml.evaluationmeasures.confusionmatricescurve.ConfusionMatricesCurveXML;
 import delfos.io.xml.parameterowner.ParameterOwnerXML;
@@ -57,15 +58,19 @@ public class AreaUnderRoc extends GroupEvaluationMeasure {
     }
 
     @Override
-    public GroupEvaluationMeasureResult getMeasureResult(GroupRecommendationResult recommendationResults, RatingsDataset<? extends Rating> testDataset, RelevanceCriteria relevanceCriteria) {
+    public GroupEvaluationMeasureResult getMeasureResult(
+            GroupRecommenderSystemResult groupRecommenderSystemResult,
+            DatasetLoader<? extends Rating> originalDatasetLoader,
+            RatingsDataset<? extends Rating> testDataset,
+            RelevanceCriteria relevanceCriteria,
+            DatasetLoader<? extends Rating> trainingDatasetLoader,
+            DatasetLoader<? extends Rating> testDatasetLoader) {
 
         Map<GroupOfUsers, ConfusionMatricesCurve> prCurves = new TreeMap<>();
 
         int gruposSinMatriz = 0;
-        for (Map.Entry<GroupOfUsers, List<Recommendation>> next : recommendationResults) {
-
-            GroupOfUsers group = next.getKey();
-            Collection<Recommendation> groupRecommendations = next.getValue();
+        for (GroupOfUsers group : groupRecommenderSystemResult.getGroupsOfUsers()) {
+            Collection<Recommendation> groupRecommendations = groupRecommenderSystemResult.getGroupOutput(group).getRecommendations();
 
             List<Boolean> recommendacionesGrupo = new ArrayList<>(groupRecommendations.size());
             for (Recommendation r : groupRecommendations) {

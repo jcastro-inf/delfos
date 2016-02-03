@@ -1,22 +1,22 @@
 package delfos.group.grouplevelcasestudy;
 
-import java.util.Map;
-import java.util.TreeMap;
 import delfos.group.groupsofusers.GroupOfUsers;
 import delfos.group.groupsofusers.measuresovergroups.GroupMeasure;
 import delfos.group.grs.GroupRecommenderSystem;
 import delfos.group.results.groupevaluationmeasures.GroupEvaluationMeasure;
 import delfos.group.results.groupevaluationmeasures.GroupEvaluationMeasureResult;
+import java.util.Map;
+import java.util.TreeMap;
 
 /**
  *
-* @author Jorge Castro Gallardo
+ * @author Jorge Castro Gallardo
  * @version 1.0 03-Jun-2013
  */
 public class GroupLevelResults {
 
-    private final Map<GroupMeasure, Double> groupMeasures = new TreeMap<GroupMeasure, Double>();
-    private final Map<GroupRecommenderSystem,Map<GroupEvaluationMeasure, GroupEvaluationMeasureResult>> evaluationMeasures = new TreeMap<GroupRecommenderSystem, Map<GroupEvaluationMeasure, GroupEvaluationMeasureResult>>();
+    private final Map<GroupMeasure, Double> groupMeasures = new TreeMap<>();
+    private final Map<GroupRecommenderSystem, Map<GroupEvaluationMeasure, GroupEvaluationMeasureResult>> evaluationMeasures = new TreeMap<>();
     private final GroupOfUsers group;
 
     public GroupLevelResults(GroupOfUsers group) {
@@ -29,8 +29,8 @@ public class GroupLevelResults {
     }
 
     public void setEvaluationMeasure(GroupRecommenderSystem groupRecommenderSystem, GroupEvaluationMeasure evaluationMeasure, GroupEvaluationMeasureResult measureResult) {
-        if(!this.evaluationMeasures.containsKey(groupRecommenderSystem)){
-            this.evaluationMeasures.put(groupRecommenderSystem, new TreeMap<GroupEvaluationMeasure, GroupEvaluationMeasureResult>());
+        if (!this.evaluationMeasures.containsKey(groupRecommenderSystem)) {
+            this.evaluationMeasures.put(groupRecommenderSystem, new TreeMap<>());
         }
         this.evaluationMeasures.get(groupRecommenderSystem).put(evaluationMeasure, measureResult);
     }
