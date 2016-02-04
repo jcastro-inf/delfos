@@ -59,7 +59,7 @@ public class Version extends CaseUseMode {
                 String path = url.getPath();
                 String jarExt = ".jar";
                 int index = path.indexOf(jarExt);
-                SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
                 if (index != -1) {
                     String jarPath = path.substring(0, index + jarExt.length());
                     File file = new File(jarPath);
