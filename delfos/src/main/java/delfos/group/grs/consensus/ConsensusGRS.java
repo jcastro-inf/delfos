@@ -75,17 +75,16 @@ public class ConsensusGRS extends GroupRecommenderSystemAdapter<SingleRecommenda
 
     private static final long serialVersionUID = 1L;
     /**
-     * "Especifica el sistema de recomendación single user que se extiende para
-     * ser usado en recomendación a grupos.
+     * Specifies the single user recommender system that this group recommender
+     * system uses in the individual recommendation phase.
      */
     public static final Parameter SINGLE_USER_RECOMMENDER = new Parameter(
             "SINGLE_USER_RECOMMENDER",
             new RecommenderSystemParameterRestriction(new SVDFoldingIn(19, 10), RecommenderSystem.class),
-            "Especifica el sistema de recomendación single user que se extiende "
-            + "para ser usaso en recomendación a grupos.");
+            "Specifies the single user recommender system that this group recommender system uses in the individual recommendation phase..");
     /**
-     * Especifica la técnica de agregación para agregar los ratings de los
-     * usuarios y formar el perfil del grupo.
+     * Specifies the aggregatoin technique used to aggregate the members'
+     * individual recommendation and build the group profile.
      */
     public static final Parameter AGGREGATION_OPERATOR = new Parameter(
             "AGGREGATION_METHOD",
