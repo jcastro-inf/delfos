@@ -1,3 +1,19 @@
+/* 
+ * Copyright (C) 2016 jcastro
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package delfos.rs.contentbased.vsm.multivalued;
 
 import delfos.ERROR_CODES;
@@ -20,6 +36,7 @@ import delfos.dataset.basic.rating.RatingsDataset;
 import delfos.dataset.basic.rating.RelevanceCriteria;
 import delfos.rs.contentbased.ContentBasedRecommender;
 import static delfos.rs.contentbased.vsm.ContentBasedVSMRS.SIMILARITY_MEASURE;
+import delfos.rs.contentbased.vsm.multivalued.entropydependence.EntropyDependenceCBRS;
 import static delfos.rs.contentbased.vsm.multivalued.entropydependence.EntropyDependenceCBRS.AGGREGATION_OPERATOR;
 import delfos.rs.contentbased.vsm.multivalued.profile.BasicMultivaluedUserProfile;
 import delfos.rs.contentbased.vsm.multivalued.profile.MultivaluedUserProfile;
@@ -33,18 +50,11 @@ import java.util.Set;
 import java.util.TreeMap;
 
 /**
- * Sistema de recomendación similar al {@link EntropyDependenceCBRS} pero sin
- * ponderación de características.
+ * Recommender system Sistema de recomendación similar al
+ * {@link EntropyDependenceCBRS} pero sin ponderación de características.
  *
- * @author Jorge Castro Gallardo (Universidad de Jaén, Sinbad2)
+ * @author Jorge Castro Gallardo
  *
- * @version 1.0 Unknow date
- * @version 1.1 21-Jan-2013
- * @version 1.2 21-Mar-2013 Implementación de las interfaces para la
- * persistencia.
- * @version 2.0 28-Mayo-2013 Refactorización para paralelizar la ejecución de
- * los sistemas de recomendación.
- * @version 2.1 9-Octubre-2013 Incorporación del método makeUserModel
  */
 public class BasicMultivaluedCBRS extends ContentBasedRecommender<MultivaluedUserProfilesModel, MultivaluedUserProfile> {
 

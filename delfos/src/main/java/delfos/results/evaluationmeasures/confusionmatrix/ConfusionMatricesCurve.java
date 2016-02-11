@@ -1,3 +1,19 @@
+/* 
+ * Copyright (C) 2016 jcastro
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package delfos.results.evaluationmeasures.confusionmatrix;
 
 import java.util.ArrayList;
@@ -260,26 +276,56 @@ public class ConfusionMatricesCurve {
         return matrices.get(index);
     }
 
+    /**
+     *
+     * @param index
+     * @return
+     */
     public int getFalsePositiveAt(int index) {
         return getMatrixAt(index).getFalsePositive();
     }
 
+    /**
+     *
+     * @param index
+     * @return
+     */
     public int getTruePositiveAt(int index) {
         return getMatrixAt(index).getTruePositive();
     }
 
+    /**
+     *
+     * @param index
+     * @return
+     */
     public int getFalseNegativeAt(int index) {
         return getMatrixAt(index).getFalseNegative();
     }
 
+    /**
+     *
+     * @param index
+     * @return
+     */
     public int getTrueNegativeAt(int index) {
         return getMatrixAt(index).getTrueNegative();
     }
 
+    /**
+     *
+     * @param index
+     * @return
+     */
     public float getPrecisionAt(int index) {
         return getMatrixAt(index).getPrecision();
     }
 
+    /**
+     *
+     * @param index
+     * @return
+     */
     public float getRecallAt(int index) {
         return getMatrixAt(index).getRecall();
     }
@@ -350,6 +396,10 @@ public class ConfusionMatricesCurve {
         return hash;
     }
 
+    /**
+     *
+     * @return
+     */
     public float getAreaPRSpace() {
 
         double areaUnderPRSPace = 0;
