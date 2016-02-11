@@ -1,3 +1,19 @@
+/* 
+ * Copyright (C) 2016 jcastro
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package delfos.group.grs.consensus;
 
 import delfos.ERROR_CODES;
@@ -54,25 +70,37 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.jdom2.JDOMException;
 
 /**
- * @author Jorge Castro Gallardo
+ * Group recommender system proposed in the paper.
+ * <p>
+ * <p>
+ * Castro, Jorge, Francisco J. Quesada, Iván Palomares, and Luis Martínez. "A
+ * Consensus‐Driven Group Recommender System." International Journal of
+ * Intelligent Systems 30, no. 8 (2015): 887-906.
+ * <p>
+ * <p>
+ * This recommender system first computes each member individual
+ * recommendations. After that selects a reduced subset of items using Borda's
+ * count. The individual preferences over this reduced set are fed into a
+ * consensus model, which bring the members' opinions closer and finally
+ * computes the collective preference and returns the final ordering, which
+ * composes the group recommendation.
  *
- * @version 02-Mayo-2014
+ * @author Jorge Castro Gallardo
  */
 public class ConsensusGRS extends GroupRecommenderSystemAdapter<SingleRecommendationModel, GroupModelPseudoUser> {
 
     private static final long serialVersionUID = 1L;
     /**
-     * "Especifica el sistema de recomendación single user que se extiende para
-     * ser usado en recomendación a grupos.
+     * Specifies the single user recommender system that this group recommender
+     * system uses in the individual recommendation phase.
      */
     public static final Parameter SINGLE_USER_RECOMMENDER = new Parameter(
             "SINGLE_USER_RECOMMENDER",
             new RecommenderSystemParameterRestriction(new SVDFoldingIn(19, 10), RecommenderSystem.class),
-            "Especifica el sistema de recomendación single user que se extiende "
-            + "para ser usaso en recomendación a grupos.");
+            "Specifies the single user recommender system that this group recommender system uses in the individual recommendation phase..");
     /**
-     * Especifica la técnica de agregación para agregar los ratings de los
-     * usuarios y formar el perfil del grupo.
+     * Specifies the aggregatoin technique used to aggregate the members'
+     * individual recommendation and build the group profile.
      */
     public static final Parameter AGGREGATION_OPERATOR = new Parameter(
             "AGGREGATION_METHOD",

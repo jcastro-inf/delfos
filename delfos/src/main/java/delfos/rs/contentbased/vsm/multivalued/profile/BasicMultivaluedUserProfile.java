@@ -1,26 +1,35 @@
+/* 
+ * Copyright (C) 2016 jcastro
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package delfos.rs.contentbased.vsm.multivalued.profile;
 
+import delfos.common.aggregationoperators.AggregationOperator;
+import delfos.dataset.basic.features.Feature;
+import delfos.dataset.basic.features.FeatureType;
+import delfos.dataset.basic.item.Item;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
-import delfos.dataset.basic.item.Item;
-import delfos.dataset.basic.features.Feature;
-import delfos.dataset.basic.features.FeatureType;
-import delfos.common.aggregationoperators.AggregationOperator;
 
 /**
  * Perfil de usuario multivaluado. Se utiliza en los sistema de recomendación
- * basados en contenido multivaluados, como {@link EntropyDependenceCBRS} y
- * {@link BasicMultivaluedCBRS}.
+ * basados en contenido multivaluados.
  *
- * @see BasicMultivaluedCBRS
- * @see EntropyDependenceCBRS
- *
- * @author Jorge Castro Gallardo (Universidad de Jaén, Sinbad2)
- *
- * @version 1.1 (1-Jan-2013)
- * @version 1.0 Unknown date
+ * @author Jorge Castro Gallardo
  */
 public class BasicMultivaluedUserProfile implements MultivaluedUserProfile {
 
@@ -50,8 +59,8 @@ public class BasicMultivaluedUserProfile implements MultivaluedUserProfile {
      */
     public BasicMultivaluedUserProfile(int idUser) {
         this._idUser = idUser;
-        _nominalValues = new TreeMap<Feature, Map<Object, Float>>();
-        _numericalValues = new TreeMap<Feature, Float>();
+        _nominalValues = new TreeMap<>();
+        _numericalValues = new TreeMap<>();
     }
 
     /**
