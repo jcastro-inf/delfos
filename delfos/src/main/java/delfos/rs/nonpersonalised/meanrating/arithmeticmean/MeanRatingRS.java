@@ -46,7 +46,7 @@ import java.util.Map;
  * de que el usuario no obtenga recomendaciones con otros sistemas o para
  * deshacer empates entre productos.
  *
- * @author Jorge Castro Gallardo (Universidad de Jaén, Sinbad2)
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  *
  * @version 1.0 (03‎ de Jjulio‎ de ‎2012)

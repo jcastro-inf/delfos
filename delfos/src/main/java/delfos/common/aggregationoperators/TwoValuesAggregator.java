@@ -23,7 +23,7 @@ import delfos.common.parameters.ParameterOwnerType;
  * Clase que provee los métodos para un operador de agregación que agrega dos
  * valores.
  *
-* @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 1.0 01-Mar-2013
  */

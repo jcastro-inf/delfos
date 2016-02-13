@@ -3,7 +3,7 @@ package delfos;
 /**
  * Clase con los valores de la tabla en la que se almacenan las recomendaciones.
  *
- * @author jcastro
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  * @version 4-Noviembre-2013
  */
 public class RecommendationsDatabaseTable {

@@ -27,7 +27,7 @@ import delfos.dataset.basic.user.User;
  * junto con el rating la ponderacion del mismo al usarlo en predicción y el
  * tipo de entidad a la que se recomienda.
  *
- * @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 1.0 Unknown date.
  * @version 1.1 19-Abril-2013

@@ -43,7 +43,7 @@ import java.util.TreeSet;
 
 /**
  *
- * @author Jorge Castro Gallardo (Universidad de Jaén, Sinbad2)
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 25-Noviembre-2013
  */

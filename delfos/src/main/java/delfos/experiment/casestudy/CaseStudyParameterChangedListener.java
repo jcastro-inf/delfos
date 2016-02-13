@@ -19,7 +19,7 @@ package delfos.experiment.casestudy;
 /**
  * Interfaz que deben implementar todos los listener que necesiten ser
  * notificados de las modificaciones de las propiedades de un {@link CaseStudy}.
-* @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  */
 public interface CaseStudyParameterChangedListener {
 

@@ -46,7 +46,7 @@ import java.util.TreeMap;
  * Agregación de valoraciones de los usuarios usando múltiples agregaciones y
  * una función penalty para elegir la agregación que se aplica para cada item.
  *
- * @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 2-julio-2014
  */

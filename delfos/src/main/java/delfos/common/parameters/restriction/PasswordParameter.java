@@ -30,7 +30,7 @@ import org.jdom2.Element;
  * <p>
  * Los valores que puede tomar son {@link String} distintas de null.
  *
- * @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  * @version 1.0 Unknown date
  * @version 1.1 (18-02-2013) Javadoc detallado.
  */

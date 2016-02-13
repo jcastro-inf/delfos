@@ -19,7 +19,7 @@ package delfos.rs.persistence;
 /**
  * Denota un fallo en la lectura/escritura en la persistencia.
  *
- * @author Jorge Castro Gallardo (Universidad de Jaén, Sinbad2)
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  */
 public class FailureInPersistence extends Exception {
 

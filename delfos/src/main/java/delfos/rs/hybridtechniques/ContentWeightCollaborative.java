@@ -48,7 +48,7 @@ import delfos.rs.recommendation.Recommendation;
  * Sistema de recomendación híbrido que utiliza como fuente un sistema de
  * recomendación colaborativo y otro basado en contenido.
  *
- * @author Jorge Castro Gallardo (Universidad de Jaén, Sinbad2)
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 1.1 21-Jan-2013
  * @version 1.0 Unknow date

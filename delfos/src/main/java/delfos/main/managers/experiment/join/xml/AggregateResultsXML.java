@@ -51,7 +51,7 @@ import org.jdom2.JDOMException;
 import org.jdom2.input.SAXBuilder;
 
 /**
- * @author Jorge Castro Gallardo (Universidad de Jaén, Sinbad2)
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  */
 public class AggregateResultsXML {
 

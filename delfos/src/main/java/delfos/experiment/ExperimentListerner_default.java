@@ -25,7 +25,7 @@ import delfos.common.DateCollapse;
  * Listener por defecto, que escribe en la salida indicada el progreso con una
  * frecuencia no superior al tiempo indicado.
  *
-* @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  * @version 1.0 22-May-2013
  */
 public class ExperimentListerner_default implements ExperimentListener {

@@ -25,7 +25,7 @@ import delfos.common.DateCollapse;
  * salida. Permite limitar la salida para que se haga una vez cada X
  * milisegundos, como muy rápido.
  *
-* @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  * 
  * @version 1.0 14-Mayo-2013
  */

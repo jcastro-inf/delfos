@@ -30,7 +30,7 @@ import java.util.TreeSet;
 /**
  * Calcula la confianza entre dos usuarios.
  *
- * @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 24-feb-2014
  */

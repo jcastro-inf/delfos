@@ -18,7 +18,7 @@ package delfos.common.parallelwork;
 
 /**
  *
- * @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  * @version 1.0 04-Jun-2013
  * @param <Task>
  *

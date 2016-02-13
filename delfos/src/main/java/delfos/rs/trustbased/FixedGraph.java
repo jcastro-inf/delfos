@@ -43,7 +43,7 @@ import delfos.common.parameters.restriction.StringParameter;
  * Envoltura para evitar que se recalcule el grafo en solicitudes sobre el mismo
  * dataset.
  *
- * @author Jorge Castro Gallardo (Sinbad2,Universidad de Jaén)
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  * @version 1.0 03-May-2013
  * @param <Node>
  */

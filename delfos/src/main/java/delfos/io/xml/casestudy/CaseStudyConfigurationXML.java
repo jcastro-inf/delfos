@@ -29,7 +29,7 @@ import delfos.io.xml.validationtechnique.ValidationTechniqueXML;
  * Clase encargada de hacer la entrada/salida de los resultados de la ejeución
  * de un caso de uso concreto.
  *
-* @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 1.1 21-Jan-2013
  * @version 1.0 UnkowDate

@@ -30,7 +30,7 @@ import java.util.function.Function;
 /**
  *
  *
- * @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  * @version 1.0 30-May-2013
  */
 public class SingleGroupRecommendationFunction implements Function<SingleGroupRecommendationTaskInput, SingleGroupRecommendationTaskOutput> {

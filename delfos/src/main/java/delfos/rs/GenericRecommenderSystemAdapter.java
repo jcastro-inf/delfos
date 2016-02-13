@@ -41,7 +41,7 @@ import delfos.rs.persistence.FilePersistence;
  * @param <RecommendationModel> Clase que almacena el modelo de recomendación
  * del sistema.
  *
- * @author Jorge Castro Gallardo (Universidad de Jaén, Sinbad2)
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 1.0 Unkown date
  * @version 1.1 22-Jan-2013

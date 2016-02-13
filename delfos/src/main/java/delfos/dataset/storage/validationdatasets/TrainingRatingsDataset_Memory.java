@@ -36,7 +36,7 @@ import delfos.dataset.basic.rating.domain.Domain;
 /**
  * Dataset para la validación de
  *
-* @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 1.0 Unknow date
  * @version 1.1 (21-01-2013) Ahora implementa de {@link RatingsDatasetAdapter}

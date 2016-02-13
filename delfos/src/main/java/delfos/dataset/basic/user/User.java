@@ -26,7 +26,7 @@ import delfos.dataset.basic.features.Feature;
 /**
  * Objeto que representa a un usuario del sistema de recomendación.
  *
- * @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 24-jul-2013
  */

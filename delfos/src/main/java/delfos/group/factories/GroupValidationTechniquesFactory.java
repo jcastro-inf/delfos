@@ -29,7 +29,7 @@ import delfos.group.experiment.validation.validationtechniques.NoValidation;
  * Conoce las técnicas de generación de grupos que se utilizarán en los casos de
  * estudio para evaluar sistemas de recomendación a grupos.
  *
- * @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  */
 public class GroupValidationTechniquesFactory extends Factory<GroupValidationTechnique> {
 

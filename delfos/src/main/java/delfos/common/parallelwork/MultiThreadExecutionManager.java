@@ -31,7 +31,7 @@ import java.util.List;
  * Paraleliza un proceso de manera que se puede ajustar dinámicamente el número
  * de cpus que se utilizan.
  *
- * @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  * @version 1.0 22-May-2013
  * @param <TaskType> Clase que tiene la información de entrada y almacena la
  * información de salida de la tarea.

@@ -40,7 +40,7 @@ import java.util.Collection;
 /**
  * Lee el dataset de MovieLens de 1 millón de ratings ml-1m.
  *
- * @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 12-mar-2014
  */

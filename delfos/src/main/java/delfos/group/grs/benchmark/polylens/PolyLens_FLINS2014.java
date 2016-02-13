@@ -53,7 +53,7 @@ import delfos.similaritymeasures.PearsonCorrelationCoefficient;
  * Published in: Proceeding ECSCW'01 Proceedings of the seventh conference on
  * European Conference on Computer Supported Cooperative Work Pages, 199 - 218.
  *
-* @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  * @version 1.0 20-May-2013
  */
 public class PolyLens_FLINS2014 extends GroupRecommenderSystemAdapter<SingleRecommendationModel, GroupModelPseudoUser> {

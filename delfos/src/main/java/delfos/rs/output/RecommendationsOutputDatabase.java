@@ -34,7 +34,7 @@ import java.util.List;
 /**
  * Escribe las recomendaciones en una tabla de base de datos MySQL.
  *
- * @author Jorge Castro Gallardo (Universidad de Jaén, Sinbad2)
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 28-oct-2013
  */

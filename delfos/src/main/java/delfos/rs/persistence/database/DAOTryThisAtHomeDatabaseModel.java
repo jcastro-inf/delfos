@@ -36,7 +36,7 @@ import java.util.logging.Logger;
  * Objeto para almacenar y recuperar en una base de datos mysql el modelo de
  * recomendación del sistema{@link TryThisAtHomeSVD}.
  *
- * @author Jorge Castro Gallardo (Universidad de Jaén, Sinbad2)
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 1.0 Unknown date
  * @version 1.1 1 de Marzo de 2013

@@ -33,7 +33,7 @@ import delfos.factories.AggregationOperatorFactory;
 /**
  * Operador de agregación de la media geométrica de los valores de entrada
  *
-* @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 16-julio-2014
  */

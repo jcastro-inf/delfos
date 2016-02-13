@@ -31,7 +31,7 @@ import delfos.dataset.basic.rating.domain.Domain;
 /**
  * Dataset que sobreescribe ratings existentes en un ratings dataset dado.
  *
- * @author Jorge Castro Gallardo (Universidad de Jaén, Sinbad2).
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  * @param <RatingType>
  */
 public class RatingsDatasetOverwrite<RatingType extends Rating> extends RatingsDatasetAdapter<RatingType> {

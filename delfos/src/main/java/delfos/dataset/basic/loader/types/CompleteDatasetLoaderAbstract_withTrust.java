@@ -31,7 +31,7 @@ import delfos.dataset.basic.user.UsersDataset;
  * ocurran en tiempo de ejecución los fallos derivados de la no implementación
  * de alguna de las interfaces de los dataset loader.
  *
-* @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 26-Noviembre-2013
  * @param <RatingType>

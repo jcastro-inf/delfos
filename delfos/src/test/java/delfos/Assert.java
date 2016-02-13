@@ -6,7 +6,7 @@ import static org.junit.Assert.fail;
 
 /**
  *
- * @author Jorge Castro Gallardo (Universidad de Jaén, Sinbad2)
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 12-mar-2014
  */

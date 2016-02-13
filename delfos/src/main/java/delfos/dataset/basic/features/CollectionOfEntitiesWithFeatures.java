@@ -26,7 +26,7 @@ import java.util.Set;
  * {@link EntityWithFeatures}. Proporciona métodos útiles sobre las entidades,
  * sus características y los valores de las mismas.
  *
- * @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 1.0 4-Octubre-2013
  * @param <Entity>

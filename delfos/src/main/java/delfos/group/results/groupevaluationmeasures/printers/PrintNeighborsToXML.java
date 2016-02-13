@@ -44,7 +44,7 @@ import org.jdom2.output.XMLOutputter;
  * Evaluation measure that prints the neighbors used to produce the
  * recommendations.
  *
- * @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  */
 public class PrintNeighborsToXML extends GroupEvaluationMeasureInformationPrinter {
 

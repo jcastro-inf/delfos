@@ -36,7 +36,7 @@ import java.util.TreeSet;
  * al dataset serán lentos. Es recomendable usar este dataset solo para casos
  * muy concretos de recomendación online, nunca en evaluación de algoritmos
  *
- * @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 1.1 (21-01-2013) Ahora implementa de {@link RatingsDatasetAdapter}
  * @version 1.0 Unknow date

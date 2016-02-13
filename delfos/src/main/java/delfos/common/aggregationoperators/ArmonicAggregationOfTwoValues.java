@@ -24,7 +24,7 @@ package delfos.common.aggregationoperators;
  * <p>
  * aggregatedValue = (2*v1*v2)/(v1+v2)
  *
-* @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 1.0 01-Mar-2013
  */

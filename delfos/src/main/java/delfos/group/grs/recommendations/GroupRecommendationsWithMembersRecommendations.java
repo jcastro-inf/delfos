@@ -30,7 +30,7 @@ import java.util.TreeSet;
 /**
  * Encapsula las recomendaciones hechas a un grupo.
  *
- * @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  */
 public class GroupRecommendationsWithMembersRecommendations extends Recommendations {
 

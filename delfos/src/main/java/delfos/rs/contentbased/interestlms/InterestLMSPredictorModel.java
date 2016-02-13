@@ -32,7 +32,7 @@ import delfos.rs.contentbased.vsm.booleanvsm.FeatureValue;
 
 /**
  *
- * @author Jorge Castro Gallardo (Universidad de Jaén, Sinbad2)
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 25-Noviembre-2013
  */

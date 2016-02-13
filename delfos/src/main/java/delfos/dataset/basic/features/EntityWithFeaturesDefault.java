@@ -20,7 +20,7 @@ package delfos.dataset.basic.features;
  * Determina los métodos estáticos que una entidad con características necesita
  * consultar.
  *
-* @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 28-Enero-2014
  */

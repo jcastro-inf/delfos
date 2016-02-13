@@ -35,7 +35,7 @@ import javax.swing.JLabel;
  * Clase utilizada para generar cuadros de diálogo con un resumen de los
  * resultados de un algoritmo sobre un dataset concreto.
  *
- * @author Jorge Castro Gallardo (Universidad de Jaén, Sinbad2)
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  */
 public class ResultsDialog {
 

@@ -39,7 +39,7 @@ import delfos.common.Global;
  * Qusai Shambour, Jie Lu: An Effective Recommender System by Unifying User and
  * Item Trust Information for B2B Applications.
  *
- * @author Jorge Castro Gallardo (Sinbad2,Universidad de Jaén)
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  * @version 1.0 03-May-2013
  */
 public class ImplicitTrustComputation_pearson {

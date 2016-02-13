@@ -24,7 +24,7 @@ import org.junit.Test;
 /**
  * Test para probar la clase {@link TrainingRatingsDataset}.
  *
- * @author Jorge Castro Gallardo (Universidad de Jaén, Sinbad2)
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  * @version 1.0 06-Mar-2013
  */
 public class TrainingRatingsDatasetTest extends DelfosTest {

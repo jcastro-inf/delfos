@@ -18,7 +18,7 @@ package delfos.configureddatasets;
 
 /**
  *
-* @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 19-mar-2014
  */

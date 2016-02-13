@@ -21,7 +21,7 @@ import delfos.dataset.basic.item.Item;
 
 /**
  *
- * @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 16-sep-2013
  */

@@ -66,7 +66,7 @@ import java.util.List;
  * para ello una técnica de predicción
  * ({@link KnnMemoryBasedCFRS#predictionTechnique})
  *
- * @author Jorge Castro Gallardo (Universidad de Jaén, Sinbad2)
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 14-abril-2014
  */

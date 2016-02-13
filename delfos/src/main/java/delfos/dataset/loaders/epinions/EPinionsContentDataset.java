@@ -41,7 +41,7 @@ import java.util.stream.Collectors;
 
 /**
  *
- * @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  */
 public class EPinionsContentDataset implements ContentDataset {
 

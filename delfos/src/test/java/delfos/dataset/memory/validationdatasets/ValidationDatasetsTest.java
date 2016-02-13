@@ -23,7 +23,7 @@ import delfos.dataset.storage.validationdatasets.ValidationDatasets;
 
 /**
  *
- * @author Jorge Castro Gallardo (Universidad de Jaén, Sinbad2)
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  * @version 1.0 06-Mar-2013
  */
 public class ValidationDatasetsTest extends DelfosTest {

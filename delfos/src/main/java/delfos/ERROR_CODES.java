@@ -26,7 +26,7 @@ import java.util.TreeMap;
  *
  * @version 1.0 30-Abril-2013
  *
- * @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  */
 public enum ERROR_CODES {
 

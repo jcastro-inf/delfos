@@ -49,7 +49,7 @@ import java.util.TreeSet;
  * Pajares, Laura Sebastia, Eva Onaindia: Preference elicitation techniques for
  * group recommender systems]
  *
- * @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version Unknown Date
  * @version 20-Noviembre-2013

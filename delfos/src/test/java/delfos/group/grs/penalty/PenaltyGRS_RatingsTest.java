@@ -31,7 +31,7 @@ import org.junit.Test;
 /**
  *
  * @version 13-sep-2014
- * @author Jorge Castro Gallardo (Universidad de Jaén, Sinbad2)
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  */
 public class PenaltyGRS_RatingsTest extends DelfosTest {
 

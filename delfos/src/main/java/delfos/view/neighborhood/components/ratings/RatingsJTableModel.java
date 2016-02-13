@@ -24,7 +24,7 @@ import java.util.LinkedList;
 import javax.swing.table.AbstractTableModel;
 
 /**
- * @author jcastro
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  */
 public class RatingsJTableModel extends AbstractTableModel {
 

@@ -21,7 +21,7 @@ import java.util.Collection;
 
 /**
  *
- * @author Jorge Castro Gallardo (Universidad de Jaén, Sinbad2)
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 18-jul-2013
  */

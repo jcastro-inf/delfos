@@ -20,7 +20,7 @@ package delfos.common.exceptions;
  * Clase que representa la ausencia del archivo de la configuración del sistema
  * de recomendación en la ruta especificada
  *
-* @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  */
 public class ConfigurationFileNotFound extends Exception {
 

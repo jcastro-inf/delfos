@@ -21,7 +21,7 @@ package delfos.rs.collaborativefiltering.knn;
  * objeto al que se refiere cierta información, si es a un usuario o a un
  * producto.
  *
-* @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  * 
  * @version 1.0 Unknown date.
  * @version 1.1 25-Abril-2013.

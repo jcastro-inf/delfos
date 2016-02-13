@@ -25,7 +25,7 @@ import delfos.common.exceptions.CouldNotComputeSimilarity;
  * se comporta como la distancia en una cuadrícula, sin utilizar desplazamientos
  * en diagonal.
  *
- * @author Jorge Castro Gallardo (Universidad de Jaén, Sinbad2)
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 1.0 Unknown date
  * @version 1.1 20-Mar-2013

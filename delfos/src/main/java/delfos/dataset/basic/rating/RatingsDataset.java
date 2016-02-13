@@ -26,7 +26,7 @@ import java.util.Set;
 /**
  * Almacena un datasets de ratings. (idUser,idItem,Rating)
  *
- * @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  * @version 1.0 (19 Octubre 2011)
  * @param <RatingType>
  */

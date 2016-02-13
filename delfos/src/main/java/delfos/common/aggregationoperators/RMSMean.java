@@ -24,7 +24,7 @@ import java.math.RoundingMode;
 /**
  * Operador de agregación de la media geométrica de los valores de entrada
  *
-* @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 17-julio-2014
  */

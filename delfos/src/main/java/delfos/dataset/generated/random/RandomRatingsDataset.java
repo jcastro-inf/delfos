@@ -48,7 +48,7 @@ import delfos.dataset.basic.rating.domain.IntegerDomain;
  * usuarios, número de productos, porcentaje de valoraciones definidas y rango
  * en que se da la valoración.
  *
- * @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 1.0 (21-01-2013)
  * @version 1.0.1 15-Noviembre-2013

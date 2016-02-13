@@ -22,7 +22,7 @@ import javax.swing.JFrame;
 
 /**
  *
- * @author jcastro
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  */
 public class SwingGUIScope extends ConfigurationScope {
 

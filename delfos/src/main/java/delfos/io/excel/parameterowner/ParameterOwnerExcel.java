@@ -26,7 +26,7 @@ import java.util.stream.Collectors;
 /**
  * Class to extract different Excel relevant data from a ParameterOwner.
  *
- * @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  */
 public class ParameterOwnerExcel {
 

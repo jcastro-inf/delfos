@@ -25,7 +25,7 @@ import java.util.Collections;
  * Stores the output of the calculation of the recommendations with the stream
  * function {@link SingleGroupRecommendationFunction}
  *
- * @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  */
 public class SingleGroupRecommendationTaskOutput {
 

@@ -8,7 +8,7 @@ import delfos.rs.trustbased.WeightedGraphAdapter;
 
 /**
  *
- * @author jcastro
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  */
 public class GeometricMeanConnectionWeightCentralityTest {
 

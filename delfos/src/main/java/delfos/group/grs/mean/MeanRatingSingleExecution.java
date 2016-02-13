@@ -23,7 +23,7 @@ import delfos.rs.nonpersonalised.meanrating.arithmeticmean.MeanRating;
 
 /**
  *
-* @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  */
 public class MeanRatingSingleExecution implements SingleTaskExecute<MeanRatingTask> {
 

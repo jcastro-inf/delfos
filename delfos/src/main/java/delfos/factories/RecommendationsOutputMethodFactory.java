@@ -26,7 +26,7 @@ import delfos.rs.output.RecommendationsOutputStandardXML;
  * Factoría que conoce los métodos de escritura de recomendaciones
  * ({@link RecommendationsOutputMethod}).
  *
-* @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 28-oct-2013
  */

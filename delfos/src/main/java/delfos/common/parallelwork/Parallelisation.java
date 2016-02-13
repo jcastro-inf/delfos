@@ -29,7 +29,7 @@ import java.util.concurrent.TimeUnit;
  * Clase para controlar el número de hebras extra que la biblioteca de
  * recomendación utiliza.
  *
- * @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  * @version 1.0 21-May-2013
  *
  * @deprecated The parallel execution should be done using

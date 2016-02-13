@@ -47,7 +47,7 @@ import org.jdom2.Element;
  * ichriste@exa.unicen.edu.ar, christenseningrid@gmail.com (I.A.Christensen),
  * sschia@exa.unicen.edu.ar (S. Schiafﬁno)
  *
- * @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version Unknown Date
  * @version 20-Noviembre-2013

@@ -44,7 +44,7 @@ import org.jdom2.Element;
  * Medida de evaluación para sistemas de recomendación a grupos que calcula la
  * precisión y recall a lo largo de todos los tamaño de recomendación al grupo.
  *
- * @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  */
 public class PRSpace_EachMember extends GroupEvaluationMeasure {
 

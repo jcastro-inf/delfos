@@ -34,7 +34,7 @@ import java.util.TreeSet;
  * U5.|.....|.....|.....|.....|.....|.....|.....|.....|.....|..5..|..3..|..4..|
  * <p>
  *
- * @author Jorge Castro Gallardo (Universidad de Jaén, Sinbad2)
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  * @version 10-Octubre-2013
  *
  */

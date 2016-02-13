@@ -27,7 +27,7 @@ import java.util.Set;
  * Stores the input of the calculation of the recommendations with the stream
  * function {@link SingleGroupRecommendationFunction}
  *
- * @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  */
 public class SingleGroupRecommendationTaskInput {
 

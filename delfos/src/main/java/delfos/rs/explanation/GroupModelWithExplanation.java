@@ -19,7 +19,7 @@ package delfos.rs.explanation;
 /**
  *
  * @version 09-sep-2014
- * @author Jorge Castro Gallardo (Universidad de Jaén, Sinbad2)
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  * @param <GroupModel>
  * @param <Explanation>
  */

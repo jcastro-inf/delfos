@@ -25,7 +25,7 @@ import delfos.rs.trustbased.WeightedGraphCalculation;
  * Factoría que conoce los algoritmos de generación de grafos ponderados que la
  * biblioteca de recomendación incorppora.
  *
-* @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 1.0 11-Septiembre-2013
  *

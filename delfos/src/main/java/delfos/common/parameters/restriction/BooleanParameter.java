@@ -27,7 +27,7 @@ import delfos.common.parameters.ParameterOwner;
  * <code>false</code>,
  * <code>true</code> {@link Boolean#FALSE} ó {@link Boolean#TRUE}
  *
-* @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  * @version 1.0 (Unknow date)
  * @version 1.1 18-Jan-2013
  */

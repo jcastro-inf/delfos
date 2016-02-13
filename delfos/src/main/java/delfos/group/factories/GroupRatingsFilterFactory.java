@@ -28,7 +28,7 @@ import delfos.group.grs.filtered.filters.OutliersRatingsStandardDeviationFilter;
  * Conoce las técnicas de filtrado de valoraciones para la recomendación a
  * grupos y las proveee.
  *
-* @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 1.0 09-Mayo-2013
  */

@@ -34,7 +34,7 @@ import java.util.Map;
  * Compute the root of squared mean absolute error of a collaborative filtering
  * rating prediction
  *
- * @author Jorge Castro Gallardo (Universidad de Jaén, Sinbad2)
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 1.1 21-Jan-2013
  * @version 1.0 UnkowDate

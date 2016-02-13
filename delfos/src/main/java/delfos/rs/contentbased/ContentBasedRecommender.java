@@ -35,7 +35,7 @@ import delfos.rs.recommendation.Recommendation;
  * <b>Nota:</b> Los sistemas de recomendación basados en contenido deben heredar
  * de esta clase.
  *
- * @author Jorge Castro Gallardo (Universidad de Jaén, Sinbad2)
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  * @version 1.0 (18 Octubre 2011)
  * @version 2.1 9-Octubre-2013 Incorporación del método makeUserModel
  * @param <RecommendationModel> Clase que almacena el modelo de recomendación

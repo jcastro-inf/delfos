@@ -22,7 +22,7 @@ import delfos.group.groupsofusers.GroupOfUsers;
  * Sistema de recomendación a grupos que comprueba que se aplican correctamente
  * los protocolos de validación a la hora de realizar la experimentación.
  *
- * @author Jorge Castro Gallardo (Universidad de Jaén, Sinbad2)
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 1.0 13-Feb-2013
  * @version 2.0 06-Mar-2013 Mejorada la evaluación de la corrección.

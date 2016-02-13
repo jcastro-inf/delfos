@@ -23,7 +23,7 @@ import delfos.rs.collaborativefiltering.predictiontechniques.WeightedSum;
 /**
  * Clase que almacena las clases que implementan una técnica de predicción.
  *
-* @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 1.0 Unknown date
  * @version 1.1 (18-02-2013) Restringidas las clases que se indican a clases que

@@ -46,7 +46,7 @@ import java.util.Collection;
  * Clase que almacena datasets de valoraciones y de contenido en un archivo de
  * valores separados por comas (CSV)
  *
- * @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  */
 public class DatasetToCSV extends DatasetSaver {
 

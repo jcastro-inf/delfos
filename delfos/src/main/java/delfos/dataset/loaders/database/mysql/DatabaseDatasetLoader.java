@@ -46,7 +46,7 @@ import java.util.stream.Collectors;
  * <code>MovilensDatasetConstructor</code> devolverá la referencia al objeto en
  * memoria.
  *
- * @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version UnknownDate
  * @version 26-Noviembre-2013

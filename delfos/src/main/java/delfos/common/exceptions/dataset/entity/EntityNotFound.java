@@ -22,7 +22,7 @@ import delfos.dataset.basic.features.EntityWithFeatures;
  * Excepción que se lanza al intentar buscar una entidad que no existe en la
  * colección {@link CollectionOfEntitiesWithFeatures}.
  *
- * @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 1.0 4-Octubre-2013
  */

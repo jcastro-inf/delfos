@@ -20,7 +20,7 @@ import delfos.factories.Factory;
 
 /**
  *
-* @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  * @version 20-sept-2014
  */
 public class GrouperFactory extends Factory<Grouper> {

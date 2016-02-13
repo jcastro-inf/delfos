@@ -8,7 +8,7 @@ import delfos.constants.DelfosTest;
  * Clase abstracta para probar técnicas de predicción de sistemas de
  * recomendación colaborativos.
  *
- * @author Jorge Castro Gallardo (Universidad de Jaén, Sinbad2)
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  * @version 1.0 21-Jan-2013
  */
 public class PredictionTechniqueTest extends DelfosTest {

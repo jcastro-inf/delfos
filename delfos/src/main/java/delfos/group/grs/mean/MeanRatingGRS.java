@@ -40,7 +40,7 @@ import java.util.TreeSet;
  * Recomendador para grupos de usuarios que recomienda los productos con mejor
  * valoración media. No se recomienda usar este algoritmo en un sistema real
  *
- * @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 1.0 9-Junio-2013
  */

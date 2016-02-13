@@ -20,7 +20,7 @@ package delfos.experiment;
  * Interfaz que define el método que se invoca para notificar del cambio de 
  * estado en la ejecución de un experimento
  * 
-* @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  * @see ExperimentProgress
  * @see AlgorithmExperimentAdapter
  */

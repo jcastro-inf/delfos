@@ -31,7 +31,7 @@ import delfos.dataset.basic.user.UsersDataset;
  * menos un dataset de valoraciones, que se hará a través del método
  * {@link RatingsDatasetLoader#getRatingsDataset()}.
  *
- * @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 26-Noviembre-2013
  * @param <RatingType> Tipo de los ratings del dataset de valoraciones.

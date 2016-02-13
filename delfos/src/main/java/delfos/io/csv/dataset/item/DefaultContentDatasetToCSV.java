@@ -43,7 +43,7 @@ import java.util.TreeSet;
 /**
  * Clase para leer/escribir un dataset de contenido a fichero csv.
  *
- * @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 1.0 04-Mar-2013
  */

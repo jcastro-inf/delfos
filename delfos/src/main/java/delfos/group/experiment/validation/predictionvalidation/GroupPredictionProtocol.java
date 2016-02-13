@@ -45,7 +45,7 @@ import delfos.experiment.SeedHolder;
  * Una posible técnica de validación podría determinar que se predigan los
  * productos i1 e i2 a partir de i3 e i4
  *
- * @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 1.0 (10/12/2012)
  */

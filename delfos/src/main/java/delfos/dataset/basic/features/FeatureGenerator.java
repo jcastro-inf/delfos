@@ -25,7 +25,7 @@ import java.util.TreeMap;
  * Almacena los características de un item que están disponibles (que han sido
  * creados) y los pone a disposición del content dataset al que pertenece.
  *
- * @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 1.0 Unkown date
  * @version 1.1 1-Feb-2013

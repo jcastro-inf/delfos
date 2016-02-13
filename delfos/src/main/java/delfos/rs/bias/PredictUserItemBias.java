@@ -34,7 +34,7 @@ import java.util.Collection;
  * Sistema de recomendación que siempre devuelve una predicción usando el bias
  * general, bias del user y/o bias del item, si existen.
  *
- * @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 5-marzo-2015
  */

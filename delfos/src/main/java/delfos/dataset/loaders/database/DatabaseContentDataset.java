@@ -44,7 +44,7 @@ import java.util.stream.Collectors;
  * Constructor de los datasets en memoria (de contenido y de ratings) a partir
  * de los datos en la base de datos mysql del conocido conjunto Movilens
  *
- * @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 1.0 Unknow date
  * @version 1.1 (21-01-2013) Ahora implementa de {@link RatingsDatasetAdapter}

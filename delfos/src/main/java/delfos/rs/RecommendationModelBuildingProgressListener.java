@@ -20,7 +20,7 @@ package delfos.rs;
  * Interfaz que define el método de notificación del progreso de la tarea de de
  * construcción del sistema de recomendación.
  *
- * @author Jorge Castro Gallardo (Universidad de Jaén, Sinbad2)
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  */
 public interface RecommendationModelBuildingProgressListener {
 

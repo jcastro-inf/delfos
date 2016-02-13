@@ -32,7 +32,7 @@ import java.util.Comparator;
  * usuario. El método {@link CommonRating#getIdR1() } devuelve 54 y el método {@link CommonRating#getIdR3()
  * } devuelve 98.
  *
- * @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 1.0 Unknown date.
  * @version 1.1 20-Mar-2013

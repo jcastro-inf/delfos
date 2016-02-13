@@ -24,7 +24,7 @@ import delfos.common.exceptions.dataset.entity.EntityNotFound;
  * dataset de rating, en el modelo generado por un sistema de recomendación,
  * etc.
  *
-* @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 1.0 Unknown date
  * @version 1.1 20-Mar-2103

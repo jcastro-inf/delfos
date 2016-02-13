@@ -36,7 +36,7 @@ import java.util.logging.Logger;
  * DAO para base de datos que almacena el modelo de recomendación del sistema
  * {@link MeanRatingRS}.
  *
- * @author Jorge Castro Gallardo (Universidad de Jaén, Sinbad2).
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 1.0 Unknown date
  * @version 1.1 28-Mar-2013

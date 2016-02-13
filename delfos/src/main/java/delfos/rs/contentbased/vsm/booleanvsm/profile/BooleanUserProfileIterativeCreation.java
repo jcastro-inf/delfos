@@ -30,7 +30,7 @@ import delfos.common.Global;
  * contenido
  * <code>{@link TfIdfCBRS}</code>
  *
- * @author Jorge Castro Gallardo (Universidad de Jaén, Sinbad2)
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 1.0 (18 Octubre 2011)
  * @version 1.1 (21-Feb-2013) Convertido en objeto serializable. Eliminado el

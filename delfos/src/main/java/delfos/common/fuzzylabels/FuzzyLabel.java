@@ -18,7 +18,7 @@ package delfos.common.fuzzylabels;
 
 /**
  *
-* @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 16-ene-2014
  */

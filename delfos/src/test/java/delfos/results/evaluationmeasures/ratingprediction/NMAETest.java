@@ -17,7 +17,7 @@ import org.junit.Test;
 /**
  * Implementa tests para {@link NMAE}.
  *
- * @author Jorge Castro Gallardo (Universidad de Jaén, Sinbad2)
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  * @version 19-febrero-2014
  */
 public class NMAETest {

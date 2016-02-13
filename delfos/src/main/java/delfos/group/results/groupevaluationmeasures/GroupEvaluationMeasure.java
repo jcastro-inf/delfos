@@ -36,14 +36,14 @@ import org.jdom2.Element;
  * Interfaz que define los métodos de una métrica de evaluación de un sistema de
  * recomendación.
  *
- * @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  * @version 1.0 (28 Octubre 2012)
  */
 /**
  * Clase abstracta que define los métodos que se utilizarán para evaluar un
  * sistema de recomendación a grupos.
  *
- * @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  */
 public abstract class GroupEvaluationMeasure extends ParameterOwnerAdapter implements Comparable<Object> {
 

@@ -28,7 +28,7 @@ import delfos.rs.contentbased.vsm.booleanvsm.profile.BooleanUserProfile;
  * compone de los perfiles de producto, los perfiles de usuario y de las
  * ponderaciones IUF.
  *
- * @author Jorge Castro Gallardo (Universidad de Jaén, Sinbad2)
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 14-Octubre-2013
  */

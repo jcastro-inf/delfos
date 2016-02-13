@@ -34,7 +34,7 @@ import delfos.group.groupsofusers.GroupOfUsers;
  * Clase para calcular el índice con el que un grupo es un clique a partir de la
  * red de confianza entre los miembros.
  *
-* @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  * @version 1.0 03-May-2013
  */
 public class FuzzyCliqueMeasure extends GroupMeasureAdapter {

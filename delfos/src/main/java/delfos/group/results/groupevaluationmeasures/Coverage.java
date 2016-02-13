@@ -37,7 +37,7 @@ import java.util.TreeSet;
  * {@link delfos.Results.EvaluationMeasures.Coverage} para recomendaciones
  * individuales.
  *
- * @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 1.0 (26-01-2013)
  * @see delfos.Results.EvaluationMeasures.RatingPrediction.MAE_ForGroups

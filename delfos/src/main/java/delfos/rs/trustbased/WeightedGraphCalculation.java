@@ -25,7 +25,7 @@ import delfos.common.parameters.ParameterOwnerType;
 
 /**
  *
- * @author Jorge Castro Gallardo (Sinbad2,Universidad de Jaén)
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @param <Node> Tipo de los nodos del grafo.
  * @version 1.0 03-Jun-2013

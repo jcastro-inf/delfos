@@ -37,7 +37,7 @@ import delfos.common.parameters.restriction.LongParameter;
  * SEED = " + newValue + "\n"); valorAnterior = newValue;
  * setSeedValue(newValue); } } });
  *
-* @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  * @version 1.0 (08-01-2012)
  */
 public interface SeedHolder {

@@ -27,7 +27,7 @@ import java.util.concurrent.Semaphore;
  * Almacena una lista de tareas que se deben ejecutar de forma paralela. Asegura
  * el correcto funcionamiento con múltiples consumidores de tareas.
  *
- * @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  * @version 1.0 22-May-2013
  * @param <Task>
  *

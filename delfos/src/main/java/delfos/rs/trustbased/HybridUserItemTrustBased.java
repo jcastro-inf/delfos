@@ -54,7 +54,7 @@ import java.util.TreeSet;
  * Qusai Shambour, Jie Liu: An effective Recommender System by Unifying User and
  * Item Trust Information for B2B Applications. Unknow journal.
  *
- * @author Jorge Castro Gallardo (Sinbad2,Universidad de Jaén)
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  * @version 1.0 24-Apr-2013
  */
 public class HybridUserItemTrustBased extends CollaborativeRecommender<HybridUserItemTrustBasedModel> {

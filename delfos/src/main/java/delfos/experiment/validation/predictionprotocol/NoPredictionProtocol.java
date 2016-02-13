@@ -35,7 +35,7 @@ import java.util.TreeSet;
  * usuario se debe volver a construir el modelo para que se actualicen las
  * recomendaciones.
  *
- * @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 1.0 21-Jan-2013
  */

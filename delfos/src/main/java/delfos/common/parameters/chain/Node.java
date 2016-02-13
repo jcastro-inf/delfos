@@ -21,7 +21,7 @@ import delfos.common.parameters.ParameterOwner;
 
 /**
  *
- * @author jcastro
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  */
 class Node {
 

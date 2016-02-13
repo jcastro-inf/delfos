@@ -30,7 +30,7 @@ import java.util.Collection;
 /**
  * Clase para escribir un dataset de valoraciones a una base de datos MySQL.
  *
- * @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 1.0 11-Mar-2013
  */

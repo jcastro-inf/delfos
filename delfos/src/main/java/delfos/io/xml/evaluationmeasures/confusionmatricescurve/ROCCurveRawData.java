@@ -22,7 +22,7 @@ import delfos.results.evaluationmeasures.confusionmatrix.ConfusionMatricesCurve;
 /**
  * Genera la información en bruto para representar una curva precision-recall.
  *
-* @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  * @version 1.0 (11-01-2013)
  */
 public class ROCCurveRawData implements CurveRawDataGenerator {

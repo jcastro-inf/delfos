@@ -27,7 +27,7 @@ import java.util.TreeSet;
 
 /**
  *
- * @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  * @version 1.0 08-Mar-2013
  */
 public interface ParameterOwner extends Serializable, Comparable<Object> {

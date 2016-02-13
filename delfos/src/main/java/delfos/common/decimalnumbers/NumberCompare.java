@@ -20,7 +20,7 @@ import static delfos.Constants.COMPARE_NUM_DECIMALS;
 
 /**
  *
- * @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  * @version 1.0 22-Mar-2013
  */
 public class NumberCompare {

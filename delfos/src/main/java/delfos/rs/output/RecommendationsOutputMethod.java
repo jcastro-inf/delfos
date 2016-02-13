@@ -26,7 +26,7 @@ import delfos.rs.recommendation.Recommendations;
  * Interfaz que sirve para definir la semántica de un método de salida de las
  * recomendaciones.
  *
- * @author Jorge Castro Gallardo (Universidad de Jaén, Sinbad2)
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 28-oct-2013
  * @version 1.1 15-Noviembre-2013

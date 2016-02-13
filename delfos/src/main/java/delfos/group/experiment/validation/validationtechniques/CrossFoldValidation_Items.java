@@ -43,7 +43,7 @@ import java.util.TreeSet;
  * elimina cierto porcentaje de items verticalmente. No tiene en cuenta nada más
  * que el conjunto de productos existentes en el dataset de contenido.
  *
- * @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  */
 public class CrossFoldValidation_Items extends GroupValidationTechnique {
 

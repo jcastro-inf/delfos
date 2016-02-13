@@ -32,7 +32,7 @@ import delfos.dataset.basic.user.UsersDataset;
  * Clase abstracta que especifica los métodos que debe implementar una clase
  * encargada de guardar en cualquier tipo de persistencia un dataset cualquiera
  *
- * @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 1.0 Unknown date
  * @version 1.1 15-Noviembre-2013

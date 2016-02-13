@@ -29,7 +29,7 @@ import delfos.io.xml.parameterowner.parameter.FileParameterXML;
  * restricción es que la extensión del archivo sea una de las extensiones
  * permitidas.
  *
-* @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  * @version 1.0 (Unknow date)
  * @version 1.1 18-Jan-2013
  */

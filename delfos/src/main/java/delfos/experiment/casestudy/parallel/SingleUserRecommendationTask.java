@@ -28,7 +28,7 @@ import java.util.Set;
 /**
  * Almacena todos los datos para realizar una solicitud de recomendación.
  *
- * @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  */
 public class SingleUserRecommendationTask extends Task {
 

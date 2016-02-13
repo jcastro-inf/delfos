@@ -26,7 +26,7 @@ import java.util.Set;
 /**
  * Encapsula las recomendaciones hechas a un usuario.
  *
- * @author Jorge Castro Gallardo (Sinbad2,Universidad de Jaén)
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 1.0 22-Mar-2013
  */

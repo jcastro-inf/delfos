@@ -35,7 +35,7 @@ import java.util.TreeSet;
  * Clase abstracta que define los métodos comunes de las distintas técnicas de
  * validación para sistemas de recomendación a grupos.
  *
- * @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 1.0 Unknow date
  * @version 1.1 Implementación de la interfaz {@link SeedHolder}.

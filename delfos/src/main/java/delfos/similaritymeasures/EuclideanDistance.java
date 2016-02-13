@@ -26,7 +26,7 @@ import java.util.List;
  * calculando la inversa. NOTA: fórmula extraída de Programming Collective
  * Intelligence by Toby Segaran. Copyright 2007 Toby Segaran, 978-0-596-52932-1
  *
- * @author Jorge Castro Gallardo (Universidad de Jaén, Sinbad2)
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 1.0 Unknown date
  * @version 1.1 20-Mar-2013

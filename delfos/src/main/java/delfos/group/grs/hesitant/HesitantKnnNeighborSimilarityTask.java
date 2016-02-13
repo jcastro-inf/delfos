@@ -31,7 +31,7 @@ import delfos.utils.hesitant.similarity.HesitantSimilarity;
  * Clase que almacena los datos necesarios para ejecutar paralelamente el
  * cálculo de la similitud con un vecino.
  *
- * @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 14-Noviembre-2013
  */

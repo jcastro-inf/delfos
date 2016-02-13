@@ -30,7 +30,7 @@ import delfos.results.evaluationmeasures.EvaluationMeasure;
 /**
  *
  * @version 29-may-2014
- * @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  */
 public class DefaultCaseStudyEvaluationMeasures_Task extends Task {
 

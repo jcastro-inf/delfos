@@ -28,7 +28,7 @@ import javax.swing.table.TableRowSorter;
 /**
  * Interface component that holds a table with the user-user neighborhood.
  *
- * @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  */
 public class UserNeighborsTable {
 

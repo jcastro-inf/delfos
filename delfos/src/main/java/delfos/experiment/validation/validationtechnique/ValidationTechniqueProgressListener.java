@@ -20,7 +20,7 @@ package delfos.experiment.validation.validationtechnique;
  * Interfaz que deben implementar los objetos que deseen registrar el progreso
  * de ejecución de una validación
  *
-* @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 1.0 Unknown date
  * @version 1.1 20-Mar-2013

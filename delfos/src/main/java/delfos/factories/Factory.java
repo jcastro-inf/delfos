@@ -37,7 +37,7 @@ import delfos.common.parameters.ParameterOwner;
  * Además deben añadir las clases que crean en su fragmento de inicialización de
  * clase.
  *
-* @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  * @version 1.0 09-May-2013
  * @param <TypeForCreation>
  */

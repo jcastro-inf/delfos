@@ -23,7 +23,7 @@ import delfos.dataset.basic.rating.RatingsDataset;
  * Interfaz que define los métodos adicionales para convertir un dataset de
  * valoraciones en modificable.
  *
-* @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 16-sep-2013
  */

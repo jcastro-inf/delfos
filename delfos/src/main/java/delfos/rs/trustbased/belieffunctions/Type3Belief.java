@@ -22,7 +22,7 @@ import delfos.common.parameters.restriction.IntegerParameter;
 /**
  *
  * @version 14-abr-2014
- * @author Jorge Castro Gallardo (Universidad de Jaén, Sinbad2)
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  */
 public class Type3Belief extends BeliefFunction {
 

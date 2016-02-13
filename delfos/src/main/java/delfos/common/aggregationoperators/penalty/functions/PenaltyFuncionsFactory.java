@@ -20,7 +20,7 @@ import delfos.factories.Factory;
 
 /**
  *
-* @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  */
 public class PenaltyFuncionsFactory extends Factory<PenaltyFunction> {
 

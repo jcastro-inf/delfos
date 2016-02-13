@@ -25,7 +25,7 @@ import java.io.File;
 
 /**
  *
- * @author jcastro
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  */
 public class InitDatabaseGUI extends CaseUseMode {
 

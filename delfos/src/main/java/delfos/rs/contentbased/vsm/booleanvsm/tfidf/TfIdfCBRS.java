@@ -59,7 +59,7 @@ import org.grouplens.lenskit.vectors.VectorEntry;
  * http://sinbad2.ujaen.es/cod/archivosPublicos/dea/TTII_JorgeCastro.pdf
  * García.</li></ul>
  *
- * @author Jorge Castro Gallardo (Universidad de Jaén, Sinbad2)
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 1.0 (19 Octubre 2011)
  * @version 2.0 (28 de Febrero de 2013) Refactorización de las clases asociadas

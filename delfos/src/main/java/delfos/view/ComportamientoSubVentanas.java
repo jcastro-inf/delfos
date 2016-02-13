@@ -23,7 +23,7 @@ import javax.swing.JFrame;
 /**
  * Clase que encapsula el comportamiento de las ventanas dentro del módulo de 
  * evaluación de sistemas de recomendación
- * @author Jorge Castro Gallardo (Universidad de Jaén, Sinbad2)
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  */
 public class ComportamientoSubVentanas extends WindowAdapter{
     private final InitialFrame f;

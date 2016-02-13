@@ -31,7 +31,7 @@ import java.util.TreeSet;
 /**
  * Dataset que almacena los datos indexados por productos.
  *
- * @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 1.0 13-Mayo-2013
  * @version 1.2 21-Mayo-2013 Implementado mediante arboles.

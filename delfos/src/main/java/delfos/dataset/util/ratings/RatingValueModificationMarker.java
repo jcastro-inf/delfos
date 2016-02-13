@@ -26,7 +26,7 @@ import delfos.dataset.basic.rating.domain.Domain;
  * Clase que dado un dataset asigna marcadores de modificación positiva y
  * negativa a los distintos cambios de valor de un rating.
  *
- * @author jcastro
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  * @version 2015-feb-18
  */
 public class RatingValueModificationMarker {

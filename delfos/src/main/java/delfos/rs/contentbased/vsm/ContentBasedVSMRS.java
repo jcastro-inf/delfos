@@ -23,7 +23,7 @@ import delfos.similaritymeasures.WeightedSimilarityMeasure;
 
 /**
  *
- * @author jcastro
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 5-marzo-2014
  */

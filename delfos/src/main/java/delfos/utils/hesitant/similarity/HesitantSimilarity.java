@@ -22,7 +22,7 @@ import java.util.TreeSet;
 
 /**
  *
- * @author jcastro
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  * @param <Term>
  */
 public abstract class HesitantSimilarity<Term> implements Comparable<HesitantSimilarity> {

@@ -40,7 +40,7 @@ import java.util.stream.Collectors;
 /**
  *
  * @version 19-jun-2014
- * @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  */
 public class TuringPreparator implements ExperimentPreparator {
 

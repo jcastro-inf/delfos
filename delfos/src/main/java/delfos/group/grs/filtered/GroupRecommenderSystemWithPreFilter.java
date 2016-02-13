@@ -55,7 +55,7 @@ import delfos.rs.recommendation.Recommendation;
  * Implementa la unión de un sistema de recomendación con un algoritmo de
  * prefiltrado de las valoraciones de los usuarios.
  *
-* @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  * @version 1.0 07-May-2013
  */
 public class GroupRecommenderSystemWithPreFilter extends GroupRecommenderSystemAdapter<Object, GroupModelWithExplanation<GroupModelRatingsPreFilter, ? extends Object>> {

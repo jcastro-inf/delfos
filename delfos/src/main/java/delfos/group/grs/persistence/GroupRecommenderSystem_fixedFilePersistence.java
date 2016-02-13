@@ -50,7 +50,7 @@ import delfos.rs.recommendation.Recommendation;
  * utilice el mismo modelo de recomendación, que se almacena en persistencia en
  * ficheros.
  *
-* @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  * @version 1.0 16-May-2013
  */
 public class GroupRecommenderSystem_fixedFilePersistence extends GroupRecommenderSystemAdapter<Object, Object> {

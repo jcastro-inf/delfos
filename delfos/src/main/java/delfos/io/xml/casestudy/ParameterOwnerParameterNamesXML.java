@@ -28,7 +28,7 @@ import delfos.common.parameters.restriction.ParameterOwnerRestriction;
  * hay un párametro que es un sistema de recomendación llamado SREjemplo y éste
  * tiene un parámetro llamado Vecinos, el nombre será SREjemplo.Vecinos
  *
-* @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 19-Noviembre-2013
  */

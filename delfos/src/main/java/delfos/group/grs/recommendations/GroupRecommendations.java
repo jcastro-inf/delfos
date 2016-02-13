@@ -25,7 +25,7 @@ import java.util.Collection;
 /**
  * Encapsula las recomendaciones hechas a un grupo.
  *
- * @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  */
 public class GroupRecommendations extends Recommendations {
 

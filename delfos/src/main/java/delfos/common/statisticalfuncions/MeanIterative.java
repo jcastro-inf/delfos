@@ -23,7 +23,7 @@ import delfos.common.Global;
  * Media calculada sin almacenar los valores previos. Se pueden ir añadiendo
  * valores a la media y se reajusta automáticamente.
  *
- * @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 1.1 21-01-2013
  * @version 1.0 03/04/2012

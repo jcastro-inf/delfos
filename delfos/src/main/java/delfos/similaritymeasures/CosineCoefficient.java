@@ -24,7 +24,7 @@ import delfos.common.exceptions.CouldNotComputeSimilarity;
  * Clase que implementa la medida del coseno para realizar una medida de
  * similitud de dos vectores
  *
- * @author Jorge Castro Gallardo (Universidad de Jaén, Sinbad2)
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 1.0 Unknown date
  * @version 1.1 20-Mar-2013

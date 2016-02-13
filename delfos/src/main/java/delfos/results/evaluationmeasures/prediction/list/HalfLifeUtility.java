@@ -39,7 +39,7 @@ import java.util.Map;
  * de la vida de la lista, es decir, el número de items que el usuario ve a una
  * probabilidad del 50%. (Breese et. al 1998).
  *
- * @author Jorge Castro Gallardo (Universidad de Jaén, Sinbad2)
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 1-julio-2014
  */

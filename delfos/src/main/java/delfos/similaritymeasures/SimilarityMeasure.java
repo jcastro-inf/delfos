@@ -29,7 +29,7 @@ import delfos.common.parameters.ParameterOwner;
  * @see SimilarityMeasure
  * @see BasicSimilarityMeasure
  *
- * @author Jorge Castro Gallardo (Universidad de Jaén, Sinbad2).
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version Unknown date
  * @version 1.1 25-Abril-2013 Javadoc completo.

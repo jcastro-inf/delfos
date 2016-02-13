@@ -26,7 +26,7 @@ import delfos.io.xml.parameterowner.parameter.ParameterXML;
  * Clase para realizar la entrada/salida a XML de las técnicas de filtrado de
  * ratings para grupos.
  *
-* @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  * @version 1.0 09-Mayo-2013
  */
 public class PreFilteringTechniqueXML {

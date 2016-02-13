@@ -21,7 +21,7 @@ import java.util.Iterator;
 /**
  * Iterador que bloquea el método para eliminar elementos.
  *
-* @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 17-Septiembre-2013
  */

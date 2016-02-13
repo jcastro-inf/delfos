@@ -30,7 +30,7 @@ import java.util.stream.Collectors;
 
 /**
  *
- * @author jcastro
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  * @param <Term>
  * @param <Value>
  */

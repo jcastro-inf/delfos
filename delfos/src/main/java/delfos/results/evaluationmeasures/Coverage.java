@@ -36,7 +36,7 @@ import delfos.rs.recommendation.SingleUserRecommendations;
  * de recomendación. La cobertura representa el ratio de items que se pudo
  * calcular un valor de preferencia del total consultados.
  *
- * @author Jorge Castro Gallardo (Universidad de Jaén, Sinbad2)
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  */
 public class Coverage extends EvaluationMeasure {
 

@@ -29,7 +29,7 @@ import java.util.List;
  *
  * @see KnnModelBasedCFRS
  *
- * @author Jorge Castro Gallardo (Universidad de Jaén, Sinbad2)
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 1.0 Unknow date
  * @version 1.1 18-Jan-2013

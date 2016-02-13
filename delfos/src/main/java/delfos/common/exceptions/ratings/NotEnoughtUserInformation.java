@@ -29,7 +29,7 @@ package delfos.common.exceptions.ratings;
  * <p>
  * Cuando un usuario no tiene
  *
-* @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 15-oct-2013
  */

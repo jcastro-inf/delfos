@@ -27,7 +27,7 @@ import delfos.results.MeasureResult;
  * Cuenta el número de recomendaciones que se calcularon. También es el
  * numerador en la medida de evaluación de cobertura.
  *
- * @author Jorge Castro Gallardo (Universidad de Jaén, Sinbad2)
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @see Coverage
  */

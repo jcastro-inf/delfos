@@ -20,7 +20,7 @@ package delfos.common.exceptions.dataset;
  * Clase que almacena información del error cuando no se puede cargar el dataset
  * de confianza.
  *
-* @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 19-Diciembre-2013
  */

@@ -28,7 +28,7 @@ import java.util.Optional;
 
 /**
  *
- * @author jcastro
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  */
 public class HesitantSimilarityFactory {
 

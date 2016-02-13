@@ -26,7 +26,7 @@ import java.util.Date;
  * Clase que encapsula los métodos para mostrar información en la consola (o en
  * la salida por defecto) de la aplicación
  *
- * @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 1.0 (03/01/2013)
  */

@@ -21,7 +21,7 @@ package delfos.common.parameters;
  * de los cambios de los parámetros de algún objeto que herede de
  * {@link ParameterOwner}
  *
-* @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  * 
  * @version 1.0 Unknown date
  * @version 1.1 22-Feb-2013

@@ -24,7 +24,7 @@ import delfos.common.exceptions.dataset.CannotLoadContentDataset;
 
 /**
  *
-* @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 13-mar-2014
  */

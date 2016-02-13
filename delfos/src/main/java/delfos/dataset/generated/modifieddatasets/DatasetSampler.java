@@ -36,7 +36,7 @@ import delfos.experiment.SeedHolder;
  * Clase que encapsula el funcionamiento de un dataset que se encarga de reducir
  * los datos de un dataset original.
  *
- * @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 1.0 ( 10/04/2012 )
  */

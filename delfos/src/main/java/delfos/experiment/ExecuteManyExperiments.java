@@ -40,7 +40,7 @@ import java.util.Collections;
 /**
  * Ejecuta todos los XML de caso de estudio que hay en el directorio indicado.
  *
- * @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 15-Noviembre-2013
  */

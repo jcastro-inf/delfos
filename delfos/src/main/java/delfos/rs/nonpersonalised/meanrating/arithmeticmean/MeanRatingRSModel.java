@@ -24,7 +24,7 @@ import java.util.List;
  * Modelo de recomendación del sistema {@link MeanRatingRS}, que almacena para
  * cada producto su valoración media.
  *
- * @author Jorge Castro Gallardo (Universidad de Jaén, Sinbad2).
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 1.0 9-Junio-2013
  */

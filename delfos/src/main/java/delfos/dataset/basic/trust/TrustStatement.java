@@ -19,7 +19,7 @@ package delfos.dataset.basic.trust;
 /**
  *
  *
-* @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 18-dic-2013
  */

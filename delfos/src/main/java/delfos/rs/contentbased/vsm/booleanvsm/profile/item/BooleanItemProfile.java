@@ -25,7 +25,7 @@ import delfos.rs.ItemProfile;
  * Interfaz que establece los métodos de un perfil de usuario para sistemas de
  * recomendación basados en contenido.
  *
- * @author Jorge Castro Gallardo (Universidad de Jaén, Sinbad2)
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 1.1 9-Octubre-2013
  */

@@ -28,7 +28,7 @@ import delfos.group.groupsofusers.GroupOfUsers;
  * Validación nula. El conjunto de entrenamiento y el de evaluación son
  * exactamente iguales al conjunto original.
  *
-* @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  * @version 1.0 14-Feb-2013
  */
 public class NoValidation extends GroupValidationTechnique {

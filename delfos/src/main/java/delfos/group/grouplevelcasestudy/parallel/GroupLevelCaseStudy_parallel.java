@@ -40,7 +40,7 @@ import java.util.List;
  * Realiza un caso de estudio a nivel de grupo, es decir, aplica las medidas de
  * evaluación sólo por cada grupo.
  *
- * @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  * @version 1.0 03-Jun-2013
  */
 public class GroupLevelCaseStudy_parallel {

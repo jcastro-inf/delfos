@@ -24,7 +24,7 @@ import java.io.File;
  * Abstract class for measures that collect and print detailed information in a
  * file.
  *
- * @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  */
 public abstract class GroupEvaluationMeasureInformationPrinter extends GroupEvaluationMeasure {
 

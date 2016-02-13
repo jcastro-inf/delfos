@@ -44,7 +44,7 @@ import java.util.stream.Collectors;
  * Implementa un dataset de contenido con persistencia sobre base de datos MySQL
  * con la posibilidad de modificar los productos del mismo.
  *
- * @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 04-Diciembre-2013
  */

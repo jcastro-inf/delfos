@@ -22,7 +22,7 @@ import java.util.Collection;
 /**
  *
  * @version 09-sep-2014
- * @author Jorge Castro Gallardo (Universidad de Jaén, Sinbad2)
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  * @param <ExplanationType>
  */
 public class RecommendationWithExplanation<ExplanationType> {

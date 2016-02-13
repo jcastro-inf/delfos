@@ -25,7 +25,7 @@ import delfos.common.parameters.ParameterOwner;
  * Restricción que controla que los valores del parámetro sean del tipo String.
  * Excepcionalmente, permite que los valores sean null.
  *
-* @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  * @version 1.0 (Unknow date)
  * @version 1.1 18-Jan-2013
  * @version 1.2 03-Junio-2013 Ahora admite valores null.

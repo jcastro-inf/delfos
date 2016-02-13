@@ -25,7 +25,7 @@ import java.io.File;
  * Clase para establecer los parámetros de la línea de comandos que son comunes
  * a todos los casos de uso relacionados con la petición de recomendaciones.
  *
- * @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  */
 public class ArgumentsRecommendation {
 

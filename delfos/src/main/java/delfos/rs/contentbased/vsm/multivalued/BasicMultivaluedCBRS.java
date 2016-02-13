@@ -53,7 +53,7 @@ import java.util.TreeMap;
  * Recommender system Sistema de recomendación similar al
  * {@link EntropyDependenceCBRS} pero sin ponderación de características.
  *
- * @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  */
 public class BasicMultivaluedCBRS extends ContentBasedRecommender<MultivaluedUserProfilesModel, MultivaluedUserProfile> {

@@ -47,7 +47,7 @@ import java.util.stream.Collectors;
  * Writes extended information of the recommendation in an XML file. This
  * information is the test ratings of each group and its recommendations.
  *
- * @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  */
 public class PrintTestSet extends GroupEvaluationMeasureInformationPrinter {
 

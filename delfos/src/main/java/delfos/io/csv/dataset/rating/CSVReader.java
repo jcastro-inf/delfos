@@ -29,7 +29,7 @@ import java.util.regex.Pattern;
 
 /**
  *
- * @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 12-mar-2014
  */

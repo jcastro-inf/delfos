@@ -31,7 +31,7 @@ import delfos.group.groupsofusers.GroupOfUsers;
  * Establece los métodos que debe implementar un algoritmo de filtrado de
  * valoraciones para sistemas de recomendación a grupos.
  *
-* @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 1.0 07-May-2013
  * @version 1.1 22-May-2013 Modificados los métodos que provee para soportar

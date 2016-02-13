@@ -7,7 +7,7 @@ import delfos.constants.DelfosTest;
  * Test que comprueba si el cálculo de la confianza basada en usuarios es
  * correcta.
  *
- * @author Jorge Castro Gallardo (Universidad de Jaén, Sinbad2).
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version Unknown date
  *

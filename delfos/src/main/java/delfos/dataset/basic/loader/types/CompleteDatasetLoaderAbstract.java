@@ -24,7 +24,7 @@ import delfos.dataset.basic.rating.Rating;
  * Un <code>DatasetLoader</code> se encarga de cargar un dataset de
  * recomendación para su posterior uso con un sistema de recomendación.
  *
- * @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  * @version 1.0 Unknown date.
  * @version 1.0.1 26-Mayo-2013
  * @version 1.0.2 15-Noviembre-2013

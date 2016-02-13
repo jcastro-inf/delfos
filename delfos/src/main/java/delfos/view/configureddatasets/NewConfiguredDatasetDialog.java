@@ -39,7 +39,7 @@ import delfos.common.parameters.view.EditParameterDialog;
 
 /**
  *
- * @author Jorge Castro Gallardo (Universidad de Jaén, Sinbad2)
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 13-mar-2014
  */

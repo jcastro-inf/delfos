@@ -29,7 +29,7 @@ import delfos.common.Global;
  * Clase que implementa el patrón factoría para las técnicas de validación.
  * Permite ver las técnicas que hay implementadas, obtener una técnica concreta.
  *
-* @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 1.0 Unknown date.
  * @version 2.0 9-Mayo-2013 Ahora la clase hereda de {@link Factory}.

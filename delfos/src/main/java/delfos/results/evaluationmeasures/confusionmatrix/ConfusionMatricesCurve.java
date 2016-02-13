@@ -26,7 +26,7 @@ import java.util.List;
  * Representa una curva ROC. Proporciona operaciones básicas sobre curvas, como
  * la agregación de varias o el cálculo del área bajo una curva.
  *
- * @author Jorge Castro Gallardo (Universidad de Jaén, Sinbad2)
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 1.0 Unknown date
  * @version 1.1 (Anterior a verano del 2012)

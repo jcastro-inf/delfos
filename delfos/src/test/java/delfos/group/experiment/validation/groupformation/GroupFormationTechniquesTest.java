@@ -41,7 +41,7 @@ import org.junit.Test;
 /**
  * Test para comprobar las técnicas de formación de grupos.
  *
- * @author Jorge Castro Gallardo (Universidad de Jaén, Sinbad2)
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  * @version 1.0 16-Jan-2013
  */
 public class GroupFormationTechniquesTest {

@@ -17,7 +17,7 @@
 package delfos.group.casestudy.definedcases.jrs2014;
 
 /**
-* @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  */
 public class CouldNotComputeTrust extends Exception {

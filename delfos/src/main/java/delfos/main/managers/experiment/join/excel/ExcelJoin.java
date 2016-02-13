@@ -31,7 +31,7 @@ import java.util.List;
  * Case use to join many excel of many experiment in a single one.
  *
  * @version 21-oct-2014
- * @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  */
 public class ExcelJoin extends CaseUseMode {
 

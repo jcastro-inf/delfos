@@ -24,7 +24,7 @@ import org.junit.Test;
  * Test para comprobar el correcto funcionamiento de la técnica de filtrado
  * {@link OutliersRatingsFilter}.
  *
- * @author Jorge Castro Gallardo (Universidad de Jaén)
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  * @version 1.0 03-May-2013
  */
 public class OutliersRatingsFilterTest extends DelfosTest {

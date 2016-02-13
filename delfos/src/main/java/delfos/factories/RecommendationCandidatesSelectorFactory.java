@@ -23,7 +23,7 @@ import delfos.recommendationcandidates.RecommendationCandidatesSelector;
 /**
  *
  * @version 03-jun-2014
-* @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  */
 public class RecommendationCandidatesSelectorFactory extends Factory<RecommendationCandidatesSelector> {
 

@@ -43,7 +43,7 @@ import java.util.Map;
  * aggregation and collaborative ﬁltering. In: Proceedings of the 4th ACM
  * conference on Recommender Systems, RecSys ’10. ACM, New York, pp 119–126
  *
- * @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 20-Noviembre-2013
  */

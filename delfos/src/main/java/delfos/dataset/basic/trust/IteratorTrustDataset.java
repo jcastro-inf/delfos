@@ -24,7 +24,7 @@ import delfos.common.exceptions.dataset.users.UserNotFound;
 /**
  * Clase para iterar de forma genérica sobre un dataset de valores de confianza.
  *
-* @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 18-Diciembre-2013
  * @param <TrustStatementType>

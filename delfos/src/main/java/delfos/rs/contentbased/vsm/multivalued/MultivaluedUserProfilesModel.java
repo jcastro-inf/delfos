@@ -25,7 +25,7 @@ import delfos.rs.contentbased.vsm.multivalued.profile.MultivaluedUserProfile;
  * Modelo de recomendación de los sistemas de recomendación que utilizan
  * modelado multivaluado de los productos y usuarios.
  *
- * @author Jorge Castro Gallardo (Sinbad2,Universidad de Jaén)
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  * @version 1.0 28-May-2013
  */
 public class MultivaluedUserProfilesModel implements Serializable {

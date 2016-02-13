@@ -45,7 +45,7 @@ import javax.swing.event.ListSelectionEvent;
 
 /**
  *
- * @author jcastro
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  */
 public class KnnMemoryCFRSRecommendationsGUI implements RecommendationsGUI {
 

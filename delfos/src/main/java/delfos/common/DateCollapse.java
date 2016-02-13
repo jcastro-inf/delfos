@@ -20,7 +20,7 @@ package delfos.common;
  * Clase con métodos estáticos para convertir el tiempo en una cadena amigable
  * al usuario
  *
- * @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  */
 public class DateCollapse {
 

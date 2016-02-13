@@ -28,7 +28,7 @@ import java.util.TreeSet;
  * Devuelve todos los productos del catálogo.
  *
  * @version 03-jun-2014
- * @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  */
 public class AllCatalogItems extends RecommendationCandidatesSelector {
 

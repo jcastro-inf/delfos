@@ -27,7 +27,7 @@ import delfos.dataset.basic.loader.types.UsersDatasetLoader;
 /**
  * Interfaz de un dataset que permite cambios.
  *
-* @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  * @version 28-Noviembre-2013
  */
 public interface ChangeableDatasetLoader extends DatasetLoader<Rating>, ContentDatasetLoader, UsersDatasetLoader {

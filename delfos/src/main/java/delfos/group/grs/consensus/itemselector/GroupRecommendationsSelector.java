@@ -27,7 +27,7 @@ import java.util.Set;
 import java.util.TreeSet;
 
 /**
- * @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 02-Mayo-2014
  */

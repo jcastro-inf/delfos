@@ -33,7 +33,7 @@ import java.util.TreeSet;
  * Implementa la validación de predicción que realiza una validación dadas N
  * valoraciones para el usuario que se predice
  *
- * @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  */
 public class GivenN extends PredictionProtocol {
 

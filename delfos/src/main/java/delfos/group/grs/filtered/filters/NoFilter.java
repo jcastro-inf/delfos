@@ -28,7 +28,7 @@ import delfos.group.groupsofusers.GroupOfUsers;
 /**
  * Implementa un filtro de ratings que no elimina valoraciones.
  *
-* @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 1.0 13-May-2013
  */

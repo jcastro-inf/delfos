@@ -71,7 +71,7 @@ import javax.swing.SwingUtilities;
 
 /**
  *
- * @author jcastro
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  */
 public class RecommendationsExplainedWindow extends JFrame {
 

@@ -20,7 +20,7 @@ import java.io.Serializable;
 
 /**
  *
- * @author jcastro
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  */
 public class EmptyRecommendationModel implements Serializable {
 

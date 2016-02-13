@@ -24,7 +24,7 @@ import java.util.List;
 
 /**
  *
- * @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  * @version 1.0 17-May-2013
  */
 public class FileUtilities {

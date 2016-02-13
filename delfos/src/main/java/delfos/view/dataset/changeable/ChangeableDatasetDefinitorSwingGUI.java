@@ -48,7 +48,7 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 /**
  * Frame to define a changeable dataset and save its xml file.
  *
- * @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  */
 public class ChangeableDatasetDefinitorSwingGUI extends Frame {
 

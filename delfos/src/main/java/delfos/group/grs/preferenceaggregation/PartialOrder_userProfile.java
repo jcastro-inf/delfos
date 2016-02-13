@@ -33,7 +33,7 @@ import java.util.TreeSet;
  * bipolaridad, si dos productos tienen la misma valoración se introducen las 
  * dos preferencias (u1=[i1->5, i2->3
  * 
-* @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  */
 public class PartialOrder_userProfile {
     

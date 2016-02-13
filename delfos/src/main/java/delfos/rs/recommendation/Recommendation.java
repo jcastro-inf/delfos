@@ -31,7 +31,7 @@ import java.util.stream.Collectors;
 /**
  * Almacena una recomendación devuelta por un sistema de recomendación.
  *
- * @author Jorge Castro Gallardo (Universidad de Jaén, Sinbad2)
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  */
 public class Recommendation implements Comparable<Recommendation>, Serializable {
 

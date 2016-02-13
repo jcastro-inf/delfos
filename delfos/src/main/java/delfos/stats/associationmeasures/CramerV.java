@@ -27,7 +27,7 @@ import delfos.common.Global;
  * significa que no hay relación, 1 significa que las dos variables tienen una
  * dependencia perfecta. El Cramer's V se da en el intervalo [0,1].
  *
- * @author Jorge Castro Gallardo (Universidad de Jaén, Sinbad2)
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 14-oct-2013
  */

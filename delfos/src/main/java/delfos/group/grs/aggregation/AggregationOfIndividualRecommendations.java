@@ -50,7 +50,7 @@ import java.util.TreeMap;
  * recomendaciones de cada individuo para componer una lista de recomendaciones
  * para el grupo.
  *
- * @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 1.0 Unknown date
  * @version 1.1 9-Mayo-2013

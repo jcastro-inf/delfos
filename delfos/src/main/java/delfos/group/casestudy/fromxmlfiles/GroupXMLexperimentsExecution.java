@@ -45,7 +45,7 @@ import org.jdom2.JDOMException;
  * Ejecuta los experimentos que hay definidos en el directorio indicado, leyendo
  * los XML que existen para generar los casos de estudio.
  *
- * @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 1.0 14-May-2013
  */

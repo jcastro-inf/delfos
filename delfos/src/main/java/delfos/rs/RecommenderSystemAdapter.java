@@ -47,7 +47,7 @@ import java.util.stream.Collectors;
  * @param <RecommendationModel> Clase que almacena el modelo de recomendación
  * del sistema.
  *
- * @author Jorge Castro Gallardo (Universidad de Jaén, Sinbad2)
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  * @version 1.0 (19 Octubre 2011)
  * @version 2.0 26-Mayo-2013 Ahora los datasets se pasan por parámetro en cada
  * método.

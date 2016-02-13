@@ -39,7 +39,7 @@ import org.jdom2.output.XMLOutputter;
  * Realiza la lectura/escritura del archivo de configuración que describe un
  * dataset modificable
  *
- * @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  * @version 1.0 17-Septiembre-2013
  */
 public class ChangeableDatasetConfigurationFileParser {

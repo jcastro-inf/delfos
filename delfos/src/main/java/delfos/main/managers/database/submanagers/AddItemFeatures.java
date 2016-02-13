@@ -35,7 +35,7 @@ import java.util.TreeMap;
 
 /**
  *
- * @author jcastro
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  */
 public class AddItemFeatures extends DatabaseCaseUseSubManager {
 

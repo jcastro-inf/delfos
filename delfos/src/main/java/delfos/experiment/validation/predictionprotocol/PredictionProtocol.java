@@ -34,7 +34,7 @@ import java.util.Set;
  * sistema de recomendación al realizar la predicción de los que no. Sólo se
  * usan las {@link PredictionProtocol} en algoritmos de filtrado colaborativo.
  *
-* @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  * @version 1.0 (19 Octubre 2011)
  * @version 1.1 08-Mar-2013 Ahora implementa {@link SeedHolder}, para controlar
  * la generación de datos aleatorios.

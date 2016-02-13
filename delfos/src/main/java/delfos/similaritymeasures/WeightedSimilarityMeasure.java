@@ -28,7 +28,7 @@ import java.util.List;
  * La similitud es un valor entre 0 y 1, 0 cuando los vectores son completamente
  * distintos y 1 cuando son completamente iguales.
  *
- * @author Jorge Castro Gallardo (Universidad de Jaén, Sinbad2)
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @see SimilarityMeasure
  * @see BasicSimilarityMeasure

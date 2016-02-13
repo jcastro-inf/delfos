@@ -25,7 +25,7 @@ import delfos.common.parameters.ParameterOwner;
  * Restricción de valores de un parámetro que permite que tome valores reales
  * entre un valor mínimo y un valor máximo.
  *
-* @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  * @version 1.0 (Unknow date)
  * @version 1.1 18-Jan-2013
  */

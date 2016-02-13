@@ -33,7 +33,7 @@ import delfos.common.parameters.ParameterOwnerType;
 /**
  * Métodos por defecto que un cargador dataset modificable debe implementar.
  *
-* @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 17-sep-2013
  */

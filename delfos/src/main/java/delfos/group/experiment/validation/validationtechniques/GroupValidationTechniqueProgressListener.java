@@ -20,7 +20,7 @@ package delfos.group.experiment.validation.validationtechniques;
  * Interfaz que deben implementar los objetos que deseen registrar el progreso
  * de ejecución de una validación
  *
-* @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  * @see GroupValidationTechnique#shuffle() 
  *
  * @version 1.0 (12/12/2012)

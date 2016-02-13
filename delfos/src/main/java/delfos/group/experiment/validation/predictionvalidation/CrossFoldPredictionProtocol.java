@@ -37,7 +37,7 @@ import java.util.TreeSet;
 /**
  * Implementa el protocolo de predicción similar a la validación cruzada.
  *
- * @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 1.0 (10-12-2012)
  */

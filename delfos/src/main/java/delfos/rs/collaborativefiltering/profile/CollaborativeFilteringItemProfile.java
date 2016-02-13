@@ -21,7 +21,7 @@ import java.io.Serializable;
 /**
  * Clase general de un perfil de producto.
  *
- * @author Jorge Castro Gallardo (Universidad de Jaén, Sinbad2)
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 1.0
  */

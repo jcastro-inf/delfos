@@ -22,7 +22,7 @@ import java.util.Collection;
  * Versión thread-safe de la clase {@link MeanIterative}, implementado como un
  * wrapper.
  *
- * @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 19-Junio-2014
  */

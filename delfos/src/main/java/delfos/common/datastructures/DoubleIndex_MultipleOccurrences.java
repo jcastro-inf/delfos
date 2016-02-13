@@ -32,7 +32,7 @@ import java.util.TreeMap;
  * @param <Type1> Tipo 1. Debe implementar la interfaz {@link Comparable}
  * @param <Type2> Tipo 2. Debe implementar la interfaz {@link Comparable}
  *
-* @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 1.0 Unknown date
  * @version 1.1 20-Mar-2103

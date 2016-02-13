@@ -25,7 +25,7 @@ import delfos.rs.contentbased.vsm.booleanvsm.BooleanFeaturesTransformation;
  * Almacena el modelo del sistema {@link TfIdfCBRS}. En su implementación de
  * {@link TreeMap} almacena los perfiles de los productos.
  *
- * @author Jorge Castro Gallardo (Universidad de Jaén, Sinbad2)
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 14-oct-2013
  */

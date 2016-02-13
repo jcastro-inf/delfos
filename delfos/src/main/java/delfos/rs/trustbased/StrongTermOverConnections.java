@@ -24,7 +24,7 @@ import delfos.dataset.util.DatasetPrinter;
 /**
  * Normaliza un grafo ponderado dado. Utiliza la normalización
  *
- * @author Jorge Castro Gallardo (Universidad de Jaén, Sinbad2)
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 15-ene-2014
  * @param <Node>

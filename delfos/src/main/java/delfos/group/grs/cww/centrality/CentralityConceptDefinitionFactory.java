@@ -23,7 +23,7 @@ import delfos.group.grs.cww.centrality.definitions.GeometricMeanConnectionWeight
 
 /**
  *
-* @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 04-mar-2014
  */

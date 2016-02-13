@@ -36,7 +36,7 @@ import org.junit.Test;
 
 /**
  *
- * @author Jorge Castro Gallardo (Universidad de Jaén, Sinbad2)
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  */
 public class GRSItemWeightedCaseStudy extends DelfosTest {
 

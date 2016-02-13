@@ -35,7 +35,7 @@ import java.util.Set;
  * Realiza la ejecución de una recomendación de un usuario y la almacena. Al
  * terminar la tarea, libera los recursos que ya no son necesarios.
  *
- * @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  */
 public class SingleUserRecommendationTaskExecutor implements SingleTaskExecute<SingleUserRecommendationTask> {
 

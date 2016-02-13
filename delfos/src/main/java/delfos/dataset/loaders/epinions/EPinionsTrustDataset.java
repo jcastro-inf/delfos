@@ -34,7 +34,7 @@ import delfos.common.Global;
 
 /**
  *
-* @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 12-Diciembre-2013
  */

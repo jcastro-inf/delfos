@@ -28,7 +28,7 @@ import delfos.common.parameters.ParameterOwnerType;
 /**
  * Clase para almacenar y recuperar métodos de salida de las recomendaciones.
  *
-* @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 28-oct-2013
  */

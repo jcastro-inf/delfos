@@ -31,7 +31,7 @@ import java.util.TreeSet;
  * Devuelve los productos del catálogo no valorados por el usuario indicado.
  *
  * @version 03-jun-2014
- * @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  */
 public class OnlyNewItems extends RecommendationCandidatesSelector {
 

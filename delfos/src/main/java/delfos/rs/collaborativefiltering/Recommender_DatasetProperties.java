@@ -36,7 +36,7 @@ import delfos.rs.recommendation.Recommendation;
  * entrenamiento/evaluación se realizan correctamente. Comprueba que no se
  * solicitan ratings que se usaron en la fase de construcción.
  *
- * @author Jorge Castro Gallardo (Universidad de Jaén, Sinbad2)
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 1.0 21-02-2013
  */

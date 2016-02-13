@@ -8,7 +8,7 @@ import org.junit.BeforeClass;
 /**
  * Clase de la que deben heredar todos los test de la biblioteca.
  *
- * @author Jorge Castro Gallardo (Sinbad2, Universidad de Jaén)
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  * @version 1.0 26-Septiembre-2013
  */
 public class DelfosTest {

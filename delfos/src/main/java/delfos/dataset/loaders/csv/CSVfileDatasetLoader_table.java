@@ -53,7 +53,7 @@ import java.util.stream.Collectors;
 /**
  *
  * @version 14-oct-2014
- * @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  */
 public class CSVfileDatasetLoader_table extends DatasetLoaderAbstract<Rating> implements RatingsDatasetLoader<Rating>, ContentDatasetLoader, UsersDatasetLoader {
 

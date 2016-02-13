@@ -22,7 +22,7 @@ import org.junit.Test;
 /**
  *
  * @version 10-abr-2014
- * @author Jorge Castro Gallardo (Universidad de Jaén, Sinbad2)
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  */
 public class DissimilarMembers_OnlyNGroupsTest extends DelfosTest {
 

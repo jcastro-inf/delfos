@@ -23,7 +23,7 @@ import java.util.Set;
  * un producto, debe implementar. Generaliza el anterior comportamiento de los
  * productos y el manejo del contenido de los mismos.
  *
-* @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 18-sep-2013
  */

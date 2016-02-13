@@ -29,7 +29,7 @@ import delfos.rs.contentbased.vsm.booleanvsm.profile.BooleanUserProfile;
  * perfil booleano con vector de características y vector de ponderación de las
  * características.
  *
- * @author Jorge Castro Gallardo (Universidad de Jaén, Sinbad2)
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 30-oct-2013
  */

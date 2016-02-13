@@ -48,7 +48,7 @@ import delfos.rs.recommendation.Recommendation;
  * FoldIn del modelo. De esta manera se incluyen las valoraciones del
  * pseudo-usuario que representa al grupo.
  *
- * @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 1.0 08-Julio-2013
  */

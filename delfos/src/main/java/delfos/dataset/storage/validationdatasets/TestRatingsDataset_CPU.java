@@ -35,7 +35,7 @@ import java.util.TreeSet;
  * Dataset que deja visibles las valoraciones especificadas en el conjunto de
  * datos indicado.
  *
- * @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 1.0 Unknow date
  * @version 1.2 06-Mar-2013 Modificación de los parámetros del constructor y

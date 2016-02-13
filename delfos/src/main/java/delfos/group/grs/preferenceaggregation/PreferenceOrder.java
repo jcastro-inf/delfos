@@ -26,7 +26,7 @@ import java.util.TreeSet;
 /**
  * Clase que encapsula el orden de preferencia de una serie de objetos.
  *
-* @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  */
 public class PreferenceOrder<E> implements Iterable<E>,Comparable<PreferenceOrder<E>> {
 

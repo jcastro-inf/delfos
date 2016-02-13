@@ -35,7 +35,7 @@ import java.util.TreeSet;
  * Sistema de recomendación para grupos de usuarios. Esta clase define los
  * métodos de un sistema de recomendación a grupos.
  *
- * @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @param <RecommendationModel> Modelo del sistema de recomendación. Es el
  * modelo general utilizado para todos los grupos de usuarios.

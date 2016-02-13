@@ -34,7 +34,7 @@ import org.jdom2.output.Format;
  * 15/11/2012 Añadida la funcionalidad para controlar si se muestran los
  * resultados en bruto de las medidas basadas en curvas
  *
- * @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 1.1 15/11/2012
  */

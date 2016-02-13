@@ -37,7 +37,7 @@ import java.util.LinkedList;
  * que se implementen al método super(), para realizar las inicializaciones
  * pertinentes.
  *
- * @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  */
 public abstract class GroupFormationTechnique extends ParameterOwnerAdapter implements SeedHolder {
 

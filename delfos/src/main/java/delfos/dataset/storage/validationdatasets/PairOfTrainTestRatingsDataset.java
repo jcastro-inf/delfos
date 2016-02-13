@@ -28,7 +28,7 @@ import delfos.dataset.basic.loader.types.DatasetLoader;
  * Par de conjuntos entrenamiento y evaluación. La unión de los dos conjuntos
  * resulta en el conjunto de datos original.
  *
-* @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 1.0 4-Junio-2013
  * @version 1.1 26-Noviembre-2013

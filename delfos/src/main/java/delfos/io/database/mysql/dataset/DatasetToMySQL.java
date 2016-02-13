@@ -40,7 +40,7 @@ import java.sql.SQLException;
 /**
  * Class to load and save datasets to a mysql database.
  *
- * @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  */
 public class DatasetToMySQL extends DatasetSaver {
 

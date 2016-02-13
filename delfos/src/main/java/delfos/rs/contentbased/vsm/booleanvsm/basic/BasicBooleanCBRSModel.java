@@ -23,7 +23,7 @@ import delfos.rs.contentbased.vsm.booleanvsm.BooleanFeaturesTransformation;
 /**
  * Almacena el modelo del sistema {@link BasicBooleanCBRS}.
  *
- * @author Jorge Castro Gallardo (Universidad de Jaén, Sinbad2)
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 09-oct-2013
  */

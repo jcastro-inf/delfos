@@ -22,7 +22,7 @@ import delfos.common.datastructures.MultiSet;
  * Operador de agregación que devuelve el valor más frecuente de los valores de
  * entrada
  *
-* @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 1.0 Unknown date
  * @version 1.1 (1 de Marzo de 2013)

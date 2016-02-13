@@ -35,7 +35,7 @@ import java.util.Map;
  * Algoritmo de recomendación no personalizado que recomienda los productos con
  * mayor porcentaje de ratings positivos.
  *
- * @author Jorge Castro Gallardo (Universidad de Jaén, Sinbad2)
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 08-ene-2014
  */

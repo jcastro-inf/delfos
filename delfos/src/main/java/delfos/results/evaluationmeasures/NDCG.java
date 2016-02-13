@@ -35,7 +35,7 @@ import java.util.Map;
  * Evalúa las recomendaciones de un sistema aplicando NDCG, usando logaritmo en
  * base 2. Se calcula el nDCG por usuarios y luego se hace la media.
  *
- * @author Jorge Castro Gallardo (Universidad de Jaén, Sinbad2)
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 18-Noviembre-2013
  */

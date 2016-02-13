@@ -21,7 +21,7 @@ package delfos.group.grs.preferenceaggregation.order;
  * alternativa preceda a otra teniendo en cuenta la información que se ha
  * indicado a la instanciación concreta de esta interfaz.
  *
-* @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 1.0 (01/12/2012)
  */

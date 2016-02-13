@@ -24,7 +24,7 @@ import delfos.rs.GenericRecommenderSystem;
 /**
  *
  * @version 30-abr-2014
- * @author Jorge Castro Gallardo (Universidad de Jaén, Sinbad2)
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  */
 public class PersistenceMethodStrategy {
 

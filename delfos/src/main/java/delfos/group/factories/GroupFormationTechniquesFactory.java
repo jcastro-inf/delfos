@@ -33,7 +33,7 @@ import delfos.group.experiment.validation.groupformation.SimilarMembers_except;
  * Conoce las técnicas de generación de grupos que se utilizarán en los casos de
  * estudio para evaluar sistemas de recomendación a grupos.
  *
- * @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 1.0 16-Jan-2013
  * @version 9-Enero-2013 Adaptado a la nueva declaración de las factorías.

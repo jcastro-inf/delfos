@@ -24,7 +24,7 @@ import delfos.group.groupsofusers.GroupOfUsers;
 /**
  * Modelo de un grupo que almacena la valoración del grupo para cada producto.
  *
-* @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  * @version 1.0 29-May-2013
  */
 public class GroupModelPseudoUser_itemWeighted implements Serializable {

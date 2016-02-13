@@ -46,7 +46,7 @@ import java.util.stream.Collectors;
  * Evaluation measure that prints the ratings used to produce the
  * recommendations.
  *
- * @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  */
 public class PrintGroupRatingsToPlainText extends GroupEvaluationMeasureInformationPrinter {
 

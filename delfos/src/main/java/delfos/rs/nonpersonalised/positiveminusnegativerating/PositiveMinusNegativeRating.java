@@ -35,7 +35,7 @@ import java.util.Map;
  * Sistema de recomendación no personalizado que recomienda los productos
  * ordenando por ratingsPositivos - ratingsNegativos.
  *
- * @author Jorge Castro Gallardo (Universidad de Jaén, Sinbad2)
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 08-ene-2014
  */

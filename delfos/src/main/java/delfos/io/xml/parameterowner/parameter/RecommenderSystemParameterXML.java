@@ -23,7 +23,7 @@ import delfos.common.parameters.ParameterOwner;
 
 /**
  *
-* @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  * @version 1.0 15-May-2013
  */
 public class RecommenderSystemParameterXML {

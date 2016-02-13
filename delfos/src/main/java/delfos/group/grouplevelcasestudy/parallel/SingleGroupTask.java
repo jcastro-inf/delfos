@@ -30,7 +30,7 @@ import delfos.group.experiment.validation.predictionvalidation.GroupPredictionPr
 
 /**
  *
-* @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  * @version 1.0 04-Jun-2013
  * @version 1.1 26-Noviembre-2013
  */

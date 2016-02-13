@@ -31,7 +31,7 @@ import delfos.common.parameters.ParameterListener;
 /**
  * Implementa un dataset de valoraciones modificable sobre fichero CSV.
  *
-* @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 16-sep-2013
  */

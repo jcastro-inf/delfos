@@ -35,7 +35,7 @@ import delfos.dataset.storage.validationdatasets.ValidationDatasets;
  * genera un dataset de entrenamiento por cada valoración. No se aconseja
  * utilizar, ya que el cálculo es muy extensivo.
  *
-* @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 1.0 (19 Octubre 2011)
  * @version 1.1 21-02-2013 Adecuación a la implementación de {@link SeedHolder}

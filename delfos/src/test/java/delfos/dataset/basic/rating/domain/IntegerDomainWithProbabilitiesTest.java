@@ -6,7 +6,7 @@ import org.junit.Test;
 
 /**
  *
- * @author jcastro
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  */
 public class IntegerDomainWithProbabilitiesTest {
 

@@ -21,7 +21,7 @@ import org.jdom2.Element;
 /**
  * Excepción que se lanza para informar que el objeto {@link Element} que se 
  * deseaba convertir a un objeto concreto no tiene el formato correcto.
-* @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  */
 public class UnrecognizedElementException extends Exception{
 

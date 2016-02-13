@@ -38,7 +38,7 @@ import org.junit.Test;
  * Test para comprobar la cobertura. Ahora mismo se utiliza como un main, pero
  * se hace así para no 'ensuciar' el código de la biblioteca.
  *
- * @author Jorge Castro Gallardo (Universidad de Jaén)
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  * @version 1.0 07-May-2013
  */
 public class CheckCoverageTest {

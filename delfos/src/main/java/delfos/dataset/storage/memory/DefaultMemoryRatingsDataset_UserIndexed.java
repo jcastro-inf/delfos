@@ -37,7 +37,7 @@ import java.util.TreeSet;
  * conjuntos de items valorados y usuarios que han valorado. El resto de los
  * mÃ©todos tienen un orden de eficiencia lineal.
  *
- * @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 1.1 (21-01-2013) Ahora implementa de {@link RatingsDatasetAdapter}
  * @version 1.0 Unknow date

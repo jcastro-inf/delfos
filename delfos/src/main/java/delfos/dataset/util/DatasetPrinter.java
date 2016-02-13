@@ -37,7 +37,7 @@ import java.util.TreeSet;
  * Clase para transformar datasets a cadenas con formato amigable para el
  * usuario.
  *
- * @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  * @version 1.0 15-Enero-2014
  */
 public class DatasetPrinter {

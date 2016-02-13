@@ -31,7 +31,7 @@ import delfos.group.groupsofusers.GroupOfUsers;
 /**
  * Clase para calcular número de ratings del grupo.
  *
-* @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  * @version 1.0 03-Junio-2013
  */
 public class CommonRatings extends GroupMeasureAdapter {

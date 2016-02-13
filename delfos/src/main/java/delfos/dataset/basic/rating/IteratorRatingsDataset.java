@@ -25,7 +25,7 @@ import delfos.common.exceptions.dataset.users.UserNotFound;
 /**
  * Clase para iterar de forma genérica sobre un dataset de valoraciones.
  *
-* @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 1.0 07-Mar-2013 Implementada como clase, en lugar de como clase
  * interna de {@link RatingsDatasetAdapter}.

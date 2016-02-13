@@ -35,7 +35,7 @@ import java.util.List;
  * las recomendaciones fueron valoradas con la máxima puntuación en el conjunto
  * de test.
  *
- * @author Jorge Castro Gallardo (Universidad de Jaén, Sinbad2)
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 1.1 21-Jan-2013
  * @version 1.0 UnkowDate

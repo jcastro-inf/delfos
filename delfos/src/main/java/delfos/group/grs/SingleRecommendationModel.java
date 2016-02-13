@@ -20,7 +20,7 @@ import java.io.Serializable;
 
 /**
  *
-* @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  * @version 1.0 29-May-2013
  */
 public class SingleRecommendationModel implements Serializable{

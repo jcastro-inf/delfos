@@ -35,7 +35,7 @@ import org.junit.Test;
 /**
  * Crea los experimentos del congreso ISKE 2014 (dentro de flins).
  *
- * @author Jorge Castro Gallardo (Universidad de Jaén, Sinbad2)
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 22-ene-2014
  */

@@ -41,7 +41,7 @@ import java.util.TreeSet;
  * default constructor (super) on every constructor that they implement.
  * Otherwise, the correct behaviour is not guaranteed.
  *
- * @author Jorge Castro Gallardo (Universidad de Jaén, Sinbad2)
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 1.0 Unknown date
  * @version 2.0 Unknown date

@@ -24,7 +24,7 @@ import delfos.common.Global;
  * parameter, that can be queried through the method {@link CaseUseMode#getModeParameter()
  * }.
  *
- * @author Jorge Castro Gallardo.
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  */
 public abstract class CaseUseMode {
 

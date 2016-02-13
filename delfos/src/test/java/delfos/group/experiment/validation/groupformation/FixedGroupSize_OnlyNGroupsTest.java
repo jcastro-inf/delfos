@@ -20,7 +20,7 @@ import org.junit.Test;
  * }, si genera grupos de tamaño fijo, si genera el número de grupos
  * especificado.
  *
- * @author Jorge Castro Gallardo (Universidad de Jaén, Sinbad2)
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 1.0 (09-01-2013)
  */

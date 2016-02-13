@@ -48,7 +48,7 @@ import java.util.TreeSet;
  * Implementa el sistema de recomendación a grupos basado en la medida propuesta
  * por Hui Wang para calcular similitudes entre ordenes de preferencia parciales
  *
- * @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @deprecated Se ha modificado la estructura de los sistemas de recomendación y
  * no se ha actualizado este sistema.

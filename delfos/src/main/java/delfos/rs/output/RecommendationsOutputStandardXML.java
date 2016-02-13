@@ -33,7 +33,7 @@ import org.jdom2.output.XMLOutputter;
 /**
  * Escribe las recomendaciones en formato XML en la salida estándar.
  *
- * @author Jorge Castro Gallardo (Universidad de Jaén, Sinbad2)
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 28-oct-2013
  */

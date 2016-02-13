@@ -18,7 +18,7 @@ package delfos.utils.algorithm.progress;
 
 /**
  *
- * @author jcastro
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  */
 public interface ProgressChangedListener {
 

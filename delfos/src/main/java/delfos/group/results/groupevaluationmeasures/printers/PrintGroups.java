@@ -37,7 +37,7 @@ import org.jdom2.output.XMLOutputter;
  * que hay en cada uno de los grupos evaluados. Asimismo añade algunas
  * estadísticas generales sobre los mismos.
  *
- * @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  */
 public class PrintGroups extends GroupEvaluationMeasureInformationPrinter {
 

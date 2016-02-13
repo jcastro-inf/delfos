@@ -22,7 +22,7 @@ import delfos.results.evaluationmeasures.EvaluationMeasure;
 /**
  * Almacena los resultados de una métrica de evaluación
  *
-* @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 1.0 Unknown date
  * @version 1.1 20-Mar-2013

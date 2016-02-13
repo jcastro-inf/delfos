@@ -18,7 +18,7 @@ package delfos.stats.associationmeasures;
 
 /**
  *
- * @author Jorge Castro Gallardo (Universidad de Jaén, Sinbad2)
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 15-oct-2013
  */

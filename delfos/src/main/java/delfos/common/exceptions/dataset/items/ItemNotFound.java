@@ -23,7 +23,7 @@ import delfos.common.exceptions.dataset.entity.EntityNotFound;
  * Excepción que se lanza cuando no se encuentra un item en el modelo de un
  * sistema de recomendación, en los datasets, etc.
  *
-* @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 1.0 Unknown date
  * @version 1.1 20-Mar-2103

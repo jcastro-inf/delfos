@@ -30,7 +30,7 @@ import java.util.stream.Collectors;
 /**
  * Dataset de contenido que almacena todos los items en memoria
  *
- * @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 1.0.0 Unknown date
  * @version 1.0.1 07-Mar-2013 Eliminación de la especificación de las

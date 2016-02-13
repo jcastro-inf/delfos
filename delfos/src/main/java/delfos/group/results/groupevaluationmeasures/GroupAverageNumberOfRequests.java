@@ -30,7 +30,7 @@ import java.util.Collection;
  * Medida de evaluación para calcular el número medio de solicitudes de
  * predicción que se hicieron al sistema por grupo.
  *
- * @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 1.0 14-Mayo-2013
  * @see Coverage_ForGroups

@@ -25,7 +25,7 @@ import delfos.dataset.basic.rating.Rating;
  * <p>
  * Original documentation:http://www.trustlet.org/wiki/Extended_Epinions_dataset
  *
-* @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 12-Diciembre-2014
  */

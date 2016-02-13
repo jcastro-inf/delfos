@@ -39,7 +39,7 @@ import delfos.common.Global;
  *
  * @see EntropyDependenceCBRS
  *
- * @author Jorge Castro Gallardo (Universidad de Jaén, Sinbad2)
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 1.0 (18 Octubre 2011)
  * @version 1.1 1 de Marzo de 2013

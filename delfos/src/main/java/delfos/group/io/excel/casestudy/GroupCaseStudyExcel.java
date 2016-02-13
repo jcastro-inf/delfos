@@ -76,7 +76,7 @@ import jxl.write.biff.RowsExceededException;
  * Clase encargada de hacer la entrada/salida de los resultados de la ejeución
  * de un caso de uso concreto.
  *
- * @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 1.0 Unknown date
  * @version 1.1 (3-Mayo-2013)

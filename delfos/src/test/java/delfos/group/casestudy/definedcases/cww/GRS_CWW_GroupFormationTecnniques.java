@@ -31,7 +31,7 @@ import org.junit.Test;
  * sistema de recomendación.
  *
  * @version 25-jun-2014
- * @author Jorge Castro Gallardo (Universidad de Jaén, Sinbad2)
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  */
 public class GRS_CWW_GroupFormationTecnniques extends DelfosTest {
 

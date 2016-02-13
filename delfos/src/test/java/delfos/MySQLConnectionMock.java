@@ -7,7 +7,7 @@ import java.sql.SQLException;
 
 /**
  *
- * @author Jorge Castro Gallardo (Universidad de Jaén, Sinbad2)
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 04-Noviembre-2013
  */

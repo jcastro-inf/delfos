@@ -23,7 +23,7 @@ import delfos.similaritymeasures.SimilarityMeasure;
 /**
  *
  * @version 08-may-2014
- * @author Jorge Castro Gallardo (Universidad de Jaén, Sinbad2)
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  */
 public interface UserUserSimilarity extends SimilarityMeasure {
 

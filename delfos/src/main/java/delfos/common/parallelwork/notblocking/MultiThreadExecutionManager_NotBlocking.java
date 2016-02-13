@@ -39,7 +39,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  * @version 29-Mayo-2014
  * @param <TaskType> Clase que tiene la información de entrada y almacena la
  * información de salida de la tarea.

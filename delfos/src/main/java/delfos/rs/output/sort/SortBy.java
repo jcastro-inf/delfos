@@ -18,7 +18,7 @@ package delfos.rs.output.sort;
 
 /**
  *
- * @author jcastro
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  */
 public enum SortBy {
 

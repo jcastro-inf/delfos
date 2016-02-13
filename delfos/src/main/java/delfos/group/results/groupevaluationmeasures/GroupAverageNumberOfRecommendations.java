@@ -30,7 +30,7 @@ import java.util.Collection;
  * Medida de evaluación para calcular el número de medio de predicciones que se
  * calcularon por grupo.
  *
- * @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 1.0 (26-01-2013)
  * @see delfos.Results.EvaluationMeasures.RatingPrediction.MAE_ForGroups

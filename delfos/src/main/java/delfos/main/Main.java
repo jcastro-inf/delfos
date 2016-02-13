@@ -34,7 +34,7 @@ import java.util.List;
  * Clase que define el punto de entrada de la biblioteca de recomendación cuando
  * se invoca como un programa aparte (java -jar {@link Constants#LIBRARY_NAME})
  *
- * @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  */
 public class Main {
 

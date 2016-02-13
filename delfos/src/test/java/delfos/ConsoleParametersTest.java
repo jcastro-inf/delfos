@@ -12,7 +12,7 @@ import org.junit.Test;
  * Tests the command line parameters parser, to ensure the expected behaviour of
  * the parser regarding the parameters and flags present in the command line.
  *
- * @author jcastro
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  */
 public class ConsoleParametersTest {
 

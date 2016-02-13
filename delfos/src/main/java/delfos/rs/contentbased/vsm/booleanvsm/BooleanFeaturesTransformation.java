@@ -36,7 +36,7 @@ import delfos.rs.contentbased.vsm.booleanvsm.profile.BooleanUserProfile;
  * Objeto que almacena una transformación de características y valores a un
  * vector de ocurrencias.
  *
- * @author Jorge Castro Gallardo (Universidad de Jaén, Sinbad2)
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 10-Octubre-2013
  */

@@ -57,7 +57,7 @@ import java.util.stream.Collectors;
  *
  * @see HoldOutGroupRatedItems
  *
- * @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  */
 public class CrossFoldValidation_groupRatedItems extends GroupValidationTechnique {
 

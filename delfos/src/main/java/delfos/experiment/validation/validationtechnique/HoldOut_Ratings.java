@@ -37,7 +37,7 @@ import delfos.dataset.storage.validationdatasets.ValidationDatasets;
 /**
  * Clase que implementa el método de partición de datasets Hold Out por ratings.
  *
- * @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 1.0 (19 Octubre 2011)
  * @version 1.0 (19-Abril-2013) Documentación de la clase.
