@@ -34,7 +34,7 @@ import java.util.TreeSet;
 /**
  * Dataset utilizado para añadir un usuario que no existe realmente.
  *
- * @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 1.1 (21-01-2013) Ahora implementa de {@link RatingsDatasetAdapter}
  * @version 21-Enero-2014 Ahora también se permite eliminar usuarios, para dar

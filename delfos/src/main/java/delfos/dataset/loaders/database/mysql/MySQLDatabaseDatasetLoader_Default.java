@@ -38,7 +38,7 @@ import java.sql.SQLException;
  * {@link RatingsDatasetToMySQL} y {@link ContentDatasetToMySQL} y utilizarlos
  * para la recomendación.
  *
- * @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 1.0 15-Mar-2013
  */

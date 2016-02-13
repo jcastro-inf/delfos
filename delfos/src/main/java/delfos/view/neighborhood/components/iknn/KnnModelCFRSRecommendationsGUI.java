@@ -50,7 +50,7 @@ import javax.swing.event.ListSelectionListener;
 
 /**
  *
- * @author jcastro
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  */
 public class KnnModelCFRSRecommendationsGUI implements RecommendationsGUI {
 

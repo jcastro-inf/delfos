@@ -35,7 +35,7 @@ import java.util.stream.Collectors;
  * que en un futuro los grupos de usuarios puedan ser más sofisticados o más
  * simples
  *
- * @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  */
 public class GroupOfUsers implements Comparable<GroupOfUsers>, Iterable<Integer> {
 

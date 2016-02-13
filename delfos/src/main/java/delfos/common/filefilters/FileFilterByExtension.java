@@ -22,7 +22,7 @@ import java.io.FileFilter;
 /**
  * Filtro de ficheros que acepta sólo los ficheros que son directorios.
  *
-* @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  * @version 1.0 16-May-2013
  * @version 10-Enero-2014 Ahora se permite especificar si se listan directorios
  * o no.

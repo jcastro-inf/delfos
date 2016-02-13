@@ -29,7 +29,7 @@ import java.util.stream.Collectors;
 import javax.swing.table.AbstractTableModel;
 
 /**
- * @author jcastro
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  */
 public class RatingsItemNeighborJTableModel extends AbstractTableModel {
 

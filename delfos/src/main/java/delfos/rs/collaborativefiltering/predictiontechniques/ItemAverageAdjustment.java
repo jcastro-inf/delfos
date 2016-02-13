@@ -32,7 +32,7 @@ import delfos.common.Global;
  * el ítem activo. Fórmula extraida del guión de prácticas de sistemas
  * informáticos.
  *
- * @author Jorge Castro Gallardo (Universidad de Jaén, Sinbad2)
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 1.0 Unknown date
  * @version 1.1 (18-Feb-2013)

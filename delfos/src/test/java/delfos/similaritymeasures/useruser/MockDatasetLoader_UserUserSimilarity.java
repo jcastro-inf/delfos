@@ -14,7 +14,7 @@ import delfos.dataset.loaders.movilens.ml100k.MovieLens100k;
 /**
  *
  * @version 08-may-2014
- * @author Jorge Castro Gallardo (Universidad de Jaén, Sinbad2)
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  */
 public class MockDatasetLoader_UserUserSimilarity extends CompleteDatasetLoaderAbstract<Rating> {
 

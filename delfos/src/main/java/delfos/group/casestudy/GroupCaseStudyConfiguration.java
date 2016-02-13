@@ -32,7 +32,7 @@ import java.util.Map;
  * Almacena los valores de un caso de estudio de sistemas de recomendación para
  * grupos de usuarios.
  *
- * @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 9-Enero-2014
  */

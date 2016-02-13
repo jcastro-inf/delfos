@@ -25,7 +25,7 @@ import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
  * Interfaz que deben implementar los objetos que almacenen un dataset de
  * valoraciones.
  *
-* @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 26-Noviembre-2013
  * @param <RatingType> Tipo de los ratings del dataset de valoraciones.

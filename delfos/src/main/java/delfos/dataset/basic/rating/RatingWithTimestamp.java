@@ -26,7 +26,7 @@ import java.util.GregorianCalendar;
  * Extiende la funcionalidad de la clase {@link Rating} para añadir una marca de
  * tiempo al mismo.
  *
- * @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 24-jul-2013
  */

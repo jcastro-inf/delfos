@@ -27,7 +27,7 @@ import delfos.experiment.validation.predictionprotocol.PredictionProtocol;
  * para algoritmos colaborativos . Permite ver las técnicas que hay
  * implementadas, obtener una técnica concreta.
  *
-* @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 1.1 21-Jan-2013
  * @version 1.0 Unknow date

@@ -33,7 +33,7 @@ import delfos.rs.recommendation.SingleUserRecommendations;
  * Interfaz que define los métodos de una métrica de evaluación de un sistema de
  * recomendación.
  *
- * @author Jorge Castro Gallardo (Universidad de Jaén, Sinbad2)
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 1.0 19/10/2011
  * @version 1.1 08-Mar-2013

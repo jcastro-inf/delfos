@@ -40,7 +40,7 @@ import org.jdom2.Element;
  * los posibles tamaños de la lista de recomendaciones. Muestra como valor
  * agregado la precisión suponiendo una recomendación.
  *
- * @author Jorge Castro Gallardo (Universidad de Jaén, Sinbad2)
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  */
 public class PRSpace extends EvaluationMeasure {
 

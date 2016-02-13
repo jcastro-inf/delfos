@@ -29,7 +29,7 @@ import java.util.TreeSet;
  * Perfil de usuario multivaluado. Se utiliza en los sistema de recomendación
  * basados en contenido multivaluados.
  *
- * @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  */
 public class BasicMultivaluedUserProfile implements MultivaluedUserProfile {
 

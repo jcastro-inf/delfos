@@ -21,7 +21,7 @@ package delfos.group.experiment.validation.groupformation;
  * los grupos de usuarios mediante el método {@link GroupFormationTechnique#shuffle()
  * }
  *
- * @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  */
 public interface GroupFormationTechniqueProgressListener {
 

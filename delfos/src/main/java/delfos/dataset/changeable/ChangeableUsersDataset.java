@@ -22,7 +22,7 @@ import delfos.dataset.basic.user.UsersDataset;
 
 /**
  *
- * @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 16-sep-2013
  */

@@ -6,7 +6,7 @@ import delfos.dataset.storage.memory.BothIndexRatingsDataset;
 /**
  * Dataset para testear las metricas de evaluación.
  *
- * @author Jorge Castro Gallardo (Universidad de Jaén, Sinbad2)
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 19-feb-2014
  */

@@ -85,7 +85,7 @@ import org.jdom2.JDOMException;
  * computes the collective preference and returns the final ordering, which
  * composes the group recommendation.
  *
- * @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  */
 public class ConsensusGRS extends GroupRecommenderSystemAdapter<SingleRecommendationModel, GroupModelPseudoUser> {
 

@@ -25,7 +25,7 @@ import delfos.group.grs.consensus.itemselector.TopNOfEach;
 
 /**
  *
- * @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 27-sept-2014
  */

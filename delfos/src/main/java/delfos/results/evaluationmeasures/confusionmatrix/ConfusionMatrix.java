@@ -22,7 +22,7 @@ import delfos.results.evaluationmeasures.PRSpace;
 /**
  * Matriz de confusión de un algoritmo de clasificación binario.
  *
- * @author Jorge Castro Gallardo (Universidad de Jaén, Sinbad2)
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 1.0 (11-01-2013)
  *

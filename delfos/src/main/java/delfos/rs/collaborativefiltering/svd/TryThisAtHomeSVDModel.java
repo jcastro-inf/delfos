@@ -29,7 +29,7 @@ import delfos.common.exceptions.ratings.NotEnoughtUserInformation;
  * Almacena el modelo de un sistema de recomendación basado en Descomposición en
  * valores singulares.
  *
- * @author Jorge Castro Gallardo (Universidad de Jaén, Sinbad2).
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 1.0 Unknow date.
  * @version 1.1 08-Julio-2013 Completada la documentación de clase.

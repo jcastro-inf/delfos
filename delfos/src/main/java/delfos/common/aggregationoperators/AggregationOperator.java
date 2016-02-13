@@ -21,7 +21,7 @@ import java.util.Arrays;
 /**
  * Clase abstracta que encapsula el funcionamiento de un método de agregación
  *
-* @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 1.0 Unknown date
  * @version 1.1 (1 de Marzo de 2013)

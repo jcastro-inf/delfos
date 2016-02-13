@@ -36,7 +36,7 @@ import delfos.common.exceptions.dataset.users.UserNotFound;
  * of data aggregation strategies. RecSys '10 Proceedings of the fourth ACM
  * conference on Recommender systems Pages 111-118 ACM New York, NY, USA.
  *
-* @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  * @version 1.0 04-Julio-2013
  */
 public class AverageWeightedWithNumberOfRatings implements UserRatingsAggregation {

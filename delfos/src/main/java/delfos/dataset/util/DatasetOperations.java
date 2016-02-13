@@ -28,7 +28,7 @@ import delfos.dataset.basic.rating.RatingsDataset;
 /**
  * Implementa operaciones simples entre conjuntos de valoraciones.
  *
-* @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  * @version 1.0 07-May-2013
  */
 public class DatasetOperations {

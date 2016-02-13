@@ -26,7 +26,7 @@ import java.io.IOException;
 
 /**
  *
- * @author jcastro
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  */
 public class ConfigurationManager {
 

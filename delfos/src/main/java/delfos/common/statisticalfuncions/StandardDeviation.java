@@ -22,7 +22,7 @@ import java.util.LinkedList;
 /**
  * Clase para calcular la desviación típica de una colección de valores.
  *
-* @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  * @version 1.0 (05/11/2012)
  */
 public class StandardDeviation {

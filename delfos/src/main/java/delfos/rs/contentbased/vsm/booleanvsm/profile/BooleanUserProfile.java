@@ -25,7 +25,7 @@ import delfos.rs.UserProfile;
  * Interfaz que establece los métodos de un perfil de usuario para sistemas de
  * recomendación basados en contenido.
  *
- * @author Jorge Castro Gallardo (Universidad de Jaén, Sinbad2)
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 1.0 (18 Octubre 2011)
  * @vserion 2.0 (28 de Febrero de 2013) Separación de los métodos para las

@@ -21,7 +21,7 @@ import java.text.DecimalFormat;
 /**
  * Redondea números decimales.
  *
-* @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  * @version 1.0 24-Apr-2013
  */
 public class NumberRounder {

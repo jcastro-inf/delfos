@@ -31,7 +31,7 @@ import delfos.databaseconnections.MySQLConnection;
  * Objeto que almacena la conexion de base de datos que se utiliza para
  * almacenar el modelo generado por un sistema de recomendación
  *
- * @author Jorge Castro Gallardo (Universidad de Jaén, Sinbad2)
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  */
 public class DatabasePersistence extends ParameterOwnerAdapter implements PersistenceMethod {
 

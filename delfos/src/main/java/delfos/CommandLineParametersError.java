@@ -18,7 +18,7 @@ package delfos;
 
 /**
  *
- * @author jcastro
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  */
 public class CommandLineParametersError extends Exception {
 

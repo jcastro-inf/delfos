@@ -26,7 +26,7 @@ import delfos.io.xml.parameterowner.parameter.ParameterXML;
  * Clase para convertir objetos de tipo {@link ParameterOwner} a elementos de
  * XML.
  *
-* @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 15-Noviembre-2013
  */

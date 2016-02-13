@@ -20,7 +20,7 @@ package delfos.experiment;
  * Interfaz que define los métodos que un experimento debe implementar para la
  * notificación de cambios en su estado interno.
  *
-* @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  */
 public interface ExperimentProgress extends SeedHolder {
 

@@ -22,7 +22,7 @@ import delfos.common.parameters.ParameterOwner;
  * Método de persistencia que define como debe ser almacenado/recuperado el
  * modelo de un sistema de recomendación
  *
- * @author Jorge Castro Gallardo (Universidad de Jaén, Sinbad2)
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 14-Octubre-2013
  */

@@ -64,7 +64,7 @@ import java.util.stream.Collectors;
  * utilizando para ello una técnica de predicción
  * ({@link KnnModelBasedCFRS#PREDICTION_TECHNIQUE})
  *
- * @author Jorge Castro Gallardo (Universidad de Jaén, Sinbad2)
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 1.0 Unknown date
  * @version 1.1 28-02-2013

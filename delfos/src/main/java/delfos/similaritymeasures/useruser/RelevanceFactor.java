@@ -30,7 +30,7 @@ import delfos.similaritymeasures.SimilarityMeasureAdapter;
 /**
  *
  * @version 24-Junio-2014
- * @author Jorge Castro Gallardo (Universidad de Jaén, Sinbad2)
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  */
 public class RelevanceFactor extends SimilarityMeasureAdapter implements UserUserSimilarity {
 

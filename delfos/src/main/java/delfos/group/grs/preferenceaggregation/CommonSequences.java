@@ -29,7 +29,7 @@ import java.util.TreeSet;
  * set of objects. The total orders may not contain every possible object, so
  * Intersection of both total orders may be empty.
  *
-* @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  * @version 1.0 (01/12/2012)
  */
 public class CommonSequences {

@@ -26,7 +26,7 @@ import java.io.Serializable;
  * restricción que compruebe que su valor es válido (satisface la restricción)
  * en todo momento.
  *
- * @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 1.0 Unknown date
  * @version 1.1 (21-02-2013)

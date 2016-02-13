@@ -22,7 +22,7 @@ import java.util.LinkedList;
 /**
  * Adaptador que implementa la interfaz {@link delfos.algorithm.Algorithm}
  *
- * @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 1.0 17-Julio-2013
  */

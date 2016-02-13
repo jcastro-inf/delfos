@@ -5,7 +5,7 @@ import java.io.File;
 
 /**
  *
- * @author Jorge Castro Gallardo (Universidad de Granada, sci2s)
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  * <jorgecastrog@correo.ugr.es>
  */
 public class ArgumentsNonPersonalisedTestSuite {

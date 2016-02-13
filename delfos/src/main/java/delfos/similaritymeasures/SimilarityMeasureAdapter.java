@@ -27,7 +27,7 @@ import delfos.common.parameters.ParameterOwnerType;
  * La similitud es un valor entre 0 y 1, 0 cuando los vectores son completamente
  * distintos y 1 cuando son completamente iguales.
  *
- * @author Jorge Castro Gallardo (Universidad de Jaén, Sinbad2)
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 2.0 (Unknow date) Se cambia el funcionamiento de las medidas de
  * similitud, ahora se hace mediante interfaces y adaptadores.

@@ -18,7 +18,7 @@ package delfos.view.swing.table;
 
 /**
  *
- * @author jcastro
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  */
 public class UserNeighborRatingsTable {
 

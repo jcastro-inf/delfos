@@ -26,7 +26,7 @@ import delfos.experiment.casestudy.ExecutionProgressListener;
  * experimentación con algoritmos debe implementar.
  *
  * @version 1.0 (métodos para notificación del progreso de ejecución)
-* @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  */
 public abstract class ExperimentAdapter extends ParameterOwnerAdapter implements ExperimentProgress {
 

@@ -26,7 +26,7 @@ import delfos.common.parameters.restriction.DirectoryParameter;
  * Clase para realizar la entrada/salida a XML para parámetros de directorio de
  * {@link ParameterOwner}
  *
-* @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 1.0 25-Julio-2013
  */

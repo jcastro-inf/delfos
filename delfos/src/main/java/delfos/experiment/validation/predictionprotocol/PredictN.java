@@ -34,7 +34,7 @@ import java.util.TreeSet;
  * quedarán X-n valoraciones, donde X es el número d evaloraciones original que
  * el usuario había hecho.
  *
- * @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 1.1 21-Jan-2013
  * @version 1.0 Unknow date

@@ -59,7 +59,7 @@ import delfos.common.Global;
  * <p>
  * 4.- UBTrust = MSD*Jaccard.
  *
- * @author Jorge Castro Gallardo (Sinbad2,Universidad de Jaén)
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  * @version 1.0 03-May-2013
  * @version 1.01 29-Agosto-2013
  */

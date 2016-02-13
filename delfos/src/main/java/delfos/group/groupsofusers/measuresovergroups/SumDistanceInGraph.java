@@ -29,7 +29,7 @@ import delfos.group.groupsofusers.GroupOfUsers;
 /**
  * Clase para la suma de todas las distancias entre todos los pares de usuarios.
  *
-* @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  * @version 1.0 03-May-2013
  */
 public class SumDistanceInGraph extends GroupMeasureAdapter {

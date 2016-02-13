@@ -26,7 +26,7 @@ import delfos.dataset.util.DatasetUtilities;
  * Implementa un filtro de ratings que elimina los ratings que son demasiado
  * distintos al resto de ratings del grupo.
  *
-* @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 1.0 03-May-2013
  */

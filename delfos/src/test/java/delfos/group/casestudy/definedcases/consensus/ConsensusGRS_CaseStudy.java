@@ -31,7 +31,7 @@ import org.junit.Test;
 
 /**
  *
- * @author Jorge Castro Gallardo (Universidad de Jaén, Sinbad2)
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  * @version 28-sept-2014
  */
 public class ConsensusGRS_CaseStudy {

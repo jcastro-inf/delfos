@@ -25,7 +25,7 @@ import delfos.group.experiment.validation.validationtechniques.GroupValidationTe
  * Clase para realizar el almacenamiento/recuperación de técnicas de validación
  * en archivos XML.
  *
-* @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 9-Enero-2014
  */

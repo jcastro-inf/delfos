@@ -25,7 +25,7 @@ import org.junit.Test;
  * "Feature-weighted user model for recommender systems." In User Modeling 2007,
  * pp. 97-106. Springer Berlin Heidelberg, 2007.
  *
- * @author Jorge Castro Gallardo (Universidad de Jaén, Sinbad2).
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 31-Octubre-2013
  */

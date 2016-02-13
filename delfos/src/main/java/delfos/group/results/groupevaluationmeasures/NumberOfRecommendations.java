@@ -33,7 +33,7 @@ import org.jdom2.Element;
  * Medida de evaluación para calcular el número de predicciones que se
  * calcularon.
  *
- * @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 1.0 (26-01-2013)
  * @see delfos.Results.EvaluationMeasures.RatingPrediction.MAE_ForGroups

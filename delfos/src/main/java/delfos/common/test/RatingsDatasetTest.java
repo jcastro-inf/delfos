@@ -30,7 +30,7 @@ import delfos.common.Global;
 /**
  * Test para comprobar que funciona correctamente un dataset.
  *
-* @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 1.0 15-Julio-2013
  */

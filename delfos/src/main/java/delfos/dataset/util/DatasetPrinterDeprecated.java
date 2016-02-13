@@ -35,7 +35,7 @@ import java.util.TreeSet;
 /**
  * Clase para escribir datasets al estilo linea de comandos.
  *
- * @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  * @version 1.0 24-Apr-2013
  *
  * @deprecated Ahora se debe usar la clase {@link delfos.util.DatasetPrinter}

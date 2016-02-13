@@ -28,7 +28,7 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
  * Clase que encapsula el almacenamiento en memoria de una valoración que un
  * usuario ha hecho sobre un producto.
  *
- * @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 1.0 Unknown date.
  * @version 1.1

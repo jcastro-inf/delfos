@@ -32,7 +32,7 @@ import java.util.stream.Collectors;
 /**
  * Represents a chain of parameters and values of a given parameter owner.
  *
- * @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  */
 public class ParameterChain {

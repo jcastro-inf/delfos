@@ -32,7 +32,7 @@ import delfos.dataset.basic.user.UsersDataset;
 /**
  * Dataset loader a partir de los datasets de contenido y de valoraciones.
  *
- * @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version Unknown date
  * @version 26-Noviembre-2013

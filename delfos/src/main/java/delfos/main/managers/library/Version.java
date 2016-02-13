@@ -32,7 +32,7 @@ import java.util.jar.JarFile;
 /**
  *
  * @version 21-oct-2014
- * @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  */
 public class Version extends CaseUseMode {
 

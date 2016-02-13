@@ -29,7 +29,7 @@ import java.util.Set;
 /**
  * Implementa la transpuesta de un dataset, cambiando items por productos.
  *
- * @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  * @version 1.0 01-May-2013
  * @param <RatingType>
  */

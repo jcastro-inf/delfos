@@ -45,7 +45,7 @@ import org.jdom2.JDOMException;
 /**
  * Lower bound of Wilson score confidence interval for a Bernoulli parameter.
  *
- * @author Jorge Castro Gallardo (Universidad de Jaén, Sinbad2)
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 07-ene-2014
  */

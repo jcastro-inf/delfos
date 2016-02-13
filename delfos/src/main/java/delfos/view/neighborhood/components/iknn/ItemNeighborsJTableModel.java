@@ -27,7 +27,7 @@ import java.util.List;
 import javax.swing.table.AbstractTableModel;
 
 /**
- * @author jcastro
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  */
 public class ItemNeighborsJTableModel extends AbstractTableModel {
 

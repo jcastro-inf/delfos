@@ -30,7 +30,7 @@ import java.util.stream.Collectors;
  * Almacena los resultados de recomendaciones de un sistema de recomendación a
  * grupos
  *
- * @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  */
 public class GroupRecommenderSystemResult {
 

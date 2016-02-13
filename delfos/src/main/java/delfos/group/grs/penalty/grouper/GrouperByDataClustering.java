@@ -41,7 +41,7 @@ import delfos.similaritymeasures.Tanimoto;
 /**
  *
  * @version 18-sep-2014
-* @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  */
 public class GrouperByDataClustering extends Grouper {
 

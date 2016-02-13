@@ -19,7 +19,7 @@ package delfos.common.exceptions.dataset;
 /**
  * Excepción que se lanza cuando no se puede cargar el dataset de valoraciones.
  *
- * @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 1.0 Unknown date
  * @version 1.1 20-Mar-2103

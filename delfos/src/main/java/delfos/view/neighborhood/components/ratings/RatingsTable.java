@@ -28,7 +28,7 @@ import javax.swing.table.TableRowSorter;
 /**
  * Table to show the ratings, initially sorted by id.
  *
- * @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  */
 public class RatingsTable {
 

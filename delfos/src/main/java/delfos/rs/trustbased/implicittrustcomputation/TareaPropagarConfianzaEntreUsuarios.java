@@ -24,7 +24,7 @@ import delfos.dataset.basic.rating.RatingsDataset;
  * Guarda los datos necesarios para propagar la confianza entre dos usuarios que
  * no tienen definida una confianza directamente.
  *
- * @author Jorge Castro Gallardo (Universidad de Jaén, Sinbad2)
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 04-sep-2013
  */

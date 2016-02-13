@@ -26,7 +26,7 @@ import org.jdom2.Element;
 /**
  * Clase para efectuar la entrada/salida en xml de curvas ROC.
  *
- * @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 1.0 (10-01-2013)s
  *

@@ -29,7 +29,7 @@ import java.util.TreeMap;
  * Clase que define el comportamiento de cualquier objeto al que se le puedan
  * asignar parámetros para determinar su comportamiento
  *
- * @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 1.0 Unknown date
  * @version 1.1 22 de Febrero de 2013

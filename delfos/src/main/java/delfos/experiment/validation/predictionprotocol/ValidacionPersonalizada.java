@@ -37,7 +37,7 @@ import java.util.TreeSet;
  *
  * Esta técnica de predicción surge al comprobar que la validación
  *
- * @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  *
  * @version 1.1 21-Jan-2013

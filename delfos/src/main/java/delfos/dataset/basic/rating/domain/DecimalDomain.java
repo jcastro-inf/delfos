@@ -19,7 +19,7 @@ package delfos.dataset.basic.rating.domain;
 /**
  * Clase que se utiliza para describir en qué dominio decimal se da una variable
  *
- * @author Jorge Castro Gallardo (Universidad de Jaén, Sinbad2)
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  */
 public class DecimalDomain extends Domain {
 

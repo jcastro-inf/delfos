@@ -56,7 +56,7 @@ import java.util.stream.Collectors;
  * Construye el RatingsDataset<? extends Rating>y ContentDataset a partir de dos
  * archivos CSV, uno para cada dataset
  *
- * @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 1.1 29-01-2013
  * @version 1.0 Unknown date

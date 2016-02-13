@@ -33,7 +33,7 @@ import java.util.Set;
  * productos estén en el conjunto de entrenamiento, y el resto en el de
  * evaluación
  *
- * @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 1.0 (10-12-2012)
  */

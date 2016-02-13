@@ -44,7 +44,7 @@ import delfos.dataset.storage.validationdatasets.ValidationDatasets;
  * valoraciones (los usuarios o los items a los que pertenecen dichas
  * valoraciones no se tienen en cuenta)
  *
-* @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  * @version 1.0 (19 Octubre 2011)
  */
 public class CrossFoldValidation_Ratings extends ValidationTechnique {

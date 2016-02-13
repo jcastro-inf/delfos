@@ -32,7 +32,7 @@ import delfos.common.parameters.ParameterOwner;
  * determinar si es un archivo o un fichero, por lo que se supone que es un
  * directorio.
  *
-* @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 1.0 25-Julio-2013
  */

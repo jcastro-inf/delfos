@@ -26,7 +26,7 @@ import delfos.common.Global;
  *
  * @version 1.0 (06/12/2012)
  *
-* @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  */
 public class RelevanceCriteriaXML {
 

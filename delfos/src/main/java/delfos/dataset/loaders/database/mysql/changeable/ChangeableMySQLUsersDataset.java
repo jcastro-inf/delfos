@@ -43,7 +43,7 @@ import java.util.stream.Collectors;
 /**
  * Implementa un dataset de usuarios con persistencia en base de datos mysql.
  *
- * @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 04-Diciembre-2013
  */

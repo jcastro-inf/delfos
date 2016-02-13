@@ -21,7 +21,7 @@ package delfos;
  * linea de comandos y no está definido ({@link ConsoleParameterParser#isDefined(java.lang.String)
  * } devuelve falso)
  *
- * @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  */
 public class UndefinedParameterException extends RuntimeException {

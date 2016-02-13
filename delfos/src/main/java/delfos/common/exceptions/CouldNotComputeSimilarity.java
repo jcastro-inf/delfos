@@ -18,7 +18,7 @@ package delfos.common.exceptions;
 
 /**
  *
- * @author jcastro
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  */
 public class CouldNotComputeSimilarity extends RuntimeException {
 

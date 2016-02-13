@@ -32,7 +32,7 @@ import delfos.group.groupsofusers.GroupOfUsers;
  * considera que sólo se deben recomendar productos que ningún usuario haya
  * experimentado previamente.
  *
-* @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  */
 public class NeverRatedItems extends RecomendableItemTechnique {
 

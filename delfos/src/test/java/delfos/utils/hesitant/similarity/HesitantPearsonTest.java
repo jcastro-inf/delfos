@@ -9,7 +9,7 @@ import org.junit.Test;
  * Paper: T. González-Arteaga, J.C.R. Alcantud, R. de Andrés Calle: New
  * correlation coefficients for hesitant fuzzy sets (2015) IFSA-EUSFLAT.
  *
- * @author jcastro
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  */
 public class HesitantPearsonTest {
 

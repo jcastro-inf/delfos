@@ -33,7 +33,7 @@ import delfos.rs.persistence.FilePersistence;
 
 /**
  *
- * @author jcastro
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  */
 public class CreateDefaultGroupRecommender extends CaseUseMode {
 

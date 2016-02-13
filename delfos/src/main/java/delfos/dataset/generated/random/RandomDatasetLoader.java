@@ -45,7 +45,7 @@ import java.util.stream.Collectors;
  * <p>
  * No usar en sistemas reales.
  *
- * @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  * @version 1.0 31-Jan-2013
  */
 public class RandomDatasetLoader extends DatasetLoaderAbstract<RatingWithTimestamp> implements ContentDatasetLoader, UsersDatasetLoader, SeedHolder {

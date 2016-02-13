@@ -26,7 +26,7 @@ import static delfos.main.managers.database.DatabaseManager.MANAGE_RATING_DATABA
 
 /**
  *
- * @author jcastro
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  */
 public class AddUser extends DatabaseCaseUseSubManager {
 

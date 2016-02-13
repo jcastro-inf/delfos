@@ -23,7 +23,7 @@ import delfos.common.parameters.ParameterOwner;
  * Excepción que se lanza cuando se detecta que el valor de dos parámetros de un
  * {@link ParameterOwner} son incompatibles.
  *
-* @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 1.0 9-Mayo-2013
  */

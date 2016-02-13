@@ -32,7 +32,7 @@ import delfos.common.exceptions.CouldNotComputeSimilarity;
  * either sample. NOTA: Se utiliza solo para comparar vectores de bits (o
  * derivados de éstos).
  *
- * @author Jorge Castro Gallardo (Universidad de Jaén, Sinbad2)
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 1.0 Unknown date
  * @version 1.1 20-Mar-2013

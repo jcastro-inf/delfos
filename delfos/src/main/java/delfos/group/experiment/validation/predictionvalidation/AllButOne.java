@@ -38,7 +38,7 @@ import delfos.group.groupsofusers.GroupOfUsers;
  * predicciones por grupo, donde n es el número de productos valorados por el
  * grupo.
  *
- * @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 1.0 (10-12-2012)
  */

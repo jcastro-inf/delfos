@@ -28,7 +28,7 @@ import javax.swing.table.TableRowSorter;
 /**
  * Table to show the recommendations, initially sorted by prediction.
  *
- * @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  */
 public class RecommendationsTable {
 

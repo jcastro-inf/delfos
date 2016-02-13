@@ -21,7 +21,7 @@ import delfos.rs.recommendation.Recommendations;
 import javax.swing.table.AbstractTableModel;
 
 /**
- * @author jcastro
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  */
 public class RecommendationsJTableModel extends AbstractTableModel {
 

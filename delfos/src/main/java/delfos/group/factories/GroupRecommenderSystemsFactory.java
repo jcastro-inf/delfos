@@ -39,7 +39,7 @@ import delfos.group.grs.svd.SVDforGroup_ratingsAggregation;
 /**
  * Factoría para los sistemas de recomendación a grupos.
  *
- * @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  * @version 1.0 09-May-2013
  */
 public class GroupRecommenderSystemsFactory extends Factory<GroupRecommenderSystem> {

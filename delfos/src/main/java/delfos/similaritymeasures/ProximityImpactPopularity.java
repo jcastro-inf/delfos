@@ -31,7 +31,7 @@ import delfos.rs.collaborativefiltering.knn.memorybased.KnnMemoryBasedCFRS;
  * Clase que implementa la medida del coseno para realizar una medida de
  * similitud de dos vectores
  *
- * @author Jorge Castro Gallardo (Universidad de Jaén, Sinbad2)
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  */
 public class ProximityImpactPopularity extends SimilarityMeasureAdapter implements CollaborativeSimilarityMeasure {
 

@@ -19,7 +19,7 @@ package delfos.common.datastructures.queue;
 /**
  * The higher the priority, the better.
  *
-* @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  * @param <KeyType>
  */
 public class PriorityItem<KeyType> implements Comparable<PriorityItem<KeyType>> {

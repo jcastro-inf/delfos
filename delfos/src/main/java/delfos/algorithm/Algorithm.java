@@ -23,7 +23,7 @@ import delfos.experiment.SeedHolder;
  * Interfaz que define los métodos que un experimento debe implementar para la
  * notificación de su progreso de ejecución.
  *
-* @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 1.0 17-Julio-2013
  */

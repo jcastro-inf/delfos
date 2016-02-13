@@ -26,7 +26,7 @@ import java.util.List;
 
 /**
  *
- * @author Jorge Castro Gallardo (Universidad de Jaén, Sinbad2)
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 19-Noviembre-2013
  */

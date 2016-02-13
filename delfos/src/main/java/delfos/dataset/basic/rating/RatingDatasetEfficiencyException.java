@@ -19,7 +19,7 @@ package delfos.dataset.basic.rating;
 /**
  *
  * @version 04-sep-2014
-* @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  */
 public class RatingDatasetEfficiencyException extends Exception {
 

@@ -53,7 +53,7 @@ import org.jdom2.Element;
  * @version 1.0 (10-01-2012)
  * @version 1.1 (11-01-2012)
  *
- * @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @see AreaUnderROC
  */

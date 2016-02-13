@@ -70,7 +70,7 @@ import java.util.TreeSet;
  *
  * </ul>
  *
- * @author Jorge Castro Gallardo (Universidad de Jaén, Sinbad2)
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 1.1 21-Jan-2013
  * @version 2.1 9-Octubre-2013 Incorporación del método makeUserModel

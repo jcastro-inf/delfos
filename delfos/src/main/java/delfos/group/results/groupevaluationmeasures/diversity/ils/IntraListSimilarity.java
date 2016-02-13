@@ -50,7 +50,7 @@ import org.jdom2.Element;
  * measure is intended to capture the diversity of the recommender. A lower
  * value means that the recommender generates more diverse recommendations.
  *
- * @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  */
 public class IntraListSimilarity extends GroupEvaluationMeasure {

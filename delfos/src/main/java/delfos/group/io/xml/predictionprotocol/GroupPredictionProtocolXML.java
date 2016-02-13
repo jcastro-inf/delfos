@@ -25,7 +25,7 @@ import delfos.group.experiment.validation.predictionvalidation.GroupPredictionPr
  * Clase para realizar el almacenamiento/recuperación de protocolos de
  * predicción para grupos.
  *
-* @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 9-Enero-2014
  */

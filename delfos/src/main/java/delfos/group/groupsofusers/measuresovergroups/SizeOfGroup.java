@@ -24,7 +24,7 @@ import delfos.group.groupsofusers.GroupOfUsers;
 /**
  * Clase para calcular número de miembros del grupo.
  *
-* @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  * @version 1.0 03-Junio-2013
  */
 public class SizeOfGroup extends GroupMeasureAdapter {

@@ -32,7 +32,7 @@ import java.util.TreeMap;
  * Clase encargada de almacenar el modelo de recomendación generado por el
  * sistem {@link KnnModelBasedCFRS}.
  *
- * @author Jorge Castro Gallardo (Universidad de Jaén, Sinbad2)
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 1.0 Unknown date
  * @version 2.0 28-Mayo-2013 Se ha cambiado la persistencia, ahora la realiza el

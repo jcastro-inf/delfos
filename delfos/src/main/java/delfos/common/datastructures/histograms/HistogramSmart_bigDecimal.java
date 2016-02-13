@@ -29,7 +29,7 @@ import java.util.Locale;
 /**
  * Histograma con precisión exacta.
  *
- * @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 2-julio-2014
  */

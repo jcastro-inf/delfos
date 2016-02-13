@@ -36,7 +36,7 @@ import java.util.Random;
  * par de grupos generados (de una vez) es siempre el conjunto vacío.
  *
  * @version 10-abr-2014
- * @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  */
 public class SimilarMembers extends GroupFormationTechnique {
 

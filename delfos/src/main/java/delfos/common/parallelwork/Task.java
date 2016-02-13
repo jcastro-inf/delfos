@@ -21,7 +21,7 @@ import java.io.Serializable;
 /**
  *
  * @version 20-may-2014
- * @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @deprecated The parallel execution should be done using
  * {@link java.util.function.Function}, by iterating over the list of the

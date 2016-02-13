@@ -57,7 +57,7 @@ import java.util.TreeMap;
  * algoritmo de filtrado de las predicciones de los usuarios. Finalmente agrega
  * con una función de agregación.
  *
- * @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  * @version 1.0 22-May-2013
  */
 public class GroupRecommenderSystemWithPostFilter extends GroupRecommenderSystemAdapter<SingleRecommendationModel, GroupOfUsers> {

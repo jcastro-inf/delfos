@@ -24,7 +24,7 @@ import delfos.common.parameters.restriction.CannotParseParameterValue;
 import delfos.common.parameters.restriction.ParameterOwnerRestriction;
 
 /**
-* @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  * @version 1.0 13-Mayo-2013
  */
 public class ParameterOwnerParameterXML {

@@ -37,7 +37,7 @@ import static delfos.io.csv.dataset.rating.RatingsDatasetToCSV.RATING_COLUMN_NAM
 /**
  * Clase para escribir un dataset de valoraciones a fichero csv.
  *
-* @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 1.0 04-Mar-2013
  */

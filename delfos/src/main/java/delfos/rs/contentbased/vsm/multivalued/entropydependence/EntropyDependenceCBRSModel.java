@@ -25,7 +25,7 @@ import delfos.dataset.basic.features.Feature;
 
 /**
  *
- * @author Jorge Castro Gallardo (Universidad de Jaén, Sinbad2)
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 14-oct-2013
  */

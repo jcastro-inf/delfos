@@ -54,7 +54,7 @@ import org.jdom2.output.XMLOutputter;
 
 /**
  *
- * @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  */
 public class GroupRecommendationManager {
 

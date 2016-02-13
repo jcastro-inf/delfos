@@ -34,7 +34,7 @@ import delfos.experiment.SeedHolder;
  * sus consultas para obtener valores aleatorios. De esta manera se garantiza
  * que distintos algoritmos utilicen la misma muestra aleatoria.
  *
-* @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  * @version 1.0 (19 Octubre 2011)
  */
 public abstract class ValidationTechnique extends ParameterOwnerAdapter implements SeedHolder {

@@ -18,7 +18,7 @@ package delfos.dataset.basic.item;
 
 /**
  *
-* @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 27-sep-2013
  */

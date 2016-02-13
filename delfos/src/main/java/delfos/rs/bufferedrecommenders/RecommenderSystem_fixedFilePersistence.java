@@ -48,7 +48,7 @@ import java.util.TreeSet;
  * utilice el mismo modelo de recomendación, que se almacena en persistencia en
  * ficheros.
  *
- * @author Jorge Castro Gallardo (Sinbad2,Universidad de Jaén)
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  * @version 1.0 17-Jun-2013
  * @param <RecommendationModel> Modelo de recomendación
  */

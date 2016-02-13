@@ -23,7 +23,7 @@ import javax.swing.JTable;
  * también qué características están activos y el orden de mostrado. Esta clase
  * se utiliza en la generación del diagrama de coordenadas paralelas
  *
- * @author Jorge Castro Gallardo (Universidad de Jaén, Sinbad2)
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 1.0 Unknown date
  * @version 1.1 20-Mar-2013

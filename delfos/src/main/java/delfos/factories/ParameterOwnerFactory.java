@@ -28,7 +28,7 @@ import java.util.List;
 /**
  * Factoría de todos los elementos de tipo ParameterOwner
  *
- * @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  * @version 1.0 15-May-2013
  */
 public class ParameterOwnerFactory {

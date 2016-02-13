@@ -41,7 +41,7 @@ import java.util.TreeMap;
  * {@link delfos.Results.EvaluationMeasures.RatingPrediction.RMSE} para
  * recomendaciones individuales.
  *
- * @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 1.0 (22-01-2013)
  * @see delfos.Results.EvaluationMeasures.RatingPrediction.MAE_ForGroups

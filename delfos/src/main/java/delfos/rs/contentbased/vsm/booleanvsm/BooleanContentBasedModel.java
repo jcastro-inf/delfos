@@ -26,7 +26,7 @@ import delfos.rs.contentbased.vsm.booleanvsm.profile.BooleanUserProfile;
  * modelado booleano de los productos y perfiles de usuarios calculados a partir
  * de la suma.
  *
- * @author Jorge Castro Gallardo (Sinbad2,Universidad de Jaén)
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  * @version 1.0 28-May-2013
  */
 public class BooleanContentBasedModel implements Serializable {

@@ -32,7 +32,7 @@ import java.util.TreeMap;
  * @version 1.0 (Unknow Date)
  * @version 1.1 (28 de Febrero de 2013)
  *
- * @author Jorge Castro Gallardo (Universidad de Jaén, Sinbad2)
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  */
 public class Neighbor implements Comparable<Neighbor>, Serializable {
 

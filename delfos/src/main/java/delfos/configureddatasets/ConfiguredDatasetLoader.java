@@ -34,7 +34,7 @@ import delfos.dataset.basic.user.UsersDataset;
 /**
  *
  * @version 22-abr-2014
- * @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  */
 public class ConfiguredDatasetLoader extends DatasetLoaderAbstract<Rating> implements ContentDatasetLoader, UsersDatasetLoader {
 

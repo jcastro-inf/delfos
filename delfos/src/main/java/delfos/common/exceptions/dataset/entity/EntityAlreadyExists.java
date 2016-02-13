@@ -20,7 +20,7 @@ package delfos.common.exceptions.dataset.entity;
  * Excepción que se lanza al intentar añadir una entidad que ya existe (con
  * mismo identificador) a un {@link CollectionOfEntitiesWithFeatures}.
  *
-* @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 1.0 4-Octubre-2013
  */

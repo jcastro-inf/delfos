@@ -26,7 +26,7 @@ import java.util.TreeMap;
  *
  * @param <E> Tipo de los objetos que se guardan en el multiset.
  *
-* @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 1.1 26-Jan-2013 Se generaliza la clase.
  * @version 1.0 Unknow date

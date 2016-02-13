@@ -23,7 +23,7 @@ import delfos.dataset.basic.features.CollectionOfEntitiesWithFeatures;
  * Interfaz que define los métodos genéricos de un dataset que almacena los
  * datos de los usuarios de un sistema de recomendación.
  *
-* @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 16-sep-2013
  */

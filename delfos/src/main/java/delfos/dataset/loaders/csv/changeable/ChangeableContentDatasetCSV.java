@@ -34,7 +34,7 @@ import java.util.Set;
  * Implementa un dataset de contenido con persistencia sobre fichero CSV con la
  * posibilidad de modificar los productos del mismo.
  *
- * @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 16-sep-2013
  */

@@ -25,7 +25,7 @@ import java.util.Collection;
 /**
  *
  * @version 22-oct-2014
- * @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  */
 public class GroupRecommendation extends CaseUseModeWithSubManagers {
 

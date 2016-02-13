@@ -35,7 +35,7 @@ import java.io.FileNotFoundException;
 
 /**
  *
- * @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  */
 class BuildRecommendationModel extends CaseUseSubManager {
 

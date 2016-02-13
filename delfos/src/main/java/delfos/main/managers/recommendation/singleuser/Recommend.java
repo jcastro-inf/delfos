@@ -53,7 +53,7 @@ import java.util.Set;
 /**
  *
  * @version 20-oct-2014
- * @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  */
 class Recommend extends CaseUseSubManager {
 

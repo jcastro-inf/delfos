@@ -25,7 +25,7 @@ import delfos.dataset.basic.rating.Rating;
 /**
  *
  * @version 24-jul-2014
- * @author Jorge Castro Gallardo (Universidad de Jaén, Sinbad2)
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  */
 public class ParallelSVD_TrainSector_SingleTaskExecutor implements SingleTaskExecute<ParallelSVD_TrainSector_Task> {
 

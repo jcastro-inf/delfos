@@ -23,7 +23,7 @@ import java.util.Locale;
 
 /**
  *
- * @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 24-feb-2014
  */

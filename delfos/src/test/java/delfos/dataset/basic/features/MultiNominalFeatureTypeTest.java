@@ -25,7 +25,7 @@ import org.junit.Test;
  * Testeo el comportamiento de los datasets de contenido con múltiples valores
  * para un atributo. Ej: Una película tiene los dos géneros drama y horror;
  *
- * @author Jorge Castro Gallardo (Universidad de Jaén, Sinbad2)
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 12-mar-2014
  */

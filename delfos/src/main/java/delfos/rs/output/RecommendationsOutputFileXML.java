@@ -39,7 +39,7 @@ import org.jdom2.output.XMLOutputter;
  * que si su valor es 'userUserRecommendation', el nombre del fichero de
  * recomendaciones para el usuario 54 es 'userUserRecommendation.user_54.xml'.
  *
- * @author Jorge Castro Gallardo (Universidad de Jaén, Sinbad2)
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 28-oct-2013
  */

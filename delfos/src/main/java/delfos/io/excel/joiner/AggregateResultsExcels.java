@@ -39,7 +39,7 @@ import jxl.read.biff.BiffException;
 /**
  *
  * @version 24-jun-2014
- * @author Jorge Castro Gallardo (Universidad de Jaén, Sinbad2)
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  */
 public class AggregateResultsExcels {
 

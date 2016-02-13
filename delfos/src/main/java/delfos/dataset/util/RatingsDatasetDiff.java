@@ -32,7 +32,7 @@ import delfos.view.console.util.ConsoleColor;
 /**
  * Clase para calcular diferencias entre dos dataset de valoraciones.
  *
- * @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  * @version 18-feb-2015
  */
 public class RatingsDatasetDiff {

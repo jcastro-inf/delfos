@@ -15,7 +15,7 @@ import org.junit.Test;
  * Test para evaluar el cálculo de la medida de cohesión del grupo a través de
  * una red de confianza.
  *
- * @author Jorge Castro Gallardo (Universidad de Jaén)
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  * @version 1.0 03-May-2013
  */
 public class FuzzyCliqueMeasureTest {

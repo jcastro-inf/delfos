@@ -9,7 +9,7 @@ import org.junit.Test;
 /**
  * Tests the case use for the initial configuration of the library.
  *
- * @author jcastro
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  */
 public class InitialConfigurationTest extends DelfosTest {
 

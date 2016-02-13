@@ -27,7 +27,7 @@ import delfos.io.xml.parameterowner.ParameterOwnerXML;
  * Clase para realizar la entrada/salida a XML de los sistemas de recomendación
  * para grupos.
  *
-* @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 9-Enero-2014
  */

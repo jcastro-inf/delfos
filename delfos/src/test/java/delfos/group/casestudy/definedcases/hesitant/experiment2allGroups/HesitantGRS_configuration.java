@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 
 /**
  *
- * @author jcastro
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  */
 public class HesitantGRS_configuration {
 

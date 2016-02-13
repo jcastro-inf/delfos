@@ -30,7 +30,7 @@ import delfos.common.parameters.ParameterOwnerType;
  * Métodos que una clase que implemente una técnica de predicción de ratings
  * debe implementar.
  *
- * @author Jorge Castro Gallardo (Universidad de Jaén, Sinbad2)
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 1.0 Unknown date
  * @version 1.1 (18-Feb-2013)

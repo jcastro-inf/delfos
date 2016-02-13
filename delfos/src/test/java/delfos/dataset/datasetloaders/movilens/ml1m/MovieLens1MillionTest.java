@@ -11,7 +11,7 @@ import delfos.dataset.basic.user.UsersDataset;
 
 /**
  *
- * @author Jorge Castro Gallardo (Universidad de Jaén, Sinbad2)
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  */
 public class MovieLens1MillionTest extends DelfosTest {
 

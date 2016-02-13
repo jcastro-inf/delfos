@@ -46,7 +46,7 @@ import javax.swing.JTable;
 /**
  * Crea un CSV a partir de los resultados de varios casos de uso ejecutados.
  *
- * @author Jorge Castro Gallardo (Universidad de Jaén, Sinbad2)
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 19-Noviembre-2013
  */

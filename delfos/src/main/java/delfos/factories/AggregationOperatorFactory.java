@@ -38,7 +38,7 @@ import delfos.common.aggregationoperators.TwoValuesAggregator;
  * Factoría de operaciones de agregación. Conoce todos los operadores de
  * agregación de esta biblioteca y es capaz de recuperar por nombre.
  *
-* @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 1.0 Unknown date
  * @version 1.1 (1 de Marzo de 2013)

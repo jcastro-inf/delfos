@@ -45,7 +45,7 @@ import org.jdom2.Element;
  * Usa como test la media de valoraciones de test de los usuarios sobre el
  * producto que se predice.
  *
- * @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 1.0 15-01-2013
  */

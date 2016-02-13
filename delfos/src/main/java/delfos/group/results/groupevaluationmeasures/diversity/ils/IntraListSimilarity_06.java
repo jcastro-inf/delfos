@@ -18,7 +18,7 @@ package delfos.group.results.groupevaluationmeasures.diversity.ils;
 
 /**
  *
- * @author jcastro
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  */
 public class IntraListSimilarity_06 extends IntraListSimilarity {
 

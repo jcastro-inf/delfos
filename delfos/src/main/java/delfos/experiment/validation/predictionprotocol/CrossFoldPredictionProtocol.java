@@ -30,7 +30,7 @@ import java.util.TreeSet;
 /**
  * Esta técnica aplica la validación cruzada para la predicción de valoraciones.
  *
- * @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  */
 public class CrossFoldPredictionProtocol extends PredictionProtocol {
 

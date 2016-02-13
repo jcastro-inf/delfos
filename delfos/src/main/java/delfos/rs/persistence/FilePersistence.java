@@ -30,7 +30,7 @@ import delfos.common.parameters.restriction.StringParameter;
  * Objeto que genera el archivo en que se almacena el modelo generado por un
  * sistema de recomendación.
  *
- * @author Jorge Castro Gallardo (Universidad de Jaén, Sinbad2)
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 1.0 Unknown date
  * @version 1.1 15-Mar-2013 Añadida la posibilidad de que los archivos generados

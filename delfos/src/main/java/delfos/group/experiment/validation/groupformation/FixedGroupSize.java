@@ -36,7 +36,7 @@ import delfos.group.groupsofusers.GroupOfUsers;
  * Validación de grupos que genera grupos de usuarios, utilizando miembros
  * elegidos aleatoriamente, de un tamaño fijo.
  *
-* @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  */
 public class FixedGroupSize extends GroupFormationTechnique {
 

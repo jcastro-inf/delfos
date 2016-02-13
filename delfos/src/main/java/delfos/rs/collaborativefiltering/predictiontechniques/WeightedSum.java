@@ -27,7 +27,7 @@ import delfos.common.exceptions.CouldNotPredictRating;
  * invocan los métodos que carecen de pesos ( <code>weights</code>) supone que
  * los datos tienen el mismo peso
  *
- * @author Jorge Castro Gallardo (Universidad de Jaén, Sinbad2)
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 1.0 Unknown date
  * @version 1.1 (18-Feb-2013)

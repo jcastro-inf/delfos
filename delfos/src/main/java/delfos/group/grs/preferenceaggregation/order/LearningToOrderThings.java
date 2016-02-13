@@ -23,7 +23,7 @@ import java.util.Set;
 
 /**
  *
-* @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  */
 public class LearningToOrderThings {
 

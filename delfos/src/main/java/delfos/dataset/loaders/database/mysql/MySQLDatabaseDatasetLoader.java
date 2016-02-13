@@ -24,7 +24,7 @@ import delfos.common.parameters.restriction.StringParameter;
 
 /**
  *
-* @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 28-Noviembre-2013
  */

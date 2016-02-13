@@ -28,7 +28,7 @@ import delfos.common.exceptions.dataset.users.UserNotFound;
  * Implementa la técnica de predicción de la suma ponderada con normalización de
  * ratings en base a la media de los usuarios
  *
- * @author Jorge Castro Gallardo (Universidad de Jaén, Sinbad2)
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 1.0 Unknown date
  * @version 1.1 (18-Feb-2013)

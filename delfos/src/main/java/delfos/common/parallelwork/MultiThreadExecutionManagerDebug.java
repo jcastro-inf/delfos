@@ -23,7 +23,7 @@ import java.util.Collection;
 
 /**
  *
- * @author jcastro
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  * @param <TaskType>
  *
  * @deprecated The parallel execution should be done using

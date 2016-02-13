@@ -60,7 +60,7 @@ import java.util.logging.Logger;
 /**
  * Dataset loader para cargar los datasets de MovieLens llamados ml-100k.
  *
- * @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 24-Julio-2013
  */

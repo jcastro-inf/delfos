@@ -27,7 +27,7 @@ import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
  * Clase que implementa el método validación todos menos 1. Solo tiene sentido
  * aplicar este método de validación en el sistema {@link KnnMemoryBasedCFRS}
  *
-* @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 1.0 (19 Octubre 2011)
  */

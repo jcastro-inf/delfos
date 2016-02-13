@@ -36,7 +36,7 @@ import java.util.TreeSet;
  * características u obtener los valores distintos valores que los objetos que
  * contiene tienen en una característica dada.
  *
- * @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 18-sep-2013
  * @param <Entity>

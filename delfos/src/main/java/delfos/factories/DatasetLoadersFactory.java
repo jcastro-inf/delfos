@@ -35,7 +35,7 @@ import delfos.dataset.papertestdatasets.ImplicitTrustDataset;
  * Factoría que conoce todos los dataset de los que dispone la biblioteca de
  * recomendación.
  *
-* @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 1.1 24-Jan-2013
  * @version 1.0 Unknow date

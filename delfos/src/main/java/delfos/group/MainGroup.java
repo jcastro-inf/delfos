@@ -57,7 +57,7 @@ import java.util.logging.Logger;
  * recomendación a grupos implementada hasta el momento. No proporciona interfaz
  * y las opciones son introducidas usando el método <b>Hard coded</b>.
  *
- * @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  */
 public class MainGroup {
 

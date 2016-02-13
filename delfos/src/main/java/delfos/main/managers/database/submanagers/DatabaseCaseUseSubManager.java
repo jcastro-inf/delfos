@@ -25,7 +25,7 @@ import static delfos.main.managers.database.DatabaseManager.extractChangeableDat
 /**
  *
  * @version 21-oct-2014
- * @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  */
 public abstract class DatabaseCaseUseSubManager extends CaseUseSubManager {
 

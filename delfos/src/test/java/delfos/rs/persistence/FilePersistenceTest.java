@@ -38,7 +38,7 @@ import org.junit.Test;
  * <p>
  * NOTA: Sólo comprueba que funciona con la configuración por defecto.
  *
- * @author Jorge Castro Gallardo (Universidad de Jaén, Sinbad2)
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 1.0 04-Mar-2013
  */

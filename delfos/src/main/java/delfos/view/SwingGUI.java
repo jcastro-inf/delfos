@@ -24,7 +24,7 @@ import delfos.view.recommendation.RecommendationWindow;
  * Clase que contiene los métodos para utilizar la biblioteca de recomendación
  * con una interfaz en swing.
  *
- * @author Jorge Castro Gallardo (Universidad de Jaén, Sinbad2)
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 1.0 Unknown date
  *

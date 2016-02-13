@@ -61,7 +61,7 @@ import java.util.TreeMap;
  * La técnica utilizada para la agregación de preferencias es calcular la media
  * de las valoraciones de los usuarios en cada producto
  *
- * @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version Unknown date.
  * @version 12-Enero-2014

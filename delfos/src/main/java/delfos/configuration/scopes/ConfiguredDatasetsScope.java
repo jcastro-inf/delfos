@@ -39,7 +39,7 @@ import org.jdom2.output.XMLOutputter;
 
 /**
  *
- * @author jcastro
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  */
 public class ConfiguredDatasetsScope extends ConfigurationScope {
 

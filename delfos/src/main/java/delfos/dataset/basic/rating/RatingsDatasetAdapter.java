@@ -34,7 +34,7 @@ import delfos.dataset.basic.rating.domain.Domain;
 /**
  * Clase que almacena un datasets de ratings. (idUser,idItem,Rating)
  *
- * @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  * @version 1.0 (19 Octubre 2011)
  * @param <RatingType>
  */

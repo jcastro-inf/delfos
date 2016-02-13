@@ -37,7 +37,7 @@ import delfos.group.casestudy.definedcases.jrs2014.PearsonWithPenalty;
  * Calcula el grafo entre usuarios utilizando la medida Jaccard, con el número
  * de valoraciones en común de los usuarios.
  *
- * @author Jorge Castro Gallardo (Sinbad2,Universidad de Jaén)
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  * @version 1.0 19-Julio-2013
  */
 public class PearsonCorrelationWithPenalty extends WeightedGraphCalculation<Integer> {

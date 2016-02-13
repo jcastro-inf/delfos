@@ -50,7 +50,7 @@ import jxl.Workbook;
  * información sobre el contenido de los items, por lo que se genera un dataset
  * de contenido al cargar el dataset de ratings.
  *
- * @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  */
 public class Jester extends DatasetLoaderAbstract {
 

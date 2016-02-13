@@ -7,7 +7,7 @@ import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
 
 /**
  *
- * @author Jorge Castro Gallardo (Universidad de Jaén, Sinbad2)
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 09-oct-2013
  */

@@ -25,7 +25,7 @@ import delfos.rs.trustbased.WeightedGraphAdapter;
 
 /**
  *
-* @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 04-mar-2014
  */

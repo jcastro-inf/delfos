@@ -26,7 +26,7 @@ import java.util.TreeMap;
 import org.jdom2.Element;
 
 /**
- * @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  */
 public class RecommendationsWithNeighborToXML {
 

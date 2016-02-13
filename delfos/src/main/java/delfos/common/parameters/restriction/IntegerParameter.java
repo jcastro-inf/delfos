@@ -26,7 +26,7 @@ import delfos.common.parameters.ParameterOwner;
  * (representable con un {@link Integer}) entre un valor mínimo y un valor
  * máximo dados.
  *
-* @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  * @version 1.0 (Unknow date)
  * @version 1.1 18-Jan-2013
  */

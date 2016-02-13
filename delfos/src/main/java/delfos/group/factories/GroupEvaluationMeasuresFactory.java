@@ -49,7 +49,7 @@ import delfos.group.results.groupevaluationmeasures.printers.PrintTestSet;
  * Clase que conoce todas las medidas de evaluación a grupos y permite
  * recuperarlas para su uso en los casos de estudio.
  *
- * @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 1.1 26-Jan-2013
  */

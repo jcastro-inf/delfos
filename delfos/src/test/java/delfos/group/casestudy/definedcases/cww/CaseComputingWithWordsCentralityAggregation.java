@@ -29,7 +29,7 @@ import org.junit.Test;
 /**
  * Crea los experimentos del congreso FLINS 2014.
  *
- * @author Jorge Castro Gallardo (Universidad de Jaén, Sinbad2)
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 22-ene-2014
  */

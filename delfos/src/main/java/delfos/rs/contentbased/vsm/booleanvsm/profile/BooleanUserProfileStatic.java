@@ -36,7 +36,7 @@ import delfos.dataset.basic.features.Feature;
  * {@link String}, si es la característica es numérico se convierte a cadena) y
  * el número asignado al mismo.
  *
- * @author Jorge Castro Gallardo (Universidad de Jaén, Sinbad2)
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 1.0 Unknown date
  * @version 1.1 (21-Feb-2013) Convertido en objeto serializable. Eliminado el

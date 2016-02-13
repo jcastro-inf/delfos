@@ -29,7 +29,7 @@ import delfos.common.parallelwork.SingleTaskExecute;
 /**
  * Ejecuta la propagación de confianza entre dos usuarios dados.
  *
- * @author Jorge Castro Gallardo (Universidad de Jaén, Sinbad2)
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 04-sep-2013
  */

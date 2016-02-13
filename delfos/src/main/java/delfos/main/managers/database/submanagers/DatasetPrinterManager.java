@@ -39,7 +39,7 @@ import java.util.logging.Logger;
 
 /**
  *
- * @author jcastro
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  */
 public class DatasetPrinterManager extends DatabaseCaseUseSubManager {
 

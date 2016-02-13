@@ -45,7 +45,7 @@ import delfos.common.parameters.restriction.FloatParameter;
  * Challenge on Context-Aware Movie Recommendation Pages 23-28 ACM New York, NY,
  * USA ©2011
  *
-* @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  * @version 1.0 05-Julio-2013
  */
 public class SwitchingAggregationLeastMisseryAndAverage extends ParameterOwnerAdapter implements UserRatingsAggregation {

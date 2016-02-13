@@ -29,7 +29,7 @@ import java.util.TreeSet;
  * utilizan todos los ratings del usuario en la predicción excepto el que se
  * desea predecir.
  *
- * @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  */
 public class AllButOne extends PredictionProtocol {
 

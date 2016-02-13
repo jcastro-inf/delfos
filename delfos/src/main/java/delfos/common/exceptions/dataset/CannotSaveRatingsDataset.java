@@ -22,7 +22,7 @@ package delfos.common.exceptions.dataset;
  * en el que se intenta escribir está protegido o que no se encuentra la base de
  * datos en la que se almacena.
  *
-* @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 18-sep-2013
  * @version 30-Octubre-2013 Ahora es una excepción Unchecked.

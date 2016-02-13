@@ -26,7 +26,7 @@ import delfos.rs.contentbased.vsm.booleanvsm.profile.BooleanUserProfile;
  * Provee los métodos para convertir un perfil de usuario de sistema de
  * recomendación basado en contenido en un vector de valores.
  *
- * @author Jorge Castro Gallardo (Universidad de Jaén, Sinbad2)
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 1.0 01-Mar-2013
  * @deprecated 10-Octubre-2013 Ya no se hace de esta manera, sino que se

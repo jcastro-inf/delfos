@@ -25,7 +25,7 @@ import java.io.Serializable;
  *
  * @see MeanRatingRS
  *
- * @author Jorge Castro Gallardo (Universidad de Jaén, Sinbad2)
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  * @version 1.0 21-Feb-2013
  */
 public class MeanRating implements Serializable, Comparable<MeanRating> {

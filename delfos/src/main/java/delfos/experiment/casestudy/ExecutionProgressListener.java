@@ -20,7 +20,7 @@ package delfos.experiment.casestudy;
  * Define los métodos que un listener del proceso de ejecución de una ejecución
  * debe implementar para ser notificado de los cambios en el mismo.
  *
-* @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  */
 public interface ExecutionProgressListener {
 

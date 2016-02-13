@@ -33,7 +33,7 @@ import delfos.similaritymeasures.SimilarityMeasureAdapter;
 /**
  *
  * @version 08-may-2014
- * @author Jorge Castro Gallardo (Universidad de Jaén, Sinbad2)
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  */
 public class UserUserSimilarityWrapper extends SimilarityMeasureAdapter implements UserUserSimilarity {
 

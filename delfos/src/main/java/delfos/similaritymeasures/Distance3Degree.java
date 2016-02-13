@@ -23,7 +23,7 @@ import java.util.List;
  * Distancia de grado 3, similar a la distancia euclidea pero usando las
  * potencias al cubo en vez de al cuadrado.
  *
- * @author Jorge Castro Gallardo (Universidad de Jaén, Sinbad2)
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 1.0 Unknown date
  * @version 1.1 20-Mar-2013

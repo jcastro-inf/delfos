@@ -22,7 +22,7 @@ import delfos.group.grs.preferenceaggregation.PreferenceOrder;
 
 /**
  *
-* @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  */
 public class GroupTotalOrder implements Preff {
 

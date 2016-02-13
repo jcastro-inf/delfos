@@ -32,7 +32,7 @@ import delfos.group.groupsofusers.GroupOfUsers;
  * Recomendacion de productos de multiples usos: Se pueden recomendar productos
  * que ya se hayan experimentado
  *
-* @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  */
 public abstract class RecomendableItemTechnique {
 

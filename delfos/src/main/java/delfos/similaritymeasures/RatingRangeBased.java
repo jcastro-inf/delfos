@@ -34,7 +34,7 @@ import delfos.rs.collaborativefiltering.knn.memorybased.KnnMemoryBasedCFRS;
  * Soojung Lee Keywords: similarity measure; web personalization; collaborative
  * filtering; recommender system
  *
- * @author Jorge Castro Gallardo (Universidad de Jaén, Sinbad2)
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  */
 public class RatingRangeBased extends SimilarityMeasureAdapter implements CollaborativeSimilarityMeasure {
 

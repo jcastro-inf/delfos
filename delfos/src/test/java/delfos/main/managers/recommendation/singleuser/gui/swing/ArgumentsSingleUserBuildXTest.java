@@ -20,7 +20,7 @@ import org.junit.Test;
 
 /**
  *
- * @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  */
 public class ArgumentsSingleUserBuildXTest extends DelfosTest {
 

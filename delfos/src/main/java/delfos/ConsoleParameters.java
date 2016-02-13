@@ -32,7 +32,7 @@ import java.util.TreeSet;
  * Guarda los parámetros definidos en una estructura para que sean fácilmente
  * accesibles en el codigo de una aplicación
  *
- * @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  */
 public class ConsoleParameters {
 

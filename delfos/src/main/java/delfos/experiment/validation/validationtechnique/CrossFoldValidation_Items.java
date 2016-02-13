@@ -38,7 +38,7 @@ import delfos.dataset.storage.validationdatasets.PairOfTrainTestRatingsDataset;
  * en productos (las particiones las hace por productos, no por ratings o por
  * usuarios)
  *
-* @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  * @version 1.0 (19 Octubre 2011)
  */
 public class CrossFoldValidation_Items extends ValidationTechnique {

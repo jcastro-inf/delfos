@@ -48,7 +48,7 @@ import org.jdom2.JDOMException;
  * Case use to joinAndWrite many excel of many experiment in a single one.
  *
  * @version 21-oct-2014
- * @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  */
 public class XMLJoin extends CaseUseMode {
 

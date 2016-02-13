@@ -48,7 +48,7 @@ import delfos.dataset.storage.validationdatasets.PairOfTrainTestRatingsDataset;
  *
  *
  *
-* @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 1.0 (19 Octubre 2011)
  * @version 1.1 (18-Jan-2013)

@@ -22,7 +22,7 @@ import java.io.File;
  * Excepción que se lanza cuando no se encuentra el archivo que almacena el
  * modelo generado por un sistema de recomendación
  *
-* @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 1.0 Unknown date
  * @version 1.1 20-Mar-2103

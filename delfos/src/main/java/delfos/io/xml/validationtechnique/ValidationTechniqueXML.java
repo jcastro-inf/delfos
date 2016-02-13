@@ -25,7 +25,7 @@ import delfos.common.parameters.ParameterOwner;
  * Clase para realizar el almacenamiento/recuperación de técnicas de validación
  * en archivos XML.
  *
-* @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 15-Noviembre-2013
  */

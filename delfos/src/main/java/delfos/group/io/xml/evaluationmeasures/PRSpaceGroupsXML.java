@@ -25,7 +25,7 @@ import delfos.group.results.groupevaluationmeasures.precisionrecall.PRSpaceGroup
 
 /**
  *
-* @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  * @version 1.0 22-Jan-2013
  */
 public class PRSpaceGroupsXML {

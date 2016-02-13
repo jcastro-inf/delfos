@@ -25,7 +25,7 @@ import delfos.rs.RecommenderSystemAdapter;
  * recomendación híbrido, es decir, que combina el funcionamiento de varios
  * sistemas de recomendación básicos.
  *
- * @author Jorge Castro Gallardo (Universidad de Jaén, Sinbad2)
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 1.1 21-Jan-2013
  * @version 1.0 Unknow date

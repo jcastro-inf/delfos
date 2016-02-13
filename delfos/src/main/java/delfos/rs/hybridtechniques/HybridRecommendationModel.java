@@ -20,7 +20,7 @@ import java.io.Serializable;
 
 /**
  *
- * @author Jorge Castro Gallardo (Sinbad2,Universidad de Jaén)
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  * @version 1.0 28-May-2013
  */
 public class HybridRecommendationModel implements Serializable {

@@ -29,7 +29,7 @@ import delfos.common.aggregationoperators.AggregationOperator;
 
 /**
  *
- * @author Jorge Castro Gallardo (Universidad de Jaén, Sinbad2)
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 14-oct-2013
  */

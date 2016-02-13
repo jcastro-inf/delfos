@@ -23,7 +23,7 @@ import delfos.rs.trustbased.WeightedGraphAdapter;
  * Interfaz que define los metodos del calculo de la centralidad de un usuario
  * en un grafo.
  *
-* @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 4-Marzo-2014
  * @param <Node>

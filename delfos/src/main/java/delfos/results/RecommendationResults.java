@@ -34,7 +34,7 @@ import java.util.TreeSet;
  * Guarda los resultados de una ejecución, es decir, las recomendaciones que se
  * hacen a todos los usuarios con el mismo conjunto de datos de training
  *
- * @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  * @version 1.0 (19 Octubre 2011)
  */
 public class RecommendationResults {

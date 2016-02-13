@@ -48,7 +48,7 @@ import java.util.Collection;
  * diseñadas para funcionar en sistemas de recomendación colaborativos
  * ({@link CollaborativeSimilarityMeasure}).
  *
- * @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 1.0 Unknown date
  * @version 1.1 20-Mar-2013

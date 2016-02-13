@@ -24,7 +24,7 @@ import java.util.stream.Collectors;
 
 /**
  *
- * @author Jorge Castro Gallardo (Sinbad2,Universidad de Jaén)
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  * @version 1.0 22-Mar-2013
  */
 public class MockDatasetLoader extends DatasetLoaderAbstract<Rating> implements ContentDatasetLoader {

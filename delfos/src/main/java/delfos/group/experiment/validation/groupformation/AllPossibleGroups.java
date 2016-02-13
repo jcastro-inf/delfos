@@ -31,7 +31,7 @@ import delfos.group.groupsofusers.GroupOfUsers;
  * Devuelve todos los grupos posibles del dataset. Si el dataset tiene más de 10
  * usuarios, no se puede aplicar esta validación.
  *
-* @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  * @version 1.0 24-May-2013
  */
 public class AllPossibleGroups extends GroupFormationTechnique {

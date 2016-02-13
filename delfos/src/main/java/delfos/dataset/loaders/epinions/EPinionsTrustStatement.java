@@ -20,7 +20,7 @@ import delfos.dataset.basic.trust.TrustStatement;
 
 /**
  *
-* @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 18-dic-2013
  */

@@ -20,7 +20,7 @@ import delfos.common.parallelwork.Parallelisation.Worker;
 
 /**
  *
- * @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  * @version 1.0 31-May-2013
  *
  * @deprecated The parallel execution should be done using

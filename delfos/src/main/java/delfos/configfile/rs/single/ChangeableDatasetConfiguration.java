@@ -24,7 +24,7 @@ import delfos.dataset.changeable.ChangeableDatasetLoaderAbstract;
  *
  * @see ChangeableDatasetLoaderAbstract
  *
-* @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 1.0 17-Septiembre-2013
  */

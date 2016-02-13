@@ -22,7 +22,7 @@ import java.io.Serializable;
  * Interfaz que define los métodos comunes a todos los periles de productos que
  * los sistemas de recomendación utilicen
  *
- * @author Jorge Castro Gallardo (Universidad de Jaén, Sinbad2)
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 1.0 9-Octubre-2013
  */

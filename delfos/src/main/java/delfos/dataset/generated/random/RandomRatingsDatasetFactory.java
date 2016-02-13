@@ -26,7 +26,7 @@ import delfos.dataset.basic.rating.domain.Domain;
 
 /**
  *
- * @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 5-marzo-2015
  */

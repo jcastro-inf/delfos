@@ -24,7 +24,7 @@ import java.util.Objects;
  * librería de recomendación para discernir si a un usuario le gusta un producto
  * o no
  *
- * @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  */
 public class RelevanceCriteria {
 

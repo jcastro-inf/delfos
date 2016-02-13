@@ -29,7 +29,7 @@ import delfos.group.groupsofusers.GroupOfUsers;
 /**
  * Clase para calcular la distancia máxima entre dos miembros del grupo.
  *
-* @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  * @version 1.0 03-May-2013
  */
 public class MaximumDistanceInGraph extends GroupMeasureAdapter {

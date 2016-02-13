@@ -30,7 +30,7 @@ import delfos.common.parameters.ParameterOwnerType;
 /**
  *
  * @version 02-jul-2014
-* @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  */
 public abstract class PenaltyFunction extends ParameterOwnerAdapter {
 

@@ -40,7 +40,7 @@ import delfos.dataset.basic.rating.RatingsDataset;
  * usuarios, número de productos, porcentaje de valoraciones definidas y rango
  * en que se da la valoración.
  *
-* @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 1.0 15-Mar-2013
  */

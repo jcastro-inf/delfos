@@ -28,7 +28,7 @@ import delfos.common.parameters.restriction.BooleanParameter;
  *
  * @version 1.0 (06/12/2012)
  *
- * @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  */
 public class BooleanParameterXML {
 

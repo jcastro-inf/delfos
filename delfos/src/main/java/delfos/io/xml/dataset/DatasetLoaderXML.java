@@ -31,7 +31,7 @@ import delfos.io.xml.parameterowner.parameter.ParameterXML;
 /**
  * Clase para efectuar la entrada/salida en XML de los dataset loader.
  *
-* @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  * @version 1.0 (06/12/2012)
  * @version 2.0 15-Noviembre-2013 Ya no están obsoletos los métodos, se han
  *

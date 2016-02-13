@@ -18,7 +18,7 @@ import org.junit.Test;
 
 /**
  *
- * @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  * @version 5-marzo-2015
  */
 public class RandomRatingsDatasetTest {

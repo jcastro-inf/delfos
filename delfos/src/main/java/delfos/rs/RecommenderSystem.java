@@ -35,7 +35,7 @@ import java.util.Set;
  * Interface of a single-user recommender system, which recommends items to
  * users. This interface provides the recommendation method.
  *
- * @author Jorge Castro Gallardo (Universidad de Jaén, Sinbad2)
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  * @version 1.0 08-Mar-2013
  * @version 2.0 26-Mayo-2013 Ahora los datasets se pasan por parámetro en cada
  * método.

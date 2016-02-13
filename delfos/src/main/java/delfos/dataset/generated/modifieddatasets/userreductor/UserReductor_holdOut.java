@@ -33,7 +33,7 @@ import java.util.TreeSet;
  * Envoltura de los datasets que se encarga de realizar una selección aleatoria
  * de entre todos los usuarios para trabajar con un dataset más pequeño
  *
- * @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 1.1 (21-01-2013) Ahora implementa de {@link RatingsDatasetAdapter}
  * @version 21-Enero-2014 Clase renombrada para claridad de su funcionamiento.

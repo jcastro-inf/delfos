@@ -64,7 +64,7 @@ import delfos.rs.trustbased.implicittrustcomputation.ShambourLu_UserBasedImplici
  * Sistema de recomendación a grupos de usuarios que agrega las valoraciones de
  * los miembros teniendo en cuenta la centralidad de los mismos.
  *
-* @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 12-Enero-2014
  */

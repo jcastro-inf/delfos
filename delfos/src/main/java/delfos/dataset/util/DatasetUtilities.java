@@ -31,7 +31,7 @@ import java.util.TreeMap;
 /**
  * Clase para transformar mapas de valoraciones
  *
- * @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  * @version 25-Agosto-2014
  */
 public class DatasetUtilities {

@@ -32,7 +32,7 @@ import org.junit.Test;
 
 /**
  *
- * @author Jorge Castro Gallardo (Universidad de Jaén, Sinbad2)
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  * @version 1.0 23-Jan-2013
  */
 public class AggregationOfIndividualRatingsTest extends DelfosTest {

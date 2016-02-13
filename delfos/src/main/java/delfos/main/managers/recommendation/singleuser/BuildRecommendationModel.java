@@ -37,7 +37,7 @@ import java.io.File;
 /**
  *
  * @version 20-oct-2014
- * @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  */
 class BuildRecommendationModel extends CaseUseSubManager {
 

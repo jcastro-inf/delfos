@@ -25,7 +25,7 @@ import java.util.Map;
  * Almacena, para cada item, su lista de items vecinos más cercanos junto con su
  * similitud.
  *
- * @author Jorge Castro Gallardo (Universidad de Jaén, Sinbad2).
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 1.0 28-Mayo-2013
  */

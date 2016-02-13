@@ -27,7 +27,7 @@ import delfos.recommendationcandidates.RecommendationCandidatesSelector;
 
 /**
  *
-* @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 3-Junio-2014
  */

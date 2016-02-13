@@ -52,7 +52,7 @@ import org.grouplens.lenskit.vectors.VectorEntry;
  * recomendación se calcula la similitud entre el perfil de usuario y el perfil
  * de cada producto no valorado.
  *
- * @author Jorge Castro Gallardo (Universidad de Jaén, Sinbad2)
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 1.0 (19 Octubre 2011)
  * @version 2.0 (28 de Febrero de 2013) Refactorización de las clases asociadas

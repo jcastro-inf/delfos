@@ -53,7 +53,7 @@ import delfos.group.groupsofusers.GroupOfUsers;
  * BENEFICIOS: Esta validación se puede aplicar incluso si los grupos formados
  * comparten usuarios, es decir, un usuario está en más de un grupo.
  *
- * @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 1.0 17-02-2015
  */

@@ -44,7 +44,7 @@ import org.jdom2.JDOMException;
 
 /**
  *
- * @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 27-ene-2014
  */

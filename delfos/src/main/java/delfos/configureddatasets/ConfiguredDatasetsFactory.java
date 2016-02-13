@@ -37,7 +37,7 @@ import javax.swing.JFrame;
  * Factoría que devuelve datasets ya creados, es decir, datasets que funcionan
  * correctamente en la máquina local.
  *
- * @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 13-mar-2014
  */

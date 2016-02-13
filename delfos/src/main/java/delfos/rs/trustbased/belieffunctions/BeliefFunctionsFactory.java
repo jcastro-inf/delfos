@@ -20,7 +20,7 @@ import delfos.factories.Factory;
 
 /**
  *
- * @author jcastro
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  */
 public class BeliefFunctionsFactory extends Factory<BeliefFunction> {
 

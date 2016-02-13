@@ -45,7 +45,7 @@ import org.jdom2.Element;
  * y especificidad en cada valor del umbral para generar una curva, cuyo área es
  * uno si el clasificador es perfecto y 0,5 si el clasificador es aleatorio.
  *
- * @author Jorge Castro Gallardo (Universidad de Jaén, Sinbad2)
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 1.0 Unknown date
  * @version 1.1 20-Mar-2013

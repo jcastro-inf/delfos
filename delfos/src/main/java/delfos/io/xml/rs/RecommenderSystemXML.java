@@ -30,7 +30,7 @@ import delfos.common.parameters.ParameterOwnerType;
  * <p>
  * Version 1.1: Se establecen los métodos de entrada/salida a XML.
  *
-* @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  * @version 1.0 (Unknow date)
  * @version 1.1 18-Jan-2013
  */

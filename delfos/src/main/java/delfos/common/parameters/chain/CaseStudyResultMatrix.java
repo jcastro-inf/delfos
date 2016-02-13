@@ -30,7 +30,7 @@ import java.util.TreeSet;
  * Stores in a tabular form the results of the groupCaseStudy for a given
  * evaluationMeasure.
  *
- * @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  */
 public class CaseStudyResultMatrix {

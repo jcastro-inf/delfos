@@ -24,7 +24,7 @@ import java.util.TreeSet;
 /**
  *
  * @version 07-may-2014
- * @author Jorge Castro Gallardo (Universidad de Jaén, Sinbad2)
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  */
 public class MockDatasetLoader extends CompleteDatasetLoaderAbstract_withTrust<Rating> {
 

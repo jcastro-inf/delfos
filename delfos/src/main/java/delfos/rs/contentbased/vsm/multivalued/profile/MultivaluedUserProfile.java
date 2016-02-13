@@ -24,7 +24,7 @@ import delfos.dataset.basic.features.Feature;
  * Define los métodos de un perfil de usuario multivaluado para sistemas de
  * recomendación basados en contenido.
  *
- * @author Jorge Castro Gallardo (Universidad de Jaén, Sinbad2)
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 1.0 01-Mar-2013
  */

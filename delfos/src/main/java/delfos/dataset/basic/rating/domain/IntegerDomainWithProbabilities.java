@@ -26,7 +26,7 @@ import delfos.common.Global;
  * Clase que se utiliza para describir en qué dominio discreto se da una
  * variable y con qué distribución de probabilidad.
  *
- * @author Jorge Castro Gallardo (Universidad de Jaén, Sinbad2)
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  */
 public class IntegerDomainWithProbabilities extends IntegerDomain {
 

@@ -45,7 +45,7 @@ import org.jdom2.Element;
  * {@link delfos.Results.EvaluationMeasures.RatingPrediction.MAE} para
  * recomendaciones individuales.
  *
- * @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 1.0 (10-01-2013)
  * @see delfos.Results.EvaluationMeasures.RatingPrediction.MAE

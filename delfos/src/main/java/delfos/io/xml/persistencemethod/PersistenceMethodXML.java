@@ -27,7 +27,7 @@ import delfos.rs.persistence.PersistenceMethod;
  * Clase para efectuar la entrada/salida de los distintos métodos de
  * persistencia
  *
-* @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 1.0 (06/12/2012)
  */

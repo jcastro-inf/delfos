@@ -31,7 +31,7 @@ import delfos.io.xml.parameterowner.parameter.ParameterOwnerParameterXML;
  * tipos pasados por parámetro en el constructor. De esta manera, se pueden
  * asignar sistemas de recomendación del mismo tipo o que hereden del mismo.
  *
-* @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  * @version 1.0 (Unknow date)
  * @version 1.1 18-Jan-2013
  */

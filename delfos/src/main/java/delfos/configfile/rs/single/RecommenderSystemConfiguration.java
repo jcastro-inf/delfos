@@ -31,7 +31,7 @@ import delfos.rs.persistence.PersistenceMethod;
  * @see
  * RecommenderSystemConfigurationFileParser#loadConfigFile(java.lang.String)
  *
- * @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  */
 public class RecommenderSystemConfiguration {
 

@@ -27,7 +27,7 @@ import java.util.TreeMap;
  * aleatorio para cada usuario, combinando la semilla indicada al algoritmo y su
  * id de usuario.
  *
- * @author Jorge Castro Gallardo (Universidad de Jaén, Sinbad2).
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 1.0 30-Julio-2013
  * @param <Key> Tipo de clave para cada usuario.

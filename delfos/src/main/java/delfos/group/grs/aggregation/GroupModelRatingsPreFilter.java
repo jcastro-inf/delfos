@@ -24,7 +24,7 @@ import delfos.dataset.basic.rating.Rating;
 /**
  * Modelo de un grupo que almacena las valoraciones filtradas de los miembros.
  *
-* @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  * @version 1.0 29-May-2013
  */
 public class GroupModelRatingsPreFilter implements Serializable {

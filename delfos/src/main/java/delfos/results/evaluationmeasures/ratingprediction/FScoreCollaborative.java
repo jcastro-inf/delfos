@@ -37,7 +37,7 @@ import delfos.common.parameters.restriction.FloatParameter;
  * decir, supone que el número de recomendaciones es, para cada usuario, las
  * predicciones que el criterio de relevancia clasifica como positivas.
  *
- * @author Jorge Castro Gallardo (Universidad de Jaén, Sinbad2)
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  * @version 1.0 (19 de Octubre 2011)
  */
 public class FScoreCollaborative extends EvaluationMeasure {

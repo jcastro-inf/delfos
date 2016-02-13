@@ -21,7 +21,7 @@ package delfos.common;
  * desde que se reinición y el tiempo desde que se marcó el último tiempo
  * parcial.
  *
-* @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  * 
  * @version 1.0 Unknown date
  * @version 1.1 20-Mar-2013

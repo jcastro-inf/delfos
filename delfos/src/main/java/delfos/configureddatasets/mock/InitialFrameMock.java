@@ -35,7 +35,7 @@ import delfos.view.configureddatasets.NewConfiguredDatasetDialog;
  * Ventana inicial en la que se muestran las opciones para utilizar la interfaz
  * de experimentación o de recomendación.
  *
-* @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 1.0 Unknown date
  * @version 1.1 20-Mar-2013

@@ -22,7 +22,7 @@ import delfos.dataset.basic.rating.RatingsDataset;
 import delfos.rs.nonpersonalised.meanrating.arithmeticmean.MeanRating;
 
 /**
-* @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 1.0 9-Junio-2013
  */

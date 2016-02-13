@@ -38,7 +38,7 @@ import java.util.TreeSet;
 /**
  *
  * @version 27-abr-2015
- * @author Jorge Castro Gallardo (Universidad de Jaén, Sinbad2)
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  */
 public class InitialConfiguration extends CaseUseMode {
 

@@ -36,7 +36,7 @@ import java.util.Map;
  * Calcula el error absoluto medio de una ejecución con un algoritmo de
  * recomendación que utiliza predicción de valoraciones
  *
- * @author Jorge Castro Gallardo (Universidad de Jaén, Sinbad2)
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 1.2 (21-Jan-2013)
  * @version 1.1 (9-Jan-2013)

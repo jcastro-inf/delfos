@@ -26,7 +26,7 @@ import delfos.group.casestudy.defaultcase.GroupCaseStudy;
 /**
  *
  * @version 19-jun-2014
-* @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  */
 public interface ExperimentPreparator {
 

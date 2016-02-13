@@ -26,7 +26,7 @@ import delfos.dataset.basic.rating.RatingsDataset;
 /**
  *
  * @version 14-may-2014
-* @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  */
 public class ValidationDatasets {
 

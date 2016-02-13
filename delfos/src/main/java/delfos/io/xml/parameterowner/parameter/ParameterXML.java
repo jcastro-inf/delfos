@@ -36,7 +36,7 @@ import delfos.common.parameters.restriction.StringParameter;
  * Clase que realiza el almacenamiento/recuperación de los parámetros de un
  * {@link ParameterOwner} en un elemento XML
  *
-* @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 1.0 06/12/2012
  */

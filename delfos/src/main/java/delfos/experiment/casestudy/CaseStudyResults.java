@@ -31,7 +31,7 @@ import delfos.rs.GenericRecommenderSystem;
  * Almacena los valores y resultados de un caso de estudio de sistemas de
  * recomendación tradicionales ya ejecutado.
  *
- * @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 19-Noviembre-2013
  */

@@ -26,7 +26,7 @@ import java.util.TreeMap;
 
 /**
  *
- * @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  * @version 1.0 03-Jun-2013
  */
 public class GroupLevelResults {

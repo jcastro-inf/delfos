@@ -25,7 +25,7 @@ import java.util.List;
 
 /**
  *
- * @author jcastro
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  */
 public abstract class CaseUseModeWithSubManagers extends CaseUseMode {
 

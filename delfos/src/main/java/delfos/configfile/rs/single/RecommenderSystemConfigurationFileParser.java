@@ -49,7 +49,7 @@ import delfos.rs.persistence.PersistenceMethod;
  * Realiza la lectura/escritura del archivo de configuración que describe un
  * sistema de recomendación completo, indicando el algoritmo y dataset.
  *
-* @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 1.0 Unknown date
  * @version 1.1 28-Febrero-2013

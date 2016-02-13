@@ -22,7 +22,7 @@ import java.io.Serializable;
  * Objeto que almacena la información referente a una característica del
  * contenido de una entidad cualquiera dentro de un sistema de recomendación.
  *
-* @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 2.0 18-Septiembre-2013 Generalizado para que las características
  * sean aplicables a los usuarios también. Previamente, esta clase se denominaba

@@ -24,7 +24,7 @@ import java.util.Set;
 /**
  * Encapsula los resultados del protocolo de predicción para grupos.
  *
- * @author jcastro
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  */
 public class GroupRecommendationRequest {
 

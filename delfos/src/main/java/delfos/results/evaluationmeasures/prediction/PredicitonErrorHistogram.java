@@ -35,7 +35,7 @@ import delfos.rs.recommendation.Recommendation;
 /**
  * Calcula el histograma del error.
  *
- * @author Jorge Castro Gallardo (Universidad de Jaén, Sinbad2)
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 1-julio-2014
  */

@@ -34,7 +34,7 @@ import delfos.group.view.grouprecommendation.GroupRecommendationWindow;
 
 /**
  *
-* @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  */
 public class InitialFrame extends JFrame {
 

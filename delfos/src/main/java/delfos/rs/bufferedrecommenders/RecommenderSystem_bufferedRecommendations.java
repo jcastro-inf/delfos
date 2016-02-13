@@ -51,7 +51,7 @@ import java.util.Map;
  * archivos en el directorio indicado por parámetro. El nombre de los archivos
  * es el hashCode de las valoraciones del usuario.
  *
- * @author Jorge Castro Gallardo (Sinbad2,Universidad de Jaén)
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  * @version 1.0 18-Jun-2013
  */
 public class RecommenderSystem_bufferedRecommendations extends RecommenderSystemAdapter<Object> {

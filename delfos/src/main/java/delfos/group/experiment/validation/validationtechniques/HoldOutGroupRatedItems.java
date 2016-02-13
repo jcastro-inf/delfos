@@ -51,7 +51,7 @@ import java.util.TreeSet;
  * En caso de que se de esta situación, el método {@link HoldOut_Items#shuffle(java.util.Collection)
  * } informa de esta situación y termina sin realizar la validación.
  *
- * @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 1.0 14-02-2013
  */

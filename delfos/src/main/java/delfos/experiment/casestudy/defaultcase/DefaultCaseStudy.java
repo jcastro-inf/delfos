@@ -77,7 +77,7 @@ import java.util.logging.Logger;
  * recomendaciones y recoge los resultados, almacenando el tiempo de ejecución y
  * llamando a las métricas de evaluación.
  *
- * @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  * @version 1.0 (19 Octubre 2011)
  */
 public class DefaultCaseStudy extends CaseStudy implements ParameterListener {

@@ -34,7 +34,7 @@ import java.util.Collections;
 /**
  * Recomendador aleatorio para grupos de usuarios. No usar en un sistema real
  *
- * @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  */
 public class RandomGroupRecommender
         extends GroupRecommenderSystemAdapter<RandomRecommendationModel<GroupOfUsers>, GroupOfUsers>

@@ -24,7 +24,7 @@ import delfos.rs.collaborativefiltering.knn.RecommendationEntity;
 
 /**
  *
-* @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  */
 public class RatingBasedPref implements Preff<Integer> {
 

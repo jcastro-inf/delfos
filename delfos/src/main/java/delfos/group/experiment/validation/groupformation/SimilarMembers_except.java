@@ -40,7 +40,7 @@ import java.util.TreeSet;
  * vacío.
  *
  * @version 25-Junio-2014
- * @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  */
 public class SimilarMembers_except extends GroupFormationTechnique {
 

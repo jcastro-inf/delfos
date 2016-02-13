@@ -21,7 +21,7 @@ import java.io.Serializable;
 /**
  *
  * @version 08-may-2014
- * @author Jorge Castro Gallardo (Universidad de Jaén, Sinbad2)
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  */
 public class KnnMultiCorrelation_Model implements Serializable {
 

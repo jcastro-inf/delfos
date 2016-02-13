@@ -31,7 +31,7 @@ import java.util.TreeMap;
  * Clase que almacena el contenido de un producto. Se utiliza en
  * <code>{@link ContentBasedRecommender}</code> como perfil de los productos.
  *
- * @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  * @version 1.0 (19 Octubre 2011)
  */
 public class Item implements Comparable<Item>, EntityWithFeatures, Serializable {

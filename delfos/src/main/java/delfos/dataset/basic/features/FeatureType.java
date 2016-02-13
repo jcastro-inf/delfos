@@ -26,7 +26,7 @@ import delfos.common.Global;
 /**
  * Tipos de características que puede tener un producto.
  *
- * @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 1.1 (01-Feb-2013) Cambio de nombre feature --> feature.
  * @version 1.0 (19 Octubre 2011)

@@ -43,7 +43,7 @@ import delfos.rs.trustbased.belieffunctions.BeliefFunctionsFactory;
 /**
  * Tipos de parameter owner que existen.
  *
-* @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 15-Noviembre-2013
  */

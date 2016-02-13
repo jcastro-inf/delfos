@@ -22,7 +22,7 @@ import delfos.group.groupsofusers.GroupOfUsers;
 
 /**
  *
-* @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 1.0 08-jul-2013
  */

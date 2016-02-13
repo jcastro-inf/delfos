@@ -29,7 +29,7 @@ import delfos.group.groupsofusers.GroupOfUsers;
 /**
  * Debe devolver los pesos normalizados.
  *
-* @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  */
 public abstract class GroupItemWeight extends ParameterOwnerAdapter {
 

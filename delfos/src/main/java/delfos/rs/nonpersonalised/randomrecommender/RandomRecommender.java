@@ -36,7 +36,7 @@ import java.util.LinkedList;
  * sistemas de recomendación, como por ejemplo, calcular el peor mae que un
  * sistema de recomendación puede tener en un dataset dado.
  *
- * @author Jorge Castro Gallardo (Universidad de Jaén, Sinbad2)
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 1.0 Unknown date
  * @version 1.1 (28 de Febrero de 2013)

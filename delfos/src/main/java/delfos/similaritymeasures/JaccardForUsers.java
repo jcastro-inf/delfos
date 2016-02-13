@@ -27,7 +27,7 @@ import delfos.rs.RecommenderSystemAdapter;
 /**
  * Clase que implementa la medida Jaccard para la similitud de los usuarios.
  *
- * @author Jorge Castro Gallardo (Universidad de Jaén, Sinbad2)
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 1.0 16-Julio-2013
  */

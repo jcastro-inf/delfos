@@ -19,7 +19,7 @@ import delfos.constants.DelfosTest;
  * {@link ConfusionMatricesCurveXML} Test para la clase de entrada/salida en XML
  * de las curvas definidas a partir de matrices de confusión.
  *
- * @author Jorge Castro Gallardo (Universidad de Jaén, Sinbad2)
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  * @version 1.0 (11-Jan-2013)
  */
 public class ConfusionMatricesCurveTest extends DelfosTest {

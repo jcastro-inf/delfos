@@ -48,7 +48,7 @@ import org.junit.Test;
  * Caso de estudio que ejecuta y recopila todas las técnicas consideradas
  * baseline para grupos.
  *
- * @author Jorge Castro Gallardo (Universidad de Jaén, Sinbad2)
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  * @version 28-enero-2015
  */
 public class CaseStudyAllBaselines {

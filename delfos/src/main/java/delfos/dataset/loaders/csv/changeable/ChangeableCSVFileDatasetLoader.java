@@ -35,7 +35,7 @@ import java.util.stream.Collectors;
 /**
  * Dataset almacenado en CSV que permite la modificación de sus datos.
  *
- * @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 16-sep-2013
  */

@@ -57,7 +57,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  */
 public class MovieLens100kValidation extends CompleteDatasetLoaderAbstract<RatingWithTimestamp> {
 

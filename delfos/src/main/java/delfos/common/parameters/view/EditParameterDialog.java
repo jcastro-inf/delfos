@@ -65,7 +65,7 @@ import javax.swing.filechooser.FileFilter;
  * Clase que muestra los parámetros de un {@link ParameterOwner} y permite su
  * modificación mediante una interfaz swing
  *
- * @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  */
 public class EditParameterDialog extends JDialog {
 

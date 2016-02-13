@@ -29,7 +29,7 @@ import delfos.results.evaluationmeasures.EvaluationMeasure;
  * derecha en que los características se muestran en el diagrama de coordenadas
  * paralelas
  *
- * @author Jorge Castro Gallardo (Universidad de Jaén, Sinbad2)
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 1.0 Unknown date
  * @version 1.1 20-Mar-2013

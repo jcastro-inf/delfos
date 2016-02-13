@@ -39,7 +39,7 @@ import delfos.rs.collaborativefiltering.knn.memorybased.KnnMemoryBasedCFRS;
  * en usuarios (las particiones las hace por usuarios, no por ratings o por
  * items) con la predicción todos menos 1 rating. {@link KnnMemoryBasedCFRS}
  *
-* @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  * @version 1.0 (19 Octubre 2011)
  */
 public class CrossFoldValidation_Users extends ValidationTechnique {

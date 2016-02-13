@@ -21,7 +21,7 @@ import delfos.dataset.basic.rating.Rating;
 
 /**
  *
- * @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 19-mar-2014
  */

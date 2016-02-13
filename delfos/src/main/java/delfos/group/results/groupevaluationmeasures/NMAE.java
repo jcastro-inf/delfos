@@ -43,7 +43,7 @@ import java.util.TreeMap;
  * {@link delfos.Results.EvaluationMeasures.RatingPrediction.NMAE} para
  * recomendaciones individuales.
  *
- * @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 19-Febrero-2014
  * @see delfos.Results.EvaluationMeasures.RatingPrediction.NMAE

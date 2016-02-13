@@ -42,7 +42,7 @@ import java.util.Set;
 
 /**
  *
-* @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 10-dic-2013
  */

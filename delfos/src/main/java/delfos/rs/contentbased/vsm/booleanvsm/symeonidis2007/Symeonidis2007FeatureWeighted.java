@@ -61,7 +61,7 @@ import org.grouplens.lenskit.vectors.VectorEntry;
  * "Feature-weighted user model for recommender systems." In User Modeling 2007,
  * pp. 97-106. Springer Berlin Heidelberg, 2007.
  *
- * @author Jorge Castro Gallardo (Universidad de Jaén, Sinbad2)
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 1.0 (19 Octubre 2011)
  * @version 2.0 (28 de Febrero de 2013) Refactorización de las clases asociadas

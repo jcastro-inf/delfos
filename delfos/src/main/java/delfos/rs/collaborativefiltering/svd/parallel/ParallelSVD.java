@@ -57,7 +57,7 @@ import delfos.rs.recommendation.Recommendation;
  * Calcula los valores singulares mediante el descenso de gradiente (aprendizaje
  * reduciendo el error en múltiples iteraciones.
  *
- * @author Jorge Castro Gallardo (Universidad de Jaén, Sinbad2)
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  * @version 24-julio-2014
  */
 public class ParallelSVD

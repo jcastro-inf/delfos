@@ -27,7 +27,7 @@ import delfos.dataset.basic.loader.types.DatasetLoaderAbstract;
  * parámetro las variables comunes, tal como el nombre de usuario, puerto,
  * servidor, etc.
  *
-* @author Jorge Castro Gallardo
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 1.0 (05/12/2012)
  */
