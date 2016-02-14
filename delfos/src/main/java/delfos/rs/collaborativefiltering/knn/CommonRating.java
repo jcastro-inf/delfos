@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,7 +16,16 @@
  */
 package delfos.rs.collaborativefiltering.knn;
 
+import delfos.dataset.basic.item.Item;
+import delfos.dataset.basic.loader.types.DatasetLoader;
+import delfos.dataset.basic.rating.Rating;
+import delfos.dataset.basic.user.User;
+import java.util.Collection;
 import java.util.Comparator;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
+import java.util.stream.Collectors;
 
 /**
  * Entidad que encapsula un rating en común. rating1 y rating2 son valoraciones
@@ -45,6 +54,52 @@ public class CommonRating {
 
     public static final Comparator<CommonRating> BY_ID_COMMON_DESC
             = BY_ID_COMMON_ASC.reversed();
+
+    /**
+     * Returns the intersection of the items rated by both users. This method is
+     * symmetric.
+     *
+     * @param datasetLoader Dataset from which the information is loaded.
+     * @param user1 User 1.
+     * @param user2 User 2.
+     * @return The collection of ratings over the items rated by both users.
+     */
+    public static Collection<CommonRating> intersection(DatasetLoader<? extends Rating> datasetLoader, User user1, User user2) {
+
+        Map<Integer, ? extends Rating> itemsRatedUser1 = datasetLoader.getRatingsDataset().getUserRatingsRated(user1.getId());
+        Map<Integer, ? extends Rating> itemsRatedUser2 = datasetLoader.getRatingsDataset().getUserRatingsRated(user2.getId());
+
+        Set<Integer> intersection = new TreeSet<>();
+        intersection.addAll(itemsRatedUser1.keySet());
+        intersection.retainAll(itemsRatedUser2.keySet());
+
+        Set<Item> itemsIntersection = intersection.stream()
+                .map(idItem -> datasetLoader.getContentDataset().get(idItem))
+                .collect(Collectors.toSet());
+
+        Collection<CommonRating> commonRatings = itemsIntersection.stream().map(item -> {
+
+            float ratingUser1 = datasetLoader.getRatingsDataset()
+                    .getUserRatingsRated(user1.getId())
+                    .get(item.getId())
+                    .getRatingValue().floatValue();
+
+            float ratingUser2 = datasetLoader.getRatingsDataset()
+                    .getUserRatingsRated(user2.getId())
+                    .get(item.getId())
+                    .getRatingValue().floatValue();
+
+            return new CommonRating(
+                    RecommendationEntity.ITEM,
+                    item.getId(),
+                    RecommendationEntity.USER,
+                    user1.getId(),
+                    user2.getId(),
+                    ratingUser1, ratingUser2);
+        }).collect(Collectors.toList());
+
+        return commonRatings;
+    }
 
     /**
      * Tipo de la entidad común, es decir, tipo al que todos los ratings se
