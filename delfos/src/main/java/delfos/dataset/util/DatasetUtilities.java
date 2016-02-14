@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -18,8 +18,10 @@ package delfos.dataset.util;
 
 import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
 import delfos.common.exceptions.dataset.users.UserNotFound;
+import delfos.dataset.basic.item.Item;
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
+import delfos.dataset.basic.user.User;
 import delfos.group.groupsofusers.GroupOfUsers;
 import delfos.rs.recommendation.Recommendation;
 import java.util.ArrayList;
@@ -148,6 +150,20 @@ public class DatasetUtilities {
         return recommendations;
     }
 
+    public static Map<User, Map<Item, Recommendation>> convertToMapOfRecommendationsByMember(Map<User, Collection<Recommendation>> recommendationsByMember) {
+        Map<User, Map<Item, Recommendation>> mapOfMapOfRecommendationsByMember = new TreeMap<>();
+
+        for (Map.Entry<User, Collection<Recommendation>> entry : recommendationsByMember.entrySet()) {
+            User member = entry.getKey();
+            Collection<Recommendation> recommendations = entry.getValue();
+
+            Map<Item, Recommendation> recommendationsByItem = getMapOfRecommendationsByItem(recommendations);
+
+            mapOfMapOfRecommendationsByMember.put(member, recommendationsByItem);
+        }
+        return mapOfMapOfRecommendationsByMember;
+    }
+
     public static Map convertToMemberRatings(Map<Integer, Collection<Recommendation>> recommendationsLists_byMember) {
         Map<Integer, List<Number>> membersRatingsPrediction_byItem = new TreeMap<>();
         for (int idUser : recommendationsLists_byMember.keySet()) {
@@ -161,6 +177,36 @@ public class DatasetUtilities {
             }
         }
         return membersRatingsPrediction_byItem;
+    }
+
+    private static Map<Item, Recommendation> getMapOfRecommendationsByItem(Collection<Recommendation> recommendations) {
+
+        TreeMap<Item, Recommendation> mapOfRecommendationsByItem = new TreeMap<>();
+
+        for (Recommendation recommendation : recommendations) {
+
+            mapOfRecommendationsByItem.put(recommendation.getItem(), recommendation);
+
+        }
+
+        return mapOfRecommendationsByItem;
+    }
+
+    public static <IndexA, IndexB, Element> Map<IndexB, Map<IndexA, Element>> transpose(Map<IndexA, Map<IndexB, Element>> convertToMapOfRecommendationsByMember) {
+        Map<IndexB, Map<IndexA, Element>> mapIndexedByBThenA = new TreeMap<>();
+
+        for (IndexA indexA : convertToMapOfRecommendationsByMember.keySet()) {
+            Map<IndexB, Element> mapIndexedByB = convertToMapOfRecommendationsByMember.get(indexA);
+
+            for (IndexB indexB : mapIndexedByB.keySet()) {
+                Element element = mapIndexedByB.get(indexB);
+                if (!mapIndexedByBThenA.containsKey(indexB)) {
+                    mapIndexedByBThenA.put(indexB, new TreeMap<>());
+                }
+                mapIndexedByBThenA.get(indexB).put(indexA, element);
+            }
+        }
+        return mapIndexedByBThenA;
     }
 
 }
