@@ -1,15 +1,15 @@
 # Compile output directory.
-/delfos/target/
-/delfos/nbactions-dummy-profile.xml
+/target/
+/nbactions-dummy-profile.xml
 
 # Delfos temporary directory, used to store unsaved results and other files and directories that are safe to delete.
-/delfos/temp/
+/temp/
 
 # Delfos configuration directory, which holds differents configuration defined.
-/delfos/.config/
+/.config/
 
 # Delfos directory to deploy in any linux machine
-/delfos/delfos-install/.config/
+/delfos-install/.config/
 
 # Nano (text editor) backups.
 *~
@@ -18,4 +18,3 @@
 *.jar
 
 *.tar.gz
-

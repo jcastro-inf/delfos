@@ -4,7 +4,7 @@
 
     <groupId>es.jcastroinf.delfos</groupId>
     <artifactId>delfos</artifactId>
-    <version>0.1.20150430</version>
+    <version>1.0.20160214</version>
     <packaging>jar</packaging>
 
     <name>delfos</name>
