@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -120,7 +120,13 @@ public class FileUtilities {
         }
     }
 
-    public static void createDirectoriesForFileIfNotExist(File file) {
+    /**
+     * Creates all the unexisting parents of the specified file.
+     *
+     * @param file
+     * @return True if one or more directories have been created.
+     */
+    public static boolean createDirectoriesForFileIfNotExist(File file) {
         if (file == null) {
             throw new IllegalArgumentException("File for path creation is null");
         }
@@ -131,10 +137,10 @@ public class FileUtilities {
             throw new IllegalArgumentException("Directory for creation is null");
         }
 
-        createDirectoryPathIfNotExists(directory);
+        return createDirectoryPathIfNotExists(directory);
     }
 
-    public static void createDirectoryPathIfNotExists(File directory) {
+    public static boolean createDirectoryPathIfNotExists(File directory) {
         if (directory == null) {
             throw new IllegalStateException("Directory for creation is null.");
         }
@@ -148,6 +154,9 @@ public class FileUtilities {
                 FileNotFoundException ex = new FileNotFoundException("Could not create directory '" + directory.getAbsolutePath() + "'");
                 ERROR_CODES.CANNOT_WRITE_FILE.exit(ex);
             }
+            return true;
+        } else {
+            return false;
         }
     }
 

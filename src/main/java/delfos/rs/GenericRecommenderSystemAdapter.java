@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,9 +16,14 @@
  */
 package delfos.rs;
 
+import delfos.common.FileUtilities;
+import delfos.common.Global;
+import delfos.common.parameters.ParameterOwnerAdapter;
+import delfos.rs.persistence.DatabasePersistence;
+import delfos.rs.persistence.FailureInPersistence;
+import delfos.rs.persistence.FilePersistence;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.NotSerializableException;
 import java.io.ObjectInputStream;
@@ -27,11 +32,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
-import delfos.common.Global;
-import delfos.common.parameters.ParameterOwnerAdapter;
-import delfos.rs.persistence.DatabasePersistence;
-import delfos.rs.persistence.FailureInPersistence;
-import delfos.rs.persistence.FilePersistence;
 
 /**
  * Clase abstracta que define los métodos más generales de un sistema de
@@ -120,23 +120,18 @@ public abstract class GenericRecommenderSystemAdapter<RecommendationModel> exten
 
     @Override
     public void saveRecommendationModel(FilePersistence filePersistence, RecommendationModel model) throws FailureInPersistence {
-        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(filePersistence.getCompleteFileName()))) {
+
+        File outputFile = new File(filePersistence.getCompleteFileName());
+
+        if (FileUtilities.createDirectoriesForFileIfNotExist(outputFile)) {
+            Global.showWarning("Created directory path " + outputFile.getAbsoluteFile().getParentFile() + " for recommendation model");
+        }
+
+        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(outputFile))) {
             oos.writeObject(model);
         } catch (NotSerializableException ex) {
             Global.showWarning("The system " + this.getClass() + " has a model not serializable.");
             throw new UnsupportedOperationException(ex);
-        } catch (FileNotFoundException ex) {
-            File recommendationModelDirectory = filePersistence.getDirectory().getAbsoluteFile();
-            Global.showWarning("Directory " + recommendationModelDirectory.getAbsolutePath() + " for recommendation model not exists");
-
-            boolean mkdirs = recommendationModelDirectory.mkdirs();
-            if (mkdirs) {
-                Global.showWarning("Created directory " + recommendationModelDirectory.getAbsolutePath() + " for recommendation model");
-                saveRecommendationModel(filePersistence, model);
-            } else {
-                Global.showWarning("Cannot create directory " + recommendationModelDirectory.getAbsolutePath() + " for recommendation model");
-                throw new FailureInPersistence(ex);
-            }
         } catch (Throwable ex) {
             throw new FailureInPersistence(ex);
         }

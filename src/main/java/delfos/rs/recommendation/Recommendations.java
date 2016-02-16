@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,6 +16,7 @@
  */
 package delfos.rs.recommendation;
 
+import delfos.dataset.basic.user.User;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.LinkedList;
@@ -63,7 +64,13 @@ public class Recommendations implements Serializable {
     }
 
     public String getTargetIdentifier() {
-        return target.toString();
+        if (target instanceof User) {
+            User user = (User) target;
+
+            return user.getTargetId();
+        } else {
+            return target.toString();
+        }
     }
 
     public Collection<Recommendation> getRecommendations() {
