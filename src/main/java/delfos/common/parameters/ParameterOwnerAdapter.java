@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -169,7 +169,6 @@ public abstract class ParameterOwnerAdapter implements ParameterOwner {
                     throw new IllegalArgumentException("Parameter error: " + p.getName() + " not compatible with " + value);
                 }
             }
-
             if (p.isCorrect(valueMejorado)) {
                 parameterValues.put(p, valueMejorado);
             } else {
@@ -324,21 +323,32 @@ public abstract class ParameterOwnerAdapter implements ParameterOwner {
         return equals;
     }
 
+    public static int compare(ParameterOwner parameterOwner1, ParameterOwner parameterOwner2) {
+        return ParameterOwner.PARAMETERS_DETAILED.compare(parameterOwner1, parameterOwner2);
+    }
+
     @Override
     public int hashCode() {
+        return ParameterOwnerAdapter.hashCode(this);
+    }
+
+    public static int hashCode(ParameterOwner parameterOwner) {
         int hash = 7;
 
-        hash = 97 * hash + Objects.hashCode(this.getClass().hashCode());
+        hash = 97 * hash + Objects.hashCode(parameterOwner.getClass().getName().hashCode());
 
-        for (Parameter parameter : parameterValues.keySet()) {
-            hash = 97 * hash + parameter.getName().hashCode();
-            hash = 97 * hash + getParameterValue(parameter).hashCode();
+        for (Parameter parameter : parameterOwner.getParameters()) {
+            if (parameter.equals(ParameterOwner.ALIAS)) {
+                continue;
+            }
+
+            final String parameterName = parameter.getName();
+            hash = 97 * hash + parameterName.hashCode();
+
+            Object parameterValue = parameterOwner.getParameterValue(parameter);
+            hash = 97 * hash + parameterValue.hashCode();
         }
 
         return hash;
-    }
-
-    public static int compare(ParameterOwner parameterOwner1, ParameterOwner parameterOwner2) {
-        return ParameterOwner.PARAMETERS_DETAILED.compare(parameterOwner1, parameterOwner2);
     }
 }
