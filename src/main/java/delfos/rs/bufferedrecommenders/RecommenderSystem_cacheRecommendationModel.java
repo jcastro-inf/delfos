@@ -105,21 +105,21 @@ public class RecommenderSystem_cacheRecommendationModel<RecommendationModel> ext
                 RecommendationModel recommendationModel = (RecommendationModel) cacheOfRecommendationModels
                         .get(datasetLoader)
                         .get(recommenderSystem);
-
                 return recommendationModel;
             }
         }
 
         Object exMutThisDatasetLoader = datasetLoaderExMuts.get(datasetLoader);
         synchronized (exMutThisDatasetLoader) {
-
             RecommendationModel model;
 
             int ratingsDatasetHashCode = datasetLoader.getRatingsDataset().hashCode();
             String datasetLoaderAlias = datasetLoader.getAlias();
 
-            String rsNameIdentifier = "_rsHash=" + recommenderSystem.hashCode();
+            saveHashCodeExplanationInFile(datasetLoader);
+            saveHashCodeExplanationInFile(recommenderSystem);
 
+            String rsNameIdentifier = "_rsHash=" + recommenderSystem.hashCode();
             String datasetLoaderString = "_datasetLoader=" + datasetLoaderAlias + "_DLHash=" + ratingsDatasetHashCode;
 
             FilePersistence filePersistenceWithHashSuffix = new FilePersistence(

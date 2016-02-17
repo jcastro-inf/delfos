@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -345,11 +345,8 @@ public class GroupCaseStudy extends ExperimentAdapter {
 
                 List<SingleGroupRecommendationTaskOutput> taskGroupRecommendationOutput = taskGroupRecommendationInput
                         .parallelStream()
-                        .map(new SingleGroupRecommendationFunction())
-                        .map(output -> {
-                            recommendationProgress.setTaskFinished();
-                            return output;
-                        })
+                        .map(new SingleGroupRecommendationFunction(recommendationProgress)
+                        )
                         .collect(Collectors.toList());
 
                 taskGroupRecommendationOutput.parallelStream().forEach(task -> {

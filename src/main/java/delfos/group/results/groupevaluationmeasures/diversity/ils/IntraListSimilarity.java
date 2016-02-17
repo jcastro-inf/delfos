@@ -278,7 +278,10 @@ public class IntraListSimilarity extends GroupEvaluationMeasure {
 
         synchronized (generalExMut) {
             if (cacheSVD == null) {
-                RecommenderSystem svd = new TryThisAtHomeSVD(20, 20).setNormalizeWithUserMean(true);
+                TryThisAtHomeSVD svd = new TryThisAtHomeSVD(20, 20).setNormalizeWithUserMean(true);
+                svd.setParameterValue(TryThisAtHomeSVD.PREDICT_IN_RATING_RANGE, true);
+                svd.setSeedValue(123456);
+
                 File directory = new File(RecommenderSystem_cacheRecommendationModel.DEFAULT_DIRECTORY.getAbsolutePath() + File.separator + "ILS_models" + File.separator);
                 cacheSVD = new RecommenderSystem_cacheRecommendationModel()
                         .setRecommenderSystem(svd).setDirectory(directory);
