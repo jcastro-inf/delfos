@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -146,7 +146,7 @@ public class EPinionsContentDataset implements ContentDataset {
     }
 
     @Override
-    public Collection<Integer> allID() {
+    public Collection<Integer> allIDs() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
@@ -202,11 +202,6 @@ public class EPinionsContentDataset implements ContentDataset {
 
     @Override
     public Map<Feature, Object> parseEntityFeatures(Map<String, String> features) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public Collection<Integer> getAllID() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
@@ -269,7 +264,7 @@ public class EPinionsContentDataset implements ContentDataset {
     }
 
     public Collection<Item> getAllItems() {
-        return getAllID().stream().map((idItem) -> get(idItem)).collect(Collectors.toList());
+        return allIDs().stream().map((idItem) -> get(idItem)).collect(Collectors.toList());
     }
 
     @Override

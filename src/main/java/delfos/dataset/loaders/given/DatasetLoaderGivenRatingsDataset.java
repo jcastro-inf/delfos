@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -38,7 +38,7 @@ import delfos.dataset.basic.user.UsersDataset;
  * @version 26-Noviembre-2013
  * @param <RatingType>
  */
-public class DatasetLoaderGivenRatingsDataset<RatingType extends Rating> extends CompleteDatasetLoaderAbstract_withTrust<RatingType> implements ContentDatasetLoader {
+public class DatasetLoaderGivenRatingsDataset<RatingType extends Rating> extends CompleteDatasetLoaderAbstract_withTrust<RatingType> {
 
     private static final long serialVersionUID = 1L;
     private final DatasetLoader<? extends Rating> datasetLoader;

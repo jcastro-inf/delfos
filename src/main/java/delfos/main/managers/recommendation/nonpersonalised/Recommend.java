@@ -100,7 +100,7 @@ class Recommend extends CaseUseSubManager {
             } catch (UserNotFound ex) {
                 if (rsc.datasetLoader instanceof ContentDatasetLoader) {
                     ContentDatasetLoader contentDatasetLoader = (ContentDatasetLoader) rsc.datasetLoader;
-                    candidateItems = contentDatasetLoader.getContentDataset().allID();
+                    candidateItems = contentDatasetLoader.getContentDataset().allIDs();
                 } else {
                     candidateItems = rsc.datasetLoader.getRatingsDataset().allRatedItems();
                 }

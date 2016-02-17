@@ -166,7 +166,7 @@ public class DatasetPrinterManager extends DatabaseCaseUseSubManager {
     }
 
     private void printItemSet(ChangeableDatasetLoader changeableDatasetLoader) throws CannotLoadContentDataset, RuntimeException {
-        TreeSet<Integer> items = new TreeSet<>(changeableDatasetLoader.getContentDataset().getAllID());
+        TreeSet<Integer> items = new TreeSet<>(changeableDatasetLoader.getContentDataset().allIDs());
         System.out.println("==============================================================");
         System.out.println("Item set size: " + items.size());
         for (int idItem : items) {
@@ -182,7 +182,7 @@ public class DatasetPrinterManager extends DatabaseCaseUseSubManager {
     }
 
     private void printUserSet(ChangeableDatasetLoader changeableDatasetLoader) throws CannotLoadUsersDataset, RuntimeException {
-        TreeSet<Integer> users = new TreeSet<>(changeableDatasetLoader.getUsersDataset().getAllID());
+        TreeSet<Integer> users = new TreeSet<>(changeableDatasetLoader.getUsersDataset().allIDs());
         System.out.println("==============================================================");
         System.out.println("User set size: " + users.size());
         for (int idUser : users) {
@@ -198,8 +198,8 @@ public class DatasetPrinterManager extends DatabaseCaseUseSubManager {
     }
 
     private void printRatingsTable(ChangeableDatasetLoader changeableDatasetLoader) {
-        Collection<Integer> users = changeableDatasetLoader.getUsersDataset().getAllID();
-        Collection<Integer> items = changeableDatasetLoader.getContentDataset().allID();
+        Collection<Integer> users = changeableDatasetLoader.getUsersDataset().allIDs();
+        Collection<Integer> items = changeableDatasetLoader.getContentDataset().allIDs();
 
         if (!users.isEmpty() && !items.isEmpty()) {
             String ratingTable = DatasetPrinter.printCompactRatingTable(

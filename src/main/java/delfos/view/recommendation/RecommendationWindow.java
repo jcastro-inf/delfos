@@ -333,7 +333,7 @@ public class RecommendationWindow extends JFrame {
             } else {
                 throw new CannotLoadContentDataset("The dataset loader is not a ContentDatasetLoader, cannot apply a content-based ");
             }
-            Set<Integer> noValoradas = new TreeSet<>(contentDataset.allID());
+            Set<Integer> noValoradas = new TreeSet<>(contentDataset.allIDs());
             noValoradas.removeAll(datasetLoader.getRatingsDataset().getUserRated(idUser));
 
             Collection<Recommendation> recommendations = recommenderSystem.recommendToUser(datasetLoader, recommendationModel, idUser, noValoradas);

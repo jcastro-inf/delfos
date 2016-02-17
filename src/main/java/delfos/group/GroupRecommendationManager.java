@@ -166,14 +166,14 @@ public class GroupRecommendationManager {
 
             if (grsc.datasetLoader instanceof ContentDatasetLoader) {
                 ContentDatasetLoader contentDatasetLoader = (ContentDatasetLoader) datasetLoader;
-                items = contentDatasetLoader.getContentDataset().allID();
+                items = contentDatasetLoader.getContentDataset().allIDs();
             } else {
                 items = grsc.datasetLoader.getRatingsDataset().allRatedItems();
             }
 
             if (grsc.datasetLoader instanceof UsersDatasetLoader) {
                 UsersDatasetLoader usersDatasetLoader = (UsersDatasetLoader) datasetLoader;
-                users = usersDatasetLoader.getUsersDataset().getAllID();
+                users = usersDatasetLoader.getUsersDataset().allIDs();
             } else {
                 users = datasetLoader.getRatingsDataset().allUsers();
             }

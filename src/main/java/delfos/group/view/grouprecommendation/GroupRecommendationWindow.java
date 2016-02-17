@@ -82,7 +82,7 @@ public class GroupRecommendationWindow extends JFrame {
         Set<Integer> allItems;
         if (datasetLoader instanceof ContentDatasetLoader) {
             ContentDatasetLoader contentDatasetLoader = (ContentDatasetLoader) datasetLoader;
-            allItems = new TreeSet<>(contentDatasetLoader.getContentDataset().allID());
+            allItems = new TreeSet<>(contentDatasetLoader.getContentDataset().allIDs());
         } else {
             allItems = new TreeSet<>(datasetLoader.getRatingsDataset().allRatedItems());
         }

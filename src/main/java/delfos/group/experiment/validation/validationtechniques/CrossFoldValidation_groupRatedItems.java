@@ -117,7 +117,7 @@ public class CrossFoldValidation_groupRatedItems extends GroupValidationTechniqu
 
         PairOfTrainTestRatingsDataset[] ret = new PairOfTrainTestRatingsDataset[getNumberOfSplits()];
 
-        Set<Integer> allItems = new TreeSet<>(datasetLoader.getContentDataset().allID());
+        Set<Integer> allItems = new TreeSet<>(datasetLoader.getContentDataset().allIDs());
 
         Map<GroupOfUsers, List<Set<Integer>>> partitionsByGroup = new TreeMap<>();
 

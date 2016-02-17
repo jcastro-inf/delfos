@@ -47,7 +47,7 @@ public class AddItem extends DatabaseCaseUseSubManager {
         try {
 
             int idItem = new Integer(consoleParameters.getValue(MANAGE_RATING_DATABASE_ADD_ITEM));
-            if (changeableDatasetLoader.getContentDataset().getAllID().contains(idItem)) {
+            if (changeableDatasetLoader.getContentDataset().allIDs().contains(idItem)) {
                 IllegalArgumentException ex = new IllegalArgumentException();
                 ERROR_CODES.MANAGE_RATING_DATABASE_ITEM_ALREADY_EXISTS.exit(ex);
             }

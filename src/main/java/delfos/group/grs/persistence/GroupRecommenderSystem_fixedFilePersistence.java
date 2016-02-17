@@ -144,7 +144,7 @@ public class GroupRecommenderSystem_fixedFilePersistence extends GroupRecommende
                 Set<Integer> allItems = new TreeSet<Integer>();
                 if (datasetLoader instanceof ContentDatasetLoader) {
                     ContentDatasetLoader contentDatasetLoader = (ContentDatasetLoader) datasetLoader;
-                    allItems.addAll(contentDatasetLoader.getContentDataset().allID());
+                    allItems.addAll(contentDatasetLoader.getContentDataset().allIDs());
                 } else {
                     allItems.addAll(datasetLoader.getRatingsDataset().allRatedItems());
                 }
