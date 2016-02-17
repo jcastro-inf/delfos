@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -57,15 +57,19 @@ import java.util.Map;
 public class RecommenderSystem_bufferedRecommendations extends RecommenderSystemAdapter<Object> {
 
     private static final long serialVersionUID = 1L;
+
+    public static final String DEFAULT_RECOMMENDATIONS_EXTENSION = ".buffered.recommendations";
+    public static final File DEFAULT_DIRECTORY = new File(Constants.getTempDirectory().getAbsolutePath() + File.separator
+            + "bufferOfRecommendations" + File.separator
+    );
+
     /**
      * Directorio en que se guarda el archivo de persistencia.
      */
     public static final Parameter BUFFER_DIRECTORY = new Parameter(
             "persistenceFileDirectory",
             new DirectoryParameter(
-                    new File(Constants.getTempDirectory().getAbsolutePath() + File.separator
-                            + "bufferOfRecommendations" + File.separator
-                    )
+                    DEFAULT_DIRECTORY
             )
     );
     /**
@@ -75,7 +79,6 @@ public class RecommenderSystem_bufferedRecommendations extends RecommenderSystem
     public static final Parameter RECOMMENDER_SYSTEM = new Parameter(
             "recommenderSystem",
             new RecommenderSystemParameterRestriction(new TryThisAtHomeSVD(5, 1000), RecommenderSystem.class));
-    private static final String extension = ".buffered.recommendations";
 
     public RecommenderSystem_bufferedRecommendations() {
         super();
@@ -117,7 +120,7 @@ public class RecommenderSystem_bufferedRecommendations extends RecommenderSystem
         Map<Integer, ? extends Rating> userRatings = datasetLoader.getRatingsDataset().getUserRatingsRated(idUser);
 
         int hashCodeOfRatings = userRatings.hashCode();
-        String fileName = getPersistenceDirectory().getAbsolutePath() + File.separator + "idUser_" + idUser + "_" + hashCodeOfRatings + extension;
+        String fileName = getPersistenceDirectory().getAbsolutePath() + File.separator + "idUser_" + idUser + "_" + hashCodeOfRatings + DEFAULT_RECOMMENDATIONS_EXTENSION;
         File file = new File(fileName);
 
         file.getParentFile().mkdirs();

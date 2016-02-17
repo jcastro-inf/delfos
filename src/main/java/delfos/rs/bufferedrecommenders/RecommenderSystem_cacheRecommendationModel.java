@@ -28,7 +28,6 @@ import delfos.common.exceptions.ratings.NotEnoughtUserInformation;
 import delfos.common.parameters.Parameter;
 import delfos.common.parameters.restriction.DirectoryParameter;
 import delfos.common.parameters.restriction.RecommenderSystemParameterRestriction;
-import delfos.dataset.basic.loader.types.ContentDatasetLoader;
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
 import delfos.rs.RecommendationModelBuildingProgressListener;
@@ -40,32 +39,38 @@ import delfos.rs.persistence.FilePersistence;
 import delfos.rs.recommendation.Recommendation;
 import java.io.File;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Map;
-import java.util.TreeMap;
-import java.util.TreeSet;
 
 /**
+ * Recommender system that stores the recommendation model generated in a common
+ * directory for recommendation models. It also does a cache copy in memory of
+ * the recommendation models already loaded.
  *
  * @author jcastro-inf ( https://github.com/jcastro-inf )
- * @version 1.0 17-Jun-2013
  * @param <RecommendationModel> Modelo de recomendación
  */
 public class RecommenderSystem_cacheRecommendationModel<RecommendationModel> extends RecommenderSystemAdapter<RecommendationModel> {
 
     private static final long serialVersionUID = 1L;
 
+    public static final File DEFAULT_DIRECTORY = new File(
+            Constants.getTempDirectory().getAbsolutePath() + File.separator
+            + "buffered-recommendation-models" + File.separator);
+
+    public static final String extension = "model";
     public static final Parameter RECOMMENDATION_MODELS_DIRECTORY = new Parameter(
             "persistenceFileDirectory",
-            new DirectoryParameter(
-                    new File(Constants.getTempDirectory().getAbsolutePath() + File.separator + "buffered-recommendation-models" + File.separator + "recommendation-model.data").getAbsoluteFile().getParentFile()));
+            new DirectoryParameter(DEFAULT_DIRECTORY));
 
     public static final Parameter RECOMMENDER_SYSTEM = new Parameter(
             "recommenderSystem",
             new RecommenderSystemParameterRestriction(new KnnModelBasedCFRS(), RecommenderSystem.class));
 
-    Map<DatasetLoader, Object> exMuts = new TreeMap<>();
+    private static final Object generalExMut = "GeneralExMut";
 
-    Map<DatasetLoader, RecommendationModel> recommendationModels = new TreeMap<>();
+    private static final Map<DatasetLoader, Object> datasetLoaderExMuts = new HashMap<>();
+    private static final Map<DatasetLoader, Map<RecommenderSystem, Object>> cacheOfRecommendationModels = new HashMap<>();
 
     public RecommenderSystem_cacheRecommendationModel() {
         super();
@@ -86,13 +91,26 @@ public class RecommenderSystem_cacheRecommendationModel<RecommendationModel> ext
     @Override
     public RecommendationModel buildRecommendationModel(DatasetLoader<? extends Rating> datasetLoader) throws CannotLoadRatingsDataset, CannotLoadContentDataset, CannotLoadUsersDataset {
 
-        synchronized (this) {
-            if (!exMuts.containsKey(datasetLoader)) {
-                exMuts.put(datasetLoader, datasetLoader.getAlias());
+        final RecommenderSystem<Object> recommenderSystem = getRecommenderSystem();
+        synchronized (generalExMut) {
+            if (!datasetLoaderExMuts.containsKey(datasetLoader)) {
+                datasetLoaderExMuts.put(datasetLoader, datasetLoader.getAlias());
+            }
+
+            if (!cacheOfRecommendationModels.containsKey(datasetLoader)) {
+                cacheOfRecommendationModels.put(datasetLoader, new HashMap<>());
+            }
+
+            if (cacheOfRecommendationModels.get(datasetLoader).containsKey(recommenderSystem)) {
+                RecommendationModel recommendationModel = (RecommendationModel) cacheOfRecommendationModels
+                        .get(datasetLoader)
+                        .get(recommenderSystem);
+
+                return recommendationModel;
             }
         }
 
-        Object exMutThisDatasetLoader = exMuts.get(datasetLoader);
+        Object exMutThisDatasetLoader = datasetLoaderExMuts.get(datasetLoader);
         synchronized (exMutThisDatasetLoader) {
 
             RecommendationModel model;
@@ -100,28 +118,22 @@ public class RecommenderSystem_cacheRecommendationModel<RecommendationModel> ext
             int ratingsDatasetHashCode = datasetLoader.getRatingsDataset().hashCode();
             String datasetLoaderAlias = datasetLoader.getAlias();
 
-            RecommenderSystem<Object> recommenderSystem = getRecommenderSystem();
             String rsNameIdentifier = "_rsHash=" + recommenderSystem.hashCode();
 
             String datasetLoaderString = "_datasetLoader=" + datasetLoaderAlias + "_DLHash=" + ratingsDatasetHashCode;
 
-            File directory = (File) getParameterValue(RECOMMENDATION_MODELS_DIRECTORY);
-            FilePersistence filePersistence = new FilePersistence(recommenderSystem.getName(), "model", directory);
-
-            FilePersistence filePersistenceWithHashSuffix = filePersistence.copyWithSuffix(rsNameIdentifier).copyWithSuffix(datasetLoaderString);
-            Collection<Integer> allItems = new TreeSet<>();
-            if (datasetLoader instanceof ContentDatasetLoader) {
-                ContentDatasetLoader contentDatasetLoader = (ContentDatasetLoader) datasetLoader;
-                allItems.addAll(contentDatasetLoader.getContentDataset().allID());
-            } else {
-                allItems.addAll(datasetLoader.getRatingsDataset().allRatedItems());
-            }
+            FilePersistence filePersistenceWithHashSuffix = new FilePersistence(
+                    recommenderSystem.getName(),
+                    extension,
+                    (File) getParameterValue(RECOMMENDATION_MODELS_DIRECTORY))
+                    .copyWithSuffix(rsNameIdentifier)
+                    .copyWithSuffix(datasetLoaderString);
 
             try {
                 RecommendationModel loadedModel = (RecommendationModel) getRecommenderSystem().loadRecommendationModel(
                         filePersistenceWithHashSuffix,
-                        datasetLoader.getRatingsDataset().allUsers(),
-                        allItems);
+                        datasetLoader.getUsersDataset().allIDs(),
+                        datasetLoader.getContentDataset().allIDs());
                 Global.showMessageTimestamped("Loaded model from file '" + filePersistenceWithHashSuffix.getCompleteFileName() + "'");
                 model = loadedModel;
             } catch (FailureInPersistence ex) {
@@ -142,6 +154,8 @@ public class RecommenderSystem_cacheRecommendationModel<RecommendationModel> ext
                 }
                 getRecommenderSystem().removeRecommendationModelBuildingProgressListener(listener);
             }
+
+            cacheOfRecommendationModels.get(datasetLoader).put(recommenderSystem, model);
 
             return (RecommendationModel) model;
         }
