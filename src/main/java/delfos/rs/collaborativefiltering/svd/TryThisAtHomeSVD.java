@@ -34,6 +34,7 @@ import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RatingsDataset;
 import delfos.experiment.SeedHolder;
+import delfos.rs.RecommenderSystem;
 import delfos.rs.collaborativefiltering.CollaborativeRecommender;
 import delfos.rs.persistence.DatabasePersistence;
 import delfos.rs.persistence.FailureInPersistence;
@@ -470,5 +471,12 @@ public class TryThisAtHomeSVD
      */
     protected final float getK() {
         return (Float) getParameterValue(K);
+    }
+
+    public RecommenderSystem setNormalizeWithUserMean(boolean isNormalizeWithUserMean) {
+        setParameterValue(NORMALIZE_WITH_USER_MEAN, isNormalizeWithUserMean);
+
+        return this;
+
     }
 }
