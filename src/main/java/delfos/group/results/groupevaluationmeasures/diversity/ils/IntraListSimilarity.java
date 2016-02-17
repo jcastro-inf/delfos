@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,7 +16,6 @@
  */
 package delfos.group.results.groupevaluationmeasures.diversity.ils;
 
-import delfos.Constants;
 import delfos.common.exceptions.dataset.CannotLoadContentDataset;
 import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
 import delfos.common.statisticalfuncions.MeanIterative;
@@ -31,15 +30,16 @@ import delfos.group.groupsofusers.GroupOfUsers;
 import delfos.group.results.groupevaluationmeasures.GroupEvaluationMeasure;
 import delfos.group.results.groupevaluationmeasures.GroupEvaluationMeasureResult;
 import delfos.group.results.grouprecomendationresults.GroupRecommenderSystemResult;
-import delfos.rs.bufferedrecommenders.RecommenderSystem_fixedFilePersistence;
+import delfos.rs.RecommenderSystem;
+import delfos.rs.RecommenderSystemBuildingProgressListener_default;
+import delfos.rs.bufferedrecommenders.RecommenderSystem_cacheRecommendationModel;
 import delfos.rs.collaborativefiltering.svd.TryThisAtHomeSVD;
 import delfos.rs.collaborativefiltering.svd.TryThisAtHomeSVDModel;
-import delfos.rs.persistence.FilePersistence;
 import delfos.rs.recommendation.Recommendation;
 import delfos.similaritymeasures.CosineCoefficient;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
 import java.util.function.BinaryOperator;
 import java.util.stream.Collectors;
@@ -271,25 +271,25 @@ public class IntraListSimilarity extends GroupEvaluationMeasure {
         return false;
     }
 
-    private final HashMap<DatasetLoader<? extends Rating>, TryThisAtHomeSVDModel> svdModelCache = new HashMap<>();
+    private static RecommenderSystem cacheSVD = null;
+    private static final Object generalExMut = 1;
 
-    public synchronized TryThisAtHomeSVDModel getSVDModel(DatasetLoader<? extends Rating> originalDatasetLoader) throws CannotLoadContentDataset, CannotLoadRatingsDataset {
+    public static TryThisAtHomeSVDModel getSVDModel(DatasetLoader<? extends Rating> originalDatasetLoader) throws CannotLoadContentDataset, CannotLoadRatingsDataset {
 
-        if (svdModelCache.containsKey(originalDatasetLoader)) {
-            return svdModelCache.get(originalDatasetLoader);
-        } else {
-            TryThisAtHomeSVD svd = new TryThisAtHomeSVD(20, 20);
-            svd.setParameterValue(TryThisAtHomeSVD.NORMALIZE_WITH_USER_MEAN, true);
+        synchronized (generalExMut) {
+            if (cacheSVD == null) {
+                RecommenderSystem svd = new TryThisAtHomeSVD(20, 20).setNormalizeWithUserMean(true);
+                File directory = new File(RecommenderSystem_cacheRecommendationModel.DEFAULT_DIRECTORY.getAbsolutePath() + File.separator + "ILS_models" + File.separator);
+                cacheSVD = new RecommenderSystem_cacheRecommendationModel()
+                        .setRecommenderSystem(svd).setDirectory(directory);
+                cacheSVD.addRecommendationModelBuildingProgressListener(new RecommenderSystemBuildingProgressListener_default(System.out, 5000));
+            }
 
-            RecommenderSystem_fixedFilePersistence rs_persistence = new RecommenderSystem_fixedFilePersistence(svd,
-                    new FilePersistence(originalDatasetLoader.getAlias() + "_numFeatures=20_numIter=20_normalised", "svd.model", Constants.getTempDirectory()));
-
-            TryThisAtHomeSVDModel svdModel = (TryThisAtHomeSVDModel) rs_persistence.buildRecommendationModel(originalDatasetLoader);
-
-            svdModelCache.put(originalDatasetLoader, svdModel);
+            TryThisAtHomeSVDModel svdModel = (TryThisAtHomeSVDModel) cacheSVD.buildRecommendationModel(originalDatasetLoader);
 
             return svdModel;
         }
+
     }
 
     @Override
