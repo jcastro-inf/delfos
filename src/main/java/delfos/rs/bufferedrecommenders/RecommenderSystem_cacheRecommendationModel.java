@@ -41,6 +41,9 @@ import java.io.File;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.Semaphore;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Recommender system that stores the recommendation model generated in a common
@@ -69,7 +72,7 @@ public class RecommenderSystem_cacheRecommendationModel<RecommendationModel> ext
 
     private static final Object generalExMut = "GeneralExMut";
 
-    private static final Map<DatasetLoader, Object> datasetLoaderExMuts = new HashMap<>();
+    private static final Map<DatasetLoader, Semaphore> datasetLoaderExMuts = new HashMap<>();
     private static final Map<DatasetLoader, Map<RecommenderSystem, Object>> cacheOfRecommendationModels = new HashMap<>();
 
     public RecommenderSystem_cacheRecommendationModel() {
@@ -94,7 +97,7 @@ public class RecommenderSystem_cacheRecommendationModel<RecommendationModel> ext
         final RecommenderSystem<Object> recommenderSystem = getRecommenderSystem();
         synchronized (generalExMut) {
             if (!datasetLoaderExMuts.containsKey(datasetLoader)) {
-                datasetLoaderExMuts.put(datasetLoader, datasetLoader.getAlias());
+                datasetLoaderExMuts.put(datasetLoader, new Semaphore(1));
             }
 
             if (!cacheOfRecommendationModels.containsKey(datasetLoader)) {
@@ -109,9 +112,10 @@ public class RecommenderSystem_cacheRecommendationModel<RecommendationModel> ext
             }
         }
 
-        Object exMutThisDatasetLoader = datasetLoaderExMuts.get(datasetLoader);
-        synchronized (exMutThisDatasetLoader) {
-            RecommendationModel model;
+        Semaphore exMutThisDatasetLoader = datasetLoaderExMuts.get(datasetLoader);
+        RecommendationModel model;
+        try {
+            exMutThisDatasetLoader.acquire();
 
             int ratingsDatasetHashCode = datasetLoader.getRatingsDataset().hashCode();
             String datasetLoaderAlias = datasetLoader.getAlias();
@@ -157,8 +161,12 @@ public class RecommenderSystem_cacheRecommendationModel<RecommendationModel> ext
 
             cacheOfRecommendationModels.get(datasetLoader).put(recommenderSystem, model);
 
-            return (RecommendationModel) model;
+        } catch (InterruptedException ex) {
+            exMutThisDatasetLoader.release();
+            Logger.getLogger(RecommenderSystem_cacheRecommendationModel.class.getName()).log(Level.SEVERE, null, ex);
+            model = buildRecommendationModel(datasetLoader);
         }
+        return (RecommendationModel) model;
     }
 
     @Override
