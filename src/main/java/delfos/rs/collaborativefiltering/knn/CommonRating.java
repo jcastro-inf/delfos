@@ -66,8 +66,11 @@ public class CommonRating {
      */
     public static Collection<CommonRating> intersection(DatasetLoader<? extends Rating> datasetLoader, User user1, User user2) {
 
-        Map<Integer, ? extends Rating> itemsRatedUser1 = datasetLoader.getRatingsDataset().getUserRatingsRated(user1.getId());
-        Map<Integer, ? extends Rating> itemsRatedUser2 = datasetLoader.getRatingsDataset().getUserRatingsRated(user2.getId());
+        final Map<Integer, ? extends Rating> itemsRatedUser1 = datasetLoader.getRatingsDataset()
+                .getUserRatingsRated(user1.getId());
+
+        final Map<Integer, ? extends Rating> itemsRatedUser2 = datasetLoader.getRatingsDataset()
+                .getUserRatingsRated(user2.getId());
 
         Set<Integer> intersection = new TreeSet<>();
         intersection.addAll(itemsRatedUser1.keySet());
@@ -79,13 +82,11 @@ public class CommonRating {
 
         Collection<CommonRating> commonRatings = itemsIntersection.stream().map(item -> {
 
-            float ratingUser1 = datasetLoader.getRatingsDataset()
-                    .getUserRatingsRated(user1.getId())
+            float ratingUser1 = itemsRatedUser1
                     .get(item.getId())
                     .getRatingValue().floatValue();
 
-            float ratingUser2 = datasetLoader.getRatingsDataset()
-                    .getUserRatingsRated(user2.getId())
+            float ratingUser2 = itemsRatedUser2
                     .get(item.getId())
                     .getRatingValue().floatValue();
 
