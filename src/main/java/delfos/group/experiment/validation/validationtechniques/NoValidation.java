@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,11 +16,11 @@
  */
 package delfos.group.experiment.validation.validationtechniques;
 
-import delfos.dataset.basic.rating.Rating;
-import delfos.dataset.storage.validationdatasets.PairOfTrainTestRatingsDataset;
-import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.common.exceptions.dataset.CannotLoadContentDataset;
 import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
+import delfos.dataset.basic.loader.types.DatasetLoader;
+import delfos.dataset.basic.rating.Rating;
+import delfos.dataset.storage.validationdatasets.PairOfTrainTestRatingsDataset;
 import delfos.group.groupsofusers.GroupOfUsers;
 
 /**
@@ -36,7 +36,8 @@ public class NoValidation extends GroupValidationTechnique {
     @Override
     public PairOfTrainTestRatingsDataset[] shuffle(DatasetLoader<? extends Rating> datasetLoader, Iterable<GroupOfUsers> groupsOfUsers) throws CannotLoadRatingsDataset, CannotLoadContentDataset {
         PairOfTrainTestRatingsDataset[] ret = new PairOfTrainTestRatingsDataset[1];
-        ret[0] = new PairOfTrainTestRatingsDataset(datasetLoader, datasetLoader.getRatingsDataset(), datasetLoader.getRatingsDataset());
+        ret[0] = new PairOfTrainTestRatingsDataset(datasetLoader, datasetLoader.getRatingsDataset(), datasetLoader.getRatingsDataset(),
+                "_" + this.getClass().getSimpleName());
         return ret;
     }
 

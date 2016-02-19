@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,6 +16,18 @@
  */
 package delfos.experiment.validation.validationtechnique;
 
+import delfos.ERROR_CODES;
+import delfos.common.exceptions.dataset.CannotLoadContentDataset;
+import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
+import delfos.common.exceptions.dataset.items.ItemNotFound;
+import delfos.common.exceptions.dataset.users.UserNotFound;
+import delfos.common.parameters.Parameter;
+import delfos.common.parameters.restriction.IntegerParameter;
+import delfos.dataset.basic.loader.types.DatasetLoader;
+import delfos.dataset.basic.rating.Rating;
+import delfos.dataset.basic.rating.RatingsDataset;
+import delfos.dataset.storage.validationdatasets.PairOfTrainTestRatingsDataset;
+import delfos.dataset.storage.validationdatasets.ValidationDatasets;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -24,18 +36,6 @@ import java.util.Random;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
-import delfos.ERROR_CODES;
-import delfos.common.exceptions.dataset.CannotLoadContentDataset;
-import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
-import delfos.common.exceptions.dataset.items.ItemNotFound;
-import delfos.common.exceptions.dataset.users.UserNotFound;
-import delfos.common.parameters.Parameter;
-import delfos.common.parameters.restriction.IntegerParameter;
-import delfos.dataset.basic.rating.Rating;
-import delfos.dataset.basic.rating.RatingsDataset;
-import delfos.dataset.basic.loader.types.DatasetLoader;
-import delfos.dataset.storage.validationdatasets.PairOfTrainTestRatingsDataset;
-import delfos.dataset.storage.validationdatasets.ValidationDatasets;
 
 /**
  * Clase que implementa el método de partición de datasets Cross Fold Validation
@@ -122,18 +122,19 @@ public class CrossFoldValidation_Ratings extends ValidationTechnique {
             numUserFinished++;
         }
 
-        for (int i = 0; i < getNumberOfPartitions(); i++) {
+        for (int idPartition = 0; idPartition < getNumberOfPartitions(); idPartition++) {
             try {
-                ret[i] = new PairOfTrainTestRatingsDataset(
+                ret[idPartition] = new PairOfTrainTestRatingsDataset(
                         datasetLoader,
-                        ValidationDatasets.getInstance().createTrainingDataset(datasetLoader.getRatingsDataset(), todosConjuntosTest.get(i)),
-                        ValidationDatasets.getInstance().createTestDataset(datasetLoader.getRatingsDataset(), todosConjuntosTest.get(i)));
+                        ValidationDatasets.getInstance().createTrainingDataset(datasetLoader.getRatingsDataset(), todosConjuntosTest.get(idPartition)),
+                        ValidationDatasets.getInstance().createTestDataset(datasetLoader.getRatingsDataset(), todosConjuntosTest.get(idPartition)),
+                        "_" + this.getClass().getSimpleName() + "_seed=" + getSeedValue() + "_partition=" + idPartition);
             } catch (UserNotFound ex) {
                 ERROR_CODES.USER_NOT_FOUND.exit(ex);
             } catch (ItemNotFound ex) {
                 ERROR_CODES.ITEM_NOT_FOUND.exit(ex);
             }
-            progressChanged("Copying partitions", (int) i * 100 / getNumberOfPartitions());
+            progressChanged("Copying partitions", (int) idPartition * 100 / getNumberOfPartitions());
         }
         return ret;
     }

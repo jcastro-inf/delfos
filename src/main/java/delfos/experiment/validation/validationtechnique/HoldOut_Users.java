@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,20 +16,20 @@
  */
 package delfos.experiment.validation.validationtechnique;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
-import java.util.Set;
-import java.util.TreeSet;
 import delfos.common.Global;
 import delfos.common.exceptions.dataset.CannotLoadContentDataset;
 import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
 import delfos.common.parameters.Parameter;
 import delfos.common.parameters.restriction.IntegerParameter;
-import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.loader.types.DatasetLoader;
+import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.generated.modifieddatasets.SelectionDataset;
 import delfos.dataset.storage.validationdatasets.PairOfTrainTestRatingsDataset;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+import java.util.Set;
+import java.util.TreeSet;
 
 /**
  * Clase que implementa el método de partición en datasets de
@@ -103,7 +103,8 @@ public class HoldOut_Users extends ValidationTechnique {
         test.setProductosPermitidos(allItems);
         test.setUsuariosPermitidos(usersInTest);
 
-        ret[0] = new PairOfTrainTestRatingsDataset(datasetLoader, training, test);
+        ret[0] = new PairOfTrainTestRatingsDataset(datasetLoader, training, test,
+                "_" + this.getClass().getSimpleName() + "_seed=" + getSeedValue());
 
         Global.showInfoMessage("Training dataset #users " + training.allUsers().size() + "\n");
         Global.showInfoMessage("Test dataset #users     " + test.allUsers().size() + "\n");

@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,6 +16,15 @@
  */
 package delfos.experiment.validation.validationtechnique;
 
+import delfos.common.Global;
+import delfos.common.exceptions.dataset.CannotLoadContentDataset;
+import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
+import delfos.common.parameters.Parameter;
+import delfos.common.parameters.restriction.IntegerParameter;
+import delfos.dataset.basic.loader.types.DatasetLoader;
+import delfos.dataset.basic.rating.Rating;
+import delfos.dataset.generated.modifieddatasets.SelectionDataset;
+import delfos.dataset.storage.validationdatasets.PairOfTrainTestRatingsDataset;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -23,15 +32,6 @@ import java.util.List;
 import java.util.Random;
 import java.util.Set;
 import java.util.TreeSet;
-import delfos.common.Global;
-import delfos.common.exceptions.dataset.CannotLoadContentDataset;
-import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
-import delfos.common.parameters.Parameter;
-import delfos.common.parameters.restriction.IntegerParameter;
-import delfos.dataset.basic.rating.Rating;
-import delfos.dataset.basic.loader.types.DatasetLoader;
-import delfos.dataset.generated.modifieddatasets.SelectionDataset;
-import delfos.dataset.storage.validationdatasets.PairOfTrainTestRatingsDataset;
 
 /**
  * Clase que implementa el método validación cross fold validation que se aplica
@@ -86,19 +86,20 @@ public class CrossFoldValidation_Items extends ValidationTechnique {
         Set<Integer> allUsers = new TreeSet<>(datasetLoader.getRatingsDataset().allUsers());
 
         Global.showInfoMessage("Original dataset #users " + datasetLoader.getRatingsDataset().allUsers().size() + "\n");
-        for (int i = 0; i < numSplits; i++) {
+        for (int idPartition = 0; idPartition < numSplits; idPartition++) {
             Set<Integer> productosEnTraining = new TreeSet<>(datasetLoader.getRatingsDataset().allRatedItems());
-            productosEnTraining.removeAll(itemsTest[i]);
+            productosEnTraining.removeAll(itemsTest[idPartition]);
 
             SelectionDataset training = new SelectionDataset(datasetLoader.getRatingsDataset());
             training.setProductosPermitidos(productosEnTraining);
             training.setUsuariosPermitidos(allUsers);
 
             SelectionDataset test = new SelectionDataset(datasetLoader.getRatingsDataset());
-            test.setProductosPermitidos(itemsTest[i]);
+            test.setProductosPermitidos(itemsTest[idPartition]);
             test.setUsuariosPermitidos(allUsers);
-            ret[i] = new PairOfTrainTestRatingsDataset(datasetLoader, training, test);
-            Global.showInfoMessage("------------------  " + i + "  ------------------\n");
+            ret[idPartition] = new PairOfTrainTestRatingsDataset(datasetLoader, training, test,
+                    "_" + this.getClass().getSimpleName() + "_seed=" + getSeedValue() + "_partition=" + idPartition);
+            Global.showInfoMessage("------------------  " + idPartition + "  ------------------\n");
             Global.showInfoMessage("Training dataset #users " + training.allUsers().size() + "\n");
             Global.showInfoMessage("Test dataset #users     " + test.allUsers().size() + "\n");
         }

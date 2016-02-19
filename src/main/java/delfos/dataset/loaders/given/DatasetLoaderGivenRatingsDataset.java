@@ -58,6 +58,24 @@ public class DatasetLoaderGivenRatingsDataset<RatingType extends Rating> extends
         setAlias(datasetLoader.getAlias());
     }
 
+    /**
+     * Replaces the original ratings dataset in the dataset loader for the one
+     * provided.
+     *
+     * @param datasetLoader
+     * @param ratingsDataset
+     * @param aliasSuffix Alias suffix, to identify how this dataset has been
+     * generated.
+     */
+    public DatasetLoaderGivenRatingsDataset(
+            DatasetLoader<? extends Rating> datasetLoader,
+            RatingsDataset<RatingType> ratingsDataset,
+            String aliasSuffix) {
+        this(datasetLoader, ratingsDataset);
+
+        setAlias(datasetLoader.getAlias() + aliasSuffix);
+    }
+
     @Override
     public RelevanceCriteria getDefaultRelevanceCriteria() {
         return datasetLoader.getDefaultRelevanceCriteria();

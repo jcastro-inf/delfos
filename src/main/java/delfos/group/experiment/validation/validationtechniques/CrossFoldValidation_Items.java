@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -151,7 +151,9 @@ public class CrossFoldValidation_Items extends GroupValidationTechnique {
                         datasetLoader,
                         ValidationDatasets.getInstance().createTrainingDataset(datasetLoader.getRatingsDataset(),
                                 finalTestSets.get(idPartition)),
-                        ValidationDatasets.getInstance().createTestDataset(datasetLoader.getRatingsDataset(), finalTestSets.get(idPartition)));
+                        ValidationDatasets.getInstance().createTestDataset(datasetLoader.getRatingsDataset(), finalTestSets.get(idPartition)),
+                        "_" + this.getClass().getSimpleName() + "_seed=" + getSeedValue() + "_partition=" + idPartition
+                );
 
                 if (Global.isVerboseAnnoying()) {
 

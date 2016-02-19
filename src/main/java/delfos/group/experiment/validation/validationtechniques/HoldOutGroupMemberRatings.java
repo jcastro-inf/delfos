@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,13 +16,6 @@
  */
 package delfos.group.experiment.validation.validationtechniques;
 
-import java.util.Map;
-import java.util.Random;
-import java.util.Set;
-import java.util.TreeMap;
-import java.util.TreeSet;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import delfos.ERROR_CODES;
 import delfos.common.Global;
 import delfos.common.exceptions.dataset.CannotLoadContentDataset;
@@ -31,12 +24,19 @@ import delfos.common.exceptions.dataset.items.ItemNotFound;
 import delfos.common.exceptions.dataset.users.UserNotFound;
 import delfos.common.parameters.Parameter;
 import delfos.common.parameters.restriction.FloatParameter;
-import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.loader.types.DatasetLoader;
+import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.storage.validationdatasets.PairOfTrainTestRatingsDataset;
 import delfos.dataset.storage.validationdatasets.ValidationDatasets;
 import delfos.dataset.util.DatasetPrinter;
 import delfos.group.groupsofusers.GroupOfUsers;
+import java.util.Map;
+import java.util.Random;
+import java.util.Set;
+import java.util.TreeMap;
+import java.util.TreeSet;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Validación hold out para sistemas de recomendación a grupos. Esta validación
@@ -131,7 +131,8 @@ public class HoldOutGroupMemberRatings extends GroupValidationTechnique {
             ret[0] = new PairOfTrainTestRatingsDataset(
                     datasetLoader,
                     ValidationDatasets.getInstance().createTrainingDataset(datasetLoader.getRatingsDataset(), testSet),
-                    ValidationDatasets.getInstance().createTestDataset(datasetLoader.getRatingsDataset(), testSet));
+                    ValidationDatasets.getInstance().createTestDataset(datasetLoader.getRatingsDataset(), testSet),
+                    "_" + this.getClass().getSimpleName() + "_seed=" + getSeedValue());
 
             if (Global.isVerboseAnnoying()) {
 

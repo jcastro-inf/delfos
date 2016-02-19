@@ -121,4 +121,9 @@ public abstract class DatasetLoaderAbstract<RatingType extends Rating> extends P
         return hashCodeBuilder.hashCode();
     }
 
+    @Override
+    public String toString() {
+        return getAlias();
+    }
+
 }
