@@ -132,7 +132,7 @@ public class Global {
     }
 
     public static void showMessageTimestamped(String message) {
-        Global.showInfoMessage(addTimestampToMessage(message));
+        Global.showMessage(addTimestampToMessage(message));
     }
 
     public static void showThreadMessageAnnoying(String message) {
