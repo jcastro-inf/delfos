@@ -1,2 +1,2 @@
 # delfos
-For more information, visit the wIKI at https://github.com/jcastro-inf/delfos/wiki
+For more information, visit the wiki at https://github.com/jcastro-inf/delfos/wiki
