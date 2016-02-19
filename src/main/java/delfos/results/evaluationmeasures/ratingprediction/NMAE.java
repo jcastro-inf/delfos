@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,9 +16,7 @@
  */
 package delfos.results.evaluationmeasures.ratingprediction;
 
-import delfos.ERROR_CODES;
 import delfos.common.Global;
-import delfos.common.exceptions.dataset.users.UserNotFound;
 import delfos.common.statisticalfuncions.MeanIterative;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RatingsDataset;
@@ -50,31 +48,27 @@ public class NMAE extends EvaluationMeasure {
         Domain originalDomain = testDataset.getRatingsDomain();
 
         for (int idUser : testDataset.allUsers()) {
-            Collection<Recommendation> recommendationList = recommendationResults.getRecommendationsForUser(idUser);
-            if (recommendationList == null) {
+            Collection<Recommendation> recommendations = recommendationResults.getRecommendationsForUser(idUser);
+            if (recommendations == null) {
                 throw new IllegalStateException("Recommendation list is null.");
             }
-            try {
-                Map<Integer, ? extends Rating> userRated = testDataset.getUserRatingsRated(idUser);
-                for (Recommendation lista : recommendationList) {
-                    Number trueRating = userRated.get(lista.getIdItem()).getRatingValue();
-                    Number predictedRating = lista.getPreference();
+            Map<Integer, ? extends Rating> userRatingsRated = testDataset.getUserRatingsRated(idUser);
+            for (Recommendation recommendation : recommendations) {
+                Number trueRating = userRatingsRated.get(recommendation.getIdItem()).getRatingValue();
+                Number predictedRating = recommendation.getPreference();
 
-                    if (trueRating != null
-                            && !Double.isNaN(trueRating.doubleValue())
-                            && !Double.isInfinite(trueRating.doubleValue())
-                            && predictedRating != null
-                            && !Double.isNaN(predictedRating.doubleValue())
-                            && !Double.isInfinite(predictedRating.doubleValue())) {
+                if (trueRating != null
+                        && !Double.isNaN(trueRating.doubleValue())
+                        && !Double.isInfinite(trueRating.doubleValue())
+                        && predictedRating != null
+                        && !Double.isNaN(predictedRating.doubleValue())
+                        && !Double.isInfinite(predictedRating.doubleValue())) {
 
-                        double trueRatingNormalised = originalDomain.convertToDecimalDomain(trueRating, DecimalDomain.ZERO_TO_ONE).doubleValue();
-                        double predictedNormalised = originalDomain.convertToDecimalDomain(predictedRating, DecimalDomain.ZERO_TO_ONE).doubleValue();
+                    double trueRatingNormalised = originalDomain.convertToDecimalDomain(trueRating, DecimalDomain.ZERO_TO_ONE).doubleValue();
+                    double predictedNormalised = originalDomain.convertToDecimalDomain(predictedRating, DecimalDomain.ZERO_TO_ONE).doubleValue();
 
-                        mean.addValue(Math.abs(trueRatingNormalised - predictedNormalised));
-                    }
+                    mean.addValue(Math.abs(trueRatingNormalised - predictedNormalised));
                 }
-            } catch (UserNotFound ex) {
-                ERROR_CODES.USER_NOT_FOUND.exit(ex);
             }
 
         }
