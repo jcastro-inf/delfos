@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -17,7 +17,6 @@
 package delfos;
 
 import delfos.common.Global;
-import delfos.common.parallelwork.Parallelisation;
 import delfos.configuration.ConfigurationManager;
 import delfos.view.InitialFrame;
 import delfos.view.SwingGUI;
@@ -69,12 +68,6 @@ public class Constants {
      * Flag para indicar que se escriban los XML detallados de las ejecuciones.
      */
     public static final String PRINT_FULL_XML = "--full-results";
-    /**
-     * Parámetro de la línea de comandos para limitar el número de cpus
-     * adicionales que se pueden utilizar, a parte de la hebra principal.
-     *
-     */
-    public static final String MAX_CPUS = "-maxCPU";
 
     /**
      * States the temporal directory used by the library.
@@ -195,11 +188,6 @@ public class Constants {
 
         if (consoleParameters.isFlagDefined(PRINT_FULL_XML)) {
             Constants.setPrintFullXML(true);
-        }
-
-        if (consoleParameters.isParameterDefined(MAX_CPUS)) {
-            String numCPU = consoleParameters.getValue(MAX_CPUS);
-            Parallelisation.setMaxCPU(Integer.parseInt(numCPU));
         }
     }
 
