@@ -47,7 +47,7 @@ public class AddUser extends DatabaseCaseUseSubManager {
         try {
 
             int idUser = new Integer(consoleParameters.getValue(MANAGE_RATING_DATABASE_ADD_USER));
-            if (changeableDatasetLoader.getUsersDataset().getAllID().contains(idUser)) {
+            if (changeableDatasetLoader.getUsersDataset().allIDs().contains(idUser)) {
                 IllegalArgumentException ex = new IllegalArgumentException();
                 ERROR_CODES.MANAGE_RATING_DATABASE_USER_ALREADY_EXISTS.exit(ex);
             }

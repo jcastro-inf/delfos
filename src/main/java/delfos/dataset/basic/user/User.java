@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,12 +16,12 @@
  */
 package delfos.dataset.basic.user;
 
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeMap;
 import delfos.dataset.basic.features.EntityWithFeatures;
 import static delfos.dataset.basic.features.EntityWithFeaturesDefault.checkFeatureAndFeatureValuesArrays;
 import delfos.dataset.basic.features.Feature;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
 
 /**
  * Objeto que representa a un usuario del sistema de recomendación.

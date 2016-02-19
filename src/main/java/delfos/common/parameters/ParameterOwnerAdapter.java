@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,14 +16,21 @@
  */
 package delfos.common.parameters;
 
+import delfos.Constants;
 import delfos.common.Global;
 import delfos.common.StringsOrderings;
 import delfos.common.parameters.restriction.CannotParseParameterValue;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Objects;
 import java.util.TreeMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Clase que define el comportamiento de cualquier objeto al que se le puedan
@@ -169,7 +176,6 @@ public abstract class ParameterOwnerAdapter implements ParameterOwner {
                     throw new IllegalArgumentException("Parameter error: " + p.getName() + " not compatible with " + value);
                 }
             }
-
             if (p.isCorrect(valueMejorado)) {
                 parameterValues.put(p, valueMejorado);
             } else {
@@ -324,21 +330,100 @@ public abstract class ParameterOwnerAdapter implements ParameterOwner {
         return equals;
     }
 
+    public static int compare(ParameterOwner parameterOwner1, ParameterOwner parameterOwner2) {
+        return ParameterOwner.PARAMETERS_DETAILED.compare(parameterOwner1, parameterOwner2);
+    }
+
     @Override
     public int hashCode() {
+        return ParameterOwnerAdapter.hashCode(this);
+    }
+
+    public String explainHashCode() {
+        return explainHashCode(this);
+    }
+
+    public static String explainHashCode(ParameterOwner parameterOwner) {
+
+        int hash = 7;
+        hash = 97 * hash + Objects.hashCode(parameterOwner.getClass().getName().hashCode());
+
+        StringBuilder explanation = new StringBuilder();
+
+        explanation
+                .append(parameterOwner.getClass().getName())
+                .append(" hash=[")
+                .append(Objects.hashCode(parameterOwner.getClass().getName().hashCode()))
+                .append("]")
+                .append("\n");
+
+        for (Parameter parameter : parameterOwner.getParameters()) {
+            if (parameter.equals(ParameterOwner.ALIAS)) {
+                continue;
+            }
+
+            final String parameterName = parameter.getName();
+            hash = 97 * hash + parameterName.hashCode();
+
+            Object parameterValueString = parameterOwner.getParameterValue(parameter).toString();
+            hash = 97 * hash + parameterValueString.hashCode();
+
+            explanation
+                    .append(parameterName)
+                    .append(" hash=[")
+                    .append(parameterName.hashCode())
+                    .append("]")
+                    .append("\n");
+
+            explanation.append("\t").append("\t")
+                    .append(parameterValueString)
+                    .append(" hash=[")
+                    .append(parameterValueString.hashCode())
+                    .append("]")
+                    .append("\n");
+
+        }
+
+        return explanation.toString();
+    }
+
+    public static int hashCode(ParameterOwner parameterOwner) {
+
         int hash = 7;
 
-        hash = 97 * hash + Objects.hashCode(this.getClass().hashCode());
+        hash = 97 * hash + Objects.hashCode(parameterOwner.getClass().getName().hashCode());
 
-        for (Parameter parameter : parameterValues.keySet()) {
-            hash = 97 * hash + parameter.getName().hashCode();
-            hash = 97 * hash + getParameterValue(parameter).hashCode();
+        for (Parameter parameter : parameterOwner.getParameters()) {
+            if (parameter.equals(ParameterOwner.ALIAS)) {
+                continue;
+            }
+
+            final String parameterName = parameter.getName();
+            hash = 97 * hash + parameterName.hashCode();
+
+            Object parameterValueString = parameterOwner.getParameterValue(parameter).toString();
+            hash = 97 * hash + parameterValueString.hashCode();
         }
 
         return hash;
     }
 
-    public static int compare(ParameterOwner parameterOwner1, ParameterOwner parameterOwner2) {
-        return ParameterOwner.PARAMETERS_DETAILED.compare(parameterOwner1, parameterOwner2);
+    public static void saveHashCodeExplanationInFile(ParameterOwner parameterOwner) {
+        String fileName
+                = Constants.getTempDirectory() + File.separator
+                + "parameter-owner-" + parameterOwner.getAlias() + "-hash-explanation-" + parameterOwner.hashCode() + ".txt";
+
+        File file = new File(fileName);
+
+        String explainHashCode = explainHashCode(parameterOwner);
+        if (!file.exists()) {
+            try (BufferedWriter writer = new BufferedWriter(new FileWriter(file));) {
+
+                writer.write(fileName + "\n");
+                writer.write(explainHashCode);
+            } catch (IOException ex) {
+                Logger.getLogger(ParameterOwnerAdapter.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
     }
 }

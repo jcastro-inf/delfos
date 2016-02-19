@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -92,6 +92,7 @@ public class GroupOfUsers implements Comparable<GroupOfUsers>, Iterable<Integer>
         idMembers = users.stream().map(user -> user.getId()).collect(Collectors.toCollection(TreeSet::new));
     }
 
+    @Deprecated
     public GroupOfUsers(Collection<Integer> users) {
         idMembers = new TreeSet<>(users);
         members = users.stream().map(user -> new User(user)).collect(Collectors.toSet());

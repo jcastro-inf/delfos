@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -66,4 +66,5 @@ public class CompleteDatasetLoaderAbstract_withTrust<RatingType extends Rating>
     public TrustDataset getTrustDataset() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
+
 }

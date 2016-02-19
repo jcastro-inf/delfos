@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -113,7 +113,7 @@ public class ChangeableMySQLContentDataset implements ChangeableContentDataset, 
 
     @Override
     public final void addItem(Item item) {
-        if (contentDataset.getAllID().contains(item.getId())) {
+        if (contentDataset.allIDs().contains(item.getId())) {
             //El dataset ya tenía el producto, haciento cambio.
 
             Map<Integer, Item> items = contentDataset.stream()
@@ -236,8 +236,8 @@ public class ChangeableMySQLContentDataset implements ChangeableContentDataset, 
     }
 
     @Override
-    public Collection<Integer> allID() {
-        return contentDataset.allID();
+    public Collection<Integer> allIDs() {
+        return contentDataset.allIDs();
     }
 
     @Override
@@ -288,11 +288,6 @@ public class ChangeableMySQLContentDataset implements ChangeableContentDataset, 
     @Override
     public Map<Feature, Object> parseEntityFeatures(Map<String, String> features) {
         return contentDataset.parseEntityFeatures(features);
-    }
-
-    @Override
-    public Collection<Integer> getAllID() {
-        return contentDataset.getAllID();
     }
 
     @Override
@@ -489,7 +484,7 @@ public class ChangeableMySQLContentDataset implements ChangeableContentDataset, 
     }
 
     public Collection<Item> getAllItems() {
-        return getAllID().stream().map((idItem) -> get(idItem)).collect(Collectors.toList());
+        return allIDs().stream().map((idItem) -> get(idItem)).collect(Collectors.toList());
     }
 
     @Override

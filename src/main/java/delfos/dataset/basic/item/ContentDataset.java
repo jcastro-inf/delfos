@@ -64,7 +64,7 @@ public interface ContentDataset extends Comparable<Object>, CollectionOfEntities
      *
      * @return Colección con todos los id de los items.
      */
-    public Collection<Integer> allID();
+    public Collection<Integer> allIDs();
 
     /**
      * Devuelve el conjunto de productos que pueden ser recomendados en el

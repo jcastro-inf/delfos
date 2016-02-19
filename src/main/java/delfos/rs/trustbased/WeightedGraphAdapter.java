@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,6 +16,7 @@
  */
 package delfos.rs.trustbased;
 
+import delfos.dataset.util.DatasetPrinter;
 import it.unimi.dsi.fastutil.PriorityQueue;
 import it.unimi.dsi.fastutil.objects.ObjectHeapPriorityQueue;
 import java.io.Serializable;
@@ -27,7 +28,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
-import delfos.dataset.util.DatasetPrinter;
+import java.util.stream.Collectors;
 
 /**
  * Grafo ponderado.
@@ -45,8 +46,8 @@ public class WeightedGraphAdapter<Node> implements Serializable, WeightedGraph<N
 
     public WeightedGraphAdapter() {
 
-        this.allNodes = new TreeSet<Node>();
-        this.connections = new TreeMap<Node, Map<Node, Number>>();
+        this.allNodes = new TreeSet<>();
+        this.connections = new TreeMap<>();
     }
 
     /**
@@ -64,16 +65,21 @@ public class WeightedGraphAdapter<Node> implements Serializable, WeightedGraph<N
             throw new IllegalArgumentException("The trust values structure cannot be null");
         }
 
-        for (Node key1 : connections.keySet()) {
-            this.connections.put(key1, new TreeMap<Node, Number>());
-            allNodes.add(key1);
-
-            for (Node key2 : connections.get(key1).keySet()) {
-                Number value = connections.get(key1).get(key2);
-                this.connections.get(key1).put(key2, value);
+        connections.keySet().stream().map((node) -> {
+            this.connections.put(node, new TreeMap<>());
+            return node;
+        }).map((node) -> {
+            allNodes.add(node);
+            return node;
+        }).forEach((node1) -> {
+            connections.get(node1).keySet().stream().map((node2) -> {
+                Number value = connections.get(node1).get(node2);
+                this.connections.get(node1).put(node2, value);
+                return node2;
+            }).forEach((key2) -> {
                 this.allNodes.add(key2);
-            }
-        }
+            });
+        });
     }
 
     /**
@@ -264,4 +270,27 @@ public class WeightedGraphAdapter<Node> implements Serializable, WeightedGraph<N
         return printWeightedGraph;
     }
 
+    public double[][] asMatrix() {
+
+        final List<Node> nodesSorted = nodesSortingForMatrix();
+
+        double[][] matrix = new double[nodesSorted.size()][nodesSorted.size()];
+
+        for (int indexRow = 0; indexRow < nodesSorted.size(); indexRow++) {
+            Node node = nodesSorted.get(indexRow);
+
+            for (int indexColumn = 0; indexColumn < nodesSorted.size(); indexColumn++) {
+                Node node2 = nodesSorted.get(indexColumn);
+                double value = connections.get(node).get(node2).doubleValue();
+                matrix[indexRow][indexColumn] = value;
+            }
+        }
+
+        return matrix;
+    }
+
+    public List<Node> nodesSortingForMatrix() {
+        List<Node> nodesSorted = this.allNodes.stream().sorted().collect(Collectors.toList());
+        return Collections.unmodifiableList(nodesSorted);
+    }
 }

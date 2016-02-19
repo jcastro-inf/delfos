@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -134,7 +134,8 @@ public class HoldOutGroupRatedItems extends GroupValidationTechnique {
             ret[0] = new PairOfTrainTestRatingsDataset(
                     datasetLoader,
                     ValidationDatasets.getInstance().createTrainingDataset(datasetLoader.getRatingsDataset(), testSet),
-                    ValidationDatasets.getInstance().createTestDataset(datasetLoader.getRatingsDataset(), testSet));
+                    ValidationDatasets.getInstance().createTestDataset(datasetLoader.getRatingsDataset(), testSet),
+                    "_" + this.getClass().getSimpleName() + "_seed=" + getSeedValue());
 
             if (Global.isVerboseAnnoying()) {
 

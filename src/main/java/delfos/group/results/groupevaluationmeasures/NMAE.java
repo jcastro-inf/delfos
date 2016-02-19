@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -75,12 +75,15 @@ public class NMAE extends GroupEvaluationMeasure {
                 }
             }
 
-            for (Recommendation r : groupRecommendations) {
-                int idItem = r.getIdItem();
+            for (Recommendation recommendation : groupRecommendations) {
+                if (Double.isNaN(recommendation.getPreference().doubleValue())) {
+                    continue;
+                }
+                int idItem = recommendation.getIdItem();
                 for (int idUser : group.getIdMembers()) {
                     if (groupTrueRatings.get(idUser).containsKey(idItem)) {
                         double trueRating = groupTrueRatings.get(idUser).get(idItem).getRatingValue().doubleValue();
-                        double predictedRating = r.getPreference().doubleValue();
+                        double predictedRating = recommendation.getPreference().doubleValue();
 
                         double trueRatingNormalised = originalDomain.convertToDecimalDomain(trueRating, DecimalDomain.ZERO_TO_ONE).doubleValue();
                         double predictedNormalised = originalDomain.convertToDecimalDomain(predictedRating, DecimalDomain.ZERO_TO_ONE).doubleValue();

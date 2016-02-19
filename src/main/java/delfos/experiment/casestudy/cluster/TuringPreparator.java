@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -36,15 +36,25 @@ import java.text.DecimalFormat;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
+ * Class to create and execute experiments with a fixed directory structure that
+ * allows the latter execution in other machines.
  *
- * @version 19-jun-2014
  * @author jcastro-inf ( https://github.com/jcastro-inf )
  */
 public class TuringPreparator implements ExperimentPreparator {
 
-    private static final String SEED_DEFAULT = "123456";
+    private final boolean parallel;
+
+    public TuringPreparator() {
+        parallel = false;
+    }
+
+    public TuringPreparator(boolean parallel) {
+        this.parallel = parallel;
+    }
 
     @Override
     public void prepareExperiment(File experimentBaseDirectory, List<CaseStudy> caseStudies, DatasetLoader<? extends Rating> datasetLoader) {
@@ -110,80 +120,70 @@ public class TuringPreparator implements ExperimentPreparator {
     }
 
     public void executeAllExperimentsInDirectory(File directory) {
-        List<File> children = Arrays.asList(directory.listFiles());
+        List<File> experimentsToBeExecuted = Arrays.asList(directory.listFiles());
 
-        children.stream()
-                .forEach((singleExperimentDirectory) -> {
-                    String[] args = {
-                        ExecuteGroupXML.SEED_PARAMETER, "123456",
-                        ExecuteGroupXML.MODE_PARAMETER,
-                        ExecuteGroupXML.XML_DIRECTORY, singleExperimentDirectory.getPath(),
-                        ExecuteGroupXML.NUM_EXEC_PARAMETER, "1",
-                        Constants.PRINT_FULL_XML,
-                        Constants.RAW_DATA};
-                    Main.mainWithExceptions(args);
-                });
+        Stream<File> experimentsToBeExecutedStream
+                = parallel
+                        ? experimentsToBeExecuted.parallelStream()
+                        : experimentsToBeExecuted.stream();
+
+        experimentsToBeExecutedStream.forEach((singleExperimentDirectory) -> {
+            String[] args = {
+                ExecuteGroupXML.SEED_PARAMETER, "123456",
+                ExecuteGroupXML.MODE_PARAMETER,
+                ExecuteGroupXML.XML_DIRECTORY, singleExperimentDirectory.getPath(),
+                ExecuteGroupXML.NUM_EXEC_PARAMETER, "1",
+                Constants.PRINT_FULL_XML,
+                Constants.RAW_DATA};
+            Main.mainWithExceptions(args);
+        });
     }
 
     public void executeAllExperimentsInDirectory(File directory, int numExec) {
-        Arrays.asList(directory.listFiles())
-                .stream()
-                .forEach((singleExperimentDirectory) -> {
-                    String[] args = {
-                        ExecuteGroupXML.MODE_PARAMETER,
-                        ExecuteGroupXML.SEED_PARAMETER, "123456",
-                        ExecuteGroupXML.XML_DIRECTORY, singleExperimentDirectory.getPath(),
-                        ExecuteGroupXML.NUM_EXEC_PARAMETER, Integer.toString(numExec),
-                        Constants.PRINT_FULL_XML,
-                        Constants.RAW_DATA
-                    };
+        List<File> experimentsToBeExecuted = Arrays.asList(directory.listFiles());
 
-                    Main.mainWithExceptions(args);
+        Stream<File> experimentsToBeExecutedStream
+                = parallel
+                        ? experimentsToBeExecuted.parallelStream()
+                        : experimentsToBeExecuted.stream();
 
-                    Global.show("==============================\n");
-                });
+        experimentsToBeExecutedStream.forEach((singleExperimentDirectory) -> {
+            String[] args = {
+                ExecuteGroupXML.MODE_PARAMETER,
+                ExecuteGroupXML.SEED_PARAMETER, "123456",
+                ExecuteGroupXML.XML_DIRECTORY, singleExperimentDirectory.getPath(),
+                ExecuteGroupXML.NUM_EXEC_PARAMETER, Integer.toString(numExec),
+                Constants.PRINT_FULL_XML,
+                Constants.RAW_DATA
+            };
+
+            Main.mainWithExceptions(args);
+
+            Global.show("==============================\n");
+        });
     }
 
     public int sizeOfAllExperimentsInDirectory(File directory) {
         return Arrays.asList(directory.listFiles()).size();
     }
 
-    public void executeAllExperimentsInDirectory(File directory, int numExec, int maxCPU) {
-        Arrays.asList(directory.listFiles())
-                .stream()
-                .forEach((singleExperimentDirectory) -> {
-                    String[] args = {
-                        ExecuteGroupXML.SEED_PARAMETER, "123456",
-                        ExecuteGroupXML.MODE_PARAMETER,
-                        ExecuteGroupXML.XML_DIRECTORY, singleExperimentDirectory.getPath(),
-                        ExecuteGroupXML.NUM_EXEC_PARAMETER, Integer.toString(numExec),
-                        Constants.MAX_CPUS, Integer.toString(maxCPU),
-                        Constants.PRINT_FULL_XML,
-                        Constants.RAW_DATA};
-
-                    Main.mainWithExceptions(args);
-
-                    Global.show("==============================\n");
-                });
-    }
-
     public void executeAllExperimentsInDirectory_withSeed(File directory, int numExec, int seedValue) {
         List<File> experimentsToBeExecuted = Arrays.asList(directory.listFiles());
 
-        experimentsToBeExecuted.stream()
-                .forEach((singleExperimentDirectory) -> {
-                    String[] args = {
-                        ExecuteGroupXML.SEED_PARAMETER, Integer.toString(seedValue),
-                        ExecuteGroupXML.MODE_PARAMETER,
-                        ExecuteGroupXML.XML_DIRECTORY, singleExperimentDirectory.getPath(),
-                        ExecuteGroupXML.NUM_EXEC_PARAMETER, Integer.toString(numExec),
-                        Constants.PRINT_FULL_XML,
-                        Constants.RAW_DATA};
+        Stream<File> stream = parallel ? experimentsToBeExecuted.parallelStream() : experimentsToBeExecuted.stream();
+        stream.forEach((singleExperimentDirectory) -> {
+            String[] args = {
+                ExecuteGroupXML.SEED_PARAMETER, Integer.toString(seedValue),
+                ExecuteGroupXML.MODE_PARAMETER,
+                ExecuteGroupXML.XML_DIRECTORY, singleExperimentDirectory.getPath(),
+                ExecuteGroupXML.NUM_EXEC_PARAMETER, Integer.toString(numExec),
+                Constants.PRINT_FULL_XML,
+                Constants.RAW_DATA};
 
-                    Main.mainWithExceptions(args);
+            Main.mainWithExceptions(args);
 
-                    Global.show("==============================\n");
-                });
+            Global.show("==============================\n");
+        });
     }
 
     /**

@@ -250,7 +250,7 @@ public abstract class CollectionOfEntitiesWithFeaturesDefault<Entity extends Ent
     }
 
     @Override
-    public Collection<Integer> getAllID() {
+    public Collection<Integer> allIDs() {
         return new TreeSet<>(entitiesById.keySet());
     }
 

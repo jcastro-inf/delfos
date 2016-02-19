@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,8 +16,8 @@
  */
 package delfos.common.statisticalfuncions;
 
-import java.util.Collection;
 import delfos.common.Global;
+import java.util.Collection;
 
 /**
  * Media calculada sin almacenar los valores previos. Se pueden ir añadiendo
@@ -73,7 +73,7 @@ public class MeanIterative {
             mean = 0;
         }
         for (Number n : values) {
-            addValue(n.floatValue());
+            addValue(n.doubleValue());
         }
         maxValues = null;
     }
@@ -106,27 +106,25 @@ public class MeanIterative {
             IllegalStateException ex = new IllegalStateException("Parameter is NaN.");
             Global.showWarning(ex.getMessage());
             Global.showError(ex);
+        } else if (Double.isInfinite(value)) {
+            IllegalStateException ex = new IllegalStateException("Parameter is infinite, check for overflows.");
+            Global.showWarning(ex.getMessage());
+            Global.showError(ex);
         } else {
-            if (Double.isInfinite(value)) {
-                IllegalStateException ex = new IllegalStateException("Parameter is infinite, check for overflows.");
+            double newMean = mean * (((double) numValues) / (numValues + 1.0)) + value / (numValues + 1);
+            //double newMean = ( mean * numValues + value) / (numValues+1);
+            if (Double.isNaN(newMean) || Double.isInfinite(newMean)) {
+                IllegalStateException ex = new IllegalStateException("Mean overflowed.");
                 Global.showWarning(ex.getMessage());
                 Global.showError(ex);
             } else {
-                double newMean = mean * (((double) numValues) / (numValues + 1.0)) + value / (numValues + 1);
-                //double newMean = ( mean * numValues + value) / (numValues+1);
-                if (Double.isNaN(newMean) || Double.isInfinite(newMean)) {
-                    IllegalStateException ex = new IllegalStateException("Mean overflowed.");
-                    Global.showWarning(ex.getMessage());
-                    Global.showError(ex);
-                } else {
-                    numValues++;
-                    mean = newMean;
-                }
-                if (maxValues != null && numValues > maxValues) {
-                    numValues = maxValues;
-                }
-
+                numValues++;
+                mean = newMean;
             }
+            if (maxValues != null && numValues > maxValues) {
+                numValues = maxValues;
+            }
+
         }
     }
 
@@ -196,7 +194,7 @@ public class MeanIterative {
      */
     public void addValues(Collection<? extends Number> values) {
         values.stream().forEach((n) -> {
-            addValue(n.floatValue());
+            addValue(n.doubleValue());
         });
     }
 

@@ -92,7 +92,7 @@ public class ChangeableMySQLUsersDataset implements ChangeableUsersDataset, Coll
 
     @Override
     public final void addUser(User user) {
-        if (usersDataset.getAllID().contains(user.getId())) {
+        if (usersDataset.allIDs().contains(user.getId())) {
             //El dataset ya tenía el usuario, haciento cambio.
 
             Map<Integer, User> users = new TreeMap<>();
@@ -246,8 +246,8 @@ public class ChangeableMySQLUsersDataset implements ChangeableUsersDataset, Coll
     }
 
     @Override
-    public Collection<Integer> getAllID() {
-        return usersDataset.getAllID();
+    public Collection<Integer> allIDs() {
+        return usersDataset.allIDs();
     }
 
     @Override
@@ -421,7 +421,7 @@ public class ChangeableMySQLUsersDataset implements ChangeableUsersDataset, Coll
     }
 
     public Collection<User> getAllItems() {
-        return getAllID().stream().map((idUser) -> get(idUser)).collect(Collectors.toList());
+        return allIDs().stream().map((idUser) -> get(idUser)).collect(Collectors.toList());
     }
 
     @Override
@@ -446,7 +446,7 @@ public class ChangeableMySQLUsersDataset implements ChangeableUsersDataset, Coll
 
     @Override
     public int size() {
-        return getAllID().size();
+        return allIDs().size();
     }
 
 }

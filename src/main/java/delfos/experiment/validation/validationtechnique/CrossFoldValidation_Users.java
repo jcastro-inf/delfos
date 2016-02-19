@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,6 +16,16 @@
  */
 package delfos.experiment.validation.validationtechnique;
 
+import delfos.common.Global;
+import delfos.common.exceptions.dataset.CannotLoadContentDataset;
+import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
+import delfos.common.parameters.Parameter;
+import delfos.common.parameters.restriction.IntegerParameter;
+import delfos.dataset.basic.loader.types.DatasetLoader;
+import delfos.dataset.basic.rating.Rating;
+import delfos.dataset.generated.modifieddatasets.SelectionDataset;
+import delfos.dataset.storage.validationdatasets.PairOfTrainTestRatingsDataset;
+import delfos.rs.collaborativefiltering.knn.memorybased.KnnMemoryBasedCFRS;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -23,16 +33,6 @@ import java.util.List;
 import java.util.Random;
 import java.util.Set;
 import java.util.TreeSet;
-import delfos.common.Global;
-import delfos.common.exceptions.dataset.CannotLoadContentDataset;
-import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
-import delfos.common.parameters.Parameter;
-import delfos.common.parameters.restriction.IntegerParameter;
-import delfos.dataset.basic.rating.Rating;
-import delfos.dataset.basic.loader.types.DatasetLoader;
-import delfos.dataset.generated.modifieddatasets.SelectionDataset;
-import delfos.dataset.storage.validationdatasets.PairOfTrainTestRatingsDataset;
-import delfos.rs.collaborativefiltering.knn.memorybased.KnnMemoryBasedCFRS;
 
 /**
  * Clase que implementa el método validación cross fold validation que se aplica
@@ -92,9 +92,9 @@ public class CrossFoldValidation_Users extends ValidationTechnique {
         Set<Integer> allItems = new TreeSet<>(datasetLoader.getRatingsDataset().allRatedItems());
 
         Global.showInfoMessage("Original dataset #users " + datasetLoader.getRatingsDataset().allUsers().size() + "\n");
-        for (int i = 0; i < numSplits; i++) {
+        for (int idPartition = 0; idPartition < numSplits; idPartition++) {
             Set<Integer> usuariosEnTraining = new TreeSet<>(datasetLoader.getRatingsDataset().allUsers());
-            usuariosEnTraining.removeAll(usersTest[i]);
+            usuariosEnTraining.removeAll(usersTest[idPartition]);
 
             SelectionDataset training = new SelectionDataset(datasetLoader.getRatingsDataset());
             training.setProductosPermitidos(allItems);
@@ -102,11 +102,12 @@ public class CrossFoldValidation_Users extends ValidationTechnique {
 
             SelectionDataset test = new SelectionDataset(datasetLoader.getRatingsDataset());
             test.setProductosPermitidos(allItems);
-            test.setUsuariosPermitidos(usersTest[i]);
+            test.setUsuariosPermitidos(usersTest[idPartition]);
 
-            ret[i] = new PairOfTrainTestRatingsDataset(datasetLoader, training, test);
+            ret[idPartition] = new PairOfTrainTestRatingsDataset(datasetLoader, training, test,
+                    "_" + this.getClass().getSimpleName() + "_seed=" + getSeedValue() + "_partition=" + idPartition);
 
-            Global.showInfoMessage("------------------  " + i + "  ------------------\n");
+            Global.showInfoMessage("------------------  " + idPartition + "  ------------------\n");
             Global.showInfoMessage("Training dataset #users " + training.allUsers().size() + "\n");
             Global.showInfoMessage("Test dataset #users     " + test.allUsers().size() + "\n");
         }

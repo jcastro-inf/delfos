@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,11 +16,14 @@
  */
 package delfos.group.grs.recommendations;
 
+import delfos.dataset.basic.user.User;
 import delfos.group.groupsofusers.GroupOfUsers;
 import delfos.rs.recommendation.Recommendation;
 import delfos.rs.recommendation.RecommendationComputationDetails;
 import delfos.rs.recommendation.Recommendations;
 import java.util.Collection;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Encapsula las recomendaciones hechas a un grupo.
@@ -30,6 +33,21 @@ import java.util.Collection;
 public class GroupRecommendations extends Recommendations {
 
     private static final long serialVersionUID = 34235l;
+
+    public static GroupRecommendationsWithMembersRecommendations buildGroupRecommendationsWithMembersRecommendations(GroupOfUsers groupOfUsers, Collection<Recommendation> recommendations, Map<Integer, Collection<Recommendation>> recommendationsByMember) {
+        GroupRecommendations groupRecommendations = new GroupRecommendations(groupOfUsers, recommendations);
+        Collection<Recommendations> membersRecommendations = recommendationsByMember.keySet().stream().map((Integer idMember) -> {
+            Collection<Recommendation> recommendationsThisMember = recommendationsByMember.get(idMember);
+
+            User memberUser = groupOfUsers.getMembers().stream()
+                    .filter(member -> Integer.compare(member.getId(), idMember) == 0)
+                    .findFirst().get();
+
+            return new Recommendations(memberUser, recommendationsThisMember);
+        }).collect(Collectors.toList());
+        GroupRecommendationsWithMembersRecommendations ret = new GroupRecommendationsWithMembersRecommendations(groupRecommendations, membersRecommendations.toArray(new Recommendations[0]));
+        return ret;
+    }
 
     private final GroupOfUsers targetGroupOfUsers;
 

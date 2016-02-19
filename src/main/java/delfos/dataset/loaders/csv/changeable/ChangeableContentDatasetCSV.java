@@ -96,17 +96,17 @@ public class ChangeableContentDatasetCSV extends CollectionOfEntitiesWithFeature
 
     @Override
     public int size() {
-        return allID().size();
+        return allIDs().size();
     }
 
     @Override
-    public Collection<Integer> allID() {
-        return super.getAllID();
+    public Collection<Integer> allIDs() {
+        return super.allIDs();
     }
 
     @Override
     public Collection<Integer> getAvailableItems() {
-        return allID();
+        return allIDs();
     }
 
     @Override

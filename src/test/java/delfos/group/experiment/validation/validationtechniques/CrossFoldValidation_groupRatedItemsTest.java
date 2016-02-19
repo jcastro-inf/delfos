@@ -33,8 +33,8 @@ public class CrossFoldValidation_groupRatedItemsTest {
 
         PairOfTrainTestRatingsDataset[] pairOfTrainTestRatingsDatasets = instance.shuffle(datasetLoader, groupsOfUsers);
 
-        Collection<Integer> allUsers = datasetLoader.getUsersDataset().getAllID();
-        Collection<Integer> allItems = datasetLoader.getContentDataset().getAllID();
+        Collection<Integer> allUsers = datasetLoader.getUsersDataset().allIDs();
+        Collection<Integer> allItems = datasetLoader.getContentDataset().allIDs();
 
         for (int split = 0; split < pairOfTrainTestRatingsDatasets.length; split++) {
             String trainDatasetString = DatasetPrinter.printCompactRatingTable(pairOfTrainTestRatingsDatasets[split].train, allUsers, allItems);
@@ -115,8 +115,8 @@ public class CrossFoldValidation_groupRatedItemsTest {
 
         PairOfTrainTestRatingsDataset[] pairOfTrainTestRatingsDatasets = instance.shuffle(datasetLoader, groupsOfUsers);
 
-        Collection<Integer> allUsers = datasetLoader.getUsersDataset().getAllID();
-        Collection<Integer> allItems = datasetLoader.getContentDataset().getAllID();
+        Collection<Integer> allUsers = datasetLoader.getUsersDataset().allIDs();
+        Collection<Integer> allItems = datasetLoader.getContentDataset().allIDs();
 
         for (int split = 0; split < pairOfTrainTestRatingsDatasets.length; split++) {
             String trainDatasetString = DatasetPrinter.printCompactRatingTable(pairOfTrainTestRatingsDatasets[split].train, allUsers, allItems);

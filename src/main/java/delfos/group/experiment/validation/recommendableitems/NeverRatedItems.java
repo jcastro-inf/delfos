@@ -38,7 +38,7 @@ public class NeverRatedItems extends RecomendableItemTechnique {
 
     @Override
     public Collection<Integer> getRecommendableItems(GroupOfUsers groupOfUsers, RatingsDataset<? extends Rating> ratingsDataset, ContentDataset contentDataset) {
-        Set<Integer> ret = new TreeSet<Integer>(contentDataset.allID());
+        Set<Integer> ret = new TreeSet<Integer>(contentDataset.allIDs());
 
         for (int idUser : groupOfUsers.getIdMembers()) {
             try {

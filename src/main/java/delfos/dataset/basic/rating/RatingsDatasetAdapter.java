@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,20 +16,21 @@
  */
 package delfos.dataset.basic.rating;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeMap;
-import java.util.TreeSet;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
 import delfos.ERROR_CODES;
 import delfos.common.Global;
 import delfos.common.exceptions.dataset.items.ItemNotFound;
 import delfos.common.exceptions.dataset.users.UserNotFound;
 import delfos.common.statisticalfuncions.MeanIterative;
 import delfos.dataset.basic.rating.domain.Domain;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
+import java.util.TreeSet;
+import java.util.stream.Collectors;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 /**
  * Clase que almacena un datasets de ratings. (idUser,idItem,Rating)
@@ -334,19 +335,37 @@ public abstract class RatingsDatasetAdapter<RatingType extends Rating> implement
         return super.equals(obj); //To change body of generated methods, choose Tools | Templates.
     }
 
+    private Integer hashCodeBuffer = null;
+
     @Override
     public int hashCode() {
+        if (hashCodeBuffer == null) {
+            hashCodeBuffer = hashCode(this);
+        }
+        return hashCodeBuffer;
+    }
+
+    public static <RatingType extends Rating> int hashCode(RatingsDataset<RatingType> ratingsDataset) {
         HashCodeBuilder hashCodeBuilder = new HashCodeBuilder(37, 11);
 
-        for (int idUser : this.allUsers()) {
-            try {
-                Map<Integer, RatingType> userRatingsRated = this.getUserRatingsRated(idUser);
-                Set<Integer> items = new TreeSet<>(userRatingsRated.keySet());
+        List<Integer> usersSorted = ratingsDataset.allUsers().stream().collect(Collectors.toList());
+        usersSorted.sort((i1, i2) -> Integer.compare(i1, i2));
 
-                for (int item : items) {
-                    RatingType rating = userRatingsRated.get(item);
-                    rating.hashCode();
-                    hashCodeBuilder.append(rating);
+        List<Integer> itemsSorted = ratingsDataset.allRatedItems().stream().collect(Collectors.toList());
+        itemsSorted.sort((i1, i2) -> Integer.compare(i1, i2));
+
+        for (int idUser : usersSorted) {
+            hashCodeBuilder.append(idUser);
+            try {
+                Map<Integer, RatingType> userRatingsRated = ratingsDataset.getUserRatingsRated(idUser);
+
+                for (int idItem : itemsSorted) {
+                    if (userRatingsRated.containsKey(idItem)) {
+                        RatingType rating = userRatingsRated.get(idItem);
+                        double ratingValue = rating.getRatingValue().doubleValue();
+                        hashCodeBuilder.append(idItem);
+                        hashCodeBuilder.append(ratingValue);
+                    }
                 }
 
             } catch (UserNotFound ex) {

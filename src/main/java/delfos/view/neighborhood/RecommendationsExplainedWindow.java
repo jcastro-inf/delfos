@@ -469,10 +469,10 @@ public class RecommendationsExplainedWindow extends JFrame {
 
             UsersDataset usersDataset = ((UsersDatasetLoader) datasetLoader).getUsersDataset();
 
-            User[] users = new User[usersDataset.getAllID().size()];
+            User[] users = new User[usersDataset.allIDs().size()];
 
             {
-                List<User> usersList = usersDataset.getAllID().parallelStream().map((idUser) -> {
+                List<User> usersList = usersDataset.allIDs().parallelStream().map((idUser) -> {
                     return ((User) usersDataset.get(idUser));
                 }).collect(Collectors.toList());
                 Collections.sort(usersList, (User o1, User o2) -> o1.getId() - o2.getId());

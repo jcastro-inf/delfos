@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -150,7 +150,7 @@ public class DatabaseContentDataset implements ContentDataset {
     }
 
     @Override
-    public Collection<Integer> allID() {
+    public Collection<Integer> allIDs() {
         Set<Integer> items = new TreeSet<>();
 
         String query = "SELECT idItem FROM movies;";
@@ -180,7 +180,7 @@ public class DatabaseContentDataset implements ContentDataset {
 
     @Override
     public Collection<Integer> getAvailableItems() {
-        return allID();
+        return allIDs();
     }
 
     @Override
@@ -224,11 +224,6 @@ public class DatabaseContentDataset implements ContentDataset {
     }
 
     @Override
-    public Collection<Integer> getAllID() {
-        return allID();
-    }
-
-    @Override
     public Map<Feature, Object> parseEntityFeaturesAndAddToExisting(int idEntity, Map<String, String> features) throws EntityNotFound {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
@@ -269,7 +264,7 @@ public class DatabaseContentDataset implements ContentDataset {
     }
 
     public Collection<Item> getAllItems() {
-        return getAllID().stream().map((idItem) -> get(idItem)).collect(Collectors.toList());
+        return allIDs().stream().map((idItem) -> get(idItem)).collect(Collectors.toList());
     }
 
     @Override

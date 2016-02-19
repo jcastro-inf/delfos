@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -21,6 +21,7 @@ import delfos.common.parameters.Parameter;
 import delfos.common.parameters.restriction.IntegerParameter;
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
+import delfos.dataset.basic.user.User;
 import delfos.group.groupsofusers.GroupOfUsers;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -121,10 +122,11 @@ public class FixedGroupSize_OnlyNGroups extends GroupFormationTechnique {
         int indexGrupoActual = 0;
         while (group.size() < numGroups) {
 
-            Set<Integer> usersGrupoActual = new TreeSet<>();
+            Set<User> usersGrupoActual = new TreeSet<>();
             while (usersGrupoActual.size() < groupSizeValue) {
                 int idUser = usuarios.remove(random.nextInt(usuarios.size()));
-                usersGrupoActual.add(idUser);
+                User user = datasetLoader.getUsersDataset().get(idUser);
+                usersGrupoActual.add(user);
 
                 if (usuarios.isEmpty()) {
                     usuarios.addAll(datasetLoader.getRatingsDataset().allUsers());

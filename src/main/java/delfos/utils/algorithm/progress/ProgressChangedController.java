@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -75,6 +75,7 @@ public final class ProgressChangedController {
             remainingTime = remainingTasks * timePerTask;
         }
 
+        listeners.add(listener);
         listener.progressChanged(taskName, percent, remainingTime);
     }
 

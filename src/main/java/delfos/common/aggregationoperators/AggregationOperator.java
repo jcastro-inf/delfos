@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,6 +16,7 @@
  */
 package delfos.common.aggregationoperators;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 
 /**
@@ -50,6 +51,15 @@ public abstract class AggregationOperator extends TwoValuesAggregator {
      */
     public final float aggregateValues(Number... values) {
         return aggregateValues(Arrays.asList(values));
+    }
+
+    public final double aggregateValues(double... values) {
+        ArrayList<Number> arrayList = new ArrayList<>(values.length);
+
+        for (double value : values) {
+            arrayList.add(value);
+        }
+        return aggregateValues(arrayList);
     }
 
     @Override

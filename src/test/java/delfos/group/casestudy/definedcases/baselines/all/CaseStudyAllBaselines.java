@@ -10,7 +10,6 @@ import delfos.common.aggregationoperators.Mean;
 import delfos.common.aggregationoperators.Median;
 import delfos.common.aggregationoperators.MinimumValue;
 import delfos.common.aggregationoperators.RMSMean;
-import delfos.common.parallelwork.Parallelisation;
 import delfos.configureddatasets.ConfiguredDatasetLoader;
 import delfos.configureddatasets.ConfiguredDatasetsFactory;
 import delfos.dataset.basic.loader.types.DatasetLoader;
@@ -78,7 +77,6 @@ public class CaseStudyAllBaselines {
 
     @Test
     public void createCaseStudyExperiments() throws Exception {
-        Parallelisation.setMaxCPU(8);
         List<GroupCaseStudy> allGroupCaseStudy = getAllGroupCaseStudy();
 
         new TuringPreparator().prepareGroupExperiment(
