@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -248,6 +248,20 @@ public class Global {
      * @param message Mensaje a mostrar
      */
     public static void showInfoMessage(String message) {
+        if (messageLevelPrinted.isPrinted(MessageLevel.INFO)) {
+            System.out.print(message);
+            if (doublePrint) {
+                System.err.print(message);
+            }
+        }
+    }
+
+    /**
+     * Muestra la cadena indicada como parámetro en la salida por defecto.
+     *
+     * @param message Mensaje a mostrar
+     */
+    public static void showMessage(String message) {
         if (messageLevelPrinted.isPrinted(MessageLevel.MESSAGE)) {
             System.out.print(message);
             if (doublePrint) {
