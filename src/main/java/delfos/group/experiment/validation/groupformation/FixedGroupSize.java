@@ -16,6 +16,13 @@
  */
 package delfos.group.experiment.validation.groupformation;
 
+import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
+import delfos.common.parameters.Parameter;
+import delfos.common.parameters.restriction.IntegerParameter;
+import delfos.dataset.basic.loader.types.DatasetLoader;
+import delfos.dataset.basic.rating.Rating;
+import delfos.dataset.basic.user.User;
+import delfos.group.groupsofusers.GroupOfUsers;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -24,13 +31,6 @@ import java.util.List;
 import java.util.Random;
 import java.util.Set;
 import java.util.TreeSet;
-import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
-import delfos.common.parameters.Parameter;
-import delfos.common.parameters.restriction.IntegerParameter;
-import delfos.dataset.basic.rating.Rating;
-import delfos.dataset.basic.loader.types.DatasetLoader;
-import delfos.dataset.basic.user.User;
-import delfos.group.groupsofusers.GroupOfUsers;
 
 /**
  * Validación de grupos que genera grupos de usuarios, utilizando miembros
@@ -89,7 +89,9 @@ public class FixedGroupSize extends GroupFormationTechnique {
             }
             grupos.add(new GroupOfUsers(usersGrupoActual));
             indexGrupoActual++;
-            progressChanged("Group generation", indexGrupoActual / numGrupos);
+
+            final int progress = (indexGrupoActual * 100) / numGrupos;
+            progressChanged("Group generation", progress);
         }
         GroupOfUsers[] groupOfUsers = new GroupOfUsers[grupos.size()];
 

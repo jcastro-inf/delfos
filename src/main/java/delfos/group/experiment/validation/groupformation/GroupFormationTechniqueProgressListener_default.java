@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -80,7 +80,7 @@ public class GroupFormationTechniqueProgressListener_default implements GroupFor
 
     @Override
     public void progressChanged(String message, int progressPercent, long remainingTimeInMS) {
-        if (progressPercent == 0) {
+        if (progressPercent == 0 && !beginPrinted) {
             printInfo(message, progressPercent, remainingTimeInMS);
             beginPrinted = true;
         } else {
