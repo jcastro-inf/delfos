@@ -102,7 +102,7 @@ public class MockUsersDataset implements UsersDataset {
     }
 
     @Override
-    public Collection<Integer> getAllID() {
+    public Collection<Integer> allIDs() {
         return new TreeSet<>(users.keySet());
     }
 
@@ -147,7 +147,7 @@ public class MockUsersDataset implements UsersDataset {
     }
 
     public Collection<User> getAllItems() {
-        return getAllID().stream().map((idUser) -> get(idUser)).collect(Collectors.toList());
+        return allIDs().stream().map((idUser) -> get(idUser)).collect(Collectors.toList());
     }
 
     @Override

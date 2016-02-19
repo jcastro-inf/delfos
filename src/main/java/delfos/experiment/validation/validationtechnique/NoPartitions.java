@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,12 +16,12 @@
  */
 package delfos.experiment.validation.validationtechnique;
 
-import delfos.dataset.basic.rating.Rating;
-import delfos.dataset.storage.validationdatasets.PairOfTrainTestRatingsDataset;
-import delfos.dataset.basic.loader.types.DatasetLoader;
-import delfos.rs.collaborativefiltering.knn.memorybased.KnnMemoryBasedCFRS;
 import delfos.common.exceptions.dataset.CannotLoadContentDataset;
 import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
+import delfos.dataset.basic.loader.types.DatasetLoader;
+import delfos.dataset.basic.rating.Rating;
+import delfos.dataset.storage.validationdatasets.PairOfTrainTestRatingsDataset;
+import delfos.rs.collaborativefiltering.knn.memorybased.KnnMemoryBasedCFRS;
 
 /**
  * Clase que implementa el método validación todos menos 1. Solo tiene sentido
@@ -45,7 +45,8 @@ public class NoPartitions extends ValidationTechnique {
     @Override
     public PairOfTrainTestRatingsDataset[] shuffle(DatasetLoader<? extends Rating> datasetLoader) throws CannotLoadContentDataset, CannotLoadRatingsDataset {
         PairOfTrainTestRatingsDataset[] ret = new PairOfTrainTestRatingsDataset[1];
-        ret[0] = new PairOfTrainTestRatingsDataset(datasetLoader, datasetLoader.getRatingsDataset(), datasetLoader.getRatingsDataset());
+        ret[0] = new PairOfTrainTestRatingsDataset(datasetLoader, datasetLoader.getRatingsDataset(), datasetLoader.getRatingsDataset(),
+                "_" + this.getClass().getSimpleName() + "_seed=" + getSeedValue());
         return ret;
     }
 

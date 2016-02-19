@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,19 +16,17 @@
  */
 package delfos.experiment.validation.validationtechnique;
 
+import delfos.common.exceptions.dataset.CannotLoadContentDataset;
+import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
+import delfos.dataset.basic.loader.types.DatasetLoader;
+import delfos.dataset.basic.rating.Rating;
+import delfos.dataset.basic.rating.RatingsDataset;
+import delfos.dataset.storage.validationdatasets.PairOfTrainTestRatingsDataset;
+import delfos.dataset.storage.validationdatasets.ValidationDatasets;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
-import delfos.common.exceptions.dataset.CannotLoadContentDataset;
-import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
-import delfos.common.exceptions.dataset.items.ItemNotFound;
-import delfos.common.exceptions.dataset.users.UserNotFound;
-import delfos.dataset.basic.rating.Rating;
-import delfos.dataset.basic.rating.RatingsDataset;
-import delfos.dataset.basic.loader.types.DatasetLoader;
-import delfos.dataset.storage.validationdatasets.PairOfTrainTestRatingsDataset;
-import delfos.dataset.storage.validationdatasets.ValidationDatasets;
 
 /**
  * Clase que implementa el método de partición de datasets Leave-One-Out, que
@@ -66,21 +64,16 @@ public class LeaveOneOut extends ValidationTechnique {
         int split = 0;
         for (Rating rating : ratingsDataset) {
 
-            Map<Integer, Set<Integer>> conjuntoTest = new TreeMap<Integer, Set<Integer>>();
-            conjuntoTest.put(rating.getIdUser(), new TreeSet<Integer>());
+            Map<Integer, Set<Integer>> conjuntoTest = new TreeMap<>();
+            conjuntoTest.put(rating.getIdUser(), new TreeSet<>());
             conjuntoTest.get(rating.getIdUser()).add(rating.getIdItem());
-            try {
-                ret[split] = new PairOfTrainTestRatingsDataset(
-                        datasetLoader,
-                        ValidationDatasets.getInstance().createTrainingDataset(datasetLoader.getRatingsDataset(), conjuntoTest),
-                        ValidationDatasets.getInstance().createTestDataset(datasetLoader.getRatingsDataset(), conjuntoTest));
-            } catch (UserNotFound ex) {
-                /*Por el cálculo que se realiza, si el dataset es estático este error nunca debe suceder.*/
-                throw new UnsupportedOperationException();
-            } catch (ItemNotFound ex) {
-                /*Por el cálculo que se realiza, si el dataset es estático este error nunca debe suceder.*/
-                throw new UnsupportedOperationException();
-            }
+
+            ret[split] = new PairOfTrainTestRatingsDataset(
+                    datasetLoader,
+                    ValidationDatasets.getInstance().createTrainingDataset(datasetLoader.getRatingsDataset(), conjuntoTest),
+                    ValidationDatasets.getInstance().createTestDataset(datasetLoader.getRatingsDataset(), conjuntoTest),
+                    "_" + this.getClass().getSimpleName() + "_seed=" + getSeedValue());
+
             split++;
         }
 

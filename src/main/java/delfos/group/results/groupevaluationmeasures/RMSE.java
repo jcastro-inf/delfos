@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -71,12 +71,15 @@ public class RMSE extends GroupEvaluationMeasure {
                 }
             }
 
-            for (Recommendation r : groupRecommendations) {
-                int idItem = r.getIdItem();
+            for (Recommendation recommendation : groupRecommendations) {
+                if (Double.isNaN(recommendation.getPreference().doubleValue())) {
+                    continue;
+                }
+                int idItem = recommendation.getIdItem();
                 for (int idUser : group.getIdMembers()) {
                     if (groupTrueRatings.get(idUser).containsKey(idItem)) {
                         double trueRating = groupTrueRatings.get(idUser).get(idItem).getRatingValue().doubleValue();
-                        double predicted = r.getPreference().doubleValue();
+                        double predicted = recommendation.getPreference().doubleValue();
                         rmse.addValue(Math.pow(predicted - trueRating, 2));
                     }
                 }

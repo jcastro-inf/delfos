@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -78,6 +78,7 @@ public class MAE extends GroupEvaluationMeasure {
             }
 
             Map<Integer, Map<Integer, ? extends Rating>> groupTrueRatings = new TreeMap<>();
+
             groupOfUsers.getIdMembers().stream().forEach((idUser) -> {
                 try {
                     groupTrueRatings.put(idUser, testDataset.getUserRatingsRated(idUser));
@@ -87,6 +88,9 @@ public class MAE extends GroupEvaluationMeasure {
             });
 
             for (Recommendation recommendation : groupRecommendations) {
+                if (Double.isNaN(recommendation.getPreference().doubleValue())) {
+                    continue;
+                }
                 int idItem = recommendation.getIdItem();
                 for (int idUser : groupOfUsers.getIdMembers()) {
                     if (groupTrueRatings.get(idUser).containsKey(idItem)) {

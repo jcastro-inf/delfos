@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,6 +16,13 @@
  */
 package delfos.group.experiment.validation.groupformation;
 
+import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
+import delfos.common.parameters.Parameter;
+import delfos.common.parameters.restriction.IntegerParameter;
+import delfos.dataset.basic.loader.types.DatasetLoader;
+import delfos.dataset.basic.rating.Rating;
+import delfos.dataset.basic.user.User;
+import delfos.group.groupsofusers.GroupOfUsers;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -24,13 +31,6 @@ import java.util.List;
 import java.util.Random;
 import java.util.Set;
 import java.util.TreeSet;
-import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
-import delfos.common.parameters.Parameter;
-import delfos.common.parameters.restriction.IntegerParameter;
-import delfos.dataset.basic.rating.Rating;
-import delfos.dataset.basic.loader.types.DatasetLoader;
-import delfos.group.groupsofusers.GroupOfUsers;
-import delfos.group.groupsofusers.GroupOfUsers;
 
 /**
  * Validación de grupos que genera grupos de usuarios, utilizando miembros
@@ -80,14 +80,18 @@ public class FixedGroupSize extends GroupFormationTechnique {
         int indexGrupoActual = 0;
         while (!usuarios.isEmpty() && usuarios.size() >= groupSizeValue) {
 
-            Set<Integer> usersGrupoActual = new TreeSet<>();
+            Set<User> usersGrupoActual = new TreeSet<>();
             for (int i = 0; i < groupSizeValue; i++) {
                 int idUser = usuarios.remove(random.nextInt(usuarios.size()));
-                usersGrupoActual.add(idUser);
+
+                User member = datasetLoader.getUsersDataset().get(idUser);
+                usersGrupoActual.add(member);
             }
             grupos.add(new GroupOfUsers(usersGrupoActual));
             indexGrupoActual++;
-            progressChanged("Group generation", indexGrupoActual / numGrupos);
+
+            final int progress = (indexGrupoActual * 100) / numGrupos;
+            progressChanged("Group generation", progress);
         }
         GroupOfUsers[] groupOfUsers = new GroupOfUsers[grupos.size()];
 

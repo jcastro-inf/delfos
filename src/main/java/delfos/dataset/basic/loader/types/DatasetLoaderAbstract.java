@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -30,6 +30,7 @@ import delfos.dataset.basic.user.User;
 import delfos.dataset.basic.user.UsersDataset;
 import delfos.dataset.basic.user.UsersDatasetAdapter;
 import java.util.stream.Collectors;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 /**
  * Establece las operaciones que un <code>DatasetLoader</code> debe implementar.
@@ -108,4 +109,21 @@ public abstract class DatasetLoaderAbstract<RatingType extends Rating> extends P
                 .collect(Collectors.toSet()));
 
     }
+
+    @Override
+    public int hashCode() {
+        HashCodeBuilder hashCodeBuilder = new HashCodeBuilder(37, 11);
+
+        hashCodeBuilder.append(getRatingsDataset().hashCode());
+        hashCodeBuilder.append(getContentDataset().hashCode());
+        hashCodeBuilder.append(getUsersDataset().hashCode());
+
+        return hashCodeBuilder.hashCode();
+    }
+
+    @Override
+    public String toString() {
+        return getAlias();
+    }
+
 }

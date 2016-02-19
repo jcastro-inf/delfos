@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -170,14 +170,15 @@ public class CrossFoldValidation_Ratings extends GroupValidationTechnique {
                 ret[idPartition] = new PairOfTrainTestRatingsDataset(
                         datasetLoader,
                         ValidationDatasets.getInstance().createTrainingDataset(datasetLoader.getRatingsDataset(), finalTestSets.get(idPartition)),
-                        ValidationDatasets.getInstance().createTestDataset(datasetLoader.getRatingsDataset(), finalTestSets.get(idPartition)));
+                        ValidationDatasets.getInstance().createTestDataset(datasetLoader.getRatingsDataset(), finalTestSets.get(idPartition)),
+                        "_" + this.getClass().getSimpleName() + "_seed=" + getSeedValue() + "_partition=" + idPartition);
 
                 if (Global.isVerboseAnnoying()) {
 
                     Set<Integer> allItems;
                     if (datasetLoader instanceof ContentDatasetLoader) {
                         ContentDatasetLoader contentDatasetLoader = (ContentDatasetLoader) datasetLoader;
-                        allItems = new TreeSet<>(contentDatasetLoader.getContentDataset().allID());
+                        allItems = new TreeSet<>(contentDatasetLoader.getContentDataset().allIDs());
                     } else {
                         allItems = new TreeSet<>(datasetLoader.getRatingsDataset().allRatedItems());
                     }

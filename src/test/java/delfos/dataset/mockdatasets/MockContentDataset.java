@@ -232,13 +232,13 @@ public final class MockContentDataset implements ContentDataset {
     }
 
     @Override
-    public Collection<Integer> allID() {
+    public Collection<Integer> allIDs() {
         return new ArrayList<>(items.keySet());
     }
 
     @Override
     public Collection<Integer> getAvailableItems() {
-        return allID();
+        return allIDs();
     }
 
     @Override
@@ -336,11 +336,6 @@ public final class MockContentDataset implements ContentDataset {
     }
 
     @Override
-    public Collection<Integer> getAllID() {
-        return new ArrayList<>(items.keySet());
-    }
-
-    @Override
     public Map<Feature, Object> parseEntityFeaturesAndAddToExisting(int idEntity, Map<String, String> features) throws EntityNotFound {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
@@ -391,7 +386,7 @@ public final class MockContentDataset implements ContentDataset {
     }
 
     public Collection<Item> getAllItems() {
-        return getAllID().stream().map((idUser) -> get(idUser)).collect(Collectors.toList());
+        return allIDs().stream().map((idUser) -> get(idUser)).collect(Collectors.toList());
     }
 
     @Override

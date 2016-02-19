@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -38,7 +38,7 @@ import delfos.dataset.basic.user.UsersDataset;
  * @version 26-Noviembre-2013
  * @param <RatingType>
  */
-public class DatasetLoaderGivenRatingsDataset<RatingType extends Rating> extends CompleteDatasetLoaderAbstract_withTrust<RatingType> implements ContentDatasetLoader {
+public class DatasetLoaderGivenRatingsDataset<RatingType extends Rating> extends CompleteDatasetLoaderAbstract_withTrust<RatingType> {
 
     private static final long serialVersionUID = 1L;
     private final DatasetLoader<? extends Rating> datasetLoader;
@@ -56,6 +56,24 @@ public class DatasetLoaderGivenRatingsDataset<RatingType extends Rating> extends
         this.ratingsDataset = ratingsDataset;
 
         setAlias(datasetLoader.getAlias());
+    }
+
+    /**
+     * Replaces the original ratings dataset in the dataset loader for the one
+     * provided.
+     *
+     * @param datasetLoader
+     * @param ratingsDataset
+     * @param aliasSuffix Alias suffix, to identify how this dataset has been
+     * generated.
+     */
+    public DatasetLoaderGivenRatingsDataset(
+            DatasetLoader<? extends Rating> datasetLoader,
+            RatingsDataset<RatingType> ratingsDataset,
+            String aliasSuffix) {
+        this(datasetLoader, ratingsDataset);
+
+        setAlias(datasetLoader.getAlias() + aliasSuffix);
     }
 
     @Override

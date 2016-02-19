@@ -94,7 +94,7 @@ public interface CollectionOfEntitiesWithFeatures<Entity extends EntityWithFeatu
 
     public Map<Feature, Object> parseEntityFeatures(Map<String, String> features);
 
-    public Collection<Integer> getAllID();
+    public Collection<Integer> allIDs();
 
     public Map<Feature, Object> parseEntityFeaturesAndAddToExisting(int idEntity, Map<String, String> features) throws EntityNotFound;
 

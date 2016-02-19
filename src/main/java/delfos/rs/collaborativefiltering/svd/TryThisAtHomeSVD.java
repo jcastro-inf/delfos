@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -470,5 +470,12 @@ public class TryThisAtHomeSVD
      */
     protected final float getK() {
         return (Float) getParameterValue(K);
+    }
+
+    public TryThisAtHomeSVD setNormalizeWithUserMean(boolean isNormalizeWithUserMean) {
+        setParameterValue(NORMALIZE_WITH_USER_MEAN, isNormalizeWithUserMean);
+
+        return this;
+
     }
 }

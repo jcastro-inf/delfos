@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,13 +16,12 @@
  */
 package delfos.factories;
 
-import java.util.ArrayList;
-import java.util.List;
 import delfos.group.grs.itemweighted.knn.memory.KnnMemoryBasedNWR_itemWeighted;
 import delfos.rs.GenericRecommenderSystem;
 import delfos.rs.RecommenderSystem;
 import delfos.rs.bias.PredictUserItemBias;
 import delfos.rs.bufferedrecommenders.RecommenderSystem_bufferedRecommendations;
+import delfos.rs.bufferedrecommenders.RecommenderSystem_cacheRecommendationModel;
 import delfos.rs.bufferedrecommenders.RecommenderSystem_fixedFilePersistence;
 import delfos.rs.collaborativefiltering.CollaborativeRecommender;
 import delfos.rs.collaborativefiltering.Recommender_DatasetProperties;
@@ -53,6 +52,8 @@ import delfos.rs.nonpersonalised.positiveratingspercent.PositiveRatingPercent;
 import delfos.rs.nonpersonalised.randomrecommender.RandomRecommender;
 import delfos.rs.trustbased.HybridUserItemTrustBased;
 import delfos.rs.trustbased.similaritymodification.TrustModificationKnnMemory;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Factoría de sistemas de recomendación. Conoce todos los sistemas de
@@ -121,6 +122,7 @@ public class RecommenderSystemsFactory extends Factory<GenericRecommenderSystem>
         //Sistemas especiales
         instance.addClass(RecommenderSystem_fixedFilePersistence.class);
         instance.addClass(RecommenderSystem_bufferedRecommendations.class);
+        instance.addClass(RecommenderSystem_cacheRecommendationModel.class);
 
         //Sistemas incrementales
         instance.addClass(SVDFoldingIn.class);

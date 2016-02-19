@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,9 +16,7 @@
  */
 package delfos.results.evaluationmeasures.ratingprediction;
 
-import delfos.ERROR_CODES;
 import delfos.common.Global;
-import delfos.common.exceptions.dataset.users.UserNotFound;
 import delfos.common.statisticalfuncions.MeanIterative;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RatingsDataset;
@@ -50,30 +48,30 @@ public class NRMSE extends EvaluationMeasure {
         Domain originalDomain = testDataset.getRatingsDomain();
 
         for (int idUser : testDataset.allUsers()) {
-            List<Recommendation> recommendationList = recommendationResults.getRecommendationsForUser(idUser);
-            try {
-                Map<Integer, ? extends Rating> userRated = testDataset.getUserRatingsRated(idUser);
-                if (recommendationList != null) {
-                    for (Recommendation lista : recommendationList) {
-                        Number trueRating = userRated.get(lista.getIdItem()).getRatingValue();
-                        Number predictedRating = lista.getPreference();
+            List<Recommendation> recommendations = recommendationResults.getRecommendationsForUser(idUser);
 
-                        if (trueRating != null
-                                && !Double.isNaN(trueRating.doubleValue())
-                                && !Double.isInfinite(trueRating.doubleValue())
-                                && predictedRating != null
-                                && !Double.isNaN(predictedRating.doubleValue())
-                                && !Double.isInfinite(predictedRating.doubleValue())) {
+            if (recommendations == null) {
+                continue;
+            }
 
-                            double trueRatingNormalised = originalDomain.convertToDecimalDomain(trueRating, DecimalDomain.ZERO_TO_ONE).doubleValue();
-                            double predictedNormalised = originalDomain.convertToDecimalDomain(predictedRating, DecimalDomain.ZERO_TO_ONE).doubleValue();
+            Map<Integer, ? extends Rating> userRated = testDataset.getUserRatingsRated(idUser);
 
-                            mean.addValue(Math.pow(trueRatingNormalised - predictedNormalised, 2));
-                        }
-                    }
+            for (Recommendation recommendation : recommendations) {
+                Number trueRating = userRated.get(recommendation.getIdItem()).getRatingValue();
+                Number predictedRating = recommendation.getPreference();
+
+                if (trueRating != null
+                        && !Double.isNaN(trueRating.doubleValue())
+                        && !Double.isInfinite(trueRating.doubleValue())
+                        && predictedRating != null
+                        && !Double.isNaN(predictedRating.doubleValue())
+                        && !Double.isInfinite(predictedRating.doubleValue())) {
+
+                    double trueRatingNormalised = originalDomain.convertToDecimalDomain(trueRating, DecimalDomain.ZERO_TO_ONE).doubleValue();
+                    double predictedNormalised = originalDomain.convertToDecimalDomain(predictedRating, DecimalDomain.ZERO_TO_ONE).doubleValue();
+
+                    mean.addValue(Math.pow(trueRatingNormalised - predictedNormalised, 2));
                 }
-            } catch (UserNotFound ex) {
-                ERROR_CODES.USER_NOT_FOUND.exit(ex);
             }
 
         }

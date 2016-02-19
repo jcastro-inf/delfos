@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -22,6 +22,7 @@ import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
 import delfos.group.groupsofusers.GroupOfUsers;
 import delfos.rs.recommendation.Recommendation;
+import delfos.utils.algorithm.progress.ProgressChangedController;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Set;
@@ -34,6 +35,16 @@ import java.util.function.Function;
  * @version 1.0 30-May-2013
  */
 public class SingleGroupRecommendationFunction implements Function<SingleGroupRecommendationTaskInput, SingleGroupRecommendationTaskOutput> {
+
+    private final ProgressChangedController recommendationProgress;
+
+    public SingleGroupRecommendationFunction() {
+        this.recommendationProgress = null;
+    }
+
+    public SingleGroupRecommendationFunction(ProgressChangedController recommendationProgress) {
+        this.recommendationProgress = recommendationProgress;
+    }
 
     @Override
     public SingleGroupRecommendationTaskOutput apply(SingleGroupRecommendationTaskInput task) {
@@ -69,9 +80,17 @@ public class SingleGroupRecommendationFunction implements Function<SingleGroupRe
 
         }
 
+        notifyProgress();
+
         SingleGroupRecommendationTaskOutput groupRecommendationTaskOutput = new SingleGroupRecommendationTaskOutput(groupOfUsers, recommendations, buildTime, recommendationTime);
 
         return groupRecommendationTaskOutput;
+    }
+
+    private void notifyProgress() {
+        if (this.recommendationProgress != null) {
+            recommendationProgress.setTaskFinished();
+        }
     }
 
 }

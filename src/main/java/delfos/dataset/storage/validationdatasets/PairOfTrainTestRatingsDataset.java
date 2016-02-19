@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -18,11 +18,11 @@ package delfos.dataset.storage.validationdatasets;
 
 import delfos.common.exceptions.dataset.CannotLoadContentDataset;
 import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
+import delfos.dataset.basic.loader.types.CompleteDatasetLoaderAbstract_withTrust;
+import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RatingsDataset;
 import delfos.dataset.loaders.given.DatasetLoaderGivenRatingsDataset;
-import delfos.dataset.basic.loader.types.CompleteDatasetLoaderAbstract_withTrust;
-import delfos.dataset.basic.loader.types.DatasetLoader;
 
 /**
  * Par de conjuntos entrenamiento y evaluación. La unión de los dos conjuntos
@@ -46,28 +46,36 @@ public class PairOfTrainTestRatingsDataset<RatingType extends Rating> extends Co
      */
     public final RatingsDataset<RatingType> test;
     private final DatasetLoader<RatingType> originalDatasetLoader;
+    private final String generationExplanation;
 
     /**
      *
      * @param originalDatasetLoader
      * @param train
      * @param test
+     * @param generationExplanation String to explain how the train and test
+     * sets have been generated.
      * @throws CannotLoadRatingsDataset
      * @throws CannotLoadContentDataset
      */
-    public PairOfTrainTestRatingsDataset(DatasetLoader<RatingType> originalDatasetLoader, RatingsDataset<RatingType> train, RatingsDataset<RatingType> test) throws CannotLoadRatingsDataset, CannotLoadContentDataset {
+    public PairOfTrainTestRatingsDataset(
+            DatasetLoader<RatingType> originalDatasetLoader,
+            RatingsDataset<RatingType> train, RatingsDataset<RatingType> test,
+            String generationExplanation
+    ) throws CannotLoadRatingsDataset, CannotLoadContentDataset {
 
         this.originalDatasetLoader = originalDatasetLoader;
 
         this.train = train;
         this.test = test;
+        this.generationExplanation = generationExplanation;
     }
 
     public DatasetLoader<? extends Rating> getTrainingDatasetLoader() {
-        return new DatasetLoaderGivenRatingsDataset(originalDatasetLoader, train);
+        return new DatasetLoaderGivenRatingsDataset(originalDatasetLoader, train, generationExplanation + "_train");
     }
 
     public DatasetLoader<? extends Rating> getTestDatasetLoader() {
-        return new DatasetLoaderGivenRatingsDataset(originalDatasetLoader, test);
+        return new DatasetLoaderGivenRatingsDataset(originalDatasetLoader, test, generationExplanation + "_test");
     }
 }

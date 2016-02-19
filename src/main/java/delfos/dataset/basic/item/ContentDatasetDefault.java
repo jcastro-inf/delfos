@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -20,12 +20,16 @@ import delfos.common.Global;
 import delfos.common.exceptions.dataset.entity.EntityNotFound;
 import delfos.common.exceptions.dataset.items.ItemNotFound;
 import delfos.dataset.basic.features.CollectionOfEntitiesWithFeaturesDefault;
+import delfos.dataset.basic.features.Feature;
 import delfos.dataset.basic.features.FeatureGenerator;
+import delfos.dataset.basic.rating.Rating;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 /**
  * Dataset de contenido que almacena todos los items en memoria
@@ -64,8 +68,8 @@ public class ContentDatasetDefault extends CollectionOfEntitiesWithFeaturesDefau
     }
 
     @Override
-    public Collection<Integer> allID() {
-        return getAllID();
+    public Collection<Integer> allIDs() {
+        return this.stream().map(item -> item.getId()).collect(Collectors.toList());
     }
 
     /**
@@ -80,7 +84,7 @@ public class ContentDatasetDefault extends CollectionOfEntitiesWithFeaturesDefau
     @Override
     public Collection<Integer> getAvailableItems() {
         if (availableProducts == null) {
-            return allID();
+            return allIDs();
         } else {
             return Collections.unmodifiableCollection(availableProducts);
         }
@@ -89,11 +93,11 @@ public class ContentDatasetDefault extends CollectionOfEntitiesWithFeaturesDefau
 
     @Override
     public void setItemAvailable(int idItem, boolean available) throws ItemNotFound {
-        if (!allID().contains(idItem)) {
+        if (!allIDs().contains(idItem)) {
             throw new ItemNotFound(idItem);
         }
         if (availableProducts == null) {
-            availableProducts = new TreeSet<>(allID());
+            availableProducts = new TreeSet<>(allIDs());
         }
 
         if (available) {
@@ -154,6 +158,42 @@ public class ContentDatasetDefault extends CollectionOfEntitiesWithFeaturesDefau
             ex.isA(Item.class);
             throw new ItemNotFound(idItem, ex);
         }
+    }
+
+    private Integer hashCodeBuffer = null;
+
+    @Override
+    public int hashCode() {
+        if (hashCodeBuffer == null) {
+            hashCodeBuffer = hashCode(this);
+        }
+        return hashCodeBuffer;
+    }
+
+    public static <RatingType extends Rating> int hashCode(ContentDataset contentDataset) {
+        HashCodeBuilder hashCodeBuilder = new HashCodeBuilder(37, 11);
+
+        List<Integer> itemsSorted = contentDataset.allIDs().stream().collect(Collectors.toList());
+        itemsSorted.sort((i1, i2) -> Integer.compare(i1, i2));
+
+        Feature[] features = contentDataset.getFeatures();
+
+        for (int idItem : itemsSorted) {
+            Item item = contentDataset.get(idItem);
+
+            hashCodeBuilder.append(idItem);
+            hashCodeBuilder.append(item.getName());
+            for (Feature feature : features) {
+                if (item.getFeatures().contains(feature)) {
+                    Object featureValue = item.getFeatureValue(feature);
+                    hashCodeBuilder.append(feature.getName());
+                    hashCodeBuilder.append(feature.getType());
+                    hashCodeBuilder.append(featureValue);
+                }
+            }
+        }
+
+        return hashCodeBuilder.hashCode();
     }
 
 }
