@@ -34,7 +34,6 @@ import delfos.main.managers.experiment.ExecuteGroupXML;
 import java.io.File;
 import java.text.DecimalFormat;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -142,8 +141,6 @@ public class TuringPreparator implements ExperimentPreparator {
 
     public void executeAllExperimentsInDirectory(File directory, int numExec) {
         List<File> experimentsToBeExecuted = Arrays.asList(directory.listFiles());
-
-        Collections.shuffle(experimentsToBeExecuted);
 
         Stream<File> experimentsToBeExecutedStream
                 = parallel
