@@ -141,13 +141,15 @@ public class GroupCaseStudy extends ExperimentAdapter {
     public GroupCaseStudy(DatasetLoader<? extends Rating> datasetLoader,
             GroupRecommenderSystem<? extends Object, ? extends Object> groupRecommenderSystem,
             GroupFormationTechnique groupFormationTechnique,
-            GroupValidationTechnique groupValidationTechnique, GroupPredictionProtocol groupPredictionProtocol,
+            GroupValidationTechnique groupValidationTechnique,
+            GroupPredictionProtocol groupPredictionProtocol,
             Collection<GroupEvaluationMeasure> groupEvaluationMeasures,
             RelevanceCriteria relevanceCriteria,
             int numExecutions) {
 
         this();
 
+        setParameterValue(DATASET_LOADER, datasetLoader);
         setParameterValue(NUM_EXECUTIONS, numExecutions);
 
         setParameterValue(GROUP_FORMATION_TECHNIQUE, groupFormationTechnique);
@@ -654,24 +656,25 @@ public class GroupCaseStudy extends ExperimentAdapter {
     }
 
     public void loadDataset(DatasetLoader<? extends Rating> datasetLoader) throws CannotLoadContentDataset, CannotLoadTrustDataset, CannotLoadRatingsDataset, CannotLoadUsersDataset {
-        setExperimentProgress("Loading dataset", 0, -1);
+        final String taskName = "Loading dataset '" + datasetLoader.getAlias() + "'";
+        setExperimentProgress(taskName, 0, -1);
 
         {
-            setExperimentProgress("Loading ratings dataset", 1, -1);
+            setExperimentProgress(taskName + "  ratings dataset", 1, -1);
             datasetLoader.getRatingsDataset();
             setExperimentProgress("Finished loading ratings dataset", 100, -1);
         }
         if (datasetLoader instanceof UsersDatasetLoader) {
             UsersDatasetLoader usersDatasetLoader = (UsersDatasetLoader) datasetLoader;
 
-            setExperimentProgress("Loading users dataset", 0, -1);
+            setExperimentProgress(taskName + "  users dataset", 0, -1);
             usersDatasetLoader.getUsersDataset();
             setExperimentProgress("Finished loading users dataset", 100, -1);
         }
         if (datasetLoader instanceof ContentDatasetLoader) {
             ContentDatasetLoader contentDatasetLoader = (ContentDatasetLoader) datasetLoader;
 
-            setExperimentProgress("Loading content dataset", 0, -1);
+            setExperimentProgress(taskName + "  items dataset", 0, -1);
             contentDatasetLoader.getContentDataset();
             setExperimentProgress("Finished loading content dataset", 100, -1);
         }
