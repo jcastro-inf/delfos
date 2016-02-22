@@ -141,6 +141,17 @@ public class GroupCaseStudy extends ExperimentAdapter {
     public GroupCaseStudy(DatasetLoader<? extends Rating> datasetLoader,
             GroupRecommenderSystem<? extends Object, ? extends Object> groupRecommenderSystem,
             GroupFormationTechnique groupFormationTechnique,
+            GroupValidationTechnique groupValidationTechnique, GroupPredictionProtocol groupPredictionProtocol,
+            Collection<GroupEvaluationMeasure> groupEvaluationMeasures,
+            RelevanceCriteria relevanceCriteria,
+            int numExecutions, long seed) {
+        this(datasetLoader, groupRecommenderSystem, groupFormationTechnique, groupValidationTechnique, groupPredictionProtocol, groupEvaluationMeasures, relevanceCriteria, numExecutions);
+        setSeedValue(seed);
+    }
+
+    public GroupCaseStudy(DatasetLoader<? extends Rating> datasetLoader,
+            GroupRecommenderSystem<? extends Object, ? extends Object> groupRecommenderSystem,
+            GroupFormationTechnique groupFormationTechnique,
             GroupValidationTechnique groupValidationTechnique,
             GroupPredictionProtocol groupPredictionProtocol,
             Collection<GroupEvaluationMeasure> groupEvaluationMeasures,
@@ -160,15 +171,36 @@ public class GroupCaseStudy extends ExperimentAdapter {
         setAlias(groupRecommenderSystem.getAlias());
     }
 
-    public GroupCaseStudy(DatasetLoader<? extends Rating> datasetLoader,
-            GroupRecommenderSystem<? extends Object, ? extends Object> groupRecommenderSystem,
-            GroupFormationTechnique groupFormationTechnique,
-            GroupValidationTechnique groupValidationTechnique, GroupPredictionProtocol groupPredictionProtocol,
-            Collection<GroupEvaluationMeasure> groupEvaluationMeasures,
-            RelevanceCriteria relevanceCriteria,
-            int numExecutions, long seed) {
-        this(datasetLoader, groupRecommenderSystem, groupFormationTechnique, groupValidationTechnique, groupPredictionProtocol, groupEvaluationMeasures, relevanceCriteria, numExecutions);
-        setSeedValue(seed);
+    public GroupCaseStudy setDatasetLoader(DatasetLoader<? extends Rating> datasetLoader) {
+        setParameterValue(DATASET_LOADER, datasetLoader);
+        return this;
+    }
+
+    public GroupCaseStudy setGroupRecommenderSystem(GroupRecommenderSystem<? extends Object, ? extends Object> groupRecommenderSystem) {
+        setParameterValue(GROUP_RECOMMENDER_SYSTEM, groupRecommenderSystem);
+        return this;
+    }
+
+    public GroupCaseStudy setGroupFormationTechnique(GroupFormationTechnique groupFormationTechnique) {
+        setParameterValue(GROUP_FORMATION_TECHNIQUE, groupFormationTechnique);
+        return this;
+    }
+
+    public GroupCaseStudy setGroupValidationTechnique(GroupValidationTechnique groupValidationTechnique) {
+        setParameterValue(GROUP_VALIDATION_TECHNIQUE, groupValidationTechnique);
+        return this;
+
+    }
+
+    public GroupCaseStudy setGroupPredictionProtocol(GroupPredictionProtocol groupPredictionProtocol) {
+        setParameterValue(GROUP_PREDICTION_PROTOCOL, groupPredictionProtocol);
+        return this;
+
+    }
+
+    public GroupCaseStudy setNumExecutions(int numExecutions) {
+        setParameterValue(NUM_EXECUTIONS, numExecutions);
+        return this;
     }
 
     /**
@@ -655,7 +687,7 @@ public class GroupCaseStudy extends ExperimentAdapter {
         groupPredictionProtocol.setSeedValue(getSeedValue());
     }
 
-    public void loadDataset(DatasetLoader<? extends Rating> datasetLoader) throws CannotLoadContentDataset, CannotLoadTrustDataset, CannotLoadRatingsDataset, CannotLoadUsersDataset {
+    private void loadDataset(DatasetLoader<? extends Rating> datasetLoader) throws CannotLoadContentDataset, CannotLoadTrustDataset, CannotLoadRatingsDataset, CannotLoadUsersDataset {
         final String taskName = "Loading dataset '" + datasetLoader.getAlias() + "'";
         setExperimentProgress(taskName, 0, -1);
 
@@ -762,9 +794,5 @@ public class GroupCaseStudy extends ExperimentAdapter {
 
     public long[][] getBuildTimes() {
         return buildTimes;
-    }
-
-    public void setGroupRecommenderSystem(GroupRecommenderSystem<? extends Object, ? extends Object> groupRecommenderSystem) {
-        setParameterValue(GROUP_RECOMMENDER_SYSTEM, groupRecommenderSystem);
     }
 }
