@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -146,7 +146,7 @@ public class NormalizedIndividualSatisfaction extends GroupEvaluationMeasure {
             measureElement.addContent(groupElement);
         }
         measureElement.setAttribute("value", Double.toString(media.getMean()));
-        return new GroupEvaluationMeasureResult(this, (float) media.getMean(), measureElement);
+        return new GroupEvaluationMeasureResult(this, media.getMean());
     }
 
     @Override

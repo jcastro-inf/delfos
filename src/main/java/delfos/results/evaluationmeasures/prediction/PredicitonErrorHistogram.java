@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,10 +16,6 @@
  */
 package delfos.results.evaluationmeasures.prediction;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import org.jdom2.Element;
 import delfos.ERROR_CODES;
 import delfos.common.Global;
 import delfos.common.datastructures.histograms.HistogramNumbersSmart;
@@ -27,10 +23,13 @@ import delfos.common.exceptions.dataset.users.UserNotFound;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RatingsDataset;
 import delfos.dataset.basic.rating.RelevanceCriteria;
-import delfos.results.RecommendationResults;
 import delfos.results.MeasureResult;
+import delfos.results.RecommendationResults;
 import delfos.results.evaluationmeasures.EvaluationMeasure;
 import delfos.rs.recommendation.Recommendation;
+import java.util.Collection;
+import java.util.Map;
+import org.jdom2.Element;
 
 /**
  * Calcula el histograma del error.
@@ -112,52 +111,6 @@ public class PredicitonErrorHistogram extends EvaluationMeasure {
             histogram.printHistogram(System.out);
         }
 
-        return new MeasureResult(this, 0.0f, histogramElement);
-    }
-
-    @Override
-    public MeasureResult agregateResults(Collection<MeasureResult> results) {
-
-        HistogramNumbersSmart aggregateHistogram = new HistogramNumbersSmart(binWidth);
-
-        for (MeasureResult measureResult : results) {
-            Element histogramElement = measureResult.getXMLElement();
-
-            double _binWidth = Double.parseDouble(histogramElement.getAttributeValue(HISTOGRAM_BIN_WIDTH_ATTRIBUTE_NAME));
-            if (_binWidth != binWidth) {
-                throw new IllegalStateException("Bin width does not match.");
-            }
-
-            for (Element binElement : histogramElement.getChildren(BIN_ELEMENT_NAME)) {
-                double min = Double.parseDouble(binElement.getAttributeValue(BIN_MIN_VALUE_ATTRIBUTE_NAME));
-                double max = Double.parseDouble(binElement.getAttributeValue(BIN_MAX_VALUE_ATTRIBUTE_NAME));
-                int numValues = Integer.parseInt(binElement.getAttributeValue(BIN_BIN_VALUE_ATTRIBUTE_NAME));
-
-                double representativeValueForAggregation = (max + min) / 2;
-                for (int i = 0; i < numValues; i++) {
-                    aggregateHistogram.addValue(representativeValueForAggregation);
-                }
-            }
-
-        }
-
-        if (aggregateHistogram.getNumValues() == 0) {
-            Global.showWarning("Cannot compute '" + this.getClass().getSimpleName() + "' since the RS did not predicted any recommendation!!");
-        }
-
-        Element histogramElement = new Element(HISTOGRAM_ELEMENT_NAME);
-        histogramElement.setAttribute(HISTOGRAM_BIN_WIDTH_ATTRIBUTE_NAME, Double.toString(binWidth));
-
-        for (int indexBin = 0; indexBin < aggregateHistogram.getNumBins(); indexBin++) {
-            Element binElement = new Element(BIN_ELEMENT_NAME);
-
-            binElement.setAttribute(BIN_MIN_VALUE_ATTRIBUTE_NAME, Double.toString(aggregateHistogram.getBin_minBound(indexBin)));
-            binElement.setAttribute(BIN_MAX_VALUE_ATTRIBUTE_NAME, Double.toString(aggregateHistogram.getBin_maxBound(indexBin)));
-            binElement.setAttribute(BIN_BIN_VALUE_ATTRIBUTE_NAME, Integer.toString(aggregateHistogram.getBin_numValues(indexBin)));
-
-            histogramElement.addContent(binElement);
-        }
-
-        return new MeasureResult(this, 0.0f, histogramElement);
+        return new MeasureResult(this, 0.0f);
     }
 }

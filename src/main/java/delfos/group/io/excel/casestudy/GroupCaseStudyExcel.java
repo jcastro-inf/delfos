@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -526,19 +526,8 @@ public class GroupCaseStudyExcel {
             int i = splitColumn + 1;
             for (GroupEvaluationMeasure groupEvaluationMeasure : caseStudyGroup.getEvaluationMeasures()) {
                 indexOfMeasures.put(groupEvaluationMeasure.getName(), i++);
-
                 metricsByName.put(groupEvaluationMeasure.getName(), groupEvaluationMeasure);
-
-                if (groupEvaluationMeasure instanceof PRSpaceGroups) {
-                    pRSpaceGroups = (PRSpaceGroups) groupEvaluationMeasure;
-                    for (int listSize = 1; listSize <= maxListSize; listSize++) {
-                        indexOfMeasures.put("Precision@" + listSize, i++);
-                    }
-                }
             }
-            indexOfMeasures.put("BuildTime", i++);
-            indexOfMeasures.put("GroupModelBuildTime", i++);
-            indexOfMeasures.put("RecommendationTime", i++);
         }
 
         for (Map.Entry<String, Integer> entry : indexOfMeasures.entrySet()) {
@@ -564,35 +553,10 @@ public class GroupCaseStudyExcel {
                     int column = entry.getValue();
 
                     final double value;
-                    if (name.equals("BuildTime")) {
-                        value = caseStudyGroup.getBuildTime(thisExecution, thisSplit);
-                    } else {
-                        if (name.equals("GroupModelBuildTime")) {
-                            value = caseStudyGroup.getGroupBuildTime(thisExecution, thisSplit);
-                        } else {
-                            if (name.equals("RecommendationTime")) {
-                                value = caseStudyGroup.getRecommendationTime(thisExecution, thisSplit);
-                            } else {
-                                if (name.startsWith("Precision@")) {
-                                    GroupEvaluationMeasureResult measureResult = caseStudyGroup.getMeasureResult(pRSpaceGroups, thisExecution, thisSplit);
-                                    Map<String, Double> detailedResult = (Map<String, Double>) measureResult.getDetailedResult();
 
-                                    Double get = detailedResult.get(name);
-
-                                    if (get == null) {
-                                        //No se llegan a recomendar tantos productos.
-                                        value = Double.NaN;
-                                    } else {
-                                        value = get;
-                                    }
-                                } else {
-                                    //Es una medida cualquiera.
-                                    GroupEvaluationMeasure groupEvaluationMeasure = metricsByName.get(name);
-                                    value = caseStudyGroup.getMeasureResult(groupEvaluationMeasure, thisExecution, thisSplit).getValue();
-                                }
-                            }
-                        }
-                    }
+                    //Es una medida cualquiera.
+                    GroupEvaluationMeasure groupEvaluationMeasure = metricsByName.get(name);
+                    value = caseStudyGroup.getMeasureResult(groupEvaluationMeasure, thisExecution, thisSplit).getValue();
 
                     if (!Double.isNaN(value)) {
                         double decimalTrimmedValue = NumberRounder.round(value, 5);
@@ -613,7 +577,6 @@ public class GroupCaseStudyExcel {
     private static void createAggregateResultsSheet(GroupCaseStudy caseStudyGroup, WritableSheet sheet) throws WriteException {
         int row = 0;
 
-        PRSpaceGroups pRSpaceGroups = null;
         Map<String, Integer> indexOfMeasures = new TreeMap<>();
         Map<String, GroupEvaluationMeasure> metricsByName = new TreeMap<>();
         {
@@ -622,17 +585,7 @@ public class GroupCaseStudyExcel {
                 indexOfMeasures.put(groupEvaluationMeasure.getName(), i++);
 
                 metricsByName.put(groupEvaluationMeasure.getName(), groupEvaluationMeasure);
-
-                if (groupEvaluationMeasure instanceof PRSpaceGroups) {
-                    pRSpaceGroups = (PRSpaceGroups) groupEvaluationMeasure;
-                    for (int listSize = 1; listSize <= maxListSize; listSize++) {
-                        indexOfMeasures.put("Precision@" + listSize, i++);
-                    }
-                }
             }
-            indexOfMeasures.put("BuildTime", i++);
-            indexOfMeasures.put("GroupModelBuildTime", i++);
-            indexOfMeasures.put("RecommendationTime", i++);
         }
 
         for (Map.Entry<String, Integer> entry : indexOfMeasures.entrySet()) {
@@ -650,35 +603,9 @@ public class GroupCaseStudyExcel {
 
             final double value;
 
-            if (name.equals("BuildTime")) {
-                value = caseStudyGroup.getAggregateBuildTime();
-            } else {
-                if (name.equals("GroupModelBuildTime")) {
-                    value = caseStudyGroup.getAggregateGroupBuildTime();
-                } else {
-                    if (name.equals("RecommendationTime")) {
-                        value = caseStudyGroup.getAggregateRecommendationTime();
-                    } else {
-                        if (name.startsWith("Precision@")) {
-                            GroupEvaluationMeasureResult measureResult = caseStudyGroup.getAggregateMeasureResult(pRSpaceGroups);
-                            Map<String, Double> detailedResult = (Map<String, Double>) measureResult.getDetailedResult();
-
-                            Double get = detailedResult.get(name);
-
-                            if (get == null) {
-                                //No se llegan a recomendar tantos productos.
-                                value = Double.NaN;
-                            } else {
-                                value = get;
-                            }
-                        } else {
-                            //Es una medida cualquiera.
-                            GroupEvaluationMeasure groupEvaluationMeasure = metricsByName.get(name);
-                            value = caseStudyGroup.getAggregateMeasureResult(groupEvaluationMeasure).getValue();
-                        }
-                    }
-                }
-            }
+            //Es una medida cualquiera.
+            GroupEvaluationMeasure groupEvaluationMeasure = metricsByName.get(name);
+            value = caseStudyGroup.getAggregateMeasureResult(groupEvaluationMeasure).getValue();
 
             if (!Double.isNaN(value)) {
                 double decimalTrimmedValue = NumberRounder.round(value, 5);

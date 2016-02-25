@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -22,7 +22,6 @@ import delfos.common.exceptions.dataset.users.UserNotFound;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RatingsDataset;
 import delfos.dataset.basic.rating.RelevanceCriteria;
-import delfos.io.xml.UnrecognizedElementException;
 import delfos.io.xml.evaluationmeasures.confusionmatricescurve.ConfusionMatricesCurveXML;
 import delfos.results.MeasureResult;
 import delfos.results.RecommendationResults;
@@ -96,7 +95,7 @@ public class PRSpace extends EvaluationMeasure {
         element.setAttribute(EvaluationMeasure.VALUE_ATTRIBUTE_NAME, Float.toString(areaUnderPR));
         element.setContent(ConfusionMatricesCurveXML.getElement(agregada));
 
-        Map<String, Double> detailedResult = new TreeMap<String, Double>();
+        Map<String, Double> detailedResult = new TreeMap<>();
         for (int i = 0; i < agregada.size(); i++) {
             double precisionAt = agregada.getPrecisionAt(i);
             detailedResult.put("Precision@" + i, precisionAt);
@@ -104,45 +103,6 @@ public class PRSpace extends EvaluationMeasure {
 
         return new MeasureResult(
                 this,
-                areaUnderPR,
-                element, detailedResult);
-    }
-
-    @Override
-    public MeasureResult agregateResults(Collection<MeasureResult> results) {
-        List<ConfusionMatricesCurve> curvas = new ArrayList<ConfusionMatricesCurve>(results.size());
-        for (MeasureResult mr : results) {
-            try {
-                Element prCurveElement = mr.getXMLElement();
-                ConfusionMatricesCurve c = ConfusionMatricesCurveXML.getConfusionMatricesCurve(prCurveElement);
-                curvas.add(c);
-            } catch (UnrecognizedElementException ex) {
-                ERROR_CODES.UNRECOGNIZED_XML_ELEMENT.exit(ex);
-            }
-        }
-
-        if (curvas.isEmpty()) {
-            Global.showWarning("The curves cannot be reconstructed");
-        }
-
-        ConfusionMatricesCurve agregada = ConfusionMatricesCurve.mergeCurves(curvas);
-
-        float areaUnderPR = agregada.getAreaPRSpace();
-
-        Element element = new Element(this.getName());
-        element.setAttribute(EvaluationMeasure.VALUE_ATTRIBUTE_NAME, Float.toString(areaUnderPR));
-        element.setContent(ConfusionMatricesCurveXML.getElement(agregada));
-
-        Map<String, Double> detailedResult = new TreeMap<String, Double>();
-        for (int i = 0; i < agregada.size(); i++) {
-            double precisionAt = agregada.getPrecisionAt(i);
-            detailedResult.put("Precision@" + i, precisionAt);
-        }
-
-        return new MeasureResult(
-                this,
-                areaUnderPR,
-                element,
-                detailedResult);
+                areaUnderPR);
     }
 }

@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,8 +16,8 @@
  */
 package delfos.results;
 
-import org.jdom2.Element;
 import delfos.results.evaluationmeasures.EvaluationMeasure;
+import org.jdom2.Element;
 
 /**
  * Almacena los resultados de una métrica de evaluación
@@ -29,46 +29,26 @@ import delfos.results.evaluationmeasures.EvaluationMeasure;
  */
 public class MeasureResult {
 
-    private final Element element;
-    private final float value;
+    private final double value;
     private final EvaluationMeasure evaluationMeasure;
-    private final Object detailedResult;
 
-    public MeasureResult(EvaluationMeasure evaluationMeasure, float value, Element element) {
-        this(evaluationMeasure, value, element, null);
-    }
+    public MeasureResult(EvaluationMeasure evaluationMeasure, double value) {
 
-    public MeasureResult(EvaluationMeasure evaluationMeasure, float value) {
-        this(evaluationMeasure, value, new Element(evaluationMeasure.getName()), null);
-    }
-
-    public MeasureResult(EvaluationMeasure evaluationMeasure, float value, Element element, Object detailedResult) {
-        this.element = element;
         this.value = value;
         this.evaluationMeasure = evaluationMeasure;
-        this.detailedResult = detailedResult;
     }
 
     public Element getXMLElement() {
-        return element;
+        Element measureElement = new Element(evaluationMeasure.getAlias());
+        measureElement.setAttribute(EvaluationMeasure.VALUE_ATTRIBUTE_NAME, Double.toString(value));
+        return measureElement;
     }
 
-    public float getValue() {
+    public double getValue() {
         return value;
     }
 
     public EvaluationMeasure getEvaluationMeasure() {
         return evaluationMeasure;
-    }
-
-    public boolean hasDetailedObject() {
-        return detailedResult != null;
-    }
-
-    public Object getDetailedResult() {
-        if (detailedResult == null) {
-            throw new IllegalStateException("This result does not have a detailed result explanation.");
-        }
-        return detailedResult;
     }
 }

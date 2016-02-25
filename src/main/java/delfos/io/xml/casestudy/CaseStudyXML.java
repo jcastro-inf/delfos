@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -62,16 +62,12 @@ import org.jdom2.output.XMLOutputter;
  */
 public class CaseStudyXML {
 
-    private static int meanBuildTime;
-    private static int meanRecommendationTime;
     public static String RESULT_EXTENSION = "xml";
     public static final String CASE_ROOT_ELEMENT_NAME = "Case";
     public static final String AGGREGATE_VALUES_ELEMENT_NAME = "Aggregate_values";
     public static final String EXECUTIONS_RESULTS_ELEMENT_NAME = "Executions";
 
     private static Element getResultsElement(CaseStudy c) {
-        meanBuildTime = 0;
-        meanRecommendationTime = 0;
 
         Element ejecuciones = new Element(EXECUTIONS_RESULTS_ELEMENT_NAME);
         Element ejecucion;
@@ -86,17 +82,6 @@ public class CaseStudyXML {
                     MeasureResult mr = c.getMeasureResult(em, ex, nSplit);
                     split.addContent((Element) mr.getXMLElement().clone());
                 }
-                Element resultado = new Element("Build time".replaceAll(" ", "_"));
-                resultado.setAttribute("value", Long.toString(c.getBuildTime(ex, nSplit)));
-                float valueBuild = c.getBuildTime(ex, nSplit);
-                meanBuildTime += valueBuild / (c.getNumExecutions() * c.getNumberOfSplits());
-                split.addContent(resultado);
-
-                resultado = new Element("Recommendation time".replaceAll(" ", "_"));
-                resultado.setAttribute("value", Long.toString(c.getRecommendationTime(ex, nSplit)));
-                float valueRecom = c.getRecommendationTime(ex, nSplit);
-                meanRecommendationTime += valueRecom / (c.getNumExecutions() * c.getNumberOfSplits());
-                split.addContent(resultado);
                 ejecucion.addContent(split);
             }
             ejecuciones.addContent(ejecucion);
@@ -110,12 +95,6 @@ public class CaseStudyXML {
             Element element = c.getMeasureResult(em).getXMLElement();
             mediaMedidas.addContent(element);
         }
-        Element meanBuildTime1 = new Element("Build_time");
-        meanBuildTime1.addContent(Float.toString(meanBuildTime));
-        mediaMedidas.addContent(meanBuildTime1);
-        Element meanRecommendationTime1 = new Element("Recommendation_time");
-        meanRecommendationTime1.addContent(Float.toString(meanRecommendationTime));
-        mediaMedidas.addContent(meanRecommendationTime1);
 
         return mediaMedidas;
     }
@@ -398,14 +377,7 @@ public class CaseStudyXML {
             double measureValue = new Double(valueString);
 
             if (evaluationMeasure == null) {
-
-                if (evaluationMeasureName.equals("Build_time")) {
-                    buildTime = (long) measureValue;
-                }
-                if (evaluationMeasureName.equals("Recommendation_time")) {
-                    recommendationTime = (long) measureValue;
-                }
-
+                throw new IllegalStateException("Evaluation measure cannot be null.");
             }
 
             ret.put(evaluationMeasure, measureValue);

@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -26,7 +26,6 @@ import delfos.dataset.basic.rating.RelevanceCriteria;
 import delfos.experiment.casestudy.CaseStudy;
 import delfos.experiment.validation.predictionprotocol.PredictionProtocol;
 import delfos.experiment.validation.validationtechnique.ValidationTechnique;
-import delfos.results.MeasureResult;
 import delfos.results.evaluationmeasures.EvaluationMeasure;
 import delfos.results.evaluationmeasures.PRSpace;
 import delfos.rs.RecommenderSystem;
@@ -426,31 +425,10 @@ public class CaseStudyExcel {
                     int column = entry.getValue();
 
                     final double value;
-                    if (name.equals("BuildTime")) {
-                        value = caseStudy.getBuildTime(thisExecution, thisSplit);
-                    } else {
-                        if (name.equals("RecommendationTime")) {
-                            value = caseStudy.getRecommendationTime(thisExecution, thisSplit);
-                        } else {
-                            if (name.startsWith("Precision@")) {
-                                MeasureResult measureResult = caseStudy.getMeasureResult(pRSpace, thisExecution, thisSplit);
-                                Map<String, Double> detailedResult = (Map<String, Double>) measureResult.getDetailedResult();
 
-                                Double get = detailedResult.get(name);
-
-                                if (get == null) {
-                                    //No se llegan a recomendar tantos productos.
-                                    value = Double.NaN;
-                                } else {
-                                    value = get;
-                                }
-                            } else {
-                                //Es una medida cualquiera.
-                                EvaluationMeasure groupEvaluationMeasure = metricsByName.get(name);
-                                value = caseStudy.getMeasureResult(groupEvaluationMeasure, thisExecution, thisSplit).getValue();
-                            }
-                        }
-                    }
+                    //Es una medida cualquiera.
+                    EvaluationMeasure groupEvaluationMeasure = metricsByName.get(name);
+                    value = caseStudy.getMeasureResult(groupEvaluationMeasure, thisExecution, thisSplit).getValue();
 
                     if (!Double.isNaN(value)) {
                         double decimalTrimmedValue = NumberRounder.round(value, 5);
@@ -507,32 +485,9 @@ public class CaseStudyExcel {
 
             final double value;
 
-            if (name.equals("BuildTime")) {
-                value = caseStudy.getAggregateBuildTime();
-            } else {
-                if (name.equals("RecommendationTime")) {
-                    value = caseStudy.getAggregateRecommendationTime();
-                } else {
-                    if (name.startsWith("Precision@")) {
-                        MeasureResult measureResult = caseStudy.getAggregateMeasureResult(pRSpaces);
-                        Map<String, Double> detailedResult = (Map<String, Double>) measureResult.getDetailedResult();
-
-                        Double get = detailedResult.get(name);
-
-                        if (get == null) {
-                            //No se llegan a recomendar tantos productos.
-                            value = Double.NaN;
-                        } else {
-                            value = get;
-                        }
-                    } else {
-                        //Es una medida cualquiera.
-                        EvaluationMeasure groupEvaluationMeasure = metricsByName.get(name);
-                        value = caseStudy.getAggregateMeasureResult(groupEvaluationMeasure).getValue();
-                    }
-                }
-
-            }
+            //Es una medida cualquiera.
+            EvaluationMeasure groupEvaluationMeasure = metricsByName.get(name);
+            value = caseStudy.getAggregateMeasureResult(groupEvaluationMeasure).getValue();
 
             if (!Double.isNaN(value)) {
                 double decimalTrimmedValue = NumberRounder.round(value, 5);
