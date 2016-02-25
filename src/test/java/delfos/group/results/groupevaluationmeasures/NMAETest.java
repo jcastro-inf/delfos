@@ -70,7 +70,7 @@ public class NMAETest {
                 singleGroupRecommendationOutputs,
                 MAETest.class.getSimpleName(),
                 0,
-                0);
+                0, -1);
 
         NMAE instance = new NMAE();
 

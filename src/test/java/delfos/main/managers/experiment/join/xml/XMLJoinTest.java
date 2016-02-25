@@ -6,7 +6,6 @@ import delfos.common.aggregationoperators.MaximumValue;
 import delfos.common.aggregationoperators.Mean;
 import delfos.configureddatasets.ConfiguredDatasetLoader;
 import delfos.dataset.basic.loader.types.DatasetLoader;
-import delfos.dataset.basic.rating.RelevanceCriteria;
 import delfos.experiment.casestudy.cluster.TuringPreparator;
 import delfos.group.casestudy.defaultcase.GroupCaseStudy;
 import static delfos.group.casestudy.definedcases.hesitant.experiment0.HesitantGRS_CaseStudy.SEED_VALUE;
@@ -14,7 +13,6 @@ import delfos.group.experiment.validation.groupformation.FixedGroupSize_OnlyNGro
 import delfos.group.experiment.validation.groupformation.GroupFormationTechnique;
 import delfos.group.experiment.validation.predictionvalidation.NoPredictionProtocol;
 import delfos.group.experiment.validation.validationtechniques.HoldOutGroupRatedItems;
-import delfos.group.factories.GroupEvaluationMeasuresFactory;
 import delfos.group.grs.GroupRecommenderSystem;
 import delfos.group.grs.aggregation.AggregationOfIndividualRatings;
 import delfos.group.grs.aggregation.AggregationOfIndividualRecommendations;
@@ -58,17 +56,14 @@ public class XMLJoinTest {
 
         for (GroupFormationTechnique groupFormationTechnique : groupFormationTechniques) {
             for (GroupRecommenderSystem groupRecommenderSystem : groupRecommenderSystems) {
-                GroupCaseStudy groupCaseStudy = new GroupCaseStudy(
-                        null,
-                        groupRecommenderSystem,
-                        groupFormationTechnique,
-                        new HoldOutGroupRatedItems(),
-                        new NoPredictionProtocol(),
-                        GroupEvaluationMeasuresFactory.getInstance().getAllClasses(),
-                        new RelevanceCriteria(4),
-                        1,
-                        SEED_VALUE
-                );
+                GroupCaseStudy groupCaseStudy = new GroupCaseStudy()
+                        .setGroupRecommenderSystem(groupRecommenderSystem)
+                        .setGroupFormationTechnique(groupFormationTechnique)
+                        .setGroupPredictionProtocol(new NoPredictionProtocol())
+                        .setGroupValidationTechnique(new HoldOutGroupRatedItems())
+                        .setNumExecutions(1);
+
+                groupCaseStudy.setSeedValue(SEED_VALUE);
 
                 groupCaseStudy.setAlias(
                         "_dataValidation=" + groupCaseStudy.hashDataValidation()
@@ -80,7 +75,7 @@ public class XMLJoinTest {
             }
         }
 
-        new TuringPreparator().prepareGroupExperiment(
+        new TuringPreparator(true).prepareGroupExperiment(
                 experimentDirectory,
                 groupCaseStudys,
                 Arrays.asList(ml100k).toArray(new DatasetLoader[0]));
@@ -93,7 +88,7 @@ public class XMLJoinTest {
         FileUtilities.deleteDirectoryRecursive(experimentDirectory);
         if (!experimentDirectory.exists()) {
             createCaseStudyXML();
-            new TuringPreparator().executeAllExperimentsInDirectory(experimentDirectory, 1);
+            new TuringPreparator(true).executeAllExperimentsInDirectory(experimentDirectory, 1);
         }
 
         //Execution of the joiner

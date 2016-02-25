@@ -144,10 +144,23 @@ public class GroupCaseStudy extends ExperimentAdapter {
             GroupValidationTechnique groupValidationTechnique, GroupPredictionProtocol groupPredictionProtocol,
             Collection<GroupEvaluationMeasure> groupEvaluationMeasures,
             RelevanceCriteria relevanceCriteria,
+            int numExecutions, long seed) {
+        this(datasetLoader, groupRecommenderSystem, groupFormationTechnique, groupValidationTechnique, groupPredictionProtocol, groupEvaluationMeasures, relevanceCriteria, numExecutions);
+        setSeedValue(seed);
+    }
+
+    public GroupCaseStudy(DatasetLoader<? extends Rating> datasetLoader,
+            GroupRecommenderSystem<? extends Object, ? extends Object> groupRecommenderSystem,
+            GroupFormationTechnique groupFormationTechnique,
+            GroupValidationTechnique groupValidationTechnique,
+            GroupPredictionProtocol groupPredictionProtocol,
+            Collection<GroupEvaluationMeasure> groupEvaluationMeasures,
+            RelevanceCriteria relevanceCriteria,
             int numExecutions) {
 
         this();
 
+        setParameterValue(DATASET_LOADER, datasetLoader);
         setParameterValue(NUM_EXECUTIONS, numExecutions);
 
         setParameterValue(GROUP_FORMATION_TECHNIQUE, groupFormationTechnique);
@@ -158,15 +171,36 @@ public class GroupCaseStudy extends ExperimentAdapter {
         setAlias(groupRecommenderSystem.getAlias());
     }
 
-    public GroupCaseStudy(DatasetLoader<? extends Rating> datasetLoader,
-            GroupRecommenderSystem<? extends Object, ? extends Object> groupRecommenderSystem,
-            GroupFormationTechnique groupFormationTechnique,
-            GroupValidationTechnique groupValidationTechnique, GroupPredictionProtocol groupPredictionProtocol,
-            Collection<GroupEvaluationMeasure> groupEvaluationMeasures,
-            RelevanceCriteria relevanceCriteria,
-            int numExecutions, long seed) {
-        this(datasetLoader, groupRecommenderSystem, groupFormationTechnique, groupValidationTechnique, groupPredictionProtocol, groupEvaluationMeasures, relevanceCriteria, numExecutions);
-        setSeedValue(seed);
+    public GroupCaseStudy setDatasetLoader(DatasetLoader<? extends Rating> datasetLoader) {
+        setParameterValue(DATASET_LOADER, datasetLoader);
+        return this;
+    }
+
+    public GroupCaseStudy setGroupRecommenderSystem(GroupRecommenderSystem<? extends Object, ? extends Object> groupRecommenderSystem) {
+        setParameterValue(GROUP_RECOMMENDER_SYSTEM, groupRecommenderSystem);
+        return this;
+    }
+
+    public GroupCaseStudy setGroupFormationTechnique(GroupFormationTechnique groupFormationTechnique) {
+        setParameterValue(GROUP_FORMATION_TECHNIQUE, groupFormationTechnique);
+        return this;
+    }
+
+    public GroupCaseStudy setGroupValidationTechnique(GroupValidationTechnique groupValidationTechnique) {
+        setParameterValue(GROUP_VALIDATION_TECHNIQUE, groupValidationTechnique);
+        return this;
+
+    }
+
+    public GroupCaseStudy setGroupPredictionProtocol(GroupPredictionProtocol groupPredictionProtocol) {
+        setParameterValue(GROUP_PREDICTION_PROTOCOL, groupPredictionProtocol);
+        return this;
+
+    }
+
+    public GroupCaseStudy setNumExecutions(int numExecutions) {
+        setParameterValue(NUM_EXECUTIONS, numExecutions);
+        return this;
     }
 
     /**
@@ -291,7 +325,7 @@ public class GroupCaseStudy extends ExperimentAdapter {
                 DatasetLoader<? extends Rating> trainDatasetLoader = pairsOfTrainTest[particionActual].getTrainingDatasetLoader();
                 DatasetLoader<? extends Rating> testDatasetLoader = pairsOfTrainTest[particionActual].getTestDatasetLoader();
 
-                long totalBuildTime;
+                final long recommendationModelBuildTime;
                 Object groupRecommendationModel;
                 {
                     Chronometer buildTime = new Chronometer();
@@ -302,7 +336,7 @@ public class GroupCaseStudy extends ExperimentAdapter {
 
                     long spent = buildTime.getTotalElapsed();
                     setBuildTime(ejecucionActual, particionActual, spent);
-                    totalBuildTime = spent;
+                    recommendationModelBuildTime = spent;
                 }
 
                 Global.showInfoMessage("----------------------- End of Build ----------------------------------" + "\n");
@@ -384,7 +418,7 @@ public class GroupCaseStudy extends ExperimentAdapter {
                         = new GroupRecommenderSystemResult(
                                 taskGroupRecommendationInput,
                                 taskGroupRecommendationOutput,
-                                getAlias(), ejecucionActual, particionActual);
+                                getAlias(), ejecucionActual, particionActual, recommendationModelBuildTime);
 
                 groupEvaluationMeasures.parallelStream().forEach(groupEvaluationMeasure -> {
                     GroupEvaluationMeasureResult groupMeasureResult
@@ -443,11 +477,20 @@ public class GroupCaseStudy extends ExperimentAdapter {
 
         Map<GroupEvaluationMeasure, GroupEvaluationMeasureResult> thisExecution_evaluationMeasuresValues = this.executionsResult[numExec][split];
 
-        if (thisExecution_evaluationMeasuresValues.containsKey(em)) {
-            GroupEvaluationMeasureResult groupMeasureResult = thisExecution_evaluationMeasuresValues.get(em);
-            return groupMeasureResult;
-        } else {
-            throw new IllegalArgumentException("The evaluation measure " + em + " has no value.");
+        try {
+            if (thisExecution_evaluationMeasuresValues.containsKey(em)) {
+                GroupEvaluationMeasureResult groupMeasureResult = thisExecution_evaluationMeasuresValues.get(em);
+                return groupMeasureResult;
+            } else {
+                throw new IllegalArgumentException("The evaluation measure " + em + " has no value.");
+            }
+        } catch (NullPointerException ex) {
+            if (thisExecution_evaluationMeasuresValues.containsKey(em)) {
+                GroupEvaluationMeasureResult groupMeasureResult = thisExecution_evaluationMeasuresValues.get(em);
+                return groupMeasureResult;
+            } else {
+                throw new IllegalArgumentException("The evaluation measure " + em + " has no value.");
+            }
         }
     }
 
@@ -653,25 +696,26 @@ public class GroupCaseStudy extends ExperimentAdapter {
         groupPredictionProtocol.setSeedValue(getSeedValue());
     }
 
-    public void loadDataset(DatasetLoader<? extends Rating> datasetLoader) throws CannotLoadContentDataset, CannotLoadTrustDataset, CannotLoadRatingsDataset, CannotLoadUsersDataset {
-        setExperimentProgress("Loading dataset", 0, -1);
+    private void loadDataset(DatasetLoader<? extends Rating> datasetLoader) throws CannotLoadContentDataset, CannotLoadTrustDataset, CannotLoadRatingsDataset, CannotLoadUsersDataset {
+        final String taskName = "Loading dataset '" + datasetLoader.getAlias() + "'";
+        setExperimentProgress(taskName, 0, -1);
 
         {
-            setExperimentProgress("Loading ratings dataset", 1, -1);
+            setExperimentProgress(taskName + "  ratings dataset", 1, -1);
             datasetLoader.getRatingsDataset();
             setExperimentProgress("Finished loading ratings dataset", 100, -1);
         }
         if (datasetLoader instanceof UsersDatasetLoader) {
             UsersDatasetLoader usersDatasetLoader = (UsersDatasetLoader) datasetLoader;
 
-            setExperimentProgress("Loading users dataset", 0, -1);
+            setExperimentProgress(taskName + "  users dataset", 0, -1);
             usersDatasetLoader.getUsersDataset();
             setExperimentProgress("Finished loading users dataset", 100, -1);
         }
         if (datasetLoader instanceof ContentDatasetLoader) {
             ContentDatasetLoader contentDatasetLoader = (ContentDatasetLoader) datasetLoader;
 
-            setExperimentProgress("Loading content dataset", 0, -1);
+            setExperimentProgress(taskName + "  items dataset", 0, -1);
             contentDatasetLoader.getContentDataset();
             setExperimentProgress("Finished loading content dataset", 100, -1);
         }
@@ -759,9 +803,5 @@ public class GroupCaseStudy extends ExperimentAdapter {
 
     public long[][] getBuildTimes() {
         return buildTimes;
-    }
-
-    public void setGroupRecommenderSystem(GroupRecommenderSystem<? extends Object, ? extends Object> groupRecommenderSystem) {
-        setParameterValue(GROUP_RECOMMENDER_SYSTEM, groupRecommenderSystem);
     }
 }

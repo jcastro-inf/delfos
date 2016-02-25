@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -63,12 +63,6 @@ public class ResultsDialog {
             MeasureResult agregateResults = c.getMeasureResult(em);
             mediaResultados.put(em.toString(), agregateResults.getValue());
         }
-
-        double meanBuildTime = c.getAggregateBuildTime();
-        double meanRecommendationTime = c.getAggregateRecommendationTime();
-
-        mediaResultados.put("buildTime", meanBuildTime);
-        mediaResultados.put("recommendationTime", meanRecommendationTime);
 
         //Matriz de
         int i = 0;

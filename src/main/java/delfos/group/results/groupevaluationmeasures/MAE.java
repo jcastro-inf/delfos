@@ -121,10 +121,10 @@ public class MAE extends GroupEvaluationMeasure {
         elementMae.addContent(getRawAllMembersMAEsElement(maeAllMembers));
 
         if (maeGeneral.isEmpty()) {
-            return new GroupEvaluationMeasureResult(this, Double.NaN, elementMae);
+            return new GroupEvaluationMeasureResult(this, Double.NaN);
         } else {
             double mae = maeGeneral.getMean();
-            return new GroupEvaluationMeasureResult(this, mae, elementMae);
+            return new GroupEvaluationMeasureResult(this, mae);
         }
     }
 

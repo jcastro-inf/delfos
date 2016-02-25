@@ -95,7 +95,7 @@ public class IntraListSimilarityTest {
                 .apply(singleGroupRecommendationTaskInput);
 
         IntraListSimilarity instance = new IntraListSimilarity();
-        GroupEvaluationMeasureResult result = instance.getMeasureResultForSingleGroup(
+        IntraListSimilarity.IntraListSimilarityByRecommendationLenght resultOfGroup = instance.getMeasureResultForSingleGroup(
                 groupOfUsers,
                 singleGroupRecommendationTaskInput,
                 singleGroupRecommendationTaskOutput,
@@ -104,8 +104,6 @@ public class IntraListSimilarityTest {
                 relevanceCriteria,
                 trainingDatasetLoader,
                 testDatasetLoader);
-
-        IntraListSimilarity.IntraListSimilarityByRecommendationLenght resultOfGroup = (IntraListSimilarity.IntraListSimilarityByRecommendationLenght) result.getDetailedResult();
 
         System.out.println("ILS for group " + groupOfUsers);
         for (int listSize = 1; listSize <= resultOfGroup.size(); listSize++) {

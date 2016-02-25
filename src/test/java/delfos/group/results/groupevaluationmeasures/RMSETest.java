@@ -70,7 +70,7 @@ public class RMSETest {
                 singleGroupRecommendationOutputs,
                 MAETest.class.getSimpleName(),
                 0,
-                0);
+                0, -1);
 
         RMSE instance = new RMSE();
 

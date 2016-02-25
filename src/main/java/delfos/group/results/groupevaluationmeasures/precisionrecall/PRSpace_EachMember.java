@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -26,7 +26,6 @@ import delfos.group.groupsofusers.GroupOfUsers;
 import delfos.group.results.groupevaluationmeasures.GroupEvaluationMeasure;
 import delfos.group.results.groupevaluationmeasures.GroupEvaluationMeasureResult;
 import delfos.group.results.grouprecomendationresults.GroupRecommenderSystemResult;
-import delfos.io.xml.UnrecognizedElementException;
 import delfos.io.xml.evaluationmeasures.confusionmatricescurve.ConfusionMatricesCurveXML;
 import delfos.results.evaluationmeasures.confusionmatrix.ConfusionMatricesCurve;
 import delfos.results.evaluationmeasures.confusionmatrix.ConfusionMatrix;
@@ -211,24 +210,6 @@ public class PRSpace_EachMember extends GroupEvaluationMeasure {
         ConfusionMatricesCurve curvaTotal = ConfusionMatricesCurve.mergeCurves(groupsCurves.values());
 
         measureElement.addContent(ConfusionMatricesCurveXML.getElement(curvaTotal));
-        return new GroupEvaluationMeasureResult(this, curvaTotal.getAreaUnderROC(), measureElement);
-    }
-
-    @Override
-    public GroupEvaluationMeasureResult agregateResults(Collection<GroupEvaluationMeasureResult> results) {
-        ArrayList<ConfusionMatricesCurve> curves = new ArrayList<>();
-
-        for (GroupEvaluationMeasureResult r : results) {
-            Element e = r.getXMLElement();
-            e.getChild(ConfusionMatricesCurveXML.CURVE_ELEMENT);
-            try {
-                curves.add(ConfusionMatricesCurveXML.getConfusionMatricesCurve(r.getXMLElement().getChild(ConfusionMatricesCurveXML.CURVE_ELEMENT)));
-            } catch (UnrecognizedElementException ex) {
-                ERROR_CODES.UNRECOGNIZED_XML_ELEMENT.exit(ex);
-            }
-        }
-
-        ConfusionMatricesCurve mergeCurves = ConfusionMatricesCurve.mergeCurves(curves);
-        return new GroupEvaluationMeasureResult(this, mergeCurves.getAreaUnderROC(), ConfusionMatricesCurveXML.getElement(mergeCurves));
+        return new GroupEvaluationMeasureResult(this, curvaTotal.getAreaUnderROC());
     }
 }

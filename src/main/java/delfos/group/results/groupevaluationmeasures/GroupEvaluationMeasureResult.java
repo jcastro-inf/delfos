@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,9 +16,8 @@
  */
 package delfos.group.results.groupevaluationmeasures;
 
-import org.jdom2.Element;
-import delfos.io.xml.parameterowner.ParameterOwnerXML;
 import delfos.results.evaluationmeasures.EvaluationMeasure;
+import org.jdom2.Element;
 
 /**
  * Almacena los resultados de una métrica de evaluación
@@ -28,32 +27,18 @@ import delfos.results.evaluationmeasures.EvaluationMeasure;
  */
 public class GroupEvaluationMeasureResult {
 
-    private final Element element;
     private final double value;
     private final GroupEvaluationMeasure groupEvaluationMeasure;
-    private final Object detailedResult;
-
-    public GroupEvaluationMeasureResult(GroupEvaluationMeasure groupEvaluationMeasure, double value, Element element, Object detailedResult) {
-        this.element = element;
-        this.value = value;
-        this.groupEvaluationMeasure = groupEvaluationMeasure;
-        this.detailedResult = detailedResult;
-    }
-
-    public GroupEvaluationMeasureResult(GroupEvaluationMeasure groupEvaluationMeasure, double value, Element element) {
-        this(groupEvaluationMeasure, value, element, null);
-    }
 
     public GroupEvaluationMeasureResult(GroupEvaluationMeasure groupEvaluationMeasure, double value) {
         this.groupEvaluationMeasure = groupEvaluationMeasure;
-        element = ParameterOwnerXML.getElement(groupEvaluationMeasure);
-        element.setAttribute(EvaluationMeasure.VALUE_ATTRIBUTE_NAME, Double.toString(value));
         this.value = value;
-        this.detailedResult = null;
     }
 
     public Element getXMLElement() {
-        return element;
+        Element measureElement = new Element(groupEvaluationMeasure.getAlias());
+        measureElement.setAttribute(EvaluationMeasure.VALUE_ATTRIBUTE_NAME, Double.toString(value));
+        return measureElement;
     }
 
     public double getValue() {
@@ -67,17 +52,6 @@ public class GroupEvaluationMeasureResult {
     @Override
     public String toString() {
         return groupEvaluationMeasure.getName() + " : " + getValue();
-    }
-
-    public boolean hasDetailedObject() {
-        return detailedResult != null;
-    }
-
-    public Object getDetailedResult() {
-        if (detailedResult == null) {
-            throw new IllegalStateException("This result does not have a detailed result explanation.");
-        }
-        return detailedResult;
     }
 
 }

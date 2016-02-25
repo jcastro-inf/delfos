@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -67,8 +67,6 @@ import org.jdom2.output.XMLOutputter;
  */
 public class GroupCaseStudyXML {
 
-    private static int meanBuildTime;
-    private static int meanRecommendationTime;
     public static String RESULT_EXTENSION = "xml";
     public static final String HASH_ATTRIBUTE_NAME = "hash";
     public static final String HASH_DATA_VALIDATION_ATTRIBUTE_NAME = "hash_DataValidation";
@@ -83,8 +81,6 @@ public class GroupCaseStudyXML {
     }
 
     private static Element getResultsElement(GroupCaseStudy c) {
-        meanBuildTime = 0;
-        meanRecommendationTime = 0;
 
         Element ejecuciones = new Element("Executions");
         Element ejecucion;
@@ -98,30 +94,6 @@ public class GroupCaseStudyXML {
 
                     GroupEvaluationMeasureResult mr = c.getMeasureResult(em, nexecution, nSplit);
                     split.addContent((Element) mr.getXMLElement().clone());
-                }
-
-                {
-                    Element resultado = new Element("Build time".replaceAll(" ", "_"));
-                    resultado.setAttribute("value", Long.toString(c.getBuildTime(nexecution, nSplit)));
-                    float valueBuild = c.getBuildTime(nexecution, nSplit);
-                    meanBuildTime += valueBuild / (c.getNumExecutions() * c.getGroupValidationTechnique().getNumberOfSplits());
-                    split.addContent(resultado);
-                }
-
-                {
-                    Element resultado = new Element("Group build time".replaceAll(" ", "_"));
-                    resultado.setAttribute("value", Long.toString(c.getGroupBuildTime(nexecution, nSplit)));
-                    float valueBuild = c.getGroupBuildTime(nexecution, nSplit);
-                    meanBuildTime += valueBuild / (c.getNumExecutions() * c.getGroupValidationTechnique().getNumberOfSplits());
-                    split.addContent(resultado);
-                }
-
-                {
-                    Element resultado = new Element("Recommendation time".replaceAll(" ", "_"));
-                    resultado.setAttribute("value", Long.toString(c.getRecommendationTime(nexecution, nSplit)));
-                    float valueRecom = c.getRecommendationTime(nexecution, nSplit);
-                    meanRecommendationTime += valueRecom / (c.getNumExecutions() * c.getGroupValidationTechnique().getNumberOfSplits());
-                    split.addContent(resultado);
                 }
                 ejecucion.addContent(split);
             }
@@ -137,12 +109,6 @@ public class GroupCaseStudyXML {
             Element element = c.getAggregateMeasureResult(em).getXMLElement();
             mediaMedidas.addContent(element);
         }
-        Element meanBuildTime1 = new Element("Build_time");
-        meanBuildTime1.addContent(Float.toString(meanBuildTime));
-        mediaMedidas.addContent(meanBuildTime1);
-        Element meanRecommendationTime1 = new Element("Recommendation_time");
-        meanRecommendationTime1.addContent(Float.toString(meanRecommendationTime));
-        mediaMedidas.addContent(meanRecommendationTime1);
 
         return mediaMedidas;
     }
@@ -435,14 +401,7 @@ public class GroupCaseStudyXML {
 
             GroupEvaluationMeasure groupEvaluationMeasure = GroupEvaluationMeasuresFactory.getInstance().getClassByName(name);
             if (groupEvaluationMeasure == null) {
-
-                if (name.equals("Build_time")) {
-                    //Global.showWarning("Build_time should be implemented as a proper evaluation measure");
-                } else if (name.equals("Recommendation_time")) {
-                    //Global.showWarning("Recommendation_time should be implemented as a proper evaluation measure");
-                } else {
-                    throw new IllegalStateException("The group evaluation measure '" + name + "' does not exists in delfos' factory");
-                }
+                throw new IllegalStateException("The group evaluation measure '" + name + "' does not exists in delfos' factory");
             } else {
                 groupEvaluationMeasures.put(groupEvaluationMeasure, groupEvaluationMeasure.getGroupEvaluationMeasureResultFromXML(groupEvaluationMeasureResultElement));
             }

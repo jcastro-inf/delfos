@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package delfos.group.results.groupevaluationmeasures.detailed;
+package delfos.group.results.groupevaluationmeasures.printers.neighbor;
 
 import delfos.Constants;
 import delfos.rs.collaborativefiltering.profile.Neighbor;

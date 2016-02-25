@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -23,7 +23,6 @@ import delfos.common.exceptions.dataset.users.UserNotFound;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RatingsDataset;
 import delfos.dataset.basic.rating.RelevanceCriteria;
-import delfos.io.xml.UnrecognizedElementException;
 import delfos.io.xml.evaluationmeasures.confusionmatricescurve.ConfusionMatricesCurveXML;
 import delfos.results.MeasureResult;
 import delfos.results.RecommendationResults;
@@ -33,7 +32,6 @@ import delfos.results.evaluationmeasures.confusionmatrix.ConfusionMatrix;
 import delfos.rs.recommendation.Recommendation;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -70,11 +68,12 @@ public class AreaUnderROC extends EvaluationMeasure {
         List<ConfusionMatrix> matrices = new LinkedList<>();
         int maxLength = 0;
 
-        for (Iterator<Integer> iter = recommendationResults.usersWithRecommendations().iterator(); iter.hasNext();) {
-            Integer idUser = iter.next();
-            Collection<Recommendation> recList = recommendationResults.getRecommendationsForUser(idUser);
-            if (recList.size() > maxLength) {
-                maxLength = recList.size();
+        for (Integer idUser : recommendationResults.usersWithRecommendations()) {
+            Collection<Recommendation> recommendations
+                    = recommendationResults.getRecommendationsForUser(idUser);
+
+            if (recommendations.size() > maxLength) {
+                maxLength = recommendations.size();
             }
         }
 
@@ -175,32 +174,6 @@ public class AreaUnderROC extends EvaluationMeasure {
 
         return new MeasureResult(
                 this,
-                areaUnderROC,
-                element);
-    }
-
-    @Override
-    public MeasureResult agregateResults(Collection<MeasureResult> results) {
-
-        Collection<ConfusionMatricesCurve> curvas = new ArrayList<>();
-        results.stream().forEach((measureResult) -> {
-            try {
-                curvas.add(ConfusionMatricesCurveXML.getConfusionMatricesCurve(measureResult.getXMLElement()));
-            } catch (UnrecognizedElementException ex) {
-                ERROR_CODES.UNRECOGNIZED_XML_ELEMENT.exit(ex);
-            }
-        });
-        ConfusionMatricesCurve curve = ConfusionMatricesCurve.mergeCurves(curvas);
-
-        float areaUnderROC = curve.getAreaPRSpace();
-
-        Element element = new Element(this.getName());
-        element.setAttribute(EvaluationMeasure.VALUE_ATTRIBUTE_NAME, Float.toString(areaUnderROC));
-        element.setContent(ConfusionMatricesCurveXML.getElement(curve));
-
-        return new MeasureResult(
-                this,
-                areaUnderROC,
-                element);
+                areaUnderROC);
     }
 }

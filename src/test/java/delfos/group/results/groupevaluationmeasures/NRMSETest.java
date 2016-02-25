@@ -70,7 +70,7 @@ public class NRMSETest {
                 singleGroupRecommendationOutputs,
                 MAETest.class.getSimpleName(),
                 0,
-                0);
+                0, -1);
 
         NRMSE instance = new NRMSE();
 

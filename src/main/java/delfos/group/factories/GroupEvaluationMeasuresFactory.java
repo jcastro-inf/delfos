@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -42,8 +42,11 @@ import delfos.group.results.groupevaluationmeasures.diversity.ils.IntraListSimil
 import delfos.group.results.groupevaluationmeasures.precisionrecall.PRSpaceGroups;
 import delfos.group.results.groupevaluationmeasures.printers.PrintGroupRatingsToPlainText;
 import delfos.group.results.groupevaluationmeasures.printers.PrintGroups;
-import delfos.group.results.groupevaluationmeasures.printers.PrintNeighborsToXML;
 import delfos.group.results.groupevaluationmeasures.printers.PrintTestSet;
+import delfos.group.results.groupevaluationmeasures.printers.neighbor.PrintNeighborsToXML;
+import delfos.group.results.groupevaluationmeasures.time.GroupModelBuildTime;
+import delfos.group.results.groupevaluationmeasures.time.GroupRecommendationTime;
+import delfos.group.results.groupevaluationmeasures.time.ModelBuildTime;
 
 /**
  * Clase que conoce todas las medidas de evaluación a grupos y permite
@@ -99,6 +102,11 @@ public class GroupEvaluationMeasuresFactory extends Factory<GroupEvaluationMeasu
         instance.addClass(IntraListSimilarity_08.class);
         instance.addClass(IntraListSimilarity_09.class);
         instance.addClass(IntraListSimilarity_10.class);
+
+        //Time measures
+        instance.addClass(ModelBuildTime.class);
+        instance.addClass(GroupRecommendationTime.class);
+        instance.addClass(GroupModelBuildTime.class);
     }
 
     private GroupEvaluationMeasuresFactory() {

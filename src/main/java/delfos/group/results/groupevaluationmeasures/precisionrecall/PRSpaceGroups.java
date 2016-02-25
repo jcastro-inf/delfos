@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -17,7 +17,6 @@
 package delfos.group.results.groupevaluationmeasures.precisionrecall;
 
 import delfos.ERROR_CODES;
-import delfos.common.Global;
 import delfos.common.exceptions.dataset.users.UserNotFound;
 import delfos.common.statisticalfuncions.MeanIterative;
 import delfos.dataset.basic.loader.types.DatasetLoader;
@@ -25,11 +24,9 @@ import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RatingsDataset;
 import delfos.dataset.basic.rating.RelevanceCriteria;
 import delfos.group.groupsofusers.GroupOfUsers;
-import delfos.group.io.xml.evaluationmeasures.PRSpaceGroupsXML;
 import delfos.group.results.groupevaluationmeasures.GroupEvaluationMeasure;
 import delfos.group.results.groupevaluationmeasures.GroupEvaluationMeasureResult;
 import delfos.group.results.grouprecomendationresults.GroupRecommenderSystemResult;
-import delfos.io.xml.UnrecognizedElementException;
 import delfos.results.evaluationmeasures.confusionmatrix.ConfusionMatricesCurve;
 import delfos.rs.recommendation.Recommendation;
 import java.util.ArrayList;
@@ -37,7 +34,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
-import org.jdom2.Element;
 
 /**
  * Medida de evaluación para sistemas de recomendación a grupos que calcula la
@@ -58,6 +54,38 @@ public class PRSpaceGroups extends GroupEvaluationMeasure {
 
     @Override
     public GroupEvaluationMeasureResult getMeasureResult(
+            GroupRecommenderSystemResult groupRecommenderSystemResult,
+            DatasetLoader<? extends Rating> originalDatasetLoader,
+            RatingsDataset<? extends Rating> testDataset,
+            RelevanceCriteria relevanceCriteria,
+            DatasetLoader<? extends Rating> trainingDatasetLoader,
+            DatasetLoader<? extends Rating> testDatasetLoader) {
+
+        ConfusionMatricesCurve agregada = getDetailedResult(
+                groupRecommenderSystemResult,
+                originalDatasetLoader,
+                testDataset,
+                relevanceCriteria,
+                trainingDatasetLoader,
+                testDatasetLoader);
+
+        float value;
+        if (agregada.size() >= 2) {
+            value = agregada.getPrecisionAt(1);
+        } else {
+            value = Float.NaN;
+        }
+
+        Map<String, Double> detailedResult = new TreeMap<>();
+        for (int i = 0; i < agregada.size(); i++) {
+            double precisionAt = agregada.getPrecisionAt(i);
+            detailedResult.put("Precision@" + i, precisionAt);
+        }
+
+        return new GroupEvaluationMeasureResult(this, value);
+    }
+
+    public ConfusionMatricesCurve getDetailedResult(
             GroupRecommenderSystemResult groupRecommenderSystemResult,
             DatasetLoader<? extends Rating> originalDatasetLoader,
             RatingsDataset<? extends Rating> testDataset,
@@ -98,52 +126,6 @@ public class PRSpaceGroups extends GroupEvaluationMeasure {
 
         ConfusionMatricesCurve agregada = ConfusionMatricesCurve.mergeCurves(prCurves.values());
 
-        float value;
-        if (agregada.size() >= 2) {
-            value = agregada.getPrecisionAt(1);
-        } else {
-            value = Float.NaN;
-        }
-
-        if (gruposSinMatriz != 0) {
-            Global.showWarning("Grupos sin Matriz en " + PRSpaceGroups.class + " --> " + gruposSinMatriz + " \n");
-        }
-
-        Map<String, Double> detailedResult = new TreeMap<>();
-        for (int i = 0; i < agregada.size(); i++) {
-            double precisionAt = agregada.getPrecisionAt(i);
-            detailedResult.put("Precision@" + i, precisionAt);
-        }
-
-        return new GroupEvaluationMeasureResult(this, value, PRSpaceGroupsXML.getElement(agregada), detailedResult);
-    }
-
-    @Override
-    public GroupEvaluationMeasureResult agregateResults(Collection<GroupEvaluationMeasureResult> results) {
-        ArrayList<ConfusionMatricesCurve> curves = new ArrayList<>();
-
-        for (GroupEvaluationMeasureResult r : results) {
-            Element e = r.getXMLElement();
-            e.getChild(PRSpaceGroupsXML.MEASURE_ELEMENT);
-            try {
-                curves.add(PRSpaceGroupsXML.getConfusionMatricesCurve(e));
-            } catch (UnrecognizedElementException ex) {
-                ERROR_CODES.UNRECOGNIZED_XML_ELEMENT.exit(ex);
-            }
-        }
-
-        ConfusionMatricesCurve mergeCurves = ConfusionMatricesCurve.mergeCurves(curves);
-
-        Map<String, Double> detailedResult = new TreeMap<>();
-        for (int i = 0; i < mergeCurves.size(); i++) {
-            double precisionAt = mergeCurves.getPrecisionAt(i);
-            detailedResult.put("Precision@" + i, precisionAt);
-        }
-
-        return new GroupEvaluationMeasureResult(
-                this,
-                mergeCurves.getAreaUnderROC(),
-                PRSpaceGroupsXML.getElement(mergeCurves),
-                detailedResult);
+        return agregada;
     }
 }
