@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package delfos.group.results.groupevaluationmeasures.printers;
+package delfos.group.results.groupevaluationmeasures.printers.neighbor;
 
 import delfos.Constants;
 import delfos.ERROR_CODES;
@@ -25,7 +25,7 @@ import delfos.dataset.basic.rating.RatingsDataset;
 import delfos.dataset.basic.rating.RelevanceCriteria;
 import delfos.group.groupsofusers.GroupOfUsers;
 import delfos.group.results.groupevaluationmeasures.GroupEvaluationMeasureResult;
-import delfos.group.results.groupevaluationmeasures.detailed.RecommendationsWithNeighborToXML;
+import delfos.group.results.groupevaluationmeasures.printers.GroupEvaluationMeasureInformationPrinter;
 import delfos.group.results.grouprecomendationresults.GroupRecommenderSystemResult;
 import delfos.rs.collaborativefiltering.profile.Neighbor;
 import delfos.rs.recommendation.Recommendation;

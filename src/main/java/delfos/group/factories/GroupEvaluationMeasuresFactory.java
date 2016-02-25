@@ -43,7 +43,7 @@ import delfos.group.results.groupevaluationmeasures.diversity.ils.IntraListSimil
 import delfos.group.results.groupevaluationmeasures.precisionrecall.PRSpaceGroups;
 import delfos.group.results.groupevaluationmeasures.printers.PrintGroupRatingsToPlainText;
 import delfos.group.results.groupevaluationmeasures.printers.PrintGroups;
-import delfos.group.results.groupevaluationmeasures.printers.PrintNeighborsToXML;
+import delfos.group.results.groupevaluationmeasures.printers.neighbor.PrintNeighborsToXML;
 import delfos.group.results.groupevaluationmeasures.printers.PrintTestSet;
 
 /**
