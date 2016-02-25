@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -23,6 +23,7 @@ import delfos.group.results.groupevaluationmeasures.GroupAverageNumberOfRecommen
 import delfos.group.results.groupevaluationmeasures.GroupAverageNumberOfRequests;
 import delfos.group.results.groupevaluationmeasures.GroupEvaluationMeasure;
 import delfos.group.results.groupevaluationmeasures.MAE;
+import delfos.group.results.groupevaluationmeasures.ModelBuildTime;
 import delfos.group.results.groupevaluationmeasures.NDCG;
 import delfos.group.results.groupevaluationmeasures.NMAE;
 import delfos.group.results.groupevaluationmeasures.NRMSE;
@@ -99,6 +100,9 @@ public class GroupEvaluationMeasuresFactory extends Factory<GroupEvaluationMeasu
         instance.addClass(IntraListSimilarity_08.class);
         instance.addClass(IntraListSimilarity_09.class);
         instance.addClass(IntraListSimilarity_10.class);
+
+        //Time measures
+        instance.addClass(ModelBuildTime.class);
     }
 
     private GroupEvaluationMeasuresFactory() {

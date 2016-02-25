@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -165,7 +165,7 @@ public class GroupLevelCaseStudy {
                         GroupRecommenderSystemResult groupRecommendationResult = new GroupRecommenderSystemResult(
                                 singleGroupRecommendationInputs,
                                 singleGroupRecommendationOutputs,
-                                GroupLevelCaseStudy.class.getSimpleName(), 0, 0);
+                                GroupLevelCaseStudy.class.getSimpleName(), 0, 0, -1);
 
                         GroupEvaluationMeasureResult measureResult = evaluationMeasure.getMeasureResult(
                                 groupRecommendationResult,
