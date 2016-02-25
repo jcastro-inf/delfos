@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -29,10 +29,7 @@ import delfos.group.grs.cww.CentralityWeightedAggregationGRS;
 import delfos.group.grs.filtered.GroupRecommenderSystemWithPostFilter;
 import delfos.group.grs.filtered.GroupRecommenderSystemWithPreFilter;
 import delfos.group.grs.hesitant.HesitantKnnGroupUser;
-import delfos.group.grs.itemweighted.AggregationOfIndividualRatings_itemWeighted;
 import delfos.group.grs.mean.MeanRatingGRS;
-import delfos.group.grs.penalty.PenaltyGRS_Ratings;
-import delfos.group.grs.penalty.PenaltyGRS_Recommendations;
 import delfos.group.grs.persistence.GroupRecommenderSystem_fixedFilePersistence;
 import delfos.group.grs.svd.SVDforGroup_ratingsAggregation;
 
@@ -67,11 +64,6 @@ public class GroupRecommenderSystemsFactory extends Factory<GroupRecommenderSyst
         instance.addClass(CentralityWeightedAggregationGRS.class);
 
         instance.addClass(ConsensusGRS.class);
-
-        instance.addClass(PenaltyGRS_Ratings.class);
-        instance.addClass(PenaltyGRS_Recommendations.class);
-
-        instance.addClass(AggregationOfIndividualRatings_itemWeighted.class);
 
         instance.addClass(HesitantKnnGroupUser.class);
 

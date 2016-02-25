@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,8 +16,6 @@
  */
 package delfos.factories;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import delfos.common.aggregationoperators.AggregationOperator;
 import delfos.common.aggregationoperators.ArmonicAggregationOfTwoValues;
 import delfos.common.aggregationoperators.EnsureDegreeOfFairness;
@@ -29,10 +27,10 @@ import delfos.common.aggregationoperators.Mean;
 import delfos.common.aggregationoperators.Median;
 import delfos.common.aggregationoperators.MinimumValue;
 import delfos.common.aggregationoperators.Mode;
-import delfos.common.aggregationoperators.penalty.PenaltyAggregationAllAggregations;
-import delfos.common.aggregationoperators.penalty.PenaltyAggregation_MeanRMS;
 import delfos.common.aggregationoperators.RMSMean;
 import delfos.common.aggregationoperators.TwoValuesAggregator;
+import java.util.ArrayList;
+import java.util.Collection;
 
 /**
  * Factoría de operaciones de agregación. Conoce todos los operadores de
@@ -73,9 +71,6 @@ public class AggregationOperatorFactory extends Factory<TwoValuesAggregator> {
         //Two values aggregators.
         instance.addClass(ArmonicAggregationOfTwoValues.class);
         instance.addClass(HeronianMeanAggregationOfTwoValues.class);
-
-        instance.addClass(PenaltyAggregation_MeanRMS.class);
-        instance.addClass(PenaltyAggregationAllAggregations.class);
 
     }
 
