@@ -325,7 +325,7 @@ public class GroupCaseStudy extends ExperimentAdapter {
                 DatasetLoader<? extends Rating> trainDatasetLoader = pairsOfTrainTest[particionActual].getTrainingDatasetLoader();
                 DatasetLoader<? extends Rating> testDatasetLoader = pairsOfTrainTest[particionActual].getTestDatasetLoader();
 
-                long totalBuildTime;
+                final long recommendationModelBuildTime;
                 Object groupRecommendationModel;
                 {
                     Chronometer buildTime = new Chronometer();
@@ -336,7 +336,7 @@ public class GroupCaseStudy extends ExperimentAdapter {
 
                     long spent = buildTime.getTotalElapsed();
                     setBuildTime(ejecucionActual, particionActual, spent);
-                    totalBuildTime = spent;
+                    recommendationModelBuildTime = spent;
                 }
 
                 Global.showInfoMessage("----------------------- End of Build ----------------------------------" + "\n");
@@ -418,7 +418,7 @@ public class GroupCaseStudy extends ExperimentAdapter {
                         = new GroupRecommenderSystemResult(
                                 taskGroupRecommendationInput,
                                 taskGroupRecommendationOutput,
-                                getAlias(), ejecucionActual, particionActual);
+                                getAlias(), ejecucionActual, particionActual, recommendationModelBuildTime);
 
                 groupEvaluationMeasures.parallelStream().forEach(groupEvaluationMeasure -> {
                     GroupEvaluationMeasureResult groupMeasureResult

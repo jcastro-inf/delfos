@@ -70,7 +70,8 @@ public class MAETest {
                 singleGroupRecommendationOutputs,
                 MAETest.class.getSimpleName(),
                 0,
-                0);
+                0,
+                -1);
 
         MAE instance = new MAE();
 

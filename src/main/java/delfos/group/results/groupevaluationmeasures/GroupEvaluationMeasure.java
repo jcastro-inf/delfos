@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -98,8 +98,7 @@ public abstract class GroupEvaluationMeasure extends ParameterOwnerAdapter imple
      * resultado agregado de las ejecuciones
      */
     public GroupEvaluationMeasureResult agregateResults(Collection<GroupEvaluationMeasureResult> results) {
-        Element aggregatedElement = new Element(this.getName());
-        float aggregatedValue;
+        double aggregatedValue;
 
         MeanIterative mean = new MeanIterative();
         for (GroupEvaluationMeasureResult mr : results) {
@@ -115,14 +114,8 @@ public abstract class GroupEvaluationMeasure extends ParameterOwnerAdapter imple
             }
         }
 
-        if (mean.getNumValues() == 0) {
-            aggregatedValue = Float.POSITIVE_INFINITY;
-            aggregatedElement.setAttribute(EvaluationMeasure.VALUE_ATTRIBUTE_NAME, Float.toString(Float.POSITIVE_INFINITY));
-        } else {
-            aggregatedValue = (float) mean.getMean();
-            aggregatedElement.setAttribute(EvaluationMeasure.VALUE_ATTRIBUTE_NAME, Double.toString(mean.getMean()));
-        }
-        return new GroupEvaluationMeasureResult(this, aggregatedValue, aggregatedElement);
+        aggregatedValue = mean.getNumValues() == 0 ? Double.POSITIVE_INFINITY : mean.getMean();
+        return new GroupEvaluationMeasureResult(this, aggregatedValue);
     }
 
     @Override

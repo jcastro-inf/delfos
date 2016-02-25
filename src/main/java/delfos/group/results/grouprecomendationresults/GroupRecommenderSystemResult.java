@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -41,7 +41,9 @@ public class GroupRecommenderSystemResult {
     private final int thisExecution;
     private final int thisSplit;
 
-    public GroupRecommenderSystemResult(List<SingleGroupRecommendationTaskInput> singleGroupRecommendationInputs, List<SingleGroupRecommendationTaskOutput> singleGroupRecommendationOutputs, String caseStudyAlias, int thisExecution, int thisSplit) {
+    private final long modelBuildTime;
+
+    public GroupRecommenderSystemResult(List<SingleGroupRecommendationTaskInput> singleGroupRecommendationInputs, List<SingleGroupRecommendationTaskOutput> singleGroupRecommendationOutputs, String caseStudyAlias, int thisExecution, int thisSplit, long modelBuildTime) {
 
         validateSameGroups(singleGroupRecommendationInputs, singleGroupRecommendationOutputs);
 
@@ -50,6 +52,7 @@ public class GroupRecommenderSystemResult {
         this.groupCaseStudyAlias = caseStudyAlias;
         this.thisExecution = thisExecution;
         this.thisSplit = thisSplit;
+        this.modelBuildTime = modelBuildTime;
     }
 
     /**
@@ -130,6 +133,10 @@ public class GroupRecommenderSystemResult {
      */
     public int getThisSplit() {
         return thisSplit;
+    }
+
+    public long getModelBuildTime() {
+        return modelBuildTime;
     }
 
 }
