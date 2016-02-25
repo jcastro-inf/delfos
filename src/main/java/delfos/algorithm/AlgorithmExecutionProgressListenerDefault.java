@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,10 +16,10 @@
  */
 package delfos.algorithm;
 
-import java.io.PrintStream;
-import java.util.Date;
 import delfos.common.Chronometer;
 import delfos.common.DateCollapse;
+import java.io.PrintStream;
+import java.util.Date;
 
 /**
  * Listener por defecto, que escribe en la salida indicada el progreso con una
@@ -28,12 +28,12 @@ import delfos.common.DateCollapse;
  * @author jcastro-inf ( https://github.com/jcastro-inf )
  * @version 1.0 22-May-2013
  */
-public class AlgorithmProgressListener_default implements AlgorithmProgressListener {
+public class AlgorithmExecutionProgressListenerDefault implements AlgorithmExecutionProgressListener {
 
     /**
      * Cronómetro para controlar el tiempo entre escrituras.
      */
-    private Chronometer chronometer;
+    private final Chronometer chronometer;
     /**
      * Stream de salida para escribir los mensajes.
      */
@@ -49,7 +49,7 @@ public class AlgorithmProgressListener_default implements AlgorithmProgressListe
     /**
      * Tiempo mínimo que transcurre entre escrituras.
      */
-    private long verbosePeriod;
+    private final long verbosePeriod;
 
     /**
      * Constructor por defecto, que establece el stream donde se escribe la
@@ -58,7 +58,7 @@ public class AlgorithmProgressListener_default implements AlgorithmProgressListe
      * @param out Stream de salida en el que se escriben los mensajes.
      * @param verbosePeriod Tiempo mínimo entre escrituras.
      */
-    public AlgorithmProgressListener_default(PrintStream out, long verbosePeriod) {
+    public AlgorithmExecutionProgressListenerDefault(PrintStream out, long verbosePeriod) {
         this.out = out;
         this.verbosePeriod = verbosePeriod;
         chronometer = new Chronometer();
@@ -79,11 +79,10 @@ public class AlgorithmProgressListener_default implements AlgorithmProgressListe
     }
 
     @Override
-    public void progressChanged(Algorithm algorithm) {
-
-        String task = algorithm.getProgressTask();
-        int percent = algorithm.getProgressPercent();
-        long remainingTime = algorithm.getProgressRemainingTime();
+    public void progressChanged(ExecutionProgressChangedEvent event) {
+        String task = event.getTask();
+        int percent = event.getPercent();
+        long remainingTime = event.getRemainingTime();
 
         executionProgressChanged(task, percent, remainingTime);
     }

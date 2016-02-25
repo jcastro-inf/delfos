@@ -17,7 +17,7 @@
 package delfos.rs.trustbased;
 
 import java.util.Collection;
-import delfos.algorithm.AlgorithmAdapter;
+import delfos.algorithm.AlgorithmWithExecutionProgressDefault;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
@@ -30,7 +30,7 @@ import delfos.common.parameters.ParameterOwnerType;
  * @param <Node> Tipo de los nodos del grafo.
  * @version 1.0 03-Jun-2013
  */
-public abstract class WeightedGraphCalculation<Node> extends AlgorithmAdapter {
+public abstract class WeightedGraphCalculation<Node> extends AlgorithmWithExecutionProgressDefault {
 
     /**
      * Calcula un grafo ponderado a partir del conjunto de datos indicado,

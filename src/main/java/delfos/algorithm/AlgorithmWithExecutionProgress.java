@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,18 +16,29 @@
  */
 package delfos.algorithm;
 
+import delfos.common.parameters.ParameterOwner;
+
 /**
+ * Interface to define the methods that an experiment that is able to notify its
+ * progress must implement
  *
  * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
- * @version 1.0 17-jul-2013
  */
-public interface AlgorithmProgressListener {
+public interface AlgorithmWithExecutionProgress extends ParameterOwner {
 
     /**
-     * Método por el que se notifica de cambios en el algoritmo.
+     * Adds an object to be notified when the execution progress changes.
      *
-     * @param algorithm Algoritmo que ha cambiado.
+     * @param listener Object to be notified of changes.
      */
-    public void progressChanged(Algorithm algorithm);
+    public void addProgressListener(AlgorithmExecutionProgressListener listener);
+
+    /**
+     * Removes an object that no longer is notified of changes in the execution
+     * progress.
+     *
+     * @param listener Object that is not notified.
+     */
+    public void removeProgressListener(AlgorithmExecutionProgressListener listener);
 }
