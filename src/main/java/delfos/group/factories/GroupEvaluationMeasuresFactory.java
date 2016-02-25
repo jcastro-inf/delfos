@@ -23,7 +23,6 @@ import delfos.group.results.groupevaluationmeasures.GroupAverageNumberOfRecommen
 import delfos.group.results.groupevaluationmeasures.GroupAverageNumberOfRequests;
 import delfos.group.results.groupevaluationmeasures.GroupEvaluationMeasure;
 import delfos.group.results.groupevaluationmeasures.MAE;
-import delfos.group.results.groupevaluationmeasures.ModelBuildTime;
 import delfos.group.results.groupevaluationmeasures.NDCG;
 import delfos.group.results.groupevaluationmeasures.NMAE;
 import delfos.group.results.groupevaluationmeasures.NRMSE;
@@ -43,8 +42,11 @@ import delfos.group.results.groupevaluationmeasures.diversity.ils.IntraListSimil
 import delfos.group.results.groupevaluationmeasures.precisionrecall.PRSpaceGroups;
 import delfos.group.results.groupevaluationmeasures.printers.PrintGroupRatingsToPlainText;
 import delfos.group.results.groupevaluationmeasures.printers.PrintGroups;
-import delfos.group.results.groupevaluationmeasures.printers.PrintNeighborsToXML;
 import delfos.group.results.groupevaluationmeasures.printers.PrintTestSet;
+import delfos.group.results.groupevaluationmeasures.printers.neighbor.PrintNeighborsToXML;
+import delfos.group.results.groupevaluationmeasures.time.GroupModelBuildTime;
+import delfos.group.results.groupevaluationmeasures.time.GroupRecommendationTime;
+import delfos.group.results.groupevaluationmeasures.time.ModelBuildTime;
 
 /**
  * Clase que conoce todas las medidas de evaluación a grupos y permite
@@ -103,6 +105,8 @@ public class GroupEvaluationMeasuresFactory extends Factory<GroupEvaluationMeasu
 
         //Time measures
         instance.addClass(ModelBuildTime.class);
+        instance.addClass(GroupRecommendationTime.class);
+        instance.addClass(GroupModelBuildTime.class);
     }
 
     private GroupEvaluationMeasuresFactory() {
