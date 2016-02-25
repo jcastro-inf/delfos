@@ -33,7 +33,6 @@ import delfos.rs.collaborativefiltering.knn.modelbased.KnnModelBasedCFRS;
 import delfos.rs.collaborativefiltering.knn.modelbased.nwr.KnnModelBased_NWR;
 import delfos.rs.collaborativefiltering.svd.SVDFoldingIn;
 import delfos.rs.collaborativefiltering.svd.TryThisAtHomeSVD;
-import delfos.rs.collaborativefiltering.svd.parallel.ParallelSVD;
 import delfos.rs.contentbased.ContentBasedRecommender;
 import delfos.rs.contentbased.interestlms.InterestLMSPredictor;
 import delfos.rs.contentbased.vsm.booleanvsm.basic.BasicBooleanCBRS;
@@ -132,8 +131,6 @@ public class RecommenderSystemsFactory extends Factory<GenericRecommenderSystem>
         instance.addClass(KnnMultiCorrelation.class);
 
         instance.addClass(RSTest.class);
-
-        instance.addClass(ParallelSVD.class);
 
         //Natural noise
         instance.addClass(KnnMemoryBasedNWR_itemWeighted.class);
