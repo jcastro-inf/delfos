@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,6 +16,14 @@
  */
 package delfos.view.resultanalysis;
 
+import delfos.experiment.casestudy.CaseStudyResults;
+import delfos.io.xml.casestudy.CaseStudyXML;
+import delfos.io.xml.casestudy.ParameterOwnerParameterNamesXML;
+import delfos.io.xml.dataset.DatasetLoaderXML;
+import delfos.io.xml.predictionprotocol.PredictionProtocolXML;
+import delfos.io.xml.rs.RecommenderSystemXML;
+import delfos.io.xml.validationtechnique.ValidationTechniqueXML;
+import delfos.results.evaluationmeasures.EvaluationMeasure;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -26,14 +34,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.table.AbstractTableModel;
 import org.jdom2.JDOMException;
-import delfos.experiment.casestudy.CaseStudyResults;
-import delfos.io.xml.casestudy.CaseStudyXML;
-import delfos.io.xml.casestudy.ParameterOwnerParameterNamesXML;
-import delfos.io.xml.dataset.DatasetLoaderXML;
-import delfos.io.xml.predictionprotocol.PredictionProtocolXML;
-import delfos.io.xml.rs.RecommenderSystemXML;
-import delfos.io.xml.validationtechnique.ValidationTechniqueXML;
-import delfos.results.evaluationmeasures.EvaluationMeasure;
 
 /**
  *
@@ -123,8 +123,6 @@ public class OutputTableModel extends AbstractTableModel {
         for (EvaluationMeasure evaluationMeasure : evaluationMeasures) {
             newColumnNames.add(evaluationMeasure.getName());
         }
-        newColumnNames.add("Build_time");
-        newColumnNames.add("Recommendation_time");
 
         //Valores
         values = new String[results.size()][newColumnNames.size()];

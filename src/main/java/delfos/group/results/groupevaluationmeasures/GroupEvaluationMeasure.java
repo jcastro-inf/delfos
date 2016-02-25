@@ -97,7 +97,7 @@ public abstract class GroupEvaluationMeasure extends ParameterOwnerAdapter imple
      * @return Devuelve un objeto {@link MeasureResult} que encapsula el
      * resultado agregado de las ejecuciones
      */
-    public GroupEvaluationMeasureResult agregateResults(Collection<GroupEvaluationMeasureResult> results) {
+    public final GroupEvaluationMeasureResult agregateResults(Collection<GroupEvaluationMeasureResult> results) {
         double aggregatedValue;
 
         MeanIterative mean = new MeanIterative();
@@ -149,7 +149,7 @@ public abstract class GroupEvaluationMeasure extends ParameterOwnerAdapter imple
 
         String attributeValue = groupEvaluationMeasureResultElement.getAttributeValue(VALUE);
         double measureValue = Double.parseDouble(attributeValue);
-        return new GroupEvaluationMeasureResult(this, measureValue, groupEvaluationMeasureResultElement);
+        return new GroupEvaluationMeasureResult(this, measureValue);
     }
 
 }

@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -27,7 +27,6 @@ import delfos.common.exceptions.dataset.items.ItemNotFound;
 import delfos.common.exceptions.dataset.users.UserNotFound;
 import delfos.common.parallelwork.notblocking.MultiThreadExecutionManager_NotBlocking;
 import delfos.common.parameters.ParameterListener;
-import delfos.common.statisticalfuncions.MeanIterative;
 import delfos.dataset.basic.loader.types.ContentDatasetLoader;
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.loader.types.TrustDatasetLoader;
@@ -82,18 +81,6 @@ import java.util.logging.Logger;
  */
 public class DefaultCaseStudy extends CaseStudy implements ParameterListener {
 
-    /**
-     * Almacena los tiempos de construcción de los modelos en milisegundos. Es
-     * un array bidimensional en que la primera coordenada se refiere a las
-     * ejecuciones y la seguna a las particiones.
-     */
-    private Long[][] buildTimes;
-    /**
-     * Almacena los tiempos de recomendación en milisegundos. Es un array
-     * bidimensional en que la primera coordenada se refiere a las ejecuciones y
-     * la seguna a las particiones.
-     */
-    private Long[][] recommendationTimes;
     protected final ArrayList<CaseStudyParameterChangedListener> propertyListeners = new ArrayList<>();
     protected final ArrayList<ExperimentListener> experimentProgressListeners = new ArrayList<>();
     private boolean running;
@@ -212,7 +199,6 @@ public class DefaultCaseStudy extends CaseStudy implements ParameterListener {
                 executionsResult[execution][split] = new TreeMap<>();
             }
         }
-        initTimes(executionNumber, splitNumber);
     }
 
     /**
@@ -277,7 +263,7 @@ public class DefaultCaseStudy extends CaseStudy implements ParameterListener {
                 executionProgressFireEvent(getAlias() + "Building recommendation model", 0, -1);
                 final Object model = recommenderSystem.buildRecommendationModel(pairsValidation[_conjuntoActual].getTrainingDatasetLoader());
 
-                setBuildTime(_ejecucionActual, _conjuntoActual, System.currentTimeMillis() - initTime);
+                final long modelBuildTime = System.currentTimeMillis() - initTime;
 
                 Global.showInfoMessage("----------------------- End of Build ----------------------------------" + "\n");
                 this.executionProgressFireEvent(getAlias() + " --> Recommendation process", 50, -1);
@@ -382,9 +368,6 @@ public class DefaultCaseStudy extends CaseStudy implements ParameterListener {
                         pairsValidation[_conjuntoActual].test,
                         evaluationMeasures,
                         relevanceCriteria));
-
-                //Se realiza el conteo del tiempo consumido en la ejecución
-                setRecommendationTime(_ejecucionActual, _conjuntoActual, recommendationTime);
 
                 this.loopCount++;
                 loopCount++;
@@ -613,10 +596,7 @@ public class DefaultCaseStudy extends CaseStudy implements ParameterListener {
      */
     @Override
     public int getNumberOfSplits() {
-        if (buildTimes == null || buildTimes.length == 0) {
-            return 1;
-        }
-        return buildTimes[0].length;
+        return getValidationTechnique().getNumberOfSplits();
     }
     private String executionProgressTask = "";
     private int executionProgressPercent = 0;
@@ -744,72 +724,5 @@ public class DefaultCaseStudy extends CaseStudy implements ParameterListener {
 
         }
         return em.agregateResults(measureResult);
-    }
-
-    /**
-     * Devuelve el tiempo de ejecución en milisegundos de una partición concreta
-     * de una ejecución dada
-     *
-     * @param execution Ejecución para la que se quiere conocer el tiempo
-     * @param set Indice del subconjunto del dataset
-     * @return tiempo de ejecución en milisegundos
-     */
-    @Override
-    public long getBuildTime(int execution, int set) {
-        return buildTimes[execution][set];
-    }
-
-    /**
-     * Devuelve el tiempo de ejecución en milisegundos de una partición concreta
-     * de una ejecución dada
-     *
-     * @param execution Ejecución para la que se quiere conocer el tiempo
-     * @param set Indice del subconjunto del dataset
-     * @return tiempo de ejecución en milisegundos
-     */
-    @Override
-    public long getRecommendationTime(int execution, int set) {
-        return recommendationTimes[execution][set];
-    }
-
-    protected void initTimes(int executionNumber, int numberOfSplits) {
-        buildTimes = new Long[executionNumber][numberOfSplits];
-        recommendationTimes = new Long[executionNumber][numberOfSplits];
-    }
-
-    protected void setBuildTime(int executionNumber, int numberOfSplits, long time) {
-        buildTimes[executionNumber][numberOfSplits] = time;
-    }
-
-    protected void setRecommendationTime(int executionNumber, int numberOfSplits, long time) {
-        recommendationTimes[executionNumber][numberOfSplits] = time;
-    }
-
-    /**
-     * Devuelve el tiempo medio de la consttrucción del modelo de recomendación.
-     *
-     * @return
-     */
-    // METODOS PARA OBTENER TIEMPOS DEL EXPERIMENTO
-    @Override
-    public double getAggregateBuildTime() {
-        MeanIterative meanValue = new MeanIterative();
-        for (Long[] executionTimes : buildTimes) {
-            for (long executionSplitTime : executionTimes) {
-                meanValue.addValue(executionSplitTime);
-            }
-        }
-        return (long) meanValue.getMean();
-    }
-
-    @Override
-    public long getAggregateRecommendationTime() {
-        MeanIterative meanValue = new MeanIterative();
-        for (Long[] executionTimes : recommendationTimes) {
-            for (long executionSplitTime : executionTimes) {
-                meanValue.addValue(executionSplitTime);
-            }
-        }
-        return (long) meanValue.getMean();
     }
 }

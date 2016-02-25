@@ -31,6 +31,8 @@ public class MovieLens1MillionContentDatasetToCSVTest extends DelfosTest {
         File contentCSVFile = ml_1m.getContentFile();
         MovieLens1MillionContentDatasetToCSV instance = new MovieLens1MillionContentDatasetToCSV();
         ContentDataset result = instance.readContentDataset(contentCSVFile);
+
+        System.out.println("The MovieLens-1m contains " + result.size() + " items.");
     }
 
 }

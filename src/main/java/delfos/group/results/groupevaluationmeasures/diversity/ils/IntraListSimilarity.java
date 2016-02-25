@@ -39,7 +39,6 @@ import delfos.rs.recommendation.Recommendation;
 import delfos.similaritymeasures.CosineCoefficient;
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.function.BinaryOperator;
 import java.util.stream.Collectors;
@@ -169,7 +168,8 @@ public class IntraListSimilarity extends GroupEvaluationMeasure {
                     SingleGroupRecommendationTaskInput singleGroupRecommendationTaskInput = groupRecommenderSystemResult.getGroupInput(groupOfUsers);
                     SingleGroupRecommendationTaskOutput singleGroupRecommendationTaskOutput = groupRecommenderSystemResult.getGroupOutput(groupOfUsers);
 
-                    GroupEvaluationMeasureResult thisGroupResult = getMeasureResultForSingleGroup(
+                    IntraListSimilarityByRecommendationLenght intraListSimilarityByRecommendationLenght
+                    = getMeasureResultForSingleGroup(
                             groupOfUsers,
                             singleGroupRecommendationTaskInput,
                             singleGroupRecommendationTaskOutput,
@@ -179,7 +179,7 @@ public class IntraListSimilarity extends GroupEvaluationMeasure {
                             trainingDatasetLoader,
                             testDatasetLoader);
 
-                    return (IntraListSimilarityByRecommendationLenght) thisGroupResult.getDetailedResult();
+                    return intraListSimilarityByRecommendationLenght;
                 })
                 .reduce(ILS_JOINER)
                 .get();
@@ -191,11 +191,11 @@ public class IntraListSimilarity extends GroupEvaluationMeasure {
             measureValue = ilsAllGroups.getILS(ilsAllGroups.size());
         }
 
-        return new GroupEvaluationMeasureResult(this, measureValue, getXMLElement(this, ilsAllGroups), ilsAllGroups);
+        return new GroupEvaluationMeasureResult(this, measureValue);
 
     }
 
-    public GroupEvaluationMeasureResult getMeasureResultForSingleGroup(
+    public IntraListSimilarityByRecommendationLenght getMeasureResultForSingleGroup(
             GroupOfUsers groupOfUsers,
             SingleGroupRecommendationTaskInput singleGroupRecommendationTaskInput,
             SingleGroupRecommendationTaskOutput singleGroupRecommendationTaskOutput,
@@ -228,7 +228,7 @@ public class IntraListSimilarity extends GroupEvaluationMeasure {
             measureValue = ilsThisGroup.getILS(ilsThisGroup.size());
         }
 
-        return new GroupEvaluationMeasureResult(this, measureValue, getXMLElement(this, ilsThisGroup), ilsThisGroup);
+        return ilsThisGroup;
     }
 
     private double intraListSimilarity(TryThisAtHomeSVDModel svdModel, List<Recommendation> recommendations) {
@@ -293,24 +293,6 @@ public class IntraListSimilarity extends GroupEvaluationMeasure {
             return svdModel;
         }
 
-    }
-
-    @Override
-    public GroupEvaluationMeasureResult agregateResults(Collection<GroupEvaluationMeasureResult> results) {
-
-        IntraListSimilarityByRecommendationLenght ilsAggregated = results.parallelStream()
-                .map(groupEvaluationMeasureResult -> (IntraListSimilarityByRecommendationLenght) groupEvaluationMeasureResult.getDetailedResult())
-                .reduce(ILS_JOINER)
-                .get();
-
-        double measureValue;
-        if (ilsAggregated.size() >= this.listSizeOfMeasure) {
-            measureValue = ilsAggregated.getILS(this.listSizeOfMeasure);
-        } else {
-            measureValue = ilsAggregated.getILS(ilsAggregated.size());
-        }
-
-        return new GroupEvaluationMeasureResult(this, measureValue, getXMLElement(this, ilsAggregated), ilsAggregated);
     }
 
     private static synchronized Element getXMLElement(IntraListSimilarity intraListSimilarity, IntraListSimilarityByRecommendationLenght intraListSimilarityByRecommendationLenght) {

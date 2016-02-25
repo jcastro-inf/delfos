@@ -477,11 +477,20 @@ public class GroupCaseStudy extends ExperimentAdapter {
 
         Map<GroupEvaluationMeasure, GroupEvaluationMeasureResult> thisExecution_evaluationMeasuresValues = this.executionsResult[numExec][split];
 
-        if (thisExecution_evaluationMeasuresValues.containsKey(em)) {
-            GroupEvaluationMeasureResult groupMeasureResult = thisExecution_evaluationMeasuresValues.get(em);
-            return groupMeasureResult;
-        } else {
-            throw new IllegalArgumentException("The evaluation measure " + em + " has no value.");
+        try {
+            if (thisExecution_evaluationMeasuresValues.containsKey(em)) {
+                GroupEvaluationMeasureResult groupMeasureResult = thisExecution_evaluationMeasuresValues.get(em);
+                return groupMeasureResult;
+            } else {
+                throw new IllegalArgumentException("The evaluation measure " + em + " has no value.");
+            }
+        } catch (NullPointerException ex) {
+            if (thisExecution_evaluationMeasuresValues.containsKey(em)) {
+                GroupEvaluationMeasureResult groupMeasureResult = thisExecution_evaluationMeasuresValues.get(em);
+                return groupMeasureResult;
+            } else {
+                throw new IllegalArgumentException("The evaluation measure " + em + " has no value.");
+            }
         }
     }
 

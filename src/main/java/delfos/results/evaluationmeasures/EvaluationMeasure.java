@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,9 +16,6 @@
  */
 package delfos.results.evaluationmeasures;
 
-import java.util.Collection;
-import java.util.Map;
-import org.jdom2.Element;
 import delfos.common.parameters.ParameterOwnerAdapter;
 import delfos.common.parameters.ParameterOwnerType;
 import delfos.common.statisticalfuncions.MeanIterative;
@@ -28,6 +25,9 @@ import delfos.dataset.basic.rating.RelevanceCriteria;
 import delfos.results.MeasureResult;
 import delfos.results.RecommendationResults;
 import delfos.rs.recommendation.SingleUserRecommendations;
+import java.util.Collection;
+import java.util.Map;
+import org.jdom2.Element;
 
 /**
  * Interfaz que define los métodos de una métrica de evaluación de un sistema de
@@ -85,18 +85,18 @@ public abstract class EvaluationMeasure extends ParameterOwnerAdapter implements
      * @return Devuelve un objeto {@link MeasureResult} que encapsula el
      * resultado agregado de las ejecuciones
      */
-    public MeasureResult agregateResults(Collection<MeasureResult> results) {
+    public final MeasureResult agregateResults(Collection<MeasureResult> results) {
         Element aggregatedElement = new Element(this.getName());
         float aggregatedValue;
 
         MeanIterative mean = new MeanIterative();
-        for (MeasureResult mr : results) {
+        results.stream().forEach((mr) -> {
             mean.addValue(mr.getValue());
-        }
+        });
         aggregatedValue = (float) mean.getMean();
         aggregatedElement.setAttribute(EvaluationMeasure.VALUE_ATTRIBUTE_NAME, Double.toString(mean.getMean()));
 
-        return new MeasureResult(this, aggregatedValue, aggregatedElement);
+        return new MeasureResult(this, aggregatedValue);
     }
 
     @Override

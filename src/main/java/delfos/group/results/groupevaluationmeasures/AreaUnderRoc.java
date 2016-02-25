@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -27,7 +27,6 @@ import delfos.dataset.basic.rating.RelevanceCriteria;
 import delfos.group.groupsofusers.GroupOfUsers;
 import delfos.group.results.groupevaluationmeasures.precisionrecall.PRSpaceGroups;
 import delfos.group.results.grouprecomendationresults.GroupRecommenderSystemResult;
-import delfos.io.xml.UnrecognizedElementException;
 import delfos.io.xml.evaluationmeasures.confusionmatricescurve.ConfusionMatricesCurveXML;
 import delfos.io.xml.parameterowner.ParameterOwnerXML;
 import delfos.results.evaluationmeasures.confusionmatrix.ConfusionMatricesCurve;
@@ -131,30 +130,6 @@ public class AreaUnderRoc extends GroupEvaluationMeasure {
 
         areaUnderRocElement.addContent(ConfusionMatricesCurveXML.getElement(curva));
 
-        return new GroupEvaluationMeasureResult(this, areaUnderRoc, areaUnderRocElement);
-    }
-
-    @Override
-    public GroupEvaluationMeasureResult agregateResults(Collection<GroupEvaluationMeasureResult> results) {
-        ArrayList<ConfusionMatricesCurve> curves = new ArrayList<>();
-
-        for (GroupEvaluationMeasureResult r : results) {
-            Element e = r.getXMLElement();
-            try {
-                curves.add(ConfusionMatricesCurveXML.getConfusionMatricesCurve(e.getChild(ConfusionMatricesCurveXML.CURVE_ELEMENT)));
-            } catch (UnrecognizedElementException ex) {
-                ERROR_CODES.UNRECOGNIZED_XML_ELEMENT.exit(ex);
-            }
-        }
-
-        ConfusionMatricesCurve mergeCurves = ConfusionMatricesCurve.mergeCurves(curves);
-
-        float areaUnderRoc = mergeCurves.getAreaUnderROC();
-        Element areaUnderRocElement = new Element(this.getName());
-        areaUnderRocElement.setAttribute("value", Float.toString(areaUnderRoc));
-
-        areaUnderRocElement.addContent(ConfusionMatricesCurveXML.getElement(mergeCurves));
-
-        return new GroupEvaluationMeasureResult(this, areaUnderRoc, areaUnderRocElement);
+        return new GroupEvaluationMeasureResult(this, areaUnderRoc);
     }
 }

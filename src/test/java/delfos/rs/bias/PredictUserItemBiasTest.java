@@ -103,7 +103,7 @@ public class PredictUserItemBiasTest {
         RecommendationResults recommendationResults = new RecommendationResults(allRecommendations);
 
         MeasureResult measureResult = new Coverage().getMeasureResult(recommendationResults, datasetLoader.getRatingsDataset(), new RelevanceCriteria(4));
-        float coverage = measureResult.getValue();
+        double coverage = measureResult.getValue();
 
         Assert.assertEquals(1, coverage, Double.MIN_VALUE);
     }
