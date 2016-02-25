@@ -23,7 +23,7 @@ import delfos.group.results.groupevaluationmeasures.GroupAverageNumberOfRecommen
 import delfos.group.results.groupevaluationmeasures.GroupAverageNumberOfRequests;
 import delfos.group.results.groupevaluationmeasures.GroupEvaluationMeasure;
 import delfos.group.results.groupevaluationmeasures.MAE;
-import delfos.group.results.groupevaluationmeasures.ModelBuildTime;
+import delfos.group.results.groupevaluationmeasures.time.ModelBuildTime;
 import delfos.group.results.groupevaluationmeasures.NDCG;
 import delfos.group.results.groupevaluationmeasures.NMAE;
 import delfos.group.results.groupevaluationmeasures.NRMSE;
