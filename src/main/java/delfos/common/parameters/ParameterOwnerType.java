@@ -16,7 +16,6 @@
  */
 package delfos.common.parameters;
 
-import delfos.common.aggregationoperators.penalty.functions.PenaltyFuncionsFactory;
 import delfos.factories.AggregationOperatorFactory;
 import delfos.factories.DatasetLoadersFactory;
 import delfos.factories.EvaluationMeasuresFactory;
@@ -77,7 +76,6 @@ public enum ParameterOwnerType {
     BELIEF_FUNCTION,
     RECOMMENDATION_CANDIDATES_SELECTOR,
     CASE_STUDY,
-    PENALTY_FUNCION,
     GROUPER,
     GROUP_RECOMMENDATION_SELECTION_MODE, NON_PERSONALISED_RECOMMENDER_SYSTEM;
 
@@ -112,8 +110,6 @@ public enum ParameterOwnerType {
                 return GroupValidationTechniquesFactory.getInstance().getClassByName(className);
             case NON_PERSONALISED_RECOMMENDER_SYSTEM:
                 return RecommenderSystemsFactory.getInstance().getClassByName(className);
-            case PENALTY_FUNCION:
-                return PenaltyFuncionsFactory.getInstance().getClassByName(className);
             case PREDICTION_PROTOCOL_TECHNIQUE:
                 return PredictionProtocolFactory.getInstance().getClassByName(className);
             case PREDICTION_TECHNIQUE:
