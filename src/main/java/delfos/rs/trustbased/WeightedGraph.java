@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -24,6 +24,7 @@ import java.util.Collection;
  * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 18-jul-2013
+ * @param <Node>
  */
 public interface WeightedGraph<Node> extends Serializable {
 
@@ -58,7 +59,8 @@ public interface WeightedGraph<Node> extends Serializable {
      *
      * @param id1 Nodo origen.
      * @param id2 Nodo destino.
-     * @return Intensidad de la conexión entre dos nodos. Siempre devuelve un número concreto, si no existe conexión devuelve cero.
+     * @return Intensidad de la conexión entre dos nodos. Siempre devuelve un
+     * número concreto, si no existe conexión devuelve cero.
      */
     public Number connection(Node id1, Node id2);
 
