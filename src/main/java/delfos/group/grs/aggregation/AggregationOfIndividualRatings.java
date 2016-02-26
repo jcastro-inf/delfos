@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -19,8 +19,6 @@ package delfos.group.grs.aggregation;
 import delfos.common.Global;
 import delfos.common.aggregationoperators.AggregationOperator;
 import delfos.common.aggregationoperators.Mean;
-import delfos.common.aggregationoperators.penalty.PenaltyAggregation_MeanRMS;
-import delfos.common.aggregationoperators.penalty.functions.PenaltyFunction;
 import delfos.common.exceptions.dataset.CannotLoadContentDataset;
 import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
 import delfos.common.exceptions.dataset.items.ItemNotFound;
@@ -38,11 +36,10 @@ import delfos.dataset.util.DatasetUtilities;
 import delfos.group.groupsofusers.GroupOfUsers;
 import delfos.group.grs.GroupRecommenderSystemAdapter;
 import delfos.group.grs.SingleRecommendationModel;
-import delfos.rs.RecommenderSystem;
 import delfos.rs.RecommendationModelBuildingProgressListener;
+import delfos.rs.RecommenderSystem;
 import delfos.rs.collaborativefiltering.knn.memorybased.KnnMemoryBasedCFRS;
 import delfos.rs.explanation.GroupModelWithExplanation;
-import delfos.rs.explanation.PenaltyAggregationExplanation;
 import delfos.rs.recommendation.Recommendation;
 import java.util.Arrays;
 import java.util.Collection;
@@ -147,12 +144,9 @@ public class AggregationOfIndividualRatings
 
         GroupModelWithExplanation<GroupModelPseudoUser, ? extends Object> groupModelWithExplanation;
         AggregationOperator aggregationOperator = getAggregationOperator();
-        if (aggregationOperator instanceof PenaltyAggregation_MeanRMS) {
-            groupModelWithExplanation = getGroupProfile_PenaltiesExplained(datasetLoader, aggregationOperator, groupOfUsers);
-        } else {
-            Map<Integer, Number> groupProfile = getGroupProfile(datasetLoader, aggregationOperator, groupOfUsers);
-            groupModelWithExplanation = new GroupModelWithExplanation<>(new GroupModelPseudoUser(groupOfUsers, groupProfile), "No explanantion");
-        }
+        Map<Integer, Number> groupProfile = getGroupProfile(datasetLoader, aggregationOperator, groupOfUsers);
+        groupModelWithExplanation = new GroupModelWithExplanation<>(new GroupModelPseudoUser(groupOfUsers, groupProfile), "No explanantion");
+
         return groupModelWithExplanation;
     }
 
@@ -211,56 +205,6 @@ public class AggregationOfIndividualRatings
         });
 
         return groupRatings;
-    }
-
-    private GroupModelWithExplanation<GroupModelPseudoUser, PenaltyAggregationExplanation> getGroupProfile_PenaltiesExplained(
-            DatasetLoader<? extends Rating> datasetLoader,
-            AggregationOperator aggregationOperator1,
-            GroupOfUsers groupOfUsers)
-            throws UserNotFound, CannotLoadRatingsDataset {
-
-        if (!(aggregationOperator1 instanceof PenaltyAggregation_MeanRMS)) {
-            throw new IllegalStateException("No permitido por ahora.");
-        }
-
-        PenaltyAggregation_MeanRMS penaltyAggregation = (PenaltyAggregation_MeanRMS) aggregationOperator1;
-
-        //Generate groupProfile:
-        Map<Integer, List<Number>> groupRatingsList = new TreeMap<>();
-
-        for (int idUser : groupOfUsers.getIdMembers()) {
-            Map<Integer, ? extends Rating> userRatingsRated = datasetLoader.getRatingsDataset().getUserRatingsRated(idUser);
-            userRatingsRated.keySet().stream().map((idItem) -> {
-                if (!groupRatingsList.containsKey(idItem)) {
-                    groupRatingsList.put(idItem, new LinkedList<>());
-                }
-                return idItem;
-            }).forEach((idItem) -> {
-                groupRatingsList.get(idItem).add(userRatingsRated.get(idItem).getRatingValue());
-            });
-        }
-
-        //Aggregate profiles
-        Map<Integer, Number> groupRatings = new TreeMap<>();
-        Map<Integer, AggregationOperator> groupRatingsAggregationExplanation_noTies = new TreeMap<>();
-        Map<Integer, AggregationOperator> groupRatingsAggregationExplanation = new TreeMap<>();
-
-        for (int idItem : groupRatingsList.keySet()) {
-            List<Number> lista = groupRatingsList.get(idItem);
-
-            PenaltyAggregation_MeanRMS.PenaltyInfo penaltyInfo = penaltyAggregation.getPenaltyInfo(lista, (PenaltyFunction) penaltyAggregation.getParameterValue(PenaltyAggregation_MeanRMS.PENALTY));
-
-            float aggregateValue = penaltyInfo.bestAggregationOperator.aggregateValues(lista);
-
-            groupRatings.put(idItem, aggregateValue);
-            if (penaltyInfo.tiedAggregations.isEmpty()) {
-                groupRatingsAggregationExplanation_noTies.put(idItem, penaltyInfo.bestAggregationOperator);
-            }
-
-            groupRatingsAggregationExplanation.put(idItem, penaltyInfo.bestAggregationOperator);
-        }
-
-        return new GroupModelWithExplanation<>(new GroupModelPseudoUser(groupOfUsers, groupRatings), new PenaltyAggregationExplanation(groupRatingsAggregationExplanation, groupRatingsAggregationExplanation_noTies));
     }
 
     public static Collection<Recommendation> recommendWithGroupRatings(
