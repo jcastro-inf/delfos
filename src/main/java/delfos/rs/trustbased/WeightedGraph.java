@@ -18,6 +18,9 @@ package delfos.rs.trustbased;
 
 import java.io.Serializable;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  *
@@ -72,5 +75,29 @@ public interface WeightedGraph<Node> extends Serializable {
      * @return
      */
     int maxK();
+
+    public default double[][] asMatrix() {
+
+        final List<Node> nodesSorted = nodesSortingForMatrix();
+
+        double[][] matrix = new double[nodesSorted.size()][nodesSorted.size()];
+
+        for (int indexRow = 0; indexRow < nodesSorted.size(); indexRow++) {
+            Node node = nodesSorted.get(indexRow);
+
+            for (int indexColumn = 0; indexColumn < nodesSorted.size(); indexColumn++) {
+                Node node2 = nodesSorted.get(indexColumn);
+                double value = connection(node, node2).doubleValue();
+                matrix[indexRow][indexColumn] = value;
+            }
+        }
+
+        return matrix;
+    }
+
+    public default List<Node> nodesSortingForMatrix() {
+        List<Node> nodesSorted = allNodes().stream().sorted().collect(Collectors.toList());
+        return Collections.unmodifiableList(nodesSorted);
+    }
 
 }

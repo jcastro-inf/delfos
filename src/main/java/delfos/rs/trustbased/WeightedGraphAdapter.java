@@ -271,30 +271,6 @@ public class WeightedGraphAdapter<Node> implements Serializable, WeightedGraph<N
         return printWeightedGraph;
     }
 
-    public double[][] asMatrix() {
-
-        final List<Node> nodesSorted = nodesSortingForMatrix();
-
-        double[][] matrix = new double[nodesSorted.size()][nodesSorted.size()];
-
-        for (int indexRow = 0; indexRow < nodesSorted.size(); indexRow++) {
-            Node node = nodesSorted.get(indexRow);
-
-            for (int indexColumn = 0; indexColumn < nodesSorted.size(); indexColumn++) {
-                Node node2 = nodesSorted.get(indexColumn);
-                double value = connections.get(node).get(node2).doubleValue();
-                matrix[indexRow][indexColumn] = value;
-            }
-        }
-
-        return matrix;
-    }
-
-    public List<Node> nodesSortingForMatrix() {
-        List<Node> nodesSorted = this.allNodes.stream().sorted().collect(Collectors.toList());
-        return Collections.unmodifiableList(nodesSorted);
-    }
-
     public void printTable(WriterOutputStream outputStream) {
 
         List<String> columnNames = new ArrayList<>();
