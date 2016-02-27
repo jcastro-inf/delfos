@@ -120,9 +120,6 @@ public class RecommenderSystem_cacheRecommendationModel<RecommendationModel> ext
             int ratingsDatasetHashCode = datasetLoader.getRatingsDataset().hashCode();
             String datasetLoaderAlias = datasetLoader.getAlias();
 
-            saveHashCodeExplanationInFile(datasetLoader);
-            saveHashCodeExplanationInFile(recommenderSystem);
-
             String rsNameIdentifier = "_rsHash=" + recommenderSystem.hashCode();
             String datasetLoaderString = "_datasetLoader=" + datasetLoaderAlias + "_DLHash=" + ratingsDatasetHashCode;
 

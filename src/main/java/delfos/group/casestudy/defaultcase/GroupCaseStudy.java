@@ -323,7 +323,10 @@ public class GroupCaseStudy extends ExperimentAdapter {
                 setExecutionProgress(getAlias() + " --> Building Recommender System Model", 0, -1);
 
                 DatasetLoader<? extends Rating> trainDatasetLoader = pairsOfTrainTest[particionActual].getTrainingDatasetLoader();
+                trainDatasetLoader.setAlias(trainDatasetLoader.getAlias() + "_execution=" + executionIndex);
+
                 DatasetLoader<? extends Rating> testDatasetLoader = pairsOfTrainTest[particionActual].getTestDatasetLoader();
+                testDatasetLoader.setAlias(testDatasetLoader.getAlias() + "_execution=" + executionIndex);
 
                 final long recommendationModelBuildTime;
                 Object groupRecommendationModel;
