@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -22,7 +22,6 @@ import delfos.common.exceptions.dataset.CannotLoadContentDataset;
 import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
 import delfos.common.exceptions.dataset.items.ItemNotFound;
 import delfos.common.exceptions.dataset.users.UserNotFound;
-import delfos.common.parallelwork.MultiThreadExecutionManager;
 import delfos.common.parameters.Parameter;
 import delfos.common.parameters.restriction.ParameterOwnerRestriction;
 import delfos.common.parameters.restriction.RecommenderSystemParameterRestriction;
@@ -33,17 +32,17 @@ import delfos.experiment.casestudy.parallel.SingleUserRecommendationTaskExecutor
 import delfos.group.groupsofusers.GroupOfUsers;
 import delfos.group.grs.GroupRecommenderSystemAdapter;
 import delfos.group.grs.SingleRecommendationModel;
-import delfos.rs.RecommenderSystem;
 import delfos.rs.RecommendationModelBuildingProgressListener;
+import delfos.rs.RecommenderSystem;
 import delfos.rs.collaborativefiltering.knn.memorybased.KnnMemoryBasedCFRS;
 import delfos.rs.recommendation.Recommendation;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.stream.Collectors;
 
 /**
  * Implementa un sistema de recomendación a grupos que agrega las
@@ -185,32 +184,14 @@ public class AggregationOfIndividualRecommendations extends GroupRecommenderSyst
         return recommendations;
     }
 
-    public static Map<Integer, Collection<Recommendation>> performSingleUserRecommendations(Collection<Integer> users, RecommenderSystem singleUserRecommender, DatasetLoader<? extends Rating> datasetLoader, SingleRecommendationModel RecommendationModel, Set<Integer> candidateItems) throws UserNotFound {
+    public static Map<Integer, Collection<Recommendation>> performSingleUserRecommendations(Collection<Integer> users, RecommenderSystem<? extends Object> singleUserRecommender, DatasetLoader<? extends Rating> datasetLoader, SingleRecommendationModel recommendationModel, Set<Integer> candidateItems) throws UserNotFound {
 
-        List<SingleUserRecommendationTask> tasks = new LinkedList<>();
-        for (int idUser : users) {
-            tasks.add(
-                    new SingleUserRecommendationTask(
-                            singleUserRecommender,
-                            datasetLoader,
-                            RecommendationModel.getRecommendationModel(),
-                            idUser,
-                            candidateItems));
-
-        }
-        MultiThreadExecutionManager<SingleUserRecommendationTask> executionManager = new MultiThreadExecutionManager<>(
-                "Prediction of each member",
-                tasks,
-                SingleUserRecommendationTaskExecutor.class);
-        executionManager.run();
-        Map<Integer, Collection<Recommendation>> singleUserRecomendationLists = new TreeMap<>();
-        for (SingleUserRecommendationTask task : executionManager.getAllFinishedTasks()) {
-            Collection<Recommendation> recommendations = task.getRecommendationList();
-            if (recommendations == null) {
-                throw new UserNotFound(task.getIdUser());
-            }
-            singleUserRecomendationLists.put(task.getIdUser(), recommendations);
-        }
-        return singleUserRecomendationLists;
+        return users.parallelStream()
+                .map(idUser -> new SingleUserRecommendationTask(singleUserRecommender, datasetLoader, recommendationModel, idUser, candidateItems))
+                .map(new SingleUserRecommendationTaskExecutor())
+                .collect(Collectors.toMap(
+                                recommendationsToUser -> recommendationsToUser.getUser().getId(),
+                                recommendationsToUser -> recommendationsToUser.getRecommendations()
+                        ));
     }
 }

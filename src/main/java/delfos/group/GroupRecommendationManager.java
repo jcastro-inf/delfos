@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -21,7 +21,6 @@ import delfos.Constants;
 import delfos.ERROR_CODES;
 import delfos.UndefinedParameterException;
 import delfos.common.Global;
-import delfos.common.parallelwork.MultiThreadExecutionManager;
 import delfos.configfile.rs.single.RecommenderSystemConfiguration;
 import delfos.configfile.rs.single.RecommenderSystemConfigurationFileParser;
 import delfos.dataset.basic.loader.types.ContentDatasetLoader;
@@ -46,8 +45,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeMap;
 import java.util.TreeSet;
+import java.util.stream.Collectors;
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.output.XMLOutputter;
@@ -139,7 +138,6 @@ public class GroupRecommendationManager {
             Global.showInfoMessage("Recommending for grs described in file '" + configFile_grs.getAbsolutePath() + "'\n");
 
             List<Recommendation> groupRecommendations;
-            Map<Integer, Collection<Recommendation>> singleUserRecommendations = new TreeMap<>();
 
             GroupOfUsers group;
             {
@@ -182,13 +180,13 @@ public class GroupRecommendationManager {
             Global.showInfoMessage("\tUsers:   " + users.size() + "\n");
             Global.showInfoMessage("\tItems:   " + items.size() + "\n");
             Global.showInfoMessage("\tRatings: " + grsc.datasetLoader.getRatingsDataset().getNumRatings() + "\n");
-            Set<Integer> candidateItems = new TreeSet<>();
-            candidateItems.addAll(items);
+            Set<Integer> _candidateItems = new TreeSet<>();
+            _candidateItems.addAll(items);
 
             for (int idMember : group) {
-                candidateItems.removeAll(datasetLoader.getRatingsDataset().getUserRated(idMember));
+                _candidateItems.removeAll(datasetLoader.getRatingsDataset().getUserRated(idMember));
             }
-            candidateItems = Collections.unmodifiableSet(candidateItems);
+            Set<Integer> candidateItems = Collections.unmodifiableSet(_candidateItems);
 
             Object recommendationModel_grs = groupRecommenderSystem.loadRecommendationModel(
                     grsFilePersistence,
@@ -213,15 +211,19 @@ public class GroupRecommendationManager {
                         candidateItems));
             }
 
-            MultiThreadExecutionManager<SingleUserRecommendationTask> multiThreadExecutionManager = new MultiThreadExecutionManager<>(
-                    recommenderSystem.getName() + ":memberRecommendation",
-                    tareas,
-                    SingleUserRecommendationTaskExecutor.class);
-            multiThreadExecutionManager.run();
-
-            multiThreadExecutionManager.getAllFinishedTasks().stream().forEach((task) -> {
-                singleUserRecommendations.put(task.getIdUser(), task.getRecommendationList());
-            });
+            Map<Integer, Collection<Recommendation>> singleUserRecommendations
+                    = group.getIdMembers().parallelStream().map(idUser -> new SingleUserRecommendationTask(
+                                    recommenderSystem,
+                                    datasetLoader,
+                                    recommendationModel_singleUser,
+                                    idUser,
+                                    candidateItems))
+                    .map(new SingleUserRecommendationTaskExecutor())
+                    .collect(
+                            Collectors.toMap(
+                                    recommendationsToUser -> recommendationsToUser.getUser().getId(),
+                                    recommendationsToUser -> recommendationsToUser.getRecommendations())
+                    );
 
             {
                 //Miro las predichas para todos.

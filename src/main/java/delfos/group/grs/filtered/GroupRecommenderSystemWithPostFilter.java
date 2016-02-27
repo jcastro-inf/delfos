@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -23,7 +23,6 @@ import delfos.common.exceptions.dataset.CannotLoadContentDataset;
 import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
 import delfos.common.exceptions.dataset.items.ItemNotFound;
 import delfos.common.exceptions.dataset.users.UserNotFound;
-import delfos.common.parallelwork.MultiThreadExecutionManager;
 import delfos.common.parameters.Parameter;
 import delfos.common.parameters.ParameterListener;
 import delfos.common.parameters.restriction.ObjectParameter;
@@ -40,17 +39,17 @@ import delfos.group.grs.GroupRecommenderSystemAdapter;
 import delfos.group.grs.SingleRecommendationModel;
 import delfos.group.grs.filtered.filters.GroupRatingsFilter;
 import delfos.group.grs.filtered.filters.OutliersRatingsFilter;
-import delfos.rs.RecommenderSystem;
 import delfos.rs.RecommendationModelBuildingProgressListener;
+import delfos.rs.RecommenderSystem;
 import delfos.rs.collaborativefiltering.knn.modelbased.KnnModelBasedCFRS;
 import delfos.rs.recommendation.Recommendation;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.stream.Collectors;
 
 /**
  * Implementa la unión de un sistema de recomendación a individuos con un
@@ -149,29 +148,19 @@ public class GroupRecommenderSystemWithPostFilter extends GroupRecommenderSystem
     @Override
     public Collection<Recommendation> recommendOnly(DatasetLoader<? extends Rating> datasetLoader, SingleRecommendationModel RecommendationModel, GroupOfUsers groupModel, GroupOfUsers groupOfUsers, java.util.Set<Integer> candidateItems) throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset {
 
-        List<SingleUserRecommendationTask> tasks = new LinkedList<SingleUserRecommendationTask>();
-        for (int idUser : groupOfUsers) {
-            tasks.add(new SingleUserRecommendationTask(getRecommenderSystem(), datasetLoader, RecommendationModel.getRecommendationModel(), idUser, candidateItems));
-        }
+        Map<Integer, Map<Integer, Number>> listsWithoutFilter = groupOfUsers.getMembers()
+                .parallelStream()
+                .map(member -> new SingleUserRecommendationTask(getRecommenderSystem(), datasetLoader, RecommendationModel, member.getId(), candidateItems))
+                .map(new SingleUserRecommendationTaskExecutor())
+                .collect(Collectors.toMap(
+                                recommendationsToMember -> recommendationsToMember.getUser().getId(),
+                                recommendationsToMember -> {
+                                    return recommendationsToMember.getRecommendations().parallelStream()
+                                    .collect(Collectors.toMap(
+                                                    recommendation -> recommendation.getItem().getId(),
+                                                    recommendation -> recommendation.getPreference()));
 
-        MultiThreadExecutionManager<SingleUserRecommendationTask> executionManager = new MultiThreadExecutionManager<>(
-                "Prediction of each member",
-                tasks,
-                SingleUserRecommendationTaskExecutor.class);
-        executionManager.run();
-
-        Map<Integer, Map<Integer, Number>> listsWithoutFilter = new TreeMap<Integer, Map<Integer, Number>>();
-        for (SingleUserRecommendationTask task : executionManager.getAllFinishedTasks()) {
-            Collection<Recommendation> recommendations = task.getRecommendationList();
-            if (recommendations == null) {
-                throw new UserNotFound(task.getIdUser());
-            }
-            Map<Integer, Number> predictions = new TreeMap<Integer, Number>();
-            for (Recommendation r : recommendations) {
-                predictions.put(r.getIdItem(), r.getPreference());
-            }
-            listsWithoutFilter.put(task.getIdUser(), predictions);
-        }
+                                }));
 
         Map<Integer, Map<Integer, Number>> filteredLists = filterLists(getFilter(), listsWithoutFilter);
 
@@ -179,20 +168,20 @@ public class GroupRecommenderSystemWithPostFilter extends GroupRecommenderSystem
 
         {
             //Muestro las listas individuales y agregadas, para depuración.
-            Map<Integer, Map<Integer, Number>> all = new TreeMap<Integer, Map<Integer, Number>>();
+            Map<Integer, Map<Integer, Number>> all = new TreeMap<>();
             all.putAll(listsWithoutFilter);
 
-            Map<Integer, Number> aggregateListNotFiltered = new TreeMap<Integer, Number>();
+            Map<Integer, Number> aggregateListNotFiltered = new TreeMap<>();
             Collection<Recommendation> retNoFilter = aggregateLists(getAggregationOperator(), listsWithoutFilter);
-            for (Recommendation r : retNoFilter) {
+            retNoFilter.stream().forEach((r) -> {
                 aggregateListNotFiltered.put(r.getIdItem(), r.getPreference());
-            }
+            });
             all.put(88888888, aggregateListNotFiltered);
 
-            Map<Integer, Number> aggregateListFiltered = new TreeMap<Integer, Number>();
-            for (Recommendation r : ret) {
+            Map<Integer, Number> aggregateListFiltered = new TreeMap<>();
+            ret.stream().forEach((r) -> {
                 aggregateListFiltered.put(r.getIdItem(), r.getPreference());
-            }
+            });
             all.put(99999999, aggregateListFiltered);
 
             if (Global.isVerboseAnnoying()) {
@@ -213,13 +202,13 @@ public class GroupRecommenderSystemWithPostFilter extends GroupRecommenderSystem
     public static Collection<Recommendation> aggregateLists(AggregationOperator aggregationOperator, Map<Integer, Map<Integer, Number>> groupUtilityList) {
 
         //Reordeno las predicciones.
-        Map<Integer, Collection<Number>> prediction_byItem = new TreeMap<Integer, Collection<Number>>();
+        Map<Integer, Collection<Number>> prediction_byItem = new TreeMap<>();
         for (int idUser : groupUtilityList.keySet()) {
             for (int idItem : groupUtilityList.get(idUser).keySet()) {
                 Number preference = groupUtilityList.get(idUser).get(idItem);
 
                 if (!prediction_byItem.containsKey(idItem)) {
-                    prediction_byItem.put(idItem, new LinkedList<Number>());
+                    prediction_byItem.put(idItem, new LinkedList<>());
                 }
 
                 prediction_byItem.get(idItem).add(preference);
@@ -245,7 +234,7 @@ public class GroupRecommenderSystemWithPostFilter extends GroupRecommenderSystem
         return ret;
     }
 
-    private RecommenderSystem getRecommenderSystem() {
+    private RecommenderSystem<? extends Rating> getRecommenderSystem() {
         return (RecommenderSystem) getParameterValue(RECOMMENDER_SYSTEM);
     }
 

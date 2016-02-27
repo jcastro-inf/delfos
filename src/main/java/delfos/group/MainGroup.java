@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -49,8 +49,6 @@ import delfos.rs.trustbased.implicittrustcomputation.ShambourLu_UserBasedImplici
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Clase principal que sirve como punto de entrada para ejecutar la
@@ -163,7 +161,7 @@ public class MainGroup {
             try {
                 filterMethodCaseStudy(NUM_EJECUCIONES, NUM_GROUPS, SIZE_OF_GROUPS, SEED);
             } catch (NumberFormatException | IOException ex) {
-                Logger.getLogger(MainGroup.class.getName()).log(Level.SEVERE, null, ex);
+                ERROR_CODES.COMMAND_LINE_PARAMETERS_ERROR.exit(ex);
             }
 
             return true;
