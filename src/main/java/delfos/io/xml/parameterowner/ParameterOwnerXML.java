@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,11 +16,11 @@
  */
 package delfos.io.xml.parameterowner;
 
-import org.jdom2.Element;
 import delfos.common.parameters.Parameter;
 import delfos.common.parameters.ParameterOwner;
 import delfos.common.parameters.ParameterOwnerType;
 import delfos.io.xml.parameterowner.parameter.ParameterXML;
+import org.jdom2.Element;
 
 /**
  * Clase para convertir objetos de tipo {@link ParameterOwner} a elementos de
@@ -54,15 +54,14 @@ public class ParameterOwnerXML {
 
         ParameterOwner parameterOwner = parameterOwnerType.createObjectFromClassName(className);
 
-        for (Object listObject : parameterOwnerElement.getChildren(ParameterXML.PARAMETER_ELEMENT_NAME)) {
-            Element parameterElement = (Element) listObject;
+        for (Element parameterElement : parameterOwnerElement.getChildren(ParameterXML.PARAMETER_ELEMENT_NAME)) {
+
+            Parameter parameter = parameterOwner.getParameterByName(parameterElement.getAttributeValue(ParameterXML.PARAMETER_NAME));
             Object parameterValue = ParameterXML.getParameterValue(parameterOwner, parameterElement);
             if (parameterValue == null) {
-
                 parameterValue = ParameterXML.getParameterValue(parameterOwner, parameterElement);
             }
 
-            Parameter parameter = parameterOwner.getParameterByName(parameterElement.getAttributeValue(ParameterXML.PARAMETER_NAME));
             parameterOwner.setParameterValue(parameter, parameterValue);
         }
         return parameterOwner;
