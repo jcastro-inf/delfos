@@ -102,6 +102,41 @@ public class CommonRating {
         return commonRatings;
     }
 
+    public static Collection<CommonRating> intersection(DatasetLoader<? extends Rating> datasetLoader, Item item1, Item item2) {
+        final Map<Integer, ? extends Rating> ratingsOverItem1 = datasetLoader.getRatingsDataset()
+                .getItemRatingsRated(item1.getId());
+
+        final Map<Integer, ? extends Rating> ratingsOverItem2 = datasetLoader.getRatingsDataset()
+                .getItemRatingsRated(item2.getId());
+
+        Set<User> intersection
+                = ratingsOverItem1.keySet().parallelStream()
+                .map(idUser -> datasetLoader.getUsersDataset().get(idUser))
+                .filter(user -> ratingsOverItem2.containsKey(user.getId()))
+                .collect(Collectors.toSet());
+
+        Collection<CommonRating> commonRatings = intersection.stream().map(user -> {
+
+            float ratingUser1 = ratingsOverItem1
+                    .get(user.getId())
+                    .getRatingValue().floatValue();
+
+            float ratingUser2 = ratingsOverItem2
+                    .get(user.getId())
+                    .getRatingValue().floatValue();
+
+            return new CommonRating(
+                    RecommendationEntity.USER,
+                    user.getId(),
+                    RecommendationEntity.ITEM,
+                    item1.getId(),
+                    item2.getId(),
+                    ratingUser1, ratingUser2);
+        }).collect(Collectors.toList());
+
+        return commonRatings;
+    }
+
     /**
      * Tipo de la entidad común, es decir, tipo al que todos los ratings se
      * refieren.
