@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,16 +16,16 @@
  */
 package delfos.similaritymeasures.useruser;
 
-import java.util.Collection;
-import java.util.Set;
-import java.util.TreeSet;
 import delfos.common.exceptions.CouldNotComputeSimilarity;
 import delfos.common.exceptions.dataset.users.UserNotFound;
 import delfos.common.parameters.Parameter;
 import delfos.common.parameters.restriction.IntegerParameter;
-import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.loader.types.DatasetLoader;
+import delfos.dataset.basic.rating.Rating;
 import delfos.similaritymeasures.SimilarityMeasureAdapter;
+import java.util.Collection;
+import java.util.Set;
+import java.util.TreeSet;
 
 /**
  *
@@ -64,6 +64,12 @@ public class RelevanceFactor extends SimilarityMeasureAdapter implements UserUse
         Set<Integer> intersection = new TreeSet<>(user1Ratings);
         intersection.retainAll(user2Ratings);
 
+        return getSimilarity(intersection);
+    }
+
+    public double getSimilarity(Set<Integer> intersection) {
+
+        final int relevanceFactorValule = (Integer) getParameterValue(RELEVANCE_FACTOR);
         double similarity;
         if (intersection.size() >= relevanceFactorValule) {
             similarity = 1;
