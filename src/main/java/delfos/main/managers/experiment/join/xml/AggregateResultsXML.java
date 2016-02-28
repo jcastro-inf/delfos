@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -40,6 +40,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.function.Predicate;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -56,14 +57,15 @@ import org.jdom2.input.SAXBuilder;
 public class AggregateResultsXML {
 
     public static final String AGGREGATE_XML_SUFFIX = "_AGGR.xml";
+    public static final Predicate<? super File> RESULTS_FILES = file -> file.getName().endsWith(AGGREGATE_XML_SUFFIX);
 
     public AggregateResultsXML() {
     }
 
     public List<File> filterResultsFiles(List<File> files) {
 
-        List<File> returnFiles = files.stream()
-                .filter(file -> file.getName().endsWith(AGGREGATE_XML_SUFFIX))
+        List<File> returnFiles = files.parallelStream()
+                .filter(RESULTS_FILES)
                 .collect(Collectors.toList());
 
         return returnFiles;
