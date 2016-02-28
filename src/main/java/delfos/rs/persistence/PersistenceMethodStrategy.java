@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,10 +16,12 @@
  */
 package delfos.rs.persistence;
 
-import java.util.Collection;
 import delfos.common.Global;
 import delfos.configfile.rs.single.RecommenderSystemConfiguration;
+import delfos.dataset.basic.loader.types.DatasetLoader;
+import delfos.dataset.basic.rating.Rating;
 import delfos.rs.GenericRecommenderSystem;
+import java.util.Collection;
 
 /**
  *
@@ -28,7 +30,8 @@ import delfos.rs.GenericRecommenderSystem;
  */
 public class PersistenceMethodStrategy {
 
-    public static <RecommendationModel> RecommendationModel loadModel(GenericRecommenderSystem<RecommendationModel> recommenderSystem, PersistenceMethod persistenceMethod, Collection<Integer> users, Collection<Integer> items) throws FailureInPersistence {
+    public static <RecommendationModel> RecommendationModel loadModel(
+            GenericRecommenderSystem<RecommendationModel> recommenderSystem, PersistenceMethod persistenceMethod, Collection<Integer> users, Collection<Integer> items, DatasetLoader<? extends Rating> datasetLoader) throws FailureInPersistence {
         RecommendationModel RecommendationModel = null;
 
         boolean methodOK = false;
@@ -38,7 +41,7 @@ public class PersistenceMethodStrategy {
             DatabasePersistence databasePersistence = (DatabasePersistence) persistenceMethod;
 
             Global.showMessageTimestamped("Loading recommendation model from database");
-            RecommendationModel = recommenderSystem.loadRecommendationModel(databasePersistence, users, items);
+            RecommendationModel = recommenderSystem.loadRecommendationModel(databasePersistence, users, items, datasetLoader);
             Global.showMessageTimestamped("Loaded recommendation model from database");
         }
 
@@ -86,7 +89,7 @@ public class PersistenceMethodStrategy {
     }
 
     public static Object loadModel(RecommenderSystemConfiguration rsc) throws FailureInPersistence {
-        return loadModel(rsc.recommenderSystem, rsc.persistenceMethod, null, null);
+        return loadModel(rsc.recommenderSystem, rsc.persistenceMethod, null, null, rsc.datasetLoader);
     }
 
     public static void saveModel(RecommenderSystemConfiguration rsc, Object recommendationModel) throws FailureInPersistence {

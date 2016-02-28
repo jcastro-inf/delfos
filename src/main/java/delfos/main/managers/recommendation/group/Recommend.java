@@ -121,7 +121,7 @@ class Recommend extends CaseUseSubManager {
             Object RecommendationModel;
             try {
                 Global.showMessageTimestamped("Loading recommendation model");
-                RecommendationModel = PersistenceMethodStrategy.loadModel(groupRecommenderSystem, rsc.persistenceMethod, targetGroup.getIdMembers(), candidateItems);
+                RecommendationModel = PersistenceMethodStrategy.loadModel(groupRecommenderSystem, rsc.persistenceMethod, targetGroup.getIdMembers(), candidateItems, datasetLoader);
                 Global.showMessageTimestamped("Loaded recommendation model");
             } catch (FailureInPersistence ex) {
                 ERROR_CODES.FAILURE_IN_PERSISTENCE.exit(ex);

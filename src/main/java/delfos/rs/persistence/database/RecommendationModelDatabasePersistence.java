@@ -16,6 +16,8 @@
  */
 package delfos.rs.persistence.database;
 
+import delfos.dataset.basic.loader.types.DatasetLoader;
+import delfos.dataset.basic.rating.Rating;
 import delfos.rs.persistence.DatabasePersistence;
 import delfos.rs.persistence.FailureInPersistence;
 import java.util.Collection;
@@ -30,7 +32,7 @@ import java.util.Collection;
  */
 public interface RecommendationModelDatabasePersistence<RecommendationModel> {
 
-    public RecommendationModel loadModel(DatabasePersistence databasePersistence, Collection<Integer> users, Collection<Integer> items) throws FailureInPersistence;
+    public RecommendationModel loadModel(DatabasePersistence databasePersistence, Collection<Integer> users, Collection<Integer> items, DatasetLoader<? extends Rating> datasetLoader) throws FailureInPersistence;
 
     public void saveModel(DatabasePersistence databasePersistence, RecommendationModel model) throws FailureInPersistence;
 }

@@ -66,7 +66,7 @@ public class RSTest extends CollaborativeRecommender<Object> {
     }
 
     @Override
-    public Object loadRecommendationModel(DatabasePersistence databasePersistence, Collection<Integer> users, Collection<Integer> items) throws FailureInPersistence {
+    public Object loadRecommendationModel(DatabasePersistence databasePersistence, Collection<Integer> users, Collection<Integer> items, DatasetLoader<? extends Rating> datasetLoader) throws FailureInPersistence {
         return new Object();
     }
 

@@ -105,9 +105,9 @@ public class MeanRatingRS extends CollaborativeRecommender<MeanRatingRSModel> {
     }
 
     @Override
-    public MeanRatingRSModel loadRecommendationModel(DatabasePersistence databasePersistence, Collection<Integer> users, Collection<Integer> items) throws FailureInPersistence {
+    public MeanRatingRSModel loadRecommendationModel(DatabasePersistence databasePersistence, Collection<Integer> users, Collection<Integer> items, DatasetLoader<? extends Rating> datasetLoader) throws FailureInPersistence {
         DAOMeanRatingProfile dAOMeanRatingProfile = new DAOMeanRatingProfile();
-        return dAOMeanRatingProfile.loadModel(databasePersistence, users, items);
+        return dAOMeanRatingProfile.loadModel(databasePersistence, users, items, datasetLoader);
     }
 
     @Override

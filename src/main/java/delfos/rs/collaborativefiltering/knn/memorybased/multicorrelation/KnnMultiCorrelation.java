@@ -243,7 +243,7 @@ public class KnnMultiCorrelation extends CollaborativeRecommender<KnnMultiCorrel
     }
 
     @Override
-    public KnnMultiCorrelation_Model loadRecommendationModel(DatabasePersistence databasePersistence, Collection<Integer> users, Collection<Integer> items) throws FailureInPersistence {
+    public KnnMultiCorrelation_Model loadRecommendationModel(DatabasePersistence databasePersistence, Collection<Integer> users, Collection<Integer> items, DatasetLoader<? extends Rating> datasetLoader) throws FailureInPersistence {
         return new KnnMultiCorrelation_Model();
     }
 

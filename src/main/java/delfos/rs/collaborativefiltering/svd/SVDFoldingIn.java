@@ -33,8 +33,6 @@ import delfos.common.statisticalfuncions.MeanIterative;
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RatingsDataset;
-import delfos.rs.persistence.DatabasePersistence;
-import delfos.rs.persistence.FailureInPersistence;
 import delfos.rs.recommendation.Recommendation;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -107,16 +105,6 @@ public class SVDFoldingIn
         }
 
         return super.recommendToUser(datasetLoader, incrementedModel, idUser, candidateItems);
-    }
-
-    @Override
-    public void saveRecommendationModel(DatabasePersistence databasePersistence, TryThisAtHomeSVDModel model) throws FailureInPersistence {
-        super.saveRecommendationModel(databasePersistence, model); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public TryThisAtHomeSVDModel loadRecommendationModel(DatabasePersistence databasePersistence, Collection<Integer> users, Collection<Integer> items) throws FailureInPersistence {
-        return super.loadRecommendationModel(databasePersistence, users, items); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override

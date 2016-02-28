@@ -264,7 +264,7 @@ public class TrustModificationKnnMemory extends CollaborativeRecommender<Object>
     }
 
     @Override
-    public Object loadRecommendationModel(DatabasePersistence databasePersistence, Collection<Integer> users, Collection<Integer> items) throws FailureInPersistence {
+    public Object loadRecommendationModel(DatabasePersistence databasePersistence, Collection<Integer> users, Collection<Integer> items, DatasetLoader<? extends Rating> datasetLoader) throws FailureInPersistence {
         return 1l;
     }
 

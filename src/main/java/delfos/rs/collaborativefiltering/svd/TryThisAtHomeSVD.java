@@ -458,8 +458,8 @@ public class TryThisAtHomeSVD
     }
 
     @Override
-    public TryThisAtHomeSVDModel loadRecommendationModel(DatabasePersistence databasePersistence, Collection<Integer> users, Collection<Integer> items) throws FailureInPersistence {
-        return new DAOTryThisAtHomeDatabaseModel().loadModel(databasePersistence, users, items);
+    public TryThisAtHomeSVDModel loadRecommendationModel(DatabasePersistence databasePersistence, Collection<Integer> users, Collection<Integer> items, DatasetLoader<? extends Rating> datasetLoader) throws FailureInPersistence {
+        return new DAOTryThisAtHomeDatabaseModel().loadModel(databasePersistence, users, items, datasetLoader);
     }
 
     /**
