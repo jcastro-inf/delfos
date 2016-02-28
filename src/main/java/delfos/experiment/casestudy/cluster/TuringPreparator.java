@@ -32,9 +32,12 @@ import delfos.io.xml.casestudy.CaseStudyXML;
 import delfos.main.Main;
 import delfos.main.managers.experiment.ExecuteGroupXML;
 import java.io.File;
+import java.lang.management.ManagementFactory;
 import java.text.DecimalFormat;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
+import java.util.Random;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -54,6 +57,17 @@ public class TuringPreparator implements ExperimentPreparator {
 
     public TuringPreparator(boolean parallel) {
         this.parallel = parallel;
+    }
+
+    public Random getRandomToShuffleExperiments() {
+
+        String name = ManagementFactory.getRuntimeMXBean().getName();
+
+        int seed = name.hashCode();
+
+        Random random = new Random(seed);
+
+        return random;
     }
 
     @Override
@@ -122,6 +136,8 @@ public class TuringPreparator implements ExperimentPreparator {
     public void executeAllExperimentsInDirectory(File directory) {
         List<File> experimentsToBeExecuted = Arrays.asList(directory.listFiles());
 
+        Collections.shuffle(experimentsToBeExecuted, getRandomToShuffleExperiments());
+
         Stream<File> experimentsToBeExecutedStream
                 = parallel
                         ? experimentsToBeExecuted.parallelStream()
@@ -141,6 +157,8 @@ public class TuringPreparator implements ExperimentPreparator {
 
     public void executeAllExperimentsInDirectory(File directory, int numExec) {
         List<File> experimentsToBeExecuted = Arrays.asList(directory.listFiles());
+
+        Collections.shuffle(experimentsToBeExecuted, getRandomToShuffleExperiments());
 
         Stream<File> experimentsToBeExecutedStream
                 = parallel
@@ -169,6 +187,8 @@ public class TuringPreparator implements ExperimentPreparator {
 
     public void executeAllExperimentsInDirectory_withSeed(File directory, int numExec, int seedValue) {
         List<File> experimentsToBeExecuted = Arrays.asList(directory.listFiles());
+
+        Collections.shuffle(experimentsToBeExecuted, getRandomToShuffleExperiments());
 
         Stream<File> stream = parallel ? experimentsToBeExecuted.parallelStream() : experimentsToBeExecuted.stream();
         stream.forEach((singleExperimentDirectory) -> {
