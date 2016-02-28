@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -18,8 +18,8 @@ package delfos.rs.collaborativefiltering.knn.memorybased.nwr;
 
 import delfos.common.exceptions.dataset.users.UserNotFound;
 import delfos.common.parallelwork.Task;
+import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
-import delfos.dataset.basic.rating.RatingsDataset;
 import delfos.rs.collaborativefiltering.profile.Neighbor;
 
 /**
@@ -35,11 +35,12 @@ public class KnnMemoryBasedNWR_Task extends Task {
     public final int idUser;
     public final int idNeighbor;
     public KnnMemoryBasedNWR rs;
-    public RatingsDataset<? extends Rating> ratingsDataset;
+    public DatasetLoader<? extends Rating> datasetLoader;
     public Neighbor neighbor = null;
 
-    public KnnMemoryBasedNWR_Task(RatingsDataset<? extends Rating> ratingsDataset, int idUser, int idNeighbor, KnnMemoryBasedNWR rs) throws UserNotFound {
-        this.ratingsDataset = ratingsDataset;
+    public KnnMemoryBasedNWR_Task(DatasetLoader<? extends Rating> datasetLoader, int idUser, int idNeighbor, KnnMemoryBasedNWR rs) throws UserNotFound {
+        this.datasetLoader = datasetLoader;
+
         this.idUser = idUser;
         this.idNeighbor = idNeighbor;
         this.rs = rs;
@@ -59,8 +60,6 @@ public class KnnMemoryBasedNWR_Task extends Task {
 
     public void setNeighbor(Neighbor neighbor) {
         this.neighbor = neighbor;
-        rs = null;
-        ratingsDataset = null;
     }
 
     public Neighbor getNeighbor() {

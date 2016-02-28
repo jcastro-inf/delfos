@@ -20,8 +20,9 @@ import delfos.common.exceptions.CouldNotComputeSimilarity;
 import delfos.common.exceptions.dataset.items.ItemNotFound;
 import delfos.common.exceptions.dataset.users.UserNotFound;
 import delfos.common.parallelwork.SingleTaskExecute;
+import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
-import delfos.dataset.basic.rating.RatingsDataset;
+import delfos.dataset.basic.user.User;
 import delfos.rs.collaborativefiltering.knn.CommonRating;
 import delfos.rs.collaborativefiltering.knn.RecommendationEntity;
 import delfos.rs.collaborativefiltering.profile.Neighbor;
@@ -48,11 +49,14 @@ public final class KnnMemoryBasedNWR_TaskExecutor implements SingleTaskExecute<K
     @Override
     public Neighbor apply(KnnMemoryBasedNWR_Task task) {
 
-        int idUser = task.idUser;
-
-        int idNeighbor = task.idNeighbor;
         KnnMemoryBasedNWR rs = task.rs;
-        RatingsDataset<? extends Rating> ratingsDataset = task.ratingsDataset;
+        DatasetLoader<? extends Rating> datasetLoader = task.datasetLoader;
+
+        User user = datasetLoader.getUsersDataset().get(task.idUser);
+        User neighbor = datasetLoader.getUsersDataset().get(task.idNeighbor);
+
+        int idUser = user.getId();
+        int idNeighbor = neighbor.getId();
 
         if (idUser == idNeighbor) {
             return new Neighbor(RecommendationEntity.USER, idNeighbor, Double.NaN);
@@ -73,12 +77,12 @@ public final class KnnMemoryBasedNWR_TaskExecutor implements SingleTaskExecute<K
         Map<Integer, ? extends Rating> activeUserRated;
         Map<Integer, ? extends Rating> neighborRatings;
         try {
-            activeUserRated = ratingsDataset.getUserRatingsRated(idUser);
+            activeUserRated = datasetLoader.getRatingsDataset().getUserRatingsRated(idUser);
         } catch (UserNotFound ex) {
             activeUserRated = new TreeMap<>();
         }
         try {
-            neighborRatings = ratingsDataset.getUserRatingsRated(idNeighbor);
+            neighborRatings = datasetLoader.getRatingsDataset().getUserRatingsRated(idNeighbor);
         } catch (UserNotFound ex) {
             neighborRatings = new TreeMap<>();
         }
@@ -120,7 +124,7 @@ public final class KnnMemoryBasedNWR_TaskExecutor implements SingleTaskExecute<K
             Set<Integer> union = new TreeSet<>(activeUserRated.keySet());
             union.addAll(neighborRatings.keySet());
             if (union.isEmpty()) {
-                return new Neighbor(RecommendationEntity.USER, idNeighbor, Double.NaN);
+                return new Neighbor(RecommendationEntity.USER, neighbor, Double.NaN);
             }
             for (int idItem : union) {
                 Rating r1 = activeUserRated.get(idItem);
@@ -144,10 +148,10 @@ public final class KnnMemoryBasedNWR_TaskExecutor implements SingleTaskExecute<K
         }
 
         if (inverseFrequency_) {
-            int numAllUsers = ratingsDataset.allUsers().size();
+            int numAllUsers = datasetLoader.getRatingsDataset().allUsers().size();
             for (CommonRating c : common) {
                 try {
-                    double numUserRatedThisItem = ratingsDataset.sizeOfItemRatings(c.getIdCommon());
+                    double numUserRatedThisItem = datasetLoader.getRatingsDataset().sizeOfItemRatings(c.getIdCommon());
                     double inverseFrequencyValue = numAllUsers / numUserRatedThisItem;
                     inverseFrequencyValue = (double) Math.log(inverseFrequencyValue);
                     c.setWeight(inverseFrequencyValue);
@@ -159,7 +163,7 @@ public final class KnnMemoryBasedNWR_TaskExecutor implements SingleTaskExecute<K
 
         double sim;
         try {
-            sim = similarityMeasure_.similarity(common, ratingsDataset);
+            sim = similarityMeasure_.similarity(common, datasetLoader.getRatingsDataset());
 
             if (sim > 0) {
                 //Global.showMessage(numVecinosProbados+"   de "+getRatingsDataset().allUsers().size()+" en "+chronometer.printPartialElapsed());
@@ -176,14 +180,14 @@ public final class KnnMemoryBasedNWR_TaskExecutor implements SingleTaskExecute<K
                 if (Double.isNaN(sim) || Double.isInfinite(sim)) {
                     throw new IllegalArgumentException("Similarity NaN or Infinity.");
                 }
-                Neighbor neighbor = new Neighbor(RecommendationEntity.USER, idNeighbor, sim);
-                task.setNeighbor(neighbor);
+                task.setNeighbor(new Neighbor(RecommendationEntity.USER, neighbor, sim));
+                return task.getNeighbor();
             }
         } catch (CouldNotComputeSimilarity ex) {
 
         }
 
-        return new Neighbor(RecommendationEntity.USER, idNeighbor, Double.NaN);
+        return new Neighbor(RecommendationEntity.USER, neighbor, Double.NaN);
     }
 
 }
