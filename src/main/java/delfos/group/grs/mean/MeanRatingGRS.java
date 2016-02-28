@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -20,21 +20,20 @@ import delfos.common.exceptions.dataset.CannotLoadContentDataset;
 import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
 import delfos.common.exceptions.dataset.items.ItemNotFound;
 import delfos.common.exceptions.dataset.users.UserNotFound;
-import delfos.common.parallelwork.MultiThreadExecutionManager;
+import delfos.dataset.basic.item.Item;
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
-import delfos.experiment.casestudy.ExecutionProgressListener;
 import delfos.group.groupsofusers.GroupOfUsers;
 import delfos.group.grs.GroupRecommenderSystemAdapter;
 import delfos.rs.nonpersonalised.meanrating.arithmeticmean.MeanRating;
 import delfos.rs.nonpersonalised.meanrating.arithmeticmean.MeanRatingRSModel;
 import delfos.rs.recommendation.Recommendation;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
-import java.util.TreeSet;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 /**
  * Recomendador para grupos de usuarios que recomienda los productos con mejor
@@ -54,48 +53,41 @@ public class MeanRatingGRS extends GroupRecommenderSystemAdapter<MeanRatingRSMod
     @Override
     public MeanRatingRSModel buildRecommendationModel(DatasetLoader<? extends Rating> datasetLoader) throws CannotLoadRatingsDataset, CannotLoadContentDataset {
 
-        Set<Integer> allItems = new TreeSet(datasetLoader.getRatingsDataset().allRatedItems());
-        List<MeanRating> meanRatings = new ArrayList<>(allItems.size());
+        List<MeanRating> meanRatings
+                = datasetLoader.getContentDataset().parallelStream()
+                .map(item -> new MeanRatingTask(datasetLoader, item))
+                .map(new MeanRatingSingleExecution())
+                .sorted(MeanRating.BY_PREFERENCE_DESC)
+                .collect(Collectors.toList());
 
-        List<MeanRatingTask> tasks = new ArrayList<>(allItems.size());
-        for (int idItem : allItems) {
-            tasks.add(new MeanRatingTask(datasetLoader.getRatingsDataset(), idItem));
-        }
-        MultiThreadExecutionManager<MeanRatingTask> multiThreadExecutionManager = new MultiThreadExecutionManager<>(
-                "Building mean rating profile",
-                tasks,
-                MeanRatingSingleExecution.class);
-        multiThreadExecutionManager.addExecutionProgressListener(new ExecutionProgressListener() {
-            @Override
-            public void executionProgressChanged(String proceso, int percent, long remainingMiliSeconds) {
-                fireBuildingProgressChangedEvent(proceso, percent, remainingMiliSeconds);
-            }
-        });
-        multiThreadExecutionManager.run();
-        for (MeanRatingTask finished : multiThreadExecutionManager.getAllFinishedTasks()) {
-            meanRatings.add(finished.getMeanRating());
-        }
-        Collections.sort(meanRatings);
         return new MeanRatingRSModel(meanRatings);
     }
 
     @Override
     public GroupOfUsers buildGroupModel(DatasetLoader<? extends Rating> datasetLoader, MeanRatingRSModel RecommendationModel, GroupOfUsers groupOfUsers) throws UserNotFound {
-        return new GroupOfUsers(groupOfUsers.getIdMembers());
+        return new GroupOfUsers(groupOfUsers.getMembers());
     }
 
     @Override
-    public Collection<Recommendation> recommendOnly(DatasetLoader<? extends Rating> datasetLoader, MeanRatingRSModel RecommendationModel, GroupOfUsers groupModel, GroupOfUsers groupOfUsers, java.util.Set<Integer> candidateItems) throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadRatingsDataset {
-        List<MeanRating> media = RecommendationModel.getRangedMeanRatings();
-        Collection<Recommendation> recommendationList = new ArrayList<>(candidateItems.size());
-        for (MeanRating meanRating : media) {
-            if (candidateItems.contains(meanRating.getIdItem())) {
-                double ratingMedio = meanRating.getPreference().doubleValue();
-                recommendationList.add(new Recommendation(meanRating.getIdItem(), ratingMedio));
-            }
-        }
+    public Collection<Recommendation> recommendOnly(
+            DatasetLoader<? extends Rating> datasetLoader,
+            MeanRatingRSModel RecommendationModel,
+            GroupOfUsers groupModel,
+            GroupOfUsers groupOfUsers,
+            Set<Integer> candidateItems)
+            throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadRatingsDataset {
 
-        return recommendationList;
+        Map<Item, MeanRating> meanRatingsByItem = RecommendationModel
+                .getSortedMeanRatings().parallelStream()
+                .collect(Collectors.toMap(meanRating -> meanRating.getItem(), Function.identity()));
+
+        List<Recommendation> recommendations = candidateItems.parallelStream()
+                .map(idItem -> datasetLoader.getContentDataset().get(idItem))
+                .map(item -> meanRatingsByItem.containsKey(item) ? meanRatingsByItem.get(item) : new MeanRating(item, Double.NaN))
+                .map(meanRating -> new Recommendation(meanRating.getItem(), meanRating.getPreference()))
+                .collect(Collectors.toList());
+
+        return recommendations;
     }
 
     @Override

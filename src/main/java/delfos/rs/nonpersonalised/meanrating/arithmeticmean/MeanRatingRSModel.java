@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -19,6 +19,7 @@ package delfos.rs.nonpersonalised.meanrating.arithmeticmean;
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Modelo de recomendación del sistema {@link MeanRatingRS}, que almacena para
@@ -34,8 +35,11 @@ public class MeanRatingRSModel implements Serializable {
     private final List<MeanRating> rangedMeanRatings;
 
     public MeanRatingRSModel(List<MeanRating> rangedMeanRatings) {
-        Collections.sort(rangedMeanRatings);
-        this.rangedMeanRatings = rangedMeanRatings;
+        this.rangedMeanRatings = Collections.unmodifiableList(
+                rangedMeanRatings.parallelStream()
+                .sorted(MeanRating.BY_PREFERENCE_DESC)
+                .collect(Collectors.toList())
+        );
     }
 
     /**
@@ -43,7 +47,7 @@ public class MeanRatingRSModel implements Serializable {
      *
      * @return Modelo de recomendación.
      */
-    public List<MeanRating> getRangedMeanRatings() {
-        return Collections.unmodifiableList(rangedMeanRatings);
+    public List<MeanRating> getSortedMeanRatings() {
+        return rangedMeanRatings;
     }
 }

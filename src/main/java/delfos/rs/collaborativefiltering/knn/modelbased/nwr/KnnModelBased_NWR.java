@@ -281,7 +281,7 @@ public class KnnModelBased_NWR
     }
 
     @Override
-    public KnnModelBasedCFRSModel loadRecommendationModel(DatabasePersistence databasePersistence, Collection<Integer> users, Collection<Integer> items) throws FailureInPersistence {
+    public KnnModelBasedCFRSModel loadRecommendationModel(DatabasePersistence databasePersistence, Collection<Integer> users, Collection<Integer> items, DatasetLoader<? extends Rating> datasetLoader) throws FailureInPersistence {
         DAOKnnModelBasedDatabaseModel dao = new DAOKnnModelBasedDatabaseModel();
 
         return dao.loadModel(databasePersistence, users, items);

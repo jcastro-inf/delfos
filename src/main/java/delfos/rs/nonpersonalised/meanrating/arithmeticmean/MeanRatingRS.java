@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,27 +16,24 @@
  */
 package delfos.rs.nonpersonalised.meanrating.arithmeticmean;
 
-import delfos.ERROR_CODES;
 import delfos.common.exceptions.dataset.CannotLoadContentDataset;
 import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
-import delfos.common.exceptions.dataset.items.ItemNotFound;
 import delfos.common.exceptions.dataset.users.UserNotFound;
-import delfos.common.statisticalfuncions.MeanIterative;
+import delfos.dataset.basic.item.Item;
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
-import delfos.dataset.basic.rating.RatingsDataset;
 import delfos.rs.collaborativefiltering.CollaborativeRecommender;
 import delfos.rs.persistence.DatabasePersistence;
 import delfos.rs.persistence.FailureInPersistence;
 import delfos.rs.persistence.database.DAOMeanRatingProfile;
 import delfos.rs.recommendation.Recommendation;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 /**
  * Sistema de recomendación que realiza la recomendación basándose en el rating
@@ -66,57 +63,51 @@ public class MeanRatingRS extends CollaborativeRecommender<MeanRatingRSModel> {
 
     @Override
     public MeanRatingRSModel buildRecommendationModel(DatasetLoader<? extends Rating> datasetLoader) throws CannotLoadRatingsDataset, CannotLoadRatingsDataset {
-        RatingsDataset<? extends Rating> ratingsDataset = datasetLoader.getRatingsDataset();
-        Collection<Integer> allItems = ratingsDataset.allRatedItems();
 
-        List<MeanRating> rangedMeanRatings = new ArrayList<MeanRating>(allItems.size());
+        List<MeanRating> sortedMeanRatings
+                = datasetLoader.getContentDataset().parallelStream()
+                .map(item -> {
 
-        double i = 0;
-        for (int idItem : allItems) {
-            MeanIterative mean = new MeanIterative();
+                    double meanRating = datasetLoader.getRatingsDataset()
+                    .getItemRatingsRated(item.getId())
+                    .values().parallelStream()
+                    .mapToDouble(rating -> rating.getRatingValue().doubleValue())
+                    .average()
+                    .orElse(Double.NaN);
 
-            try {
-                Map<Integer, ? extends Rating> map = ratingsDataset.getItemRatingsRated(idItem);
-                for (Rating rating : map.values()) {
-                    mean.addValue(rating.getRatingValue().doubleValue());
-                }
-            } catch (ItemNotFound ex) {
-                ERROR_CODES.ITEM_NOT_FOUND.exit(ex);
-            }
-
-            if (mean.getNumValues() > 0) {
-                rangedMeanRatings.add(new MeanRating(idItem, mean.getMean()));
-            }
-            i++;
-            double percent = i / allItems.size();
-            fireBuildingProgressChangedEvent("Calculating means", (int) (percent * 100), -1);
-        }
-        Collections.sort(rangedMeanRatings);
-        return new MeanRatingRSModel(rangedMeanRatings);
+                    return new MeanRating(item, meanRating);
+                })
+                .collect(Collectors.toList());
+        Collections.sort(sortedMeanRatings);
+        return new MeanRatingRSModel(sortedMeanRatings);
     }
 
     @Override
-    public Collection<Recommendation> recommendToUser(DatasetLoader<? extends Rating> datasetLoader, MeanRatingRSModel model, Integer idUser, java.util.Set<Integer> candidateItems) throws UserNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset {
 
-        Collection<Recommendation> recom = new LinkedList<>();
-        Iterator<MeanRating> iterator = model.getRangedMeanRatings().listIterator();
+    public Collection<Recommendation> recommendToUser(
+            DatasetLoader<? extends Rating> datasetLoader,
+            MeanRatingRSModel model,
+            Integer idUser,
+            Set<Integer> candidateItems)
+            throws UserNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset {
 
-        int i = 0;
-        while (iterator.hasNext()) {
-            MeanRating next = iterator.next();
-            if (candidateItems.contains(next.getIdItem())) {
-                recom.add(new Recommendation(next.getIdItem(), next.getPreference()));
-            }
-            i++;
-        }
+        Map<Item, MeanRating> meanRatingsByItem = model
+                .getSortedMeanRatings().parallelStream()
+                .collect(Collectors.toMap(meanRating -> meanRating.getItem(), Function.identity()));
 
-        return recom;
+        List<Recommendation> recommendations = candidateItems.parallelStream()
+                .map(idItem -> datasetLoader.getContentDataset().get(idItem))
+                .map(item -> meanRatingsByItem.containsKey(item) ? meanRatingsByItem.get(item) : new MeanRating(item, Double.NaN))
+                .map(meanRating -> new Recommendation(meanRating.getItem(), meanRating.getPreference()))
+                .collect(Collectors.toList());
+
+        return recommendations;
     }
 
     @Override
-    public MeanRatingRSModel loadRecommendationModel(DatabasePersistence databasePersistence, Collection<Integer> users, Collection<Integer> items) throws FailureInPersistence {
+    public MeanRatingRSModel loadRecommendationModel(DatabasePersistence databasePersistence, Collection<Integer> users, Collection<Integer> items, DatasetLoader<? extends Rating> datasetLoader) throws FailureInPersistence {
         DAOMeanRatingProfile dAOMeanRatingProfile = new DAOMeanRatingProfile();
-        return dAOMeanRatingProfile.loadModel(databasePersistence, users, items);
+        return dAOMeanRatingProfile.loadModel(databasePersistence, users, items, datasetLoader);
     }
 
     @Override

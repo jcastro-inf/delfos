@@ -29,8 +29,11 @@ import delfos.common.parameters.restriction.ParameterOwnerRestriction;
 import delfos.common.parameters.restriction.RecommenderSystemParameterRestriction;
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
+import delfos.dataset.basic.user.User;
+import delfos.dataset.basic.user.UsersDatasetAdapter;
 import delfos.dataset.generated.modifieddatasets.PseudoUserRatingsDataset;
 import delfos.dataset.loaders.given.DatasetLoaderGivenRatingsDataset;
+import delfos.dataset.loaders.given.DatasetLoaderGivenUsersDataset;
 import delfos.dataset.util.DatasetPrinterDeprecated;
 import delfos.dataset.util.DatasetUtilities;
 import delfos.group.groupsofusers.GroupOfUsers;
@@ -48,6 +51,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.stream.Collectors;
 
 /**
  * Implementa un sistema de recomendación a grupos que agrega las valoraciones
@@ -221,8 +225,20 @@ public class AggregationOfIndividualRatings
         if (Global.isVerboseAnnoying()) {
             DatasetPrinterDeprecated.printCompactRatingTable(ratingsDataset_withPseudoUser, Arrays.asList(idGroup), ratingsDataset_withPseudoUser.getUserRated(idGroup));
         }
+
+        Set<User> usersInNewDataset = datasetLoader.getUsersDataset().parallelStream().collect(Collectors.toSet());
+
+        usersInNewDataset.add(new User(idGroup, groupRatings.keySet().toString()));
+
+        DatasetLoader<? extends Rating> datasetLoaderWithPseudoUser
+                = new DatasetLoaderGivenRatingsDataset(datasetLoader, ratingsDataset_withPseudoUser);
+        datasetLoaderWithPseudoUser = new DatasetLoaderGivenUsersDataset<>(datasetLoader,
+                new UsersDatasetAdapter(usersInNewDataset)
+        );
+
         Collection<Recommendation> groupRecom;
-        groupRecom = recommenderSystem.recommendToUser(new DatasetLoaderGivenRatingsDataset(datasetLoader, ratingsDataset_withPseudoUser),
+        groupRecom = recommenderSystem.recommendToUser(
+                datasetLoaderWithPseudoUser,
                 RecommendationModel.getRecommendationModel(),
                 idGroup,
                 candidateItems);

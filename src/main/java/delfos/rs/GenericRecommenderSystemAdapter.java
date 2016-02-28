@@ -19,6 +19,8 @@ package delfos.rs;
 import delfos.common.FileUtilities;
 import delfos.common.Global;
 import delfos.common.parameters.ParameterOwnerAdapter;
+import delfos.dataset.basic.loader.types.DatasetLoader;
+import delfos.dataset.basic.rating.Rating;
 import delfos.rs.persistence.DatabasePersistence;
 import delfos.rs.persistence.FailureInPersistence;
 import delfos.rs.persistence.FilePersistence;
@@ -48,7 +50,9 @@ import java.util.List;
  * @version 2.0 26-Mayo-2013 Ahora los datasets se pasan por parámetro en cada
  * método.
  */
-public abstract class GenericRecommenderSystemAdapter<RecommendationModel> extends ParameterOwnerAdapter implements GenericRecommenderSystem<RecommendationModel> {
+public abstract class GenericRecommenderSystemAdapter<RecommendationModel>
+        extends ParameterOwnerAdapter
+        implements GenericRecommenderSystem<RecommendationModel> {
 
     /**
      * Lista de objetos que desean ser notificados del cambio en el progreso de
@@ -143,7 +147,7 @@ public abstract class GenericRecommenderSystemAdapter<RecommendationModel> exten
     }
 
     @Override
-    public RecommendationModel loadRecommendationModel(DatabasePersistence databasePersistence, Collection<Integer> users, Collection<Integer> items) throws FailureInPersistence {
+    public RecommendationModel loadRecommendationModel(DatabasePersistence databasePersistence, Collection<Integer> users, Collection<Integer> items, DatasetLoader<? extends Rating> datasetLoader) throws FailureInPersistence {
         throw new UnsupportedOperationException("The system " + this.getClass() + " does not implement the database persistence: this method should be overrided and perform the model loading.");
     }
 }
