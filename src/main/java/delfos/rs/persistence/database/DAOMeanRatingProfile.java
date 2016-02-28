@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -68,8 +68,7 @@ public class DAOMeanRatingProfile implements RecommendationModelDatabasePersiste
 
     @Override
     public MeanRatingRSModel loadModel(DatabasePersistence databasePersistence, Collection<Integer> users, Collection<Integer> items) throws FailureInPersistence {
-        try (
-                Statement statement = databasePersistence.getConection().doConnection().createStatement()) {
+        try (Statement statement = databasePersistence.getConection().doConnection().createStatement()) {
 
             List<MeanRating> profiles = new LinkedList<>();
 
@@ -103,7 +102,7 @@ public class DAOMeanRatingProfile implements RecommendationModelDatabasePersiste
         try (
                 Statement statement = databasePersistence.getConection().doConnection().createStatement()) {
 
-            List<MeanRating> meanProfile = model.getRangedMeanRatings();
+            List<MeanRating> meanProfile = model.getSortedMeanRatings();
 
             for (MeanRating mr : meanProfile) {
                 String statementString = "INSERT INTO " + PROFILE_TABLE + "(" + ID_COLUMN_NAME + "," + PREFERENCE_COLUMN_NAME + ") "

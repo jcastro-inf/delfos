@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,9 +16,9 @@
  */
 package delfos.rs.persistence.database;
 
-import java.util.Collection;
 import delfos.rs.persistence.DatabasePersistence;
 import delfos.rs.persistence.FailureInPersistence;
+import java.util.Collection;
 
 /**
  * Interfaz que implementan los objetos para almacenar-recuperar un modelo de
@@ -26,6 +26,7 @@ import delfos.rs.persistence.FailureInPersistence;
  *
  * @author jcastro-inf ( https://github.com/jcastro-inf )
  * @version 1.0 28-May-2013
+ * @param <RecommendationModel>
  */
 public interface RecommendationModelDatabasePersistence<RecommendationModel> {
 

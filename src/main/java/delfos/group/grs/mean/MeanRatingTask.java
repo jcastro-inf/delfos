@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -17,8 +17,9 @@
 package delfos.group.grs.mean;
 
 import delfos.common.parallelwork.Task;
+import delfos.dataset.basic.item.Item;
+import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
-import delfos.dataset.basic.rating.RatingsDataset;
 import delfos.rs.nonpersonalised.meanrating.arithmeticmean.MeanRating;
 
 /**
@@ -28,18 +29,18 @@ import delfos.rs.nonpersonalised.meanrating.arithmeticmean.MeanRating;
  */
 public class MeanRatingTask extends Task {
 
-    private final RatingsDataset<? extends Rating> ratingsDataset;
-    private final int idItem;
+    private final DatasetLoader<? extends Rating> datasetLoader;
+    private final Item item;
     private MeanRating meanRating;
 
     /**
      *
-     * @param ratingsDataset
-     * @param idItem
+     * @param datasetLoader
+     * @param item
      */
-    public MeanRatingTask(RatingsDataset<? extends Rating> ratingsDataset, int idItem) {
-        this.ratingsDataset = ratingsDataset;
-        this.idItem = idItem;
+    public MeanRatingTask(DatasetLoader<? extends Rating> datasetLoader, Item item) {
+        this.datasetLoader = datasetLoader;
+        this.item = item;
     }
 
     @Override
@@ -47,7 +48,9 @@ public class MeanRatingTask extends Task {
         StringBuilder str = new StringBuilder();
 
         str.append("task-----> ").append(this.getClass().getName()).append("\n");
-        str.append("idItem --> ").append(idItem).append("\n");
+        str.append("idItem --> ")
+                .append("(").append(item.getId()).append(") ")
+                .append(item.getName()).append("\n");
 
         return str.toString();
     }
@@ -60,12 +63,12 @@ public class MeanRatingTask extends Task {
         return meanRating;
     }
 
-    public RatingsDataset<? extends Rating> getRatingsDataset() {
-        return ratingsDataset;
+    public DatasetLoader<? extends Rating> getDatasetLoader() {
+        return datasetLoader;
     }
 
-    public int getIdItem() {
-        return idItem;
+    public Item getItem() {
+        return item;
     }
 
 }
