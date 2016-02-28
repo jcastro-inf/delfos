@@ -187,7 +187,12 @@ public class AggregationOfIndividualRecommendations extends GroupRecommenderSyst
     public static Map<Integer, Collection<Recommendation>> performSingleUserRecommendations(Collection<Integer> users, RecommenderSystem<? extends Object> singleUserRecommender, DatasetLoader<? extends Rating> datasetLoader, SingleRecommendationModel recommendationModel, Set<Integer> candidateItems) throws UserNotFound {
 
         return users.parallelStream()
-                .map(idUser -> new SingleUserRecommendationTask(singleUserRecommender, datasetLoader, recommendationModel, idUser, candidateItems))
+                .map(idUser -> new SingleUserRecommendationTask(
+                                singleUserRecommender,
+                                datasetLoader,
+                                recommendationModel.getRecommendationModel(),
+                                idUser,
+                                candidateItems))
                 .map(new SingleUserRecommendationTaskExecutor())
                 .collect(Collectors.toMap(
                                 recommendationsToUser -> recommendationsToUser.getUser().getId(),
