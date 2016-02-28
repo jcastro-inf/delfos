@@ -67,7 +67,7 @@ public class RatingBasedPref implements Preff<Integer> {
     }
 
     @Override
-    public float preff(Integer e1, Integer e2) {
+    public double preff(Integer e1, Integer e2) {
         if (!ratings.containsKey(e1)) {
             throw new IllegalArgumentException("Element '" + e1 + "' not in rating set");
         }

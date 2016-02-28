@@ -23,7 +23,7 @@ import delfos.common.parameters.restriction.BooleanParameter;
 import delfos.common.parameters.restriction.DatasetLoaderParameterRestriction;
 import delfos.common.parameters.restriction.DirectoryParameter;
 import delfos.common.parameters.restriction.FileParameter;
-import delfos.common.parameters.restriction.FloatParameter;
+import delfos.common.parameters.restriction.DoubleParameter;
 import delfos.common.parameters.restriction.IntegerParameter;
 import delfos.common.parameters.restriction.LongParameter;
 import delfos.common.parameters.restriction.ObjectParameter;
@@ -263,8 +263,8 @@ public class EditParameterDialog extends JDialog {
 
             Object restriction = p.getRestriction();
             boolean widgetCreado = false;
-            if (restriction instanceof FloatParameter) {
-                FloatParameter npr = (FloatParameter) p.getRestriction();
+            if (restriction instanceof DoubleParameter) {
+                DoubleParameter npr = (DoubleParameter) p.getRestriction();
 
                 constraints.fill = GridBagConstraints.HORIZONTAL;
                 constraints.weightx = 0.0;
@@ -274,10 +274,10 @@ public class EditParameterDialog extends JDialog {
                 constraints.gridwidth = 1;
                 constraints.gridheight = 1;
                 constraints.insets = new Insets(3, 4, 3, 4);
-                float value = ((Number) _parameterOwner.getParameterValue(p)).floatValue();
-                float min = npr.getMin();
-                float max = npr.getMax();
-                float step = 0.01f;
+                double value = ((Number) _parameterOwner.getParameterValue(p)).doubleValue();
+                double min = npr.getMin();
+                double max = npr.getMax();
+                double step = 0.01f;
 
                 final JSpinner spinner = new JSpinner(new SpinnerNumberModel(value, min, max, step));
                 spinner.setSize(50, spinner.getSize().height);

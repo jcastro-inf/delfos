@@ -469,14 +469,14 @@ public class DefaultCaseStudy extends CaseStudy implements ParameterListener {
         });
     }
 
-    private int totalCaseStudyPercent(float percent) {
-        float totalPercent;
+    private int totalCaseStudyPercent(double percent) {
+        double totalPercent;
         int maxVueltas = executionNumber * getNumberOfSplits();
         int vueltasActual = _ejecucionActual * getNumberOfSplits() + _conjuntoActual;
-        totalPercent = (((float) vueltasActual) / (maxVueltas)) * 100;
+        totalPercent = (((double) vueltasActual) / (maxVueltas)) * 100;
 
-        float add;
-        add = (float) ((percent / 100.0) / maxVueltas) * 100;
+        double add;
+        add = (double) ((percent / 100.0) / maxVueltas) * 100;
         totalPercent += add;
 
         return (int) totalPercent;
@@ -570,7 +570,7 @@ public class DefaultCaseStudy extends CaseStudy implements ParameterListener {
         this.executionProgressPercent = executionProgressPercent;
         this.executionProgressRemainingTime = executionProgressRemainingTime;
 
-        float _experimentProgressPercent = (loopCount * 100 + executionProgressPercent) / numVueltas;
+        double _experimentProgressPercent = (loopCount * 100 + executionProgressPercent) / numVueltas;
 
         //Actualizo las variables que luego el listener del experimento pedirá.
         this.experimentProgressTask = this.getAlias();

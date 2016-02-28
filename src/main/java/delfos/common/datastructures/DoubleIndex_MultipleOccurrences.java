@@ -180,8 +180,8 @@ public class DoubleIndex_MultipleOccurrences<Type1, Type2> implements Iterable<D
      * @param value1 Valor del tipo 1.
      * @return Probabilidad teórica de ocurrencia del valor.
      */
-    public float probabilityOfType1Value(Type1 value1) {
-        return ((float) frequencyOfType1Value(value1)) / size();
+    public double probabilityOfType1Value(Type1 value1) {
+        return ((double) frequencyOfType1Value(value1)) / size();
     }
 
     /**
@@ -217,8 +217,8 @@ public class DoubleIndex_MultipleOccurrences<Type1, Type2> implements Iterable<D
      * @param value2 Valor del tipo2.
      * @return Frecuencia del par indicado.
      */
-    public Float probabilityOfPair(Type1 value1, Type2 value2) {
-        return ((float) frequencyOfPair(value1, value2)) / size();
+    public Double probabilityOfPair(Type1 value1, Type2 value2) {
+        return ((double) frequencyOfPair(value1, value2)) / size();
     }
 
     /**
@@ -237,8 +237,8 @@ public class DoubleIndex_MultipleOccurrences<Type1, Type2> implements Iterable<D
      * @param type2
      * @return Probabilidad de que un item tenga la valoración dada
      */
-    public float probPuntuacion(Type2 type2) {
-        return ((float) frequencyOfType2Value(type2)) / size();
+    public double probPuntuacion(Type2 type2) {
+        return ((double) frequencyOfType2Value(type2)) / size();
     }
 
     /**

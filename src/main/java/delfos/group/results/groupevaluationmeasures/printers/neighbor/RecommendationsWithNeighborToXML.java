@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -75,7 +75,7 @@ public class RecommendationsWithNeighborToXML {
         Element neighborElement = new Element("neighbor");
 
         neighborElement.setAttribute(ID_NEIGHBOR_TTRIBUTE_NAME, Integer.toString(neighbor.getIdNeighbor()));
-        neighborElement.setAttribute(SIMILARITY_ATTRIBUTE_NAME, Float.toString(neighbor.getSimilarity()));
+        neighborElement.setAttribute(SIMILARITY_ATTRIBUTE_NAME, Double.toString(neighbor.getSimilarity()));
         neighborElement.setAttribute(RANK_ATTRIBUTE_NAME, Integer.toString(rank));
 
         return neighborElement;

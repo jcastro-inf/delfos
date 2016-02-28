@@ -33,7 +33,7 @@ public class HarmonicMean extends AggregationOperator {
     private final static long serialVersionUID = 1L;
 
     @Override
-    public float aggregateValues(Iterable<Number> values) {
+    public double aggregateValues(Iterable<Number> values) {
 
         MathContext mathContext = new MathContext(32, RoundingMode.HALF_UP);
         BigDecimal sum = new BigDecimal(BigInteger.ZERO);
@@ -48,6 +48,6 @@ public class HarmonicMean extends AggregationOperator {
 
         double harmonicMean = new BigDecimal(n).divide(sum, mathContext).doubleValue();
 
-        return (float) harmonicMean;
+        return (double) harmonicMean;
     }
 }

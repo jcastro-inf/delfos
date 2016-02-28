@@ -23,7 +23,7 @@ import delfos.common.parameters.ParameterOwner;
 import delfos.common.parameters.restriction.BooleanParameter;
 import delfos.common.parameters.restriction.DirectoryParameter;
 import delfos.common.parameters.restriction.FileParameter;
-import delfos.common.parameters.restriction.FloatParameter;
+import delfos.common.parameters.restriction.DoubleParameter;
 import delfos.common.parameters.restriction.IntegerParameter;
 import delfos.common.parameters.restriction.LongParameter;
 import delfos.common.parameters.restriction.ObjectParameter;
@@ -75,8 +75,8 @@ public class ParameterXML {
             value = LongParameterXML.getParameterValue(parameterOwner, elementParameter);
         }
 
-        if (FloatParameter.class.getSimpleName().equals(parameterType)) {
-            value = FloatParameterXML.getParameterValue(parameterOwner, elementParameter);
+        if (DoubleParameter.class.getSimpleName().equals(parameterType)) {
+            value = DoubleParameterXML.getParameterValue(parameterOwner, elementParameter);
         }
 
         if (BooleanParameter.class.getSimpleName().equals(parameterType)) {
@@ -131,8 +131,8 @@ public class ParameterXML {
             ret = IntegerParameterXML.getIntegerParameterElement(parameterOwner, p);
         }
 
-        if (p.getRestriction() instanceof FloatParameter) {
-            ret = FloatParameterXML.getFloatParameterElement(parameterOwner, p);
+        if (p.getRestriction() instanceof DoubleParameter) {
+            ret = DoubleParameterXML.getDoubleParameterElement(parameterOwner, p);
         }
 
         if (p.getRestriction() instanceof BooleanParameter) {

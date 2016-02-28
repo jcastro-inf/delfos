@@ -37,12 +37,12 @@ public class NumberOfRecommendations extends EvaluationMeasure {
 
     @Override
     public MeasureResult getMeasureResult(RecommendationResults recommendationResults, RatingsDataset<? extends Rating> testDataset, RelevanceCriteria relevanceCriteria) {
-        float numberOfRecommendations = 0;
+        double numberOfRecommendations = 0;
         Element element = new Element(this.getName());
         for (int idUser : testDataset.allUsers()) {
             numberOfRecommendations += recommendationResults.getRecommendationsForUser(idUser).size();
         }
-        element.setAttribute("value", Float.toString(numberOfRecommendations));
+        element.setAttribute("value", Double.toString(numberOfRecommendations));
         return new MeasureResult(this, numberOfRecommendations);
     }
 

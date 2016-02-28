@@ -44,7 +44,7 @@ public abstract class WeightedAggregationOperator extends AggregationOperator {
      * @throws IllegalArgumentException Si no contiene ningún valor para agregar
      * o si es nulo. También si los tamaños de ambas listas son distintos.
      */
-    public abstract float aggregateValues(List<? extends Number> values, List<? extends Number> weights);
+    public abstract double aggregateValues(List<? extends Number> values, List<? extends Number> weights);
 
     /**
      * Agrega los valores especificados en un único valor, aplicando la
@@ -57,12 +57,12 @@ public abstract class WeightedAggregationOperator extends AggregationOperator {
      * @throws IllegalArgumentException Si no contiene ningún valor para agregar
      * o si es nulo. También si los tamaños de ambas listas son distintos.
      */
-    public final float aggregateValues(Number[] values, Number[] weights) {
+    public final double aggregateValues(Number[] values, Number[] weights) {
         return aggregateValues(Arrays.asList(values), Arrays.asList(weights));
     }
 
     @Override
-    public final float aggregateValues(Iterable<Number> values) {
+    public final double aggregateValues(Iterable<Number> values) {
 
         List<Number> valuesList = new ArrayList<Number>();
 

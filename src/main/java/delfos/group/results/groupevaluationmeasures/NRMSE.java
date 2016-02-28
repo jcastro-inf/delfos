@@ -97,7 +97,7 @@ public class NRMSE extends GroupEvaluationMeasure {
         if (nrmse.getNumValues() == 0) {
             return new GroupEvaluationMeasureResult(this, Double.NaN);
         } else {
-            float rmseValue = (float) Math.sqrt(nrmse.getMean());
+            double rmseValue = (double) Math.sqrt(nrmse.getMean());
             return new GroupEvaluationMeasureResult(this, rmseValue);
         }
 

@@ -144,7 +144,7 @@ public class DatabaseRatingsDataset extends RatingsDatasetAdapter {
 
             while (rst.next()) {
                 int idItem = rst.getInt("idItem");
-                float rating = rst.getFloat("rating");
+                double rating = rst.getDouble("rating");
                 valuedItems.put(idItem, new Rating(idUser, idItem, rating));
             }
             rst.close();
@@ -188,7 +188,7 @@ public class DatabaseRatingsDataset extends RatingsDatasetAdapter {
 
             while (rst.next()) {
                 int idUser = rst.getInt("idUser");
-                float rating = rst.getFloat("rating");
+                double rating = rst.getDouble("rating");
                 usersRatings.put(idUser, new Rating(idUser, idItem, rating));
             }
             rst.close();

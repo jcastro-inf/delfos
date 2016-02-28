@@ -140,9 +140,9 @@ public class ContentWeightCollaborative extends HybridRecommender<HybridRecommen
                 this.idItem = idItem;
             }
             final int idItem;
-            float content = 0;
-            float collaborative = 0;
-            float valorCombinado = 0;
+            double content = 0;
+            double collaborative = 0;
+            double valorCombinado = 0;
 
             @Override
             public int compareTo(rank o) {
@@ -168,7 +168,7 @@ public class ContentWeightCollaborative extends HybridRecommender<HybridRecommen
         int i = 0;
         for (Recommendation r : l1) {
             rank ranking = new rank(r.getIdItem());
-            ranking.content = 1 - (((float) i) / size);
+            ranking.content = 1 - (((double) i) / size);
             mapa.put(r.getIdItem(), ranking);
             i++;
         }
@@ -181,7 +181,7 @@ public class ContentWeightCollaborative extends HybridRecommender<HybridRecommen
             } else {
                 ranking = new rank(r.getIdItem());
             }
-            ranking.collaborative = 1 - (((float) i) / size);
+            ranking.collaborative = 1 - (((double) i) / size);
             mapa.put(r.getIdItem(), ranking);
             i++;
         }

@@ -51,7 +51,7 @@ public class DirectoryParameterXML {
 //        for (String extension : fp.getAllowedExtensions()) {
 //            Element allowedExtension = new Element(EXTENSIONS_ELEMENTS);
 //            allowedExtension.setAttribute(ParameterXML.PARAMETER_VALUE, extension);
-//            floatParameter.addContent(allowedExtension);
+//            doubleParameter.addContent(allowedExtension);
 //        }
         return parameterElement;
     }

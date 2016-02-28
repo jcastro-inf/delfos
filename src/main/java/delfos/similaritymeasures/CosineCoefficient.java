@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,9 +16,9 @@
  */
 package delfos.similaritymeasures;
 
+import delfos.common.exceptions.CouldNotComputeSimilarity;
 import java.util.Iterator;
 import java.util.List;
-import delfos.common.exceptions.CouldNotComputeSimilarity;
 
 /**
  * Clase que implementa la medida del coseno para realizar una medida de
@@ -34,21 +34,21 @@ public class CosineCoefficient extends WeightedSimilarityMeasureAdapter {
     private static final long serialVersionUID = 1L;
 
     @Override
-    public float weightedSimilarity(List<Float> v1, List<Float> v2, List<Float> weights) throws CouldNotComputeSimilarity {
+    public double weightedSimilarity(List<Double> v1, List<Double> v2, List<Double> weights) throws CouldNotComputeSimilarity {
         if (v1.size() != v2.size() || v1.size() != weights.size()) {
             throw new IllegalArgumentException("The vector lengths are different");
         }
 
-        float numerator = 0;
-        float denominator1 = 0, denominator2 = 0;
-        float sumPesos = 0;
-        Iterator<Float> i1 = v1.listIterator();
-        Iterator<Float> i2 = v2.listIterator();
-        Iterator<Float> iw = weights.listIterator();
+        double numerator = 0;
+        double denominator1 = 0, denominator2 = 0;
+        double sumPesos = 0;
+        Iterator<Double> i1 = v1.listIterator();
+        Iterator<Double> i2 = v2.listIterator();
+        Iterator<Double> iw = weights.listIterator();
         for (int i = 0; i < v1.size(); i++) {
-            float r1 = i1.next();
-            float r2 = i2.next();
-            float w = iw.next();
+            double r1 = i1.next();
+            double r2 = i2.next();
+            double w = iw.next();
 
             numerator = numerator + r1 * r2 * w;
             denominator1 = denominator1 + r1 * r1 * w;
@@ -67,7 +67,7 @@ public class CosineCoefficient extends WeightedSimilarityMeasureAdapter {
         if (denominator1 == 0 || denominator2 == 0) {
             return 0;
         } else {
-            float coseno = (float) (numerator / (Math.sqrt(denominator1) * Math.sqrt(denominator2)));
+            double coseno = (double) (numerator / (Math.sqrt(denominator1) * Math.sqrt(denominator2)));
             return coseno;
         }
     }

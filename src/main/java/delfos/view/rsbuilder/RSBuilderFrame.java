@@ -395,7 +395,7 @@ public class RSBuilderFrame extends Frame {
             }
             final GenericRecommenderSystem rs_generic = (GenericRecommenderSystem) recommenderSelector.getSelectedItem();
             final DatasetLoader<? extends Rating> loader = (DatasetLoader) datasetSelector.getSelectedItem();
-            final RelevanceCriteria relevanceCriteria = new RelevanceCriteria(((Number) spinerRelevancia.getValue()).floatValue());
+            final RelevanceCriteria relevanceCriteria = new RelevanceCriteria(((Number) spinerRelevancia.getValue()).doubleValue());
             final PersistenceMethod persistenceMethod = (PersistenceMethod) persistenceMethodSelector.getSelectedItem();
             final RecommendationCandidatesSelector recommendationCandidatesSelector = recommendationCandidateSelectorComboBox.getItemAt(recommendationCandidateSelectorComboBox.getSelectedIndex());
             final RecommendationsOutputMethod recommendationsOutputMethod = (RecommendationsOutputMethod) recommendationsOutputMethodSelector.getSelectedItem();

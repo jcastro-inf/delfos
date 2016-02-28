@@ -90,7 +90,7 @@ public class MeanRatingGRS extends GroupRecommenderSystemAdapter<MeanRatingRSMod
         Collection<Recommendation> recommendationList = new ArrayList<>(candidateItems.size());
         for (MeanRating meanRating : media) {
             if (candidateItems.contains(meanRating.getIdItem())) {
-                float ratingMedio = meanRating.getPreference().floatValue();
+                double ratingMedio = meanRating.getPreference().doubleValue();
                 recommendationList.add(new Recommendation(meanRating.getIdItem(), ratingMedio));
             }
         }

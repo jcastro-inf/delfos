@@ -104,7 +104,7 @@ public class ProfileToVector {
      * @param item Producto que se desea convertir a vector.
      * @return Vector de valores asociado al producto.
      */
-    public static float[] getBooleanVectorProfile_Values(ContentDataset contentDataset, Item item) {
+    public static double[] getBooleanVectorProfile_Values(ContentDataset contentDataset, Item item) {
         if (contentDataset == null) {
             throw new IllegalArgumentException("The content dataset cant be null");
         }
@@ -114,7 +114,7 @@ public class ProfileToVector {
         if (!booleanIndexes.containsKey(contentDataset)) {
             generateBooleanIndex(contentDataset);
         }
-        float[] ret = new float[sizeOfBooleanVector.get(contentDataset)];
+        double[] ret = new double[sizeOfBooleanVector.get(contentDataset)];
         for (Feature itemFeature : item.getFeatures()) {
             Object value = item.getFeatureValue(itemFeature);
             int index = indexOf_inBoolean(contentDataset, itemFeature, value);
@@ -131,7 +131,7 @@ public class ProfileToVector {
      * @param userProfile Perfil de usuario que se desea convertir a vector.
      * @return Vector de valores asociado al usuario.
      */
-    public static float[] getBooleanVectorProfile_Values(ContentDataset contentDataset, BooleanUserProfile userProfile) {
+    public static double[] getBooleanVectorProfile_Values(ContentDataset contentDataset, BooleanUserProfile userProfile) {
 
         if (contentDataset == null) {
             throw new IllegalArgumentException("The content dataset cant be null");
@@ -143,12 +143,12 @@ public class ProfileToVector {
         if (!booleanIndexes.containsKey(contentDataset)) {
             generateBooleanIndex(contentDataset);
         }
-        float[] ret = new float[sizeOfBooleanVector.get(contentDataset)];
+        double[] ret = new double[sizeOfBooleanVector.get(contentDataset)];
 
         for (Feature itemFeature : userProfile.getFeatures()) {
             for (Object value : userProfile.getValuedFeatureValues(itemFeature)) {
                 int index = indexOf_inBoolean(contentDataset, itemFeature, value);
-                ret[index] = (float) userProfile.getFeatureValueValue(itemFeature, value);
+                ret[index] = (double) userProfile.getFeatureValueValue(itemFeature, value);
             }
         }
         return ret;
@@ -162,7 +162,7 @@ public class ProfileToVector {
      * @param userProfile Perfil de usuario que se desea convertir a vector.
      * @return Vector de ponderación de características del usuario.
      */
-    public static float[] getBooleanVectorProfile_Weights(ContentDataset contentDataset, BooleanUserProfile userProfile) {
+    public static double[] getBooleanVectorProfile_Weights(ContentDataset contentDataset, BooleanUserProfile userProfile) {
         if (contentDataset == null) {
             throw new IllegalArgumentException("The content dataset cant be null");
         }
@@ -172,11 +172,11 @@ public class ProfileToVector {
         if (!booleanIndexes.containsKey(contentDataset)) {
             generateBooleanIndex(contentDataset);
         }
-        float[] ret = new float[sizeOfBooleanVector.get(contentDataset)];
+        double[] ret = new double[sizeOfBooleanVector.get(contentDataset)];
         for (Feature itemFeature : userProfile.getFeatures()) {
             for (Object value : userProfile.getValuedFeatureValues(itemFeature)) {
                 int index = indexOf_inBoolean(contentDataset, itemFeature, value);
-                ret[index] = (float) userProfile.getFeatureValueWeight(itemFeature, value);
+                ret[index] = (double) userProfile.getFeatureValueWeight(itemFeature, value);
             }
         }
         return ret;
@@ -197,17 +197,17 @@ public class ProfileToVector {
         ret.append("\n");
 
         {
-            float[] booleanVectorProfile_Values = getBooleanVectorProfile_Values(contentDataset, userProfile);
+            double[] booleanVectorProfile_Values = getBooleanVectorProfile_Values(contentDataset, userProfile);
             ret.append("Values:  ");
-            for (float value : booleanVectorProfile_Values) {
+            for (double value : booleanVectorProfile_Values) {
                 ret.append(value).append("\t");
             }
             ret.append("\n");
         }
 
-        float[] booleanVectorProfile_Weights = getBooleanVectorProfile_Weights(contentDataset, userProfile);
+        double[] booleanVectorProfile_Weights = getBooleanVectorProfile_Weights(contentDataset, userProfile);
         ret.append("Weights: ");
-        for (float value : booleanVectorProfile_Weights) {
+        for (double value : booleanVectorProfile_Weights) {
             ret.append(value).append("\t");
         }
         ret.append("\n");

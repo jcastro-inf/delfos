@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,11 +16,11 @@
  */
 package delfos.rs.collaborativefiltering.predictiontechniques;
 
-import java.util.Collection;
+import delfos.common.exceptions.CouldNotPredictRating;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RatingsDataset;
 import delfos.rs.collaborativefiltering.knn.MatchRating;
-import delfos.common.exceptions.CouldNotPredictRating;
+import java.util.Collection;
 
 /**
  * Clase que implementa la técnica de predicción de la suma ponderada. Si se
@@ -37,23 +37,23 @@ public class WeightedSum extends PredictionTechnique {
     private static final long serialVersionUID = 1L;
 
     @Override
-    public float predictRating(int idUser, int idItem, Collection<MatchRating> ratings, RatingsDataset<? extends Rating> rd) throws CouldNotPredictRating {
-        float numerador = 0, denominador = 0;
+    public double predictRating(int idUser, int idItem, Collection<MatchRating> ratings, RatingsDataset<? extends Rating> rd) throws CouldNotPredictRating {
+        double numerador = 0, denominador = 0;
 
         if (ratings.isEmpty()) {
             throw new CouldNotPredictRating("Match rating list is empty");
         }
         for (MatchRating matchRating : ratings) {
-            numerador += matchRating.getRating().floatValue() * matchRating.getWeight();
+            numerador += matchRating.getRating().doubleValue() * matchRating.getWeight();
             denominador += matchRating.getWeight();
         }
 
-        float prediccion = numerador / denominador;
+        double prediccion = numerador / denominador;
 
-        if (Float.isInfinite(prediccion)) {
+        if (Double.isInfinite(prediccion)) {
             throw new CouldNotPredictRating("Prediction is infinite");
         }
-        if (Float.isNaN(prediccion)) {
+        if (Double.isNaN(prediccion)) {
             throw new CouldNotPredictRating("Prediction is NaN");
         }
 

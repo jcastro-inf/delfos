@@ -82,13 +82,13 @@ public class CommonRating {
 
         Collection<CommonRating> commonRatings = itemsIntersection.stream().map(item -> {
 
-            float ratingUser1 = itemsRatedUser1
+            double ratingUser1 = itemsRatedUser1
                     .get(item.getId())
-                    .getRatingValue().floatValue();
+                    .getRatingValue().doubleValue();
 
-            float ratingUser2 = itemsRatedUser2
+            double ratingUser2 = itemsRatedUser2
                     .get(item.getId())
-                    .getRatingValue().floatValue();
+                    .getRatingValue().doubleValue();
 
             return new CommonRating(
                     RecommendationEntity.ITEM,
@@ -117,13 +117,13 @@ public class CommonRating {
 
         Collection<CommonRating> commonRatings = intersection.stream().map(user -> {
 
-            float ratingUser1 = ratingsOverItem1
+            double ratingUser1 = ratingsOverItem1
                     .get(user.getId())
-                    .getRatingValue().floatValue();
+                    .getRatingValue().doubleValue();
 
-            float ratingUser2 = ratingsOverItem2
+            double ratingUser2 = ratingsOverItem2
                     .get(user.getId())
-                    .getRatingValue().floatValue();
+                    .getRatingValue().doubleValue();
 
             return new CommonRating(
                     RecommendationEntity.USER,
@@ -144,11 +144,11 @@ public class CommonRating {
     private final RecommendationEntity commonEntity;
     private final RecommendationEntity ratingEntity;
     private final int idCommon;
-    private final float rating1;
-    private final float rating2;
+    private final double rating1;
+    private final double rating2;
     private final int idR1;
     private final int idR2;
-    private Float weight = null;
+    private Double weight = null;
 
     /**
      * Crea una entidad de rating común, que almacena dos ratings dados sobre
@@ -164,7 +164,7 @@ public class CommonRating {
      * @param rating2 Valoración 2.
      * @param weight Ponderación de la valoración.
      */
-    public CommonRating(RecommendationEntity commonEntity, int idCommon, RecommendationEntity ratingEntity, int idR1, int idR2, float rating1, float rating2, float weight) {
+    public CommonRating(RecommendationEntity commonEntity, int idCommon, RecommendationEntity ratingEntity, int idR1, int idR2, double rating1, double rating2, double weight) {
         this.commonEntity = commonEntity;
         this.ratingEntity = ratingEntity;
         this.idCommon = idCommon;
@@ -188,7 +188,7 @@ public class CommonRating {
      * @param rating1 Valoración 1.
      * @param rating2 Valoración 2.
      */
-    public CommonRating(RecommendationEntity commonEntity, int idCommon, RecommendationEntity ratingEntity, int idR1, int idR2, float rating1, float rating2) {
+    public CommonRating(RecommendationEntity commonEntity, int idCommon, RecommendationEntity ratingEntity, int idR1, int idR2, double rating1, double rating2) {
         this.commonEntity = commonEntity;
         this.ratingEntity = ratingEntity;
         this.idCommon = idCommon;
@@ -247,7 +247,7 @@ public class CommonRating {
      *
      * @return Valoración de la entidad de valoración 1.
      */
-    public float getRating1() {
+    public double getRating1() {
         return rating1;
     }
 
@@ -256,7 +256,7 @@ public class CommonRating {
      *
      * @return Valoración de la entidad de valoración 2.
      */
-    public float getRating2() {
+    public double getRating2() {
         return rating2;
     }
 
@@ -275,7 +275,7 @@ public class CommonRating {
      *
      * @return Ponderación del rating en común.
      */
-    public float getWeight() {
+    public double getWeight() {
         return weight;
     }
 
@@ -293,7 +293,7 @@ public class CommonRating {
      *
      * @param weight Ponderación de la valoración en común.
      */
-    public void setWeight(float weight) {
+    public void setWeight(double weight) {
         this.weight = weight;
     }
 

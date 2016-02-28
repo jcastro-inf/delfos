@@ -200,7 +200,7 @@ public class Symeonidis2007FeatureWeighted extends ContentBasedRecommender<Symeo
                     MutableSparseVector itemProfile = makeFFItemProfile(item.getId(), datasetLoader, booleanFeaturesTransformation);
                     model.putItemProfile(item.getId(), itemProfile);
 
-                    fireBuildingProgressChangedEvent("Profile creation", (int) ((float) i++ * 100 / contentDataset.size()), -1);
+                    fireBuildingProgressChangedEvent("Profile creation", (int) ((double) i++ * 100 / contentDataset.size()), -1);
                 } catch (ItemNotFound ex) {
                     ERROR_CODES.ITEM_NOT_FOUND.exit(ex);
                 }
@@ -226,7 +226,7 @@ public class Symeonidis2007FeatureWeighted extends ContentBasedRecommender<Symeo
         MutableSparseVector iuf = booleanFeaturesTransformation.newProfile();
         {
             int i = 0;
-            final float numUsers = ratingsDataset.allUsers().size();
+            final double numUsers = ratingsDataset.allUsers().size();
             fireBuildingProgressChangedEvent("IUF calculation", 0, -1);
             for (Feature feature : contentDataset.getFeatures()) {
                 for (Object featureValue : booleanFeaturesTransformation.getAllFeatureValues(feature)) {
@@ -268,7 +268,7 @@ public class Symeonidis2007FeatureWeighted extends ContentBasedRecommender<Symeo
                         Global.showInfoMessage("Feature " + feature + " and value " + featureValue + " has an IUF of " + iufThisFeatureValue + "\n");
                     }
                     iuf.set(idFeatureValue, iufThisFeatureValue);
-                    fireBuildingProgressChangedEvent("IUF calculation", (int) ((float) i++ * 100 / booleanFeaturesTransformation.sizeOfAllFeatureValues()), -1);
+                    fireBuildingProgressChangedEvent("IUF calculation", (int) ((double) i++ * 100 / booleanFeaturesTransformation.sizeOfAllFeatureValues()), -1);
                 }
             }
         }
@@ -360,14 +360,14 @@ public class Symeonidis2007FeatureWeighted extends ContentBasedRecommender<Symeo
         List<Neighbor> neighbors = new ArrayList<>();
         for (Symeonidis2007UserProfile neighborProfile : model.userProfiles()) {
             if (neighborProfile.getId() != userProfile.getId()) {
-                List<Float> v1 = new LinkedList<>();
-                List<Float> v2 = new LinkedList<>();
+                List<Double> v1 = new LinkedList<>();
+                List<Double> v2 = new LinkedList<>();
 
                 for (Feature feature : userProfile.getFeatures()) {
                     for (Object value : userProfile.getValuedFeatureValues(feature)) {
                         if (neighborProfile.contains(feature, value)) {
-                            float userValue = (float) userProfile.getFeatureValueValue(feature, value);
-                            float neighborValue = (float) neighborProfile.getFeatureValueValue(feature, value);
+                            double userValue = (double) userProfile.getFeatureValueValue(feature, value);
+                            double neighborValue = (double) neighborProfile.getFeatureValueValue(feature, value);
 
                             v1.add(userValue);
                             v2.add(neighborValue);
@@ -376,7 +376,7 @@ public class Symeonidis2007FeatureWeighted extends ContentBasedRecommender<Symeo
                 }
 
                 try {
-                    float sim = cosineCoefficient.similarity(v1, v2);
+                    double sim = cosineCoefficient.similarity(v1, v2);
                     neighbors.add(new Neighbor(RecommendationEntity.USER, neighborProfile.getId(), sim));
                 } catch (CouldNotComputeSimilarity ex) {
                 }

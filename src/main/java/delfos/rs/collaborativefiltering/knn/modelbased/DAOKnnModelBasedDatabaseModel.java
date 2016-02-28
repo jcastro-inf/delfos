@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -68,7 +68,7 @@ public class DAOKnnModelBasedDatabaseModel {
             st.execute("CREATE TABLE  " + getTemporalProfilesTable(databaseConection) + " ("
                     + "idItem int(10) unsigned NOT NULL,"
                     + "idNeighbor int(10) unsigned NOT NULL,"
-                    + "similarity float unsigned NOT NULL,"
+                    + "similarity double unsigned NOT NULL,"
                     + "PRIMARY KEY (idItem,idNeighbor)"
                     + ") ENGINE=InnoDB DEFAULT CHARSET=latin1;");
         } catch (SQLException ex) {
@@ -114,15 +114,15 @@ public class DAOKnnModelBasedDatabaseModel {
                 c.append("Values ");
 
                 for (Neighbor neighbor : profile.getAllNeighbors()) {
-                    Float sim = neighbor.getSimilarity();
+                    Double sim = neighbor.getSimilarity();
 
                     if (sim > 1) {
                         Global.showWarning("Similarity of items " + profile.getIdItem() + " and " + neighbor.getIdNeighbor() + " was " + sim.toString() + " set to 1");
-                        sim = 1.0f;
+                        sim = 1.0;
                     }
                     if (sim < 0) {
                         Global.showWarning("Similarity of items " + profile.getIdItem() + " and " + neighbor.getIdNeighbor() + " was " + sim.toString() + " set to 0");
-                        sim = 0.0f;
+                        sim = 0.0;
                     }
 
                     c.append("(").append(profile.getIdItem()).append(",");
@@ -164,7 +164,7 @@ public class DAOKnnModelBasedDatabaseModel {
 
                     int idItem = rst.getInt("idItem");
                     int idNeighbor = rst.getInt("idNeighbor");
-                    float similarity = rst.getFloat("similarity");
+                    double similarity = rst.getDouble("similarity");
 
                     if (!itemProfiles.containsKey(idItem)) {
                         itemProfiles.put(idItem, new KnnModelItemProfile(idItem));

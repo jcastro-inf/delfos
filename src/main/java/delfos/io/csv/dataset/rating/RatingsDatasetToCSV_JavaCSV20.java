@@ -121,7 +121,7 @@ public class RatingsDatasetToCSV_JavaCSV20 implements RatingsDatasetToCSV {
                 try {
                     int idUser = Integer.parseInt(reader.get("idUser"));
                     int idItem = Integer.parseInt(reader.get("idItem"));
-                    Number rating = Float.parseFloat(reader.get("rating"));
+                    Number rating = Double.parseDouble(reader.get("rating"));
                     ratings.add(new Rating(idUser, idItem, rating));
 
                     if (i % 1000000 == 0 && i != 0) {

@@ -230,7 +230,7 @@ public class AggregateResultsXML {
                     ConfusionMatricesCurve curve = ConfusionMatricesCurveXML.getConfusionMatricesCurve(curveElement);
 
                     for (int index = 1; index < curve.size(); index++) {
-                        float precisionAt = curve.getPrecisionAt(index);
+                        double precisionAt = curve.getPrecisionAt(index);
 
                         DecimalFormat format = new DecimalFormat("000");
 

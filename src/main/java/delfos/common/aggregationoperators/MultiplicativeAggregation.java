@@ -20,7 +20,7 @@ import delfos.ERROR_CODES;
 import delfos.common.exceptions.ParammeterIncompatibleValues;
 import delfos.common.parameters.Parameter;
 import delfos.common.parameters.ParameterListener;
-import delfos.common.parameters.restriction.FloatParameter;
+import delfos.common.parameters.restriction.DoubleParameter;
 
 /**
  * Operador de agregación que ensure some degree of fairness for the
@@ -39,14 +39,14 @@ public class MultiplicativeAggregation extends AggregationOperator {
      */
     public static final Parameter MIN_VALUE = new Parameter(
             "MIN_VALUE",
-            new FloatParameter(-Float.MAX_VALUE, Float.MAX_VALUE, 1),
+            new DoubleParameter(-Double.MAX_VALUE, Double.MAX_VALUE, 1),
             "Minimum value, to perform the normalisation.");
     /**
      * Maximum value, to perform the normalisation.
      */
     public static final Parameter MAX_VALUE = new Parameter(
             "MAX_VALUE",
-            new FloatParameter(-Float.MAX_VALUE, Float.MAX_VALUE, 5),
+            new DoubleParameter(-Double.MAX_VALUE, Double.MAX_VALUE, 5),
             "Maximum value, to perform the normalisation.");
 
     public MultiplicativeAggregation() {
@@ -66,24 +66,24 @@ public class MultiplicativeAggregation extends AggregationOperator {
     }
 
     @Override
-    public float aggregateValues(Iterable<Number> values) {
+    public double aggregateValues(Iterable<Number> values) {
         if (values == null) {
         }
 
-        float retValue = 1;
+        double retValue = 1;
         int n = 0;
 
         for (Number value : values) {
 
-            if (value.floatValue() > getMaxValue()) {
+            if (value.doubleValue() > getMaxValue()) {
                 throw new IllegalArgumentException("El valor " + value + " excede el máximo.");
             }
 
-            if (value.floatValue() < getMinValue()) {
+            if (value.doubleValue() < getMinValue()) {
                 throw new IllegalArgumentException("El valor " + value + " excede el mínimo.");
             }
 
-            float normalisedValue = (value.floatValue() - getMinValue()) / (getMaxValue() - getMinValue());
+            double normalisedValue = (value.doubleValue() - getMinValue()) / (getMaxValue() - getMinValue());
 
             retValue *= normalisedValue;
             n++;
@@ -99,11 +99,11 @@ public class MultiplicativeAggregation extends AggregationOperator {
         return retValue;
     }
 
-    private float getMinValue() {
-        return (Float) getParameterValue(MIN_VALUE);
+    private double getMinValue() {
+        return (Double) getParameterValue(MIN_VALUE);
     }
 
-    private float getMaxValue() {
-        return (Float) getParameterValue(MAX_VALUE);
+    private double getMaxValue() {
+        return (Double) getParameterValue(MAX_VALUE);
     }
 }

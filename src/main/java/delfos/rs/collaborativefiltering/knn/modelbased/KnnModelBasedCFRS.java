@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -137,25 +137,25 @@ public class KnnModelBasedCFRS
 
             List<Neighbor> selectedNeighbors = profile.getAllNeighbors().stream()
                     .filter(neighbor -> neighbor.getSimilarity() > 0)
-                    .filter(neighbor -> Float.isFinite(neighbor.getSimilarity()))
-                    .filter(neighbor -> !Float.isNaN(neighbor.getSimilarity())).collect(Collectors.toList());
+                    .filter(neighbor -> Double.isFinite(neighbor.getSimilarity()))
+                    .filter(neighbor -> !Double.isNaN(neighbor.getSimilarity())).collect(Collectors.toList());
 
             selectedNeighbors = selectedNeighbors
                     .subList(0, Math.min(selectedNeighbors.size(), neighborhoodSize));
 
             for (Neighbor itemNeighbor : selectedNeighbors) {
-                float similarity = itemNeighbor.getSimilarity();
+                double similarity = itemNeighbor.getSimilarity();
                 Rating rating = targetUserRatings.get(itemNeighbor.getIdNeighbor());
                 if (rating != null) {
                     matchRatings.add(new MatchRating(RecommendationEntity.USER, idUser, itemNeighbor.getIdNeighbor(), rating.getRatingValue(), similarity));
                 }
             }
 
-            Float predictedRating;
+            Double predictedRating;
             try {
                 predictedRating = prediction.predictRating(idUser, idItem, matchRatings, datasetLoader.getRatingsDataset());
             } catch (CouldNotPredictRating ex) {
-                predictedRating = Float.NaN;
+                predictedRating = Double.NaN;
             }
 
             recommendationList.add(new Recommendation(idItem, predictedRating));
@@ -171,7 +171,7 @@ public class KnnModelBasedCFRS
      * <p>
      * This method must return a Neighbor object for each item in the dataset.
      * For the neighbors that is not possible to compute a similarity,
-     * {@link Float#NaN} similarity is assigned.
+     * {@link Double#NaN} similarity is assigned.
      * <p>
      * <p>
      * The neighbors will be selected in the prediction step.
@@ -211,20 +211,20 @@ public class KnnModelBasedCFRS
                                     RecommendationEntity.ITEM,
                                     item.getId(),
                                     itemNeighbor.getId(),
-                                    usersRatingsToTargetItem.get(idUser).getRatingValue().floatValue(),
-                                    usersRatingsToNeighborItem.get(idUser).getRatingValue().floatValue())))
+                                    usersRatingsToTargetItem.get(idUser).getRatingValue().doubleValue(),
+                                    usersRatingsToNeighborItem.get(idUser).getRatingValue().doubleValue())))
                     .collect(Collectors.toList());
 
-            float similarity;
+            double similarity;
             try {
                 similarity = similarityMeasureValue.similarity(common, ratingsDataset);
                 if (similarity > 0
                         && isRelevanceFactorApplied
                         && common.size() < relevanceFactorIntValue) {
-                    similarity = (similarity * (common.size() / (float) relevanceFactorIntValue));
+                    similarity = (similarity * (common.size() / (double) relevanceFactorIntValue));
                 }
             } catch (CouldNotComputeSimilarity ex) {
-                similarity = Float.NaN;
+                similarity = Double.NaN;
             }
             itemsSimilares.add(new Neighbor(RecommendationEntity.ITEM, itemNeighbor, similarity));
 

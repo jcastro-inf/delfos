@@ -18,7 +18,7 @@ package delfos.dataset.generated.random;
 
 import delfos.common.Global;
 import delfos.common.parameters.Parameter;
-import delfos.common.parameters.restriction.FloatParameter;
+import delfos.common.parameters.restriction.DoubleParameter;
 import delfos.common.parameters.restriction.IntegerParameter;
 import delfos.common.parameters.restriction.ObjectParameter;
 import delfos.dataset.basic.item.ContentDataset;
@@ -67,7 +67,7 @@ public class RandomDatasetLoader extends DatasetLoaderAbstract<RatingWithTimesta
      * Porcentaje de valoraciones que están definidas en el dataset. Por defecto
      * es el 50%.
      */
-    public final static Parameter ratings_loadFactor = new Parameter("ratings_loadFactor", new FloatParameter(0, 1, 0.5f));
+    public final static Parameter ratings_loadFactor = new Parameter("ratings_loadFactor", new DoubleParameter(0, 1, 0.5f));
     /**
      * Valoración mas baja que un usuario puede dar. Por defecto es 1.
      */

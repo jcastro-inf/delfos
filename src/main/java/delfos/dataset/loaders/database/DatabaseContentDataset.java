@@ -88,7 +88,7 @@ public class DatabaseContentDataset implements ContentDataset {
                 values[0] = rst.getString("genero_nominal");
                 values[1] = rst.getString("director_nominal");
                 values[2] = rst.getString("pais_nominal");
-                values[3] = rst.getFloat("anyo_numerical");
+                values[3] = rst.getDouble("anyo_numerical");
                 String name = rst.getString("name");
 
                 i = new Item(idItem, name, features, values);

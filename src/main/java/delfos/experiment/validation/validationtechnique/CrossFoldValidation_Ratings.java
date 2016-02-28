@@ -81,7 +81,7 @@ public class CrossFoldValidation_Ratings extends ValidationTechnique {
         }
 
         //composicion de los conjuntos de training y test
-        float numUserFinished = 0;
+        double numUserFinished = 0;
         final Collection<Integer> allUsers = datasetLoader.getRatingsDataset().allUsers();
 
         for (int idUser : allUsers) {

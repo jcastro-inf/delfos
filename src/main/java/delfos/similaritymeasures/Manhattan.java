@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,9 +16,9 @@
  */
 package delfos.similaritymeasures;
 
+import delfos.common.exceptions.CouldNotComputeSimilarity;
 import java.util.Iterator;
 import java.util.List;
-import delfos.common.exceptions.CouldNotComputeSimilarity;
 
 /**
  * Medida de similitud que utiliza la medida de manhatan. La medida de manhatan
@@ -35,16 +35,16 @@ public class Manhattan extends BasicSimilarityMeasureAdapter {
     private static final long serialVersionUID = 1L;
 
     @Override
-    public float similarity(List<Float> v1, List<Float> v2) throws CouldNotComputeSimilarity {
+    public double similarity(List<Double> v1, List<Double> v2) throws CouldNotComputeSimilarity {
         if (v1.size() != v2.size()) {
             throw new CouldNotComputeSimilarity("Vector size is diferent");
         }
-        Iterator<Float> i1 = v1.listIterator();
-        Iterator<Float> i2 = v2.listIterator();
-        float distance = 0;
+        Iterator<Double> i1 = v1.listIterator();
+        Iterator<Double> i2 = v2.listIterator();
+        double distance = 0;
         while (i1.hasNext()) {
-            Float n1 = i1.next();
-            Float n2 = i2.next();
+            Double n1 = i1.next();
+            Double n2 = i2.next();
             distance += Math.abs(n1 - n2);
         }
         return 1 / (1 + distance);

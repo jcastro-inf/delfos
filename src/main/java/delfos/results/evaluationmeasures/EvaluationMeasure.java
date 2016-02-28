@@ -87,13 +87,13 @@ public abstract class EvaluationMeasure extends ParameterOwnerAdapter implements
      */
     public final MeasureResult agregateResults(Collection<MeasureResult> results) {
         Element aggregatedElement = new Element(this.getName());
-        float aggregatedValue;
+        double aggregatedValue;
 
         MeanIterative mean = new MeanIterative();
         results.stream().forEach((mr) -> {
             mean.addValue(mr.getValue());
         });
-        aggregatedValue = (float) mean.getMean();
+        aggregatedValue = (double) mean.getMean();
         aggregatedElement.setAttribute(EvaluationMeasure.VALUE_ATTRIBUTE_NAME, Double.toString(mean.getMean()));
 
         return new MeasureResult(this, aggregatedValue);

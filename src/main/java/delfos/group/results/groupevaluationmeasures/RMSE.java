@@ -89,7 +89,7 @@ public class RMSE extends GroupEvaluationMeasure {
         if (rmse.getNumValues() == 0) {
             return new GroupEvaluationMeasureResult(this, Double.NaN);
         } else {
-            float rmseValue = (float) Math.sqrt(rmse.getMean());
+            double rmseValue = (double) Math.sqrt(rmse.getMean());
             return new GroupEvaluationMeasureResult(this, rmseValue);
         }
 

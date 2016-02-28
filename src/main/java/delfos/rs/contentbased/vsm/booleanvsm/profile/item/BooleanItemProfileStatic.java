@@ -50,11 +50,11 @@ public class BooleanItemProfileStatic implements BooleanItemProfile, Serializabl
     /**
      * Valor del perfil para cada valor de cada característica.
      */
-    private Map<Feature, Map<Object, Float>> _values;
+    private Map<Feature, Map<Object, Double>> _values;
     /**
      * Ponderación de cada valor de cada característica.
      */
-    private Map<Feature, Map<Object, Float>> _weights;
+    private Map<Feature, Map<Object, Double>> _weights;
 
     /**
      * Constructor que genera un perfil de usuario con ponderación de
@@ -66,7 +66,7 @@ public class BooleanItemProfileStatic implements BooleanItemProfile, Serializabl
      * @param weights Importancia de cada una de los características para el
      * usuario.
      */
-    public BooleanItemProfileStatic(int idUser, Map<Feature, Map<Object, Float>> values, Map<Feature, Map<Object, Float>> weights) {
+    public BooleanItemProfileStatic(int idUser, Map<Feature, Map<Object, Double>> values, Map<Feature, Map<Object, Double>> weights) {
         this._idUser = idUser;
         this._values = values;
         this._weights = weights;
@@ -80,14 +80,14 @@ public class BooleanItemProfileStatic implements BooleanItemProfile, Serializabl
      * @param values Valor que el perfil de usuario tiene para cada valor de
      * cada característica.
      */
-    public BooleanItemProfileStatic(int idUser, Map<Feature, Map<Object, Float>> values) {
+    public BooleanItemProfileStatic(int idUser, Map<Feature, Map<Object, Double>> values) {
         this._idUser = idUser;
         this._values = values;
         this._weights = null;
     }
 
     @Override
-    public float getFeatureValueValue(Feature f, Object featureValue) {
+    public double getFeatureValueValue(Feature f, Object featureValue) {
         return _values.get(f).get(featureValue.toString());
     }
 
@@ -121,12 +121,12 @@ public class BooleanItemProfileStatic implements BooleanItemProfile, Serializabl
             _values.get(key).clear();
         }
         _values.clear();
-        _values = new TreeMap<Feature, Map<Object, Float>>();
+        _values = new TreeMap<Feature, Map<Object, Double>>();
 
         for (Feature key : _weights.keySet()) {
             _weights.get(key).clear();
         }
         _weights.clear();
-        _weights = new TreeMap<Feature, Map<Object, Float>>();
+        _weights = new TreeMap<Feature, Map<Object, Double>>();
     }
 }

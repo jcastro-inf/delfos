@@ -242,30 +242,30 @@ public class ConfusionMatricesCurve {
      *
      * @return Área bajo la curva. El valor siempre está entre 0 y 1.
      */
-    public float getAreaUnderROC() {
+    public double getAreaUnderROC() {
         double areaUnderROC = 0;
 
-        float tpR_previo = 0;
-        float fpR_previo = 0;
+        double tpR_previo = 0;
+        double fpR_previo = 0;
 
         for (int i = 0; i < matrices.size(); i++) {
 
-            float tpr = matrices.get(i).getTruePositiveRate();
-            float fpr = matrices.get(i).getFalsePositiveRate();
+            double tpr = matrices.get(i).getTruePositiveRate();
+            double fpr = matrices.get(i).getFalsePositiveRate();
 
             //Rectángulo que se forma si no hay incremento en el eje Y (tpr).
-            float rectangulo = (fpr - fpR_previo) * (tpR_previo);
+            double rectangulo = (fpr - fpR_previo) * (tpR_previo);
             areaUnderROC += rectangulo;
 
             //Triángulo que se forma si hay incremento.
-            float triangulo = ((fpr - fpR_previo) * (tpr - tpR_previo)) / 2;
+            double triangulo = ((fpr - fpR_previo) * (tpr - tpR_previo)) / 2;
 
             areaUnderROC += triangulo;
 
             tpR_previo = tpr;
             fpR_previo = fpr;
         }
-        return (float) areaUnderROC;
+        return (double) areaUnderROC;
     }
 
     private ConfusionMatrix getMatrixAt(int index) {
@@ -317,7 +317,7 @@ public class ConfusionMatricesCurve {
      * @param index
      * @return
      */
-    public float getPrecisionAt(int index) {
+    public double getPrecisionAt(int index) {
         return getMatrixAt(index).getPrecision();
     }
 
@@ -326,7 +326,7 @@ public class ConfusionMatricesCurve {
      * @param index
      * @return
      */
-    public float getRecallAt(int index) {
+    public double getRecallAt(int index) {
         return getMatrixAt(index).getRecall();
     }
 
@@ -336,7 +336,7 @@ public class ConfusionMatricesCurve {
      * @param i Posición.
      * @return Componente fpr del punto.
      */
-    public float getFalsePositiveRateAt(int i) {
+    public double getFalsePositiveRateAt(int i) {
         return matrices.get(i).getFalsePositiveRate();
     }
 
@@ -346,7 +346,7 @@ public class ConfusionMatricesCurve {
      * @param i Posición.
      * @return Componente tpr del punto.
      */
-    public float getTruePositiveRateAt(int i) {
+    public double getTruePositiveRateAt(int i) {
         return matrices.get(i).getTruePositiveRate();
     }
 
@@ -400,12 +400,12 @@ public class ConfusionMatricesCurve {
      *
      * @return
      */
-    public float getAreaPRSpace() {
+    public double getAreaPRSpace() {
 
         double areaUnderPRSPace = 0;
 
-        float precision_previo = 0;
-        float recall_previo = 0;
+        double precision_previo = 0;
+        double recall_previo = 0;
 
         /**
          * Se ignora el valor en el punto de recomendación 0, ya que la
@@ -413,21 +413,21 @@ public class ConfusionMatricesCurve {
          */
         for (int i = 1; i < matrices.size(); i++) {
 
-            float precision = matrices.get(i).getPrecision();
-            float recall = matrices.get(i).getRecall();
+            double precision = matrices.get(i).getPrecision();
+            double recall = matrices.get(i).getRecall();
 
             //Rectángulo que se forma si no hay incremento en el eje Y (tpr).
-            float rectangulo = (recall - recall_previo) * (precision_previo);
+            double rectangulo = (recall - recall_previo) * (precision_previo);
             areaUnderPRSPace += rectangulo;
 
             //Triángulo que se forma si hay incremento.
-            float triangulo = ((recall - recall_previo) * (precision - precision_previo)) / 2;
+            double triangulo = ((recall - recall_previo) * (precision - precision_previo)) / 2;
 
             areaUnderPRSPace += triangulo;
 
             precision_previo = precision;
             recall_previo = recall;
         }
-        return (float) areaUnderPRSPace;
+        return (double) areaUnderPRSPace;
     }
 }

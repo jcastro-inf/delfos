@@ -60,7 +60,7 @@ public class DAOMeanRatingProfile implements RecommendationModelDatabasePersiste
 
             statement.execute("CREATE TABLE `" + PROFILE_TABLE + "` ("
                     + ID_COLUMN_NAME + " int(10) unsigned NOT NULL,"
-                    + PREFERENCE_COLUMN_NAME + " float unsigned NOT NULL,"
+                    + PREFERENCE_COLUMN_NAME + " double unsigned NOT NULL,"
                     + "PRIMARY KEY (" + ID_COLUMN_NAME + ")"
                     + ") ENGINE=MyISAM DEFAULT CHARSET=latin1;");
         }
@@ -107,7 +107,7 @@ public class DAOMeanRatingProfile implements RecommendationModelDatabasePersiste
 
             for (MeanRating mr : meanProfile) {
                 String statementString = "INSERT INTO " + PROFILE_TABLE + "(" + ID_COLUMN_NAME + "," + PREFERENCE_COLUMN_NAME + ") "
-                        + "VALUES (" + mr.getIdItem() + "," + mr.getPreference().floatValue() + ");";
+                        + "VALUES (" + mr.getIdItem() + "," + mr.getPreference().doubleValue() + ");";
                 Global.showInfoMessage(statementString + "\n");
                 statement.executeUpdate(statementString);
             }

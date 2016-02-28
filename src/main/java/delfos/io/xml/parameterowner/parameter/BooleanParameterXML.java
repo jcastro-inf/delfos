@@ -46,14 +46,14 @@ public class BooleanParameterXML {
      * @return
      */
     public static Element getBooleanParameterElement(ParameterOwner parameterOwner, Parameter p) {
-        Element floatParameter = new Element(ParameterXML.PARAMETER_ELEMENT_NAME);
-        floatParameter.setAttribute(ParameterXML.PARAMETER_NAME, p.getName());
+        Element doubleParameter = new Element(ParameterXML.PARAMETER_ELEMENT_NAME);
+        doubleParameter.setAttribute(ParameterXML.PARAMETER_NAME, p.getName());
 
         BooleanParameter bp = (BooleanParameter) p.getRestriction();
 
-        floatParameter.setAttribute(ParameterXML.PARAMETER_TYPE, bp.getName());
-        floatParameter.setAttribute(VALUE_ATTRIBUTE, parameterOwner.getParameterValue(p).toString());
-        return floatParameter;
+        doubleParameter.setAttribute(ParameterXML.PARAMETER_TYPE, bp.getName());
+        doubleParameter.setAttribute(VALUE_ATTRIBUTE, parameterOwner.getParameterValue(p).toString());
+        return doubleParameter;
     }
 
     /**

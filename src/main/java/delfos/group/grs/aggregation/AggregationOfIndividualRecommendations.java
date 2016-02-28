@@ -177,7 +177,7 @@ public class AggregationOfIndividualRecommendations extends GroupRecommenderSyst
                 continue;
             }
 
-            float aggregateValue = aggregationOperator.aggregateValues(predictionsThisItem);
+            double aggregateValue = aggregationOperator.aggregateValues(predictionsThisItem);
             recommendations.add(new Recommendation(idItem, aggregateValue));
         }
 

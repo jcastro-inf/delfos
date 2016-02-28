@@ -33,20 +33,20 @@ public class Median extends AggregationOperator {
     private final static long serialVersionUID = 1L;
 
     @Override
-    public float aggregateValues(Iterable<Number> values) {
+    public double aggregateValues(Iterable<Number> values) {
         ArrayList<Number> list = new ArrayList<>();
         for (Number value : values) {
             list.add(value);
         }
 
-        Collections.sort(list, (Number o1, Number o2) -> Float.compare(o1.floatValue(), o2.floatValue()));
+        Collections.sort(list, (Number o1, Number o2) -> Double.compare(o1.doubleValue(), o2.doubleValue()));
 
         if (hasPairSize(list)) {
-            float centralValue1 = list.get(list.size() / 2 - 1).floatValue();
-            float centralValue2 = list.get(list.size() / 2).floatValue();
+            double centralValue1 = list.get(list.size() / 2 - 1).doubleValue();
+            double centralValue2 = list.get(list.size() / 2).doubleValue();
             return (centralValue1 + centralValue2) / 2;
         } else {
-            float centralValue = list.get(list.size() / 2).floatValue();
+            double centralValue = list.get(list.size() / 2).doubleValue();
             return centralValue;
         }
     }

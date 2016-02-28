@@ -69,9 +69,9 @@ public class StandardDeviation {
         }
         double meanValue = mean.getMean();
 
-        float numerador = 0;
+        double numerador = 0;
         for (Number n : _values) {
-            numerador += Math.pow(meanValue - n.floatValue(), 2);
+            numerador += Math.pow(meanValue - n.doubleValue(), 2);
         }
         return Math.sqrt(numerador / _values.size());
     }

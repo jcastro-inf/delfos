@@ -200,7 +200,7 @@ public class AggregationOfIndividualRatings
         Map<Integer, Number> groupRatings = new TreeMap<>();
         groupRatingsList.keySet().stream().forEach((idItem) -> {
             List<Number> lista = groupRatingsList.get(idItem);
-            float aggregateValue = aggregationOperator.aggregateValues(lista);
+            double aggregateValue = aggregationOperator.aggregateValues(lista);
             groupRatings.put(idItem, aggregateValue);
         });
 

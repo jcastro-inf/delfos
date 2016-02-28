@@ -115,7 +115,7 @@ public class TfIdfCBRS extends ContentBasedRecommender<TfIdfCBRSModel, TfIdfCBRS
 
             model.put(item.getId(), itemProfile);
 
-            fireBuildingProgressChangedEvent("Profile creation", (int) ((float) i++ * 100 / contentDataset.size()), -1);
+            fireBuildingProgressChangedEvent("Profile creation", (int) ((double) i++ * 100 / contentDataset.size()), -1);
         }
 
         fireBuildingProgressChangedEvent("Profile creation", 100, -1);
@@ -166,7 +166,7 @@ public class TfIdfCBRS extends ContentBasedRecommender<TfIdfCBRSModel, TfIdfCBRS
                 }
 
                 iuf.set(idFeatureValue, iufThisFeatureValue);
-                fireBuildingProgressChangedEvent("IUF calculation", (int) ((float) i++ * 100 / booleanFeaturesTransformation.sizeOfAllFeatureValues()), -1);
+                fireBuildingProgressChangedEvent("IUF calculation", (int) ((double) i++ * 100 / booleanFeaturesTransformation.sizeOfAllFeatureValues()), -1);
 
             }
         }
@@ -265,10 +265,10 @@ public class TfIdfCBRS extends ContentBasedRecommender<TfIdfCBRSModel, TfIdfCBRS
 
         for (int idItem : candidateItems) {
             SparseVector itemProfile = model.get(idItem);
-            List<Float> itemVector = model.getBooleanFeaturesTransformation().getFloatVector(itemProfile);
+            List<Double> itemVector = model.getBooleanFeaturesTransformation().getDoubleVector(itemProfile);
 
-            List<Float> userVector = model.getBooleanFeaturesTransformation().getFloatValuesVector(userProfile);
-            List<Float> userWeights = model.getBooleanFeaturesTransformation().getFloatWeightsVector(userProfile);
+            List<Double> userVector = model.getBooleanFeaturesTransformation().getDoubleValuesVector(userProfile);
+            List<Double> userWeights = model.getBooleanFeaturesTransformation().getDoubleWeightsVector(userProfile);
 
             if (Global.isVerboseAnnoying()) {
                 Global.showInfoMessage("========================================\n"
@@ -277,7 +277,7 @@ public class TfIdfCBRS extends ContentBasedRecommender<TfIdfCBRSModel, TfIdfCBRS
                         + userWeights + "\n");
             }
             try {
-                float similarity = weightedSimilarity.weightedSimilarity(itemVector, userVector, userWeights);
+                double similarity = weightedSimilarity.weightedSimilarity(itemVector, userVector, userWeights);
                 ret.add(new Recommendation(idItem, similarity));
             } catch (CouldNotComputeSimilarity ex) {
                 //No big deal, cannot compute similarity. But it is a problem in TF idf method, since all value must be set, so I throw an unchecked exception to track if it happens.

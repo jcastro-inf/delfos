@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,19 +16,13 @@
  */
 package delfos.rs.trustbased.similaritymodification;
 
-import java.util.ArrayList;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeMap;
-import java.util.TreeSet;
 import delfos.common.exceptions.CouldNotComputeSimilarity;
 import delfos.common.exceptions.dataset.items.ItemNotFound;
 import delfos.common.exceptions.dataset.users.UserNotFound;
 import delfos.common.parallelwork.SingleTaskExecute;
-import delfos.rs.collaborativefiltering.knn.CommonRating;
-import delfos.rs.collaborativefiltering.knn.RecommendationEntity;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RatingsDataset;
+import delfos.rs.collaborativefiltering.knn.CommonRating;
 import static delfos.rs.collaborativefiltering.knn.KnnCollaborativeRecommender.CASE_AMPLIFICATION;
 import static delfos.rs.collaborativefiltering.knn.KnnCollaborativeRecommender.DEFAULT_RATING;
 import static delfos.rs.collaborativefiltering.knn.KnnCollaborativeRecommender.DEFAULT_RATING_VALUE;
@@ -36,8 +30,14 @@ import static delfos.rs.collaborativefiltering.knn.KnnCollaborativeRecommender.I
 import static delfos.rs.collaborativefiltering.knn.KnnCollaborativeRecommender.RELEVANCE_FACTOR;
 import static delfos.rs.collaborativefiltering.knn.KnnCollaborativeRecommender.RELEVANCE_FACTOR_VALUE;
 import static delfos.rs.collaborativefiltering.knn.KnnCollaborativeRecommender.SIMILARITY_MEASURE;
+import delfos.rs.collaborativefiltering.knn.RecommendationEntity;
 import delfos.rs.collaborativefiltering.profile.Neighbor;
 import delfos.similaritymeasures.CollaborativeSimilarityMeasure;
+import java.util.ArrayList;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
+import java.util.TreeSet;
 
 public final class NeighborCalculationCalculator implements SingleTaskExecute<NeighborCalculationTask> {
 
@@ -64,7 +64,7 @@ public final class NeighborCalculationCalculator implements SingleTaskExecute<Ne
         }
 
         boolean inverseFrequency_ = (Boolean) rs.getParameterValue(INVERSE_FREQUENCY);
-        float caseAmp = ((Number) rs.getParameterValue(CASE_AMPLIFICATION)).floatValue();
+        double caseAmp = ((Number) rs.getParameterValue(CASE_AMPLIFICATION)).doubleValue();
         boolean relevanceFactor_ = (Boolean) rs.getParameterValue(RELEVANCE_FACTOR);
         int relevanceFactorValue_ = (Integer) rs.getParameterValue(RELEVANCE_FACTOR_VALUE);
 
@@ -110,8 +110,8 @@ public final class NeighborCalculationCalculator implements SingleTaskExecute<Ne
                 Rating r1 = activeUserRated.get(idItem);
                 Rating r2 = neighborRatings.get(idItem);
 
-                float d1 = r1.getRatingValue().floatValue();
-                float d2 = r2.getRatingValue().floatValue();
+                double d1 = r1.getRatingValue().doubleValue();
+                double d2 = r2.getRatingValue().doubleValue();
                 common.add(new CommonRating(RecommendationEntity.ITEM, idItem, RecommendationEntity.USER, idUser, idNeighbor, d1, d2));
             }
         } else {
@@ -124,18 +124,18 @@ public final class NeighborCalculationCalculator implements SingleTaskExecute<Ne
                 Rating r1 = activeUserRated.get(idItem);
                 Rating r2 = neighborRatings.get(idItem);
 
-                float d1;
+                double d1;
                 if (r1 == null) {
                     d1 = defaultRatingValue_;
                 } else {
-                    d1 = r1.getRatingValue().floatValue();
+                    d1 = r1.getRatingValue().doubleValue();
                 }
 
-                float d2;
+                double d2;
                 if (r2 == null) {
                     d2 = defaultRatingValue_;
                 } else {
-                    d2 = r2.getRatingValue().floatValue();
+                    d2 = r2.getRatingValue().doubleValue();
                 }
                 common.add(new CommonRating(RecommendationEntity.ITEM, idItem, RecommendationEntity.USER, idUser, idNeighbor, d1, d2));
             }
@@ -145,9 +145,9 @@ public final class NeighborCalculationCalculator implements SingleTaskExecute<Ne
             int numAllUsers = ratingsDataset.allUsers().size();
             for (CommonRating c : common) {
                 try {
-                    float numUserRatedThisItem = ratingsDataset.sizeOfItemRatings(c.getIdCommon());
-                    float inverseFrequencyValue = numAllUsers / numUserRatedThisItem;
-                    inverseFrequencyValue = (float) Math.log(inverseFrequencyValue);
+                    double numUserRatedThisItem = ratingsDataset.sizeOfItemRatings(c.getIdCommon());
+                    double inverseFrequencyValue = numAllUsers / numUserRatedThisItem;
+                    inverseFrequencyValue = (double) Math.log(inverseFrequencyValue);
                     c.setWeight(inverseFrequencyValue);
                 } catch (ItemNotFound ex) {
                     throw new IllegalArgumentException("Cant find product '" + c.getIdCommon());
@@ -155,23 +155,23 @@ public final class NeighborCalculationCalculator implements SingleTaskExecute<Ne
             }
         }
 
-        float sim;
+        double sim;
         try {
             sim = similarityMeasure_.similarity(common, ratingsDataset);
 
             if (sim > 0) {
                 //Global.showMessage(numVecinosProbados+"   de "+getRatingsDataset().allUsers().size()+" en "+chronometer.printPartialElapsed());
                 if (relevanceFactor_ && intersectionSet.size() < relevanceFactorValue_) {
-                    sim = sim * ((float) intersectionSet.size() / relevanceFactorValue_);
+                    sim = sim * ((double) intersectionSet.size() / relevanceFactorValue_);
                 }
 
                 if (caseAmp >= 0) {
-                    sim = (float) Math.pow(sim, caseAmp);
+                    sim = (double) Math.pow(sim, caseAmp);
                 } else {
-                    sim = (float) -Math.pow(-sim, caseAmp);
+                    sim = (double) -Math.pow(-sim, caseAmp);
                 }
 
-                if (Float.isNaN(sim) || Float.isInfinite(sim)) {
+                if (Double.isNaN(sim) || Double.isInfinite(sim)) {
                     throw new IllegalArgumentException("Similarity NaN or Infinity.");
                 }
                 Neighbor neighbor = new Neighbor(RecommendationEntity.USER, idNeighbor, sim);

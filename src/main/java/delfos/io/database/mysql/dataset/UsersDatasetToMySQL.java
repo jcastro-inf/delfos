@@ -229,7 +229,7 @@ public class UsersDatasetToMySQL {
                     createContentTable.append(" VARCHAR(" + varcharSize + ") DEFAULT NULL,");
                     break;
                 case Numerical:
-                    createContentTable.append(" FLOAT DEFAULT NULL,");
+                    createContentTable.append(" DOUBLE DEFAULT NULL,");
                     break;
                 default:
                     throw new IllegalArgumentException("Not implemented for '" + userFeature.getType() + "'");

@@ -31,12 +31,12 @@ public class Mean extends AggregationOperator {
     private final static long serialVersionUID = 1L;
 
     @Override
-    public float aggregateValues(Iterable<Number> values) {
+    public double aggregateValues(Iterable<Number> values) {
         MeanIterative meanIterative = new MeanIterative();
 
         for (Number value : values) {
             meanIterative.addValue(value.doubleValue());
         }
-        return (float) meanIterative.getMean();
+        return (double) meanIterative.getMean();
     }
 }

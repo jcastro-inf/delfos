@@ -61,11 +61,11 @@ public class PearsonWithPenalty implements PairwiseUserTrust {
         commonItems.retainAll(user2ratings.keySet());
 
         PearsonCorrelationCoefficient pcc = new PearsonCorrelationCoefficient();
-        ArrayList<Float> user1 = new ArrayList<Float>(commonItems.size());
-        ArrayList<Float> user2 = new ArrayList<Float>(commonItems.size());
+        ArrayList<Double> user1 = new ArrayList<Double>(commonItems.size());
+        ArrayList<Double> user2 = new ArrayList<Double>(commonItems.size());
         for (int idItem : commonItems) {
-            user1.add(user1ratings.get(idItem).getRatingValue().floatValue());
-            user2.add(user2ratings.get(idItem).getRatingValue().floatValue());
+            user1.add(user1ratings.get(idItem).getRatingValue().doubleValue());
+            user2.add(user2ratings.get(idItem).getRatingValue().doubleValue());
         }
         double similarity;
         try {

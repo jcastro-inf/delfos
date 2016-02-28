@@ -126,7 +126,7 @@ public class User implements Comparable<Object>, EntityWithFeatures {
      * @param feature característica que se desea consultar
      * @return devuelve un objeto con el valor de la característica. Si la
      * característica es nominal, es de tipo <code>{@link String}</code>; si es
-     * numérico, devuelve un <code>{@link Float}</code>
+     * numérico, devuelve un <code>{@link Double}</code>
      */
     @Override
     public Object getFeatureValue(Feature feature) {

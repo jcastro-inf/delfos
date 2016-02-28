@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -140,12 +140,12 @@ public class EntropyDependenceCBRS extends ContentBasedRecommender<EntropyDepend
          no se tienen en cuenta las valoraciones, sino que se hace con la bbdd entera*/
         fireBuildingProgressChangedEvent("Entropy calculation", 0, -1);
         Map<Feature, Number> entropias = new TreeMap<>();
-        float normaEntropias = 0;
+        double normaEntropias = 0;
         for (Feature feature : contentDataset.getFeatures()) {
             MultiSet<Object> multiset = frecuencias.get(feature);
-            float entropia = -0;
+            double entropia = -0;
             for (Object clave : multiset.keySet()) {
-                float freq = (float) multiset.getFreq(clave) / (float) multiset.getN();
+                double freq = (double) multiset.getFreq(clave) / (double) multiset.getN();
                 entropia += freq * (Math.log(freq) / Math.log(2));
             }
             entropia = -entropia;
@@ -156,7 +156,7 @@ public class EntropyDependenceCBRS extends ContentBasedRecommender<EntropyDepend
 
         //normalizo las entropias
         for (Feature c : contentDataset.getFeatures()) {
-            float entropia = entropias.get(c).floatValue();
+            double entropia = entropias.get(c).doubleValue();
             entropia = entropia / normaEntropias;
             Global.showInfoMessage("entropia normalizada de " + c + " = " + entropia + "\n");
             entropias.put(c, entropia);
@@ -165,7 +165,7 @@ public class EntropyDependenceCBRS extends ContentBasedRecommender<EntropyDepend
         //Creando los perfiles
         fireBuildingProgressChangedEvent("Item profiles creation", 0, -1);
         {
-            float i = 0;
+            double i = 0;
             for (Item item : contentDataset) {
                 Map<Feature, Object> featureValue = new TreeMap<>();
                 for (Feature feature : item.getFeatures()) {
@@ -227,7 +227,7 @@ public class EntropyDependenceCBRS extends ContentBasedRecommender<EntropyDepend
                                     if (_nominalValues.containsKey(feature)) {
                                         Map<Object, Number> treeMap = _nominalValues.get(feature);
                                         if (treeMap.containsKey(featureValue)) {
-                                            treeMap.put(featureValue, treeMap.get(featureValue).floatValue() + 1);
+                                            treeMap.put(featureValue, treeMap.get(featureValue).doubleValue() + 1);
                                         } else {
                                             treeMap.put(featureValue, 1.0f);
                                         }
@@ -259,7 +259,7 @@ public class EntropyDependenceCBRS extends ContentBasedRecommender<EntropyDepend
             for (Map.Entry<Feature, Collection<Number>> entry : _numericalValuesMeans.entrySet()) {
                 Feature feature = entry.getKey();
                 Collection<Number> values = entry.getValue();
-                float aggregateValue = condensationFormula_.aggregateValues(values);
+                double aggregateValue = condensationFormula_.aggregateValues(values);
 
                 _numericalValues.put(feature, aggregateValue);
             }
@@ -280,7 +280,7 @@ public class EntropyDependenceCBRS extends ContentBasedRecommender<EntropyDepend
                     featureValues.add(item.getFeatureValue(feature));
                     ratings.add(userRated.get(item.getId()));
                 }
-                float intraUserWeight;
+                double intraUserWeight;
                 try {
                     intraUserWeight = cramerV.association(ratings, featureValues);
                 } catch (CannotComputeAssociation ex) {
@@ -288,7 +288,7 @@ public class EntropyDependenceCBRS extends ContentBasedRecommender<EntropyDepend
                 }
                 //Aplico las entropías.
                 Number entropy = model.getEntropy(feature);
-                _weights.put(feature, entropy.floatValue() * intraUserWeight);
+                _weights.put(feature, entropy.doubleValue() * intraUserWeight);
             }
         }
 
@@ -303,29 +303,29 @@ public class EntropyDependenceCBRS extends ContentBasedRecommender<EntropyDepend
                     ratings.add(userRated.get(item.getId()).getRatingValue());
                 }
 
-                float intraUserWeight;
+                double intraUserWeight;
                 try {
-                    intraUserWeight = (float) pearsonCorrelationCoefficient.pearsonCorrelationCoefficient(ratings, featureValues);
+                    intraUserWeight = (double) pearsonCorrelationCoefficient.pearsonCorrelationCoefficient(ratings, featureValues);
                 } catch (CouldNotComputeSimilarity ex) {
                     intraUserWeight = 1;
                 }
 
                 //Aplico las entropías.
                 Number entropy = model.getEntropy(feature);
-                _weights.put(feature, entropy.floatValue() * intraUserWeight);
+                _weights.put(feature, entropy.doubleValue() * intraUserWeight);
             }
         }
 
         //Normalizo los pesos dividiendo por la suma.
         {
-            float norma = 0;
+            double norma = 0;
 
             for (Number weights : _weights.values()) {
-                norma += weights.floatValue();
+                norma += weights.doubleValue();
             }
 
             for (Map.Entry<Feature, Number> entry : _weights.entrySet()) {
-                float weight = entry.getValue().floatValue();
+                double weight = entry.getValue().doubleValue();
                 entry.setValue(weight / norma);
             }
         }
@@ -357,34 +357,34 @@ public class EntropyDependenceCBRS extends ContentBasedRecommender<EntropyDepend
             EntropyDependenceCBRSItemProfile itemProfile = model.get(item.getId());
 
             //Extraer v1 y v2 del perfil del usuario y del perfil del item
-            ArrayList<Float> arrayUser = new ArrayList<>();
-            ArrayList<Float> arrayItem = new ArrayList<>();
-            ArrayList<Float> weight = new ArrayList<>();
+            ArrayList<Double> arrayUser = new ArrayList<>();
+            ArrayList<Double> arrayItem = new ArrayList<>();
+            ArrayList<Double> weight = new ArrayList<>();
             for (Feature feature : itemProfile.getFeatures()) {
                 Object value = itemProfile.getFeatureValue(feature);
 
                 weight.add(userProfile.getFeatureValueWeight(feature));
                 if (userProfile.contains(feature, value)) {
                     if (feature.getType() == FeatureType.Nominal) {
-                        arrayItem.add(1.0f);
+                        arrayItem.add(1.0);
                         arrayUser.add(userProfile.getFeatureValueValue(feature, value));
                     } else {
-                        arrayItem.add((float) ((((Number) itemProfile.getFeatureValue(feature)).doubleValue() - contentDataset.getMinValue(feature)) / (contentDataset.getMaxValue(feature) - contentDataset.getMinValue(feature))));
-                        arrayUser.add((float) (((userProfile.getFeatureValueValue(feature, value)) - contentDataset.getMinValue(feature)) / (contentDataset.getMaxValue(feature) - contentDataset.getMinValue(feature))));
+                        arrayItem.add((double) ((((Number) itemProfile.getFeatureValue(feature)).doubleValue() - contentDataset.getMinValue(feature)) / (contentDataset.getMaxValue(feature) - contentDataset.getMinValue(feature))));
+                        arrayUser.add((double) (((userProfile.getFeatureValueValue(feature, value)) - contentDataset.getMinValue(feature)) / (contentDataset.getMaxValue(feature) - contentDataset.getMinValue(feature))));
                     }
                 } else {
                     if (userProfile.contains(feature) && feature.getType() == FeatureType.Nominal) {
-                        arrayItem.add(1.0f);
-                        arrayUser.add(0.0f);
+                        arrayItem.add(1.0);
+                        arrayUser.add(0.0);
                     } else {
                         Global.showInfoMessage("la caracteristica " + feature + " no está en el perfil del usuario.\n");
                         throw new IllegalArgumentException("The feature " + feature + " with type " + feature.getType() + "is not defined in the user " + userProfile.getId() + " profile");
                     }
                 }
             }
-            float[] vUser = new float[arrayUser.size()];
-            float[] vItem = new float[arrayUser.size()];
-            float[] weights = new float[arrayUser.size()];
+            double[] vUser = new double[arrayUser.size()];
+            double[] vItem = new double[arrayUser.size()];
+            double[] weights = new double[arrayUser.size()];
             for (int j = 0; j < arrayUser.size(); j++) {
                 vUser[j] = arrayUser.get(j);
                 vItem[j] = arrayItem.get(j);

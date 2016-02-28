@@ -36,5 +36,5 @@ public interface Preff<E> {
      * @return Probabilidad de que la alternativa 1 preceda a la alternativa 2.
      * Como devuelve una probabilidad, el valor está comprendido entre 0 y 1.
      */
-    public float preff(E e1, E e2);
+    public double preff(E e1, E e2);
 }

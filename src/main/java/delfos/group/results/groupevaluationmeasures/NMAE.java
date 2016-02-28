@@ -97,7 +97,7 @@ public class NMAE extends GroupEvaluationMeasure {
         if (nmae.getNumValues() == 0) {
             return new GroupEvaluationMeasureResult(this, Double.NaN);
         } else {
-            float rmseValue = (float) nmae.getMean();
+            double rmseValue = (double) nmae.getMean();
             return new GroupEvaluationMeasureResult(this, rmseValue);
         }
     }

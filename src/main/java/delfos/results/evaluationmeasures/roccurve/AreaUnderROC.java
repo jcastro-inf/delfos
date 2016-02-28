@@ -166,10 +166,10 @@ public class AreaUnderROC extends EvaluationMeasure {
             Global.showInfoMessage(curve.toString() + "\n");
         }
 
-        float areaUnderROC = curve.getAreaPRSpace();
+        double areaUnderROC = curve.getAreaPRSpace();
 
         Element element = new Element(this.getName());
-        element.setAttribute(EvaluationMeasure.VALUE_ATTRIBUTE_NAME, Float.toString(areaUnderROC));
+        element.setAttribute(EvaluationMeasure.VALUE_ATTRIBUTE_NAME, Double.toString(areaUnderROC));
         element.setContent(ConfusionMatricesCurveXML.getElement(curve));
 
         return new MeasureResult(

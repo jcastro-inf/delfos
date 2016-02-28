@@ -114,11 +114,11 @@ public class AreaUnderRoc extends GroupEvaluationMeasure {
 
         ConfusionMatricesCurve curva = ConfusionMatricesCurve.mergeCurves(prCurves.values());
 
-        float areaUnderRoc;
+        double areaUnderRoc;
         if (curva.size() >= 2) {
             areaUnderRoc = curva.getAreaUnderROC();
         } else {
-            areaUnderRoc = Float.NaN;
+            areaUnderRoc = Double.NaN;
         }
 
         if (gruposSinMatriz != 0) {
@@ -126,7 +126,7 @@ public class AreaUnderRoc extends GroupEvaluationMeasure {
         }
 
         Element areaUnderRocElement = ParameterOwnerXML.getElement(this);
-        areaUnderRocElement.setAttribute("value", Float.toString(areaUnderRoc));
+        areaUnderRocElement.setAttribute("value", Double.toString(areaUnderRoc));
 
         areaUnderRocElement.addContent(ConfusionMatricesCurveXML.getElement(curva));
 

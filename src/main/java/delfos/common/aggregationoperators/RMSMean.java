@@ -33,7 +33,7 @@ public class RMSMean extends AggregationOperator {
     private final static long serialVersionUID = 1L;
 
     @Override
-    public float aggregateValues(Iterable<Number> values) {
+    public double aggregateValues(Iterable<Number> values) {
 
         MathContext mathContext = new MathContext(32, RoundingMode.HALF_UP);
         BigDecimal sum = new BigDecimal(BigInteger.ZERO, mathContext);
@@ -48,6 +48,6 @@ public class RMSMean extends AggregationOperator {
         BigDecimal meanSquare = sum.multiply(BigDecimal.ONE.divide(new BigDecimal(n), mathContext));
 
         double rootMeanSquare = Math.sqrt(meanSquare.doubleValue());
-        return (float) rootMeanSquare;
+        return (double) rootMeanSquare;
     }
 }

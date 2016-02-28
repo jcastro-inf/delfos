@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -187,7 +187,7 @@ public class KnnModelBased_NWR
 
             for (Neighbor neighbor : profile.getAllNeighbors()) {
                 int idItemNeighbor = neighbor.getIdNeighbor();
-                float similarity = neighbor.getSimilarity();
+                double similarity = neighbor.getSimilarity();
                 Rating rating = userRated.get(idItemNeighbor);
                 if (rating != null) {
                     matchRatings.add(new MatchRating(RecommendationEntity.USER, idUser, idItemNeighbor, rating, similarity));
@@ -202,7 +202,7 @@ public class KnnModelBased_NWR
             }
 
             if (!matchRatings.isEmpty()) {
-                Float predictedRating;
+                Double predictedRating;
                 try {
                     predictedRating = prediction.predictRating(idUser, idItem, matchRatings, datasetLoader.getRatingsDataset());
                     recommendationList.add(new Recommendation(idItem, predictedRating));
@@ -254,16 +254,16 @@ public class KnnModelBased_NWR
                                 RecommendationEntity.ITEM,
                                 idItem,
                                 idItemNeighbor,
-                                itemRatingsRated.get(idUser).getRatingValue().floatValue(),
-                                neighborRated.get(idUser).getRatingValue().floatValue()));
+                                itemRatingsRated.get(idUser).getRatingValue().doubleValue(),
+                                neighborRated.get(idUser).getRatingValue().doubleValue()));
                     }
 
-                    float similarity;
+                    double similarity;
                     try {
                         similarity = similarityMeasureValue.similarity(common, ratingsDataset);
                         if (similarity > 0) {
                             if (isRelevanceFactorApplied && common.size() < relevanceFactorIntValue) {
-                                similarity = (similarity * (common.size() / (float) relevanceFactorIntValue));
+                                similarity = (similarity * (common.size() / (double) relevanceFactorIntValue));
                             }
                             itemsSimilares.add(new Neighbor(RecommendationEntity.ITEM, idItemNeighbor, similarity));
                         }

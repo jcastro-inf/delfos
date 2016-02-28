@@ -19,7 +19,7 @@ package delfos.results.evaluationmeasures.prediction.list;
 import delfos.ERROR_CODES;
 import delfos.common.exceptions.dataset.users.UserNotFound;
 import delfos.common.parameters.Parameter;
-import delfos.common.parameters.restriction.FloatParameter;
+import delfos.common.parameters.restriction.DoubleParameter;
 import delfos.common.parameters.restriction.IntegerParameter;
 import delfos.common.statisticalfuncions.MeanIterative;
 import delfos.dataset.basic.rating.Rating;
@@ -48,7 +48,7 @@ public class HalfLifeUtility extends EvaluationMeasure {
     private static final long serialVersionUID = 1L;
 
     public static final Parameter ALPHA = new Parameter("ALPHA", new IntegerParameter(1, 500, 5));
-    public static final Parameter NEUTRAL_RATING = new Parameter("NEUTRAL_RATING", new FloatParameter(-500, 500, 3));
+    public static final Parameter NEUTRAL_RATING = new Parameter("NEUTRAL_RATING", new DoubleParameter(-500, 500, 3));
     private Integer oldAlpha = 5;
 
     /**
@@ -124,6 +124,6 @@ public class HalfLifeUtility extends EvaluationMeasure {
             }
         }
 
-        return new MeasureResult(this, (float) mean.getMean());
+        return new MeasureResult(this, (double) mean.getMean());
     }
 }

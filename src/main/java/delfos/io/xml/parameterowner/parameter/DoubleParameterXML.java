@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,11 +16,11 @@
  */
 package delfos.io.xml.parameterowner.parameter;
 
-import org.jdom2.Element;
 import delfos.common.Global;
 import delfos.common.parameters.Parameter;
 import delfos.common.parameters.ParameterOwner;
-import delfos.common.parameters.restriction.FloatParameter;
+import delfos.common.parameters.restriction.DoubleParameter;
+import org.jdom2.Element;
 
 /**
  * Clase para realizar la entrada/salida a XML para parámetros reales de
@@ -30,7 +30,7 @@ import delfos.common.parameters.restriction.FloatParameter;
  *
  * @author jcastro-inf ( https://github.com/jcastro-inf )
  */
-public class FloatParameterXML {
+public class DoubleParameterXML {
 
     /**
      * Nombre de la característica en que se guarda el valor mínimo del
@@ -53,21 +53,22 @@ public class FloatParameterXML {
      * @param parameterOwner Parameter owner al que pertenece al parámetro. Se
      * debe consultar a este objeto para conocer el valor actual del mismo
      * @param p Parámetro a almacenar
+     * @return
      */
-    public static Element getFloatParameterElement(ParameterOwner parameterOwner, Parameter p) {
-        Element floatParameter = new Element(ParameterXML.PARAMETER_ELEMENT_NAME);
-        floatParameter.setAttribute(ParameterXML.PARAMETER_NAME, p.getName());
+    public static Element getDoubleParameterElement(ParameterOwner parameterOwner, Parameter p) {
+        Element doubleParameter = new Element(ParameterXML.PARAMETER_ELEMENT_NAME);
+        doubleParameter.setAttribute(ParameterXML.PARAMETER_NAME, p.getName());
 
-        FloatParameter fp = (FloatParameter) p.getRestriction();
-        floatParameter.setAttribute(ParameterXML.PARAMETER_TYPE, fp.getName());
+        DoubleParameter fp = (DoubleParameter) p.getRestriction();
+        doubleParameter.setAttribute(ParameterXML.PARAMETER_TYPE, fp.getName());
         if (Global.isVerboseAnnoying()) {
-            floatParameter.setAttribute(MIN_VALUE_ATTRIBUTE, Double.toString(fp.getMin()));
-            floatParameter.setAttribute(MAX_VALUE_ATTRIBUTE, Double.toString(fp.getMax()));
+            doubleParameter.setAttribute(MIN_VALUE_ATTRIBUTE, Double.toString(fp.getMin()));
+            doubleParameter.setAttribute(MAX_VALUE_ATTRIBUTE, Double.toString(fp.getMax()));
         }
 
-        floatParameter.setAttribute(VALUE_ATTRIBUTE, parameterOwner.getParameterValue(p).toString());
+        doubleParameter.setAttribute(VALUE_ATTRIBUTE, parameterOwner.getParameterValue(p).toString());
 
-        return floatParameter;
+        return doubleParameter;
     }
 
     /**

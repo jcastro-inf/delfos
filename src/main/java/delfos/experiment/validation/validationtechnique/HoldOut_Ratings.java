@@ -22,7 +22,7 @@ import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
 import delfos.common.exceptions.dataset.items.ItemNotFound;
 import delfos.common.exceptions.dataset.users.UserNotFound;
 import delfos.common.parameters.Parameter;
-import delfos.common.parameters.restriction.FloatParameter;
+import delfos.common.parameters.restriction.DoubleParameter;
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RatingsDataset;
@@ -50,7 +50,7 @@ public class HoldOut_Ratings extends ValidationTechnique {
      */
     public static final Parameter TRAIN_PERCENT = new Parameter(
             "Training_percent",
-            new FloatParameter(0, 1, 0.8f),
+            new DoubleParameter(0, 1, 0.8f),
             "Porcentaje de valoraciones que contiene el conjunto de entrenamiento.");
 
     /**
@@ -70,7 +70,7 @@ public class HoldOut_Ratings extends ValidationTechnique {
 
         //HoldOut initialization
         Map<Integer, Set<Integer>> testSet = new TreeMap<>();
-        float testPercentValue = 1 - getTrainPercent();
+        double testPercentValue = 1 - getTrainPercent();
 
         //composicion de los conjuntos de training y test
         int numUsers = datasetLoader.getRatingsDataset().allUsers().size();
@@ -82,7 +82,7 @@ public class HoldOut_Ratings extends ValidationTechnique {
                 Set<Integer> allItemsThisUser = new TreeSet<>(datasetLoader.getRatingsDataset().getUserRated(idUser));
                 Set<Integer> testItemsThisUser = new TreeSet<>();
 
-                int ratingsToRemove = Math.round(testPercentValue * datasetLoader.getRatingsDataset().getUserRated(idUser).size());
+                long ratingsToRemove = Math.round(testPercentValue * datasetLoader.getRatingsDataset().getUserRated(idUser).size());
                 if (ratingsToRemove == 0) {
                     ratingsToRemove = 1;
                 }
@@ -119,8 +119,8 @@ public class HoldOut_Ratings extends ValidationTechnique {
         return ret;
     }
 
-    public float getTrainPercent() {
-        return ((Number) getParameterValue(TRAIN_PERCENT)).floatValue();
+    public double getTrainPercent() {
+        return ((Number) getParameterValue(TRAIN_PERCENT)).doubleValue();
     }
 
     @Override

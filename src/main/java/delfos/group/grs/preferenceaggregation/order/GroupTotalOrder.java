@@ -33,7 +33,7 @@ public class GroupTotalOrder implements Preff {
     }
 
     @Override
-    public float preff(Object e1, Object e2) {
+    public double preff(Object e1, Object e2) {
 
         if (e1 == e2) {
             //Global.showWarning("Es un warning?");
@@ -58,7 +58,7 @@ public class GroupTotalOrder implements Preff {
             gB += CommonSequences.getCommonSequencesEfficient(alpha, x).size();
         }
 
-        float ret = ((float) gAB) / gB;
+        double ret = ((double) gAB) / gB;
 
         if (ret <= 1 && ret >= 0) {
             throw new IllegalArgumentException("The value is not between 0 and 1: " + ret);

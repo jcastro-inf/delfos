@@ -72,7 +72,7 @@ public class EPinionsTrustDataset implements TrustDataset<EPinionsTrustStatement
                 usersIndex.add(OTHER_ID, usersIndex.size() + 1);
             }
 
-            float VALUE = new Float(columns[2]);
+            double VALUE = new Double(columns[2]);
             long CREATION;
 
             SimpleDateFormat df = new SimpleDateFormat("yyyy/MM/dd");

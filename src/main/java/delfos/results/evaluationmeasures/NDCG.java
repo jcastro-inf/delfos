@@ -74,7 +74,7 @@ public class NDCG extends EvaluationMeasure {
             }
         }
 
-        return new MeasureResult(this, (float) new MeanIterative(ndcgPerUser).getMean());
+        return new MeasureResult(this, (double) new MeanIterative(ndcgPerUser).getMean());
     }
 
     @Override

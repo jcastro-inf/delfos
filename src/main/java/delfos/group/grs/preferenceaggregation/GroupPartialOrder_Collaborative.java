@@ -104,7 +104,7 @@ public class GroupPartialOrder_Collaborative extends GroupRecommenderSystemAdapt
             final PreferenceOrder<Integer>[] _orderMembers = orderMembers;
 
             @Override
-            public float preff(Object e1, Object e2) {
+            public double preff(Object e1, Object e2) {
 
                 if (e1 == e2) {
                     //Global.showWarning("Es un warning?");
@@ -128,7 +128,7 @@ public class GroupPartialOrder_Collaborative extends GroupRecommenderSystemAdapt
                     gB += CommonSequences.getCommonSequencesEfficient(alpha, x).size();
                 }
 
-                float ret = ((float) gAB) / gB;
+                double ret = ((double) gAB) / gB;
 
                 if (ret <= 1 && ret >= 0) {
                     throw new IllegalArgumentException("The value is not between 0 and 1: " + ret);

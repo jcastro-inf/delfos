@@ -24,7 +24,7 @@ import delfos.common.exceptions.dataset.entity.EntityNotFound;
 import delfos.common.exceptions.dataset.items.ItemNotFound;
 import delfos.common.exceptions.dataset.users.UserNotFound;
 import delfos.common.parameters.Parameter;
-import delfos.common.parameters.restriction.FloatParameter;
+import delfos.common.parameters.restriction.DoubleParameter;
 import delfos.dataset.basic.item.ContentDataset;
 import delfos.dataset.basic.item.Item;
 import delfos.dataset.basic.loader.types.ContentDatasetLoader;
@@ -60,12 +60,12 @@ public class InterestLMSPredictor extends RecommenderSystemAdapter<InterestLMSPr
      * Tuning attribute: The rate of updating the value of interest in subjects
      * in the user profile.
      */
-    public static final Parameter LEARNING_MODERATOR = new Parameter("LEARNING_MODERATOR", new FloatParameter(0, 50, 0.14f));
+    public static final Parameter LEARNING_MODERATOR = new Parameter("LEARNING_MODERATOR", new DoubleParameter(0, 50, 0.14f));
     /**
      * Tuning attribute: The rate of updating the certainty of interest in
      * subjects in the user profile.
      */
-    public static final Parameter CERTAINTY_MODERATOR = new Parameter("CERTAINTY_MODERATOR", new FloatParameter(0, 50, 0.2f));
+    public static final Parameter CERTAINTY_MODERATOR = new Parameter("CERTAINTY_MODERATOR", new DoubleParameter(0, 50, 0.2f));
 
     public InterestLMSPredictor() {
         addParameter(LEARNING_MODERATOR);
@@ -107,7 +107,7 @@ public class InterestLMSPredictor extends RecommenderSystemAdapter<InterestLMSPr
                 Number ratingValue = rating.getRatingValue();
                 Number minusOneToOneValue = domain.convertToDecimalDomain(ratingValue, minusOneToOne);
 
-                predictorModel.enterFeedback(idUser, item, minusOneToOneValue.floatValue());
+                predictorModel.enterFeedback(idUser, item, minusOneToOneValue.doubleValue());
             } catch (EntityNotFound ex) {
                 ERROR_CODES.ITEM_NOT_FOUND.exit(ex);
             }
@@ -133,7 +133,7 @@ public class InterestLMSPredictor extends RecommenderSystemAdapter<InterestLMSPr
         for (int idItem : candidateItems) {
             try {
                 Item item = contentDataset.get(idItem);
-                float prediction = model.predict(idUser, item);
+                double prediction = model.predict(idUser, item);
 
                 ret.add(new Recommendation(idItem, prediction));
             } catch (EntityNotFound ex) {

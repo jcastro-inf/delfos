@@ -29,7 +29,7 @@ import delfos.common.exceptions.ratings.NotEnoughtUserInformation;
 import delfos.common.parameters.Parameter;
 import delfos.common.parameters.restriction.BooleanParameter;
 import delfos.common.parameters.restriction.DirectoryParameter;
-import delfos.common.parameters.restriction.FloatParameter;
+import delfos.common.parameters.restriction.DoubleParameter;
 import delfos.common.parameters.restriction.ParameterOwnerRestriction;
 import delfos.common.parameters.restriction.RecommenderSystemParameterRestriction;
 import delfos.dataset.basic.loader.types.DatasetLoader;
@@ -136,7 +136,7 @@ public class ConsensusGRS extends GroupRecommenderSystemAdapter<SingleRecommenda
 
     public static final Parameter CONSENSUS_DEGREE = new Parameter(
             "CONSENSUS_DEGREE",
-            new FloatParameter(0.01f, 1, 0.8f)
+            new DoubleParameter(0.01f, 1, 0.8f)
     );
 
     public ConsensusGRS() {
@@ -421,7 +421,7 @@ public class ConsensusGRS extends GroupRecommenderSystemAdapter<SingleRecommenda
         Map<Integer, Number> groupRatings = new TreeMap<>();
         groupRatingsList.keySet().stream().forEach((idItem) -> {
             List<Number> lista = groupRatingsList.get(idItem);
-            float aggregateValue = aggregationOperator.aggregateValues(lista);
+            double aggregateValue = aggregationOperator.aggregateValues(lista);
             groupRatings.put(idItem, aggregateValue);
         });
 

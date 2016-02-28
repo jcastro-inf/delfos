@@ -35,7 +35,7 @@ import delfos.common.exceptions.dataset.users.UserNotFound;
 import delfos.common.exceptions.ratings.NotEnoughtUserInformation;
 import delfos.common.parameters.Parameter;
 import delfos.common.parameters.restriction.BooleanParameter;
-import delfos.common.parameters.restriction.FloatParameter;
+import delfos.common.parameters.restriction.DoubleParameter;
 import delfos.common.parameters.restriction.ParameterOwnerRestriction;
 import delfos.common.parameters.restriction.RecommenderSystemParameterRestriction;
 import delfos.dataset.basic.rating.Rating;
@@ -87,8 +87,8 @@ public class CentralityWeightedAggregationGRS extends GroupRecommenderSystemAdap
             new ParameterOwnerRestriction(WeightedGraphCalculation.class, new ShambourLu_UserBasedImplicitTrustComputation(false)));
 
     public static final Parameter STRONG_APPLY = new Parameter("STRONG_APPLY", new BooleanParameter(Boolean.TRUE));
-    public static final Parameter STRONG_MIN = new Parameter("STRONG_MIN", new FloatParameter(0, 1.0f, 0.6f));
-    public static final Parameter STRONG_MAX = new Parameter("STRONG_MAX", new FloatParameter(0, 1.0f, 0.8f));
+    public static final Parameter STRONG_MIN = new Parameter("STRONG_MIN", new DoubleParameter(0, 1.0f, 0.6f));
+    public static final Parameter STRONG_MAX = new Parameter("STRONG_MAX", new DoubleParameter(0, 1.0f, 0.8f));
 
     public static final Parameter CENTRALITY_CONCEPT = new Parameter("CENTRALITY_CONCEPT", new ParameterOwnerRestriction(CentralityConceptDefinition.class, new AritmethicMeanConnectionWeightCentrality()));
 

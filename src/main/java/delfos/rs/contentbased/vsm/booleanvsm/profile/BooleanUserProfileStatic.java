@@ -55,11 +55,11 @@ public class BooleanUserProfileStatic implements BooleanUserProfile, Serializabl
     /**
      * Valor del perfil para cada valor de cada característica.
      */
-    private Map<Feature, Map<Object, Float>> _values;
+    private Map<Feature, Map<Object, Double>> _values;
     /**
      * Ponderación de cada valor de cada característica.
      */
-    private Map<Feature, Map<Object, Float>> _weights;
+    private Map<Feature, Map<Object, Double>> _weights;
 
     /**
      * Constructor que genera un perfil de usuario con ponderación de
@@ -71,7 +71,7 @@ public class BooleanUserProfileStatic implements BooleanUserProfile, Serializabl
      * @param weights Importancia de cada una de los características para el
      * usuario.
      */
-    public BooleanUserProfileStatic(int idUser, Map<Feature, Map<Object, Float>> values, Map<Feature, Map<Object, Float>> weights) {
+    public BooleanUserProfileStatic(int idUser, Map<Feature, Map<Object, Double>> values, Map<Feature, Map<Object, Double>> weights) {
         this._idUser = idUser;
         this._values = values;
         this._weights = weights;
@@ -85,7 +85,7 @@ public class BooleanUserProfileStatic implements BooleanUserProfile, Serializabl
      * @param values Valor que el perfil de usuario tiene para cada valor de
      * cada característica.
      */
-    public BooleanUserProfileStatic(int idUser, Map<Feature, Map<Object, Float>> values) {
+    public BooleanUserProfileStatic(int idUser, Map<Feature, Map<Object, Double>> values) {
         this._idUser = idUser;
         this._values = values;
         this._weights = null;
@@ -140,12 +140,12 @@ public class BooleanUserProfileStatic implements BooleanUserProfile, Serializabl
             _values.get(key).clear();
         }
         _values.clear();
-        _values = new TreeMap<Feature, Map<Object, Float>>();
+        _values = new TreeMap<Feature, Map<Object, Double>>();
 
         for (Feature key : _weights.keySet()) {
             _weights.get(key).clear();
         }
         _weights.clear();
-        _weights = new TreeMap<Feature, Map<Object, Float>>();
+        _weights = new TreeMap<Feature, Map<Object, Double>>();
     }
 }

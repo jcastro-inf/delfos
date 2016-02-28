@@ -127,7 +127,7 @@ public class HybridAlternatingListRS extends HybridRecommender<HybridRecommendat
      * @return Lista de recomendaciones unida.
      */
     private Collection<Recommendation> joinRecommendationLists(Collection<Recommendation> l1, Collection<Recommendation> l2) {
-        final float numItems;
+        final double numItems;
         {
             Set<Integer> allItems = new TreeSet<>();
             for (Recommendation recommendation : l1) {
@@ -148,7 +148,7 @@ public class HybridAlternatingListRS extends HybridRecommender<HybridRecommendat
 
         while (l1Iterator.hasNext() && l2Iterator.hasNext()) {
 
-            float rank = numItems - i;
+            double rank = numItems - i;
 
             if (i % 2 == 0) {
                 //l1

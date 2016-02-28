@@ -199,8 +199,8 @@ public class DefaultUsersDatasetToCSV implements UsersDatasetToCSV {
 
             int j = 40499;
             while (reader.readRecord()) {
-                Float latitude;
-                Float longitude;
+                Double latitude;
+                Double longitude;
 
                 int idUser;
 
@@ -212,13 +212,13 @@ public class DefaultUsersDatasetToCSV implements UsersDatasetToCSV {
                 }
 
                 if (latitudeColumn != null) {
-                    latitude = Float.parseFloat(reader.get(latitudeColumn));
+                    latitude = Double.parseDouble(reader.get(latitudeColumn));
                 } else {
                     latitude = null;
                 }
 
                 if (longitudeColumn != null) {
-                    longitude = Float.parseFloat(reader.get(longitudeColumn));
+                    longitude = Double.parseDouble(reader.get(longitudeColumn));
                 } else {
                     longitude = null;
                 }

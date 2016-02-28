@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,19 +16,19 @@
  */
 package delfos.group.groupsofusers.measuresovergroups;
 
-import delfos.dataset.basic.rating.Rating;
-import delfos.dataset.basic.loader.types.DatasetLoader;
-import delfos.dataset.util.DatasetPrinterDeprecated;
-import delfos.rs.trustbased.implicittrustcomputation.ShambourLu_UserBasedImplicitTrustComputation;
-import delfos.rs.trustbased.WeightedGraphAdapter;
-import delfos.rs.trustbased.WeightedGraphCalculation;
-import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
 import delfos.common.Global;
+import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
 import delfos.common.parameters.Parameter;
-import delfos.common.parameters.restriction.FloatParameter;
+import delfos.common.parameters.restriction.DoubleParameter;
 import delfos.common.parameters.restriction.IntegerParameter;
 import delfos.common.parameters.restriction.ParameterOwnerRestriction;
+import delfos.dataset.basic.loader.types.DatasetLoader;
+import delfos.dataset.basic.rating.Rating;
+import delfos.dataset.util.DatasetPrinterDeprecated;
 import delfos.group.groupsofusers.GroupOfUsers;
+import delfos.rs.trustbased.WeightedGraphAdapter;
+import delfos.rs.trustbased.WeightedGraphCalculation;
+import delfos.rs.trustbased.implicittrustcomputation.ShambourLu_UserBasedImplicitTrustComputation;
 
 /**
  * Clase para calcular el índice con el que un grupo es un clique a partir de la
@@ -44,16 +44,16 @@ public class FuzzyCliqueMeasure extends GroupMeasureAdapter {
             new ParameterOwnerRestriction(WeightedGraphCalculation.class, new ShambourLu_UserBasedImplicitTrustComputation()));
     public static final Parameter N1_forShort = new Parameter(
             "N1_forShort",
-            new FloatParameter(0, 1, 0.25f));
+            new DoubleParameter(0, 1, 0.25f));
     public static final Parameter N2_forShort = new Parameter(
             "N2_forShort",
-            new FloatParameter(0, 1, 0.5f));
+            new DoubleParameter(0, 1, 0.5f));
     public static final Parameter N4_forStrong = new Parameter(
             "N4_forStrong",
-            new FloatParameter(0, 1, 0.3f));
+            new DoubleParameter(0, 1, 0.3f));
     public static final Parameter N5_forStrong = new Parameter(
             "N5_forStrong",
-            new FloatParameter(0, 1, 0.8f));
+            new DoubleParameter(0, 1, 0.8f));
     public static final Parameter N6_forLong = new Parameter(
             "N6_forLong",
             new IntegerParameter(1, Integer.MAX_VALUE, 2));
@@ -79,10 +79,10 @@ public class FuzzyCliqueMeasure extends GroupMeasureAdapter {
 
     public FuzzyCliqueMeasure(
             WeightedGraphCalculation weightedGraphAlgorithmTechnique,
-            float n1_for_short,
-            float n2_for_short,
-            float n4_for_strong,
-            float n5_for_strong) {
+            double n1_for_short,
+            double n2_for_short,
+            double n4_for_strong,
+            double n5_for_strong) {
 
         this(weightedGraphAlgorithmTechnique);
 
@@ -94,16 +94,6 @@ public class FuzzyCliqueMeasure extends GroupMeasureAdapter {
         setParameterValue(FuzzyCliqueMeasure.N5_forStrong, n5_for_strong);
 
         checkRestrictions();
-    }
-
-    public FuzzyCliqueMeasure(
-            WeightedGraphCalculation weightedGraphAlgorithmTechnique,
-            double n1_for_short,
-            double n2_for_short,
-            double n4_for_strong,
-            double n5_for_strong) {
-
-        this(weightedGraphAlgorithmTechnique, (float) n1_for_short, (float) n2_for_short, (float) n4_for_strong, (float) n5_for_strong);
     }
 
     @Override
@@ -229,8 +219,8 @@ public class FuzzyCliqueMeasure extends GroupMeasureAdapter {
      * @return
      */
     private double wordStrong(double connection) {
-        final float n4 = getN4_forStrong();
-        final float n5 = getN5_forStrong();
+        final double n4 = getN4_forStrong();
+        final double n5 = getN5_forStrong();
 
         if (connection <= n4) {
             return 0;
@@ -243,27 +233,27 @@ public class FuzzyCliqueMeasure extends GroupMeasureAdapter {
         }
     }
 
-    public float getN1_forShort() {
-        return (Float) getParameterValue(N1_forShort);
+    public double getN1_forShort() {
+        return (Double) getParameterValue(N1_forShort);
     }
 
-    public float getN2_forShort() {
-        return (Float) getParameterValue(N2_forShort);
+    public double getN2_forShort() {
+        return (Double) getParameterValue(N2_forShort);
     }
 
-    public float getN4_forStrong() {
-        return (Float) getParameterValue(N4_forStrong);
+    public double getN4_forStrong() {
+        return (Double) getParameterValue(N4_forStrong);
     }
 
-    public float getN5_forStrong() {
-        return (Float) getParameterValue(N5_forStrong);
+    public double getN5_forStrong() {
+        return (Double) getParameterValue(N5_forStrong);
     }
 
     public WeightedGraphCalculation getWeightedGraphCalculation() {
         return (WeightedGraphCalculation) getParameterValue(weightedGraphCalculation);
     }
 
-    private void checkRestrictions(float n1_for_short, float n2_for_short, float n4_for_strong, float n5_for_strong) {
+    private void checkRestrictions(double n1_for_short, double n2_for_short, double n4_for_strong, double n5_for_strong) {
         if (n1_for_short >= n2_for_short) {
             throw new IllegalArgumentException("The short label definition is not valid (n1 must be less than n2).");
         }

@@ -38,7 +38,7 @@ import delfos.group.groupsofusers.GroupOfUsers;
  */
 public class ProbabilityDistributionOfSizes extends GroupFormationTechnique {
 
-    private float[] acumulateProbabilities = null;
+    private double[] acumulateProbabilities = null;
 
     /**
      * Parámetro para establecer el número de usuarios que tendrán los grupos
@@ -73,12 +73,12 @@ public class ProbabilityDistributionOfSizes extends GroupFormationTechnique {
             norma += x;
         }
 
-        acumulateProbabilities = new float[probabilitiesVector.length];
+        acumulateProbabilities = new double[probabilitiesVector.length];
 
-        acumulateProbabilities[0] = (float) (probabilitiesVector[0] / norma);
-        float anterior = acumulateProbabilities[0];
+        acumulateProbabilities[0] = (double) (probabilitiesVector[0] / norma);
+        double anterior = acumulateProbabilities[0];
         for (int i = 1; i < probabilitiesVector.length; i++) {
-            acumulateProbabilities[i] = (float) (anterior + probabilitiesVector[i] / norma);
+            acumulateProbabilities[i] = (double) (anterior + probabilitiesVector[i] / norma);
             anterior = acumulateProbabilities[i];
         }
     }
@@ -136,7 +136,7 @@ public class ProbabilityDistributionOfSizes extends GroupFormationTechnique {
     }
 
     private int getGroupSize(long seed) {
-        float r = new Random(seed).nextFloat();
+        double r = new Random(seed).nextDouble();
         int size = -1;
 
         for (int i = 0; i < acumulateProbabilities.length; i++) {

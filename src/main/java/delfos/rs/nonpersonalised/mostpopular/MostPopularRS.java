@@ -50,7 +50,7 @@ public class MostPopularRS extends RecommenderSystemAdapter<Collection<Recommend
     @Override
     public Collection<Recommendation> buildRecommendationModel(DatasetLoader<? extends Rating> datasetLoader) throws CannotLoadRatingsDataset, CannotLoadContentDataset, CannotLoadUsersDataset {
 
-        final float numUsers = datasetLoader.getRatingsDataset().allUsers().size();
+        final double numUsers = datasetLoader.getRatingsDataset().allUsers().size();
         Collection<Recommendation> model = new ArrayList<>(datasetLoader.getRatingsDataset().allRatedItems().size());
         RatingsDataset<? extends Rating> ratingDataset = datasetLoader.getRatingsDataset();
         for (int idItem : ratingDataset.allRatedItems()) {

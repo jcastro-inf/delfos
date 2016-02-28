@@ -17,7 +17,7 @@
 package delfos.common.aggregationoperators;
 
 import delfos.common.parameters.Parameter;
-import delfos.common.parameters.restriction.FloatParameter;
+import delfos.common.parameters.restriction.DoubleParameter;
 import delfos.common.statisticalfuncions.MeanIterative;
 import delfos.common.statisticalfuncions.StandardDeviation;
 
@@ -38,7 +38,7 @@ public class EnsureDegreeOfFairness extends AggregationOperator {
      */
     public static final Parameter DEGREE_OF_FAIRNESS = new Parameter(
             "DEGREE_OF_FAIRNESS",
-            new FloatParameter(0f, 10f, 0.1f),
+            new DoubleParameter(0f, 10f, 0.1f),
             "Degree of fairness for the aggregation.");
 
     public EnsureDegreeOfFairness() {
@@ -46,13 +46,13 @@ public class EnsureDegreeOfFairness extends AggregationOperator {
         addParameter(DEGREE_OF_FAIRNESS);
     }
 
-    public EnsureDegreeOfFairness(float degreeOfFairness) {
+    public EnsureDegreeOfFairness(double degreeOfFairness) {
         this();
         setParameterValue(DEGREE_OF_FAIRNESS, degreeOfFairness);
     }
 
     @Override
-    public float aggregateValues(Iterable<Number> values) {
+    public double aggregateValues(Iterable<Number> values) {
 
         MeanIterative mean = new MeanIterative();
         StandardDeviation stdDev = new StandardDeviation();
@@ -62,10 +62,10 @@ public class EnsureDegreeOfFairness extends AggregationOperator {
 
         }
         double aggregateValue = mean.getMean() - getDegreeOfFairness() * stdDev.getStandardDeviation();
-        return (float) aggregateValue;
+        return (double) aggregateValue;
     }
 
-    private float getDegreeOfFairness() {
-        return (Float) getParameterValue(DEGREE_OF_FAIRNESS);
+    private double getDegreeOfFairness() {
+        return (Double) getParameterValue(DEGREE_OF_FAIRNESS);
     }
 }

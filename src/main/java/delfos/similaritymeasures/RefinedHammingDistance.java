@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,27 +16,27 @@
  */
 package delfos.similaritymeasures;
 
+import delfos.common.exceptions.CouldNotComputeSimilarity;
 import java.util.Iterator;
 import java.util.List;
-import delfos.common.exceptions.CouldNotComputeSimilarity;
 
 /**
  *
  * @author jcastro-inf ( https://github.com/jcastro-inf )
- * 
+ *
  * @version 1.0 Unknown date
  * @version 1.1 20-Mar-2013
  */
 public class RefinedHammingDistance extends BasicSimilarityMeasureAdapter {
 
     @Override
-    public float similarity(List<Float> v1, List<Float> v2) throws CouldNotComputeSimilarity {
+    public double similarity(List<Double> v1, List<Double> v2) throws CouldNotComputeSimilarity {
         if (v1.size() != v2.size() || v1.isEmpty()) {
             throw new CouldNotComputeSimilarity("Not enought values");
         }
-        float distancia = 0;
-        Iterator<Float> i1 = v1.listIterator();
-        Iterator<Float> i2 = v2.listIterator();
+        double distancia = 0;
+        Iterator<Double> i1 = v1.listIterator();
+        Iterator<Double> i2 = v2.listIterator();
         for (int i = 0; i < v1.size(); i++) {
             distancia += Math.abs(i1.next() - i2.next());
         }

@@ -60,7 +60,7 @@ public final class KnnMemoryNeighborCalculator implements Function<KnnMemoryNeig
         }
 
         boolean inverseFrequency_ = (Boolean) rs.getParameterValue(KnnMemoryBasedCFRS.INVERSE_FREQUENCY);
-        float caseAmp = ((Number) rs.getParameterValue(KnnMemoryBasedCFRS.CASE_AMPLIFICATION)).floatValue();
+        double caseAmp = ((Number) rs.getParameterValue(KnnMemoryBasedCFRS.CASE_AMPLIFICATION)).doubleValue();
         boolean relevanceFactor_ = (Boolean) rs.getParameterValue(KnnMemoryBasedCFRS.RELEVANCE_FACTOR);
         int relevanceFactorValue_ = (Integer) rs.getParameterValue(KnnMemoryBasedCFRS.RELEVANCE_FACTOR_VALUE);
 
@@ -80,7 +80,7 @@ public final class KnnMemoryNeighborCalculator implements Function<KnnMemoryNeig
                     CommonRating commonRating = new CommonRating(
                             RecommendationEntity.ITEM, idItem,
                             RecommendationEntity.USER, user.getId(), neighbor.getId(),
-                            userRating.getRatingValue().floatValue(), neighborRating.getRatingValue().floatValue());
+                            userRating.getRatingValue().doubleValue(), neighborRating.getRatingValue().doubleValue());
                     return commonRating;
                 }).collect(Collectors.toList());
 
@@ -98,12 +98,12 @@ public final class KnnMemoryNeighborCalculator implements Function<KnnMemoryNeig
                 return new Neighbor(RecommendationEntity.USER, neighbor, Double.NaN);
             }
             for (int idItem : onlyOneRated) {
-                float userRating = userRatings.containsKey(idItem)
-                        ? userRatings.get(idItem).getRatingValue().floatValue()
+                double userRating = userRatings.containsKey(idItem)
+                        ? userRatings.get(idItem).getRatingValue().doubleValue()
                         : defaultRatingValue_;
 
-                float neighborRating = neighborRatings.containsKey(idItem)
-                        ? neighborRatings.get(idItem).getRatingValue().floatValue()
+                double neighborRating = neighborRatings.containsKey(idItem)
+                        ? neighborRatings.get(idItem).getRatingValue().doubleValue()
                         : defaultRatingValue_;
                 CommonRating commonRatingCompletedWithDefault = new CommonRating(
                         RecommendationEntity.ITEM, idItem,
@@ -117,9 +117,9 @@ public final class KnnMemoryNeighborCalculator implements Function<KnnMemoryNeig
             int numAllUsers = ratingsDataset.allUsers().size();
             for (CommonRating commonRating : ratingsForSimilarity) {
                 try {
-                    float numUserRatedThisItem = ratingsDataset.sizeOfItemRatings(commonRating.getIdCommon());
-                    float inverseFrequencyValue = numAllUsers / numUserRatedThisItem;
-                    inverseFrequencyValue = (float) Math.log(inverseFrequencyValue);
+                    double numUserRatedThisItem = ratingsDataset.sizeOfItemRatings(commonRating.getIdCommon());
+                    double inverseFrequencyValue = numAllUsers / numUserRatedThisItem;
+                    inverseFrequencyValue = (double) Math.log(inverseFrequencyValue);
                     commonRating.setWeight(inverseFrequencyValue);
                 } catch (ItemNotFound ex) {
                     ERROR_CODES.ITEM_NOT_FOUND.exit(ex);
@@ -127,20 +127,20 @@ public final class KnnMemoryNeighborCalculator implements Function<KnnMemoryNeig
             }
         }
 
-        float sim;
+        double sim;
         try {
             sim = similarityMeasure_.similarity(ratingsForSimilarity, ratingsDataset);
 
             if (sim > 0) {
                 if (relevanceFactor_) {
                     if (intersectionSet.size() < relevanceFactorValue_) {
-                        sim = sim * ((float) intersectionSet.size() / relevanceFactorValue_);
+                        sim = sim * ((double) intersectionSet.size() / relevanceFactorValue_);
                     }
                 }
-                sim = (float) Math.pow(sim, caseAmp);
+                sim = (double) Math.pow(sim, caseAmp);
             }
         } catch (CouldNotComputeSimilarity ex) {
-            sim = Float.NaN;
+            sim = Double.NaN;
         }
         return new Neighbor(RecommendationEntity.USER, neighbor, sim);
     }

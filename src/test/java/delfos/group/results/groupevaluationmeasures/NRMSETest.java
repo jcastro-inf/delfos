@@ -84,8 +84,8 @@ public class NRMSETest {
                 datasetLoader);
 
         //Phase 3: Result checking
-        float expResult = Float.NaN;
-        float delta = 0.001f;
+        double expResult = Double.NaN;
+        double delta = 0.001f;
         assertEquals(expResult, groupMaeResult.getValue(), delta);
     }
 }

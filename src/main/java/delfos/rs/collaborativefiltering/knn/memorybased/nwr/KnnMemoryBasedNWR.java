@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -242,7 +242,7 @@ public class KnnMemoryBasedNWR extends KnnCollaborativeRecommender<KnnMemoryMode
             throws UserNotFound {
 
         List<Neighbor> neighborhood = _neighborhood.stream()
-                .filter(neighbor -> !Float.isNaN(neighbor.getSimilarity()))
+                .filter(neighbor -> !Double.isNaN(neighbor.getSimilarity()))
                 .filter(neighbor -> neighbor.getSimilarity() > 0)
                 .collect(Collectors.toList());
 
@@ -277,7 +277,7 @@ public class KnnMemoryBasedNWR extends KnnCollaborativeRecommender<KnnMemoryMode
                 }
 
                 try {
-                    float predicted = predictionTechnique.predictRating(idUser, item.getId(), match, ratingsDataset);
+                    double predicted = predictionTechnique.predictRating(idUser, item.getId(), match, ratingsDataset);
                     recommendationList.add(new Recommendation(item, predicted));
 
                 } catch (CouldNotPredictRating ex) {

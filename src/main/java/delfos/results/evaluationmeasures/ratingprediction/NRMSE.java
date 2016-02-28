@@ -79,7 +79,7 @@ public class NRMSE extends EvaluationMeasure {
             Global.showWarning("Cannot compute 'MAE' since the RS did not predicted any recommendation!!");
         }
 
-        return new MeasureResult(this, (float) Math.sqrt(mean.getMean()));
+        return new MeasureResult(this, (double) Math.sqrt(mean.getMean()));
     }
 
     @Override

@@ -45,12 +45,12 @@ public class StringParameterXML {
      * @param p Parámetro a almacenar
      */
     public static Element getStringParameterElement(ParameterOwner parameterOwner, Parameter p) {
-        Element floatParameter = new Element(ParameterXML.PARAMETER_ELEMENT_NAME);
-        floatParameter.setAttribute(ParameterXML.PARAMETER_NAME, p.getName());
+        Element doubleParameter = new Element(ParameterXML.PARAMETER_ELEMENT_NAME);
+        doubleParameter.setAttribute(ParameterXML.PARAMETER_NAME, p.getName());
 
         StringParameter sp = (StringParameter) p.getRestriction();
 
-        floatParameter.setAttribute(ParameterXML.PARAMETER_TYPE, sp.getName());
+        doubleParameter.setAttribute(ParameterXML.PARAMETER_TYPE, sp.getName());
 
         String value = (String) parameterOwner.getParameterValue(p);
 
@@ -58,9 +58,9 @@ public class StringParameterXML {
             value = StringParameter.NULL_VALUE;
         }
 
-        floatParameter.setAttribute(VALUE_ATTRIBUTE, value);
+        doubleParameter.setAttribute(VALUE_ATTRIBUTE, value);
 
-        return floatParameter;
+        return doubleParameter;
     }
 
     /**

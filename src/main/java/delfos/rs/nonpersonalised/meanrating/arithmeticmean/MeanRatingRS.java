@@ -71,14 +71,14 @@ public class MeanRatingRS extends CollaborativeRecommender<MeanRatingRSModel> {
 
         List<MeanRating> rangedMeanRatings = new ArrayList<MeanRating>(allItems.size());
 
-        float i = 0;
+        double i = 0;
         for (int idItem : allItems) {
             MeanIterative mean = new MeanIterative();
 
             try {
                 Map<Integer, ? extends Rating> map = ratingsDataset.getItemRatingsRated(idItem);
                 for (Rating rating : map.values()) {
-                    mean.addValue(rating.getRatingValue().floatValue());
+                    mean.addValue(rating.getRatingValue().doubleValue());
                 }
             } catch (ItemNotFound ex) {
                 ERROR_CODES.ITEM_NOT_FOUND.exit(ex);
@@ -88,7 +88,7 @@ public class MeanRatingRS extends CollaborativeRecommender<MeanRatingRSModel> {
                 rangedMeanRatings.add(new MeanRating(idItem, mean.getMean()));
             }
             i++;
-            float percent = i / allItems.size();
+            double percent = i / allItems.size();
             fireBuildingProgressChangedEvent("Calculating means", (int) (percent * 100), -1);
         }
         Collections.sort(rangedMeanRatings);

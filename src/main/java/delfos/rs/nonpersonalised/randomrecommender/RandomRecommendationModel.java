@@ -36,8 +36,8 @@ public class RandomRecommendationModel<Key> implements Serializable {
 
     private static final long serialVersionUID = 107L;
     private final long seed;
-    private final float minRating;
-    private final float maxRating;
+    private final double minRating;
+    private final double maxRating;
     private final Map<Key, Random> generadores;
 
     private RandomRecommendationModel() {
@@ -49,18 +49,18 @@ public class RandomRecommendationModel<Key> implements Serializable {
 
     public RandomRecommendationModel(long seed, Number minRating, Number maxRating) {
         this.seed = seed;
-        this.minRating = minRating.floatValue();
-        this.maxRating = maxRating.floatValue();
+        this.minRating = minRating.doubleValue();
+        this.maxRating = maxRating.doubleValue();
         generadores = Collections.synchronizedMap(new TreeMap<Key, Random>());
     }
 
-    public float predict(Key key, int idItem) {
+    public double predict(Key key, int idItem) {
 
-        float prediction = getRandomFloat(key) * (maxRating - minRating) + minRating;
+        double prediction = getRandomDouble(key) * (maxRating - minRating) + minRating;
         return prediction;
     }
 
-    public float getRandomFloat(Key key) {
+    public double getRandomDouble(Key key) {
         synchronized (generadores) {
             if (!generadores.containsKey(key)) {
                 long thisRecommendationSeed = seed + key.hashCode();
@@ -68,7 +68,7 @@ public class RandomRecommendationModel<Key> implements Serializable {
                 generadores.put(key, randomGenerator);
             }
         }
-        return generadores.get(key).nextFloat();
+        return generadores.get(key).nextDouble();
 
     }
 

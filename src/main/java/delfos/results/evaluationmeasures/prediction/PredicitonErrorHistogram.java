@@ -81,7 +81,7 @@ public class PredicitonErrorHistogram extends EvaluationMeasure {
                             && prediction != null
                             && !Double.isNaN(prediction.doubleValue())
                             && !Double.isInfinite(prediction.doubleValue())) {
-                        float error = prediction.floatValue() - rating.floatValue();
+                        double error = prediction.doubleValue() - rating.doubleValue();
                         histogram.addValue(error);
                     }
                 }

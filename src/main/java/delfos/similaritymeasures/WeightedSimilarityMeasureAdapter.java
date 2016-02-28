@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -47,14 +47,14 @@ import java.util.List;
 public abstract class WeightedSimilarityMeasureAdapter extends SimilarityMeasureAdapter implements BasicSimilarityMeasure, WeightedSimilarityMeasure, CollaborativeSimilarityMeasure {
 
     @Override
-    public final float similarity(float[] v1, float[] v2) {
+    public final double similarity(double[] v1, double[] v2) {
 
         if (v1.length != v2.length) {
             throw new IllegalArgumentException("The length of vectors is different");
         }
 
-        List<Float> v1List = new ArrayList<>(v1.length);
-        List<Float> v2List = new ArrayList<>(v2.length);
+        List<Double> v1List = new ArrayList<>(v1.length);
+        List<Double> v2List = new ArrayList<>(v2.length);
 
         for (int i = 0; i < v1.length; i++) {
             v1List.add(v1[i]);
@@ -64,15 +64,15 @@ public abstract class WeightedSimilarityMeasureAdapter extends SimilarityMeasure
     }
 
     @Override
-    public final float weightedSimilarity(float[] v1, float[] v2, float[] weights) {
+    public final double weightedSimilarity(double[] v1, double[] v2, double[] weights) {
 
         if (v1.length != v2.length || v1.length != weights.length) {
             throw new IllegalArgumentException("The length of vectors is different");
         }
 
-        List<Float> v1List = new ArrayList<>(v1.length);
-        List<Float> v2List = new ArrayList<>(v2.length);
-        List<Float> weightsList = new ArrayList<>(weights.length);
+        List<Double> v1List = new ArrayList<>(v1.length);
+        List<Double> v2List = new ArrayList<>(v2.length);
+        List<Double> weightsList = new ArrayList<>(weights.length);
 
         for (int i = 0; i < v1.length; i++) {
             v1List.add(v1[i]);
@@ -83,22 +83,22 @@ public abstract class WeightedSimilarityMeasureAdapter extends SimilarityMeasure
     }
 
     @Override
-    public float similarity(List<Float> v1, List<Float> v2) {
-        List<Float> weights = new ArrayList<>(v1.size());
+    public double similarity(List<Double> v1, List<Double> v2) {
+        List<Double> weights = new ArrayList<>(v1.size());
         for (int i = 0; i < v1.size(); i++) {
-            weights.add((float) (1.0 / v1.size()));
+            weights.add((double) (1.0 / v1.size()));
         }
         return weightedSimilarity(v1, v2, weights);
     }
 
     @Override
-    public float similarity(Collection<CommonRating> commonRatings, RatingsDataset<? extends Rating> ratings) {
+    public double similarity(Collection<CommonRating> commonRatings, RatingsDataset<? extends Rating> ratings) {
         Iterator<CommonRating> it = commonRatings.iterator();
         if (it.hasNext()) {
             if (it.next().isWeighted()) {
-                float[] v1 = new float[commonRatings.size()];
-                float[] v2 = new float[commonRatings.size()];
-                float[] weights = new float[commonRatings.size()];
+                double[] v1 = new double[commonRatings.size()];
+                double[] v2 = new double[commonRatings.size()];
+                double[] weights = new double[commonRatings.size()];
                 int i = 0;
                 for (CommonRating c : commonRatings) {
                     v1[i] = c.getRating1();
@@ -109,8 +109,8 @@ public abstract class WeightedSimilarityMeasureAdapter extends SimilarityMeasure
                 return weightedSimilarity(v1, v2, weights);
 
             } else {
-                float[] v1 = new float[commonRatings.size()];
-                float[] v2 = new float[commonRatings.size()];
+                double[] v1 = new double[commonRatings.size()];
+                double[] v2 = new double[commonRatings.size()];
                 int i = 0;
                 for (CommonRating c : commonRatings) {
                     v1[i] = c.getRating1();
@@ -121,7 +121,7 @@ public abstract class WeightedSimilarityMeasureAdapter extends SimilarityMeasure
                 return similarity(v1, v2);
             }
         } else {
-            return Float.NaN;
+            return Double.NaN;
         }
     }
 

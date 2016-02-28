@@ -17,7 +17,7 @@
 package delfos.common.parameters.restriction;
 
 import org.jdom2.Element;
-import delfos.io.xml.parameterowner.parameter.FloatParameterXML;
+import delfos.io.xml.parameterowner.parameter.DoubleParameterXML;
 import delfos.common.parameters.Parameter;
 import delfos.common.parameters.ParameterOwner;
 
@@ -29,23 +29,23 @@ import delfos.common.parameters.ParameterOwner;
  * @version 1.0 (Unknow date)
  * @version 1.1 18-Jan-2013
  */
-public class FloatParameter extends ParameterRestriction {
+public class DoubleParameter extends ParameterRestriction {
 
     private final static long serialVersionUID = 1L;
     /**
      * Valor mínimo del parámetro que tiene esta restricción.
      */
-    private final float minValue;
+    private final double minValue;
     /**
      * Valor máximo del parámetro que tiene esta restricción.
      */
-    private final float maxValue;
+    private final double maxValue;
 
     /**
      * Crea la restricción para aceptar valores entre cero y uno, con valor por
      * defecto uno.
      */
-    public FloatParameter() {
+    public DoubleParameter() {
         this(0, 1, 1);
     }
 
@@ -57,7 +57,7 @@ public class FloatParameter extends ParameterRestriction {
      * @param maxValue Valor máximo.
      * @param defaultValue Valor por defecto.
      */
-    public FloatParameter(float minValue, float maxValue, float defaultValue) {
+    public DoubleParameter(double minValue, double maxValue, double defaultValue) {
         super(defaultValue);
 
         this.minValue = minValue;
@@ -87,7 +87,7 @@ public class FloatParameter extends ParameterRestriction {
      *
      * @return Valor mínimo.
      */
-    public float getMin() {
+    public double getMin() {
         return minValue;
     }
 
@@ -96,23 +96,23 @@ public class FloatParameter extends ParameterRestriction {
      *
      * @return Valor máximo.
      */
-    public float getMax() {
+    public double getMax() {
         return maxValue;
     }
 
     @Override
     public Object parseString(String parameterValue) {
-        Float d = Float.parseFloat(parameterValue);
+        Double d = Double.parseDouble(parameterValue);
         return d;
     }
 
     @Override
     public Object getValue(ParameterOwner parameterOwner, Element elementParameter) {
-        return FloatParameterXML.getParameterValue(parameterOwner, elementParameter);
+        return DoubleParameterXML.getParameterValue(parameterOwner, elementParameter);
     }
 
     @Override
     public Element getXMLElement(ParameterOwner parameterOwner, Parameter parameter) {
-        return FloatParameterXML.getFloatParameterElement(parameterOwner, parameter);
+        return DoubleParameterXML.getDoubleParameterElement(parameterOwner, parameter);
     }
 }

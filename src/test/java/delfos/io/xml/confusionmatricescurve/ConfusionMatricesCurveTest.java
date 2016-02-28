@@ -203,7 +203,7 @@ public class ConfusionMatricesCurveTest extends DelfosTest {
             recomm_1.add(i % 2 == 1);
         }
         ConfusionMatricesCurve curve1 = new ConfusionMatricesCurve(recomm_1);
-        float areaUnderROC1 = curve1.getAreaUnderROC();
+        double areaUnderROC1 = curve1.getAreaUnderROC();
         Global.showInfoMessage("Area = " + areaUnderROC1 + "\n");
         Assert.assertEquals(0.5, areaUnderROC1, 0.001);
 
@@ -214,7 +214,7 @@ public class ConfusionMatricesCurveTest extends DelfosTest {
             recomm_2.add(i % 2 == 1);
         }
         ConfusionMatricesCurve curve2 = new ConfusionMatricesCurve(recomm_2);
-        float areaUnderROC2 = curve2.getAreaUnderROC();
+        double areaUnderROC2 = curve2.getAreaUnderROC();
         Global.showInfoMessage("Area = " + areaUnderROC2 + "\n");
         Assert.assertEquals(0.5, areaUnderROC2, 0.001);
     }

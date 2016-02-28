@@ -89,10 +89,10 @@ public class PRSpace extends EvaluationMeasure {
 
         ConfusionMatricesCurve agregada = ConfusionMatricesCurve.mergeCurves(allUsersCurves.values());
 
-        float areaUnderPR = agregada.getAreaPRSpace();
+        double areaUnderPR = agregada.getAreaPRSpace();
 
         Element element = new Element(this.getName());
-        element.setAttribute(EvaluationMeasure.VALUE_ATTRIBUTE_NAME, Float.toString(areaUnderPR));
+        element.setAttribute(EvaluationMeasure.VALUE_ATTRIBUTE_NAME, Double.toString(areaUnderPR));
         element.setContent(ConfusionMatricesCurveXML.getElement(agregada));
 
         Map<String, Double> detailedResult = new TreeMap<>();

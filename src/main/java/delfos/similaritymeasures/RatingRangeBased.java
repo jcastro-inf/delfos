@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,17 +16,17 @@
  */
 package delfos.similaritymeasures;
 
-import java.util.Collection;
-import java.util.Iterator;
 import delfos.ERROR_CODES;
 import delfos.common.exceptions.CouldNotComputeSimilarity;
 import delfos.common.exceptions.dataset.users.UserNotFound;
-import delfos.rs.collaborativefiltering.knn.CommonRating;
-import delfos.rs.collaborativefiltering.knn.RecommendationEntity;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RatingsDataset;
 import delfos.rs.RecommenderSystemAdapter;
+import delfos.rs.collaborativefiltering.knn.CommonRating;
+import delfos.rs.collaborativefiltering.knn.RecommendationEntity;
 import delfos.rs.collaborativefiltering.knn.memorybased.KnnMemoryBasedCFRS;
+import java.util.Collection;
+import java.util.Iterator;
 
 /**
  * Medida de similitud propuesta en INS-D-12-446 de Information Sciences Title:
@@ -38,10 +38,10 @@ import delfos.rs.collaborativefiltering.knn.memorybased.KnnMemoryBasedCFRS;
  */
 public class RatingRangeBased extends SimilarityMeasureAdapter implements CollaborativeSimilarityMeasure {
 
-    private final float alpha = 6;
+    private final double alpha = 6;
 
-    private float pos(float ratingMin, float ratingMax, float rating) {
-        float ret;
+    private double pos(double ratingMin, double ratingMax, double rating) {
+        double ret;
         if (ratingMax > ratingMin) {
             ret = (rating - ratingMin) / (ratingMax - ratingMin);
         } else {
@@ -50,13 +50,13 @@ public class RatingRangeBased extends SimilarityMeasureAdapter implements Collab
         return ret;
     }
 
-    private float Dpos(Collection<CommonRating> commonRatings, RatingsDataset<? extends Rating> ratings) throws CouldNotComputeSimilarity {
+    private double Dpos(Collection<CommonRating> commonRatings, RatingsDataset<? extends Rating> ratings) throws CouldNotComputeSimilarity {
         double ret = 0;
 
-        float minU = (float) ratings.getRatingsDomain().max();
-        float maxU = (float) ratings.getRatingsDomain().min();
-        float minV = (float) ratings.getRatingsDomain().max();
-        float maxV = (float) ratings.getRatingsDomain().min();
+        double minU = (double) ratings.getRatingsDomain().max();
+        double maxU = (double) ratings.getRatingsDomain().min();
+        double minV = (double) ratings.getRatingsDomain().max();
+        double maxV = (double) ratings.getRatingsDomain().min();
         CommonRating next = commonRatings.iterator().next();
 
         if (!next.getCommonEntity().equals(RecommendationEntity.ITEM)) {
@@ -65,7 +65,7 @@ public class RatingRangeBased extends SimilarityMeasureAdapter implements Collab
         try {
             //minimo y maximo del usuario 1
             for (Iterator<? extends Rating> it = ratings.getUserRatingsRated(next.getIdR1()).values().iterator(); it.hasNext();) {
-                float r = it.next().getRatingValue().floatValue();
+                double r = it.next().getRatingValue().doubleValue();
                 if (r < minU) {
                     minU = r;
                 }
@@ -79,7 +79,7 @@ public class RatingRangeBased extends SimilarityMeasureAdapter implements Collab
         try {
             //minimo y maximo del usuario 2
             for (Iterator<? extends Rating> it = ratings.getUserRatingsRated(next.getIdR2()).values().iterator(); it.hasNext();) {
-                float r = it.next().getRatingValue().floatValue();
+                double r = it.next().getRatingValue().doubleValue();
                 if (r < minV) {
                     minV = r;
                 }
@@ -93,7 +93,7 @@ public class RatingRangeBased extends SimilarityMeasureAdapter implements Collab
         for (CommonRating commonRating : commonRatings) {
             if (commonRating.getCommonEntity().equals(RecommendationEntity.ITEM)) {
 
-                float aporte = 1.0f / commonRatings.size();
+                double aporte = 1.0f / commonRatings.size();
 
                 aporte = aporte * Math.abs(pos(minU, maxU, commonRating.getRating1()) - pos(minV, maxV, commonRating.getRating2()));
                 ret += aporte;
@@ -102,15 +102,15 @@ public class RatingRangeBased extends SimilarityMeasureAdapter implements Collab
             }
         }
 
-        return (float) ret;
+        return (double) ret;
     }
 
     @Override
-    public float similarity(Collection<CommonRating> commonRatings, RatingsDataset<? extends Rating> ratings) throws CouldNotComputeSimilarity {
+    public double similarity(Collection<CommonRating> commonRatings, RatingsDataset<? extends Rating> ratings) throws CouldNotComputeSimilarity {
         if (commonRatings.isEmpty()) {
             throw new CouldNotComputeSimilarity("No common ratings to compute similarity");
         }
-        float ret = (float) (2 / (1 + Math.pow(Math.E, alpha * Dpos(commonRatings, ratings))));
+        double ret = (double) (2 / (1 + Math.pow(Math.E, alpha * Dpos(commonRatings, ratings))));
         return ret;
     }
 

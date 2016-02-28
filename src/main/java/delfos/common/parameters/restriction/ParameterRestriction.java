@@ -24,7 +24,7 @@ import delfos.common.parameters.ParameterOwner;
 /**
  * Objeto encargado de comprobar si los valores de los parámetros son correctos.
  * Tiene implementaciones para las restricciones más comunes: valor entero
- * {@link IntegerParameter}, valor real {@link FloatParameter}, valor booleano
+ * {@link IntegerParameter}, valor real {@link DoubleParameter}, valor booleano
  * {@link BooleanParameter} y objetos concretos {@link ObjectParameter}
  *
  * <p>

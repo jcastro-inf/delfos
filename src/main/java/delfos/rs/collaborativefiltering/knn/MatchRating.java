@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -38,7 +38,7 @@ public class MatchRating {
     private final User user;
     private final Item item;
     private final Number ratingValue;
-    private final float weight;
+    private final double weight;
 
     /**
      * Constructor del objeto.
@@ -51,7 +51,7 @@ public class MatchRating {
      * la similitud de usuarios, de items, etc.)
      */
     @Deprecated
-    public MatchRating(RecommendationEntity entity, int idUser, int idItem, Number rating, float weight) {
+    public MatchRating(RecommendationEntity entity, int idUser, int idItem, Number rating, double weight) {
         this.entity = entity;
         this.user = new User(idUser);
         this.item = new Item(idItem);
@@ -70,7 +70,7 @@ public class MatchRating {
      * la similitud de usuarios, de items, etc.)
      */
     @Deprecated
-    public MatchRating(RecommendationEntity entity, int idUser, int idItem, Rating rating, float weight) {
+    public MatchRating(RecommendationEntity entity, int idUser, int idItem, Rating rating, double weight) {
         this.entity = entity;
         this.user = new User(idUser);
         this.item = new Item(idItem);
@@ -78,7 +78,7 @@ public class MatchRating {
         this.weight = weight;
     }
 
-    public MatchRating(RecommendationEntity entity, User user, Item item, Number ratingValue, float weight) {
+    public MatchRating(RecommendationEntity entity, User user, Item item, Number ratingValue, double weight) {
         this.entity = entity;
         this.user = user;
         this.item = item;
@@ -118,7 +118,7 @@ public class MatchRating {
      *
      * @return Ponderación de la valoración.
      */
-    public float getWeight() {
+    public double getWeight() {
         return weight;
     }
 

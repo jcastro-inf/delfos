@@ -248,7 +248,7 @@ public class RecommendationWindow extends JFrame {
                 calcularRecomendaciones.setEnabled(false);
                 final DatasetLoader<? extends Rating> datasetLoader = (DatasetLoader) datasetSelector.getSelectedItem();
                 final RecommenderSystemAdapter rs = (RecommenderSystemAdapter) SRSelector.getSelectedItem();
-                final RelevanceCriteria rc = new RelevanceCriteria(((Number) spinerRelevancia.getValue()).floatValue());
+                final RelevanceCriteria rc = new RelevanceCriteria(((Number) spinerRelevancia.getValue()).doubleValue());
 
                 class worker extends SwingWorker<Void, Void> {
 

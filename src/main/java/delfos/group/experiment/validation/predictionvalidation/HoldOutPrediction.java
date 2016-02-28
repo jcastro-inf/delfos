@@ -20,7 +20,7 @@ import delfos.ERROR_CODES;
 import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
 import delfos.common.exceptions.dataset.users.UserNotFound;
 import delfos.common.parameters.Parameter;
-import delfos.common.parameters.restriction.FloatParameter;
+import delfos.common.parameters.restriction.DoubleParameter;
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RatingsDataset;
@@ -52,7 +52,7 @@ public class HoldOutPrediction extends GroupPredictionProtocol {
      * Parametro para establecer el porcentaje de productos que se utilizan en
      * el conjunto de entrenamiento.
      */
-    public static final Parameter trainingPercent = new Parameter("trainingPercent", new FloatParameter(0f, 1f, 0.80f));
+    public static final Parameter trainingPercent = new Parameter("trainingPercent", new DoubleParameter(0f, 1f, 0.80f));
 
     public HoldOutPrediction() {
         super();
@@ -71,9 +71,9 @@ public class HoldOutPrediction extends GroupPredictionProtocol {
             }
         }
         Set<Integer> trainSet = new TreeSet<>();
-        final float trainingPercentValue = (Float) getParameterValue(trainingPercent);
+        final double trainingPercentValue = (Double) getParameterValue(trainingPercent);
 
-        while ((trainSet.size() / (float) ratedProducts.size()) < trainingPercentValue) {
+        while ((trainSet.size() / (double) ratedProducts.size()) < trainingPercentValue) {
 
             int idItem = (Integer) ratedProducts.toArray()[random.nextInt(ratedProducts.size())];
             ratedProducts.remove(idItem);

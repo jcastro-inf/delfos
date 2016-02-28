@@ -33,10 +33,10 @@ import java.util.ListIterator;
  */
 public class PearsonCorrelationCoefficient {
 
-    public float similarity(List<Float> v1, List<Float> v2) {
+    public double similarity(List<Double> v1, List<Double> v2) {
         double pcc = pearsonCorrelationCoefficient(v1, v2);
 
-        return (float) pcc;
+        return (double) pcc;
     }
 
     /**

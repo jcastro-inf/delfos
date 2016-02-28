@@ -248,7 +248,7 @@ public class GroupCaseStudyExcel {
                     for (String metricName : experimentResults.keySet()) {
                         double metricValue = metricValues_byCase.get(experimentName).get(metricName);
                         int column = indexColumn.get(metricName) + GROUP_EVALUATION_MEASURES_OFFSET;
-                        setCellFloatNumber(allExperiments, column, row, metricValue);
+                        setCellDoubleNumber(allExperiments, column, row, metricValue);
                     }
                     row++;
                 }
@@ -476,7 +476,7 @@ public class GroupCaseStudyExcel {
                     setCellIntegerNumber(sheet, column + parameterValueOffset, row, number);
                 } else {
                     java.lang.Number number = (java.lang.Number) parameterValue;
-                    setCellFloatNumber(sheet, column + parameterValueOffset, row, number.doubleValue());
+                    setCellDoubleNumber(sheet, column + parameterValueOffset, row, number.doubleValue());
                 }
             } else {
                 setCellText(sheet, column + parameterValueOffset, row, parameterValue.toString());
@@ -560,7 +560,7 @@ public class GroupCaseStudyExcel {
 
                     if (!Double.isNaN(value)) {
                         double decimalTrimmedValue = NumberRounder.round(value, 5);
-                        setCellFloatNumber(sheet, column, row, decimalTrimmedValue);
+                        setCellDoubleNumber(sheet, column, row, decimalTrimmedValue);
                     } else {
                         setCellText(sheet, column, row, "");
                     }
@@ -609,13 +609,13 @@ public class GroupCaseStudyExcel {
 
             if (!Double.isNaN(value)) {
                 double decimalTrimmedValue = NumberRounder.round(value, 5);
-                setCellFloatNumber(sheet, column, row, decimalTrimmedValue);
+                setCellDoubleNumber(sheet, column, row, decimalTrimmedValue);
             } else {
                 setCellText(sheet, column, row, "");
             }
             double decimalTrimmedValue = NumberRounder.round(value, 5);
 
-            setCellFloatNumber(sheet, column, row, decimalTrimmedValue);
+            setCellDoubleNumber(sheet, column, row, decimalTrimmedValue);
         }
 
     }
@@ -644,7 +644,7 @@ public class GroupCaseStudyExcel {
         sheet.addCell(label);
     }
 
-    private static void setCellFloatNumber(WritableSheet sheet, int column, int row,
+    private static void setCellDoubleNumber(WritableSheet sheet, int column, int row,
             double value) throws WriteException, RowsExceededException {
         double rounded = NumberRounder.round(value, 8);
 
@@ -666,9 +666,9 @@ public class GroupCaseStudyExcel {
         } else if (content instanceof Integer) {
             setCellIntegerNumber(sheet, column, row, (Integer) content);
         } else if (content instanceof Double) {
-            setCellFloatNumber(sheet, column, row, (Double) content);
-        } else if (content instanceof Float) {
-            setCellFloatNumber(sheet, column, row, (Float) content);
+            setCellDoubleNumber(sheet, column, row, (Double) content);
+        } else if (content instanceof Double) {
+            setCellDoubleNumber(sheet, column, row, (Double) content);
         } else {
             setCellText(sheet, column, row, content.toString());
         }

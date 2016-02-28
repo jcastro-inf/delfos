@@ -44,8 +44,8 @@ public class NRMSETest {
         MeasureResult result = instance.getMeasureResult(recommendationResults, testDataset, relevanceCriteria);
 
         //Phase 3: Result checking
-        float expResult = Float.NaN;
-        float delta = 0.001f;
+        double expResult = Double.NaN;
+        double delta = 0.001f;
         assertEquals(expResult, result.getValue(), delta);
     }
 
@@ -93,8 +93,8 @@ public class NRMSETest {
         MeasureResult result = instance.getMeasureResult(recommendationResults, testDataset, relevanceCriteria);
 
         //Phase 3: Result checking
-        float expResult = 0.25f;
-        float delta = 0.001f;
+        double expResult = 0.25f;
+        double delta = 0.001f;
         assertEquals(expResult, result.getValue(), delta);
     }
 
@@ -143,8 +143,8 @@ public class NRMSETest {
         MeasureResult result = instance.getMeasureResult(recommendationResults, testDataset, relevanceCriteria);
 
         //Phase 3: Result checking
-        float expResult = 0.5f;
-        float delta = 0.001f;
+        double expResult = 0.5f;
+        double delta = 0.001f;
         assertEquals(expResult, result.getValue(), delta);
     }
 

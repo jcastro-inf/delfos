@@ -112,7 +112,7 @@ public class BasicBooleanCBRS extends ContentBasedRecommender<BasicBooleanCBRSMo
 
             model.put(item.getId(), itemProfile);
 
-            fireBuildingProgressChangedEvent("Profile creation", (int) ((float) i * 100 / contentDataset.size()), -1);
+            fireBuildingProgressChangedEvent("Profile creation", (int) ((double) i * 100 / contentDataset.size()), -1);
             i++;
         }
 
@@ -134,10 +134,10 @@ public class BasicBooleanCBRS extends ContentBasedRecommender<BasicBooleanCBRSMo
         final BasicSimilarityMeasure similarity = (BasicSimilarityMeasure) getParameterValue(SIMILARITY_MEASURE);
         Collection<Recommendation> recomendaciones = new ArrayList<>();
 
-        List<Float> userVectorProfile = model.booleanFeaturesTransformation.getFloatVector(userProfile);
+        List<Double> userVectorProfile = model.booleanFeaturesTransformation.getDoubleVector(userProfile);
         for (int idItem : candidateItems) {
-            List<Float> itemVectorProfile = model.getBooleanFeaturesTransformation().getFloatVector(model.get(idItem));
-            float sim;
+            List<Double> itemVectorProfile = model.getBooleanFeaturesTransformation().getDoubleVector(model.get(idItem));
+            double sim;
             try {
                 sim = similarity.similarity(itemVectorProfile, userVectorProfile);
                 recomendaciones.add(new Recommendation(idItem, sim));

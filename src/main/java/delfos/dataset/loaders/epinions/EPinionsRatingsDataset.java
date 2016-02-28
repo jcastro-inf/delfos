@@ -235,12 +235,12 @@ public class EPinionsRatingsDataset implements RatingsDataset<EPinionsRating> {
     }
 
     @Override
-    public float getMeanRatingItem(int idItem) throws ItemNotFound {
+    public double getMeanRatingItem(int idItem) throws ItemNotFound {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public float getMeanRatingUser(int idUser) throws UserNotFound {
+    public double getMeanRatingUser(int idUser) throws UserNotFound {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
@@ -275,7 +275,7 @@ public class EPinionsRatingsDataset implements RatingsDataset<EPinionsRating> {
     }
 
     @Override
-    public float getMeanRating() {
+    public double getMeanRating() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 

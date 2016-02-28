@@ -105,7 +105,7 @@ public class GroupSatisfaction_Average extends GroupEvaluationMeasure {
             }
             maeTotal.addValue(maeGupos.getMean());
         }
-        return new GroupEvaluationMeasureResult(this, (float) maeTotal.getMean());
+        return new GroupEvaluationMeasureResult(this, (double) maeTotal.getMean());
     }
 
     @Override

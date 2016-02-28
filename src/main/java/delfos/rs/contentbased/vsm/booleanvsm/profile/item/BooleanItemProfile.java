@@ -42,7 +42,7 @@ public interface BooleanItemProfile extends ItemProfile, Serializable {
      * independientemente de su valor
      * @return valor de la caracteristica en el perfil
      */
-    public float getFeatureValueValue(Feature f, Object featureValue);
+    public double getFeatureValueValue(Feature f, Object featureValue);
 
     /**
      * Devuelve los valores de características valorados por el usuario al que

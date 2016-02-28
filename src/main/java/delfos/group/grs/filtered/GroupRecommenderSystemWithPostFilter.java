@@ -224,7 +224,7 @@ public class GroupRecommenderSystemWithPostFilter extends GroupRecommenderSystem
                 continue;
             }
 
-            float aggregateValue = aggregationOperator.aggregateValues(predictionsThisItem);
+            double aggregateValue = aggregationOperator.aggregateValues(predictionsThisItem);
             ret.add(new Recommendation(idItem, aggregateValue));
         }
 

@@ -113,7 +113,7 @@ public class GroupSatisfaction_StdDev extends GroupEvaluationMeasure {
             }
             mediaTodasDesviacionesTipicas.addValue(mediaDesviacionGrupoActual.getMean());
         }
-        return new GroupEvaluationMeasureResult(this, (float) mediaTodasDesviacionesTipicas.getMean());
+        return new GroupEvaluationMeasureResult(this, (double) mediaTodasDesviacionesTipicas.getMean());
     }
 
     @Override

@@ -63,7 +63,7 @@ public class RelevanceCriteria {
         if (rating == null) {
             throw new IllegalArgumentException("The rating cannot be null.");
         }
-        return rating.floatValue() >= threshold.floatValue();
+        return rating.doubleValue() >= threshold.doubleValue();
     }
 
     /**

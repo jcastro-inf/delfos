@@ -185,18 +185,18 @@ public class PRSpace_EachMember extends GroupEvaluationMeasure {
                     }
                 }
 
-                float precision;
-                float recall;
-                if (((float) truePositive_group + (float) falsePositive_group) == 0) {
+                double precision;
+                double recall;
+                if (((double) truePositive_group + (double) falsePositive_group) == 0) {
                     precision = 0;
                 } else {
-                    precision = (float) truePositive_group / ((float) truePositive_group + (float) falsePositive_group);
+                    precision = (double) truePositive_group / ((double) truePositive_group + (double) falsePositive_group);
                 }
 
-                if (((float) truePositive_group + (float) falseNegative_group) == 0) {
+                if (((double) truePositive_group + (double) falseNegative_group) == 0) {
                     recall = 0;
                 } else {
-                    recall = (float) truePositive_group / ((float) truePositive_group + (float) falseNegative_group);
+                    recall = (double) truePositive_group / ((double) truePositive_group + (double) falseNegative_group);
                 }
 
                 groupMatrices.add(new ConfusionMatrix(falsePositive_group, falseNegative_group, truePositive_group, trueNegative_group));

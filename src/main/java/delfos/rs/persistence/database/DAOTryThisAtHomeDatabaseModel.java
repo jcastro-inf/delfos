@@ -103,14 +103,14 @@ public class DAOTryThisAtHomeDatabaseModel implements RecommendationModelDatabas
             st.execute("CREATE TABLE  " + getTemporalUserProfilesTable(prefix) + " ("
                     + "idUser int(10) NOT NULL,"
                     + "idFeature int(10) unsigned NOT NULL,"
-                    + "value float NOT NULL,"
+                    + "value double NOT NULL,"
                     + "PRIMARY KEY (idUser,idFeature)"
                     + ") ENGINE=InnoDB DEFAULT CHARSET=latin1;");
 
             st.execute("CREATE TABLE  " + getTemporalItemProfilesTable(prefix) + " ("
                     + "idItem int(10) unsigned NOT NULL,"
                     + "idFeature int(10) unsigned NOT NULL,"
-                    + "value float NOT NULL,"
+                    + "value double NOT NULL,"
                     + "PRIMARY KEY (idItem,idFeature)"
                     + ") ENGINE=InnoDB DEFAULT CHARSET=latin1;");
 

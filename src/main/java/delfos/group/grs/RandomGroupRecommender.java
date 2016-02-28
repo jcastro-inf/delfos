@@ -67,7 +67,7 @@ public class RandomGroupRecommender
             DatasetLoader<? extends Rating> datasetLoader, RandomRecommendationModel<GroupOfUsers> RecommendationModel, GroupOfUsers groupModel, GroupOfUsers groupOfUsers, java.util.Set<Integer> candidateItems)
             throws UserNotFound, CannotLoadRatingsDataset {
 
-        if (RecommendationModel.getRandomFloat(groupOfUsers) > 0.999) {
+        if (RecommendationModel.getRandomDouble(groupOfUsers) > 0.999) {
             return Collections.EMPTY_LIST;
         } else {
             final int numRecomendaciones = (int) (RecommendationModel.getRandomInt(groupOfUsers, candidateItems.size()));
@@ -79,7 +79,7 @@ public class RandomGroupRecommender
             for (int i = 0; i < numRecomendaciones; i++) {
                 int idItem = toPredict.remove(RecommendationModel.getRandomInt(groupOfUsers, toPredict.size()));
 
-                double ratingAleatorio = RecommendationModel.getRandomFloat(groupOfUsers);
+                double ratingAleatorio = RecommendationModel.getRandomDouble(groupOfUsers);
                 ratingAleatorio = ratingAleatorio * rango + min;
                 recommendationList.add(new Recommendation(idItem, ratingAleatorio));
             }

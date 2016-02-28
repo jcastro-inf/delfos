@@ -222,7 +222,7 @@ public class MultiThreadExecutionManager<TaskType extends Task> implements Runna
     }
 
     private int getPercentCompleted() {
-        float percent = (listOfTasks.sizeOfFinished() * 100.0f) / listOfTasks.sizeOfAll();
+        double percent = (listOfTasks.sizeOfFinished() * 100.0f) / listOfTasks.sizeOfAll();
         return (int) percent;
     }
 

@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,15 +16,15 @@
  */
 package delfos.similaritymeasures;
 
+import delfos.common.exceptions.CouldNotComputeSimilarity;
+import delfos.dataset.basic.rating.Rating;
+import delfos.dataset.basic.rating.RatingsDataset;
+import delfos.rs.RecommenderSystemAdapter;
+import delfos.rs.collaborativefiltering.knn.CommonRating;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
-import delfos.common.exceptions.CouldNotComputeSimilarity;
-import delfos.rs.collaborativefiltering.knn.CommonRating;
-import delfos.dataset.basic.rating.Rating;
-import delfos.dataset.basic.rating.RatingsDataset;
-import delfos.rs.RecommenderSystemAdapter;
 
 /**
  * Clase que adapta la medida de similitud completando los métodos de medida de
@@ -48,14 +48,14 @@ import delfos.rs.RecommenderSystemAdapter;
 public abstract class BasicSimilarityMeasureAdapter extends SimilarityMeasureAdapter implements BasicSimilarityMeasure, WeightedSimilarityMeasure, CollaborativeSimilarityMeasure {
 
     @Override
-    public final float similarity(float[] v1, float[] v2) throws CouldNotComputeSimilarity {
+    public final double similarity(double[] v1, double[] v2) throws CouldNotComputeSimilarity {
 
         if (v1.length != v2.length) {
             throw new IllegalArgumentException("The length of vectors is different");
         }
 
-        List<Float> v1List = new ArrayList<>(v1.length);
-        List<Float> v2List = new ArrayList<>(v2.length);
+        List<Double> v1List = new ArrayList<>(v1.length);
+        List<Double> v2List = new ArrayList<>(v2.length);
 
         for (int i = 0; i < v1.length; i++) {
             v1List.add(v1[i]);
@@ -65,15 +65,15 @@ public abstract class BasicSimilarityMeasureAdapter extends SimilarityMeasureAda
     }
 
     @Override
-    public final float weightedSimilarity(float[] v1, float[] v2, float[] weights) throws CouldNotComputeSimilarity {
+    public final double weightedSimilarity(double[] v1, double[] v2, double[] weights) throws CouldNotComputeSimilarity {
 
         if (v1.length != v2.length || v1.length != weights.length) {
             throw new IllegalArgumentException("The length of vectors is different");
         }
 
-        List<Float> v1List = new ArrayList<>(v1.length);
-        List<Float> v2List = new ArrayList<>(v2.length);
-        List<Float> weightsList = new ArrayList<>(weights.length);
+        List<Double> v1List = new ArrayList<>(v1.length);
+        List<Double> v2List = new ArrayList<>(v2.length);
+        List<Double> weightsList = new ArrayList<>(weights.length);
 
         for (int i = 0; i < v1.length; i++) {
             v1List.add(v1[i]);
@@ -84,13 +84,13 @@ public abstract class BasicSimilarityMeasureAdapter extends SimilarityMeasureAda
     }
 
     @Override
-    public float similarity(Collection<CommonRating> commonRatings, RatingsDataset<? extends Rating> ratings) throws CouldNotComputeSimilarity {
+    public double similarity(Collection<CommonRating> commonRatings, RatingsDataset<? extends Rating> ratings) throws CouldNotComputeSimilarity {
         Iterator<CommonRating> it = commonRatings.iterator();
         if (it.hasNext()) {
             if (it.next().isWeighted()) {
-                float[] v1 = new float[commonRatings.size()];
-                float[] v2 = new float[commonRatings.size()];
-                float[] weights = new float[commonRatings.size()];
+                double[] v1 = new double[commonRatings.size()];
+                double[] v2 = new double[commonRatings.size()];
+                double[] weights = new double[commonRatings.size()];
                 int i = 0;
                 for (CommonRating c : commonRatings) {
                     v1[i] = c.getRating1();
@@ -101,8 +101,8 @@ public abstract class BasicSimilarityMeasureAdapter extends SimilarityMeasureAda
                 return weightedSimilarity(v1, v2, weights);
 
             } else {
-                float[] v1 = new float[commonRatings.size()];
-                float[] v2 = new float[commonRatings.size()];
+                double[] v1 = new double[commonRatings.size()];
+                double[] v2 = new double[commonRatings.size()];
                 int i = 0;
                 for (CommonRating c : commonRatings) {
                     v1[i] = c.getRating1();
@@ -123,7 +123,7 @@ public abstract class BasicSimilarityMeasureAdapter extends SimilarityMeasureAda
     }
 
     @Override
-    public float weightedSimilarity(List<Float> v1, List<Float> v2, List<Float> weights) throws CouldNotComputeSimilarity {
+    public double weightedSimilarity(List<Double> v1, List<Double> v2, List<Double> weights) throws CouldNotComputeSimilarity {
         return similarity(v1, v2);
     }
 }

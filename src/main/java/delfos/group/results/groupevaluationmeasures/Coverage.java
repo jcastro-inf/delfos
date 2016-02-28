@@ -78,7 +78,7 @@ public class Coverage extends GroupEvaluationMeasure {
                 predichas += groupRecommendations.size();
             }
         }
-        float ret = predichas / ((float) solicitudes);
+        double ret = predichas / ((double) solicitudes);
         return new GroupEvaluationMeasureResult(this, ret);
     }
 

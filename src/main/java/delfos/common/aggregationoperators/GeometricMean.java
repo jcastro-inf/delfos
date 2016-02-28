@@ -28,7 +28,7 @@ public class GeometricMean extends AggregationOperator {
     private final static long serialVersionUID = 1L;
 
     @Override
-    public float aggregateValues(Iterable<Number> values) {
+    public double aggregateValues(Iterable<Number> values) {
 
         double multiplication = 1;
         int n = 0;
@@ -40,6 +40,6 @@ public class GeometricMean extends AggregationOperator {
 
         double geometricMean = Math.pow(multiplication, 1.0 / n);
 
-        return (float) geometricMean;
+        return (double) geometricMean;
     }
 }

@@ -31,16 +31,16 @@ public class MinimumValue extends AggregationOperator {
     private final static long serialVersionUID = 1L;
 
     @Override
-    public float aggregateValues(Iterable<Number> values) {
+    public double aggregateValues(Iterable<Number> values) {
         Iterator<? extends Number> it = values.iterator();
         if (!it.hasNext()) {
             throw new IllegalArgumentException("No values given");
         }
-        float min = it.next().floatValue();
+        double min = it.next().doubleValue();
         while (it.hasNext()) {
             Number value = it.next();
-            if (value.floatValue() < min) {
-                min = value.floatValue();
+            if (value.doubleValue() < min) {
+                min = value.doubleValue();
             }
         }
         return min;

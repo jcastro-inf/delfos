@@ -181,11 +181,11 @@ public class ConfusionMatrix {
      *
      * @return False positive rate de la matriz de confusión.
      */
-    public float getFalsePositiveRate() {
+    public double getFalsePositiveRate() {
         if ((falsePositive + trueNegative) == 0) {
             return 0;
         } else {
-            float falsePositiveRate = falsePositive / ((float) (falsePositive + trueNegative));
+            double falsePositiveRate = falsePositive / ((double) (falsePositive + trueNegative));
             return falsePositiveRate;
         }
     }
@@ -197,11 +197,11 @@ public class ConfusionMatrix {
      *
      * @return False positive rate de la matriz de confusión.
      */
-    public float getTruePositiveRate() {
+    public double getTruePositiveRate() {
         if ((truePositive + falseNegative) == 0) {
             return 0;
         } else {
-            float truePositiveRate = truePositive / ((float) (truePositive + falseNegative));
+            double truePositiveRate = truePositive / ((double) (truePositive + falseNegative));
             return truePositiveRate;
         }
     }
@@ -213,8 +213,8 @@ public class ConfusionMatrix {
      *
      * @return False positive rate de la matriz de confusión.
      */
-    public float getPrecision() {
-        return truePositive / ((float) truePositive + falsePositive);
+    public double getPrecision() {
+        return truePositive / ((double) truePositive + falsePositive);
     }
 
     /**
@@ -224,7 +224,7 @@ public class ConfusionMatrix {
      *
      * @return False positive rate de la matriz de confusión.
      */
-    public float getRecall() {
-        return truePositive / ((float) truePositive + falseNegative);
+    public double getRecall() {
+        return truePositive / ((double) truePositive + falseNegative);
     }
 }

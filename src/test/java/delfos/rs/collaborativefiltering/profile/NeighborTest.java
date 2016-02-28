@@ -22,18 +22,18 @@ public class NeighborTest {
     public void testSortBySimilarityDesc() {
 
         List<Neighbor> neighbors = Arrays.asList(
-                new Neighbor(RecommendationEntity.USER, 199, Float.NaN),
+                new Neighbor(RecommendationEntity.USER, 199, Double.NaN),
                 new Neighbor(RecommendationEntity.USER, 2, 0.9),
                 new Neighbor(RecommendationEntity.USER, 9, 0.5),
-                new Neighbor(RecommendationEntity.USER, 99, Float.NaN)
+                new Neighbor(RecommendationEntity.USER, 99, Double.NaN)
         );
 
         neighbors.sort(Neighbor.BY_SIMILARITY_DESC);
 
         assertEquals(neighbors.get(0), new Neighbor(RecommendationEntity.USER, 2, 0.9));
         assertEquals(neighbors.get(1), new Neighbor(RecommendationEntity.USER, 9, 0.5));
-        assertEquals(neighbors.get(2), new Neighbor(RecommendationEntity.USER, 99, Float.NaN));
-        assertEquals(neighbors.get(3), new Neighbor(RecommendationEntity.USER, 199, Float.NaN));
+        assertEquals(neighbors.get(2), new Neighbor(RecommendationEntity.USER, 99, Double.NaN));
+        assertEquals(neighbors.get(3), new Neighbor(RecommendationEntity.USER, 199, Double.NaN));
     }
 
     /**
@@ -43,17 +43,17 @@ public class NeighborTest {
     public void testSortBySimilarityAsc() {
 
         List<Neighbor> neighbors = Arrays.asList(
-                new Neighbor(RecommendationEntity.USER, 199, Float.NaN),
+                new Neighbor(RecommendationEntity.USER, 199, Double.NaN),
                 new Neighbor(RecommendationEntity.USER, 2, 0.9),
                 new Neighbor(RecommendationEntity.USER, 9, 0.5),
-                new Neighbor(RecommendationEntity.USER, 99, Float.NaN)
+                new Neighbor(RecommendationEntity.USER, 99, Double.NaN)
         );
 
         neighbors.sort(Neighbor.BY_SIMILARITY_ASC);
 
         assertEquals(neighbors.get(0), new Neighbor(RecommendationEntity.USER, 9, 0.5));
         assertEquals(neighbors.get(1), new Neighbor(RecommendationEntity.USER, 2, 0.9));
-        assertEquals(neighbors.get(2), new Neighbor(RecommendationEntity.USER, 99, Float.NaN));
-        assertEquals(neighbors.get(3), new Neighbor(RecommendationEntity.USER, 199, Float.NaN));
+        assertEquals(neighbors.get(2), new Neighbor(RecommendationEntity.USER, 99, Double.NaN));
+        assertEquals(neighbors.get(3), new Neighbor(RecommendationEntity.USER, 199, Double.NaN));
     }
 }

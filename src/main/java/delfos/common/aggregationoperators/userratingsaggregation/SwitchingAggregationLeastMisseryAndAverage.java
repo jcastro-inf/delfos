@@ -29,7 +29,7 @@ import delfos.common.exceptions.dataset.users.UserNotFound;
 import delfos.common.parameters.Parameter;
 import delfos.common.parameters.ParameterOwnerAdapter;
 import delfos.common.parameters.ParameterOwnerType;
-import delfos.common.parameters.restriction.FloatParameter;
+import delfos.common.parameters.restriction.DoubleParameter;
 
 /**
  * Agrega las valoraciones de un grupo de usuarios sobre un producto indicado.
@@ -53,7 +53,7 @@ public class SwitchingAggregationLeastMisseryAndAverage extends ParameterOwnerAd
     private final static long serialVersionUID = 1L;
     public static final Parameter threshold = new Parameter(
             "threshold",
-            new FloatParameter(0, Float.MAX_VALUE, 2.0f));
+            new DoubleParameter(0, Double.MAX_VALUE, 2.0f));
     private final AggregationOperator leastMissery = new MinimumValue();
     private final AggregationOperator average = new Mean();
 
@@ -90,7 +90,7 @@ public class SwitchingAggregationLeastMisseryAndAverage extends ParameterOwnerAd
             throw new IllegalArgumentException("The users do not have ratings over item " + idItem);
         }
 
-        float thresholdValue = getThreshold();
+        double thresholdValue = getThreshold();
         if (max - min >= thresholdValue) {
             return leastMissery.aggregateValues(values);
         } else {
@@ -98,8 +98,8 @@ public class SwitchingAggregationLeastMisseryAndAverage extends ParameterOwnerAd
         }
     }
 
-    private float getThreshold() {
-        return (Float) getParameterValue(threshold);
+    private double getThreshold() {
+        return (Double) getParameterValue(threshold);
     }
 
     @Override

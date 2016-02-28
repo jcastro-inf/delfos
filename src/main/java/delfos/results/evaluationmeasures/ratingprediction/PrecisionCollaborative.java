@@ -44,7 +44,7 @@ public class PrecisionCollaborative extends EvaluationMeasure {
 
     @Override
     public MeasureResult getMeasureResult(RecommendationResults recommendationResults, RatingsDataset<? extends Rating> testDataset, RelevanceCriteria relevanceCriteria) {
-        float precision;
+        double precision;
         int relevantesRecomendadas = 0;
         int relevantesNoRecomendadas = 0;
         int noRelevantesRecomendadas = 0;
@@ -75,7 +75,7 @@ public class PrecisionCollaborative extends EvaluationMeasure {
         if ((relevantesRecomendadas + noRelevantesRecomendadas) == 0) {
             precision = 0;
         } else {
-            precision = (float) relevantesRecomendadas / ((float) relevantesRecomendadas + (float) noRelevantesRecomendadas);
+            precision = (double) relevantesRecomendadas / ((double) relevantesRecomendadas + (double) noRelevantesRecomendadas);
         }
 
         return new MeasureResult(this, precision);

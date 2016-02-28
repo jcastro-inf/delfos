@@ -236,7 +236,7 @@ public class HybridUserItemTrustBased extends CollaborativeRecommender<HybridUse
                         continue;
                     }
 
-                    float trustBetweenUsers = usersTrust.connection(idUser, idUserNeighbour).floatValue();
+                    double trustBetweenUsers = usersTrust.connection(idUser, idUserNeighbour).doubleValue();
                     if (trustBetweenUsers > 0) {
                         neighborsOfUser.add(new Neighbor(RecommendationEntity.USER, idUserNeighbour, trustBetweenUsers));
                     }
@@ -348,7 +348,7 @@ public class HybridUserItemTrustBased extends CollaborativeRecommender<HybridUse
                         continue;
                     }
 
-                    float trustBetweenItems = itemBasedTrust.connection(idItem, idItemNeighbour).floatValue();
+                    double trustBetweenItems = itemBasedTrust.connection(idItem, idItemNeighbour).doubleValue();
                     neighborsOfItem.add(new Neighbor(RecommendationEntity.ITEM, idItemNeighbour, trustBetweenItems));
 
                 }
@@ -448,7 +448,7 @@ public class HybridUserItemTrustBased extends CollaborativeRecommender<HybridUse
         WeightedGraph<Integer> usersTrust = userBasedTrustModuleModel.getUsersTrust();
 
         for (Neighbor userNeighbor : usersNeighbours.get(idUser)) {
-            float neighbourMeanRating;
+            double neighbourMeanRating;
             int idUserNeighbour = userNeighbor.getIdNeighbor();
             Map<Integer, ? extends Rating> neighbourRatings;
             try {

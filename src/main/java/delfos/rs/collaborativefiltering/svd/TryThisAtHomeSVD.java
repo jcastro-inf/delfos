@@ -27,7 +27,7 @@ import delfos.common.exceptions.ratings.NotEnoughtItemInformation;
 import delfos.common.exceptions.ratings.NotEnoughtUserInformation;
 import delfos.common.parameters.Parameter;
 import delfos.common.parameters.restriction.BooleanParameter;
-import delfos.common.parameters.restriction.FloatParameter;
+import delfos.common.parameters.restriction.DoubleParameter;
 import delfos.common.parameters.restriction.IntegerParameter;
 import delfos.common.statisticalfuncions.MeanIterative;
 import delfos.dataset.basic.loader.types.DatasetLoader;
@@ -84,7 +84,7 @@ public class TryThisAtHomeSVD
      * Parámetro que controla el learning rate, es decir, la velocidad con la
      * que se modifican los valores para minimizar el error de predicción.
      */
-    public static final Parameter LEARNING_RATE = new Parameter("lRate", new FloatParameter(0.001f, 500f, 0.01f));
+    public static final Parameter LEARNING_RATE = new Parameter("lRate", new DoubleParameter(0.001f, 500f, 0.01f));
     /**
      * Parámetro para indicar si se realiza una normalización de las
      * valoraciones utilizando la valoración media del usuario. Por defecto esta
@@ -99,7 +99,7 @@ public class TryThisAtHomeSVD
     /**
      * Parámetro para penalizar valores grandes de las características.
      */
-    public static final Parameter K = new Parameter("K", new FloatParameter(0.0001f, 1f, 0.02f), "Parámetro para penalizar valores grandes de las características.");
+    public static final Parameter K = new Parameter("K", new DoubleParameter(0.0001f, 1f, 0.02f), "Parámetro para penalizar valores grandes de las características.");
 
     /**
      * Constructor por defecto, que añade los parámetros del sistema de
@@ -155,7 +155,7 @@ public class TryThisAtHomeSVD
 
         Random random = new Random(seed);
         while (ret == 0) {
-            ret = random.nextFloat();
+            ret = random.nextDouble();
             ret = (ret * (maxInitialisation - minInitialisation)) + minInitialisation;
         }
 
@@ -170,10 +170,10 @@ public class TryThisAtHomeSVD
         final int numFeatures = (Integer) getParameterValue(NUM_FEATURES);
         final int numIterationsPerFeature = (Integer) getParameterValue(NUM_ITER_PER_FEATURE);
         final RatingsDataset<? extends Rating> ratingsDataset = datasetLoader.getRatingsDataset();
-        final float Kvalue = getK();
+        final double Kvalue = getK();
 
-        final double maxInitialisation = (float) Math.sqrt(ratingsDataset.getRatingsDomain().max().doubleValue() / numFeatures);
-        final double minInitialisation = (float) Math.sqrt(ratingsDataset.getRatingsDomain().min().doubleValue() / numFeatures);
+        final double maxInitialisation = (double) Math.sqrt(ratingsDataset.getRatingsDomain().max().doubleValue() / numFeatures);
+        final double minInitialisation = (double) Math.sqrt(ratingsDataset.getRatingsDomain().min().doubleValue() / numFeatures);
 
         final TreeMap<Integer, Integer> itemsIndex = new TreeMap<>();
         final TreeMap<Integer, Integer> usersIndex = new TreeMap<>();
@@ -378,9 +378,9 @@ public class TryThisAtHomeSVD
 
         if (isNormalised()) {
             RatingsDataset<? extends Rating> ratingsDataset = datasetLoadder.getRatingsDataset();
-            float meanRating = ratingsDataset.getMeanRating();
-            float meanRatingUser = meanRating - ratingsDataset.getMeanRatingUser(idUser);
-            float meanRatingItem = meanRating - ratingsDataset.getMeanRatingItem(idItem);
+            double meanRating = ratingsDataset.getMeanRating();
+            double meanRatingUser = meanRating - ratingsDataset.getMeanRatingUser(idUser);
+            double meanRatingItem = meanRating - ratingsDataset.getMeanRatingItem(idItem);
 
             prediction = prediction + meanRating + meanRatingUser + meanRatingItem;
         }
@@ -468,8 +468,8 @@ public class TryThisAtHomeSVD
      *
      * @return
      */
-    protected final float getK() {
-        return (Float) getParameterValue(K);
+    protected final double getK() {
+        return (Double) getParameterValue(K);
     }
 
     public TryThisAtHomeSVD setNormalizeWithUserMean(boolean isNormalizeWithUserMean) {

@@ -93,7 +93,7 @@ public class MeanRating implements Serializable, Comparable<MeanRating> {
      */
     @Override
     public int compareTo(MeanRating o) {
-        float diff = _preference.floatValue() - o._preference.floatValue();
+        double diff = _preference.doubleValue() - o._preference.doubleValue();
         if (diff == 0) {
             return 0;
         } else if (diff > 0) {

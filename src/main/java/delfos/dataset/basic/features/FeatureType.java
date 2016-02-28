@@ -278,7 +278,7 @@ public enum FeatureType {
             case Nominal:
                 return "varchar(255)";
             case Numerical:
-                return "float";
+                return "double";
             case Unary:
                 return "varchar(255)";
             default:

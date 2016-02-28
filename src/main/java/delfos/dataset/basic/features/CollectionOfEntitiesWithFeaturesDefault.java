@@ -195,7 +195,7 @@ public abstract class CollectionOfEntitiesWithFeaturesDefault<Entity extends Ent
             Collections.sort(a, (Object o1, Object o2) -> {
                 if (o1 instanceof Number) {
                     if (o2 instanceof Number) {
-                        return (int) (((Number) o1).floatValue() - ((Number) o2).floatValue());
+                        return (int) (((Number) o1).doubleValue() - ((Number) o2).doubleValue());
                     } else {
                         throw new IllegalArgumentException("There is a not numerical value (featureName='" + feature + "' type='" + feature.getType() + "' value='" + o2 + "'");
                     }
@@ -226,7 +226,7 @@ public abstract class CollectionOfEntitiesWithFeaturesDefault<Entity extends Ent
             Collections.sort(a, (Object o1, Object o2) -> {
                 if (o1 instanceof Number) {
                     if (o2 instanceof Number) {
-                        return (int) (((Number) o1).floatValue() - ((Number) o2).floatValue());
+                        return (int) (((Number) o1).doubleValue() - ((Number) o2).doubleValue());
                     } else {
                         throw new IllegalArgumentException("There is a not numerical value (featureName='" + feature + "' type='" + feature.getType() + "' value='" + o2 + "'");
                     }

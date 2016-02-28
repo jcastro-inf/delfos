@@ -78,8 +78,8 @@ public class NMAETest {
         GroupEvaluationMeasureResult groupMaeResult = instance.getMeasureResult(groupRecommenderSystemResult, datasetLoader, testDataset, relevanceCriteria, datasetLoader, datasetLoader);
 
         //Phase 3: Result checking
-        float expResult = Float.NaN;
-        float delta = 0.001f;
+        double expResult = Double.NaN;
+        double delta = 0.001f;
         assertEquals(expResult, groupMaeResult.getValue(), delta);
     }
 }

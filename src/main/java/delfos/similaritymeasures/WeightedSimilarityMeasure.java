@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -53,7 +53,7 @@ public interface WeightedSimilarityMeasure extends BasicSimilarityMeasure {
      * @throws IllegalArgumentException Si los vectores no tienen la misma
      * dimensión o la suma de las ponderaciones es mayor que 1.
      */
-    public float weightedSimilarity(float[] v1, float[] v2, float[] weights);
+    public double weightedSimilarity(double[] v1, double[] v2, double[] weights);
 
     /**
      * Calcula la medida de similitud entre los vectores v1 y v2 utilizando la
@@ -69,5 +69,5 @@ public interface WeightedSimilarityMeasure extends BasicSimilarityMeasure {
      * @throws IllegalArgumentException Si los vectores no tienen la misma
      * dimensión o la suma de las ponderaciones es mayor que 1.
      */
-    public float weightedSimilarity(List<Float> v1, List<Float> v2, List<Float> weights);
+    public double weightedSimilarity(List<Double> v1, List<Double> v2, List<Double> weights);
 }

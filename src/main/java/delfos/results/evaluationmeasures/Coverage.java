@@ -44,7 +44,7 @@ public class Coverage extends EvaluationMeasure {
 
     @Override
     public MeasureResult getMeasureResult(RecommendationResults recommendationResults, RatingsDataset<? extends Rating> testDataset, RelevanceCriteria relevanceCriteria) {
-        float cobertura;
+        double cobertura;
 
         long total = 0;
         long positivos = 0;
@@ -59,7 +59,7 @@ public class Coverage extends EvaluationMeasure {
                 ERROR_CODES.USER_NOT_FOUND.exit(ex);
             }
         }
-        cobertura = (float) positivos / total;
+        cobertura = (double) positivos / total;
         return new MeasureResult(this, cobertura);
     }
 

@@ -167,7 +167,7 @@ public class MockRatingsDataset implements RatingsDataset<Rating> {
     }
 
     @Override
-    public float getMeanRatingItem(int idItem) throws ItemNotFound {
+    public double getMeanRatingItem(int idItem) throws ItemNotFound {
 
         checkItem(idItem);
         Collection<Rating> itemRatings = getItemRatingsRated(idItem).values();
@@ -179,11 +179,11 @@ public class MockRatingsDataset implements RatingsDataset<Rating> {
                 .getAsDouble();
 
         mean = mean / itemRatings.size();
-        return (float) mean;
+        return (double) mean;
     }
 
     @Override
-    public float getMeanRatingUser(int idUser) throws UserNotFound {
+    public double getMeanRatingUser(int idUser) throws UserNotFound {
         checkUser(idUser);
 
         Collection<Rating> userRatings = getUserRatingsRated(idUser).values();
@@ -195,7 +195,7 @@ public class MockRatingsDataset implements RatingsDataset<Rating> {
                 .getAsDouble();
 
         mean = mean / userRatings.size();
-        return (float) mean;
+        return (double) mean;
     }
 
     @Override
@@ -242,13 +242,13 @@ public class MockRatingsDataset implements RatingsDataset<Rating> {
     }
 
     @Override
-    public float getMeanRating() {
+    public double getMeanRating() {
 
-        float mean = 0;
+        double mean = 0;
         int count = 0;
 
         for (Rating rating : this) {
-            mean += rating.getRatingValue().floatValue();
+            mean += rating.getRatingValue().doubleValue();
             count++;
         }
 

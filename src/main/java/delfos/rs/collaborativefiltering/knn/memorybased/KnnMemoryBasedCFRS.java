@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -96,7 +96,7 @@ public class KnnMemoryBasedCFRS extends KnnCollaborativeRecommender<KnnMemoryMod
             Integer relevanceFactor,
             Number defaultRating,
             boolean inverseFrequency,
-            float caseAmplification,
+            double caseAmplification,
             int neighborhoodSize,
             PredictionTechnique predictionTechnique) {
 
@@ -205,7 +205,7 @@ public class KnnMemoryBasedCFRS extends KnnCollaborativeRecommender<KnnMemoryMod
         int neighborhoodSize_ = ((Number) getParameterValue(KnnMemoryBasedCFRS.NEIGHBORHOOD_SIZE)).intValue();
 
         List<Neighbor> neighborsWithPositiveSimilarityAndSelected = neighbors.stream()
-                .filter((neighbor -> Float.isFinite(neighbor.getSimilarity()) && neighbor.getSimilarity() > 0))
+                .filter((neighbor -> Double.isFinite(neighbor.getSimilarity()) && neighbor.getSimilarity() > 0))
                 .collect(Collectors.toList());
         neighborsWithPositiveSimilarityAndSelected.sort(Neighbor.BY_SIMILARITY_DESC);
         neighborsWithPositiveSimilarityAndSelected = neighborsWithPositiveSimilarityAndSelected
@@ -234,7 +234,7 @@ public class KnnMemoryBasedCFRS extends KnnCollaborativeRecommender<KnnMemoryMod
             }
 
             try {
-                float predicted = predictionTechnique_.predictRating(idUser, item.getId(), match, ratingsDataset);
+                double predicted = predictionTechnique_.predictRating(idUser, item.getId(), match, ratingsDataset);
                 recommendations.add(new Recommendation(item, predicted));
             } catch (CouldNotPredictRating ex) {
                 recommendations.add(new Recommendation(item, Double.NaN));

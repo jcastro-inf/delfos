@@ -69,11 +69,11 @@ public class PRSpaceGroups extends GroupEvaluationMeasure {
                 trainingDatasetLoader,
                 testDatasetLoader);
 
-        float value;
+        double value;
         if (agregada.size() >= 2) {
             value = agregada.getPrecisionAt(1);
         } else {
-            value = Float.NaN;
+            value = Double.NaN;
         }
 
         Map<String, Double> detailedResult = new TreeMap<>();
