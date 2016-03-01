@@ -183,7 +183,7 @@ public class GroupCaseStudy extends ExperimentAdapter {
                     Collection<GroupOfUsers> groups = groupFormationTechnique.shuffle(originalDatasetLoader);
                     PairOfTrainTestRatingsDataset[] pairsOfTrainTest = groupValidationTechnique.shuffle(originalDatasetLoader, groups);
 
-                    return IntStream.range(0, getNumExecutions()).boxed().parallel().collect(Collectors.toMap(Function.identity(),
+                    return IntStream.range(0, getNumSplits()).boxed().parallel().collect(Collectors.toMap(Function.identity(),
                                     split -> {
                                         Map<GroupEvaluationMeasure, GroupEvaluationMeasureResult> execute = new ExecutionExplitConsumer(execution, split, this, pairsOfTrainTest, groups).execute();
                                         groupCaseStudyProgressChangedController.setTaskFinished();
@@ -218,6 +218,8 @@ public class GroupCaseStudy extends ExperimentAdapter {
 
                     return resultsAggregated;
                 }));
+
+        setExecutionProgress(getAlias(), 100, 0);
     }
 
     protected long getLoopSeed(int execution, int split) {
