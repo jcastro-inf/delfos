@@ -30,6 +30,8 @@ import delfos.results.evaluationmeasures.EvaluationMeasure;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 import org.jdom2.Element;
 
 /**
@@ -98,6 +100,9 @@ public abstract class GroupEvaluationMeasure extends ParameterOwnerAdapter imple
      * resultado agregado de las ejecuciones
      */
     public final GroupEvaluationMeasureResult agregateResults(Collection<GroupEvaluationMeasureResult> results) {
+
+        validateCollectionOfResults(results);
+
         double aggregatedValue;
 
         MeanIterative mean = new MeanIterative();
@@ -116,6 +121,17 @@ public abstract class GroupEvaluationMeasure extends ParameterOwnerAdapter imple
 
         aggregatedValue = mean.getNumValues() == 0 ? Double.POSITIVE_INFINITY : mean.getMean();
         return new GroupEvaluationMeasureResult(this, aggregatedValue);
+    }
+
+    public void validateCollectionOfResults(Collection<GroupEvaluationMeasureResult> results) {
+        Set<GroupEvaluationMeasure> distinctEvaluationMeasures = results.stream()
+                .map(result -> result.getGroupEvaluationMeasure())
+                .distinct()
+                .collect(Collectors.toSet());
+
+        if (distinctEvaluationMeasures.size() != 1) {
+            throw new IllegalStateException("Results must belong to the same evaluation measure [" + distinctEvaluationMeasures + "]");
+        }
     }
 
     @Override

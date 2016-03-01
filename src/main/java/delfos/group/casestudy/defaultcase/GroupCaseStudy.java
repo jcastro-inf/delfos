@@ -53,8 +53,10 @@ import delfos.group.results.groupevaluationmeasures.GroupEvaluationMeasureResult
 import delfos.utils.algorithm.progress.ProgressChangedController;
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -191,6 +193,31 @@ public class GroupCaseStudy extends ExperimentAdapter {
                     );
                 })
         );
+
+        Set<GroupEvaluationMeasure> groupEvaluationMeasures = allLoopsResults.get(0).get(0).keySet();
+
+        aggregateResults = groupEvaluationMeasures.parallelStream().collect(Collectors.toMap(Function.identity(),
+                groupEvaluationMeasure -> {
+                    List<GroupEvaluationMeasureResult> resultsExecutions = allLoopsResults
+                    .values().parallelStream()
+                    .map(resultSplitsAllMeasures -> {
+
+                        List<GroupEvaluationMeasureResult> resultsSplits
+                        = resultSplitsAllMeasures.entrySet().parallelStream()
+                        .map(resultExecutionSplit -> resultExecutionSplit.getValue().get(groupEvaluationMeasure))
+                        .collect(Collectors.toList());
+
+                        GroupEvaluationMeasureResult resultsSplitsAggregated
+                        = groupEvaluationMeasure.agregateResults(resultsSplits);
+
+                        return resultsSplitsAggregated;
+                    }).collect(Collectors.toList());
+
+                    GroupEvaluationMeasureResult resultsAggregated
+                    = groupEvaluationMeasure.agregateResults(resultsExecutions);
+
+                    return resultsAggregated;
+                }));
     }
 
     protected long getLoopSeed(int execution, int split) {
