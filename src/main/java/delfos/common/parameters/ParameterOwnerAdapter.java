@@ -17,6 +17,7 @@
 package delfos.common.parameters;
 
 import delfos.Constants;
+import delfos.ERROR_CODES;
 import delfos.common.Global;
 import delfos.common.StringsOrderings;
 import delfos.common.parameters.restriction.CannotParseParameterValue;
@@ -79,7 +80,7 @@ public abstract class ParameterOwnerAdapter implements ParameterOwner {
     /**
      * Almacena para cada parámetro el valor que posee.
      */
-    private final Map<Parameter, Object> parameterValues = new TreeMap<>();
+    private Map<Parameter, Object> parameterValues = new TreeMap<>();
     /**
      * Almacena los objetos que desean ser notificados de cambios en los
      * parámetros de este objeto.
@@ -425,5 +426,45 @@ public abstract class ParameterOwnerAdapter implements ParameterOwner {
                 Logger.getLogger(ParameterOwnerAdapter.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
+    }
+
+    @Override
+    public ParameterOwner clone() {
+        try {
+            ParameterOwner clone = cloneWithException();
+
+            return clone;
+        } catch (CloneNotSupportedException ex) {
+            ERROR_CODES.UNDEFINED_ERROR.exit(ex);
+            throw new IllegalStateException(ex);
+        }
+    }
+
+    public ParameterOwner cloneWithException() throws CloneNotSupportedException {
+        ParameterOwnerAdapter clone = (ParameterOwnerAdapter) super.clone();
+
+        /* The clone should not have listeners */
+        clone.parammeterListeners.clear();
+        clone.parameterValues = new TreeMap<>();
+
+        parameterValues.forEach((parameter, value) -> {
+
+            /*Parameters are non-mutable objects. Just use the same.*/
+            Parameter newParameter = parameter;
+
+            Object newValue;
+            if (value instanceof ParameterOwner) {
+                ParameterOwner valueThatIsParameterOwner = (ParameterOwner) value;
+
+                /*ParameterOwners are cloned recursively*/
+                newValue = valueThatIsParameterOwner.clone();
+            } else {
+                /*Other values are copied*/
+                newValue = value;
+            }
+            clone.parameterValues.put(newParameter, newValue);
+        });
+
+        return clone;
     }
 }
