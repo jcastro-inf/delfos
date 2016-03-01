@@ -76,11 +76,11 @@ public interface WeightedGraph<Node> extends Serializable {
      */
     int maxK();
 
-    public default double[][] asMatrix() {
+    public default Double[][] asMatrix() {
 
         final List<Node> nodesSorted = nodesSortingForMatrix();
 
-        double[][] matrix = new double[nodesSorted.size()][nodesSorted.size()];
+        Double[][] matrix = new Double[nodesSorted.size()][nodesSorted.size()];
 
         for (int indexRow = 0; indexRow < nodesSorted.size(); indexRow++) {
             Node node = nodesSorted.get(indexRow);
