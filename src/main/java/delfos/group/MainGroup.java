@@ -72,12 +72,6 @@ public class MainGroup {
         GroupRecommenderSystemsFactory.getInstance().copyInSingleUserRecommender();
         GroupRatingsFilterFactory.getInstance();
 
-        if (consoleParameters.isParameterDefined("-default")) {
-            consoleParameters.printUnusedParameters(System.err);
-            defaultBehaviour();
-            return true;
-        }
-
         if (consoleParameters.isParameterDefined(ExecuteGroupXML.MODE_PARAMETER)) {
             try {
                 String xmlExperimentsDirectory = consoleParameters.getValue(ExecuteGroupXML.MODE_PARAMETER);
@@ -255,11 +249,6 @@ public class MainGroup {
         } catch (CannotLoadRatingsDataset ex) {
             ERROR_CODES.CANNOT_LOAD_RATINGS_DATASET.exit(ex);
         }
-    }
-
-    private static void defaultBehaviour() {
-        DefaultExecution defaultExecution = new DefaultExecution();
-        defaultExecution.execute();
     }
 
     private static void xmlExperimentsExecution(String experimentsDirectory, String datasetDirectory, int numExecutions, long seed) {
