@@ -298,37 +298,42 @@ public class GroupCaseStudy extends ExperimentAdapter {
         groupPredictionProtocol.setSeedValue(getSeedValue());
     }
 
-    private void loadDataset(DatasetLoader<? extends Rating> datasetLoader) throws CannotLoadContentDataset, CannotLoadTrustDataset, CannotLoadRatingsDataset, CannotLoadUsersDataset {
-        final String taskName = "Loading dataset '" + datasetLoader.getAlias() + "'";
-        setExperimentProgress(taskName, 0, -1);
+    public static final Object exmutLoadDatasetsOnceAtATime = 1;
 
-        {
-            setExperimentProgress(taskName + "  ratings dataset", 1, -1);
-            datasetLoader.getRatingsDataset();
+    private void loadDataset(DatasetLoader<? extends Rating> datasetLoader) throws CannotLoadContentDataset, CannotLoadTrustDataset, CannotLoadRatingsDataset, CannotLoadUsersDataset {
+
+        synchronized (exmutLoadDatasetsOnceAtATime) {
+            final String taskName = "Loading dataset '" + datasetLoader.getAlias() + "'";
+            setExperimentProgress(taskName, 0, -1);
+
+            {
+                setExperimentProgress(taskName + "  ratings dataset", 1, -1);
+                datasetLoader.getRatingsDataset();
+                setExperimentProgress("Finished loading ratings dataset", 100, -1);
+            }
+            if (datasetLoader instanceof UsersDatasetLoader) {
+                UsersDatasetLoader usersDatasetLoader = (UsersDatasetLoader) datasetLoader;
+
+                setExperimentProgress(taskName + "  users dataset", 0, -1);
+                usersDatasetLoader.getUsersDataset();
+                setExperimentProgress("Finished loading users dataset", 100, -1);
+            }
+            if (datasetLoader instanceof ContentDatasetLoader) {
+                ContentDatasetLoader contentDatasetLoader = (ContentDatasetLoader) datasetLoader;
+
+                setExperimentProgress(taskName + "  items dataset", 0, -1);
+                contentDatasetLoader.getContentDataset();
+                setExperimentProgress("Finished loading content dataset", 100, -1);
+            }
+            if (datasetLoader instanceof TrustDatasetLoader) {
+                TrustDatasetLoader trustDatasetLoader = (TrustDatasetLoader) datasetLoader;
+
+                setExperimentProgress("Loading trust dataset", 0, -1);
+                trustDatasetLoader.getTrustDataset();
+                setExperimentProgress("Finished loading trust dataset", 100, -1);
+            }
             setExperimentProgress("Finished loading ratings dataset", 100, -1);
         }
-        if (datasetLoader instanceof UsersDatasetLoader) {
-            UsersDatasetLoader usersDatasetLoader = (UsersDatasetLoader) datasetLoader;
-
-            setExperimentProgress(taskName + "  users dataset", 0, -1);
-            usersDatasetLoader.getUsersDataset();
-            setExperimentProgress("Finished loading users dataset", 100, -1);
-        }
-        if (datasetLoader instanceof ContentDatasetLoader) {
-            ContentDatasetLoader contentDatasetLoader = (ContentDatasetLoader) datasetLoader;
-
-            setExperimentProgress(taskName + "  items dataset", 0, -1);
-            contentDatasetLoader.getContentDataset();
-            setExperimentProgress("Finished loading content dataset", 100, -1);
-        }
-        if (datasetLoader instanceof TrustDatasetLoader) {
-            TrustDatasetLoader trustDatasetLoader = (TrustDatasetLoader) datasetLoader;
-
-            setExperimentProgress("Loading trust dataset", 0, -1);
-            trustDatasetLoader.getTrustDataset();
-            setExperimentProgress("Finished loading trust dataset", 100, -1);
-        }
-        setExperimentProgress("Finished loading ratings dataset", 100, -1);
     }
 
     public GroupEvaluationMeasureResult getMeasureResult(GroupEvaluationMeasure groupEvaluationMeasure, int execution, int split) {
