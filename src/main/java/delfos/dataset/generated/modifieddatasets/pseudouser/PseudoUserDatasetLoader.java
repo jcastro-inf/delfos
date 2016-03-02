@@ -29,6 +29,7 @@ import delfos.dataset.basic.user.UsersDataset;
 import delfos.dataset.basic.user.UsersDatasetAdapter;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -48,6 +49,7 @@ public class PseudoUserDatasetLoader<RatingType extends Rating> extends DatasetL
 
     public PseudoUserDatasetLoader(DatasetLoader<RatingType> originalDatasetLoader) {
         this.originalDatasetLoader = originalDatasetLoader;
+        pseudoUsersRatings = new TreeMap<>();
     }
 
     public synchronized User addPseudoUser(Map<Item, RatingType> pseudoUserRatings) {
