@@ -16,8 +16,6 @@
  */
 package delfos.rs.collaborativefiltering.knn.memorybased.nwr;
 
-import delfos.rs.collaborativefiltering.knn.memorybased.KnnMemoryNeighborCalculator;
-import delfos.rs.collaborativefiltering.knn.memorybased.KnnMemoryNeighborTask;
 import delfos.common.Global;
 import delfos.common.exceptions.CouldNotPredictRating;
 import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
@@ -33,6 +31,8 @@ import delfos.rs.collaborativefiltering.knn.KnnCollaborativeRecommender;
 import delfos.rs.collaborativefiltering.knn.MatchRating;
 import delfos.rs.collaborativefiltering.knn.RecommendationEntity;
 import delfos.rs.collaborativefiltering.knn.memorybased.KnnMemoryModel;
+import delfos.rs.collaborativefiltering.knn.memorybased.KnnMemoryNeighborCalculator;
+import delfos.rs.collaborativefiltering.knn.memorybased.KnnMemoryNeighborTask;
 import delfos.rs.collaborativefiltering.predictiontechniques.PredictionTechnique;
 import delfos.rs.collaborativefiltering.profile.Neighbor;
 import delfos.rs.persistence.DatabasePersistence;
@@ -41,9 +41,9 @@ import delfos.rs.recommendation.Recommendation;
 import delfos.similaritymeasures.CollaborativeSimilarityMeasure;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -141,15 +141,11 @@ public class KnnMemoryBasedNWR extends KnnCollaborativeRecommender<KnnMemoryMode
 
     @Override
     public KnnMemoryModel buildRecommendationModel(DatasetLoader<? extends Rating> datasetLoader) {
-        //No se necesitan perfiles porque se examina la base de datos directamente
         return new KnnMemoryModel();
     }
 
     @Override
     public Collection<Recommendation> recommendToUser(DatasetLoader<? extends Rating> datasetLoader, KnnMemoryModel model, Integer idUser, Set<Integer> candidateItems) throws UserNotFound {
-        if (Global.isVerboseAnnoying()) {
-            Global.showInfoMessage(new Date().toGMTString() + " --> Recommending for user '" + idUser + "'\n");
-        }
 
         PredictionTechnique predictionTechnique = (PredictionTechnique) getParameterValue(PREDICTION_TECHNIQUE);
         int neighborhoodSize = (Integer) getParameterValue(NEIGHBORHOOD_SIZE);
@@ -187,12 +183,14 @@ public class KnnMemoryBasedNWR extends KnnCollaborativeRecommender<KnnMemoryMode
 
         User user = datasetLoader.getUsersDataset().get(idUser);
 
-        return datasetLoader.getUsersDataset().stream()
-                .filter(neighor -> neighor.getId() != user.getId())
-                .map((neighor) -> new KnnMemoryNeighborTask(datasetLoader, user, neighor, this))
+        List<Neighbor> neigbors = datasetLoader.getUsersDataset().stream()
+                .filter(neighbor -> !Objects.equals(neighbor.getId(), user.getId()))
+                .map((neighbor) -> new KnnMemoryNeighborTask(datasetLoader, user, neighbor, this))
                 .map(new KnnMemoryNeighborCalculator())
                 .sorted(Neighbor.BY_SIMILARITY_DESC)
                 .collect(Collectors.toList());
+
+        return neigbors;
     }
 
     /**

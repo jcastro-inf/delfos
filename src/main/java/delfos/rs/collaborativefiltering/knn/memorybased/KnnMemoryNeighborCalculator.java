@@ -29,6 +29,7 @@ import delfos.rs.collaborativefiltering.profile.Neighbor;
 import delfos.similaritymeasures.CollaborativeSimilarityMeasure;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
@@ -57,11 +58,7 @@ public final class KnnMemoryNeighborCalculator implements Function<KnnMemoryNeig
         }
         CollaborativeSimilarityMeasure similarityMeasure_ = (CollaborativeSimilarityMeasure) rs.getParameterValue(KnnCollaborativeRecommender.SIMILARITY_MEASURE);
 
-        Byte defaultRatingValue_ = 0;
         boolean defaultRating_ = (Boolean) rs.getParameterValue(KnnCollaborativeRecommender.DEFAULT_RATING);
-        if (defaultRating_) {
-            defaultRatingValue_ = ((Integer) rs.getParameterValue(KnnCollaborativeRecommender.DEFAULT_RATING_VALUE)).byteValue();
-        }
 
         boolean inverseFrequency_ = (Boolean) rs.getParameterValue(KnnCollaborativeRecommender.INVERSE_FREQUENCY);
         double caseAmp = ((Number) rs.getParameterValue(KnnCollaborativeRecommender.CASE_AMPLIFICATION)).doubleValue();
@@ -81,42 +78,15 @@ public final class KnnMemoryNeighborCalculator implements Function<KnnMemoryNeig
             neighborRatings = new TreeMap<>();
         }
 
-        Set<Integer> intersectionSet = null;
+        Set<Integer> intersectionSet = new TreeSet<>(activeUserRated.keySet());
+        intersectionSet.retainAll(neighborRatings.keySet());
 
-        if (relevanceFactor_) {
-            intersectionSet = new TreeSet<>(activeUserRated.keySet());
-            intersectionSet.retainAll(neighborRatings.keySet());
-        }
-
-        Collection<CommonRating> common = new ArrayList<>();
+        Collection<CommonRating> common;
 
         if (!defaultRating_) {
             common = CommonRating.intersection(datasetLoader, user, neighbor);
         } else {
-            Set<Integer> union = new TreeSet<>(activeUserRated.keySet());
-            union.addAll(neighborRatings.keySet());
-            if (union.isEmpty()) {
-                return new Neighbor(RecommendationEntity.USER, neighbor, Double.NaN);
-            }
-            for (int idItem : union) {
-                Rating r1 = activeUserRated.get(idItem);
-                Rating r2 = neighborRatings.get(idItem);
-
-                double d1;
-                if (r1 == null) {
-                    d1 = defaultRatingValue_;
-                } else {
-                    d1 = r1.getRatingValue().doubleValue();
-                }
-
-                double d2;
-                if (r2 == null) {
-                    d2 = defaultRatingValue_;
-                } else {
-                    d2 = r2.getRatingValue().doubleValue();
-                }
-                common.add(new CommonRating(RecommendationEntity.ITEM, idItem, RecommendationEntity.USER, idUser, idNeighbor, d1, d2));
-            }
+            common = getCommonRatingUnion(datasetLoader, rs, user, activeUserRated, neighbor, neighborRatings);
         }
 
         if (inverseFrequency_) {
@@ -150,6 +120,46 @@ public final class KnnMemoryNeighborCalculator implements Function<KnnMemoryNeig
             sim = Double.NaN;
         }
         return new Neighbor(RecommendationEntity.USER, neighbor, sim);
+    }
+
+    private Collection<CommonRating> getCommonRatingUnion(DatasetLoader<? extends Rating> datasetLoader, KnnCollaborativeRecommender rs, User user, Map<Integer, ? extends Rating> activeUserRated, User neighbor, Map<Integer, ? extends Rating> neighborRatings) {
+
+        byte defaultRatingValue = ((Integer) rs.getParameterValue(KnnCollaborativeRecommender.DEFAULT_RATING_VALUE)).byteValue();
+
+        Set<Integer> union = new TreeSet<>(activeUserRated.keySet());
+
+        union.addAll(neighborRatings.keySet());
+        if (union.isEmpty()) {
+            return Collections.EMPTY_LIST;
+        }
+
+        Collection<CommonRating> common = new ArrayList<>();
+        for (int idItem : union) {
+            Rating r1 = activeUserRated.get(idItem);
+            Rating r2 = neighborRatings.get(idItem);
+
+            double d1;
+            if (r1 == null) {
+                d1 = defaultRatingValue;
+            } else {
+                d1 = r1.getRatingValue().doubleValue();
+            }
+
+            double d2;
+            if (r2 == null) {
+                d2 = defaultRatingValue;
+            } else {
+                d2 = r2.getRatingValue().doubleValue();
+            }
+            common.add(new CommonRating(
+                    RecommendationEntity.ITEM,
+                    idItem,
+                    RecommendationEntity.USER,
+                    user.getId(), neighbor.getId(),
+                    d1, d2));
+        }
+
+        return common;
     }
 
 }
