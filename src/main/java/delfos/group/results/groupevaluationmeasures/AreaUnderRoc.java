@@ -25,10 +25,7 @@ import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RatingsDataset;
 import delfos.dataset.basic.rating.RelevanceCriteria;
 import delfos.group.groupsofusers.GroupOfUsers;
-import delfos.group.results.groupevaluationmeasures.precisionrecall.PRSpaceGroups;
 import delfos.group.results.grouprecomendationresults.GroupRecommenderSystemResult;
-import delfos.io.xml.evaluationmeasures.confusionmatricescurve.ConfusionMatricesCurveXML;
-import delfos.io.xml.parameterowner.ParameterOwnerXML;
 import delfos.results.evaluationmeasures.confusionmatrix.ConfusionMatricesCurve;
 import delfos.results.evaluationmeasures.roccurve.AreaUnderROC;
 import delfos.rs.recommendation.Recommendation;
@@ -37,7 +34,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
-import org.jdom2.Element;
 
 /**
  * Medida de evaluación para sistemas de recomendación a grupos que calcula la
@@ -49,23 +45,11 @@ import org.jdom2.Element;
  * <p>
  * Esta medida de evaluación es una generalización del
  *
- * @version 1.0 (10-01-2012)
- * @version 1.1 (11-01-2012)
- *
  * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @see AreaUnderROC
  */
 public class AreaUnderRoc extends GroupEvaluationMeasure {
-
-    /**
-     * Nombre del elemento que almacena la información de un grupo de usuarios
-     */
-    public static final String GROUP_OF_USERS_ELEMENT = "GroupOfUsers";
-    /**
-     * Nombre del atributo que almacena la lista de usuarios que forman el grupo
-     */
-    public static final String USERS_ATTRIBUTE = "users";
 
     @Override
     public boolean usesRatingPrediction() {
@@ -89,7 +73,7 @@ public class AreaUnderRoc extends GroupEvaluationMeasure {
 
             List<Boolean> recommendacionesGrupo = new ArrayList<>(groupRecommendations.size());
             for (Recommendation r : groupRecommendations) {
-                int idItem = r.getIdItem();
+                int idItem = r.getItem().getId();
 
                 MeanIterative mean = new MeanIterative();
                 for (int idUser : group.getIdMembers()) {
@@ -122,13 +106,8 @@ public class AreaUnderRoc extends GroupEvaluationMeasure {
         }
 
         if (gruposSinMatriz != 0) {
-            Global.showWarning("Grupos sin Matriz en " + PRSpaceGroups.class + " --> " + gruposSinMatriz + " \n");
+            Global.showWarning("Grupos sin Matriz en " + AreaUnderRoc.class + " --> " + gruposSinMatriz + " \n");
         }
-
-        Element areaUnderRocElement = ParameterOwnerXML.getElement(this);
-        areaUnderRocElement.setAttribute("value", Double.toString(areaUnderRoc));
-
-        areaUnderRocElement.addContent(ConfusionMatricesCurveXML.getElement(curva));
 
         return new GroupEvaluationMeasureResult(this, areaUnderRoc);
     }
