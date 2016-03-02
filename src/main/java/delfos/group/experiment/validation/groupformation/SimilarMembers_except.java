@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -22,6 +22,7 @@ import delfos.common.parameters.restriction.IntegerParameter;
 import delfos.common.parameters.restriction.ParameterOwnerRestriction;
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
+import delfos.dataset.basic.user.User;
 import delfos.group.groupsofusers.GroupOfUsers;
 import delfos.similaritymeasures.PearsonCorrelationCoefficient;
 import delfos.similaritymeasures.useruser.UserUserSimilarity;
@@ -143,7 +144,7 @@ public class SimilarMembers_except extends GroupFormationTechnique {
 
         Collection<GroupOfUsers> groupsOfSimilarMembers = similarMembers.shuffle(datasetLoader);
 
-        ArrayList<Integer> usersRemainToSelect = new ArrayList<>(datasetLoader.getRatingsDataset().allUsers());
+        ArrayList<User> usersRemainToSelect = new ArrayList<>(datasetLoader.getUsersDataset());
         groupsOfSimilarMembers.stream().forEach((group) -> {
             usersRemainToSelect.removeAll(group.getIdMembers());
         });
@@ -152,11 +153,11 @@ public class SimilarMembers_except extends GroupFormationTechnique {
 
         //A cada grupo le añado los usuarios no similares.
         for (GroupOfUsers group : groupsOfSimilarMembers) {
-            Set<Integer> usersGrupoActual = new TreeSet<>(group.getIdMembers());
+            Set<User> usersGrupoActual = new TreeSet<>(group.getMembers());
 
             while (usersGrupoActual.size() < groupSize) {
                 int index = random.nextInt(usersRemainToSelect.size());
-                Integer idUser = usersRemainToSelect.remove(index);
+                User idUser = usersRemainToSelect.remove(index);
                 usersGrupoActual.add(idUser);
             }
             ret.add(new GroupOfUsers(usersGrupoActual));

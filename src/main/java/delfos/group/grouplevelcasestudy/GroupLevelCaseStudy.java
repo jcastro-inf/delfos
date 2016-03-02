@@ -24,6 +24,7 @@ import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
 import delfos.common.exceptions.dataset.items.ItemNotFound;
 import delfos.common.exceptions.dataset.users.UserNotFound;
 import delfos.common.exceptions.ratings.NotEnoughtUserInformation;
+import delfos.dataset.basic.item.Item;
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RelevanceCriteria;
@@ -119,7 +120,7 @@ public class GroupLevelCaseStudy {
                 for (GroupRecommenderSystem groupRecommenderSystem : groupRecommenderSystems) {
                     Object recommendationModel = groupRecommenderSystem.buildRecommendationModel(trainingDatasetLoader);
                     Collection<Recommendation> allPredictions = new ArrayList<>();
-                    Set<Integer> requests = new TreeSet<>();
+                    Set<Item> requests = new TreeSet<>();
 
                     for (GroupRecommendationRequest groupRecommendationRequest : predictionProtocol.getGroupRecommendationRequests(trainingDatasetLoader, testDatasetLoader, group)) {
 
@@ -145,7 +146,7 @@ public class GroupLevelCaseStudy {
                     }
 
                     for (GroupEvaluationMeasure evaluationMeasure : evaluationMeasures) {
-                        Map<GroupOfUsers, Collection<Integer>> _requests = new TreeMap<>();
+                        Map<GroupOfUsers, Collection<Item>> _requests = new TreeMap<>();
                         _requests.put(group, requests);
                         Map<GroupOfUsers, Collection<Recommendation>> _recommendations = new TreeMap<>();
                         _recommendations.put(group, allPredictions);

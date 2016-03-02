@@ -1,22 +1,23 @@
 package delfos.group.rs;
 
-import delfos.group.grs.RandomGroupRecommender;
-import delfos.group.grs.GroupRecommenderSystemAdapter;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
-import delfos.dataset.basic.rating.Rating;
-import delfos.dataset.basic.loader.types.DatasetLoader;
-import delfos.dataset.basic.rating.RatingsDataset;
-import delfos.rs.nonpersonalised.randomrecommender.RandomRecommendationModel;
-import delfos.rs.recommendation.Recommendation;
+import delfos.common.Global;
 import delfos.common.exceptions.dataset.CannotLoadContentDataset;
 import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
 import delfos.common.exceptions.dataset.items.ItemNotFound;
 import delfos.common.exceptions.dataset.users.UserNotFound;
-import delfos.common.Global;
+import delfos.dataset.basic.item.Item;
+import delfos.dataset.basic.loader.types.DatasetLoader;
+import delfos.dataset.basic.rating.Rating;
+import delfos.dataset.basic.rating.RatingsDataset;
 import delfos.group.groupsofusers.GroupOfUsers;
+import delfos.group.grs.GroupRecommenderSystemAdapter;
+import delfos.group.grs.RandomGroupRecommender;
+import delfos.rs.nonpersonalised.randomrecommender.RandomRecommendationModel;
+import delfos.rs.recommendation.Recommendation;
+import java.util.Collection;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
 
 /**
  * Sistema de recomendación a grupos que comprueba que se aplican correctamente
@@ -57,7 +58,7 @@ public class GroupRecommender_TestValidationProtocols extends GroupRecommenderSy
     }
 
     @Override
-    public Object buildGroupModel(DatasetLoader<? extends Rating> datasetLoader, Object RecommendationModel, GroupOfUsers groupOfUsers) throws UserNotFound, CannotLoadRatingsDataset {
+    public <RatingType extends Rating> Object buildGroupModel(DatasetLoader<RatingType> datasetLoader, Object RecommendationModel, GroupOfUsers groupOfUsers) throws UserNotFound, CannotLoadRatingsDataset {
         datasetsEnConstruccionModeloGrupo.put(
                 groupOfUsers,
                 datasetLoader.getRatingsDataset());
@@ -67,7 +68,12 @@ public class GroupRecommender_TestValidationProtocols extends GroupRecommenderSy
     }
 
     @Override
-    public Collection<Recommendation> recommendOnly(DatasetLoader<? extends Rating> datasetLoader, Object RecommendationModel, Object groupModel, GroupOfUsers groupOfUsers, java.util.Set<Integer> candidateItems) throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset {
+    public <RatingType extends Rating> Collection<Recommendation> recommendOnly(
+            DatasetLoader<RatingType> datasetLoader,
+            Object RecommendationModel,
+            Object groupModel,
+            GroupOfUsers groupOfUsers,
+            Set<Item> candidateItems) throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset {
 
         /*
          * Compruebo si alguna vez me piden recomendaciones que se conocian en
@@ -84,8 +90,8 @@ public class GroupRecommender_TestValidationProtocols extends GroupRecommenderSy
         for (int idUser : groupOfUsers.getIdMembers()) {
             boolean error = false;
             Collection<Integer> userRated = datasetLoader.getRatingsDataset().getUserRated(idUser);
-            for (int idItem : candidateItems) {
-                if (userRated.contains(idItem)) {
+            for (Item item : candidateItems) {
+                if (userRated.contains(item.getId())) {
                     Global.showWarning("El producto a predecir está en el dataset!!!!");
                     error = true;
                 }
@@ -102,8 +108,8 @@ public class GroupRecommender_TestValidationProtocols extends GroupRecommenderSy
         for (int idUser : groupOfUsers.getIdMembers()) {
             boolean error = false;
             Collection<Integer> userRated = datasetsEnConstruccionModeloGrupo.get(groupOfUsers).getUserRated(idUser);
-            for (int idItem : candidateItems) {
-                if (userRated.contains(idItem)) {
+            for (Item item : candidateItems) {
+                if (userRated.contains(item.getId())) {
                     Global.showWarning("El dataset de construcción del modelo de este grupo contiene el rating a predecir!!!!");
                     error = true;
                 }
@@ -120,8 +126,8 @@ public class GroupRecommender_TestValidationProtocols extends GroupRecommenderSy
         for (int idUser : groupOfUsers.getIdMembers()) {
             boolean error = false;
             Collection<Integer> userRated = datasetEnBuild.getUserRated(idUser);
-            for (int idItem : candidateItems) {
-                if (userRated.contains(idItem)) {
+            for (Item item : candidateItems) {
+                if (userRated.contains(item.getId())) {
                     Global.showWarning("El dataset de construcción del modelo general contiene el rating a predecir!!!!");
                     error = true;
                 }
@@ -144,7 +150,12 @@ public class GroupRecommender_TestValidationProtocols extends GroupRecommenderSy
         if (RecommendationModel instanceof RandomRecommendationModel) {
             RandomRecommendationModel randomRecommendationModel = (RandomRecommendationModel) RecommendationModel;
 
-            return randomGroupRecommender.recommendOnly(datasetLoader, randomRecommendationModel, groupOfUsers, groupOfUsers, candidateItems);
+            return randomGroupRecommender.recommendOnly(
+                    datasetLoader,
+                    randomRecommendationModel,
+                    groupOfUsers,
+                    groupOfUsers,
+                    candidateItems);
         } else {
             throw new IllegalArgumentException("The model type is not the correct for this recommender.");
         }

@@ -8,6 +8,7 @@ import delfos.common.exceptions.dataset.users.UserNotFound;
 import delfos.common.exceptions.ratings.NotEnoughtUserInformation;
 import delfos.configureddatasets.ConfiguredDatasetsFactory;
 import delfos.constants.DelfosTest;
+import delfos.dataset.basic.item.Item;
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RatingsDataset;
@@ -17,6 +18,7 @@ import delfos.group.grs.aggregation.AggregationOfIndividualRatings;
 import delfos.group.grs.aggregation.GroupModelPseudoUser;
 import delfos.group.grs.recommendations.GroupRecommendations;
 import delfos.rs.RecommenderSystemBuildingProgressListener_default;
+import delfos.rs.collaborativefiltering.knn.KnnCollaborativeRecommender;
 import delfos.rs.collaborativefiltering.knn.memorybased.nwr.KnnMemoryBasedNWR;
 import delfos.rs.collaborativefiltering.predictiontechniques.WeightedSum;
 import delfos.rs.explanation.GroupModelWithExplanation;
@@ -24,9 +26,11 @@ import delfos.rs.output.RecommendationsOutputStandardRaw;
 import delfos.rs.recommendation.Recommendation;
 import delfos.rs.recommendation.RecommendationComputationDetails;
 import delfos.similaritymeasures.CosineCoefficient;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.stream.Collectors;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -46,23 +50,44 @@ public class AggregationOfIndividualRatingsTest extends DelfosTest {
     public void testWholeProccess() throws UserNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset, ItemNotFound, NotEnoughtUserInformation {
         final RatingsDataset<? extends Rating> ratingsDataset = datasetLoader.getRatingsDataset();
 
-        KnnMemoryBasedNWR traditionalRecommenderSystem = new KnnMemoryBasedNWR(new CosineCoefficient(), 30, null, false, 1, 20, new WeightedSum());
+        KnnMemoryBasedNWR knnMemory = new KnnMemoryBasedNWR();
 
-        AggregationOfIndividualRatings grs = new AggregationOfIndividualRatings(traditionalRecommenderSystem, new Mean());
+        knnMemory.setParameterValue(KnnCollaborativeRecommender.SIMILARITY_MEASURE, new CosineCoefficient());
+        knnMemory.setParameterValue(KnnCollaborativeRecommender.RELEVANCE_FACTOR, 30);
+        knnMemory.setParameterValue(KnnCollaborativeRecommender.DEFAULT_RATING_VALUE, null);
+        knnMemory.setParameterValue(KnnCollaborativeRecommender.DEFAULT_RATING, false);
+        knnMemory.setParameterValue(KnnCollaborativeRecommender.CASE_AMPLIFICATION, 1);
+        knnMemory.setParameterValue(KnnCollaborativeRecommender.NEIGHBORHOOD_SIZE, 20);
+        knnMemory.setParameterValue(KnnCollaborativeRecommender.PREDICTION_TECHNIQUE, new WeightedSum());
+
+        AggregationOfIndividualRatings grs = new AggregationOfIndividualRatings(knnMemory, new Mean());
 
         grs.addRecommendationModelBuildingProgressListener(new RecommenderSystemBuildingProgressListener_default(System.out, 5000));
         SingleRecommendationModel recommendationModel = grs.buildRecommendationModel(datasetLoader);
 
-        Set<Integer> notRated = new TreeSet<>(ratingsDataset.allRatedItems());
+        Set<Integer> notRatedID = new TreeSet<>(ratingsDataset.allRatedItems());
 
-        notRated.removeAll(ratingsDataset.getUserRated(15743));
-        notRated.removeAll(ratingsDataset.getUserRated(24357));
-        notRated.removeAll(ratingsDataset.getUserRated(162779));
+        notRatedID.removeAll(ratingsDataset.getUserRated(15743));
+        notRatedID.removeAll(ratingsDataset.getUserRated(24357));
+        notRatedID.removeAll(ratingsDataset.getUserRated(162779));
 
-        final GroupOfUsers group = new GroupOfUsers(15743, 24357, 162779);
+        Set<Item> notRated = notRatedID.stream()
+                .map(idItem -> datasetLoader.getContentDataset().get(idItem))
+                .collect(Collectors.toSet());
 
-        GroupModelWithExplanation<GroupModelPseudoUser, ? extends Object> groupModel = grs.buildGroupModel(datasetLoader, recommendationModel, group);
-        Collection<Recommendation> recommendOnly = grs.recommendOnly(datasetLoader, recommendationModel, groupModel, group, notRated);
+        final GroupOfUsers group = new GroupOfUsers(Arrays.asList(
+                datasetLoader.getUsersDataset().get(15743),
+                datasetLoader.getUsersDataset().get(24357),
+                datasetLoader.getUsersDataset().get(162779))
+        );
+
+        GroupModelWithExplanation<GroupModelPseudoUser, Object> groupModel = grs.buildGroupModel(datasetLoader, recommendationModel, group);
+        Collection<Recommendation> recommendOnly = grs.recommendOnly(
+                datasetLoader,
+                recommendationModel,
+                groupModel,
+                group,
+                notRated);
 
         RecommendationsOutputStandardRaw output = new RecommendationsOutputStandardRaw();
         output.writeRecommendations(new GroupRecommendations(group, recommendOnly, RecommendationComputationDetails.EMPTY_DETAILS));
@@ -70,8 +95,17 @@ public class AggregationOfIndividualRatingsTest extends DelfosTest {
         {
             // 4697 -> 4.300307
             int idItem = 4697;
+            Item item = datasetLoader.getContentDataset().get(idItem);
+
+            Set<Item> candidateItems = Arrays.asList(item).stream().collect(Collectors.toSet());
             double prediction = 4.300307;
-            Collection<Recommendation> predictionList = grs.recommendOnly(datasetLoader, recommendationModel, groupModel, group, idItem);
+            Collection<Recommendation> predictionList = grs.recommendOnly(
+                    datasetLoader,
+                    recommendationModel,
+                    groupModel,
+                    group,
+                    candidateItems);
+
             Assert.assertEquals(1, predictionList.size());
             Assert.assertEquals(idItem, predictionList.iterator().next().getIdItem());
             Assert.assertEquals(prediction, predictionList.iterator().next().getPreference().doubleValue(), 0.0001);
@@ -81,7 +115,15 @@ public class AggregationOfIndividualRatingsTest extends DelfosTest {
             // 10082 -> 2.50053
             int idItem = 10082;
             double prediction = 2.50053;
-            Collection<Recommendation> predictionList = grs.recommendOnly(datasetLoader, recommendationModel, groupModel, group, idItem);
+            Item item = datasetLoader.getContentDataset().get(idItem);
+            Set<Item> candidateItems = Arrays.asList(item).stream().collect(Collectors.toSet());
+            Collection<Recommendation> predictionList = grs.recommendOnly(
+                    datasetLoader,
+                    recommendationModel,
+                    groupModel,
+                    group,
+                    candidateItems);
+
             Assert.assertEquals(1, predictionList.size());
             Assert.assertEquals(idItem, predictionList.iterator().next().getIdItem());
             Assert.assertEquals(prediction, predictionList.iterator().next().getPreference().doubleValue(), 0.0001);

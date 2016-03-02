@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -107,7 +107,7 @@ public class DissimilarMembers_OnlyNGroups extends GroupFormationTechnique {
 
         int numGruposGenerados = 0;
         while (groupsGenerated.size() < numGroups) {
-            TreeSet<Integer> usersThisGroup = new TreeSet<>();
+            TreeSet<User> usersThisGroup = new TreeSet<>();
 
             if (usersRemainToSelect.size() < groupSize) {
                 throw new IllegalStateException("No more users!!");
@@ -117,7 +117,7 @@ public class DissimilarMembers_OnlyNGroups extends GroupFormationTechnique {
             {
                 int indexToRemove = random.nextInt(usersRemainToSelect.size());
                 firstMember = usersRemainToSelect.remove(indexToRemove);
-                usersThisGroup.add(firstMember.getId());
+                usersThisGroup.add(firstMember);
             }
 
             List<Neighbor> similarityToFirstUser = usersRemainToSelect.parallelStream()
@@ -131,7 +131,7 @@ public class DissimilarMembers_OnlyNGroups extends GroupFormationTechnique {
             List<Neighbor> usersToAdd = similarityToFirstUser.subList(0, groupSize - 1);
 
             for (Neighbor newMember : usersToAdd) {
-                usersThisGroup.add(newMember.getIdNeighbor());
+                usersThisGroup.add((User) newMember.getNeighbor());
                 boolean remove = usersRemainToSelect.remove((User) newMember.getNeighbor());
                 if (!remove) {
                     throw new IllegalStateException("asdfasdf");

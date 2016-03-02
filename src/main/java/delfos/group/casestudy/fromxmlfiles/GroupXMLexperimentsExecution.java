@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -54,7 +54,7 @@ public class GroupXMLexperimentsExecution {
     private final String experimentsDirectory;
     private final int numExecutions;
     private final String datasetsDirectory;
-    private long seed;
+    private final long seed;
 
     public GroupXMLexperimentsExecution(String experimentsDirectory, String datasetDirectory, int numExecutions, long seed) {
         this.experimentsDirectory = experimentsDirectory;

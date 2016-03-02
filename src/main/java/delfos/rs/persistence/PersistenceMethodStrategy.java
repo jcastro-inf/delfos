@@ -31,8 +31,14 @@ import java.util.Collection;
 public class PersistenceMethodStrategy {
 
     public static <RecommendationModel> RecommendationModel loadModel(
-            GenericRecommenderSystem<RecommendationModel> recommenderSystem, PersistenceMethod persistenceMethod, Collection<Integer> users, Collection<Integer> items, DatasetLoader<? extends Rating> datasetLoader) throws FailureInPersistence {
-        RecommendationModel RecommendationModel = null;
+            GenericRecommenderSystem<RecommendationModel> recommenderSystem,
+            PersistenceMethod persistenceMethod,
+            Collection<Integer> users,
+            Collection<Integer> items,
+            DatasetLoader<? extends Rating> datasetLoader)
+            throws FailureInPersistence {
+
+        RecommendationModel recommendationModel = null;
 
         boolean methodOK = false;
 
@@ -41,7 +47,7 @@ public class PersistenceMethodStrategy {
             DatabasePersistence databasePersistence = (DatabasePersistence) persistenceMethod;
 
             Global.showMessageTimestamped("Loading recommendation model from database");
-            RecommendationModel = recommenderSystem.loadRecommendationModel(databasePersistence, users, items, datasetLoader);
+            recommendationModel = recommenderSystem.loadRecommendationModel(databasePersistence, users, items, datasetLoader);
             Global.showMessageTimestamped("Loaded recommendation model from database");
         }
 
@@ -50,7 +56,7 @@ public class PersistenceMethodStrategy {
             FilePersistence filePersistence = (FilePersistence) persistenceMethod;
 
             Global.showMessageTimestamped("Loading recommendation model from file");
-            RecommendationModel = recommenderSystem.loadRecommendationModel(filePersistence, users, items);
+            recommendationModel = recommenderSystem.loadRecommendationModel(filePersistence, users, items);
             Global.showMessageTimestamped("Loaded recommendation model from file");
         }
 
@@ -58,7 +64,7 @@ public class PersistenceMethodStrategy {
             throw new IllegalStateException("Persistence method " + persistenceMethod.getName() + " not known.");
         }
 
-        return RecommendationModel;
+        return recommendationModel;
     }
 
     public static void saveModel(GenericRecommenderSystem recommenderSystem, PersistenceMethod persistenceMethod, Object RecommendationModel) throws FailureInPersistence {

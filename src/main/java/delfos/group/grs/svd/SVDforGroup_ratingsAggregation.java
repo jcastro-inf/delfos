@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,11 +16,6 @@
  */
 package delfos.group.grs.svd;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
 import delfos.common.aggregationoperators.AggregationOperator;
 import delfos.common.aggregationoperators.Mean;
 import delfos.common.exceptions.dataset.CannotLoadContentDataset;
@@ -29,11 +24,11 @@ import delfos.common.exceptions.dataset.items.ItemNotFound;
 import delfos.common.exceptions.dataset.users.UserNotFound;
 import delfos.common.parameters.Parameter;
 import delfos.common.parameters.restriction.ParameterOwnerRestriction;
-import delfos.dataset.basic.rating.Rating;
-import delfos.dataset.loaders.given.DatasetLoaderGivenRatingsDataset;
+import delfos.dataset.basic.item.Item;
 import delfos.dataset.basic.loader.types.DatasetLoader;
-import delfos.dataset.generated.modifieddatasets.PseudoUserRatingsDataset;
-import delfos.dataset.util.DatasetUtilities;
+import delfos.dataset.basic.rating.Rating;
+import delfos.dataset.basic.user.User;
+import delfos.dataset.generated.modifieddatasets.pseudouser.PseudoUserDatasetLoader;
 import delfos.group.groupsofusers.GroupOfUsers;
 import delfos.group.grs.GroupRecommenderSystemAdapter;
 import delfos.group.grs.aggregation.AggregationOfIndividualRatings;
@@ -41,6 +36,11 @@ import delfos.rs.collaborativefiltering.svd.SVDFoldingIn;
 import delfos.rs.collaborativefiltering.svd.TryThisAtHomeSVD;
 import delfos.rs.collaborativefiltering.svd.TryThisAtHomeSVDModel;
 import delfos.rs.recommendation.Recommendation;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Sistema de recomendación a grupos con agregación de valoraciones de los
@@ -104,25 +104,30 @@ public class SVDforGroup_ratingsAggregation extends GroupRecommenderSystemAdapte
     }
 
     @Override
-    public GroupSVDModel buildGroupModel(
-            DatasetLoader<? extends Rating> datasetLoader,
-            TryThisAtHomeSVDModel RecommendationModel,
+    public <RatingType extends Rating> GroupSVDModel buildGroupModel(
+            DatasetLoader<RatingType> datasetLoader,
+            TryThisAtHomeSVDModel recommendationModel,
             GroupOfUsers groupOfUsers)
             throws UserNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset {
 
         AggregationOperator aggregationOperator = getAggregationOperator();
-        Map<Integer, Number> groupAggregatedProfile = AggregationOfIndividualRatings.getGroupProfile(datasetLoader, aggregationOperator, groupOfUsers);
+        Map<Item, RatingType> groupAggregatedProfile = AggregationOfIndividualRatings.getGroupProfile(
+                datasetLoader,
+                aggregationOperator,
+                groupOfUsers);
 
-        Map<Integer, Map<Integer, Number>> groupAggregatedProfile_matrix = new TreeMap<>();
-        groupAggregatedProfile_matrix.put(-1, groupAggregatedProfile);
+        PseudoUserDatasetLoader<RatingType> pseudoUserDatasetLoader
+                = new PseudoUserDatasetLoader<>(datasetLoader);
 
-        PseudoUserRatingsDataset<Rating> rd = new PseudoUserRatingsDataset<>(datasetLoader.getRatingsDataset(), DatasetUtilities.getUserMap_Rating(-1, groupAggregatedProfile));
+        User pseudoUser = pseudoUserDatasetLoader.addPseudoUser(groupAggregatedProfile);
 
-        final int idPseudoUser = rd.getIdPseudoUser();
+        TryThisAtHomeSVDModel foldInModel = singleUserSR
+                .incrementModelWithUserRatings(
+                        recommendationModel,
+                        pseudoUserDatasetLoader,
+                        pseudoUser.getId());
 
-        TryThisAtHomeSVDModel foldInModel = singleUserSR.incrementModelWithUserRatings(RecommendationModel, new DatasetLoaderGivenRatingsDataset(datasetLoader, rd), idPseudoUser);
-
-        int idPseudoUserIndex = foldInModel.getUsersIndex().get(idPseudoUser);
+        int idPseudoUserIndex = foldInModel.getUsersIndex().get(pseudoUser.getId());
 
         ArrayList<Double> groupFeatures = foldInModel.getAllUserFeatures().get(idPseudoUserIndex);
 
@@ -134,7 +139,13 @@ public class SVDforGroup_ratingsAggregation extends GroupRecommenderSystemAdapte
     }
 
     @Override
-    public Collection<Recommendation> recommendOnly(DatasetLoader<? extends Rating> datasetLoader, TryThisAtHomeSVDModel RecommendationModel, GroupSVDModel groupModel, GroupOfUsers groupOfUsers, java.util.Set<Integer> candidateItems) throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset {
+    public <RatingType extends Rating> Collection<Recommendation> recommendOnly(
+            DatasetLoader<RatingType> datasetLoader,
+            TryThisAtHomeSVDModel RecommendationModel,
+            GroupSVDModel groupModel,
+            GroupOfUsers groupOfUsers,
+            Set<Item> candidateItems)
+            throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset {
 
         int idUser = -1;
         if (datasetLoader.getRatingsDataset().allUsers().contains(idUser)) {
@@ -142,6 +153,9 @@ public class SVDforGroup_ratingsAggregation extends GroupRecommenderSystemAdapte
         }
 
         TryThisAtHomeSVDModel extendedModel = TryThisAtHomeSVDModel.addUser(RecommendationModel, idUser, groupModel.getGroupFeatures());
-        return singleUserSR.recommendToUser(datasetLoader, extendedModel, idUser, candidateItems);
+        return singleUserSR.recommendToUser(datasetLoader, extendedModel, idUser,
+                candidateItems.stream()
+                .map(item -> item.getId()).collect(Collectors.toSet())
+        );
     }
 }

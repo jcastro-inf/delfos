@@ -156,7 +156,7 @@ public class GroupRecommendationManager {
                     groupMembers.add(Integer.parseInt(idUser));
                 }
 
-                group = new GroupOfUsers(groupMembers);
+                group = new GroupOfUsers(groupMembers.toArray(new Integer[0]));
             }
 
             Collection<Integer> users;
@@ -195,7 +195,12 @@ public class GroupRecommendationManager {
 
             Object groupModel = groupRecommenderSystem.buildGroupModel(datasetLoader, recommendationModel_grs, group);
 
-            groupRecommendations = new ArrayList<>(groupRecommenderSystem.recommendOnly(datasetLoader, recommendationModel_grs, groupModel, group, candidateItems));
+            groupRecommendations = new ArrayList<>(groupRecommenderSystem.recommendOnly(
+                    datasetLoader,
+                    recommendationModel_grs,
+                    groupModel,
+                    group,
+                    candidateItems.stream().map(idItem -> datasetLoader.getContentDataset().get(idItem)).collect(Collectors.toSet())));
             Collections.sort(groupRecommendations);
 
             Object recommendationModel_singleUser = recommenderSystem.loadRecommendationModel(rsFilePersistence, users, items);
@@ -208,7 +213,8 @@ public class GroupRecommendationManager {
                         datasetLoader,
                         recommendationModel_singleUser,
                         idUser,
-                        candidateItems));
+                        candidateItems.stream().map(idItem -> datasetLoader.getContentDataset()
+                                .get(idItem)).collect(Collectors.toSet())));
             }
 
             Map<Integer, Collection<Recommendation>> singleUserRecommendations
@@ -217,7 +223,7 @@ public class GroupRecommendationManager {
                                     datasetLoader,
                                     recommendationModel_singleUser,
                                     idUser,
-                                    candidateItems))
+                                    candidateItems.stream().map(idItem -> datasetLoader.getContentDataset().get(idItem)).collect(Collectors.toSet())))
                     .map(new SingleUserRecommendationTaskExecutor())
                     .collect(
                             Collectors.toMap(

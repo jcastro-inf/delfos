@@ -64,17 +64,21 @@ public class MeanRatingGRS extends GroupRecommenderSystemAdapter<MeanRatingRSMod
     }
 
     @Override
-    public GroupOfUsers buildGroupModel(DatasetLoader<? extends Rating> datasetLoader, MeanRatingRSModel RecommendationModel, GroupOfUsers groupOfUsers) throws UserNotFound {
+    public <RatingType extends Rating> GroupOfUsers buildGroupModel(
+            DatasetLoader<RatingType> datasetLoader,
+            MeanRatingRSModel RecommendationModel,
+            GroupOfUsers groupOfUsers)
+            throws UserNotFound {
         return new GroupOfUsers(groupOfUsers.getMembers());
     }
 
     @Override
-    public Collection<Recommendation> recommendOnly(
-            DatasetLoader<? extends Rating> datasetLoader,
+    public <RatingType extends Rating> Collection<Recommendation> recommendOnly(
+            DatasetLoader<RatingType> datasetLoader,
             MeanRatingRSModel RecommendationModel,
             GroupOfUsers groupModel,
             GroupOfUsers groupOfUsers,
-            Set<Integer> candidateItems)
+            Set<Item> candidateItems)
             throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadRatingsDataset {
 
         Map<Item, MeanRating> meanRatingsByItem = RecommendationModel
@@ -82,7 +86,6 @@ public class MeanRatingGRS extends GroupRecommenderSystemAdapter<MeanRatingRSMod
                 .collect(Collectors.toMap(meanRating -> meanRating.getItem(), Function.identity()));
 
         List<Recommendation> recommendations = candidateItems.parallelStream()
-                .map(idItem -> datasetLoader.getContentDataset().get(idItem))
                 .map(item -> meanRatingsByItem.containsKey(item) ? meanRatingsByItem.get(item) : new MeanRating(item, Double.NaN))
                 .map(meanRating -> new Recommendation(meanRating.getItem(), meanRating.getPreference()))
                 .collect(Collectors.toList());

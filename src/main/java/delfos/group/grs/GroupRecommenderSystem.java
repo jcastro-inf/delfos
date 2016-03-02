@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -21,13 +21,14 @@ import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
 import delfos.common.exceptions.dataset.items.ItemNotFound;
 import delfos.common.exceptions.dataset.users.UserNotFound;
 import delfos.common.exceptions.ratings.NotEnoughtUserInformation;
+import delfos.dataset.basic.item.Item;
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
 import delfos.group.groupsofusers.GroupOfUsers;
 import delfos.rs.GenericRecommenderSystem;
 import delfos.rs.recommendation.Recommendation;
 import java.util.Collection;
-import java.util.List;
+import java.util.Set;
 
 /**
  *
@@ -47,16 +48,18 @@ public interface GroupRecommenderSystem<RecommendationModel, GroupModel> extends
      * NOTA: Por defecto este método está vacío, por lo que los sistemas de
      * recomendación que lo necesiten deben sobreescribirlo.
      *
+     * @param <RatingType>
      * @param datasetLoader
      * @param RecommendationModel
      * @param groupOfUsers Grupo para el que se genera su modelo asociado
      * @return
      * @throws UserNotFound Cuando algún usuario del el usuario del grupo no
      * existe
+     * @throws delfos.common.exceptions.ratings.NotEnoughtUserInformation
      *
      */
-    public GroupModel buildGroupModel(
-            DatasetLoader<? extends Rating> datasetLoader,
+    public <RatingType extends Rating> GroupModel buildGroupModel(
+            DatasetLoader<RatingType> datasetLoader,
             RecommendationModel RecommendationModel,
             GroupOfUsers groupOfUsers)
             throws UserNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset, NotEnoughtUserInformation;
@@ -65,33 +68,24 @@ public interface GroupRecommenderSystem<RecommendationModel, GroupModel> extends
      * Devuelve las recomendacione para el grupo de usuarios indicado de entre
      * las opciones disponibles indicadas.
      *
+     * @param <RatingType>
+     * @param datasetLoader
+     * @param recommendationModel
+     * @param groupModel
      * @param groupOfUsers Grupo de usuarios para el que se realiza la
      * recomendación
      * @param candidateItems Conjunto de opciones disponibles para recomendar
      * @return Lista ordenada de recomendaciones para el grupo
      * @throws UserNotFound Cuando algún usuario del el usuario del grupo no
      * existe
+     * @throws delfos.common.exceptions.ratings.NotEnoughtUserInformation
      */
-    public Collection<Recommendation> recommendOnly(
-            DatasetLoader<? extends Rating> datasetLoader, RecommendationModel RecommendationModel, GroupModel groupModel, GroupOfUsers groupOfUsers, java.util.Set<Integer> candidateItems)
-            throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset, NotEnoughtUserInformation;
-
-    /**
-     * Devuelve las recomendacione para el grupo de usuarios indicado de entre
-     * las opciones disponibles indicadas.
-     *
-     * @param groupOfUsers Grupo de usuarios para el que se realiza la
-     * recomendación
-     * @param candidateItems Conjunto de opciones disponibles para recomendar
-     * @return Lista ordenada de recomendaciones para el grupo
-     * @throws UserNotFound Cuando algún usuario del el usuario del grupo no
-     * existe
-     */
-    public Collection<Recommendation> recommendOnly(
-            DatasetLoader<? extends Rating> datasetLoader,
-            RecommendationModel RecommendationModel,
+    public <RatingType extends Rating> Collection<Recommendation> recommendOnly(
+            DatasetLoader<RatingType> datasetLoader,
+            RecommendationModel recommendationModel,
             GroupModel groupModel,
             GroupOfUsers groupOfUsers,
-            Integer... candidateItems)
+            Set<Item> candidateItems)
             throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset, NotEnoughtUserInformation;
+
 }

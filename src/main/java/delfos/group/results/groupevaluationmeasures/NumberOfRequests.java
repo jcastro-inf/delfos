@@ -16,13 +16,14 @@
  */
 package delfos.group.results.groupevaluationmeasures;
 
+import delfos.dataset.basic.item.Item;
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RatingsDataset;
 import delfos.dataset.basic.rating.RelevanceCriteria;
 import delfos.group.groupsofusers.GroupOfUsers;
 import delfos.group.results.grouprecomendationresults.GroupRecommenderSystemResult;
-import java.util.Collection;
+import java.util.Set;
 
 /**
  * Medida de evaluación para calcular el número de solicitudes de predicción que
@@ -47,7 +48,7 @@ public class NumberOfRequests extends GroupEvaluationMeasure {
         long solicitadas = 0;
 
         for (GroupOfUsers groupOfUsers : groupRecommenderSystemResult.getGroupsOfUsers()) {
-            Collection<Integer> groupRequests = groupRecommenderSystemResult.getGroupInput(groupOfUsers).getItemsRequested();
+            Set<Item> groupRequests = groupRecommenderSystemResult.getGroupInput(groupOfUsers).getItemsRequested();
             solicitadas += groupRequests.size();
         }
 

@@ -87,37 +87,6 @@ public class KnnMemoryBasedCFRS extends KnnCollaborativeRecommender<KnnMemoryMod
         addParameter(RELEVANCE_FACTOR_VALUE);
     }
 
-    public KnnMemoryBasedCFRS(
-            CollaborativeSimilarityMeasure similarityMeasure,
-            Integer relevanceFactor,
-            Number defaultRating,
-            boolean inverseFrequency,
-            double caseAmplification,
-            int neighborhoodSize,
-            PredictionTechnique predictionTechnique) {
-
-        this();
-
-        setParameterValue(SIMILARITY_MEASURE, similarityMeasure);
-        setParameterValue(RELEVANCE_FACTOR, relevanceFactor != null);
-        setParameterValue(NEIGHBORHOOD_SIZE, neighborhoodSize);
-
-        if (relevanceFactor != null && relevanceFactor <= 0) {
-            throw new IllegalArgumentException("The relevance factor cannot be 0 or negative.");
-        }
-        if (relevanceFactor != null) {
-            setParameterValue(RELEVANCE_FACTOR_VALUE, relevanceFactor);
-        }
-        setParameterValue(DEFAULT_RATING, defaultRating != null);
-        if (defaultRating != null) {
-            setParameterValue(DEFAULT_RATING_VALUE, defaultRating);
-        }
-
-        setParameterValue(INVERSE_FREQUENCY, inverseFrequency);
-        setParameterValue(CASE_AMPLIFICATION, caseAmplification);
-        setParameterValue(PREDICTION_TECHNIQUE, predictionTechnique);
-    }
-
     @Override
     public KnnMemoryModel buildRecommendationModel(DatasetLoader<? extends Rating> datasetLoader) {
         //No se necesitan perfiles porque se examina la base de datos directamente
@@ -282,5 +251,42 @@ public class KnnMemoryBasedCFRS extends KnnCollaborativeRecommender<KnnMemoryMod
 
         Recommendations recommendToUser = recommendToUser(datasetLoader, model, user, candidateItemSet);
         return recommendToUser.getRecommendations();
+    }
+
+    public KnnMemoryBasedCFRS setNeighborhoodSize(int neighborhoodSize) {
+        setParameterValue(NEIGHBORHOOD_SIZE, neighborhoodSize);
+        return this;
+    }
+
+    public KnnMemoryBasedCFRS setSIMILARITY_MEASURE(CollaborativeSimilarityMeasure similarityMeasure) {
+        setParameterValue(SIMILARITY_MEASURE, similarityMeasure);
+        return this;
+    }
+
+    public KnnMemoryBasedCFRS setPREDICTION_TECHNIQUE(PredictionTechnique predictionTechnique) {
+        setParameterValue(PREDICTION_TECHNIQUE, predictionTechnique);
+        return this;
+    }
+
+    public KnnMemoryBasedCFRS setINVERSE_FREQUENCY(boolean inverseFrequency) {
+        setParameterValue(INVERSE_FREQUENCY, inverseFrequency);
+        return this;
+    }
+
+    public KnnMemoryBasedCFRS setCASE_AMPLIFICATION(double caseAmplification) {
+        setParameterValue(CASE_AMPLIFICATION, caseAmplification);
+        return this;
+    }
+
+    public KnnMemoryBasedCFRS setDEFAULT_RATING_VALUE(Double defaultRatingValue) {
+        setParameterValue(DEFAULT_RATING, defaultRatingValue != null);
+        setParameterValue(DEFAULT_RATING_VALUE, defaultRatingValue);
+        return this;
+    }
+
+    public KnnMemoryBasedCFRS setRELEVANCE_FACTOR_VALUE(Integer relevanceFactorValue) {
+        setParameterValue(RELEVANCE_FACTOR, relevanceFactorValue != null);
+        setParameterValue(RELEVANCE_FACTOR_VALUE, relevanceFactorValue);
+        return this;
     }
 }

@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -26,6 +26,7 @@ import delfos.common.exceptions.dataset.users.UserNotFound;
 import delfos.common.exceptions.ratings.NotEnoughtUserInformation;
 import delfos.configfile.rs.single.RecommenderSystemConfiguration;
 import delfos.configfile.rs.single.RecommenderSystemConfigurationFileParser;
+import delfos.dataset.basic.item.Item;
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
 import delfos.group.groupsofusers.GroupOfUsers;
@@ -33,7 +34,6 @@ import delfos.group.grs.GroupRecommenderSystem;
 import delfos.group.grs.recommendations.GroupRecommendations;
 import delfos.main.managers.CaseUseSubManager;
 import delfos.main.managers.recommendation.ArgumentsRecommendation;
-import delfos.main.managers.recommendation.group.GroupRecommendation;
 import static delfos.main.managers.recommendation.group.GroupRecommendation.GROUP_MODE;
 import static delfos.main.managers.recommendation.group.GroupRecommendation.TARGET_GROUP;
 import delfos.recommendationcandidates.RecommendationCandidatesSelector;
@@ -48,6 +48,7 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  *
@@ -105,7 +106,7 @@ class Recommend extends CaseUseSubManager {
 
             Collection<Recommendation> recommendations = null;
 
-            Set<Integer> candidateItems;
+            Set<Item> candidateItems;
             try {
                 candidateItems = candidatesSelector.candidateItems(datasetLoader, targetGroup);
             } catch (UserNotFound ex) {
@@ -118,10 +119,11 @@ class Recommend extends CaseUseSubManager {
                 Global.showInfoMessage("\t" + candidateItems + "\n");
             }
 
-            Object RecommendationModel;
+            Object recommendationModel;
             try {
                 Global.showMessageTimestamped("Loading recommendation model");
-                RecommendationModel = PersistenceMethodStrategy.loadModel(groupRecommenderSystem, rsc.persistenceMethod, targetGroup.getIdMembers(), candidateItems, datasetLoader);
+                recommendationModel = PersistenceMethodStrategy.loadModel(groupRecommenderSystem, rsc.persistenceMethod, targetGroup.getIdMembers(),
+                        candidateItems.stream().map(item -> item.getId()).collect(Collectors.toSet()), datasetLoader);
                 Global.showMessageTimestamped("Loaded recommendation model");
             } catch (FailureInPersistence ex) {
                 ERROR_CODES.FAILURE_IN_PERSISTENCE.exit(ex);
@@ -130,8 +132,13 @@ class Recommend extends CaseUseSubManager {
 
             Object groupModel;
             try {
-                groupModel = groupRecommenderSystem.buildGroupModel(datasetLoader, RecommendationModel, targetGroup);
-                recommendations = groupRecommenderSystem.recommendOnly(datasetLoader, RecommendationModel, groupModel, targetGroup, candidateItems);
+                groupModel = groupRecommenderSystem.buildGroupModel(datasetLoader, recommendationModel, targetGroup);
+                recommendations = groupRecommenderSystem.recommendOnly(
+                        datasetLoader,
+                        recommendationModel,
+                        groupModel,
+                        targetGroup,
+                        candidateItems);
             } catch (UserNotFound ex) {
                 ERROR_CODES.USER_NOT_FOUND.exit(ex);
                 throw new IllegalArgumentException(ex);
@@ -203,6 +210,6 @@ class Recommend extends CaseUseSubManager {
             }
         }
 
-        return new GroupOfUsers(members);
+        return new GroupOfUsers(members.toArray(new Integer[0]));
     }
 }

@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,11 +16,6 @@
  */
 package delfos.group.grs.persistence;
 
-import java.io.File;
-import java.util.Collection;
-import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
 import delfos.ERROR_CODES;
 import delfos.common.Global;
 import delfos.common.exceptions.dataset.CannotLoadContentDataset;
@@ -32,9 +27,9 @@ import delfos.common.parameters.Parameter;
 import delfos.common.parameters.restriction.DirectoryParameter;
 import delfos.common.parameters.restriction.RecommenderSystemParameterRestriction;
 import delfos.common.parameters.restriction.StringParameter;
-import delfos.dataset.basic.rating.Rating;
-import delfos.dataset.basic.loader.types.ContentDatasetLoader;
+import delfos.dataset.basic.item.Item;
 import delfos.dataset.basic.loader.types.DatasetLoader;
+import delfos.dataset.basic.rating.Rating;
 import delfos.group.groupsofusers.GroupOfUsers;
 import delfos.group.grs.GroupRecommenderSystem;
 import delfos.group.grs.GroupRecommenderSystemAdapter;
@@ -44,6 +39,10 @@ import delfos.rs.collaborativefiltering.knn.modelbased.KnnModelBasedCFRS;
 import delfos.rs.persistence.FailureInPersistence;
 import delfos.rs.persistence.FilePersistence;
 import delfos.rs.recommendation.Recommendation;
+import java.io.File;
+import java.util.Collection;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Implementa un modificador a un sistema de recomendación para que siempre
@@ -141,13 +140,9 @@ public class GroupRecommenderSystem_fixedFilePersistence extends GroupRecommende
         synchronized (exMut) {
             if (RecommendationModel == null) {
 
-                Set<Integer> allItems = new TreeSet<Integer>();
-                if (datasetLoader instanceof ContentDatasetLoader) {
-                    ContentDatasetLoader contentDatasetLoader = (ContentDatasetLoader) datasetLoader;
-                    allItems.addAll(contentDatasetLoader.getContentDataset().allIDs());
-                } else {
-                    allItems.addAll(datasetLoader.getRatingsDataset().allRatedItems());
-                }
+                Set<Integer> allItems = datasetLoader.getContentDataset().stream()
+                        .map(item -> item.getId())
+                        .collect(Collectors.toSet());
 
                 try {
                     Object loadedModel = getGroupRecommenderSystem().loadRecommendationModel(
@@ -159,12 +154,7 @@ public class GroupRecommenderSystem_fixedFilePersistence extends GroupRecommende
                 } catch (Exception ex) {
 
                     Global.showWarning(ex);
-                    RecommendationModelBuildingProgressListener listener = new RecommendationModelBuildingProgressListener() {
-                        @Override
-                        public void buildingProgressChanged(String actualJob, int percent, long remainingTime) {
-                            fireBuildingProgressChangedEvent(actualJob, percent, remainingTime);
-                        }
-                    };
+                    RecommendationModelBuildingProgressListener listener = this::fireBuildingProgressChangedEvent;
                     Global.showWarning("Recommendation model not found: \n\tThe recommender system model needs to be constructed.\n");
                     getGroupRecommenderSystem().addRecommendationModelBuildingProgressListener(listener);
                     try {
@@ -181,7 +171,7 @@ public class GroupRecommenderSystem_fixedFilePersistence extends GroupRecommende
     }
 
     @Override
-    public Object buildGroupModel(DatasetLoader<? extends Rating> datasetLoader, Object RecommendationModel, GroupOfUsers groupOfUsers) throws UserNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset, NotEnoughtUserInformation {
+    public <RatingType extends Rating> Object buildGroupModel(DatasetLoader<RatingType> datasetLoader, Object RecommendationModel, GroupOfUsers groupOfUsers) throws UserNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset, NotEnoughtUserInformation {
         return getGroupRecommenderSystem().buildGroupModel(datasetLoader, RecommendationModel, groupOfUsers);
     }
 
@@ -191,7 +181,12 @@ public class GroupRecommenderSystem_fixedFilePersistence extends GroupRecommende
     }
 
     @Override
-    public Collection<Recommendation> recommendOnly(DatasetLoader<? extends Rating> datasetLoader, Object RecommendationModel, Object groupModel, GroupOfUsers groupOfUsers, java.util.Set<Integer> candidateItems) throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset, NotEnoughtUserInformation {
+    public <RatingType extends Rating> Collection<Recommendation> recommendOnly(
+            DatasetLoader<RatingType> datasetLoader,
+            Object RecommendationModel,
+            Object groupModel,
+            GroupOfUsers groupOfUsers,
+            Set<Item> candidateItems) throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset, NotEnoughtUserInformation {
         Collection<Recommendation> recommendations;
         recommendations = getGroupRecommenderSystem().recommendOnly(datasetLoader, RecommendationModel, groupModel, groupOfUsers, candidateItems);
         return recommendations;

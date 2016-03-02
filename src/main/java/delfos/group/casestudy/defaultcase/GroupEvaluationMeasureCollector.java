@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -14,8 +14,21 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package delfos.group.grs.preferenceaggregation;
+package delfos.group.casestudy.defaultcase;
 
-public class GroupPartialOrderGroupModel{
+import delfos.group.results.groupevaluationmeasures.GroupEvaluationMeasure;
+import delfos.group.results.groupevaluationmeasures.GroupEvaluationMeasureResult;
+import java.util.function.BiConsumer;
+
+/**
+ *
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
+ */
+public class GroupEvaluationMeasureCollector implements BiConsumer<GroupEvaluationMeasure, GroupEvaluationMeasureResult> {
+
+    @Override
+    public void accept(GroupEvaluationMeasure t, GroupEvaluationMeasureResult u) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
 
 }

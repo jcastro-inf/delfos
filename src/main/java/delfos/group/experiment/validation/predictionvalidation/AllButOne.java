@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,21 +16,22 @@
  */
 package delfos.group.experiment.validation.predictionvalidation;
 
+import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
+import delfos.common.exceptions.dataset.users.UserNotFound;
+import delfos.dataset.basic.loader.types.DatasetLoader;
+import delfos.dataset.basic.rating.Rating;
+import delfos.dataset.basic.rating.RatingsDataset;
+import delfos.dataset.generated.modifieddatasets.changeratings.RatingsDatasetOverwrite;
+import delfos.dataset.loaders.given.DatasetLoaderGivenRatingsDataset;
+import delfos.dataset.util.DatasetUtilities;
+import delfos.group.groupsofusers.GroupOfUsers;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
-import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
-import delfos.common.exceptions.dataset.users.UserNotFound;
-import delfos.dataset.basic.rating.Rating;
-import delfos.dataset.basic.rating.RatingsDataset;
-import delfos.dataset.loaders.given.DatasetLoaderGivenRatingsDataset;
-import delfos.dataset.basic.loader.types.DatasetLoader;
-import delfos.dataset.generated.modifieddatasets.changeratings.RatingsDatasetOverwrite;
-import delfos.dataset.util.DatasetUtilities;
-import delfos.group.groupsofusers.GroupOfUsers;
+import java.util.stream.Collectors;
 
 /**
  * Implementa el protocolo de predicción todos menos uno, predice cada
@@ -74,7 +75,9 @@ public class AllButOne extends GroupPredictionProtocol {
                             RatingsDatasetOverwrite.createRatingsDataset((RatingsDataset<Rating>) trainDatasetLoader.getRatingsDataset(), predictionMembersRatings_byUser_Rating));
 
             Set<Integer> itemsToPredict = new TreeSet<>(Arrays.asList(idItem));
-            groupRecommendationRequests.add(new GroupRecommendationRequest(group, predictionPhaseDatasetLoader, itemsToPredict));
+            groupRecommendationRequests.add(new GroupRecommendationRequest(group, predictionPhaseDatasetLoader,
+                    itemsToPredict.stream().map(idItem2 -> trainDatasetLoader.getContentDataset().get(idItem2)).collect(Collectors.toSet())
+            ));
 
         }
         return groupRecommendationRequests;

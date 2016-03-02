@@ -27,21 +27,22 @@ import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RatingsDataset;
 import delfos.dataset.basic.user.User;
-import delfos.rs.collaborativefiltering.knn.KnnCollaborativeRecommender;
 import delfos.rs.collaborativefiltering.knn.MatchRating;
 import delfos.rs.collaborativefiltering.knn.RecommendationEntity;
+import delfos.rs.collaborativefiltering.knn.memorybased.KnnMemoryBasedCFRS;
 import delfos.rs.collaborativefiltering.knn.memorybased.KnnMemoryModel;
+import delfos.rs.collaborativefiltering.knn.memorybased.KnnMemoryNeighborCalculator;
+import delfos.rs.collaborativefiltering.knn.memorybased.KnnMemoryNeighborTask;
 import delfos.rs.collaborativefiltering.predictiontechniques.PredictionTechnique;
 import delfos.rs.collaborativefiltering.profile.Neighbor;
 import delfos.rs.persistence.DatabasePersistence;
 import delfos.rs.persistence.FailureInPersistence;
 import delfos.rs.recommendation.Recommendation;
-import delfos.similaritymeasures.CollaborativeSimilarityMeasure;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -63,91 +64,21 @@ import java.util.stream.Collectors;
  * @version 1.0 Unknown date
  * @version 1.1 27-02-2013
  */
-public class KnnMemoryBasedNWR extends KnnCollaborativeRecommender<KnnMemoryModel> {
+public class KnnMemoryBasedNWR extends KnnMemoryBasedCFRS {
 
     private static final long serialVersionUID = 1L;
 
-    /**
-     * Constructor que añade los parámetros al sistema de recomendación y asigna
-     * la medida del coseno y la suma ponderada como medida de similitud y
-     * técnica de predicción respectivamente.
-     */
     public KnnMemoryBasedNWR() {
         super();
-        addParameter(NEIGHBORHOOD_SIZE);
-        addParameter(SIMILARITY_MEASURE);
-        addParameter(PREDICTION_TECHNIQUE);
-        addParameter(INVERSE_FREQUENCY);
-        addParameter(CASE_AMPLIFICATION);
-        addParameter(DEFAULT_RATING);
-        addParameter(DEFAULT_RATING_VALUE);
-        addParameter(RELEVANCE_FACTOR);
-        addParameter(RELEVANCE_FACTOR_VALUE);
-    }
-
-    public KnnMemoryBasedNWR(
-            CollaborativeSimilarityMeasure similarityMeasure,
-            Integer relevanceFactor,
-            Number defaultRating,
-            boolean inverseFrequency,
-            double caseAmplification,
-            int neighborhoodSize,
-            PredictionTechnique predictionTechnique) {
-
-        this();
-
-        setParameterValue(SIMILARITY_MEASURE, similarityMeasure);
-        setParameterValue(RELEVANCE_FACTOR, relevanceFactor != null);
-        setParameterValue(NEIGHBORHOOD_SIZE, neighborhoodSize);
-
-        if (relevanceFactor != null && relevanceFactor <= 0) {
-            throw new IllegalArgumentException("The relevance factor cannot be 0 or negative.");
-        }
-        if (relevanceFactor != null) {
-            setParameterValue(RELEVANCE_FACTOR_VALUE, relevanceFactor);
-        }
-        setParameterValue(DEFAULT_RATING, defaultRating != null);
-        if (defaultRating != null) {
-            setParameterValue(DEFAULT_RATING_VALUE, defaultRating);
-        }
-
-        setParameterValue(INVERSE_FREQUENCY, inverseFrequency);
-        setParameterValue(CASE_AMPLIFICATION, caseAmplification);
-        setParameterValue(PREDICTION_TECHNIQUE, predictionTechnique);
-    }
-
-    public KnnMemoryBasedNWR(
-            CollaborativeSimilarityMeasure similarityMeasure,
-            Integer relevanceFactor,
-            int neighborhoodSize,
-            PredictionTechnique predictionTechnique) {
-
-        this();
-
-        setParameterValue(SIMILARITY_MEASURE, similarityMeasure);
-        setParameterValue(RELEVANCE_FACTOR, relevanceFactor != null);
-        setParameterValue(NEIGHBORHOOD_SIZE, neighborhoodSize);
-
-        if (relevanceFactor != null && relevanceFactor <= 0) {
-            throw new IllegalArgumentException("The relevance factor cannot be 0 or negative.");
-        }
-        if (relevanceFactor != null) {
-            setParameterValue(RELEVANCE_FACTOR_VALUE, relevanceFactor);
-        }
-        setParameterValue(PREDICTION_TECHNIQUE, predictionTechnique);
     }
 
     @Override
     public KnnMemoryModel buildRecommendationModel(DatasetLoader<? extends Rating> datasetLoader) {
-        //No se necesitan perfiles porque se examina la base de datos directamente
         return new KnnMemoryModel();
     }
 
     @Override
     public Collection<Recommendation> recommendToUser(DatasetLoader<? extends Rating> datasetLoader, KnnMemoryModel model, Integer idUser, Set<Integer> candidateItems) throws UserNotFound {
-        if (Global.isVerboseAnnoying()) {
-            Global.showInfoMessage(new Date().toGMTString() + " --> Recommending for user '" + idUser + "'\n");
-        }
 
         PredictionTechnique predictionTechnique = (PredictionTechnique) getParameterValue(PREDICTION_TECHNIQUE);
         int neighborhoodSize = (Integer) getParameterValue(NEIGHBORHOOD_SIZE);
@@ -183,12 +114,16 @@ public class KnnMemoryBasedNWR extends KnnCollaborativeRecommender<KnnMemoryMode
             int idUser)
             throws UserNotFound {
 
-        return datasetLoader.getUsersDataset().allIDs().stream()
-                .filter(idNeighbor -> idUser != idNeighbor)
-                .map((idNeighbor) -> new KnnMemoryBasedNWR_Task(datasetLoader, idUser, idNeighbor, this))
-                .map(new KnnMemoryBasedNWR_TaskExecutor())
+        User user = datasetLoader.getUsersDataset().get(idUser);
+
+        List<Neighbor> neigbors = datasetLoader.getUsersDataset().stream()
+                .filter(neighbor -> !Objects.equals(neighbor.getId(), user.getId()))
+                .map((neighbor) -> new KnnMemoryNeighborTask(datasetLoader, user, neighbor, this))
+                .map(new KnnMemoryNeighborCalculator())
                 .sorted(Neighbor.BY_SIMILARITY_DESC)
                 .collect(Collectors.toList());
+
+        return neigbors;
     }
 
     /**

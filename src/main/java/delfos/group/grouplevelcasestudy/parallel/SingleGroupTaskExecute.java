@@ -23,6 +23,7 @@ import delfos.common.exceptions.dataset.items.ItemNotFound;
 import delfos.common.exceptions.dataset.users.UserNotFound;
 import delfos.common.exceptions.ratings.NotEnoughtUserInformation;
 import delfos.common.parallelwork.SingleTaskExecute;
+import delfos.dataset.basic.item.Item;
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.storage.validationdatasets.PairOfTrainTestRatingsDataset;
@@ -108,7 +109,7 @@ public class SingleGroupTaskExecute implements SingleTaskExecute<SingleGroupTask
 
                 Object recommendationModel = groupRecommenderSystem.buildRecommendationModel(trainingDatasetLoader);
                 Collection<Recommendation> allPredictions = new ArrayList<>();
-                Set<Integer> requests = new TreeSet<>();
+                Set<Item> requests = new TreeSet<>();
 
                 Collection<GroupRecommendationRequest> allRequests = predictionProtocol.getGroupRecommendationRequests(trainingDatasetLoader, testDatasetLoader, group);
                 for (GroupRecommendationRequest groupRecommendationRequest : allRequests) {
@@ -135,7 +136,7 @@ public class SingleGroupTaskExecute implements SingleTaskExecute<SingleGroupTask
                 }
 
                 for (GroupEvaluationMeasure evaluationMeasure : evaluationMeasures) {
-                    Map<GroupOfUsers, Collection<Integer>> _requests = new TreeMap<>();
+                    Map<GroupOfUsers, Collection<Item>> _requests = new TreeMap<>();
                     _requests.put(group, requests);
                     Map<GroupOfUsers, Collection<Recommendation>> _recommendations = new TreeMap<>();
                     _recommendations.put(group, allPredictions);
@@ -146,7 +147,8 @@ public class SingleGroupTaskExecute implements SingleTaskExecute<SingleGroupTask
                                     originalDatasetLoader,
                                     recommendationModel,
                                     group,
-                                    requests));
+                                    requests
+                            ));
 
                     List<SingleGroupRecommendationTaskOutput> singleGroupRecommendationOutputs = Arrays.asList(
                             new SingleGroupRecommendationTaskOutput(group, allPredictions, 0, 0)

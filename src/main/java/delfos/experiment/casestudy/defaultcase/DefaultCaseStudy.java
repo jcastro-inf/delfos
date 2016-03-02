@@ -291,7 +291,8 @@ public class DefaultCaseStudy extends CaseStudy implements ParameterListener {
                                             predictionDatasetLoader,
                                             model,
                                             idUser,
-                                            candidateItems);
+                                            candidateItems.stream().map(idItem -> datasetLoader.getContentDataset().get(idItem)).collect(Collectors.toSet())
+                                    );
 
                                 } catch (UserNotFound ex) {
                                     ERROR_CODES.USER_NOT_FOUND.exit(ex);
