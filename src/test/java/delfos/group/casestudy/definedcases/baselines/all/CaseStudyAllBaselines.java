@@ -242,11 +242,16 @@ public class CaseStudyAllBaselines {
     }
 
     private RecommenderSystem getKnnUserRecommender() {
-        RecommenderSystem rs = new KnnMemoryBasedNWR(
-                new PearsonCorrelationCoefficient(),
-                null,
-                50,
-                new WeightedSum());
+
+        KnnMemoryBasedNWR rs = new KnnMemoryBasedNWR();
+
+        rs.setSIMILARITY_MEASURE(new PearsonCorrelationCoefficient());
+        rs.setRELEVANCE_FACTOR_VALUE(30);
+        rs.setDEFAULT_RATING_VALUE(null);
+        rs.setINVERSE_FREQUENCY(false);
+        rs.setCASE_AMPLIFICATION(1);
+        rs.setNeighborhoodSize(50);
+        rs.setPREDICTION_TECHNIQUE(new WeightedSum());
 
         rs.setAlias("KnnUser");
         return rs;

@@ -27,9 +27,9 @@ import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RatingsDataset;
 import delfos.dataset.basic.user.User;
-import delfos.rs.collaborativefiltering.knn.KnnCollaborativeRecommender;
 import delfos.rs.collaborativefiltering.knn.MatchRating;
 import delfos.rs.collaborativefiltering.knn.RecommendationEntity;
+import delfos.rs.collaborativefiltering.knn.memorybased.KnnMemoryBasedCFRS;
 import delfos.rs.collaborativefiltering.knn.memorybased.KnnMemoryModel;
 import delfos.rs.collaborativefiltering.knn.memorybased.KnnMemoryNeighborCalculator;
 import delfos.rs.collaborativefiltering.knn.memorybased.KnnMemoryNeighborTask;
@@ -38,7 +38,6 @@ import delfos.rs.collaborativefiltering.profile.Neighbor;
 import delfos.rs.persistence.DatabasePersistence;
 import delfos.rs.persistence.FailureInPersistence;
 import delfos.rs.recommendation.Recommendation;
-import delfos.similaritymeasures.CollaborativeSimilarityMeasure;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -65,78 +64,12 @@ import java.util.stream.Collectors;
  * @version 1.0 Unknown date
  * @version 1.1 27-02-2013
  */
-public class KnnMemoryBasedNWR extends KnnCollaborativeRecommender<KnnMemoryModel> {
+public class KnnMemoryBasedNWR extends KnnMemoryBasedCFRS {
 
     private static final long serialVersionUID = 1L;
 
-    /**
-     * Constructor que añade los parámetros al sistema de recomendación y asigna
-     * la medida del coseno y la suma ponderada como medida de similitud y
-     * técnica de predicción respectivamente.
-     */
     public KnnMemoryBasedNWR() {
         super();
-        addParameter(NEIGHBORHOOD_SIZE);
-        addParameter(SIMILARITY_MEASURE);
-        addParameter(PREDICTION_TECHNIQUE);
-        addParameter(INVERSE_FREQUENCY);
-        addParameter(CASE_AMPLIFICATION);
-        addParameter(DEFAULT_RATING);
-        addParameter(DEFAULT_RATING_VALUE);
-        addParameter(RELEVANCE_FACTOR);
-        addParameter(RELEVANCE_FACTOR_VALUE);
-    }
-
-    public KnnMemoryBasedNWR(
-            CollaborativeSimilarityMeasure similarityMeasure,
-            Integer relevanceFactor,
-            Number defaultRating,
-            boolean inverseFrequency,
-            double caseAmplification,
-            int neighborhoodSize,
-            PredictionTechnique predictionTechnique) {
-
-        this();
-
-        setParameterValue(SIMILARITY_MEASURE, similarityMeasure);
-        setParameterValue(RELEVANCE_FACTOR, relevanceFactor != null);
-        setParameterValue(NEIGHBORHOOD_SIZE, neighborhoodSize);
-
-        if (relevanceFactor != null && relevanceFactor <= 0) {
-            throw new IllegalArgumentException("The relevance factor cannot be 0 or negative.");
-        }
-        if (relevanceFactor != null) {
-            setParameterValue(RELEVANCE_FACTOR_VALUE, relevanceFactor);
-        }
-        setParameterValue(DEFAULT_RATING, defaultRating != null);
-        if (defaultRating != null) {
-            setParameterValue(DEFAULT_RATING_VALUE, defaultRating);
-        }
-
-        setParameterValue(INVERSE_FREQUENCY, inverseFrequency);
-        setParameterValue(CASE_AMPLIFICATION, caseAmplification);
-        setParameterValue(PREDICTION_TECHNIQUE, predictionTechnique);
-    }
-
-    public KnnMemoryBasedNWR(
-            CollaborativeSimilarityMeasure similarityMeasure,
-            Integer relevanceFactor,
-            int neighborhoodSize,
-            PredictionTechnique predictionTechnique) {
-
-        this();
-
-        setParameterValue(SIMILARITY_MEASURE, similarityMeasure);
-        setParameterValue(RELEVANCE_FACTOR, relevanceFactor != null);
-        setParameterValue(NEIGHBORHOOD_SIZE, neighborhoodSize);
-
-        if (relevanceFactor != null && relevanceFactor <= 0) {
-            throw new IllegalArgumentException("The relevance factor cannot be 0 or negative.");
-        }
-        if (relevanceFactor != null) {
-            setParameterValue(RELEVANCE_FACTOR_VALUE, relevanceFactor);
-        }
-        setParameterValue(PREDICTION_TECHNIQUE, predictionTechnique);
     }
 
     @Override

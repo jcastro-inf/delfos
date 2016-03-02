@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -17,7 +17,6 @@
 package delfos.group.grs.benchmark.polylens;
 
 import java.util.Collection;
-import java.util.List;
 import delfos.common.aggregationoperators.Mean;
 import delfos.common.exceptions.dataset.CannotLoadContentDataset;
 import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
@@ -33,6 +32,7 @@ import delfos.group.grs.GroupRecommenderSystemAdapter;
 import delfos.group.grs.SingleRecommendationModel;
 import delfos.group.grs.aggregation.AggregationOfIndividualRatings;
 import delfos.group.grs.aggregation.GroupModelPseudoUser;
+import delfos.rs.collaborativefiltering.knn.KnnCollaborativeRecommender;
 import delfos.rs.collaborativefiltering.knn.memorybased.nwr.KnnMemoryBasedNWR;
 import delfos.rs.collaborativefiltering.predictiontechniques.WeightedSum;
 import delfos.rs.explanation.GroupModelWithExplanation;
@@ -68,7 +68,16 @@ public class PolyLens_FLINS2014 extends GroupRecommenderSystemAdapter<SingleReco
     public static final Parameter neighborhoodSize = new Parameter("Neighborhood_size", new IntegerParameter(1, 9999, 60));
 
     public PolyLens_FLINS2014() {
-        final KnnMemoryBasedNWR knnMemory = new KnnMemoryBasedNWR(new PearsonCorrelationCoefficient(), 20, null, false, 1, 60, new WeightedSum());
+        final KnnMemoryBasedNWR knnMemory = new KnnMemoryBasedNWR();
+
+        knnMemory.setParameterValue(KnnCollaborativeRecommender.SIMILARITY_MEASURE, new PearsonCorrelationCoefficient());
+        knnMemory.setParameterValue(KnnCollaborativeRecommender.RELEVANCE_FACTOR, 20);
+        knnMemory.setParameterValue(KnnCollaborativeRecommender.DEFAULT_RATING_VALUE, null);
+        knnMemory.setParameterValue(KnnCollaborativeRecommender.DEFAULT_RATING, false);
+        knnMemory.setParameterValue(KnnCollaborativeRecommender.CASE_AMPLIFICATION, 1);
+        knnMemory.setParameterValue(KnnCollaborativeRecommender.NEIGHBORHOOD_SIZE, 60);
+        knnMemory.setParameterValue(KnnCollaborativeRecommender.PREDICTION_TECHNIQUE, new WeightedSum());
+
         aggregationOfIndividualRatings = new AggregationOfIndividualRatings(knnMemory, new Mean());
         addParameter(neighborhoodSize);
 

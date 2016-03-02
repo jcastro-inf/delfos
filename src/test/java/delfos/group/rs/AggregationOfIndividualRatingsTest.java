@@ -17,6 +17,7 @@ import delfos.group.grs.aggregation.AggregationOfIndividualRatings;
 import delfos.group.grs.aggregation.GroupModelPseudoUser;
 import delfos.group.grs.recommendations.GroupRecommendations;
 import delfos.rs.RecommenderSystemBuildingProgressListener_default;
+import delfos.rs.collaborativefiltering.knn.KnnCollaborativeRecommender;
 import delfos.rs.collaborativefiltering.knn.memorybased.nwr.KnnMemoryBasedNWR;
 import delfos.rs.collaborativefiltering.predictiontechniques.WeightedSum;
 import delfos.rs.explanation.GroupModelWithExplanation;
@@ -46,9 +47,17 @@ public class AggregationOfIndividualRatingsTest extends DelfosTest {
     public void testWholeProccess() throws UserNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset, ItemNotFound, NotEnoughtUserInformation {
         final RatingsDataset<? extends Rating> ratingsDataset = datasetLoader.getRatingsDataset();
 
-        KnnMemoryBasedNWR traditionalRecommenderSystem = new KnnMemoryBasedNWR(new CosineCoefficient(), 30, null, false, 1, 20, new WeightedSum());
+        KnnMemoryBasedNWR knnMemory = new KnnMemoryBasedNWR();
 
-        AggregationOfIndividualRatings grs = new AggregationOfIndividualRatings(traditionalRecommenderSystem, new Mean());
+        knnMemory.setParameterValue(KnnCollaborativeRecommender.SIMILARITY_MEASURE, new CosineCoefficient());
+        knnMemory.setParameterValue(KnnCollaborativeRecommender.RELEVANCE_FACTOR, 30);
+        knnMemory.setParameterValue(KnnCollaborativeRecommender.DEFAULT_RATING_VALUE, null);
+        knnMemory.setParameterValue(KnnCollaborativeRecommender.DEFAULT_RATING, false);
+        knnMemory.setParameterValue(KnnCollaborativeRecommender.CASE_AMPLIFICATION, 1);
+        knnMemory.setParameterValue(KnnCollaborativeRecommender.NEIGHBORHOOD_SIZE, 20);
+        knnMemory.setParameterValue(KnnCollaborativeRecommender.PREDICTION_TECHNIQUE, new WeightedSum());
+
+        AggregationOfIndividualRatings grs = new AggregationOfIndividualRatings(knnMemory, new Mean());
 
         grs.addRecommendationModelBuildingProgressListener(new RecommenderSystemBuildingProgressListener_default(System.out, 5000));
         SingleRecommendationModel recommendationModel = grs.buildRecommendationModel(datasetLoader);

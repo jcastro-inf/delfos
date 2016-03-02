@@ -16,10 +16,10 @@ import delfos.dataset.basic.user.UsersDatasetAdapter;
 import delfos.dataset.loaders.given.DatasetLoaderGivenRatingsContent;
 import delfos.dataset.storage.memory.BothIndexRatingsDataset;
 import delfos.dataset.util.DatasetPrinterDeprecated;
+import delfos.rs.collaborativefiltering.knn.KnnCollaborativeRecommender;
 import delfos.rs.collaborativefiltering.knn.RecommendationEntity;
 import delfos.rs.collaborativefiltering.predictiontechniques.WeightedSum;
 import delfos.rs.collaborativefiltering.profile.Neighbor;
-import delfos.similaritymeasures.CosineCoefficient;
 import delfos.similaritymeasures.PearsonCorrelationCoefficient;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -106,7 +106,16 @@ public class KnnMemoryBasedCFRSTest extends DelfosTest {
 
     @Test
     public void testBasicWithPearson() throws CannotLoadRatingsDataset, UserNotFound {
-        KnnMemoryBasedCFRS knnMemoryBasedCFRS = new KnnMemoryBasedCFRS(new PearsonCorrelationCoefficient(), null, null, false, 1, 20, new WeightedSum());
+
+        KnnMemoryBasedCFRS knnMemoryBasedCFRS = new KnnMemoryBasedCFRS();
+
+        knnMemoryBasedCFRS.setParameterValue(KnnCollaborativeRecommender.SIMILARITY_MEASURE, new PearsonCorrelationCoefficient());
+        knnMemoryBasedCFRS.setParameterValue(KnnCollaborativeRecommender.RELEVANCE_FACTOR, 30);
+        knnMemoryBasedCFRS.setParameterValue(KnnCollaborativeRecommender.DEFAULT_RATING_VALUE, null);
+        knnMemoryBasedCFRS.setParameterValue(KnnCollaborativeRecommender.DEFAULT_RATING, false);
+        knnMemoryBasedCFRS.setParameterValue(KnnCollaborativeRecommender.CASE_AMPLIFICATION, 1);
+        knnMemoryBasedCFRS.setParameterValue(KnnCollaborativeRecommender.NEIGHBORHOOD_SIZE, 20);
+        knnMemoryBasedCFRS.setParameterValue(KnnCollaborativeRecommender.PREDICTION_TECHNIQUE, new WeightedSum());
 
         UsersDataset usersDataset = ((UsersDatasetLoader) datasetLoader).getUsersDataset();
 
@@ -125,7 +134,15 @@ public class KnnMemoryBasedCFRSTest extends DelfosTest {
 
     @Test
     public void testBasicWithCosine() throws CannotLoadRatingsDataset, UserNotFound {
-        KnnMemoryBasedCFRS knnMemoryBasedCFRS = new KnnMemoryBasedCFRS(new CosineCoefficient(), null, null, false, 1, 20, new WeightedSum());
+        KnnMemoryBasedCFRS knnMemoryBasedCFRS = new KnnMemoryBasedCFRS();
+
+        knnMemoryBasedCFRS.setParameterValue(KnnCollaborativeRecommender.SIMILARITY_MEASURE, new PearsonCorrelationCoefficient());
+        knnMemoryBasedCFRS.setParameterValue(KnnCollaborativeRecommender.RELEVANCE_FACTOR, 30);
+        knnMemoryBasedCFRS.setParameterValue(KnnCollaborativeRecommender.DEFAULT_RATING_VALUE, null);
+        knnMemoryBasedCFRS.setParameterValue(KnnCollaborativeRecommender.DEFAULT_RATING, false);
+        knnMemoryBasedCFRS.setParameterValue(KnnCollaborativeRecommender.CASE_AMPLIFICATION, 1);
+        knnMemoryBasedCFRS.setParameterValue(KnnCollaborativeRecommender.NEIGHBORHOOD_SIZE, 20);
+        knnMemoryBasedCFRS.setParameterValue(KnnCollaborativeRecommender.PREDICTION_TECHNIQUE, new WeightedSum());
 
         UsersDataset usersDataset = ((UsersDatasetLoader) datasetLoader).getUsersDataset();
 

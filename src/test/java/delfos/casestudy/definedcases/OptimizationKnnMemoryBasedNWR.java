@@ -86,7 +86,7 @@ public class OptimizationKnnMemoryBasedNWR {
         Collection<CollaborativeSimilarityMeasure> similarityMeasures = getSimilarityMeasures();
         Integer[] relevanceFactors = {30};
         boolean[] inverseFrequencies = {false};
-        Number[] defaultRatings = {null};
+        Double[] defaultRatings = {null};
         double[] caseAmplificationValues = {1};
         int[] neighborhoodSizes = {1, 5, 10, 20, 30, 40, 50, 75, 100, 200, 300, 400, 500, 600, 700, 800, 900, 1000};
         //int[] neighborhoodSizes = {50};
@@ -94,13 +94,22 @@ public class OptimizationKnnMemoryBasedNWR {
 
         for (CollaborativeSimilarityMeasure similarityMeasure : similarityMeasures) {
             for (Integer relevanceFactor : relevanceFactors) {
-                for (Number defaultRating : defaultRatings) {
+                for (Double defaultRating : defaultRatings) {
                     for (boolean inverseFrequency : inverseFrequencies) {
                         for (double caseAmplification : caseAmplificationValues) {
                             for (int neighborhoodSize : neighborhoodSizes) {
                                 for (PredictionTechnique predictionTechnique : predictionTechniques) {
 
-                                    KnnMemoryBasedNWR rs = new KnnMemoryBasedNWR(similarityMeasure, relevanceFactor, defaultRating, inverseFrequency, caseAmplification, neighborhoodSize, predictionTechnique);
+                                    KnnMemoryBasedNWR rs = new KnnMemoryBasedNWR();
+
+                                    rs.setSIMILARITY_MEASURE(similarityMeasure);
+                                    rs.setRELEVANCE_FACTOR_VALUE(relevanceFactor);
+                                    rs.setDEFAULT_RATING_VALUE(defaultRating);
+                                    rs.setINVERSE_FREQUENCY(inverseFrequency);
+                                    rs.setCASE_AMPLIFICATION(caseAmplification);
+                                    rs.setNeighborhoodSize(neighborhoodSize);
+                                    rs.setPREDICTION_TECHNIQUE(predictionTechnique);
+
                                     recommenders.add(rs);
 
                                     String number = Integer.toString(i);

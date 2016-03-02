@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,26 +16,25 @@
  */
 package delfos.group.grs.benchmark.polylens;
 
-import java.util.Collection;
-import java.util.List;
 import delfos.common.aggregationoperators.MinimumValue;
 import delfos.common.exceptions.dataset.CannotLoadContentDataset;
 import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
 import delfos.common.exceptions.dataset.items.ItemNotFound;
 import delfos.common.exceptions.dataset.users.UserNotFound;
 import delfos.common.parameters.Parameter;
-import delfos.common.parameters.ParameterListener;
 import delfos.common.parameters.restriction.IntegerParameter;
-import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.loader.types.DatasetLoader;
+import delfos.dataset.basic.rating.Rating;
 import delfos.group.groupsofusers.GroupOfUsers;
 import delfos.group.grs.GroupRecommenderSystemAdapter;
 import delfos.group.grs.SingleRecommendationModel;
 import delfos.group.grs.aggregation.AggregationOfIndividualRecommendations;
+import delfos.rs.collaborativefiltering.knn.KnnCollaborativeRecommender;
 import delfos.rs.collaborativefiltering.knn.memorybased.nwr.KnnMemoryBasedNWR;
 import delfos.rs.collaborativefiltering.predictiontechniques.WeightedSum;
 import delfos.rs.recommendation.Recommendation;
 import delfos.similaritymeasures.PearsonCorrelationCoefficient;
+import java.util.Collection;
 
 /**
  * Sistema que propone el paper
@@ -66,14 +65,21 @@ public class PolyLens extends GroupRecommenderSystemAdapter<SingleRecommendation
     public static final Parameter neighborhoodSize = new Parameter("Neighborhood_size", new IntegerParameter(1, 9999, 60));
 
     public PolyLens() {
-        final KnnMemoryBasedNWR knnMemory = new KnnMemoryBasedNWR(new PearsonCorrelationCoefficient(), 20, null, false, 1, 60, new WeightedSum());
+        final KnnMemoryBasedNWR knnMemory = new KnnMemoryBasedNWR();
+
+        knnMemory.setParameterValue(KnnCollaborativeRecommender.SIMILARITY_MEASURE, new PearsonCorrelationCoefficient());
+        knnMemory.setParameterValue(KnnCollaborativeRecommender.RELEVANCE_FACTOR, 20);
+        knnMemory.setParameterValue(KnnCollaborativeRecommender.DEFAULT_RATING_VALUE, null);
+        knnMemory.setParameterValue(KnnCollaborativeRecommender.DEFAULT_RATING, false);
+        knnMemory.setParameterValue(KnnCollaborativeRecommender.CASE_AMPLIFICATION, 1);
+        knnMemory.setParameterValue(KnnCollaborativeRecommender.NEIGHBORHOOD_SIZE, 60);
+        knnMemory.setParameterValue(KnnCollaborativeRecommender.PREDICTION_TECHNIQUE, new WeightedSum());
+
         aggregationOfIndividualRecommendations = new AggregationOfIndividualRecommendations(knnMemory, new MinimumValue());
+
         addParameter(neighborhoodSize);
-        addParammeterListener(new ParameterListener() {
-            @Override
-            public void parameterChanged() {
-                knnMemory.setParameterValue(KnnMemoryBasedNWR.NEIGHBORHOOD_SIZE, getParameterValue(neighborhoodSize));
-            }
+        addParammeterListener(() -> {
+            knnMemory.setParameterValue(KnnMemoryBasedNWR.NEIGHBORHOOD_SIZE, getParameterValue(neighborhoodSize));
         });
     }
 
