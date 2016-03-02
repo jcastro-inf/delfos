@@ -19,60 +19,54 @@ package delfos.rs.collaborativefiltering.knn.memorybased.nwr;
 import delfos.common.exceptions.CouldNotComputeSimilarity;
 import delfos.common.exceptions.dataset.items.ItemNotFound;
 import delfos.common.exceptions.dataset.users.UserNotFound;
-import delfos.common.parallelwork.SingleTaskExecute;
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.user.User;
 import delfos.rs.collaborativefiltering.knn.CommonRating;
+import delfos.rs.collaborativefiltering.knn.KnnCollaborativeRecommender;
 import delfos.rs.collaborativefiltering.knn.RecommendationEntity;
 import delfos.rs.collaborativefiltering.profile.Neighbor;
 import delfos.similaritymeasures.CollaborativeSimilarityMeasure;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.function.Function;
 
-public final class KnnMemoryBasedNWR_TaskExecutor implements SingleTaskExecute<KnnMemoryBasedNWR_Task>, Function<KnnMemoryBasedNWR_Task, Neighbor> {
+public final class KnnMemoryNeighborCalculator implements Function<KnnMemoryNeighborTask, Neighbor> {
 
-    public KnnMemoryBasedNWR_TaskExecutor() {
+    public KnnMemoryNeighborCalculator() {
         super();
     }
 
     @Override
-    public void executeSingleTask(KnnMemoryBasedNWR_Task task) {
-        Neighbor neighbor = apply(task);
-        task.neighbor = neighbor;
-    }
+    public Neighbor apply(KnnMemoryNeighborTask task) {
 
-    @Override
-    public Neighbor apply(KnnMemoryBasedNWR_Task task) {
-
-        KnnMemoryBasedNWR rs = task.rs;
+        KnnCollaborativeRecommender rs = task.rs;
         DatasetLoader<? extends Rating> datasetLoader = task.datasetLoader;
 
-        User user = datasetLoader.getUsersDataset().get(task.idUser);
-        User neighbor = datasetLoader.getUsersDataset().get(task.idNeighbor);
-
-        int idUser = user.getId();
-        int idNeighbor = neighbor.getId();
+        User user = task.user;
+        User neighbor = task.neighbor;
+        int idUser = task.user.getId();
+        int idNeighbor = task.neighbor.getId();
 
         if (idUser == idNeighbor) {
-            return new Neighbor(RecommendationEntity.USER, idNeighbor, Double.NaN);
+            return new Neighbor(RecommendationEntity.USER, neighbor, Double.NaN);
         }
-        CollaborativeSimilarityMeasure similarityMeasure_ = (CollaborativeSimilarityMeasure) rs.getParameterValue(KnnMemoryBasedNWR.SIMILARITY_MEASURE);
+        CollaborativeSimilarityMeasure similarityMeasure_ = (CollaborativeSimilarityMeasure) rs.getParameterValue(KnnCollaborativeRecommender.SIMILARITY_MEASURE);
 
         Byte defaultRatingValue_ = 0;
-        boolean defaultRating_ = (Boolean) rs.getParameterValue(KnnMemoryBasedNWR.DEFAULT_RATING);
+        boolean defaultRating_ = (Boolean) rs.getParameterValue(KnnCollaborativeRecommender.DEFAULT_RATING);
         if (defaultRating_) {
-            defaultRatingValue_ = ((Integer) rs.getParameterValue(KnnMemoryBasedNWR.DEFAULT_RATING_VALUE)).byteValue();
+            defaultRatingValue_ = ((Integer) rs.getParameterValue(KnnCollaborativeRecommender.DEFAULT_RATING_VALUE)).byteValue();
         }
 
-        boolean inverseFrequency_ = (Boolean) rs.getParameterValue(KnnMemoryBasedNWR.INVERSE_FREQUENCY);
-        double caseAmp = ((Number) rs.getParameterValue(KnnMemoryBasedNWR.CASE_AMPLIFICATION)).doubleValue();
-        boolean relevanceFactor_ = (Boolean) rs.getParameterValue(KnnMemoryBasedNWR.RELEVANCE_FACTOR);
-        int relevanceFactorValue_ = (Integer) rs.getParameterValue(KnnMemoryBasedNWR.RELEVANCE_FACTOR_VALUE);
+        boolean inverseFrequency_ = (Boolean) rs.getParameterValue(KnnCollaborativeRecommender.INVERSE_FREQUENCY);
+        double caseAmp = ((Number) rs.getParameterValue(KnnCollaborativeRecommender.CASE_AMPLIFICATION)).doubleValue();
+        boolean relevanceFactor_ = (Boolean) rs.getParameterValue(KnnCollaborativeRecommender.RELEVANCE_FACTOR);
+        int relevanceFactorValue_ = (Integer) rs.getParameterValue(KnnCollaborativeRecommender.RELEVANCE_FACTOR_VALUE);
 
         Map<Integer, ? extends Rating> activeUserRated;
         Map<Integer, ? extends Rating> neighborRatings;
@@ -94,32 +88,10 @@ public final class KnnMemoryBasedNWR_TaskExecutor implements SingleTaskExecute<K
             intersectionSet.retainAll(neighborRatings.keySet());
         }
 
-        ArrayList<CommonRating> common = new ArrayList<>();
+        Collection<CommonRating> common = new ArrayList<>();
 
         if (!defaultRating_) {
-
-            Set<Integer> intersection;
-            if (intersectionSet == null) {
-                intersection = new TreeSet<>();
-                for (int id : activeUserRated.keySet()) {
-                    if (neighborRatings.containsKey(id)) {
-                        intersection.add(id);
-                    }
-                }
-            } else {
-                intersection = intersectionSet;
-            }
-            if (intersection.isEmpty()) {
-                return new Neighbor(RecommendationEntity.USER, idNeighbor, Double.NaN);
-            }
-            for (int idItem : intersection) {
-                Rating r1 = activeUserRated.get(idItem);
-                Rating r2 = neighborRatings.get(idItem);
-
-                double d1 = r1.getRatingValue().doubleValue();
-                double d2 = r2.getRatingValue().doubleValue();
-                common.add(new CommonRating(RecommendationEntity.ITEM, idItem, RecommendationEntity.USER, idUser, idNeighbor, d1, d2));
-            }
+            common = CommonRating.intersection(datasetLoader, user, neighbor);
         } else {
             Set<Integer> union = new TreeSet<>(activeUserRated.keySet());
             union.addAll(neighborRatings.keySet());
@@ -166,28 +138,18 @@ public final class KnnMemoryBasedNWR_TaskExecutor implements SingleTaskExecute<K
             sim = similarityMeasure_.similarity(common, datasetLoader.getRatingsDataset());
 
             if (sim > 0) {
-                //Global.showMessage(numVecinosProbados+"   de "+getRatingsDataset().allUsers().size()+" en "+chronometer.printPartialElapsed());
-                if (relevanceFactor_ && intersectionSet.size() < relevanceFactorValue_) {
-                    sim = sim * ((double) intersectionSet.size() / relevanceFactorValue_);
-                }
+                if (relevanceFactor_) {
 
-                if (caseAmp >= 0) {
-                    sim = (double) Math.pow(sim, caseAmp);
-                } else {
-                    sim = (double) -Math.pow(-sim, caseAmp);
+                    if (intersectionSet.size() < relevanceFactorValue_) {
+                        sim = sim * ((double) intersectionSet.size() / relevanceFactorValue_);
+                    }
                 }
-
-                if (Double.isNaN(sim) || Double.isInfinite(sim)) {
-                    throw new IllegalArgumentException("Similarity NaN or Infinity.");
-                }
-                task.setNeighbor(new Neighbor(RecommendationEntity.USER, neighbor, sim));
-                return task.getNeighbor();
+                sim = (double) Math.pow(sim, caseAmp);
             }
         } catch (CouldNotComputeSimilarity ex) {
-
+            sim = Double.NaN;
         }
-
-        return new Neighbor(RecommendationEntity.USER, neighbor, Double.NaN);
+        return new Neighbor(RecommendationEntity.USER, neighbor, sim);
     }
 
 }

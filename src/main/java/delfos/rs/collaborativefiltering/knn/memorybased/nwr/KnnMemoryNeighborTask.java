@@ -17,52 +17,46 @@
 package delfos.rs.collaborativefiltering.knn.memorybased.nwr;
 
 import delfos.common.exceptions.dataset.users.UserNotFound;
-import delfos.common.parallelwork.Task;
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
-import delfos.rs.collaborativefiltering.profile.Neighbor;
+import delfos.dataset.basic.user.User;
+import delfos.rs.collaborativefiltering.knn.KnnCollaborativeRecommender;
 
 /**
- * Clase que almacena los datos necesarios para ejecutar paralelamente el
- * cálculo de la similitud con un vecino.
+ * Computes the similarity between the user and the neighbour, taking into
+ * account the RS parameters.
  *
  * @author jcastro-inf ( https://github.com/jcastro-inf )
- *
- * @version 14-Noviembre-2013
  */
-public class KnnMemoryBasedNWR_Task extends Task {
+public class KnnMemoryNeighborTask {
 
-    public final int idUser;
-    public final int idNeighbor;
-    public KnnMemoryBasedNWR rs;
+    public final User user;
+    public final User neighbor;
+    public KnnCollaborativeRecommender rs;
     public DatasetLoader<? extends Rating> datasetLoader;
-    public Neighbor neighbor = null;
 
-    public KnnMemoryBasedNWR_Task(DatasetLoader<? extends Rating> datasetLoader, int idUser, int idNeighbor, KnnMemoryBasedNWR rs) throws UserNotFound {
+    public KnnMemoryNeighborTask(
+            DatasetLoader<? extends Rating> datasetLoader,
+            User user,
+            User neighbor,
+            KnnCollaborativeRecommender rs) throws UserNotFound {
+
         this.datasetLoader = datasetLoader;
+        this.neighbor = neighbor;
 
-        this.idUser = idUser;
-        this.idNeighbor = idNeighbor;
         this.rs = rs;
+        this.user = user;
     }
 
     @Override
     public String toString() {
         StringBuilder str = new StringBuilder();
 
-        str.append("idUser ---------> ").append(idUser).append("\n");
-        str.append("idNeighbor -----> ").append(idNeighbor).append("\n");
+        str.append("idUser ---------> ").append(user).append("\n");
+        str.append("idNeighbor -----> ").append(neighbor).append("\n");
         str.append("rs -------------> ").append(rs.getAlias()).append("\n");
         str.append("\n").append(rs.getNameWithParameters());
 
         return str.toString();
-    }
-
-    public void setNeighbor(Neighbor neighbor) {
-        this.neighbor = neighbor;
-    }
-
-    public Neighbor getNeighbor() {
-        return neighbor;
     }
 }

@@ -183,10 +183,12 @@ public class KnnMemoryBasedNWR extends KnnCollaborativeRecommender<KnnMemoryMode
             int idUser)
             throws UserNotFound {
 
-        return datasetLoader.getUsersDataset().allIDs().stream()
-                .filter(idNeighbor -> idUser != idNeighbor)
-                .map((idNeighbor) -> new KnnMemoryBasedNWR_Task(datasetLoader, idUser, idNeighbor, this))
-                .map(new KnnMemoryBasedNWR_TaskExecutor())
+        User user = datasetLoader.getUsersDataset().get(idUser);
+
+        return datasetLoader.getUsersDataset().stream()
+                .filter(neighor -> neighor.getId() != user.getId())
+                .map((neighor) -> new KnnMemoryNeighborTask(datasetLoader, user, neighor, this))
+                .map(new KnnMemoryNeighborCalculator())
                 .sorted(Neighbor.BY_SIMILARITY_DESC)
                 .collect(Collectors.toList());
     }
