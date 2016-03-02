@@ -198,23 +198,15 @@ public class GroupCaseStudy extends ExperimentAdapter {
 
         aggregateResults = groupEvaluationMeasures.parallelStream().collect(Collectors.toMap(Function.identity(),
                 groupEvaluationMeasure -> {
-                    List<GroupEvaluationMeasureResult> resultsExecutions = allLoopsResults
-                    .values().parallelStream()
-                    .map(resultSplitsAllMeasures -> {
 
-                        List<GroupEvaluationMeasureResult> resultsSplits
-                        = resultSplitsAllMeasures.entrySet().parallelStream()
-                        .map(resultExecutionSplit -> resultExecutionSplit.getValue().get(groupEvaluationMeasure))
-                        .collect(Collectors.toList());
-
-                        GroupEvaluationMeasureResult resultsSplitsAggregated
-                        = groupEvaluationMeasure.agregateResults(resultsSplits);
-
-                        return resultsSplitsAggregated;
-                    }).collect(Collectors.toList());
+                    List<GroupEvaluationMeasureResult> allResultsThisMeasure
+                    = allLoopsResults.values().parallelStream()
+                    .flatMap(resultsForThisExecution -> resultsForThisExecution.values().stream())
+                    .map(resultExecutionSplit -> resultExecutionSplit.get(groupEvaluationMeasure))
+                    .collect(Collectors.toList());
 
                     GroupEvaluationMeasureResult resultsAggregated
-                    = groupEvaluationMeasure.agregateResults(resultsExecutions);
+                    = groupEvaluationMeasure.agregateResults(allResultsThisMeasure);
 
                     return resultsAggregated;
                 }));
