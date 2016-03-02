@@ -16,6 +16,8 @@
  */
 package delfos.rs.collaborativefiltering.knn.memorybased.nwr;
 
+import delfos.rs.collaborativefiltering.knn.memorybased.KnnMemoryNeighborCalculator;
+import delfos.rs.collaborativefiltering.knn.memorybased.KnnMemoryNeighborTask;
 import delfos.common.Global;
 import delfos.common.exceptions.CouldNotPredictRating;
 import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
