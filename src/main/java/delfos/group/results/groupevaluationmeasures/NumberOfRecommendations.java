@@ -16,26 +16,20 @@
  */
 package delfos.group.results.groupevaluationmeasures;
 
-import delfos.common.Global;
+import delfos.common.statisticalfuncions.MeanIterative;
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RatingsDataset;
 import delfos.dataset.basic.rating.RelevanceCriteria;
 import delfos.group.groupsofusers.GroupOfUsers;
 import delfos.group.results.grouprecomendationresults.GroupRecommenderSystemResult;
-import delfos.io.xml.parameterowner.ParameterOwnerXML;
 import delfos.rs.recommendation.Recommendation;
 import java.util.Collection;
-import org.jdom2.Element;
 
 /**
- * Medida de evaluación para calcular el número de predicciones que se
- * calcularon.
+ * Computes the average number of recommendations per group.
  *
  * @author jcastro-inf ( https://github.com/jcastro-inf )
- *
- * @version 1.0 (26-01-2013)
- * @see delfos.Results.EvaluationMeasures.RatingPrediction.MAE_ForGroups
  */
 public class NumberOfRecommendations extends GroupEvaluationMeasure {
 
@@ -48,31 +42,23 @@ public class NumberOfRecommendations extends GroupEvaluationMeasure {
             DatasetLoader<? extends Rating> trainingDatasetLoader,
             DatasetLoader<? extends Rating> testDatasetLoader) {
 
-        Element ret = ParameterOwnerXML.getElement(this);
-        long recomendadas = 0;
+        MeanIterative meanRecommendationsPerGroup = new MeanIterative();
 
         for (GroupOfUsers groupOfUsers : groupRecommenderSystemResult.getGroupsOfUsers()) {
             Collection<Recommendation> groupRecommendations = groupRecommenderSystemResult.getGroupOutput(groupOfUsers).getRecommendations();
 
-            Element groupRecommendationsElement = new Element("GroupRecommendations");
-            groupRecommendationsElement.setAttribute("group", groupOfUsers.toString());
-
             if (groupRecommendations == null) {
-                Global.showWarning("the group " + groupOfUsers + " has no recommendations (null)");
-                groupRecommendationsElement.addContent("[]");
+                throw new IllegalStateException("The group " + groupOfUsers + " has null recommendations.");
             } else {
                 long recommendedThisGroup = groupRecommendations.stream()
                         .filter(recommendation -> recommendation != null)
                         .filter(recommendation -> !Double.isNaN(recommendation.getPreference().doubleValue()))
                         .count();
-                recomendadas += recommendedThisGroup;
-                groupRecommendationsElement.addContent(groupRecommendations.toString());
-            }
 
-            ret.addContent(groupRecommendationsElement);
+                meanRecommendationsPerGroup.addValue(recommendedThisGroup);
+            }
         }
-        ret.setAttribute("value", Long.toString(recomendadas));
-        return new GroupEvaluationMeasureResult(this, recomendadas);
+        return new GroupEvaluationMeasureResult(this, meanRecommendationsPerGroup.getMean());
     }
 
     @Override

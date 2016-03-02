@@ -19,8 +19,6 @@ package delfos.group.factories;
 import delfos.factories.Factory;
 import delfos.group.results.groupevaluationmeasures.AreaUnderRoc;
 import delfos.group.results.groupevaluationmeasures.Coverage;
-import delfos.group.results.groupevaluationmeasures.GroupAverageNumberOfRecommendations;
-import delfos.group.results.groupevaluationmeasures.GroupAverageNumberOfRequests;
 import delfos.group.results.groupevaluationmeasures.GroupEvaluationMeasure;
 import delfos.group.results.groupevaluationmeasures.MAE;
 import delfos.group.results.groupevaluationmeasures.NDCG;
@@ -64,8 +62,6 @@ public class GroupEvaluationMeasuresFactory extends Factory<GroupEvaluationMeasu
         instance = new GroupEvaluationMeasuresFactory();
 
         //Medidas relacionadas con la cobertura.
-        instance.addClass(GroupAverageNumberOfRecommendations.class);
-        instance.addClass(GroupAverageNumberOfRequests.class);
         instance.addClass(Coverage.class);
         instance.addClass(NumberOfRecommendations.class);
         instance.addClass(NumberOfRequests.class);
