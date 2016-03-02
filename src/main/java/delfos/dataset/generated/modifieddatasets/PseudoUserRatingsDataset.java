@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -51,7 +51,11 @@ public class PseudoUserRatingsDataset<RatingType extends Rating> extends Ratings
     private boolean pseudoUserSetted = false;
     private int idPseudoUser;
 
-    public PseudoUserRatingsDataset(RatingsDataset<? extends RatingType> ratingsDataset, Map<Integer, RatingType> userRatings, Collection<Integer> forbiddenUsers) {
+    public PseudoUserRatingsDataset(
+            RatingsDataset<? extends RatingType> ratingsDataset,
+            Map<Integer, RatingType> pseudoUserRatings,
+            Collection<Integer> forbiddenUsers) {
+
         super();
         constructionOriginalDataset = (RatingsDataset<RatingType>) ratingsDataset;
 
@@ -63,7 +67,7 @@ public class PseudoUserRatingsDataset<RatingType extends Rating> extends Ratings
 
         pseudoUserSetted = true;
 
-        if (userRatings == null) {
+        if (pseudoUserRatings == null) {
             throw new IllegalArgumentException("No se puede crear un usuario sin valoraciones.");
         }
 
@@ -75,7 +79,7 @@ public class PseudoUserRatingsDataset<RatingType extends Rating> extends Ratings
         }
 
         Map<Integer, Map<Integer, RatingType>> ratingsToAdd = new TreeMap<>();
-        ratingsToAdd.put(idPseudoUser, userRatings);
+        ratingsToAdd.put(idPseudoUser, pseudoUserRatings);
 
         Set<Integer> allowedUsers = new TreeSet<>(workingDataset.allUsers());
 

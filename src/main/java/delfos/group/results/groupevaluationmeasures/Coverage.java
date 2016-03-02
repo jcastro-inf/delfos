@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -17,6 +17,7 @@
 package delfos.group.results.groupevaluationmeasures;
 
 import delfos.common.Global;
+import delfos.dataset.basic.item.Item;
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RatingsDataset;
@@ -70,7 +71,7 @@ public class Coverage extends GroupEvaluationMeasure {
                 }
             }
 
-            Collection<Integer> solicitadas = groupRecommenderSystemResult.getGroupInput(group).getItemsRequested();
+            Set<Item> solicitadas = groupRecommenderSystemResult.getGroupInput(group).getItemsRequested();
             if (solicitadas == null) {
                 Global.showWarning("the group " + group + " has no requests (null)");
             } else {

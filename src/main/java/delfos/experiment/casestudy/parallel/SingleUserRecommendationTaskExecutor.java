@@ -30,7 +30,6 @@ import delfos.rs.recommendation.Recommendations;
 import delfos.rs.recommendation.RecommendationsToUser;
 import java.util.Set;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 
 /**
  * Realiza la ejecución de una recomendación de un usuario y la almacena. Al
@@ -45,9 +44,7 @@ public class SingleUserRecommendationTaskExecutor implements Function<SingleUser
         RecommenderSystem recommenderSystem = task.getRecommenderSystem();
         DatasetLoader<? extends Rating> datasetLoader = task.getDatasetLoader();
         User user = datasetLoader.getUsersDataset().get(task.getIdUser());
-        Set<Item> candidateItems = task.getCandidateItems().parallelStream()
-                .map(idItem -> datasetLoader.getContentDataset().get(idItem))
-                .collect(Collectors.toSet());
+        Set<Item> candidateItems = task.getCandidateItems();
         Object model = task.getRecommendationModel();
         try {
             Recommendations recommendationsGeneric = recommenderSystem.recommendToUser(

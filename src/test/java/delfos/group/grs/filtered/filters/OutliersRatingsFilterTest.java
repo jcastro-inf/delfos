@@ -87,7 +87,7 @@ public class OutliersRatingsFilterTest extends DelfosTest {
                 members.add(users[random.nextInt(users.length)]);
             }
 
-            GroupOfUsers group = new GroupOfUsers(members);
+            GroupOfUsers group = new GroupOfUsers(members.toArray(new Integer[0]));
             //Fetch dataset.
             Map<Integer, Map<Integer, ? extends Rating>> groupRatings = new TreeMap<>();
             TreeSet<Integer> items = new TreeSet<>();

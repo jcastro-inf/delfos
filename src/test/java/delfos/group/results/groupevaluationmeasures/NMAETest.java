@@ -1,6 +1,7 @@
 package delfos.group.results.groupevaluationmeasures;
 
 import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
+import delfos.dataset.basic.item.Item;
 import delfos.dataset.basic.loader.types.CompleteDatasetLoaderAbstract;
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
@@ -53,7 +54,7 @@ public class NMAETest {
         RelevanceCriteria relevanceCriteria = new RelevanceCriteria(4);
 
         GroupOfUsers groupOfUsers = new GroupOfUsers(1, 2);
-        Set<Integer> groupRequests = Arrays.asList(12, 13).stream().collect(Collectors.toSet());
+        Set<Item> groupRequests = Arrays.asList(new Item(12), new Item(13)).stream().collect(Collectors.toSet());
 
         List<SingleGroupRecommendationTaskInput> singleGroupRecommendationInputs = Arrays.asList(
                 new SingleGroupRecommendationTaskInput(null, datasetLoader, recommendationModel, groupOfUsers, groupRequests));

@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -20,7 +20,7 @@ import delfos.common.exceptions.dataset.CannotLoadContentDataset;
 import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
 import delfos.common.exceptions.dataset.items.ItemNotFound;
 import delfos.common.exceptions.dataset.users.UserNotFound;
-import delfos.dataset.basic.loader.types.ContentDatasetLoader;
+import delfos.dataset.basic.item.Item;
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RatingsDataset;
@@ -79,15 +79,14 @@ public class GroupRecommendationWindow extends JFrame {
 
         NeverRatedItems nri = new NeverRatedItems();
 
-        Set<Integer> allItems;
-        if (datasetLoader instanceof ContentDatasetLoader) {
-            ContentDatasetLoader contentDatasetLoader = (ContentDatasetLoader) datasetLoader;
-            allItems = new TreeSet<>(contentDatasetLoader.getContentDataset().allIDs());
-        } else {
-            allItems = new TreeSet<>(datasetLoader.getRatingsDataset().allRatedItems());
-        }
+        Set<Item> allItems = new TreeSet<>(datasetLoader.getContentDataset());
 
-        Collection<Recommendation> recomm = groupRecommenderSystem.recommendOnly(datasetLoader, build, buildGroupModel, groupOfUsers, allItems);
+        Collection<Recommendation> recomm = groupRecommenderSystem.recommendOnly(
+                datasetLoader,
+                build,
+                buildGroupModel,
+                groupOfUsers,
+                allItems);
 
         RecommendationsOutputStandardRaw output = new RecommendationsOutputStandardRaw();
         output.writeRecommendations(new GroupRecommendations(groupOfUsers, recomm, RecommendationComputationDetails.EMPTY_DETAILS));

@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -102,7 +102,11 @@ public class HesitantKnnGroupUser
     }
 
     @Override
-    public HesitantValuation buildGroupModel(DatasetLoader<? extends Rating> datasetLoader, Object RecommendationModel, GroupOfUsers groupOfUsers) throws UserNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset, NotEnoughtUserInformation {
+    public <RatingType extends Rating> HesitantValuation buildGroupModel(
+            DatasetLoader<RatingType> datasetLoader,
+            Object RecommendationModel,
+            GroupOfUsers groupOfUsers)
+            throws UserNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset, NotEnoughtUserInformation {
         HesitantValuation<Item, Double> hesitantProfile = getHesitantProfile(datasetLoader, groupOfUsers.getMembers());
 
         if (isDeleteRepeatedOn()) {
@@ -113,7 +117,12 @@ public class HesitantKnnGroupUser
     }
 
     @Override
-    public Collection<Recommendation> recommendOnly(DatasetLoader<? extends Rating> datasetLoader, Object RecommendationModel, HesitantValuation groupModel, GroupOfUsers groupOfUsers, Set<Integer> candidateItems) throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset, NotEnoughtUserInformation {
+    public <RatingType extends Rating> Collection<Recommendation> recommendOnly(
+            DatasetLoader<RatingType> datasetLoader,
+            Object RecommendationModel,
+            HesitantValuation groupModel,
+            GroupOfUsers groupOfUsers,
+            Set<Item> candidateItems) throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset, NotEnoughtUserInformation {
 
         try {
             List<Neighbor> neighbors;
@@ -133,7 +142,7 @@ public class HesitantKnnGroupUser
                     datasetLoaderNew,
                     idPseudoUser,
                     neighbors,
-                    neighborhoodSize, candidateItems,
+                    neighborhoodSize, candidateItems.stream().map(item -> item.getId()).collect(Collectors.toSet()),
                     predictionTechnique);
 
             Collection<Recommendation> retWithNeighbors = ret.stream()

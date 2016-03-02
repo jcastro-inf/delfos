@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -21,6 +21,7 @@ import delfos.common.exceptions.dataset.CannotLoadContentDataset;
 import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
 import delfos.common.exceptions.dataset.users.UserNotFound;
 import delfos.common.parameters.ParameterListener;
+import delfos.dataset.basic.item.Item;
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
 import delfos.experiment.SeedHolder;
@@ -30,6 +31,7 @@ import delfos.rs.recommendation.Recommendation;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Set;
 
 /**
  * Recomendador aleatorio para grupos de usuarios. No usar en un sistema real
@@ -58,30 +60,37 @@ public class RandomGroupRecommender
     }
 
     @Override
-    public GroupOfUsers buildGroupModel(DatasetLoader<? extends Rating> datasetLoader, RandomRecommendationModel<GroupOfUsers> RecommendationModel, GroupOfUsers groupOfUsers) throws UserNotFound {
-        return new GroupOfUsers(groupOfUsers.getIdMembers());
+    public <RatingType extends Rating> GroupOfUsers buildGroupModel(
+            DatasetLoader<RatingType> datasetLoader,
+            RandomRecommendationModel<GroupOfUsers> recommendationModel,
+            GroupOfUsers groupOfUsers) throws UserNotFound {
+        return groupOfUsers;
     }
 
     @Override
-    public Collection<Recommendation> recommendOnly(
-            DatasetLoader<? extends Rating> datasetLoader, RandomRecommendationModel<GroupOfUsers> RecommendationModel, GroupOfUsers groupModel, GroupOfUsers groupOfUsers, java.util.Set<Integer> candidateItems)
+    public <RatingType extends Rating> Collection<Recommendation> recommendOnly(
+            DatasetLoader<RatingType> datasetLoader,
+            RandomRecommendationModel<GroupOfUsers> recommendationModel,
+            GroupOfUsers groupModel,
+            GroupOfUsers groupOfUsers,
+            Set<Item> candidateItems)
             throws UserNotFound, CannotLoadRatingsDataset {
 
-        if (RecommendationModel.getRandomDouble(groupOfUsers) > 0.999) {
+        if (recommendationModel.getRandomDouble(groupOfUsers) > 0.999) {
             return Collections.EMPTY_LIST;
         } else {
-            final int numRecomendaciones = (int) (RecommendationModel.getRandomInt(groupOfUsers, candidateItems.size()));
+            final int numRecomendaciones = (int) (recommendationModel.getRandomInt(groupOfUsers, candidateItems.size()));
             final double min = datasetLoader.getRatingsDataset().getRatingsDomain().min().doubleValue();
             final double rango = datasetLoader.getRatingsDataset().getRatingsDomain().width().doubleValue();
 
             Collection<Recommendation> recommendationList = new ArrayList<>(numRecomendaciones);
-            ArrayList<Integer> toPredict = new ArrayList<>(candidateItems);
+            ArrayList<Item> toPredict = new ArrayList<>(candidateItems);
             for (int i = 0; i < numRecomendaciones; i++) {
-                int idItem = toPredict.remove(RecommendationModel.getRandomInt(groupOfUsers, toPredict.size()));
+                Item item = toPredict.remove(recommendationModel.getRandomInt(groupOfUsers, toPredict.size()));
 
-                double ratingAleatorio = RecommendationModel.getRandomDouble(groupOfUsers);
+                double ratingAleatorio = recommendationModel.getRandomDouble(groupOfUsers);
                 ratingAleatorio = ratingAleatorio * rango + min;
-                recommendationList.add(new Recommendation(idItem, ratingAleatorio));
+                recommendationList.add(new Recommendation(item, ratingAleatorio));
             }
             return recommendationList;
         }

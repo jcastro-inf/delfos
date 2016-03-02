@@ -18,7 +18,6 @@ package delfos.rs.collaborativefiltering.knn.memorybased;
 
 import delfos.common.exceptions.CouldNotComputeSimilarity;
 import delfos.common.exceptions.dataset.items.ItemNotFound;
-import delfos.common.exceptions.dataset.users.UserNotFound;
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.user.User;
@@ -32,7 +31,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.function.Function;
 
@@ -50,10 +48,8 @@ public final class KnnMemoryNeighborCalculator implements Function<KnnMemoryNeig
 
         User user = task.user;
         User neighbor = task.neighbor;
-        int idUser = task.user.getId();
-        int idNeighbor = task.neighbor.getId();
 
-        if (idUser == idNeighbor) {
+        if (user.equals(neighbor)) {
             return new Neighbor(RecommendationEntity.USER, neighbor, Double.NaN);
         }
         CollaborativeSimilarityMeasure similarityMeasure_ = (CollaborativeSimilarityMeasure) rs.getParameterValue(KnnCollaborativeRecommender.SIMILARITY_MEASURE);
@@ -65,18 +61,10 @@ public final class KnnMemoryNeighborCalculator implements Function<KnnMemoryNeig
         boolean relevanceFactor_ = (Boolean) rs.getParameterValue(KnnCollaborativeRecommender.RELEVANCE_FACTOR);
         int relevanceFactorValue_ = (Integer) rs.getParameterValue(KnnCollaborativeRecommender.RELEVANCE_FACTOR_VALUE);
 
-        Map<Integer, ? extends Rating> activeUserRated;
-        Map<Integer, ? extends Rating> neighborRatings;
-        try {
-            activeUserRated = datasetLoader.getRatingsDataset().getUserRatingsRated(idUser);
-        } catch (UserNotFound ex) {
-            activeUserRated = new TreeMap<>();
-        }
-        try {
-            neighborRatings = datasetLoader.getRatingsDataset().getUserRatingsRated(idNeighbor);
-        } catch (UserNotFound ex) {
-            neighborRatings = new TreeMap<>();
-        }
+        Map<Integer, ? extends Rating> activeUserRated = datasetLoader.getRatingsDataset()
+                .getUserRatingsRated(user.getId());
+        Map<Integer, ? extends Rating> neighborRatings = datasetLoader.getRatingsDataset()
+                .getUserRatingsRated(neighbor.getId());
 
         Set<Integer> intersectionSet = new TreeSet<>(activeUserRated.keySet());
         intersectionSet.retainAll(neighborRatings.keySet());

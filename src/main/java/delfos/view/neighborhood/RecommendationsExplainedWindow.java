@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -604,7 +604,7 @@ public class RecommendationsExplainedWindow extends JFrame {
             DatasetLoader<? extends Rating> datasetLoader = configuredDatasetSelected().getDatasetLoader();
 
             OnlyNewItems onlyNewItems = new OnlyNewItems();
-            Set<Item> candidateItems = onlyNewItems.candidateItemsNew(datasetLoader, userSelected);
+            Set<Item> candidateItems = onlyNewItems.candidateItems(datasetLoader, userSelected);
 
             Recommendations recommendations = recommenderSystem.recommendToUser(datasetLoader, recommendationModel, userSelected, candidateItems);
 

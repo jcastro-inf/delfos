@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -34,6 +34,7 @@ import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.stream.Collectors;
 
 /**
  * Implementa el protocolo de predicción HoldOut, que divide el conjunto de
@@ -97,6 +98,8 @@ public class HoldOutPrediction extends GroupPredictionProtocol {
                 = new DatasetLoaderGivenRatingsDataset<>(trainDatasetLoader,
                         RatingsDatasetOverwrite.createRatingsDataset((RatingsDataset<Rating>) trainDatasetLoader.getRatingsDataset(), predictionMembersRatings_byUser_Rating));
 
-        return Arrays.asList(new GroupRecommendationRequest(group, predictionPhaseDatasetLoader, itemsToPredict));
+        return Arrays.asList(new GroupRecommendationRequest(group, predictionPhaseDatasetLoader,
+                itemsToPredict.stream().map(idItem -> trainDatasetLoader.getContentDataset().get(idItem)).collect(Collectors.toSet()))
+        );
     }
 }

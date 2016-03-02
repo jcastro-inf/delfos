@@ -17,6 +17,7 @@
 package delfos.experiment.casestudy.parallel;
 
 import delfos.common.parallelwork.Task;
+import delfos.dataset.basic.item.Item;
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
 import delfos.rs.RecommenderSystem;
@@ -33,10 +34,10 @@ public class SingleUserRecommendationTask extends Task {
     private final Object model;
     private final int idUser;
     private final DatasetLoader<? extends Rating> datasetLoader;
-    private final Set<Integer> candidateItems;
+    private final Set<Item> candidateItems;
     private final RecommenderSystem<? extends Object> recommenderSystem;
 
-    public SingleUserRecommendationTask(RecommenderSystem<? extends Object> recommenderSystem, DatasetLoader<? extends Rating> datasetLoader, Object model, int idUser, Set<Integer> candidateItems) {
+    public SingleUserRecommendationTask(RecommenderSystem<? extends Object> recommenderSystem, DatasetLoader<? extends Rating> datasetLoader, Object model, int idUser, Set<Item> candidateItems) {
         this.model = model;
         this.idUser = idUser;
         this.recommenderSystem = recommenderSystem;
@@ -56,7 +57,7 @@ public class SingleUserRecommendationTask extends Task {
         return str.toString();
     }
 
-    public Set<Integer> getCandidateItems() {
+    public Set<Item> getCandidateItems() {
         return Collections.unmodifiableSet(candidateItems);
     }
 

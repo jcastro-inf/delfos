@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -18,13 +18,14 @@ package delfos.group.results.groupevaluationmeasures;
 
 import delfos.common.Global;
 import delfos.common.statisticalfuncions.MeanIterative;
+import delfos.dataset.basic.item.Item;
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RatingsDataset;
 import delfos.dataset.basic.rating.RelevanceCriteria;
 import delfos.group.groupsofusers.GroupOfUsers;
 import delfos.group.results.grouprecomendationresults.GroupRecommenderSystemResult;
-import java.util.Collection;
+import java.util.Set;
 
 /**
  * Medida de evaluación para calcular el número medio de solicitudes de
@@ -48,7 +49,7 @@ public class GroupAverageNumberOfRequests extends GroupEvaluationMeasure {
 
         MeanIterative mean = new MeanIterative();
         for (GroupOfUsers group : groupRecommenderSystemResult.getGroupsOfUsers()) {
-            Collection<Integer> requestsToGroup = groupRecommenderSystemResult.getGroupInput(group).getItemsRequested();
+            Set<Item> requestsToGroup = groupRecommenderSystemResult.getGroupInput(group).getItemsRequested();
             if (requestsToGroup == null) {
                 Global.showWarning("the group " + group + " has no requests (null)");
                 mean.addValue(0);

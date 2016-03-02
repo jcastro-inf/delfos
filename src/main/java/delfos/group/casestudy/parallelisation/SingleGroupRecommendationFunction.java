@@ -18,6 +18,7 @@ package delfos.group.casestudy.parallelisation;
 
 import delfos.common.Chronometer;
 import delfos.common.exceptions.ratings.NotEnoughtUserInformation;
+import delfos.dataset.basic.item.Item;
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
 import delfos.group.groupsofusers.GroupOfUsers;
@@ -51,7 +52,7 @@ public class SingleGroupRecommendationFunction implements Function<SingleGroupRe
 
         final DatasetLoader<? extends Rating> datasetLoader = task.getDatasetLoader();
         final Object recommendationModel = task.getRecommendationModel();
-        final Set<Integer> itemsRequested = task.getItemsRequested();
+        final Set<Item> itemsRequested = task.getItemsRequested();
 
         Collection<Recommendation> recommendations = Collections.EMPTY_LIST;
         long buildTime = -1;

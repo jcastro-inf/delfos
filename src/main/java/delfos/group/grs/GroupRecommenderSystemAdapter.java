@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,20 +16,8 @@
  */
 package delfos.group.grs;
 
-import delfos.common.exceptions.dataset.CannotLoadContentDataset;
-import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
-import delfos.common.exceptions.dataset.items.ItemNotFound;
-import delfos.common.exceptions.dataset.users.UserNotFound;
-import delfos.common.exceptions.ratings.NotEnoughtUserInformation;
 import delfos.common.parameters.ParameterOwnerType;
-import delfos.dataset.basic.loader.types.DatasetLoader;
-import delfos.dataset.basic.rating.Rating;
-import delfos.group.groupsofusers.GroupOfUsers;
 import delfos.rs.GenericRecommenderSystemAdapter;
-import delfos.rs.recommendation.Recommendation;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.TreeSet;
 
 /**
  * Sistema de recomendación para grupos de usuarios. Esta clase define los
@@ -54,8 +42,4 @@ public abstract class GroupRecommenderSystemAdapter<RecommendationModel, GroupMo
         return ParameterOwnerType.GROUP_RECOMMENDER_SYSTEM;
     }
 
-    @Override
-    public Collection<Recommendation> recommendOnly(DatasetLoader<? extends Rating> datasetLoader, RecommendationModel RecommendationModel, GroupModel groupModel, GroupOfUsers groupOfUsers, Integer... candidateItems) throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadRatingsDataset, CannotLoadContentDataset, NotEnoughtUserInformation {
-        return recommendOnly(datasetLoader, RecommendationModel, groupModel, groupOfUsers, new TreeSet<>(Arrays.asList(candidateItems)));
-    }
 }

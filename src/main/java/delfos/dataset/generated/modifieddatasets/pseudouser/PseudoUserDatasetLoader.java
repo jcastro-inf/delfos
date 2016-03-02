@@ -92,7 +92,7 @@ public class PseudoUserDatasetLoader<RatingType extends Rating> extends DatasetL
 
     boolean isFrozen = false;
 
-    private synchronized void freeze() {
+    public synchronized void freeze() {
         isFrozen = true;
 
         ratingsDataset = new PseudoUserRatingsDataset<>(

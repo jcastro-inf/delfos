@@ -10,6 +10,7 @@ import delfos.configfile.rs.single.RecommenderSystemConfigurationFileParser;
 import delfos.configureddatasets.ConfiguredDatasetsFactory;
 import delfos.constants.DelfosTest;
 import delfos.databaseconnections.MySQLConnection;
+import delfos.dataset.basic.item.Item;
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RatingsDataset;
@@ -32,6 +33,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.stream.Collectors;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -78,8 +80,10 @@ public class TryThisAtHomeSVDTest extends DelfosTest {
         final RecommendationCandidatesSelector candidates = new OnlyNewItems();
 
         for (int idUser : users) {
-            Set<Integer> candidateItems = candidates.candidateItems(datasetLoader, new User(idUser));
-            Collection<Recommendation> recommendOnly = recommenderSystem.recommendToUser(datasetLoader, model, idUser, candidateItems);
+            Set<Item> candidateItems = candidates.candidateItems(datasetLoader, new User(idUser));
+            Collection<Recommendation> recommendOnly = recommenderSystem.recommendToUser(datasetLoader, model, idUser,
+                    candidateItems.stream().map(item -> item.getId()).collect(Collectors.toSet())
+            );
         }
     }
 

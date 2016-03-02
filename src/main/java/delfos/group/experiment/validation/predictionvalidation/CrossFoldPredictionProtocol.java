@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -33,6 +33,7 @@ import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.stream.Collectors;
 
 /**
  * Implementa el protocolo de predicción similar a la validación cruzada.
@@ -98,7 +99,9 @@ public class CrossFoldPredictionProtocol extends GroupPredictionProtocol {
                                     (RatingsDataset<Rating>) trainDatasetLoader.getRatingsDataset(),
                                     predictionMembersRatings_byUser_Rating));
 
-            groupRecommendationRequests.add(new GroupRecommendationRequest(group, predictionPhaseDatasetLoader, itemsInThisFold));
+            groupRecommendationRequests.add(new GroupRecommendationRequest(group, predictionPhaseDatasetLoader,
+                    itemsInThisFold.stream().map(idItem -> trainDatasetLoader.getContentDataset().get(idItem)).collect(Collectors.toSet()))
+            );
 
         }
         return groupRecommendationRequests;

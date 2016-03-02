@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,11 +16,6 @@
  */
 package delfos.group.grs.svd;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
 import delfos.common.aggregationoperators.AggregationOperator;
 import delfos.common.aggregationoperators.Mean;
 import delfos.common.exceptions.dataset.CannotLoadContentDataset;
@@ -29,10 +24,11 @@ import delfos.common.exceptions.dataset.items.ItemNotFound;
 import delfos.common.exceptions.dataset.users.UserNotFound;
 import delfos.common.parameters.Parameter;
 import delfos.common.parameters.restriction.ParameterOwnerRestriction;
-import delfos.dataset.basic.rating.Rating;
-import delfos.dataset.loaders.given.DatasetLoaderGivenRatingsDataset;
+import delfos.dataset.basic.item.Item;
 import delfos.dataset.basic.loader.types.DatasetLoader;
+import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.generated.modifieddatasets.PseudoUserRatingsDataset;
+import delfos.dataset.loaders.given.DatasetLoaderGivenRatingsDataset;
 import delfos.dataset.util.DatasetUtilities;
 import delfos.group.groupsofusers.GroupOfUsers;
 import delfos.group.grs.GroupRecommenderSystemAdapter;
@@ -41,6 +37,12 @@ import delfos.rs.collaborativefiltering.svd.SVDFoldingIn;
 import delfos.rs.collaborativefiltering.svd.TryThisAtHomeSVD;
 import delfos.rs.collaborativefiltering.svd.TryThisAtHomeSVDModel;
 import delfos.rs.recommendation.Recommendation;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
+import java.util.stream.Collectors;
 
 /**
  * Sistema de recomendación a grupos con agregación de valoraciones de los
@@ -104,8 +106,8 @@ public class SVDforGroup_ratingsAggregation extends GroupRecommenderSystemAdapte
     }
 
     @Override
-    public GroupSVDModel buildGroupModel(
-            DatasetLoader<? extends Rating> datasetLoader,
+    public <RatingType extends Rating> GroupSVDModel buildGroupModel(
+            DatasetLoader<RatingType> datasetLoader,
             TryThisAtHomeSVDModel RecommendationModel,
             GroupOfUsers groupOfUsers)
             throws UserNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset {
@@ -134,7 +136,13 @@ public class SVDforGroup_ratingsAggregation extends GroupRecommenderSystemAdapte
     }
 
     @Override
-    public Collection<Recommendation> recommendOnly(DatasetLoader<? extends Rating> datasetLoader, TryThisAtHomeSVDModel RecommendationModel, GroupSVDModel groupModel, GroupOfUsers groupOfUsers, java.util.Set<Integer> candidateItems) throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset {
+    public <RatingType extends Rating> Collection<Recommendation> recommendOnly(
+            DatasetLoader<RatingType> datasetLoader,
+            TryThisAtHomeSVDModel RecommendationModel,
+            GroupSVDModel groupModel,
+            GroupOfUsers groupOfUsers,
+            Set<Item> candidateItems)
+            throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset {
 
         int idUser = -1;
         if (datasetLoader.getRatingsDataset().allUsers().contains(idUser)) {
@@ -142,6 +150,9 @@ public class SVDforGroup_ratingsAggregation extends GroupRecommenderSystemAdapte
         }
 
         TryThisAtHomeSVDModel extendedModel = TryThisAtHomeSVDModel.addUser(RecommendationModel, idUser, groupModel.getGroupFeatures());
-        return singleUserSR.recommendToUser(datasetLoader, extendedModel, idUser, candidateItems);
+        return singleUserSR.recommendToUser(datasetLoader, extendedModel, idUser,
+                candidateItems.stream()
+                .map(item -> item.getId()).collect(Collectors.toSet())
+        );
     }
 }

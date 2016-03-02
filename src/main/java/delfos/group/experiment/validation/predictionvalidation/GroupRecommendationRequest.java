@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,6 +16,7 @@
  */
 package delfos.group.experiment.validation.predictionvalidation;
 
+import delfos.dataset.basic.item.Item;
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
 import delfos.group.groupsofusers.GroupOfUsers;
@@ -30,12 +31,12 @@ public class GroupRecommendationRequest {
 
     public final DatasetLoader<? extends Rating> predictionPhaseDatasetLoader;
     public final GroupOfUsers groupOfUsers;
-    public final Set<Integer> itemsToPredict;
+    public final Set<Item> itemsToPredict;
 
     public GroupRecommendationRequest(
             GroupOfUsers groupOfUsers,
             DatasetLoader<? extends Rating> predictionPhaseDatasetLoader,
-            Set<Integer> itemsToPredict) {
+            Set<Item> itemsToPredict) {
 
         this.groupOfUsers = groupOfUsers;
         this.predictionPhaseDatasetLoader = predictionPhaseDatasetLoader;

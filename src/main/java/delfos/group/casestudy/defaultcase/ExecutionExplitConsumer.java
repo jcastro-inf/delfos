@@ -17,6 +17,7 @@
 package delfos.group.casestudy.defaultcase;
 
 import delfos.common.Chronometer;
+import delfos.dataset.basic.item.Item;
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RelevanceCriteria;
@@ -110,7 +111,7 @@ public class ExecutionExplitConsumer {
 
         taskGroupRecommendationInput.parallelStream().forEach(task -> {
 
-            Set<Integer> groupRequests = task.getItemsRequested();
+            Set<Item> groupRequests = task.getItemsRequested();
             GroupOfUsers groupOfUsers = task.getGroupOfUsers();
 
             if (groupRequests == null) {

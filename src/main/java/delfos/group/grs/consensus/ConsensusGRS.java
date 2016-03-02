@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -32,6 +32,7 @@ import delfos.common.parameters.restriction.DirectoryParameter;
 import delfos.common.parameters.restriction.DoubleParameter;
 import delfos.common.parameters.restriction.ParameterOwnerRestriction;
 import delfos.common.parameters.restriction.RecommenderSystemParameterRestriction;
+import delfos.dataset.basic.item.Item;
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RatingsDataset;
@@ -66,6 +67,7 @@ import java.util.PriorityQueue;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
+import java.util.stream.Collectors;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.jdom2.JDOMException;
 
@@ -192,18 +194,27 @@ public class ConsensusGRS extends GroupRecommenderSystemAdapter<SingleRecommenda
     }
 
     @Override
-    public GroupModelPseudoUser buildGroupModel(DatasetLoader<? extends Rating> datasetLoader, SingleRecommendationModel RecommendationModel, GroupOfUsers groupOfUsers) throws UserNotFound, CannotLoadRatingsDataset {
+    public <RatingType extends Rating> GroupModelPseudoUser buildGroupModel(
+            DatasetLoader<RatingType> datasetLoader,
+            SingleRecommendationModel recommendationModel,
+            GroupOfUsers groupOfUsers)
+            throws UserNotFound, CannotLoadRatingsDataset {
+
         AggregationOperator aggregationOperator = getAggregationOperator();
         Map<Integer, Number> groupAggregatedProfile = getGroupProfile(datasetLoader, aggregationOperator, groupOfUsers);
         return new GroupModelPseudoUser(groupOfUsers, groupAggregatedProfile);
     }
 
     @Override
-    public Collection<Recommendation> recommendOnly(
-            DatasetLoader<? extends Rating> datasetLoader, SingleRecommendationModel RecommendationModel, GroupModelPseudoUser groupModel, GroupOfUsers groupOfUsers, java.util.Set<Integer> candidateItems)
+    public <RatingType extends Rating> Collection<Recommendation> recommendOnly(
+            DatasetLoader<RatingType> datasetLoader,
+            SingleRecommendationModel recommendationModel,
+            GroupModelPseudoUser groupModel,
+            GroupOfUsers groupOfUsers,
+            Set<Item> candidateItems)
             throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset, NotEnoughtUserInformation {
 
-        GroupRecommendationsWithMembersRecommendations groupRecommendationsWithMembersRecommendations = recommendOnlyWithMembersRecommendations(datasetLoader, RecommendationModel, groupModel, groupOfUsers, candidateItems);
+        GroupRecommendationsWithMembersRecommendations groupRecommendationsWithMembersRecommendations = recommendOnlyWithMembersRecommendations(datasetLoader, recommendationModel, groupModel, groupOfUsers, candidateItems);
 
         return groupRecommendationsWithMembersRecommendations.getRecommendations();
 
@@ -214,7 +225,7 @@ public class ConsensusGRS extends GroupRecommenderSystemAdapter<SingleRecommenda
             SingleRecommendationModel RecommendationModel,
             GroupModelPseudoUser groupModel,
             GroupOfUsers groupOfUsers,
-            Set<Integer> candidateItems)
+            Set<Item> candidateItems)
             throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset, NotEnoughtUserInformation {
 
         final GroupRecommendationsSelector itemSelector = (GroupRecommendationsSelector) getParameterValue(ITEM_SELECTOR);
@@ -369,7 +380,7 @@ public class ConsensusGRS extends GroupRecommenderSystemAdapter<SingleRecommenda
 
     public <RatingType extends Rating> void saveGroupInputDataAndRequests(
             Map<Integer, Map<Integer, RatingType>> membersRatings,
-            Collection<Integer> candidateItems) {
+            Collection<Item> candidateItems) {
 
         File consensusInputFilesDirectory = (File) getParameterValue(CONSENSUS_INPUT_FILES_DIRECTORY);
         if (!consensusInputFilesDirectory.exists()) {
@@ -386,7 +397,10 @@ public class ConsensusGRS extends GroupRecommenderSystemAdapter<SingleRecommenda
                 consensusInputFilesDirectory.getAbsolutePath() + File.separator
                 + membersRatings.keySet() + "_groupDataAndRequests.xml");
 
-        ConsensusOfIndividualRecommendationsToXML.writeRecommendationMembersRatingsXML(membersRatings, candidateItems, groupPredictionRequestsFile);
+        ConsensusOfIndividualRecommendationsToXML.writeRecommendationMembersRatingsXML(
+                membersRatings,
+                candidateItems.stream().map(item -> item.getId()).collect(Collectors.toSet()),
+                groupPredictionRequestsFile);
     }
 
     @Override
