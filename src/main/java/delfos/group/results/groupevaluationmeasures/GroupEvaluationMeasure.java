@@ -62,8 +62,11 @@ public abstract class GroupEvaluationMeasure extends ParameterOwnerAdapter imple
      * @param groupRecommenderSystemResult Vector de resultados de la ejecución
      * en el que cada elemento es el resultado de la ejecución con una partición
      * del conjunto
+     * @param originalDatasetLoader
      * @param testDataset
      * @param relevanceCriteria
+     * @param trainingDatasetLoader
+     * @param testDatasetLoader
      * @return Devuelve un objeto GroupEvaluationMeasureResult que almacena el
      * valor de la métrica para cada ejecución
      */
@@ -119,7 +122,7 @@ public abstract class GroupEvaluationMeasure extends ParameterOwnerAdapter imple
             }
         }
 
-        aggregatedValue = mean.getNumValues() == 0 ? Double.POSITIVE_INFINITY : mean.getMean();
+        aggregatedValue = mean.getNumValues() == 0 ? Double.NaN : mean.getMean();
         return new GroupEvaluationMeasureResult(this, aggregatedValue);
     }
 

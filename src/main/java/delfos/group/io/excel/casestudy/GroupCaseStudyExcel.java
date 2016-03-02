@@ -96,6 +96,8 @@ public class GroupCaseStudyExcel {
     public static final int DATASET_LOADER_ALIAS_COLUMN = 1;
     public static final int GROUP_EVALUATION_MEASURES_OFFSET = 2;
 
+    public static final String NAN_CELL_STRING = "NaN";
+
     private static WritableCellFormat titleFormat = null;
     private static WritableCellFormat defaultFormat = null;
     private static WritableCellFormat decimalFormat;
@@ -562,7 +564,7 @@ public class GroupCaseStudyExcel {
                         double decimalTrimmedValue = NumberRounder.round(value, 5);
                         setCellDoubleNumber(sheet, column, row, decimalTrimmedValue);
                     } else {
-                        setCellText(sheet, column, row, "");
+                        setCellText(sheet, column, row, NAN_CELL_STRING);
                     }
                 }
 
@@ -611,7 +613,7 @@ public class GroupCaseStudyExcel {
                 double decimalTrimmedValue = NumberRounder.round(value, 5);
                 setCellDoubleNumber(sheet, column, row, decimalTrimmedValue);
             } else {
-                setCellText(sheet, column, row, "");
+                setCellText(sheet, column, row, NAN_CELL_STRING);
             }
             double decimalTrimmedValue = NumberRounder.round(value, 5);
 
