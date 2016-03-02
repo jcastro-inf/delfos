@@ -27,9 +27,8 @@ import delfos.common.parameters.restriction.ParameterOwnerRestriction;
 import delfos.dataset.basic.item.Item;
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
-import delfos.dataset.generated.modifieddatasets.PseudoUserRatingsDataset;
-import delfos.dataset.loaders.given.DatasetLoaderGivenRatingsDataset;
-import delfos.dataset.util.DatasetUtilities;
+import delfos.dataset.basic.user.User;
+import delfos.dataset.generated.modifieddatasets.pseudouser.PseudoUserDatasetLoader;
 import delfos.group.groupsofusers.GroupOfUsers;
 import delfos.group.grs.GroupRecommenderSystemAdapter;
 import delfos.group.grs.aggregation.AggregationOfIndividualRatings;
@@ -41,7 +40,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeMap;
 import java.util.stream.Collectors;
 
 /**
@@ -108,23 +106,28 @@ public class SVDforGroup_ratingsAggregation extends GroupRecommenderSystemAdapte
     @Override
     public <RatingType extends Rating> GroupSVDModel buildGroupModel(
             DatasetLoader<RatingType> datasetLoader,
-            TryThisAtHomeSVDModel RecommendationModel,
+            TryThisAtHomeSVDModel recommendationModel,
             GroupOfUsers groupOfUsers)
             throws UserNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset {
 
         AggregationOperator aggregationOperator = getAggregationOperator();
-        Map<Integer, Number> groupAggregatedProfile = AggregationOfIndividualRatings.getGroupProfile(datasetLoader, aggregationOperator, groupOfUsers);
+        Map<Item, RatingType> groupAggregatedProfile = AggregationOfIndividualRatings.getGroupProfile(
+                datasetLoader,
+                aggregationOperator,
+                groupOfUsers);
 
-        Map<Integer, Map<Integer, Number>> groupAggregatedProfile_matrix = new TreeMap<>();
-        groupAggregatedProfile_matrix.put(-1, groupAggregatedProfile);
+        PseudoUserDatasetLoader<RatingType> pseudoUserDatasetLoader
+                = new PseudoUserDatasetLoader<>(datasetLoader);
 
-        PseudoUserRatingsDataset<Rating> rd = new PseudoUserRatingsDataset<>(datasetLoader.getRatingsDataset(), DatasetUtilities.getUserMap_Rating(-1, groupAggregatedProfile));
+        User pseudoUser = pseudoUserDatasetLoader.addPseudoUser(groupAggregatedProfile);
 
-        final int idPseudoUser = rd.getIdPseudoUser();
+        TryThisAtHomeSVDModel foldInModel = singleUserSR
+                .incrementModelWithUserRatings(
+                        recommendationModel,
+                        pseudoUserDatasetLoader,
+                        pseudoUser.getId());
 
-        TryThisAtHomeSVDModel foldInModel = singleUserSR.incrementModelWithUserRatings(RecommendationModel, new DatasetLoaderGivenRatingsDataset(datasetLoader, rd), idPseudoUser);
-
-        int idPseudoUserIndex = foldInModel.getUsersIndex().get(idPseudoUser);
+        int idPseudoUserIndex = foldInModel.getUsersIndex().get(pseudoUser.getId());
 
         ArrayList<Double> groupFeatures = foldInModel.getAllUserFeatures().get(idPseudoUserIndex);
 

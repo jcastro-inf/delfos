@@ -32,9 +32,7 @@ import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RatingsDataset;
 import delfos.dataset.basic.user.User;
-import delfos.dataset.generated.modifieddatasets.PseudoUserRatingsDataset;
-import delfos.dataset.loaders.given.DatasetLoaderGivenRatingsDataset;
-import delfos.dataset.util.DatasetUtilities;
+import delfos.dataset.generated.modifieddatasets.pseudouser.PseudoUserDatasetLoader;
 import delfos.group.groupsofusers.GroupOfUsers;
 import delfos.group.grs.GroupRecommenderSystemAdapter;
 import delfos.group.grs.aggregation.AggregationOfIndividualRatings;
@@ -126,21 +124,25 @@ public class HesitantKnnGroupUser
 
         try {
             List<Neighbor> neighbors;
-            RatingsDataset<? extends Rating> ratingsDataset = datasetLoader.getRatingsDataset();
+            RatingsDataset<RatingType> ratingsDataset = datasetLoader.getRatingsDataset();
             neighbors = getNeighbors(datasetLoader, groupModel, groupOfUsers);
 
             int neighborhoodSize = (int) getParameterValue(NEIGHBORHOOD_SIZE);
 
             PredictionTechnique predictionTechnique = (PredictionTechnique) getParameterValue(PREDICTION_TECHNIQUE);
-            int idPseudoUser = -1;
-            Map<Integer, Rating> groupRatings = DatasetUtilities.getUserMap_Rating(idPseudoUser,
-                    AggregationOfIndividualRatings.getGroupProfile(datasetLoader, new Mean(), groupOfUsers));
 
-            RatingsDataset<? extends Rating> pseudoUserRatingsDatasetForPrediction = new PseudoUserRatingsDataset<>(ratingsDataset, groupRatings);
-            DatasetLoader<? extends Rating> datasetLoaderNew = new DatasetLoaderGivenRatingsDataset<>(datasetLoader, pseudoUserRatingsDatasetForPrediction);
+            Map<Item, RatingType> groupRatings
+                    = AggregationOfIndividualRatings.getGroupProfile(datasetLoader, new Mean(), groupOfUsers);
+
+            PseudoUserDatasetLoader<RatingType> pseudoUserDatasetLoader
+                    = new PseudoUserDatasetLoader<>(datasetLoader
+                    );
+
+            User pseudoUser = pseudoUserDatasetLoader.addPseudoUser(groupRatings);
+
             Collection<Recommendation> ret = KnnMemoryBasedNWR.recommendWithNeighbors(
-                    datasetLoaderNew,
-                    idPseudoUser,
+                    pseudoUserDatasetLoader,
+                    pseudoUser.getId(),
                     neighbors,
                     neighborhoodSize, candidateItems.stream().map(item -> item.getId()).collect(Collectors.toSet()),
                     predictionTechnique);

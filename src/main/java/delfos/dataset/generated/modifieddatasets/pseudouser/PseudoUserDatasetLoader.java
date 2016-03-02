@@ -59,7 +59,9 @@ public class PseudoUserDatasetLoader<RatingType extends Rating> extends DatasetL
         idPseudoUserNext++;
 
         Map<Item, RatingType> pseudoUserRatingsConverted = pseudoUserRatings.values().stream()
-                .map(rating -> (RatingType) rating.copyWithUser(pseudoUser))
+                .map(rating -> {
+                    return (RatingType) rating.copyWithUser(pseudoUser);
+                })
                 .collect(Collectors.toMap(
                                 rating -> rating.getItem(),
                                 Function.identity()));

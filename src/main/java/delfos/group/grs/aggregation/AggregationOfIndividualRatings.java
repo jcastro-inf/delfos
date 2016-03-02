@@ -46,6 +46,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.stream.Collectors;
 
 /**
  * Implementa un sistema de recomendación a grupos que agrega las valoraciones
@@ -146,7 +147,8 @@ public class AggregationOfIndividualRatings
 
         GroupModelWithExplanation<GroupModelPseudoUser, Object> groupModelWithExplanation;
         AggregationOperator aggregationOperator = getAggregationOperator();
-        Map<Integer, Number> groupProfile = getGroupProfile(datasetLoader, aggregationOperator, groupOfUsers);
+        Map<Item, RatingType> groupProfile = getGroupProfile(datasetLoader, aggregationOperator, groupOfUsers);
+
         groupModelWithExplanation = new GroupModelWithExplanation<>(new GroupModelPseudoUser(groupOfUsers, groupProfile), "No explanantion");
 
         return groupModelWithExplanation;
@@ -187,32 +189,33 @@ public class AggregationOfIndividualRatings
         return (RecommenderSystem) getParameterValue(SINGLE_USER_RECOMMENDER);
     }
 
-    public static Map<Integer, Number> getGroupProfile(
-            DatasetLoader<? extends Rating> datasetLoader,
+    public static <RatingType extends Rating> Map<Item, RatingType> getGroupProfile(
+            DatasetLoader<RatingType> datasetLoader,
             AggregationOperator aggregationOperator,
             GroupOfUsers groupOfUsers) throws UserNotFound, CannotLoadRatingsDataset {
 
         //Generate groupProfile:
-        Map<Integer, List<Number>> groupRatingsList = new TreeMap<>();
+        Map<Integer, List<RatingType>> groupRatingsList = new TreeMap<>();
 
         for (int idUser : groupOfUsers.getIdMembers()) {
-            Map<Integer, ? extends Rating> userRatingsRated = datasetLoader.getRatingsDataset().getUserRatingsRated(idUser);
+            Map<Integer, RatingType> userRatingsRated = datasetLoader.getRatingsDataset().getUserRatingsRated(idUser);
             userRatingsRated.keySet().stream().map((idItem) -> {
                 if (!groupRatingsList.containsKey(idItem)) {
                     groupRatingsList.put(idItem, new LinkedList<>());
                 }
                 return idItem;
             }).forEach((idItem) -> {
-                groupRatingsList.get(idItem).add(userRatingsRated.get(idItem).getRatingValue());
+                groupRatingsList.get(idItem).add(userRatingsRated.get(idItem));
             });
         }
 
         //Aggregate profiles
-        Map<Integer, Number> groupRatings = new TreeMap<>();
+        Map<Item, RatingType> groupRatings = new TreeMap<>();
         groupRatingsList.keySet().stream().forEach((idItem) -> {
-            List<Number> lista = groupRatingsList.get(idItem);
-            double aggregateValue = aggregationOperator.aggregateValues(lista);
-            groupRatings.put(idItem, aggregateValue);
+            List<RatingType> lista = groupRatingsList.get(idItem);
+            double aggregateValue = aggregationOperator.aggregateValues(lista.stream().map(rating -> rating.getRatingValue().doubleValue()).collect(Collectors.toList()));
+            Item item = datasetLoader.getContentDataset().get(idItem);
+            groupRatings.put(item, (RatingType) lista.get(0).copyWithRatingValue(aggregateValue));
         });
 
         return groupRatings;
