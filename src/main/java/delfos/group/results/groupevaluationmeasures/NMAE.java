@@ -64,7 +64,7 @@ public class NMAE extends GroupEvaluationMeasure {
         Domain originalDomain = testDataset.getRatingsDomain();
 
         for (GroupOfUsers group : groupRecommenderSystemResult.getGroupsOfUsers()) {
-            Collection<Recommendation> groupRecommendations = groupRecommenderSystemResult.getGroupOutput(group).getRecommendations();
+            Collection<Recommendation> groupRecommendations = groupRecommenderSystemResult.getGroupOutput(group).getRecommendations().getRecommendations();
 
             Map<Integer, Map<Integer, ? extends Rating>> groupTrueRatings = new TreeMap<>();
             for (int idUser : group.getIdMembers()) {

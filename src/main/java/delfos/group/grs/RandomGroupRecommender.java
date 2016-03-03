@@ -26,6 +26,7 @@ import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
 import delfos.experiment.SeedHolder;
 import delfos.group.groupsofusers.GroupOfUsers;
+import delfos.group.grs.recommendations.GroupRecommendations;
 import delfos.rs.nonpersonalised.randomrecommender.RandomRecommendationModel;
 import delfos.rs.recommendation.Recommendation;
 import java.util.ArrayList;
@@ -68,16 +69,12 @@ public class RandomGroupRecommender
     }
 
     @Override
-    public <RatingType extends Rating> Collection<Recommendation> recommendOnly(
-            DatasetLoader<RatingType> datasetLoader,
-            RandomRecommendationModel<GroupOfUsers> recommendationModel,
-            GroupOfUsers groupModel,
-            GroupOfUsers groupOfUsers,
-            Set<Item> candidateItems)
+    public <RatingType extends Rating> GroupRecommendations recommendOnly(
+            DatasetLoader<RatingType> datasetLoader, RandomRecommendationModel<GroupOfUsers> recommendationModel, GroupOfUsers groupModel, GroupOfUsers groupOfUsers, Set<Item> candidateItems)
             throws UserNotFound, CannotLoadRatingsDataset {
 
         if (recommendationModel.getRandomDouble(groupOfUsers) > 0.999) {
-            return Collections.EMPTY_LIST;
+            return new GroupRecommendations(groupOfUsers, Collections.EMPTY_LIST);
         } else {
             final int numRecomendaciones = (int) (recommendationModel.getRandomInt(groupOfUsers, candidateItems.size()));
             final double min = datasetLoader.getRatingsDataset().getRatingsDomain().min().doubleValue();
@@ -92,7 +89,7 @@ public class RandomGroupRecommender
                 ratingAleatorio = ratingAleatorio * rango + min;
                 recommendationList.add(new Recommendation(item, ratingAleatorio));
             }
-            return recommendationList;
+            return new GroupRecommendations(groupOfUsers, recommendationList);
         }
     }
 

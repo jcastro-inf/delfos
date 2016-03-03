@@ -32,10 +32,7 @@ import delfos.group.grs.benchmark.polylens.PolyLens;
 import delfos.group.grs.recommendations.GroupRecommendations;
 import delfos.group.view.InitialFrame;
 import delfos.rs.output.RecommendationsOutputStandardRaw;
-import delfos.rs.recommendation.Recommendation;
-import delfos.rs.recommendation.RecommendationComputationDetails;
 import java.io.File;
-import java.util.Collection;
 import java.util.Random;
 import java.util.Set;
 import java.util.TreeSet;
@@ -81,7 +78,7 @@ public class GroupRecommendationWindow extends JFrame {
 
         Set<Item> allItems = new TreeSet<>(datasetLoader.getContentDataset());
 
-        Collection<Recommendation> recomm = groupRecommenderSystem.recommendOnly(
+        GroupRecommendations recomm = groupRecommenderSystem.recommendOnly(
                 datasetLoader,
                 build,
                 buildGroupModel,
@@ -89,7 +86,7 @@ public class GroupRecommendationWindow extends JFrame {
                 allItems);
 
         RecommendationsOutputStandardRaw output = new RecommendationsOutputStandardRaw();
-        output.writeRecommendations(new GroupRecommendations(groupOfUsers, recomm, RecommendationComputationDetails.EMPTY_DETAILS));
+        output.writeRecommendations(recomm);
 
     }
 }

@@ -34,13 +34,12 @@ import delfos.group.groupsofusers.GroupOfUsers;
 import delfos.group.grs.GroupRecommenderSystem;
 import delfos.group.grs.GroupRecommenderSystemAdapter;
 import delfos.group.grs.aggregation.AggregationOfIndividualRatings;
+import delfos.group.grs.recommendations.GroupRecommendations;
 import delfos.rs.RecommendationModelBuildingProgressListener;
 import delfos.rs.collaborativefiltering.knn.modelbased.KnnModelBasedCFRS;
 import delfos.rs.persistence.FailureInPersistence;
 import delfos.rs.persistence.FilePersistence;
-import delfos.rs.recommendation.Recommendation;
 import java.io.File;
-import java.util.Collection;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -181,14 +180,10 @@ public class GroupRecommenderSystem_fixedFilePersistence extends GroupRecommende
     }
 
     @Override
-    public <RatingType extends Rating> Collection<Recommendation> recommendOnly(
-            DatasetLoader<RatingType> datasetLoader,
-            Object RecommendationModel,
-            Object groupModel,
-            GroupOfUsers groupOfUsers,
-            Set<Item> candidateItems) throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset, NotEnoughtUserInformation {
-        Collection<Recommendation> recommendations;
-        recommendations = getGroupRecommenderSystem().recommendOnly(datasetLoader, RecommendationModel, groupModel, groupOfUsers, candidateItems);
+    public <RatingType extends Rating> GroupRecommendations recommendOnly(
+            DatasetLoader<RatingType> datasetLoader, Object RecommendationModel, Object groupModel, GroupOfUsers groupOfUsers, Set<Item> candidateItems) throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset, NotEnoughtUserInformation {
+
+        GroupRecommendations recommendations = getGroupRecommenderSystem().recommendOnly(datasetLoader, RecommendationModel, groupModel, groupOfUsers, candidateItems);
         return recommendations;
     }
 

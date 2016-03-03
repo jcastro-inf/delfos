@@ -30,6 +30,7 @@ import delfos.group.groupsofusers.GroupOfUsers;
 import delfos.group.grs.GroupRecommenderSystemAdapter;
 import delfos.group.grs.SingleRecommendationModel;
 import delfos.group.grs.aggregation.AggregationOfIndividualRecommendations;
+import delfos.group.grs.recommendations.GroupRecommendations;
 import delfos.rs.collaborativefiltering.knn.KnnCollaborativeRecommender;
 import delfos.rs.collaborativefiltering.knn.memorybased.nwr.KnnMemoryBasedNWR;
 import delfos.rs.collaborativefiltering.predictiontechniques.WeightedSum;
@@ -113,11 +114,7 @@ public class PolyLens extends GroupRecommenderSystemAdapter<SingleRecommendation
     }
 
     @Override
-    public <RatingType extends Rating> Collection<Recommendation> recommendOnly(DatasetLoader<RatingType> datasetLoader,
-            SingleRecommendationModel recommendationModel,
-            GroupOfUsers groupModel,
-            GroupOfUsers groupOfUsers,
-            Set<Item> candidateItems)
+    public <RatingType extends Rating> GroupRecommendations recommendOnly(DatasetLoader<RatingType> datasetLoader, SingleRecommendationModel recommendationModel, GroupOfUsers groupModel, GroupOfUsers groupOfUsers, Set<Item> candidateItems)
             throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset {
         return aggregationOfIndividualRecommendations.recommendOnly(
                 datasetLoader,

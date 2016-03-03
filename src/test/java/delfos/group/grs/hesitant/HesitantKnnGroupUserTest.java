@@ -9,10 +9,8 @@ import delfos.recommendationcandidates.OnlyNewItems;
 import delfos.recommendationcandidates.RecommendationCandidatesSelector;
 import delfos.rs.output.RecommendationsOutputStandardRaw;
 import delfos.rs.output.sort.SortBy;
-import delfos.rs.recommendation.Recommendation;
 import delfos.utils.hesitant.HesitantValuation;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Set;
 import java.util.stream.Collectors;
 import org.junit.Test;
@@ -42,7 +40,7 @@ public class HesitantKnnGroupUserTest {
         Object recommendationModel = grs.buildRecommendationModel(datasetLoader);
         HesitantValuation groupModel = grs.buildGroupModel(datasetLoader, recommendationModel, groupOfUsers);
 
-        Collection<Recommendation> groupRecommendations = grs.recommendOnly(
+        GroupRecommendations groupRecommendations = grs.recommendOnly(
                 datasetLoader,
                 recommendationModel,
                 groupModel,
@@ -51,7 +49,7 @@ public class HesitantKnnGroupUserTest {
         );
 
         RecommendationsOutputStandardRaw output = new RecommendationsOutputStandardRaw(SortBy.SORT_BY_PREFERENCE);
-        output.writeRecommendations(new GroupRecommendations(groupOfUsers, groupRecommendations));
+        output.writeRecommendations(groupRecommendations);
     }
 
     @Test
@@ -72,7 +70,7 @@ public class HesitantKnnGroupUserTest {
         Object recommendationModel = grs.buildRecommendationModel(datasetLoader);
         HesitantValuation groupModel = grs.buildGroupModel(datasetLoader, recommendationModel, groupOfUsers);
 
-        Collection<Recommendation> groupRecommendations = grs.recommendOnly(
+        GroupRecommendations groupRecommendations = grs.recommendOnly(
                 datasetLoader,
                 recommendationModel,
                 groupModel,
@@ -81,7 +79,7 @@ public class HesitantKnnGroupUserTest {
         );
 
         RecommendationsOutputStandardRaw output = new RecommendationsOutputStandardRaw(SortBy.SORT_BY_PREFERENCE);
-        output.writeRecommendations(new GroupRecommendations(groupOfUsers, groupRecommendations));
+        output.writeRecommendations(groupRecommendations);
     }
 
 }

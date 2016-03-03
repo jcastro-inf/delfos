@@ -32,6 +32,7 @@ import delfos.dataset.generated.modifieddatasets.pseudouser.PseudoUserDatasetLoa
 import delfos.group.groupsofusers.GroupOfUsers;
 import delfos.group.grs.GroupRecommenderSystemAdapter;
 import delfos.group.grs.aggregation.AggregationOfIndividualRatings;
+import delfos.group.grs.recommendations.GroupRecommendations;
 import delfos.rs.collaborativefiltering.svd.SVDFoldingIn;
 import delfos.rs.collaborativefiltering.svd.TryThisAtHomeSVD;
 import delfos.rs.collaborativefiltering.svd.TryThisAtHomeSVDModel;
@@ -139,12 +140,8 @@ public class SVDforGroup_ratingsAggregation extends GroupRecommenderSystemAdapte
     }
 
     @Override
-    public <RatingType extends Rating> Collection<Recommendation> recommendOnly(
-            DatasetLoader<RatingType> datasetLoader,
-            TryThisAtHomeSVDModel RecommendationModel,
-            GroupSVDModel groupModel,
-            GroupOfUsers groupOfUsers,
-            Set<Item> candidateItems)
+    public <RatingType extends Rating> GroupRecommendations recommendOnly(
+            DatasetLoader<RatingType> datasetLoader, TryThisAtHomeSVDModel RecommendationModel, GroupSVDModel groupModel, GroupOfUsers groupOfUsers, Set<Item> candidateItems)
             throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset {
 
         int idUser = -1;
@@ -153,9 +150,11 @@ public class SVDforGroup_ratingsAggregation extends GroupRecommenderSystemAdapte
         }
 
         TryThisAtHomeSVDModel extendedModel = TryThisAtHomeSVDModel.addUser(RecommendationModel, idUser, groupModel.getGroupFeatures());
-        return singleUserSR.recommendToUser(datasetLoader, extendedModel, idUser,
+        Collection<Recommendation> recommendToUser = singleUserSR.recommendToUser(datasetLoader, extendedModel, idUser,
                 candidateItems.stream()
                 .map(item -> item.getId()).collect(Collectors.toSet())
         );
+
+        return new GroupRecommendations(groupOfUsers, recommendToUser);
     }
 }

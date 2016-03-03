@@ -33,6 +33,7 @@ import delfos.experiment.casestudy.parallel.SingleUserRecommendationTaskExecutor
 import delfos.group.groupsofusers.GroupOfUsers;
 import delfos.group.grs.GroupRecommenderSystemAdapter;
 import delfos.group.grs.SingleRecommendationModel;
+import delfos.group.grs.recommendations.GroupRecommendations;
 import delfos.rs.RecommendationModelBuildingProgressListener;
 import delfos.rs.RecommenderSystem;
 import delfos.rs.collaborativefiltering.knn.memorybased.KnnMemoryBasedCFRS;
@@ -143,19 +144,15 @@ public class AggregationOfIndividualRecommendations extends GroupRecommenderSyst
     }
 
     @Override
-    public <RatingType extends Rating> Collection<Recommendation> recommendOnly(
-            DatasetLoader<RatingType> datasetLoader,
-            SingleRecommendationModel RecommendationModel,
-            GroupOfUsers groupModel,
-            GroupOfUsers groupOfUsers,
-            Set<Item> candidateItems)
+    public <RatingType extends Rating> GroupRecommendations recommendOnly(
+            DatasetLoader<RatingType> datasetLoader, SingleRecommendationModel RecommendationModel, GroupOfUsers groupModel, GroupOfUsers groupOfUsers, Set<Item> candidateItems)
             throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset {
 
         RecommenderSystem singleUserRecommender = getSingleUserRecommender();
         Map<Integer, Collection<Recommendation>> recommendationsLists_byMember = performSingleUserRecommendations(groupOfUsers.getIdMembers(), singleUserRecommender, datasetLoader, RecommendationModel, candidateItems);
 
         Collection<Recommendation> groupRecommendations = aggregateLists(getAggregationOperator(), recommendationsLists_byMember);
-        return groupRecommendations;
+        return new GroupRecommendations(groupOfUsers, groupRecommendations);
     }
 
     public static Collection<Recommendation> aggregateLists(AggregationOperator aggregationOperator, Map<Integer, Collection<Recommendation>> groupUtilityList) {

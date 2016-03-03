@@ -206,26 +206,8 @@ public class ConsensusGRS extends GroupRecommenderSystemAdapter<SingleRecommenda
     }
 
     @Override
-    public <RatingType extends Rating> Collection<Recommendation> recommendOnly(
-            DatasetLoader<RatingType> datasetLoader,
-            SingleRecommendationModel recommendationModel,
-            GroupModelPseudoUser groupModel,
-            GroupOfUsers groupOfUsers,
-            Set<Item> candidateItems)
-            throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset, NotEnoughtUserInformation {
-
-        GroupRecommendationsWithMembersRecommendations groupRecommendationsWithMembersRecommendations = recommendOnlyWithMembersRecommendations(datasetLoader, recommendationModel, groupModel, groupOfUsers, candidateItems);
-
-        return groupRecommendationsWithMembersRecommendations.getRecommendations();
-
-    }
-
-    public GroupRecommendationsWithMembersRecommendations recommendOnlyWithMembersRecommendations(
-            DatasetLoader<? extends Rating> datasetLoader,
-            SingleRecommendationModel RecommendationModel,
-            GroupModelPseudoUser groupModel,
-            GroupOfUsers groupOfUsers,
-            Set<Item> candidateItems)
+    public <RatingType extends Rating> GroupRecommendationsWithMembersRecommendations recommendOnly(
+            DatasetLoader<RatingType> datasetLoader, SingleRecommendationModel recommendationModel, GroupModelPseudoUser groupModel, GroupOfUsers groupOfUsers, Set<Item> candidateItems)
             throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset, NotEnoughtUserInformation {
 
         final GroupRecommendationsSelector itemSelector = (GroupRecommendationsSelector) getParameterValue(ITEM_SELECTOR);
@@ -251,7 +233,7 @@ public class ConsensusGRS extends GroupRecommenderSystemAdapter<SingleRecommenda
                         groupOfUsers.getIdMembers(),
                         singleUserRecommenderSystem,
                         datasetLoader,
-                        RecommendationModel,
+                        recommendationModel,
                         candidateItems);
 
         Collection<Recommendation> groupRecommendationsList = AggregationOfIndividualRecommendations.aggregateLists(aggregationOperator, membersRecommendationsList);

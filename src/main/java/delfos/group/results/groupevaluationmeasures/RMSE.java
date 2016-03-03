@@ -24,9 +24,9 @@ import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RatingsDataset;
 import delfos.dataset.basic.rating.RelevanceCriteria;
 import delfos.group.groupsofusers.GroupOfUsers;
+import delfos.group.grs.recommendations.GroupRecommendations;
 import delfos.group.results.grouprecomendationresults.GroupRecommenderSystemResult;
 import delfos.rs.recommendation.Recommendation;
-import java.util.Collection;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -60,7 +60,7 @@ public class RMSE extends GroupEvaluationMeasure {
         MeanIterative rmse = new MeanIterative();
 
         for (GroupOfUsers group : groupRecommenderSystemResult.getGroupsOfUsers()) {
-            Collection<Recommendation> groupRecommendations = groupRecommenderSystemResult.getGroupOutput(group).getRecommendations();
+            GroupRecommendations groupRecommendations = groupRecommenderSystemResult.getGroupOutput(group).getRecommendations();
 
             Map<Integer, Map<Integer, ? extends Rating>> groupTrueRatings = new TreeMap<>();
             for (int idUser : group.getIdMembers()) {
@@ -71,7 +71,7 @@ public class RMSE extends GroupEvaluationMeasure {
                 }
             }
 
-            for (Recommendation recommendation : groupRecommendations) {
+            for (Recommendation recommendation : groupRecommendations.getRecommendations()) {
                 if (Double.isNaN(recommendation.getPreference().doubleValue())) {
                     continue;
                 }

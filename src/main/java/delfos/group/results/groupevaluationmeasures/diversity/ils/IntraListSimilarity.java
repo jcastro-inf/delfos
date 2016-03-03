@@ -208,7 +208,7 @@ public class IntraListSimilarity extends GroupEvaluationMeasure {
 
         TryThisAtHomeSVDModel svdModel = getSVDModel(originalDatasetLoader);
 
-        List<Recommendation> recommendations = singleGroupRecommendationTaskOutput.getRecommendations().stream().sorted(Recommendation.BY_PREFERENCE_DESC).collect(Collectors.toList());
+        List<Recommendation> recommendations = singleGroupRecommendationTaskOutput.getRecommendations().getRecommendations().stream().sorted(Recommendation.BY_PREFERENCE_DESC).collect(Collectors.toList());
 
         recommendations = recommendations.subList(0, Math.min(maxlistSizeOfMeasure, recommendations.size()));
 

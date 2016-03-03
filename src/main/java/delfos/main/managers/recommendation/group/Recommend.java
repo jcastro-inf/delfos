@@ -39,12 +39,10 @@ import static delfos.main.managers.recommendation.group.GroupRecommendation.TARG
 import delfos.recommendationcandidates.RecommendationCandidatesSelector;
 import delfos.rs.persistence.FailureInPersistence;
 import delfos.rs.persistence.PersistenceMethodStrategy;
-import delfos.rs.recommendation.Recommendation;
-import delfos.rs.recommendation.RecommendationComputationDetails;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
@@ -104,7 +102,7 @@ class Recommend extends CaseUseSubManager {
             DatasetLoader<? extends Rating> datasetLoader = rsc.datasetLoader;
             RecommendationCandidatesSelector candidatesSelector = rsc.recommendationCandidatesSelector;
 
-            Collection<Recommendation> recommendations = null;
+            GroupRecommendations recommendations = null;
 
             Set<Item> candidateItems;
             try {
@@ -148,14 +146,14 @@ class Recommend extends CaseUseSubManager {
             } catch (NotEnoughtUserInformation ex) {
                 Global.showWarning("Recommender system '" + groupRecommenderSystem.getName() + "' reported: Not enought user information (group=" + targetGroup + ").");
                 //ERROR_CODES.USER_NOT_ENOUGHT_INFORMATION.exit(ex);
-                recommendations = new ArrayList<>();
+                recommendations = new GroupRecommendations(targetGroup, Collections.EMPTY_LIST);
             }
 
             if (Global.isVerboseAnnoying()) {
-                if (recommendations.isEmpty()) {
+                if (recommendations.getRecommendations().isEmpty()) {
                     Global.showWarning("Recommendation list for group '" + targetGroup + "' is empty, check for causes.");
                 } else {
-                    Global.showInfoMessage("Recommendation list for group '" + targetGroup + "' of size " + recommendations.size() + "\n");
+                    Global.showInfoMessage("Recommendation list for group '" + targetGroup + "' of size " + recommendations.getRecommendations().size() + "\n");
                     Global.showInfoMessage("\t" + recommendations.toString() + "\n");
                 }
             }
@@ -164,7 +162,7 @@ class Recommend extends CaseUseSubManager {
             chronometer.reset();
 
             Global.showMessageTimestamped("Writting recommendations\n");
-            rsc.recommdendationsOutputMethod.writeRecommendations(new GroupRecommendations(targetGroup, recommendations, new RecommendationComputationDetails().addDetail(RecommendationComputationDetails.DetailField.TimeTaken, timeTaken)));
+            rsc.recommdendationsOutputMethod.writeRecommendations(recommendations);
             Global.showMessageTimestamped("Wrote recommendations\n");
 
         } else {

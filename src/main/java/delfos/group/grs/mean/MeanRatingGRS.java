@@ -25,10 +25,10 @@ import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
 import delfos.group.groupsofusers.GroupOfUsers;
 import delfos.group.grs.GroupRecommenderSystemAdapter;
+import delfos.group.grs.recommendations.GroupRecommendations;
 import delfos.rs.nonpersonalised.meanrating.arithmeticmean.MeanRating;
 import delfos.rs.nonpersonalised.meanrating.arithmeticmean.MeanRatingRSModel;
 import delfos.rs.recommendation.Recommendation;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -73,12 +73,8 @@ public class MeanRatingGRS extends GroupRecommenderSystemAdapter<MeanRatingRSMod
     }
 
     @Override
-    public <RatingType extends Rating> Collection<Recommendation> recommendOnly(
-            DatasetLoader<RatingType> datasetLoader,
-            MeanRatingRSModel RecommendationModel,
-            GroupOfUsers groupModel,
-            GroupOfUsers groupOfUsers,
-            Set<Item> candidateItems)
+    public <RatingType extends Rating> GroupRecommendations recommendOnly(
+            DatasetLoader<RatingType> datasetLoader, MeanRatingRSModel RecommendationModel, GroupOfUsers groupModel, GroupOfUsers groupOfUsers, Set<Item> candidateItems)
             throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadRatingsDataset {
 
         Map<Item, MeanRating> meanRatingsByItem = RecommendationModel
@@ -90,7 +86,7 @@ public class MeanRatingGRS extends GroupRecommenderSystemAdapter<MeanRatingRSMod
                 .map(meanRating -> new Recommendation(meanRating.getItem(), meanRating.getPreference()))
                 .collect(Collectors.toList());
 
-        return recommendations;
+        return new GroupRecommendations(groupOfUsers, recommendations);
     }
 
     @Override

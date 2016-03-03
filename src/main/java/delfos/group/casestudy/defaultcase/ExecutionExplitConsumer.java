@@ -30,10 +30,10 @@ import delfos.group.experiment.validation.predictionvalidation.GroupRecommendati
 import delfos.group.factories.GroupEvaluationMeasuresFactory;
 import delfos.group.groupsofusers.GroupOfUsers;
 import delfos.group.grs.GroupRecommenderSystem;
+import delfos.group.grs.recommendations.GroupRecommendations;
 import delfos.group.results.groupevaluationmeasures.GroupEvaluationMeasure;
 import delfos.group.results.groupevaluationmeasures.GroupEvaluationMeasureResult;
 import delfos.group.results.grouprecomendationresults.GroupRecommenderSystemResult;
-import delfos.rs.recommendation.Recommendation;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -131,10 +131,18 @@ public class ExecutionExplitConsumer {
         taskGroupRecommendationOutput.parallelStream().forEach(task -> {
 
             GroupOfUsers groupOfUsers = task.getGroup();
-            final Collection<Recommendation> groupRecommendations = task.getRecommendations();
+            final GroupRecommendations groupRecommendations = task.getRecommendations();
 
             if (groupRecommendations == null) {
-                throw new IllegalStateException("Group recommendations for group '" + groupOfUsers.toString() + "'" + groupCaseStudy.getAlias() + " --> Cannot recommend to group a null recommendations, should be an empty list instead.");
+                throw new IllegalStateException("Group recommendations for group '" + groupOfUsers.toString() + "'" + groupCaseStudy.getAlias() + " --> Cannot recommend to group a null recommendations.");
+            }
+
+            if (groupRecommendations.getRecommendations() == null) {
+                throw new IllegalStateException("Group recommendations for group '" + groupOfUsers.toString() + "'" + groupCaseStudy.getAlias() + " --> Cannot recommend to group a null recommendations.");
+            }
+
+            if (groupRecommendations.getRecommendations().isEmpty()) {
+                throw new IllegalStateException("Group recommendations for group '" + groupOfUsers.toString() + "'" + groupCaseStudy.getAlias() + " --> Cannot have empty recommendations.");
             }
         });
 

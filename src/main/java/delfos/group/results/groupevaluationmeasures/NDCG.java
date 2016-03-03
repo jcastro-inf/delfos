@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -70,7 +70,7 @@ public class NDCG extends GroupEvaluationMeasure {
         List<Double> ndcgByMember = new ArrayList<>();
 
         for (GroupOfUsers group : groupRecommenderSystemResult.getGroupsOfUsers()) {
-            Collection<Recommendation> groupRecommendations = groupRecommenderSystemResult.getGroupOutput(group).getRecommendations();
+            Collection<Recommendation> groupRecommendations = groupRecommenderSystemResult.getGroupOutput(group).getRecommendations().getRecommendations();
 
             if (groupRecommendations.isEmpty()) {
                 continue;

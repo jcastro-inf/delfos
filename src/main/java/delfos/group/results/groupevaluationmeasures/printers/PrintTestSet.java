@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -69,7 +69,9 @@ public class PrintTestSet extends GroupEvaluationMeasureInformationPrinter {
         StringBuilder str = new StringBuilder();
 
         for (GroupOfUsers groupOfUsers : groupRecommenderSystemResult.getGroupsOfUsers()) {
-            Collection<Recommendation> groupRecommendations = groupRecommenderSystemResult.getGroupOutput(groupOfUsers).getRecommendations();
+            Collection<Recommendation> groupRecommendations = groupRecommenderSystemResult
+                    .getGroupOutput(groupOfUsers)
+                    .getRecommendations().getRecommendations();
 
             if (groupRecommendations.isEmpty()) {
                 str.append("No recommendations for group ").append(groupOfUsers).append("\n");

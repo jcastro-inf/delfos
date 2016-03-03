@@ -40,6 +40,7 @@ import delfos.group.grs.GroupRecommenderSystemAdapter;
 import delfos.group.grs.SingleRecommendationModel;
 import delfos.group.grs.filtered.filters.GroupRatingsFilter;
 import delfos.group.grs.filtered.filters.OutliersRatingsFilter;
+import delfos.group.grs.recommendations.GroupRecommendations;
 import delfos.rs.RecommendationModelBuildingProgressListener;
 import delfos.rs.RecommenderSystem;
 import delfos.rs.collaborativefiltering.knn.modelbased.KnnModelBasedCFRS;
@@ -148,12 +149,8 @@ public class GroupRecommenderSystemWithPostFilter extends GroupRecommenderSystem
     }
 
     @Override
-    public <RatingType extends Rating> Collection<Recommendation> recommendOnly(
-            DatasetLoader<RatingType> datasetLoader,
-            SingleRecommendationModel RecommendationModel,
-            GroupOfUsers groupModel,
-            GroupOfUsers groupOfUsers,
-            Set<Item> candidateItems) throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset {
+    public <RatingType extends Rating> GroupRecommendations recommendOnly(
+            DatasetLoader<RatingType> datasetLoader, SingleRecommendationModel RecommendationModel, GroupOfUsers groupModel, GroupOfUsers groupOfUsers, Set<Item> candidateItems) throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset {
 
         Map<Integer, Map<Integer, Number>> listsWithoutFilter = groupOfUsers.getMembers()
                 .parallelStream()
@@ -198,7 +195,7 @@ public class GroupRecommenderSystemWithPostFilter extends GroupRecommenderSystem
             }
         }
 
-        return ret;
+        return new GroupRecommendations(groupOfUsers, ret);
     }
 
     public static Map<Integer, Map<Integer, Number>> filterLists(GroupRatingsFilter filter, Map<Integer, Map<Integer, Number>> toFilter) {

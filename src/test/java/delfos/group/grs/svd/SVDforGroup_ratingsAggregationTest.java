@@ -7,9 +7,6 @@ import delfos.group.grs.recommendations.GroupRecommendations;
 import delfos.rs.collaborativefiltering.svd.TryThisAtHomeSVD;
 import delfos.rs.collaborativefiltering.svd.TryThisAtHomeSVDModel;
 import delfos.rs.output.RecommendationsOutputStandardRaw;
-import delfos.rs.recommendation.Recommendation;
-import delfos.rs.recommendation.RecommendationComputationDetails;
-import java.util.Collection;
 import java.util.Set;
 import java.util.stream.Collectors;
 import org.junit.Test;
@@ -31,10 +28,10 @@ public class SVDforGroup_ratingsAggregationTest {
         SVDforGroup_ratingsAggregation grs = new SVDforGroup_ratingsAggregation();
         grs.setParameterValue(TryThisAtHomeSVD.LEARNING_RATE, 0.02f);
         grs.setParameterValue(TryThisAtHomeSVD.K, 0.02f);
-        TryThisAtHomeSVDModel RecommendationModel = grs.buildRecommendationModel(randomDataset);
+        TryThisAtHomeSVDModel recommendationModel = grs.buildRecommendationModel(randomDataset);
 
         GroupOfUsers group = new GroupOfUsers(1, 2, 3);
-        GroupSVDModel groupModel = grs.buildGroupModel(randomDataset, RecommendationModel, group);
+        GroupSVDModel groupModel = grs.buildGroupModel(randomDataset, recommendationModel, group);
 
         Set<Item> candidateItems = candidateItems = group.getMembers().stream()
                 .map(member -> randomDataset.getRatingsDataset().getUserRated(member.getId()))
@@ -42,9 +39,9 @@ public class SVDforGroup_ratingsAggregationTest {
                 .map(idItem -> randomDataset.getContentDataset().get(idItem))
                 .collect(Collectors.toSet());
 
-        Collection<Recommendation> recommendOnly = grs.recommendOnly(randomDataset, RecommendationModel, groupModel, group, candidateItems);
+        GroupRecommendations recommendOnly = grs.recommendOnly(randomDataset, recommendationModel, groupModel, group, candidateItems);
 
         RecommendationsOutputStandardRaw output = new RecommendationsOutputStandardRaw();
-        output.writeRecommendations(new GroupRecommendations(group, recommendOnly, RecommendationComputationDetails.EMPTY_DETAILS));
+        output.writeRecommendations(recommendOnly);
     }
 }

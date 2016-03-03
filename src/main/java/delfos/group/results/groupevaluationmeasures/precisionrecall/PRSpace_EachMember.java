@@ -75,7 +75,8 @@ public class PRSpace_EachMember extends GroupEvaluationMeasure {
         Element measureElement = new Element(getName());
 
         for (GroupOfUsers group : groupRecommenderSystemResult.getGroupsOfUsers()) {
-            Collection<Recommendation> groupRecommendations = groupRecommenderSystemResult.getGroupOutput(group).getRecommendations();
+            Collection<Recommendation> groupRecommendations = groupRecommenderSystemResult
+                    .getGroupOutput(group).getRecommendations().getRecommendations();
 
             Set<Integer> recommendedItems = new TreeSet<>();
             for (Recommendation r : groupRecommendations) {

@@ -24,7 +24,6 @@ import delfos.rs.collaborativefiltering.predictiontechniques.WeightedSum;
 import delfos.rs.explanation.GroupModelWithExplanation;
 import delfos.rs.output.RecommendationsOutputStandardRaw;
 import delfos.rs.recommendation.Recommendation;
-import delfos.rs.recommendation.RecommendationComputationDetails;
 import delfos.similaritymeasures.CosineCoefficient;
 import java.util.Arrays;
 import java.util.Collection;
@@ -82,7 +81,7 @@ public class AggregationOfIndividualRatingsTest extends DelfosTest {
         );
 
         GroupModelWithExplanation<GroupModelPseudoUser, Object> groupModel = grs.buildGroupModel(datasetLoader, recommendationModel, group);
-        Collection<Recommendation> recommendOnly = grs.recommendOnly(
+        GroupRecommendations groupRecommendations = grs.recommendOnly(
                 datasetLoader,
                 recommendationModel,
                 groupModel,
@@ -90,7 +89,7 @@ public class AggregationOfIndividualRatingsTest extends DelfosTest {
                 notRated);
 
         RecommendationsOutputStandardRaw output = new RecommendationsOutputStandardRaw();
-        output.writeRecommendations(new GroupRecommendations(group, recommendOnly, RecommendationComputationDetails.EMPTY_DETAILS));
+        output.writeRecommendations(groupRecommendations);
 
         {
             // 4697 -> 4.300307
@@ -104,7 +103,7 @@ public class AggregationOfIndividualRatingsTest extends DelfosTest {
                     recommendationModel,
                     groupModel,
                     group,
-                    candidateItems);
+                    candidateItems).getRecommendations();
 
             Assert.assertEquals(1, predictionList.size());
             Assert.assertEquals(idItem, predictionList.iterator().next().getIdItem());
@@ -122,7 +121,7 @@ public class AggregationOfIndividualRatingsTest extends DelfosTest {
                     recommendationModel,
                     groupModel,
                     group,
-                    candidateItems);
+                    candidateItems).getRecommendations();
 
             Assert.assertEquals(1, predictionList.size());
             Assert.assertEquals(idItem, predictionList.iterator().next().getIdItem());

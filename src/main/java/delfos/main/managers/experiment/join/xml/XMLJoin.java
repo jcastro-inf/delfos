@@ -159,19 +159,22 @@ public class XMLJoin extends CaseUseMode {
     }
 
     public static void writeJoinIntoSpreadsheet(List<File> relevantFiles, File outputSpreadsheetFile) {
-        List<GroupCaseStudy> groupCaseStudies = relevantFiles.parallelStream().map(file -> {
-            try {
-                return GroupCaseStudyXML.loadGroupCaseWithResults(file);
-            } catch (JDOMException | IOException ex) {
-                Logger.getLogger(XMLJoin.class.getName()).log(Level.SEVERE, null, ex);
-                return null;
-            }
-        })
+        List<GroupCaseStudy> groupCaseStudies = relevantFiles.parallelStream()
+                .map(file -> {
+                    try {
+                        return GroupCaseStudyXML.loadGroupCaseWithResults(file);
+                    } catch (JDOMException | IOException ex) {
+                        Logger.getLogger(XMLJoin.class.getName()).log(Level.SEVERE, null, ex);
+                        return null;
+                    }
+                })
                 .filter(groupCaseStudyConfiguration -> groupCaseStudyConfiguration != null)
                 .map(groupCaseStudyConfiguration -> groupCaseStudyConfiguration.createGroupCaseStudy())
                 .collect(Collectors.toList());
 
-        List<GroupCaseStudyResult> groupCaseStudyResults = groupCaseStudies.stream().map(groupCaseStudy -> new GroupCaseStudyResult(groupCaseStudy)).collect(Collectors.toList());
+        List<GroupCaseStudyResult> groupCaseStudyResults = groupCaseStudies.parallelStream()
+                .map(groupCaseStudy -> new GroupCaseStudyResult(groupCaseStudy))
+                .collect(Collectors.toList());
 
         List<String> dataValidationParametersOrder = obtainDataValidationParametersOrder(groupCaseStudyResults);
         List<String> techniqueParametersOrder = obtainTechniqueParametersOrder(groupCaseStudyResults);

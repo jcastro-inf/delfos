@@ -38,6 +38,7 @@ import delfos.group.experiment.validation.validationtechniques.GroupValidationTe
 import delfos.group.groupsofusers.GroupOfUsers;
 import delfos.group.groupsofusers.measuresovergroups.GroupMeasure;
 import delfos.group.grs.GroupRecommenderSystem;
+import delfos.group.grs.recommendations.GroupRecommendations;
 import delfos.group.results.groupevaluationmeasures.GroupEvaluationMeasure;
 import delfos.group.results.groupevaluationmeasures.GroupEvaluationMeasureResult;
 import delfos.group.results.grouprecomendationresults.GroupRecommenderSystemResult;
@@ -129,14 +130,14 @@ public class GroupLevelCaseStudy {
                                 recommendationModel,
                                 group);
 
-                        Collection<Recommendation> groupRecommendations = groupRecommenderSystem.recommendOnly(
+                        GroupRecommendations groupRecommendations = groupRecommenderSystem.recommendOnly(
                                 groupRecommendationRequest.predictionPhaseDatasetLoader,
                                 recommendationModel,
                                 groupModel,
                                 group,
                                 groupRecommendationRequest.itemsToPredict);
 
-                        allPredictions.addAll(groupRecommendations);
+                        allPredictions.addAll(groupRecommendations.getRecommendations());
                         requests.addAll(groupRecommendationRequest.itemsToPredict);
                     }
 
@@ -160,7 +161,7 @@ public class GroupLevelCaseStudy {
                                         requests));
 
                         List<SingleGroupRecommendationTaskOutput> singleGroupRecommendationOutputs = Arrays.asList(
-                                new SingleGroupRecommendationTaskOutput(group, allPredictions, 0, 0)
+                                new SingleGroupRecommendationTaskOutput(group, new GroupRecommendations(group, allPredictions), 0, 0)
                         );
 
                         GroupRecommenderSystemResult groupRecommendationResult = new GroupRecommenderSystemResult(

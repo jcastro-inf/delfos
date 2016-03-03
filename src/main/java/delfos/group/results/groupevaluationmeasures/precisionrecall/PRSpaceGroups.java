@@ -97,7 +97,10 @@ public class PRSpaceGroups extends GroupEvaluationMeasure {
 
         int gruposSinMatriz = 0;
         for (GroupOfUsers group : groupRecommenderSystemResult.getGroupsOfUsers()) {
-            Collection<Recommendation> groupRecommendations = groupRecommenderSystemResult.getGroupOutput(group).getRecommendations();
+            Collection<Recommendation> groupRecommendations = groupRecommenderSystemResult
+                    .getGroupOutput(group)
+                    .getRecommendations()
+                    .getRecommendations();
 
             List<Boolean> recommendacionesGrupo = new ArrayList<>(groupRecommendations.size());
             for (Recommendation r : groupRecommendations) {

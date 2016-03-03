@@ -10,10 +10,9 @@ import delfos.dataset.basic.rating.RelevanceCriteria;
 import delfos.group.casestudy.parallelisation.SingleGroupRecommendationTaskInput;
 import delfos.group.casestudy.parallelisation.SingleGroupRecommendationTaskOutput;
 import delfos.group.groupsofusers.GroupOfUsers;
+import delfos.group.grs.recommendations.GroupRecommendations;
 import delfos.group.results.grouprecomendationresults.GroupRecommenderSystemResult;
-import delfos.rs.recommendation.Recommendation;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
@@ -59,7 +58,7 @@ public class NRMSETest {
         List<SingleGroupRecommendationTaskInput> singleGroupRecommendationInputs = Arrays.asList(
                 new SingleGroupRecommendationTaskInput(null, datasetLoader, recommendationModel, groupOfUsers, groupRequests));
 
-        Collection<Recommendation> groupRecommendations = Collections.EMPTY_LIST;
+        GroupRecommendations groupRecommendations = new GroupRecommendations(groupOfUsers, Collections.EMPTY_LIST);
         long buildTime = 0;
         long groupBuildTime = 0;
         long groupRecommendationTime = 0;

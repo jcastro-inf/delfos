@@ -31,6 +31,7 @@ import delfos.experiment.casestudy.parallel.SingleUserRecommendationTask;
 import delfos.experiment.casestudy.parallel.SingleUserRecommendationTaskExecutor;
 import delfos.group.groupsofusers.GroupOfUsers;
 import delfos.group.grs.GroupRecommenderSystem;
+import delfos.group.grs.recommendations.GroupRecommendations;
 import delfos.rs.RecommenderSystem;
 import delfos.rs.persistence.FilePersistence;
 import delfos.rs.recommendation.Recommendation;
@@ -137,7 +138,7 @@ public class GroupRecommendationManager {
         if (consoleParameters.isParameterDefined(GROUP_MEMBERS_PARAMETER)) {
             Global.showInfoMessage("Recommending for grs described in file '" + configFile_grs.getAbsolutePath() + "'\n");
 
-            List<Recommendation> groupRecommendations;
+            GroupRecommendations groupRecommendations;
 
             GroupOfUsers group;
             {
@@ -195,13 +196,12 @@ public class GroupRecommendationManager {
 
             Object groupModel = groupRecommenderSystem.buildGroupModel(datasetLoader, recommendationModel_grs, group);
 
-            groupRecommendations = new ArrayList<>(groupRecommenderSystem.recommendOnly(
+            groupRecommendations = groupRecommenderSystem.recommendOnly(
                     datasetLoader,
                     recommendationModel_grs,
                     groupModel,
                     group,
-                    candidateItems.stream().map(idItem -> datasetLoader.getContentDataset().get(idItem)).collect(Collectors.toSet())));
-            Collections.sort(groupRecommendations);
+                    candidateItems.stream().map(idItem -> datasetLoader.getContentDataset().get(idItem)).collect(Collectors.toSet()));
 
             Object recommendationModel_singleUser = recommenderSystem.loadRecommendationModel(rsFilePersistence, users, items);
 
@@ -234,23 +234,23 @@ public class GroupRecommendationManager {
             {
                 //Miro las predichas para todos.
                 Set<Integer> idItem_recommended = new TreeSet<>();
-                for (Recommendation r : groupRecommendations) {
-                    idItem_recommended.add(r.getIdItem());
+                for (Recommendation r : groupRecommendations.getRecommendations()) {
+                    idItem_recommended.add(r.getItem().getId());
                 }
 
                 for (int idMember : singleUserRecommendations.keySet()) {
                     Set<Integer> thisUserIdItem_recommended = new TreeSet<>();
                     singleUserRecommendations.get(idMember).stream().forEach((r) -> {
-                        thisUserIdItem_recommended.add(r.getIdItem());
+                        thisUserIdItem_recommended.add(r.getItem().getId());
                     });
                     idItem_recommended.retainAll(thisUserIdItem_recommended);
                 }
 
                 idItem_recommended = Collections.unmodifiableSet(idItem_recommended);
 
-                for (Iterator<Recommendation> it = groupRecommendations.iterator(); it.hasNext();) {
+                for (Iterator<Recommendation> it = groupRecommendations.getRecommendations().iterator(); it.hasNext();) {
                     Recommendation r = it.next();
-                    if (!idItem_recommended.contains(r.getIdItem())) {
+                    if (!idItem_recommended.contains(r.getItem().getId())) {
                         it.remove();
                     }
                 }
@@ -260,7 +260,7 @@ public class GroupRecommendationManager {
 
                     for (Iterator<Recommendation> it = singleUserRecommendations.get(idMember).iterator(); it.hasNext();) {
                         Recommendation r = it.next();
-                        if (!idItem_recommended.contains(r.getIdItem())) {
+                        if (!idItem_recommended.contains(r.getItem().getId())) {
                             it.remove();
                         }
                     }
@@ -270,13 +270,16 @@ public class GroupRecommendationManager {
             }
 
             {
+
+                List<Recommendation> selection = new ArrayList<>(groupRecommendations.getRecommendations())
+                        .subList(0, Math.min(groupRecommendations.getRecommendations().size(), topN));
                 //Selection of top-N recommended items
-                groupRecommendations = groupRecommendations.subList(0, Math.min(groupRecommendations.size(), topN));
+                groupRecommendations = new GroupRecommendations(group, selection, groupRecommendations.getRecommendationComputationDetails());
 
                 //Miro las predichas para el grupo.
                 Set<Integer> topNforGroup = new TreeSet<>();
-                for (Recommendation r : groupRecommendations) {
-                    topNforGroup.add(r.getIdItem());
+                for (Recommendation r : groupRecommendations.getRecommendations()) {
+                    topNforGroup.add(r.getItem().getId());
                 }
 
                 topNforGroup = Collections.unmodifiableSet(topNforGroup);
@@ -286,7 +289,7 @@ public class GroupRecommendationManager {
 
                     for (Iterator<Recommendation> it = singleUserRecommendations.get(idMember).iterator(); it.hasNext();) {
                         Recommendation r = it.next();
-                        if (!topNforGroup.contains(r.getIdItem())) {
+                        if (!topNforGroup.contains(r.getItem().getId())) {
                             it.remove();
                         }
                     }
@@ -304,7 +307,7 @@ public class GroupRecommendationManager {
                 Global.showWarning("Using default output file: '" + configFile_grs.getAbsolutePath() + "'");
             }
 
-            writeXML(groupRecommendations, singleUserRecommendations, outputFile);
+            writeXML(groupRecommendations.getRecommendations(), singleUserRecommendations, outputFile);
 
             correctOption = true;
         }
@@ -329,14 +332,14 @@ public class GroupRecommendationManager {
 
         //Miro los items recomendados para el grupo
         for (Recommendation r : groupRecommendations) {
-            itemsIntersection.add(r.getIdItem());
+            itemsIntersection.add(r.getItem().getId());
         }
 
         //Elimino los que no aparecen recomendades para los miembros
         for (int idMember : singleUserRecommendations.keySet()) {
             Set<Integer> thisMemberItems = new TreeSet<>();
             singleUserRecommendations.get(idMember).stream().forEach((r) -> {
-                thisMemberItems.add(r.getIdItem());
+                thisMemberItems.add(r.getItem().getId());
             });
             itemsIntersection.retainAll(thisMemberItems);
         }
@@ -347,9 +350,9 @@ public class GroupRecommendationManager {
             Element thisMemberElement = new Element(MEMBER_ELEMENT_NAME);
             thisMemberElement.setAttribute(MEMBER_ELEMENT_NAMEID_ATTRIBUTE_NAME, Integer.toString(idMember));
             for (Recommendation r : singleUserRecommendations.get(idMember)) {
-                if (itemsIntersection.contains(r.getIdItem())) {
+                if (itemsIntersection.contains(r.getItem().getId())) {
                     Element recommendation = new Element(RECOMMENDATION_ELEMENT_NAME);
-                    recommendation.setAttribute(RECOMMENDATION_ELEMENT_ID_ITEM_ATTRIBUTE_NAME, Integer.toString(r.getIdItem()));
+                    recommendation.setAttribute(RECOMMENDATION_ELEMENT_ID_ITEM_ATTRIBUTE_NAME, Integer.toString(r.getItem().getId()));
                     recommendation.setAttribute(RECOMMENDATION_ELEMENT_PREFERENCE_ATTRIBUTE_NAME, Double.toString(r.getPreference().doubleValue()));
                     thisMemberElement.addContent(recommendation);
                 }
@@ -371,9 +374,9 @@ public class GroupRecommendationManager {
 
         groupElement.setAttribute(GROUP_ELEMENT_MEMBERS_ATTRIBUTE_NAME, str.toString());
         for (Recommendation r : groupRecommendations) {
-            if (itemsIntersection.contains(r.getIdItem())) {
+            if (itemsIntersection.contains(r.getItem().getId())) {
                 Element recommendation = new Element(RECOMMENDATION_ELEMENT_NAME);
-                recommendation.setAttribute(RECOMMENDATION_ELEMENT_ID_ITEM_ATTRIBUTE_NAME, Integer.toString(r.getIdItem()));
+                recommendation.setAttribute(RECOMMENDATION_ELEMENT_ID_ITEM_ATTRIBUTE_NAME, Integer.toString(r.getItem().getId()));
                 recommendation.setAttribute(RECOMMENDATION_ELEMENT_PREFERENCE_ATTRIBUTE_NAME, Double.toString(r.getPreference().doubleValue()));
                 groupElement.addContent(recommendation);
             }

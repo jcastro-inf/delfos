@@ -32,7 +32,7 @@ import java.util.TreeSet;
  *
  * @author jcastro-inf ( https://github.com/jcastro-inf )
  */
-public class GroupRecommendationsWithMembersRecommendations extends Recommendations {
+public class GroupRecommendationsWithMembersRecommendations extends GroupRecommendations {
 
     private static final long serialVersionUID = 34235l;
 
@@ -46,7 +46,7 @@ public class GroupRecommendationsWithMembersRecommendations extends Recommendati
 
     public GroupRecommendationsWithMembersRecommendations(GroupRecommendations groupRecommendations, Recommendations... membersRecommendations) {
         super(
-                groupRecommendations.getTargetIdentifier(),
+                groupRecommendations.getGroupOfUsers(),
                 groupRecommendations.getRecommendations(),
                 groupRecommendations.getRecommendationComputationDetails()
         );
@@ -57,7 +57,7 @@ public class GroupRecommendationsWithMembersRecommendations extends Recommendati
 
         this.membersRecommendations = new TreeMap<>();
         for (Recommendations memberRecommendations : membersRecommendations) {
-            User member = User.parseIdTarget(memberRecommendations.getTargetIdentifier());
+            User member = (User) memberRecommendations.getTarget();
             this.membersRecommendations.put(member, memberRecommendations);
         }
 

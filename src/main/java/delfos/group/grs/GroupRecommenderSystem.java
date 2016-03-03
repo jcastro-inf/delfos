@@ -25,9 +25,8 @@ import delfos.dataset.basic.item.Item;
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
 import delfos.group.groupsofusers.GroupOfUsers;
+import delfos.group.grs.recommendations.GroupRecommendations;
 import delfos.rs.GenericRecommenderSystem;
-import delfos.rs.recommendation.Recommendation;
-import java.util.Collection;
 import java.util.Set;
 
 /**
@@ -80,12 +79,8 @@ public interface GroupRecommenderSystem<RecommendationModel, GroupModel> extends
      * existe
      * @throws delfos.common.exceptions.ratings.NotEnoughtUserInformation
      */
-    public <RatingType extends Rating> Collection<Recommendation> recommendOnly(
-            DatasetLoader<RatingType> datasetLoader,
-            RecommendationModel recommendationModel,
-            GroupModel groupModel,
-            GroupOfUsers groupOfUsers,
-            Set<Item> candidateItems)
+    public <RatingType extends Rating> GroupRecommendations recommendOnly(
+            DatasetLoader<RatingType> datasetLoader, RecommendationModel recommendationModel, GroupModel groupModel, GroupOfUsers groupOfUsers, Set<Item> candidateItems)
             throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset, NotEnoughtUserInformation;
 
 }

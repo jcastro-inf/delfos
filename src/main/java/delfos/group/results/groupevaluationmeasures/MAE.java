@@ -64,7 +64,7 @@ public class MAE extends GroupEvaluationMeasure {
 
         for (GroupOfUsers groupOfUsers : groupRecommenderSystemResult.getGroupsOfUsers()) {
             Collection<Recommendation> groupRecommendations = groupRecommenderSystemResult
-                    .getGroupOutput(groupOfUsers).getRecommendations();
+                    .getGroupOutput(groupOfUsers).getRecommendations().getRecommendations();
 
             if (groupRecommendations.isEmpty()) {
                 continue;

@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -72,7 +72,8 @@ public class GroupSatisfaction_StdDev extends GroupEvaluationMeasure {
         MeanIterative mediaTodasDesviacionesTipicas = new MeanIterative();
 
         for (GroupOfUsers groupOfUsers : groupRecommenderSystemResult.getGroupsOfUsers()) {
-            Collection<Recommendation> groupRecommendations = groupRecommenderSystemResult.getGroupOutput(groupOfUsers).getRecommendations();
+            Collection<Recommendation> groupRecommendations = groupRecommenderSystemResult.getGroupOutput(groupOfUsers)
+                    .getRecommendations().getRecommendations();
 
             //Recorro todos los grupos
             MeanIterative maeGrupo = new MeanIterative();

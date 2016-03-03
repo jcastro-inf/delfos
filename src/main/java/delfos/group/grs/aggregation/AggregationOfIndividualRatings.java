@@ -34,6 +34,7 @@ import delfos.dataset.generated.modifieddatasets.pseudouser.PseudoUserDatasetLoa
 import delfos.group.groupsofusers.GroupOfUsers;
 import delfos.group.grs.GroupRecommenderSystemAdapter;
 import delfos.group.grs.SingleRecommendationModel;
+import delfos.group.grs.recommendations.GroupRecommendations;
 import delfos.rs.RecommendationModelBuildingProgressListener;
 import delfos.rs.RecommenderSystem;
 import delfos.rs.collaborativefiltering.knn.memorybased.KnnMemoryBasedCFRS;
@@ -155,12 +156,8 @@ public class AggregationOfIndividualRatings
     }
 
     @Override
-    public <RatingType extends Rating> Collection<Recommendation> recommendOnly(
-            DatasetLoader<RatingType> datasetLoader,
-            SingleRecommendationModel recommendationModel,
-            GroupModelWithExplanation<GroupModelPseudoUser, Object> groupModel,
-            GroupOfUsers groupOfUsers,
-            Set<Item> candidateItems)
+    public <RatingType extends Rating> GroupRecommendations recommendOnly(
+            DatasetLoader<RatingType> datasetLoader, SingleRecommendationModel recommendationModel, GroupModelWithExplanation<GroupModelPseudoUser, Object> groupModel, GroupOfUsers groupOfUsers, Set<Item> candidateItems)
             throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset, NotEnoughtUserInformation {
 
         //Recojo los parámetros en variables
@@ -173,7 +170,7 @@ public class AggregationOfIndividualRatings
                 groupRatings_Number,
                 candidateItems);
 
-        return groupRecom;
+        return new GroupRecommendations(groupOfUsers, groupRecom);
     }
 
     @Override

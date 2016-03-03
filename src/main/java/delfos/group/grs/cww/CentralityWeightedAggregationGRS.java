@@ -42,6 +42,7 @@ import delfos.group.grs.SingleRecommendationModel;
 import delfos.group.grs.aggregation.GroupModelPseudoUser;
 import delfos.group.grs.cww.centrality.CentralityConceptDefinition;
 import delfos.group.grs.cww.centrality.definitions.AritmethicMeanConnectionWeightCentrality;
+import delfos.group.grs.recommendations.GroupRecommendations;
 import delfos.rs.RecommendationModelBuildingProgressListener;
 import delfos.rs.RecommenderSystem;
 import delfos.rs.collaborativefiltering.knn.memorybased.nwr.KnnMemoryBasedNWR;
@@ -167,12 +168,8 @@ public class CentralityWeightedAggregationGRS extends GroupRecommenderSystemAdap
     }
 
     @Override
-    public <RatingType extends Rating> Collection<Recommendation> recommendOnly(
-            DatasetLoader<RatingType> datasetLoader,
-            SingleRecommendationModel RecommendationModel,
-            GroupModelPseudoUser groupModel,
-            GroupOfUsers groupOfUsers,
-            Set<Item> candidateItems)
+    public <RatingType extends Rating> GroupRecommendations recommendOnly(
+            DatasetLoader<RatingType> datasetLoader, SingleRecommendationModel RecommendationModel, GroupModelPseudoUser groupModel, GroupOfUsers groupOfUsers, Set<Item> candidateItems)
             throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset, NotEnoughtUserInformation {
 
         //Recojo los parámetros en variables
@@ -195,7 +192,7 @@ public class CentralityWeightedAggregationGRS extends GroupRecommenderSystemAdap
                 idGroup,
                 candidateItems);
 
-        return groupRecom;
+        return new GroupRecommendations(groupOfUsers, groupRecom);
     }
 
     @Override

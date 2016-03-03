@@ -22,9 +22,8 @@ import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RatingsDataset;
 import delfos.dataset.basic.rating.RelevanceCriteria;
 import delfos.group.groupsofusers.GroupOfUsers;
+import delfos.group.grs.recommendations.GroupRecommendations;
 import delfos.group.results.grouprecomendationresults.GroupRecommenderSystemResult;
-import delfos.rs.recommendation.Recommendation;
-import java.util.Collection;
 
 /**
  * Computes the average number of recommendations per group.
@@ -45,12 +44,12 @@ public class NumberOfRecommendations extends GroupEvaluationMeasure {
         MeanIterative meanRecommendationsPerGroup = new MeanIterative();
 
         for (GroupOfUsers groupOfUsers : groupRecommenderSystemResult.getGroupsOfUsers()) {
-            Collection<Recommendation> groupRecommendations = groupRecommenderSystemResult.getGroupOutput(groupOfUsers).getRecommendations();
+            GroupRecommendations groupRecommendations = groupRecommenderSystemResult.getGroupOutput(groupOfUsers).getRecommendations();
 
             if (groupRecommendations == null) {
                 throw new IllegalStateException("The group " + groupOfUsers + " has null recommendations.");
             } else {
-                long recommendedThisGroup = groupRecommendations.stream()
+                long recommendedThisGroup = groupRecommendations.getRecommendations().stream()
                         .filter(recommendation -> recommendation != null)
                         .filter(recommendation -> !Double.isNaN(recommendation.getPreference().doubleValue()))
                         .count();

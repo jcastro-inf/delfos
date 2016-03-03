@@ -22,10 +22,8 @@ import delfos.dataset.basic.item.Item;
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
 import delfos.group.groupsofusers.GroupOfUsers;
-import delfos.rs.recommendation.Recommendation;
+import delfos.group.grs.recommendations.GroupRecommendations;
 import delfos.utils.algorithm.progress.ProgressChangedController;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.Set;
 import java.util.function.Function;
 
@@ -54,7 +52,7 @@ public class SingleGroupRecommendationFunction implements Function<SingleGroupRe
         final Object recommendationModel = task.getRecommendationModel();
         final Set<Item> itemsRequested = task.getItemsRequested();
 
-        Collection<Recommendation> recommendations = Collections.EMPTY_LIST;
+        GroupRecommendations recommendations = null;
         long buildTime = -1;
         long recommendationTime = -1;
 
@@ -79,7 +77,9 @@ public class SingleGroupRecommendationFunction implements Function<SingleGroupRe
 
         notifyProgress();
 
-        SingleGroupRecommendationTaskOutput groupRecommendationTaskOutput = new SingleGroupRecommendationTaskOutput(groupOfUsers, recommendations, buildTime, recommendationTime);
+        SingleGroupRecommendationTaskOutput groupRecommendationTaskOutput
+                = new SingleGroupRecommendationTaskOutput(
+                        groupOfUsers, recommendations, buildTime, recommendationTime);
 
         return groupRecommendationTaskOutput;
     }

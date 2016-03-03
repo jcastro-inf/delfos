@@ -36,6 +36,7 @@ import delfos.dataset.generated.modifieddatasets.pseudouser.PseudoUserDatasetLoa
 import delfos.group.groupsofusers.GroupOfUsers;
 import delfos.group.grs.GroupRecommenderSystemAdapter;
 import delfos.group.grs.aggregation.AggregationOfIndividualRatings;
+import delfos.group.grs.recommendations.GroupRecommendations;
 import delfos.rs.collaborativefiltering.knn.memorybased.nwr.KnnMemoryBasedNWR;
 import delfos.rs.collaborativefiltering.predictiontechniques.PredictionTechnique;
 import delfos.rs.collaborativefiltering.profile.Neighbor;
@@ -115,12 +116,8 @@ public class HesitantKnnGroupUser
     }
 
     @Override
-    public <RatingType extends Rating> Collection<Recommendation> recommendOnly(
-            DatasetLoader<RatingType> datasetLoader,
-            Object RecommendationModel,
-            HesitantValuation groupModel,
-            GroupOfUsers groupOfUsers,
-            Set<Item> candidateItems) throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset, NotEnoughtUserInformation {
+    public <RatingType extends Rating> GroupRecommendations recommendOnly(
+            DatasetLoader<RatingType> datasetLoader, Object RecommendationModel, HesitantValuation groupModel, GroupOfUsers groupOfUsers, Set<Item> candidateItems) throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset, NotEnoughtUserInformation {
 
         try {
             List<Neighbor> neighbors;
@@ -148,10 +145,13 @@ public class HesitantKnnGroupUser
                     predictionTechnique);
 
             Collection<Recommendation> retWithNeighbors = ret.stream()
-                    .map(recommendation -> new RecommendationWithNeighbors(recommendation.getItem(), recommendation.getPreference(), neighbors))
+                    .map(recommendation -> new RecommendationWithNeighbors(
+                                    recommendation.getItem(),
+                                    recommendation.getPreference(),
+                                    neighbors))
                     .collect(Collectors.toList());
 
-            return retWithNeighbors;
+            return new GroupRecommendations(groupOfUsers, retWithNeighbors);
         } catch (CannotLoadRatingsDataset ex) {
             throw new IllegalArgumentException(ex);
         }

@@ -12,6 +12,7 @@ import delfos.dataset.basic.rating.RatingsDataset;
 import delfos.group.groupsofusers.GroupOfUsers;
 import delfos.group.grs.GroupRecommenderSystemAdapter;
 import delfos.group.grs.RandomGroupRecommender;
+import delfos.group.grs.recommendations.GroupRecommendations;
 import delfos.rs.nonpersonalised.randomrecommender.RandomRecommendationModel;
 import delfos.rs.recommendation.Recommendation;
 import java.util.Collection;
@@ -68,12 +69,8 @@ public class GroupRecommender_TestValidationProtocols extends GroupRecommenderSy
     }
 
     @Override
-    public <RatingType extends Rating> Collection<Recommendation> recommendOnly(
-            DatasetLoader<RatingType> datasetLoader,
-            Object RecommendationModel,
-            Object groupModel,
-            GroupOfUsers groupOfUsers,
-            Set<Item> candidateItems) throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset {
+    public <RatingType extends Rating> GroupRecommendations recommendOnly(
+            DatasetLoader<RatingType> datasetLoader, Object RecommendationModel, Object groupModel, GroupOfUsers groupOfUsers, Set<Item> candidateItems) throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset {
 
         /*
          * Compruebo si alguna vez me piden recomendaciones que se conocian en

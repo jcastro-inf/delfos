@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -17,7 +17,6 @@
 package delfos.group.io.xml.casestudy;
 
 import org.jdom2.Element;
-import static delfos.group.GroupRecommendationManager.CASE_ROOT_ELEMENT_NAME;
 import delfos.group.casestudy.GroupCaseStudyConfiguration;
 import delfos.group.io.xml.groupformationtechnique.GroupFormationTechniqueXML;
 import delfos.group.io.xml.predictionprotocol.GroupPredictionProtocolXML;
@@ -36,6 +35,8 @@ import delfos.io.xml.rs.RecommenderSystemXML;
  * @version 1.0 UnkowDate
  */
 public class GroupCaseStudyConfigurationXML {
+
+    public static final String CASE_ROOT_ELEMENT_NAME = "Recommendations";
 
     public static Element caseStudyConfigurationToXMLElement(GroupCaseStudyConfiguration groupCaseStudyConfiguration) {
 
