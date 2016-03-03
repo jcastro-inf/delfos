@@ -48,15 +48,19 @@ import delfos.group.factories.GroupEvaluationMeasuresFactory;
 import delfos.group.groupsofusers.GroupOfUsers;
 import delfos.group.grs.GroupRecommenderSystem;
 import delfos.group.grs.RandomGroupRecommender;
+import delfos.group.io.excel.casestudy.GroupCaseStudyExcel;
+import delfos.group.io.xml.casestudy.GroupCaseStudyXML;
 import delfos.group.results.groupevaluationmeasures.GroupEvaluationMeasure;
 import delfos.group.results.groupevaluationmeasures.GroupEvaluationMeasureResult;
 import delfos.utils.algorithm.progress.ProgressChangedController;
+import java.io.File;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -100,12 +104,19 @@ public class GroupCaseStudy extends ExperimentAdapter {
 
     protected final LinkedList<CaseStudyParameterChangedListener> propertyListeners = new LinkedList<>();
 
+    private File resultsDirectory = new File("." + File.separator + "temp");
+
+    public void setResultsDirectory(File RESULTS_DIRECTORY) {
+        if (RESULTS_DIRECTORY.exists() && !RESULTS_DIRECTORY.isDirectory()) {
+            throw new IllegalStateException("Must be a directory");
+        }
+        this.resultsDirectory = RESULTS_DIRECTORY;
+    }
+
     public GroupCaseStudy() {
         addParameter(SEED);
         addParameter(NUM_EXECUTIONS);
-
         addParameter(DATASET_LOADER);
-
         addParameter(GROUP_FORMATION_TECHNIQUE);
         addParameter(GROUP_VALIDATION_TECHNIQUE);
         addParameter(GROUP_PREDICTION_PROTOCOL);
@@ -183,7 +194,7 @@ public class GroupCaseStudy extends ExperimentAdapter {
                     Collection<GroupOfUsers> groups = groupFormationTechnique.shuffle(originalDatasetLoader);
                     PairOfTrainTestRatingsDataset[] pairsOfTrainTest = groupValidationTechnique.shuffle(originalDatasetLoader, groups);
 
-                    return IntStream.range(0, getNumSplits()).boxed().parallel().collect(Collectors.toMap(Function.identity(),
+                    Map<Integer, Map<GroupEvaluationMeasure, GroupEvaluationMeasureResult>> resultsThisExecution = IntStream.range(0, getNumSplits()).boxed().parallel().collect(Collectors.toMap(Function.identity(),
                                     split -> {
                                         Map<GroupEvaluationMeasure, GroupEvaluationMeasureResult> execute = new ExecutionExplitConsumer(execution, split, this, pairsOfTrainTest, groups).execute();
                                         groupCaseStudyProgressChangedController.setTaskFinished();
@@ -191,6 +202,10 @@ public class GroupCaseStudy extends ExperimentAdapter {
                                     }
                             )
                     );
+
+                    setResultsThisExecution(execution, resultsThisExecution);
+
+                    return resultsThisExecution;
                 })
         );
 
@@ -454,5 +469,70 @@ public class GroupCaseStudy extends ExperimentAdapter {
         } else {
             return GroupEvaluationMeasuresFactory.getInstance().getAllClasses();
         }
+    }
+
+    @Override
+    public GroupCaseStudy clone() {
+        return (GroupCaseStudy) super.clone();
+    }
+
+    private final Map<Integer, Map<Integer, Map<GroupEvaluationMeasure, GroupEvaluationMeasureResult>>> resultsAsTheyFinish
+            = new TreeMap<>();
+
+    private synchronized void setResultsThisExecution(Integer newExecution, Map<Integer, Map<GroupEvaluationMeasure, GroupEvaluationMeasureResult>> resultsNewExecution) {
+
+        Set<Integer> executionsHoles = IntStream.range(0, this.getNumExecutions()).boxed().sorted().collect(Collectors.toSet());
+        executionsHoles.removeAll(resultsAsTheyFinish.keySet());
+
+        int firstHole = executionsHoles.stream().mapToInt(i -> i).min().orElse(-1);
+
+        resultsAsTheyFinish.put(newExecution, resultsNewExecution);
+        if (newExecution != firstHole) {
+            //lo guardo y punto.
+            return;
+        }
+
+        executionsHoles.remove(newExecution);
+        int nextHole = executionsHoles.stream().mapToInt(i -> i).min().orElse(this.getNumExecutions());
+
+        List<Integer> toSave = IntStream.range(firstHole, nextHole).boxed().sorted().collect(Collectors.toList());
+
+        toSave.stream().forEach(execution -> {
+
+            GroupCaseStudy groupCaseStudyCloned = this.clone();
+
+            groupCaseStudyCloned.setNumExecutions(execution + 1);
+
+            groupCaseStudyCloned.allLoopsResults
+                    = resultsAsTheyFinish.entrySet().stream()
+                    .filter(entry -> entry.getKey() <= execution)
+                    .collect(Collectors.toMap(
+                                    entry -> entry.getKey(),
+                                    entry -> entry.getValue()
+                            )
+                    );
+
+            Set<GroupEvaluationMeasure> groupEvaluationMeasures = groupCaseStudyCloned.allLoopsResults.get(0).get(0).keySet();
+
+            groupCaseStudyCloned.aggregateResults = groupEvaluationMeasures.parallelStream().collect(Collectors.toMap(Function.identity(),
+                    groupEvaluationMeasure -> {
+
+                        List<GroupEvaluationMeasureResult> allResultsThisMeasure
+                        = groupCaseStudyCloned.allLoopsResults.values().parallelStream()
+                        .flatMap(resultsForThisExecution -> resultsForThisExecution.values().stream())
+                        .map(resultExecutionSplit -> resultExecutionSplit.get(groupEvaluationMeasure))
+                        .collect(Collectors.toList());
+
+                        GroupEvaluationMeasureResult resultsAggregated
+                        = groupEvaluationMeasure.agregateResults(allResultsThisMeasure);
+
+                        return resultsAggregated;
+                    }));
+
+            GroupCaseStudyXML.saveCaseResults(groupCaseStudyCloned, resultsDirectory);
+            GroupCaseStudyExcel.saveCaseResults(groupCaseStudyCloned, resultsDirectory);
+
+        });
+
     }
 }

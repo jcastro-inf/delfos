@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -85,17 +85,18 @@ public class GroupCaseStudyExecutor implements Consumer<ExecuteGroupCaseStudy_Ta
         caseStudyGroupRecommendation.addExperimentListener(new ExperimentListerner_default(System.out, 10000));
         caseStudyGroupRecommendation.addExecutionProgressListener(new ExecutionProgressListener_default(System.out, 10000));
         caseStudyGroupRecommendation.setSeedValue(seed);
+
+        File resultsDirectory = new File(
+                experimentsDirectory.getAbsolutePath() + File.separator
+                + "results" + File.separator
+        );
+        caseStudyGroupRecommendation.setResultsDirectory(resultsDirectory);
         try {
             Global.showln("Executing case " + caseName);
             caseStudyGroupRecommendation.execute();
         } catch (UserNotFound | ItemNotFound ex) {
             throw new IllegalStateException(ex);
         }
-
-        File resultsDirectory = new File(
-                experimentsDirectory.getAbsolutePath() + File.separator
-                + "results" + File.separator
-        );
 
         GroupCaseStudyXML.saveCaseResults(caseStudyGroupRecommendation, resultsDirectory);
         GroupCaseStudyExcel.saveCaseResults(caseStudyGroupRecommendation, resultsDirectory);

@@ -145,10 +145,8 @@ public class TuringPreparator implements ExperimentPreparator {
 
         experimentsToBeExecutedStream.forEach((singleExperimentDirectory) -> {
             String[] args = {
-                ExecuteGroupXML.SEED_PARAMETER, "123456",
                 ExecuteGroupXML.MODE_PARAMETER,
                 ExecuteGroupXML.XML_DIRECTORY, singleExperimentDirectory.getPath(),
-                ExecuteGroupXML.NUM_EXEC_PARAMETER, "1",
                 Constants.PRINT_FULL_XML,
                 Constants.RAW_DATA};
             Main.mainWithExceptions(args);

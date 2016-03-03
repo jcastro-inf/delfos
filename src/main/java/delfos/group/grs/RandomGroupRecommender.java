@@ -31,8 +31,8 @@ import delfos.rs.nonpersonalised.randomrecommender.RandomRecommendationModel;
 import delfos.rs.recommendation.Recommendation;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Recomendador aleatorio para grupos de usuarios. No usar en un sistema real
@@ -74,7 +74,9 @@ public class RandomGroupRecommender
             throws UserNotFound, CannotLoadRatingsDataset {
 
         if (recommendationModel.getRandomDouble(groupOfUsers) > 0.999) {
-            return new GroupRecommendations(groupOfUsers, Collections.EMPTY_LIST);
+            return new GroupRecommendations(groupOfUsers,
+                    candidateItems.stream().map(item -> new Recommendation(item, Double.NaN)).collect(Collectors.toList())
+            );
         } else {
             final int numRecomendaciones = (int) (recommendationModel.getRandomInt(groupOfUsers, candidateItems.size()));
             final double min = datasetLoader.getRatingsDataset().getRatingsDomain().min().doubleValue();
@@ -89,6 +91,12 @@ public class RandomGroupRecommender
                 ratingAleatorio = ratingAleatorio * rango + min;
                 recommendationList.add(new Recommendation(item, ratingAleatorio));
             }
+
+            toPredict.stream().forEach(item -> {
+                Recommendation recommendation = new Recommendation(item, Double.NaN);
+                recommendationList.add(recommendation);
+            });
+
             return new GroupRecommendations(groupOfUsers, recommendationList);
         }
     }
