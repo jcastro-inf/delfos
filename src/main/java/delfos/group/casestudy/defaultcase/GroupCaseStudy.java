@@ -203,6 +203,8 @@ public class GroupCaseStudy extends ExperimentAdapter {
                             )
                     );
 
+                    setResultsThisExecution(execution, resultsThisExecution);
+
                     return resultsThisExecution;
                 })
         );
@@ -479,21 +481,23 @@ public class GroupCaseStudy extends ExperimentAdapter {
 
     private synchronized void setResultsThisExecution(Integer newExecution, Map<Integer, Map<GroupEvaluationMeasure, GroupEvaluationMeasureResult>> resultsNewExecution) {
 
-        List<Integer> executionsHoles = IntStream.rangeClosed(0, newExecution).boxed()
-                .filter(execution -> !resultsAsTheyFinish.containsKey(execution))
-                .collect(Collectors.toList());
+        Set<Integer> executionsHoles = IntStream.range(0, this.getNumExecutions()).boxed().sorted().collect(Collectors.toSet());
+        executionsHoles.removeAll(resultsAsTheyFinish.keySet());
 
-        int maxExecutionBefore = resultsAsTheyFinish.keySet().stream().mapToInt(i -> i).max().orElse(0);
+        int firstHole = executionsHoles.stream().mapToInt(i -> i).min().orElse(-1);
 
         resultsAsTheyFinish.put(newExecution, resultsNewExecution);
-
-        int maxExecutionNow = Math.max(maxExecutionBefore, newExecution);
-
-        if (maxExecutionNow == this.getNumExecutions() - 1) {
-            maxExecutionNow--;
+        if (newExecution != firstHole) {
+            //lo guardo y punto.
+            return;
         }
 
-        IntStream.rangeClosed(maxExecutionBefore, maxExecutionNow).parallel().forEach(execution -> {
+        executionsHoles.remove(newExecution);
+        int nextHole = executionsHoles.stream().mapToInt(i -> i).min().orElse(this.getNumExecutions());
+
+        List<Integer> toSave = IntStream.range(firstHole, nextHole).boxed().sorted().collect(Collectors.toList());
+
+        toSave.stream().forEach(execution -> {
 
             GroupCaseStudy groupCaseStudyCloned = this.clone();
 
@@ -501,7 +505,7 @@ public class GroupCaseStudy extends ExperimentAdapter {
 
             groupCaseStudyCloned.allLoopsResults
                     = resultsAsTheyFinish.entrySet().stream()
-                    .filter(entry -> entry.getKey() >= execution)
+                    .filter(entry -> entry.getKey() <= execution)
                     .collect(Collectors.toMap(
                                     entry -> entry.getKey(),
                                     entry -> entry.getValue()
