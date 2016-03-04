@@ -88,7 +88,14 @@ public class RecommendationsOutputStandardRaw extends RecommendationsOutputMetho
 
         Global.showln("Target '" + idTarget + "' recommendations:");
         for (Recommendation r : topNrecommendations) {
-            Global.showln("\t" + r.getItem() + "," + r.getItem().getName() + "," + format.format(r.getPreference().doubleValue()));
+            String prediction;
+
+            if (Double.isFinite(r.getPreference().doubleValue())) {
+                prediction = format.format(r.getPreference().doubleValue());
+            } else {
+                prediction = "NaN";
+            }
+            Global.showln("\t" + r.getItem() + "," + r.getItem().getName() + "," + prediction);
         }
     }
 }
