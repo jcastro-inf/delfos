@@ -30,6 +30,7 @@ import delfos.common.parameters.restriction.BooleanParameter;
 import delfos.common.parameters.restriction.DoubleParameter;
 import delfos.common.parameters.restriction.IntegerParameter;
 import delfos.common.statisticalfuncions.MeanIterative;
+import delfos.dataset.basic.item.Item;
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RatingsDataset;
@@ -41,9 +42,10 @@ import delfos.rs.persistence.database.DAOTryThisAtHomeDatabaseModel;
 import delfos.rs.recommendation.Recommendation;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
+import java.util.List;
 import java.util.Random;
 import java.util.TreeMap;
+import java.util.stream.Collectors;
 
 /**
  * Sistema de recomendación descrito en
@@ -400,14 +402,14 @@ public class TryThisAtHomeSVD
 
         boolean toRatingRange = (Boolean) getParameterValue(PREDICT_IN_RATING_RANGE);
 
-        ArrayList<Recommendation> ret = new ArrayList<>(candidateItems.size());
-        for (int idItem : candidateItems) {
+        List<Recommendation> ret = candidateItems.parallelStream().map(idItem -> {
+            Item item = datasetLoader.getContentDataset().get(idItem);
+            Number prediction = Double.NaN;
             try {
-                Number prediction = privatePredictRating(datasetLoader, model, idUser, idItem);
+                prediction = privatePredictRating(datasetLoader, model, idUser, idItem);
                 if (toRatingRange) {
                     prediction = toRatingRange(datasetLoader, prediction);
                 }
-                ret.add(new Recommendation(idItem, prediction));
             } catch (NotEnoughtItemInformation ex) {
                 //Fallo de cobertura, no habia ratings del producto en la fase de entrenamiento.
                 model.warningItemNotInModel(
@@ -420,9 +422,10 @@ public class TryThisAtHomeSVD
                         "SVD recommendation model does not contains the user (" + idUser + ").",
                         ex);
             }
-        }
 
-        Collections.sort(ret);
+            return new Recommendation(item, prediction);
+        }).collect(Collectors.toList());
+
         return ret;
     }
 
