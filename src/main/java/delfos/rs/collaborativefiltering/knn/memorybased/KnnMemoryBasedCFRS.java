@@ -97,7 +97,6 @@ public class KnnMemoryBasedCFRS extends KnnCollaborativeRecommender<KnnMemoryMod
     public Recommendations recommendToUser(DatasetLoader<? extends Rating> datasetLoader, KnnMemoryModel model, User user, Set<Item> candidateItems) throws UserNotFound {
         try {
             List<Neighbor> neighbors;
-            RatingsDataset<? extends Rating> ratingsDataset = datasetLoader.getRatingsDataset();
             neighbors = getNeighbors(datasetLoader, user);
             Collection<Recommendation> ret = recommendWithNeighbors(datasetLoader.getRatingsDataset(), user.getId(), neighbors, candidateItems);
             return new RecommendationsWithNeighbors(user.getTargetId(), ret, neighbors);
