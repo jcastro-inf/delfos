@@ -95,27 +95,29 @@ public class RecommenderSystem_cacheRecommendationModel<RecommendationModel> ext
     public RecommendationModel buildRecommendationModel(DatasetLoader<? extends Rating> datasetLoader) throws CannotLoadRatingsDataset, CannotLoadContentDataset, CannotLoadUsersDataset {
 
         final RecommenderSystem<Object> recommenderSystem = getRecommenderSystem();
-        synchronized (generalExMut) {
-            if (!datasetLoaderExMuts.containsKey(datasetLoader)) {
-                datasetLoaderExMuts.put(datasetLoader, new Semaphore(1));
-            }
-
-            if (!cacheOfRecommendationModels.containsKey(datasetLoader)) {
-                cacheOfRecommendationModels.put(datasetLoader, new HashMap<>());
-            }
-
-            if (cacheOfRecommendationModels.get(datasetLoader).containsKey(recommenderSystem)) {
-                RecommendationModel recommendationModel = (RecommendationModel) cacheOfRecommendationModels
-                        .get(datasetLoader)
-                        .get(recommenderSystem);
-                return recommendationModel;
-            }
-        }
-
-        Semaphore exMutThisDatasetLoader = datasetLoaderExMuts.get(datasetLoader);
         RecommendationModel model;
+        Semaphore exMutThisDatasetLoader;
         try {
-            exMutThisDatasetLoader.acquire();
+            synchronized (generalExMut) {
+                if (!datasetLoaderExMuts.containsKey(datasetLoader)) {
+                    datasetLoaderExMuts.put(datasetLoader, new Semaphore(1));
+                }
+
+                if (!cacheOfRecommendationModels.containsKey(datasetLoader)) {
+                    cacheOfRecommendationModels.put(datasetLoader, new HashMap<>());
+                }
+
+                if (cacheOfRecommendationModels.get(datasetLoader).containsKey(recommenderSystem)) {
+                    RecommendationModel recommendationModel = (RecommendationModel) cacheOfRecommendationModels
+                            .get(datasetLoader)
+                            .get(recommenderSystem);
+                    return recommendationModel;
+                }
+
+                exMutThisDatasetLoader = datasetLoaderExMuts.get(datasetLoader);
+                exMutThisDatasetLoader.acquire();
+
+            }
 
             int ratingsDatasetHashCode = datasetLoader.getRatingsDataset().hashCode();
             String datasetLoaderAlias = datasetLoader.getAlias();
@@ -155,9 +157,8 @@ public class RecommenderSystem_cacheRecommendationModel<RecommendationModel> ext
             }
 
             cacheOfRecommendationModels.get(datasetLoader).put(recommenderSystem, model);
-
-        } catch (InterruptedException ex) {
             exMutThisDatasetLoader.release();
+        } catch (InterruptedException ex) {
             Logger.getLogger(RecommenderSystem_cacheRecommendationModel.class.getName()).log(Level.SEVERE, null, ex);
             model = buildRecommendationModel(datasetLoader);
         }
