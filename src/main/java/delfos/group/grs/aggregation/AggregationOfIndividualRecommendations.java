@@ -151,6 +151,27 @@ public class AggregationOfIndividualRecommendations extends GroupRecommenderSyst
         });
         return userRecommendationsIntersected;
     }
+
+    public static void validateAllRecommendedItemsAreInSpecifiedSet(Collection<RecommendationsToUser> membersRecommendations, Set<Item> items) {
+        Set<Item> itemsInRecommendation = membersRecommendations.stream().map((RecommendationsToUser memberRecommendations) -> memberRecommendations.getRecommendations()).flatMap((Collection<Recommendation> recommendations) -> recommendations.stream()).map((Recommendation recommendation) -> recommendation.getItem()).collect(Collectors.toSet());
+        TreeSet<Object> inRecommendationButNotInItems = new TreeSet<>();
+        inRecommendationButNotInItems.addAll(itemsInRecommendation);
+        inRecommendationButNotInItems.removeAll(items);
+        if (!inRecommendationButNotInItems.isEmpty()) {
+            throw new IllegalStateException("arg");
+        }
+    }
+
+    public static Set<Map.Entry<Item, Double>> intersectionOfRecommendationsWithFrequency(Set<Item> items, Collection<RecommendationsToUser> membersRecommendations) {
+        validateAllRecommendedItemsAreInSpecifiedSet(membersRecommendations, items);
+        Map<Item, Double> ret = items.parallelStream().collect(Collectors.toMap((Item item) -> item, (Item item) -> {
+            double itemFrequencyAmongMembers = 0;
+            itemFrequencyAmongMembers = membersRecommendations.parallelStream().map((RecommendationsToUser memberRecommendations) -> memberRecommendations.getRecommendations()).filter((Collection<Recommendation> recommendations) -> recommendations.stream().filter((Recommendation recommendation) -> !Double.isNaN(recommendation.getPreference().doubleValue())).anyMatch((Recommendation recommendation) -> recommendation.getItem().equals(item))).count();
+            itemFrequencyAmongMembers /= membersRecommendations.size();
+            return itemFrequencyAmongMembers;
+        }));
+        return ret.entrySet();
+    }
     private AggregationOperator oldAggregationOperator = new Mean();
 
     public AggregationOfIndividualRecommendations() {

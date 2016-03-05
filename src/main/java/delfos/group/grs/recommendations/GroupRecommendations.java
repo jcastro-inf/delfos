@@ -21,6 +21,7 @@ import delfos.group.groupsofusers.GroupOfUsers;
 import delfos.rs.recommendation.Recommendation;
 import delfos.rs.recommendation.RecommendationComputationDetails;
 import delfos.rs.recommendation.Recommendations;
+import delfos.rs.recommendation.RecommendationsToUser;
 import java.util.Collection;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -34,40 +35,50 @@ public class GroupRecommendations extends Recommendations {
 
     private static final long serialVersionUID = 34235l;
 
-    public static GroupRecommendationsWithMembersRecommendations buildGroupRecommendationsWithMembersRecommendations(GroupOfUsers groupOfUsers, Collection<Recommendation> recommendations, Map<User, Collection<Recommendation>> recommendationsByMember) {
-        GroupRecommendations groupRecommendations = new GroupRecommendations(groupOfUsers, recommendations);
-        Collection<Recommendations> membersRecommendations = recommendationsByMember.keySet().stream()
-                .map((User member) -> {
-                    Collection<Recommendation> recommendationsThisMember = recommendationsByMember.get(member);
-                    return new Recommendations(member, recommendationsThisMember);
-                }).collect(Collectors.toList());
-        GroupRecommendationsWithMembersRecommendations ret = new GroupRecommendationsWithMembersRecommendations(groupRecommendations, membersRecommendations.toArray(new Recommendations[0]));
-        return ret;
-    }
+    public static GroupRecommendationsWithMembersRecommendations
+            buildGroupRecommendationsWithMembersRecommendations(
+                    GroupOfUsers groupOfUsers,
+                    Collection<Recommendation> recommendations,
+                    Map<User, Collection<Recommendation>> recommendationsByMember) {
 
-    private final GroupOfUsers targetGroupOfUsers;
+                GroupRecommendations groupRecommendations = new GroupRecommendations(
+                        groupOfUsers, recommendations);
+                Collection<RecommendationsToUser> membersRecommendations = recommendationsByMember
+                        .keySet().stream()
+                        .map((User member) -> {
+                            Collection<Recommendation> recommendationsThisMember
+                            = recommendationsByMember.get(member);
+                            return new RecommendationsToUser(member, recommendationsThisMember);
+                        }).collect(Collectors.toList());
+                GroupRecommendationsWithMembersRecommendations ret
+                        = new GroupRecommendationsWithMembersRecommendations(
+                                groupRecommendations, membersRecommendations);
+                return ret;
+            }
 
-    protected GroupRecommendations() {
-        super();
-        targetGroupOfUsers = null;
-    }
+            private final GroupOfUsers targetGroupOfUsers;
 
-    public GroupRecommendations(
-            GroupOfUsers groupOfUsers,
-            Collection<Recommendation> recommendations,
-            RecommendationComputationDetails recommendationComputationDetails) {
-        super(groupOfUsers.getTargetId(), recommendations, recommendationComputationDetails);
-        this.targetGroupOfUsers = groupOfUsers;
-    }
+            protected GroupRecommendations() {
+                super();
+                targetGroupOfUsers = null;
+            }
 
-    public GroupRecommendations(
-            GroupOfUsers groupOfUsers,
-            Collection<Recommendation> recommendations) {
-        super(groupOfUsers.getTargetId(), recommendations, RecommendationComputationDetails.EMPTY_DETAILS);
-        this.targetGroupOfUsers = groupOfUsers;
-    }
+            public GroupRecommendations(
+                    GroupOfUsers groupOfUsers,
+                    Collection<Recommendation> recommendations,
+                    RecommendationComputationDetails recommendationComputationDetails) {
+                super(groupOfUsers.getTargetId(), recommendations, recommendationComputationDetails);
+                this.targetGroupOfUsers = groupOfUsers;
+            }
 
-    public GroupOfUsers getGroupOfUsers() {
-        return targetGroupOfUsers;
-    }
+            public GroupRecommendations(
+                    GroupOfUsers groupOfUsers,
+                    Collection<Recommendation> recommendations) {
+                super(groupOfUsers.getTargetId(), recommendations, RecommendationComputationDetails.EMPTY_DETAILS);
+                this.targetGroupOfUsers = groupOfUsers;
+            }
+
+            public GroupOfUsers getGroupOfUsers() {
+                return targetGroupOfUsers;
+            }
 }
