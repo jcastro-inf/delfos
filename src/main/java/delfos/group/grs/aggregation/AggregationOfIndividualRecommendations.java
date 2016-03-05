@@ -120,10 +120,10 @@ public class AggregationOfIndividualRecommendations extends GroupRecommenderSyst
     public static RecommendationsToUser applyItemIntersection(RecommendationsToUser recommendations,
             Set<Item> items) {
 
-        Collection<Recommendation> recommendationsIntersected = new ArrayList<>(items.size());
-        recommendations.getRecommendations().stream().filter((Recommendation recommendation) -> (items.contains(recommendation.getItem()))).forEach((Recommendation recommendation) -> {
-            recommendationsIntersected.add(recommendation);
-        });
+        Collection<Recommendation> recommendationsIntersected
+                = recommendations.getRecommendations().stream()
+                .filter(recommendation -> items.contains(recommendation.getItem()))
+                .collect(Collectors.toList());
 
         return new RecommendationsToUser(recommendations.getUser(), recommendationsIntersected);
     }
@@ -131,10 +131,10 @@ public class AggregationOfIndividualRecommendations extends GroupRecommenderSyst
     public static GroupRecommendations applyItemIntersection(GroupRecommendations recommendations,
             Set<Item> items) {
 
-        Collection<Recommendation> recommendationsIntersected = new ArrayList<>(items.size());
-        recommendations.getRecommendations().stream().filter((Recommendation recommendation) -> (items.contains(recommendation.getItem()))).forEach((Recommendation recommendation) -> {
-            recommendationsIntersected.add(recommendation);
-        });
+        Collection<Recommendation> recommendationsIntersected
+                = recommendations.getRecommendations().stream()
+                .filter(recommendation -> items.contains(recommendation.getItem()))
+                .collect(Collectors.toList());
 
         return new GroupRecommendations(recommendations.getGroupOfUsers(), recommendationsIntersected);
     }
