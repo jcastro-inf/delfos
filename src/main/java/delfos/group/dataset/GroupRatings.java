@@ -38,6 +38,16 @@ public class GroupRatings implements Serializable {
     private final Map<User, Map<Item, Rating>> ratings;
     private final GroupOfUsers group;
 
+    private GroupRatings() {
+        this.ratings = null;
+        this.group = null;
+    }
+
+    public GroupRatings(GroupOfUsers group, Map<User, Map<Item, Rating>> ratings) {
+        this.ratings = ratings;
+        this.group = group;
+    }
+
     public GroupRatings(GroupOfUsers group, Collection<Rating> groupRatings) {
 
         ratings = new TreeMap<>();

@@ -34,17 +34,13 @@ public class GroupRecommendations extends Recommendations {
 
     private static final long serialVersionUID = 34235l;
 
-    public static GroupRecommendationsWithMembersRecommendations buildGroupRecommendationsWithMembersRecommendations(GroupOfUsers groupOfUsers, Collection<Recommendation> recommendations, Map<Integer, Collection<Recommendation>> recommendationsByMember) {
+    public static GroupRecommendationsWithMembersRecommendations buildGroupRecommendationsWithMembersRecommendations(GroupOfUsers groupOfUsers, Collection<Recommendation> recommendations, Map<User, Collection<Recommendation>> recommendationsByMember) {
         GroupRecommendations groupRecommendations = new GroupRecommendations(groupOfUsers, recommendations);
-        Collection<Recommendations> membersRecommendations = recommendationsByMember.keySet().stream().map((Integer idMember) -> {
-            Collection<Recommendation> recommendationsThisMember = recommendationsByMember.get(idMember);
-
-            User memberUser = groupOfUsers.getMembers().stream()
-                    .filter(member -> Integer.compare(member.getId(), idMember) == 0)
-                    .findFirst().get();
-
-            return new Recommendations(memberUser, recommendationsThisMember);
-        }).collect(Collectors.toList());
+        Collection<Recommendations> membersRecommendations = recommendationsByMember.keySet().stream()
+                .map((User member) -> {
+                    Collection<Recommendation> recommendationsThisMember = recommendationsByMember.get(member);
+                    return new Recommendations(member, recommendationsThisMember);
+                }).collect(Collectors.toList());
         GroupRecommendationsWithMembersRecommendations ret = new GroupRecommendationsWithMembersRecommendations(groupRecommendations, membersRecommendations.toArray(new Recommendations[0]));
         return ret;
     }

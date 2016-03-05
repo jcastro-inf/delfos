@@ -28,6 +28,7 @@ import delfos.common.parameters.restriction.RecommenderSystemParameterRestrictio
 import delfos.dataset.basic.item.Item;
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
+import delfos.dataset.basic.user.User;
 import delfos.experiment.casestudy.parallel.SingleUserRecommendationTask;
 import delfos.experiment.casestudy.parallel.SingleUserRecommendationTaskExecutor;
 import delfos.group.groupsofusers.GroupOfUsers;
@@ -38,12 +39,15 @@ import delfos.rs.RecommendationModelBuildingProgressListener;
 import delfos.rs.RecommenderSystem;
 import delfos.rs.collaborativefiltering.knn.memorybased.KnnMemoryBasedCFRS;
 import delfos.rs.recommendation.Recommendation;
+import delfos.rs.recommendation.RecommendationsToUser;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.TreeSet;
 import java.util.stream.Collectors;
 
 /**
@@ -77,6 +81,76 @@ public class AggregationOfIndividualRecommendations extends GroupRecommenderSyst
             new ParameterOwnerRestriction(AggregationOperator.class, new Mean()),
             "Especifica la técnica de agregación para agregar los ratings de "
             + "los usuarios y formar el perfil del grupo.");
+
+    public static Set<Item> intersectionOfRecommendations(
+            GroupRecommendations groupRecommendations,
+            Collection<RecommendationsToUser> membersRecommendations) {
+        return intersectionOfRecommendations(groupRecommendations.getRecommendations(),
+                membersRecommendations.stream().collect(Collectors.toMap(
+                                recommendationsToMember -> recommendationsToMember.getUser(),
+                                recommendationsToMember -> recommendationsToMember.getRecommendations())));
+
+    }
+
+    public static Set<Item> intersectionOfRecommendations(Collection<Recommendation> groupRecommendations, Map<User, Collection<Recommendation>> membersRecommendations) {
+        Set<Item> itemsIntersection = new TreeSet<>();
+        for (Recommendation r : groupRecommendations) {
+            itemsIntersection.add(r.getItem());
+        }
+        for (User idMember : membersRecommendations.keySet()) {
+            Set<Item> thisUserIdItem_recommended = new TreeSet<>();
+            membersRecommendations.get(idMember).stream().forEach((Recommendation r) -> {
+                thisUserIdItem_recommended.add(r.getItem());
+            });
+            itemsIntersection.retainAll(thisUserIdItem_recommended);
+        }
+        itemsIntersection = Collections.unmodifiableSet(itemsIntersection);
+        return itemsIntersection;
+    }
+
+    public static Collection<Recommendation> applyItemIntersection(Collection<Recommendation> recommendations,
+            Set<Item> items) {
+        Collection<Recommendation> recommendationsIntersected = new ArrayList<>(items.size());
+        recommendations.stream().filter((Recommendation recommendation) -> (items.contains(recommendation.getItem()))).forEach((Recommendation recommendation) -> {
+            recommendationsIntersected.add(recommendation);
+        });
+        return recommendationsIntersected;
+    }
+
+    public static RecommendationsToUser applyItemIntersection(RecommendationsToUser recommendations,
+            Set<Item> items) {
+
+        Collection<Recommendation> recommendationsIntersected = new ArrayList<>(items.size());
+        recommendations.getRecommendations().stream().filter((Recommendation recommendation) -> (items.contains(recommendation.getItem()))).forEach((Recommendation recommendation) -> {
+            recommendationsIntersected.add(recommendation);
+        });
+
+        return new RecommendationsToUser(recommendations.getUser(), recommendationsIntersected);
+    }
+
+    public static GroupRecommendations applyItemIntersection(GroupRecommendations recommendations,
+            Set<Item> items) {
+
+        Collection<Recommendation> recommendationsIntersected = new ArrayList<>(items.size());
+        recommendations.getRecommendations().stream().filter((Recommendation recommendation) -> (items.contains(recommendation.getItem()))).forEach((Recommendation recommendation) -> {
+            recommendationsIntersected.add(recommendation);
+        });
+
+        return new GroupRecommendations(recommendations.getGroupOfUsers(), recommendationsIntersected);
+    }
+
+    public static Map<User, Collection<Recommendation>> applyItemIntersection(Map<User, Collection<Recommendation>> usersRecommendations, Set<Integer> items) {
+        Map<User, Collection<Recommendation>> userRecommendationsIntersected = new TreeMap<>();
+        usersRecommendations.entrySet().stream().forEach((Map.Entry<User, Collection<Recommendation>> entry) -> {
+            User idUser = entry.getKey();
+            Collection<Recommendation> userRecommendations = entry.getValue();
+            userRecommendationsIntersected.put(idUser, new ArrayList<>(items.size()));
+            userRecommendations.stream().filter((Recommendation recommendation) -> (items.contains(recommendation.getIdItem()))).forEach((Recommendation recommendation) -> {
+                userRecommendationsIntersected.get(idUser).add(recommendation);
+            });
+        });
+        return userRecommendationsIntersected;
+    }
     private AggregationOperator oldAggregationOperator = new Mean();
 
     public AggregationOfIndividualRecommendations() {
@@ -149,17 +223,29 @@ public class AggregationOfIndividualRecommendations extends GroupRecommenderSyst
             throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset {
 
         RecommenderSystem singleUserRecommender = getSingleUserRecommender();
-        Map<Integer, Collection<Recommendation>> recommendationsLists_byMember = performSingleUserRecommendations(groupOfUsers.getIdMembers(), singleUserRecommender, datasetLoader, RecommendationModel, candidateItems);
+        Map<User, Collection<Recommendation>> recommendationsLists_byMember = performSingleUserRecommendationsOld(groupOfUsers.getIdMembers(), singleUserRecommender, datasetLoader, RecommendationModel, candidateItems);
 
         Collection<Recommendation> groupRecommendations = aggregateLists(getAggregationOperator(), recommendationsLists_byMember);
         return new GroupRecommendations(groupOfUsers, groupRecommendations);
     }
 
-    public static Collection<Recommendation> aggregateLists(AggregationOperator aggregationOperator, Map<Integer, Collection<Recommendation>> groupUtilityList) {
+    public static Collection<Recommendation> aggregateLists(AggregationOperator aggregationOperator,
+            Collection<RecommendationsToUser> groupUtilityList) {
+
+        return aggregateLists(aggregationOperator,
+                groupUtilityList.stream().collect(Collectors.toMap(
+                                recommendationToUser -> recommendationToUser.getUser(),
+                                recommendationToUser -> recommendationToUser.getRecommendations()
+                        ))
+        );
+    }
+
+    public static Collection<Recommendation> aggregateLists(AggregationOperator aggregationOperator,
+            Map<User, Collection<Recommendation>> groupUtilityList) {
 
         //Reordeno las predicciones.
         Map<Integer, Collection<Number>> prediction_byItem = new TreeMap<>();
-        for (int idUser : groupUtilityList.keySet()) {
+        for (User idUser : groupUtilityList.keySet()) {
             for (Recommendation r : groupUtilityList.get(idUser)) {
                 int idItem = r.getIdItem();
                 Number preference = r.getPreference();
@@ -188,7 +274,20 @@ public class AggregationOfIndividualRecommendations extends GroupRecommenderSyst
         return recommendations;
     }
 
-    public static Map<Integer, Collection<Recommendation>> performSingleUserRecommendations(Collection<Integer> users, RecommenderSystem<? extends Object> singleUserRecommender, DatasetLoader<? extends Rating> datasetLoader, SingleRecommendationModel recommendationModel, Set<Item> candidateItems) throws UserNotFound {
+    public static Collection<RecommendationsToUser>
+            performSingleUserRecommendations(Collection<Integer> users,
+                    RecommenderSystem<? extends Object> singleUserRecommender,
+                    DatasetLoader<? extends Rating> datasetLoader,
+                    SingleRecommendationModel recommendationModel,
+                    Set<Item> candidateItems) throws UserNotFound {
+
+        return performSingleUserRecommendationsOld(users, singleUserRecommender, datasetLoader, recommendationModel, candidateItems)
+                .entrySet()
+                .stream().map(entry -> new RecommendationsToUser(entry.getKey(), entry.getValue()))
+                .collect(Collectors.toList());
+    }
+
+    public static Map<User, Collection<Recommendation>> performSingleUserRecommendationsOld(Collection<Integer> users, RecommenderSystem<? extends Object> singleUserRecommender, DatasetLoader<? extends Rating> datasetLoader, SingleRecommendationModel recommendationModel, Set<Item> candidateItems) throws UserNotFound {
 
         return users.parallelStream()
                 .map(idUser -> new SingleUserRecommendationTask(
@@ -199,7 +298,7 @@ public class AggregationOfIndividualRecommendations extends GroupRecommenderSyst
                                 candidateItems))
                 .map(new SingleUserRecommendationTaskExecutor())
                 .collect(Collectors.toMap(
-                                recommendationsToUser -> recommendationsToUser.getUser().getId(),
+                                recommendationsToUser -> recommendationsToUser.getUser(),
                                 recommendationsToUser -> recommendationsToUser.getRecommendations()
                         ));
     }

@@ -36,11 +36,11 @@ import delfos.dataset.basic.item.Item;
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RatingsDataset;
-import delfos.dataset.basic.user.User;
 import delfos.dataset.util.DatasetOperations;
 import delfos.group.groupsofusers.GroupOfUsers;
 import delfos.group.grs.GroupRecommenderSystemAdapter;
 import delfos.group.grs.SingleRecommendationModel;
+import delfos.group.grs.aggregation.AggregationOfIndividualRatings;
 import delfos.group.grs.aggregation.AggregationOfIndividualRecommendations;
 import delfos.group.grs.aggregation.GroupModelPseudoUser;
 import delfos.group.grs.consensus.itemselector.BordaCount;
@@ -51,22 +51,17 @@ import delfos.io.csv.dataset.DatasetToCSV;
 import delfos.rs.RecommendationModelBuildingProgressListener;
 import delfos.rs.RecommenderSystem;
 import delfos.rs.collaborativefiltering.svd.SVDFoldingIn;
-import delfos.rs.recommendation.Recommendation;
-import delfos.rs.recommendation.RecommendationComputationDetails;
-import delfos.rs.recommendation.Recommendations;
+import delfos.rs.recommendation.RecommendationsToUser;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.PriorityQueue;
 import java.util.Set;
-import java.util.TreeMap;
-import java.util.TreeSet;
 import java.util.stream.Collectors;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.jdom2.JDOMException;
@@ -201,7 +196,7 @@ public class ConsensusGRS extends GroupRecommenderSystemAdapter<SingleRecommenda
             throws UserNotFound, CannotLoadRatingsDataset {
 
         AggregationOperator aggregationOperator = getAggregationOperator();
-        Map<Integer, Number> groupAggregatedProfile = getGroupProfile(datasetLoader, aggregationOperator, groupOfUsers);
+        Map<Item, RatingType> groupAggregatedProfile = AggregationOfIndividualRatings.getGroupProfile(datasetLoader, aggregationOperator, groupOfUsers);
         return new GroupModelPseudoUser(groupOfUsers, groupAggregatedProfile);
     }
 
@@ -212,7 +207,7 @@ public class ConsensusGRS extends GroupRecommenderSystemAdapter<SingleRecommenda
 
         final GroupRecommendationsSelector itemSelector = (GroupRecommendationsSelector) getParameterValue(ITEM_SELECTOR);
         final AggregationOperator aggregationOperator = getAggregationOperator();
-        final RecommenderSystem singleUserRecommenderSystem = getSingleUserRecommender();
+        final RecommenderSystem<? extends Object> singleUserRecommenderSystem = getSingleUserRecommender();
 
         final boolean isConsensusApplied = (Boolean) getParameterValue(APPLY_CONSENSUS);
         final double consensusDegree = ((Number) getParameterValue(CONSENSUS_DEGREE)).doubleValue();
@@ -227,8 +222,7 @@ public class ConsensusGRS extends GroupRecommenderSystemAdapter<SingleRecommenda
                 membersRatings,
                 candidateItems
         );
-
-        Map<Integer, Collection<Recommendation>> membersRecommendationsList
+        Collection<RecommendationsToUser> membersRecommendations
                 = AggregationOfIndividualRecommendations.performSingleUserRecommendations(
                         groupOfUsers.getIdMembers(),
                         singleUserRecommenderSystem,
@@ -236,40 +230,51 @@ public class ConsensusGRS extends GroupRecommenderSystemAdapter<SingleRecommenda
                         recommendationModel,
                         candidateItems);
 
-        Collection<Recommendation> groupRecommendationsList = AggregationOfIndividualRecommendations.aggregateLists(aggregationOperator, membersRecommendationsList);
+        GroupRecommendations groupRecommendations = new GroupRecommendations(
+                groupOfUsers,
+                AggregationOfIndividualRecommendations.aggregateLists(
+                        aggregationOperator,
+                        membersRecommendations
+                )
+        );
 
-        Set<Integer> itemsIntersection = intersectionOfRecommendations(groupRecommendationsList, membersRecommendationsList);
-        groupRecommendationsList = applyItemIntersection(groupRecommendationsList, itemsIntersection);
-        membersRecommendationsList = applyItemIntersection(membersRecommendationsList, itemsIntersection);
+        Set<Item> itemsIntersection = AggregationOfIndividualRecommendations.intersectionOfRecommendations(
+                groupRecommendations,
+                membersRecommendations);
 
-        final Set<Integer> topNSet = itemSelector.getRecommendationSelection(
-                membersRecommendationsList);
-        groupRecommendationsList = applyItemIntersection(groupRecommendationsList, topNSet);
-        membersRecommendationsList = applyItemIntersection(membersRecommendationsList, topNSet);
+        groupRecommendations = AggregationOfIndividualRecommendations
+                .applyItemIntersection(groupRecommendations, itemsIntersection);
 
-        File consensusIntputXML = getConsensusInputXML(membersRecommendationsList, groupRecommendationsList, groupOfUsers);
+        membersRecommendations = membersRecommendations.stream()
+                .map(memberRecommendations -> AggregationOfIndividualRecommendations
+                        .applyItemIntersection(memberRecommendations, itemsIntersection))
+                .collect(Collectors.toList());
+
+        final Set<Item> topNSet = itemSelector.getRecommendationSelection(
+                membersRecommendations);
+
+        groupRecommendations = AggregationOfIndividualRecommendations.applyItemIntersection(
+                groupRecommendations,
+                topNSet);
+
+        membersRecommendations = membersRecommendations.stream()
+                .map(memberRecommendations -> AggregationOfIndividualRecommendations
+                        .applyItemIntersection(memberRecommendations, topNSet))
+                .collect(Collectors.toList());
+
+        File consensusIntputXML = getConsensusInputXML(groupRecommendations, membersRecommendations);
 
         ConsensusOfIndividualRecommendationsToXML.writeConsensusInputXML(
                 datasetLoader,
-                groupRecommendationsList,
-                membersRecommendationsList,
+                groupRecommendations,
+                membersRecommendations,
                 consensusIntputXML);
 
-        GroupRecommendations groupRecommendations = new GroupRecommendations(groupOfUsers, groupRecommendationsList, RecommendationComputationDetails.EMPTY_DETAILS);
-        Recommendations[] membersRecommendations = new Recommendations[membersRecommendationsList.size()];
-        {
-            int i = 0;
-            for (Map.Entry<Integer, Collection<Recommendation>> entry : membersRecommendationsList.entrySet()) {
-                Integer idMember = entry.getKey();
-                membersRecommendations[i]
-                        = new Recommendations(User.getTargetId(idMember), membersRecommendationsList.get(idMember), RecommendationComputationDetails.EMPTY_DETAILS);
-
-                i++;
-            }
-        }
-
         GroupRecommendationsWithMembersRecommendations groupRecommendationsWithMembersRecommendations
-                = new GroupRecommendationsWithMembersRecommendations(groupRecommendations, membersRecommendations);
+                = new GroupRecommendationsWithMembersRecommendations(
+                        groupRecommendations,
+                        membersRecommendations.toArray(new RecommendationsToUser[0])
+                );
 
         if (!isConsensusApplied) {
             return groupRecommendationsWithMembersRecommendations;
@@ -287,77 +292,24 @@ public class ConsensusGRS extends GroupRecommenderSystemAdapter<SingleRecommenda
             return groupRecommendationsWithMembersRecommendations;
         } else {
             try {
-                groupRecommendationsList = ConsensusOfIndividualRecommendationsToXML.readConsensusOutputXML(consensusOutputXML).consensusRecommendations;
-                GroupRecommendations newGroupRecommendations = new GroupRecommendations(groupOfUsers, groupRecommendationsList, RecommendationComputationDetails.EMPTY_DETAILS);
-                return new GroupRecommendationsWithMembersRecommendations(newGroupRecommendations, membersRecommendations);
+                GroupRecommendations newGroupRecommendations = ConsensusOfIndividualRecommendationsToXML.readConsensusOutputXML(consensusOutputXML).groupRecommendation;
+
+                return new GroupRecommendationsWithMembersRecommendations(newGroupRecommendations, membersRecommendations.toArray(new RecommendationsToUser[0]));
             } catch (JDOMException | IOException ex) {
                 ERROR_CODES.UNRECOGNIZED_XML_ELEMENT.exit(ex);
                 throw new IllegalStateException("Error at writting XML: " + ex.toString());
             }
-
         }
     }
 
-    public File getConsensusInputXML(Map<Integer, Collection<Recommendation>> membersRecommendations, Collection<Recommendation> groupRecommendations, GroupOfUsers groupOfUsers) {
+    public File getConsensusInputXML(
+            GroupRecommendations groupRecommendations,
+            Collection<RecommendationsToUser> membersRecommendations) {
+
         final File consensusInputFilesDirectory = (File) getParameterValue(CONSENSUS_INPUT_FILES_DIRECTORY);
-        File consensusIntputXML = new File(consensusInputFilesDirectory.getAbsolutePath() + File.separator + groupOfUsers.toString() + "_consensusInput.xml");
+        File consensusIntputXML = new File(consensusInputFilesDirectory.getAbsolutePath()
+                + File.separator + groupRecommendations.getGroupOfUsers().toString() + "_consensusInput.xml");
         return consensusIntputXML;
-    }
-
-    public static Set<Integer> intersectionOfRecommendations(
-            Collection<Recommendation> groupRecommendations,
-            Map<Integer, Collection<Recommendation>> membersRecommendations) {
-
-        Set<Integer> itemsIntersection = new TreeSet<>();
-        for (Recommendation r : groupRecommendations) {
-            itemsIntersection.add(r.getIdItem());
-        }
-        for (int idMember : membersRecommendations.keySet()) {
-            Set<Integer> thisUserIdItem_recommended = new TreeSet<>();
-            membersRecommendations.get(idMember).stream().forEach((r) -> {
-                thisUserIdItem_recommended.add(r.getIdItem());
-            });
-            itemsIntersection.retainAll(thisUserIdItem_recommended);
-        }
-        itemsIntersection = Collections.unmodifiableSet(itemsIntersection);
-
-        return itemsIntersection;
-    }
-
-    public static Collection<Recommendation> applyItemIntersection(
-            Collection<Recommendation> recommendations, Set<Integer> items) {
-        Collection<Recommendation> recommendationsIntersected = new ArrayList<>(items.size());
-
-        recommendations.stream()
-                .filter(
-                        (recommendation) -> (items.contains(recommendation.getIdItem())))
-                .forEach(
-                        (recommendation) -> {
-                            recommendationsIntersected.add(recommendation);
-                        });
-
-        return recommendationsIntersected;
-    }
-
-    public static Map<Integer, Collection<Recommendation>> applyItemIntersection(
-            Map<Integer, Collection<Recommendation>> usersRecommendations, Set<Integer> items) {
-
-        Map<Integer, Collection<Recommendation>> userRecommendationsIntersected
-                = new TreeMap<>();
-
-        usersRecommendations.entrySet().stream().forEach((entry) -> {
-            int idUser = entry.getKey();
-            Collection<Recommendation> userRecommendations = entry.getValue();
-
-            userRecommendationsIntersected.put(idUser, new ArrayList<>(items.size()));
-
-            userRecommendations.stream()
-                    .filter((recommendation) -> (items.contains(recommendation.getIdItem())))
-                    .forEach((recommendation) -> {
-                        userRecommendationsIntersected.get(idUser).add(recommendation);
-                    });
-        });
-        return userRecommendationsIntersected;
     }
 
     public <RatingType extends Rating> void saveGroupInputDataAndRequests(
@@ -396,32 +348,6 @@ public class ConsensusGRS extends GroupRecommenderSystemAdapter<SingleRecommenda
 
     public RecommenderSystem getSingleUserRecommender() {
         return (RecommenderSystem) getParameterValue(SINGLE_USER_RECOMMENDER);
-    }
-
-    public static Map<Integer, Number> getGroupProfile(DatasetLoader<? extends Rating> datasetLoader, AggregationOperator aggregationOperator, GroupOfUsers groupOfUsers) throws UserNotFound, CannotLoadRatingsDataset {
-
-        //Generate groupProfile:
-        Map<Integer, List<Number>> groupRatingsList = new TreeMap<>();
-
-        for (int idUser : groupOfUsers.getIdMembers()) {
-            Map<Integer, ? extends Rating> userRatingsRated = datasetLoader.getRatingsDataset().getUserRatingsRated(idUser);
-            for (int idItem : userRatingsRated.keySet()) {
-                if (!groupRatingsList.containsKey(idItem)) {
-                    groupRatingsList.put(idItem, new LinkedList<>());
-                }
-                groupRatingsList.get(idItem).add(userRatingsRated.get(idItem).getRatingValue());
-            }
-        }
-
-        //Aggregate profiles
-        Map<Integer, Number> groupRatings = new TreeMap<>();
-        groupRatingsList.keySet().stream().forEach((idItem) -> {
-            List<Number> lista = groupRatingsList.get(idItem);
-            double aggregateValue = aggregationOperator.aggregateValues(lista);
-            groupRatings.put(idItem, aggregateValue);
-        });
-
-        return groupRatings;
     }
 
     public File getConsensusOutputXMLwithDesiredConsensusDegree(File consensusInputXML, double consensusDegree) {

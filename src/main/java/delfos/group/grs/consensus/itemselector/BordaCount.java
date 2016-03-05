@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -17,8 +17,9 @@
 package delfos.group.grs.consensus.itemselector;
 
 import delfos.common.datastructures.queue.PriorityItem;
+import delfos.dataset.basic.item.Item;
 import delfos.rs.recommendation.Recommendation;
-import java.util.ArrayList;
+import delfos.rs.recommendation.RecommendationsToUser;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -27,42 +28,47 @@ import java.util.PriorityQueue;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 public class BordaCount extends GroupRecommendationsSelector {
 
     public BordaCount() {
         super();
 
-        addParameter(NUMBER_OF_ITEM_SELECTED);
+        addParameter(NUMBER_OF_ITEMS_SELECTED);
     }
 
     @Override
-    public Set<Integer> getRecommendationSelection(Map<Integer, Collection<Recommendation>> membersRecommendations) {
+    public Set<Item> getRecommendationSelection(Collection<RecommendationsToUser> membersRecommendations) {
         super.getRecommendationSelection(membersRecommendations);
 
         long numItems = getNumItemsSelect();
-        Set<Integer> itemsSelected = new TreeSet<>();
+        Set<Item> itemsSelected = new TreeSet<>();
 
-        Map<Integer, Integer> bordaCount = new TreeMap<>();
+        Map<Item, Integer> bordaCount = Collections.synchronizedMap(new TreeMap<>());
 
-        for (int idUser : membersRecommendations.keySet()) {
-            List<Recommendation> reverseList = new ArrayList<>(membersRecommendations.get(idUser));
-            Collections.sort(reverseList, Recommendation.BY_PREFERENCE_DESC);
-            Collections.reverse(reverseList);
+        membersRecommendations.stream().forEach(recommendationsToMember -> {
+            List<Recommendation> recommendationsReverse
+                    = recommendationsToMember.getRecommendations().stream()
+                    .filter(Recommendation.NON_COVERAGE_FAILURES)
+                    .sorted(Recommendation.BY_PREFERENCE_DESC)
+                    .collect(Collectors.toList());
 
-            int index = 1;
-            for (Recommendation r : reverseList) {
-                int idItem = r.getIdItem();
-                if (!bordaCount.containsKey(idItem)) {
-                    bordaCount.put(idItem, 0);
+            IntStream.range(0, recommendationsReverse.size()).boxed().forEach(index -> {
+                Item itemRecommended = recommendationsReverse.get(index).getItem();
+                int bordaValue = index + 1;
+                synchronized (bordaCount) {
+                    Integer itemBordaValue = bordaValue;
+                    if (bordaCount.containsKey(itemRecommended)) {
+                        itemBordaValue += bordaCount.get(itemRecommended);
+                    }
+                    bordaCount.put(itemRecommended, itemBordaValue);
                 }
-                int value = bordaCount.get(idItem);
-                bordaCount.put(idItem, value + index);
-                index++;
-            }
-        }
+            });
+        });
 
-        PriorityQueue<PriorityItem<Integer>> queue = new PriorityQueue<>();
+        PriorityQueue<PriorityItem<Item>> queue = new PriorityQueue<>();
 
         bordaCount.entrySet().stream().forEach((entry) -> {
             queue.add(new PriorityItem<>(entry.getKey(), entry.getValue()));
@@ -70,7 +76,7 @@ public class BordaCount extends GroupRecommendationsSelector {
 
         final int initialSize = queue.size();
         for (int i = 0; i < Math.min(numItems, initialSize); i++) {
-            PriorityItem<Integer> item = queue.poll();
+            PriorityItem<Item> item = queue.poll();
             itemsSelected.add(item.getKey());
         }
 
@@ -78,6 +84,6 @@ public class BordaCount extends GroupRecommendationsSelector {
     }
 
     public int getNumItemsSelect() {
-        return (Integer) getParameterValue(NUMBER_OF_ITEM_SELECTED);
+        return (Integer) getParameterValue(NUMBER_OF_ITEMS_SELECTED);
     }
 }
