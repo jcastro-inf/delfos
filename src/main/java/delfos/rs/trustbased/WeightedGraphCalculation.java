@@ -43,7 +43,9 @@ public abstract class WeightedGraphCalculation<Node> extends AlgorithmWithExecut
      * @param users Usuarios para los que se calcula la red de confianza.
      * @return
      */
-    public abstract WeightedGraphAdapter<Node> computeTrustValues(DatasetLoader<? extends Rating> datasetLoader, Collection<Integer> users) throws CannotLoadRatingsDataset;
+    public abstract WeightedGraphAdapter<Node> computeTrustValues(
+            DatasetLoader<? extends Rating> datasetLoader,
+            Collection<Integer> users) throws CannotLoadRatingsDataset;
 
     /**
      * Calcula el grafo difuso del dataset indicado como parámetro, tomando
