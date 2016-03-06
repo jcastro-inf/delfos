@@ -48,7 +48,7 @@ public class OutliersItemsStandardDeviationThresholdFilter extends GroupRatingsF
 
         addParammeterListener(() -> {
             double newThreshold = ((Number) getParameterValue(THRESHOLD)).doubleValue();
-            newThreshold = NumberRounder.round(newThreshold, 2);
+            newThreshold = NumberRounder.round(newThreshold);
 
             if (oldThreshold != newThreshold) {
                 oldThreshold = newThreshold;

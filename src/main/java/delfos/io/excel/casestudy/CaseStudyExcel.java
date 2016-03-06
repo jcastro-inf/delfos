@@ -431,7 +431,7 @@ public class CaseStudyExcel {
                     value = caseStudy.getMeasureResult(groupEvaluationMeasure, thisExecution, thisSplit).getValue();
 
                     if (!Double.isNaN(value)) {
-                        double decimalTrimmedValue = NumberRounder.round(value, 5);
+                        double decimalTrimmedValue = NumberRounder.round(value);
                         addNumber(sheet, column, row, decimalTrimmedValue);
                     } else {
                         addText(sheet, column, row, "");
@@ -490,12 +490,12 @@ public class CaseStudyExcel {
             value = caseStudy.getAggregateMeasureResult(groupEvaluationMeasure).getValue();
 
             if (!Double.isNaN(value)) {
-                double decimalTrimmedValue = NumberRounder.round(value, 5);
+                double decimalTrimmedValue = NumberRounder.round(value);
                 addNumber(sheet, column, row, decimalTrimmedValue);
             } else {
                 addText(sheet, column, row, "");
             }
-            double decimalTrimmedValue = NumberRounder.round(value, 5);
+            double decimalTrimmedValue = NumberRounder.round(value);
 
             addNumber(sheet, column, row, decimalTrimmedValue);
         }
@@ -572,7 +572,7 @@ public class CaseStudyExcel {
 
     private static void addNumber(WritableSheet sheet, int column, int row,
             double value) throws WriteException, RowsExceededException {
-        double rounded = NumberRounder.round(value, 8);
+        double rounded = NumberRounder.round(value);
 
         Number number = new Number(column, row, rounded, decimalFormat);
         sheet.addCell(number);

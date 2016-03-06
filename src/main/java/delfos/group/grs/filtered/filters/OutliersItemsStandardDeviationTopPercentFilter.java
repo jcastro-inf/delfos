@@ -48,7 +48,7 @@ public class OutliersItemsStandardDeviationTopPercentFilter extends GroupRatings
 
         addParammeterListener(() -> {
             double newPercetnageFilteredOut = ((Number) getParameterValue(PERCENTAGE_FILTERED_OUT)).doubleValue();
-            newPercetnageFilteredOut = NumberRounder.round(newPercetnageFilteredOut, 2);
+            newPercetnageFilteredOut = NumberRounder.round(newPercetnageFilteredOut);
 
             if (oldPercentageFilteredOut != newPercetnageFilteredOut) {
                 oldPercentageFilteredOut = newPercetnageFilteredOut;

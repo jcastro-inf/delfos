@@ -80,8 +80,8 @@ public class OutliersRatingsFilter extends GroupRatingsFilter {
             boolean newKEEP_AT_LEAST_ONE_RATING = (Boolean) getParameterValue(KEEP_AT_LEAST_ONE_RATING);
             String newAlias = getAlias();
 
-            newDIFFERENCE_THRESHOLD = NumberRounder.round(newDIFFERENCE_THRESHOLD, 2);
-            newPERCENTAGE_MAX_FILTERED_OUT = NumberRounder.round(newPERCENTAGE_MAX_FILTERED_OUT, 2);
+            newDIFFERENCE_THRESHOLD = NumberRounder.round(newDIFFERENCE_THRESHOLD);
+            newPERCENTAGE_MAX_FILTERED_OUT = NumberRounder.round(newPERCENTAGE_MAX_FILTERED_OUT);
 
             String oldAliasOldParameters
                     = OutliersRatingsFilter.class.getSimpleName()
@@ -268,8 +268,8 @@ public class OutliersRatingsFilter extends GroupRatingsFilter {
             Global.showInfoMessage(
                     "Ratings del grupo " + originalSet.keySet() + " eliminados: "
                     + eliminados + " de " + totalRatingsGrupo
-                    + " (P: " + NumberRounder.round(partialPercent, 2)
-                    + "% T: " + NumberRounder.round(totalPercent, 2) + "%)\n");
+                    + " (P: " + NumberRounder.round(partialPercent)
+                    + "% T: " + NumberRounder.round(totalPercent) + "%)\n");
         }
         return ratingsToReturn;
     }
