@@ -137,13 +137,10 @@ public class RecommenderSystem_cacheRecommendationModel<RecommendationModel> ext
                         filePersistenceWithHashSuffix,
                         datasetLoader.getUsersDataset().allIDs(),
                         datasetLoader.getContentDataset().allIDs());
-                Global.showMessageTimestamped("Loaded model from file '" + filePersistenceWithHashSuffix.getCompleteFileName() + "'");
                 model = loadedModel;
             } catch (FailureInPersistence ex) {
                 RecommendationModelBuildingProgressListener listener = this::fireBuildingProgressChangedEvent;
-
-                Global.showWarning("Recommendation model not found: " + filePersistenceWithHashSuffix.getCompleteFileName() + "\n");
-                Global.showWarning("\tThe recommender system model needs to be constructed.\n");
+                Global.showMessage("Building recommendation model: " + filePersistenceWithHashSuffix.getCompleteFileName() + "\n");
                 getRecommenderSystem().addRecommendationModelBuildingProgressListener(listener);
                 try {
                     RecommendationModel computedModel = (RecommendationModel) getRecommenderSystem().buildRecommendationModel(datasetLoader);
