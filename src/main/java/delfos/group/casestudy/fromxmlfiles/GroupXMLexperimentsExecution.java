@@ -93,7 +93,7 @@ public class GroupXMLexperimentsExecution {
 
     public void execute() throws CannotLoadContentDataset, CannotLoadRatingsDataset {
 
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd_HH.mm.ss");
 
         dateFormat.setTimeZone(TimeZone.getDefault());
         String date = dateFormat.format(new Date());
