@@ -65,22 +65,27 @@ public class DelfosQueueSubmitGroup extends CaseUseMode {
             throw new IllegalStateException(ex);
         }
 
-        File directory;
-        try {
-            directory = new File(consoleParameters.getValue(ExecuteGroupXML.XML_DIRECTORY));
-            qsubExperimentsInDirectory(directory, numExec);
-        } catch (UndefinedParameterException ex) {
-            ERROR_CODES.COMMAND_LINE_PARAMETER_IS_NOT_DEFINED.exit(ex);
-            throw new IllegalStateException(ex);
+        if (consoleParameters.isParameterDefined(ExecuteGroupXML.XML_DIRECTORY)) {
+
+            File directory;
+            try {
+                directory = new File(consoleParameters.getValue(ExecuteGroupXML.XML_DIRECTORY));
+                qsubExperimentsInDirectory(directory, numExec);
+            } catch (UndefinedParameterException ex) {
+                ERROR_CODES.COMMAND_LINE_PARAMETER_IS_NOT_DEFINED.exit(ex);
+                throw new IllegalStateException(ex);
+            }
         }
 
-        File xml;
-        try {
-            xml = new File(consoleParameters.getValue("-xml"));
-            qsubExperimentXML(xml, numExec);
-        } catch (UndefinedParameterException ex) {
-            ERROR_CODES.COMMAND_LINE_PARAMETER_IS_NOT_DEFINED.exit(ex);
-            throw new IllegalStateException(ex);
+        if (consoleParameters.isParameterDefined("-xml")) {
+            File xml;
+            try {
+                xml = new File(consoleParameters.getValue("-xml"));
+                qsubExperimentXML(xml, numExec);
+            } catch (UndefinedParameterException ex) {
+                ERROR_CODES.COMMAND_LINE_PARAMETER_IS_NOT_DEFINED.exit(ex);
+                throw new IllegalStateException(ex);
+            }
         }
 
     }
