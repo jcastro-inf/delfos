@@ -109,7 +109,7 @@ public class DelfosQueueSubmitGroup extends CaseUseMode {
         final String command = "qsub "
                 + "-q queue" + numQueue + " "
                 + "-v "
-                + "experimentFolder=\"" + experimentDirectory.getAbsolutePath() + File.separator + "\","
+                + "experimentFolder=" + experimentDirectory.getAbsolutePath() + File.separator + ","
                 + "numExec=" + numExec + " "
                 + "./delfos-qsub-group-job.sh";
 
