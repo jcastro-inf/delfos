@@ -110,7 +110,7 @@ public class PrintGroupRatingsToPlainText extends GroupEvaluationMeasureInformat
             }
         }
 
-        FileUtilities.createDirectoriesForFile(output);
+        FileUtilities.createDirectoriesForFileIfNotExist(output);
 
         try (BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(output))) {
             bufferedWriter.write(str.toString());
