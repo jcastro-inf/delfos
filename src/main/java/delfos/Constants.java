@@ -52,12 +52,6 @@ public class Constants {
      * configurations xml files.
      */
     public static final String LIBRARY_CONFIGURATION_DIRECTORY = "-config";
-
-    /**
-     * Flag para indicar los mensajes que se impriman se deben hacer por ambas
-     * salidas: estándar y de error.
-     */
-    public static final String DOUBLE_PRINT = "--double-print";
     /**
      * Flag para indicar que se escriban los datos en bruto en el fichero de
      * resultados de las ejecuciones.
@@ -178,10 +172,6 @@ public class Constants {
             }
         }
 
-        if (consoleParameters.isFlagDefined(DOUBLE_PRINT)) {
-            Global.setDoublePrint(true);
-        }
-
         if (consoleParameters.isFlagDefined(RAW_DATA)) {
             Constants.setRawResult(true);
         }
@@ -219,7 +209,6 @@ public class Constants {
      * depuración. Se debe activar antes de los test Junit.
      */
     public static void setJUnitTestMode() {
-        Global.setDoublePrint(false);
         setExitOnFail(false);
         Global.setMessageLevel(Global.MessageLevel.INFO);
         Global.setDefaultAnswerYes(true);

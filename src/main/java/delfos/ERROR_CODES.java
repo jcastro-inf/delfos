@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,7 +16,6 @@
  */
 package delfos;
 
-import delfos.common.Global;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -338,24 +337,6 @@ public enum ERROR_CODES {
         System.out.println(ex.getMessage());
         System.out.println("\t\tError code " + this.name() + ":" + exitValue);
         System.out.flush();
-
-        if (Global.isDoublePrint()) {
-            ex.printStackTrace(System.err);
-            System.err.flush();
-            System.err.println(ex.getMessage());
-            System.err.println("Error code " + this.name() + ":" + exitValue);
-            System.err.flush();
-        }
-
-        if (Global.isDebugPrinted()) {
-            ex.printStackTrace(System.out);
-            System.out.flush();
-
-            if (Global.isDoublePrint()) {
-                ex.printStackTrace(System.err);
-                System.err.flush();
-            }
-        }
 
         if (isExitOnFail) {
             System.exit(exitValue);

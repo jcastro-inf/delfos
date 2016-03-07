@@ -31,11 +31,15 @@ import delfos.group.io.xml.casestudy.GroupCaseStudyXML;
 import delfos.group.results.groupevaluationmeasures.GroupEvaluationMeasure;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import jxl.write.WriteException;
@@ -88,6 +92,30 @@ public class GroupXMLexperimentsExecution {
     }
 
     public void execute() throws CannotLoadContentDataset, CannotLoadRatingsDataset {
+
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
+        dateFormat.setTimeZone(TimeZone.getDefault());
+        String date = dateFormat.format(new Date());
+
+        File stdLogFile = new File(experimentsDirectory + File.separator + "logs" + File.separator + date + "-log-std.txt");
+        File errLogFile = new File(experimentsDirectory + File.separator + "logs" + File.separator + date + "-err-std.txt");
+
+        FileUtilities.createDirectoriesForFile(errLogFile);
+        FileUtilities.createDirectoriesForFile(stdLogFile);
+
+        FileWriter stdLogWriter;
+        FileWriter errLogWriter;
+        try {
+            stdLogWriter = new FileWriter(stdLogFile);
+            errLogWriter = new FileWriter(errLogFile);
+        } catch (IOException ex) {
+            throw new IllegalStateException(ex);
+        }
+
+        Global.addStandardOutputLogger(stdLogWriter);
+        Global.addErrorOutputLogger(errLogWriter);
+
         Collection<GroupEvaluationMeasure> groupEvaluationMeasures = GroupEvaluationMeasuresFactory.getInstance().getAllClasses();
 
         File experimentsDirectoryDirectory = new File(experimentsDirectory);
@@ -155,5 +183,14 @@ public class GroupXMLexperimentsExecution {
         }
 
         Global.showln("Finished.");
+        Global.removeErrorOutputLogger(errLogWriter);
+        Global.removeStandardOutputLogger(stdLogWriter);
+
+        try {
+            errLogWriter.close();
+            stdLogWriter.close();
+        } catch (IOException ex) {
+            throw new IllegalStateException(ex);
+        }
     }
 }
