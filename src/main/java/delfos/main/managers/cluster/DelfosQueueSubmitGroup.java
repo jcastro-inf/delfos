@@ -23,8 +23,10 @@ import delfos.common.FileUtilities;
 import delfos.common.Global;
 import delfos.main.managers.CaseUseMode;
 import delfos.main.managers.experiment.ExecuteGroupXML;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -66,7 +68,6 @@ public class DelfosQueueSubmitGroup extends CaseUseMode {
         }
 
         if (consoleParameters.isParameterDefined(ExecuteGroupXML.XML_DIRECTORY)) {
-
             File directory;
             try {
                 directory = new File(consoleParameters.getValue(ExecuteGroupXML.XML_DIRECTORY));
@@ -105,23 +106,14 @@ public class DelfosQueueSubmitGroup extends CaseUseMode {
 
         int numQueue = mod + 1;
 
-        Runtime rt = Runtime.getRuntime();
-        try {
-            final String command = "qsub "
-                    + "-q queue" + numQueue + " "
-                    + "-v "
-                    + "experimentFolder=\"" + experimentDirectory.getAbsolutePath() + File.separator + "\","
-                    + "numExec=" + numExec + " "
-                    + "./delfos-qsub-group-job.sh;";
+        final String command = "qsub "
+                + "-q queue" + numQueue + " "
+                + "-v "
+                + "experimentFolder=\"" + experimentDirectory.getAbsolutePath() + File.separator + "\","
+                + "numExec=" + numExec + " "
+                + "./delfos-qsub-group-job.sh";
 
-            Global.showMessage("\n\n" + command + "\n\n");
-            Process pr = rt.exec(command);
-            pr.waitFor();
-        } catch (IOException ex) {
-            Logger.getLogger(DelfosQueueSubmitGroup.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (InterruptedException ex) {
-            Logger.getLogger(DelfosQueueSubmitGroup.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        executeCommand(command);
 
         try {
             Thread.sleep(200);
@@ -166,23 +158,14 @@ public class DelfosQueueSubmitGroup extends CaseUseMode {
 
             int numQueue = mod + 1;
 
-            Runtime rt = Runtime.getRuntime();
-            try {
-                final String command = "qsub "
-                        + "-q queue" + numQueue + " "
-                        + "-v "
-                        + "experimentFolder=\"" + experimentDirectory.getAbsolutePath() + File.separator + "\","
-                        + "numExec=" + numExec + " "
-                        + "./delfos-qsub-group-job.sh;";
+            final String command = "qsub "
+                    + "-q queue" + numQueue + " "
+                    + "-v "
+                    + "experimentFolder=\"" + experimentDirectory.getAbsolutePath() + File.separator + "\","
+                    + "numExec=" + numExec + " "
+                    + "./delfos-qsub-group-job.sh";
 
-                Global.showMessage("\n\n" + command + "\n\n");
-                Process pr = rt.exec(command);
-                pr.waitFor();
-            } catch (IOException ex) {
-                Logger.getLogger(DelfosQueueSubmitGroup.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (InterruptedException ex) {
-                Logger.getLogger(DelfosQueueSubmitGroup.class.getName()).log(Level.SEVERE, null, ex);
-            }
+            executeCommand(command);
 
             try {
                 Thread.sleep(200);
@@ -191,6 +174,40 @@ public class DelfosQueueSubmitGroup extends CaseUseMode {
             }
         });
 
+    }
+
+    private void executeCommand(String command) {
+
+        try {
+            Runtime rt = Runtime.getRuntime();
+            Global.showMessage("\n\n" + command + "\n\n");
+
+            Process proc = rt.exec(command);
+            proc.waitFor();
+
+            BufferedReader stdInput = new BufferedReader(new InputStreamReader(proc.getInputStream()));
+
+            BufferedReader stdError = new BufferedReader(new InputStreamReader(proc.getErrorStream()));
+
+            String s = null;
+            while ((s = stdInput.readLine()) != null) {
+                System.out.println(s);
+            }
+
+            while ((s = stdError.readLine()) != null) {
+                System.out.println(s);
+            }
+
+            if (proc.exitValue() != 0) {
+                IllegalStateException ise = new IllegalStateException(
+                        "Executed command returned error code " + proc.exitValue());
+                ERROR_CODES.UNDEFINED_ERROR.exit(ise);
+            }
+        } catch (IOException ex) {
+            Logger.getLogger(DelfosQueueSubmitGroup.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (InterruptedException ex) {
+            Logger.getLogger(DelfosQueueSubmitGroup.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
 }
