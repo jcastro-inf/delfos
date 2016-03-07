@@ -66,7 +66,6 @@ public class FileUtilities {
      */
     public static void deleteDirectoryRecursive(File directory) {
         if (!directory.exists()) {
-            Global.showWarning("The directory '" + directory.getAbsolutePath() + "' not exists, delete recursive done.");
             return;
         }
         if (!directory.isDirectory()) {
@@ -102,9 +101,7 @@ public class FileUtilities {
             throw new IllegalArgumentException("Directory for creation is null");
         }
 
-        if (directory.exists() && directory.isDirectory()) {
-            return;
-        } else {
+        if (!directory.exists() || !directory.isDirectory()) {
             createDirectoryPath(directory);
         }
     }
@@ -115,13 +112,12 @@ public class FileUtilities {
         }
 
         if (!directory.exists()) {
-            Global.showWarning("Directory '" + directory.getAbsolutePath() + "' not exists, creating.");
             createDirectoryPathIfNotExists(directory);
         }
     }
 
     /**
-     * Creates all the unexisting parents of the specified file.
+     * Creates all the not existing parents of the specified file.
      *
      * @param file
      * @return True if one or more directories have been created.
