@@ -20,6 +20,7 @@ import delfos.ConsoleParameters;
 import delfos.ERROR_CODES;
 import delfos.UndefinedParameterException;
 import delfos.common.FileUtilities;
+import delfos.common.Global;
 import delfos.main.managers.CaseUseMode;
 import delfos.main.managers.experiment.ExecuteGroupXML;
 import java.io.File;
@@ -67,12 +68,60 @@ public class DelfosQueueSubmitGroup extends CaseUseMode {
         File directory;
         try {
             directory = new File(consoleParameters.getValue(ExecuteGroupXML.XML_DIRECTORY));
+            qsubExperimentsInDirectory(directory, numExec);
         } catch (UndefinedParameterException ex) {
             ERROR_CODES.COMMAND_LINE_PARAMETER_IS_NOT_DEFINED.exit(ex);
             throw new IllegalStateException(ex);
         }
 
-        qsubExperimentsInDirectory(directory, numExec);
+        File xml;
+        try {
+            xml = new File(consoleParameters.getValue("-xml"));
+            qsubExperimentXML(xml, numExec);
+        } catch (UndefinedParameterException ex) {
+            ERROR_CODES.COMMAND_LINE_PARAMETER_IS_NOT_DEFINED.exit(ex);
+            throw new IllegalStateException(ex);
+        }
+
+    }
+
+    private void qsubExperimentXML(File xml, int numExec) {
+
+        File delfosQsubGroupJobScript = new File("delfos-qsub-group-job.sh");
+        if (!delfosQsubGroupJobScript.exists()) {
+            throw new IllegalStateException(
+                    "The 'delfos-qsub-group-job.sh' script is not present in "
+                    + "working directory '" + delfosQsubGroupJobScript.getParent() + "'");
+        }
+
+        File experimentDirectory = xml.getParentFile();
+
+        int numQueue = (experimentDirectory.hashCode() % 2) + 1;
+
+        Runtime rt = Runtime.getRuntime();
+        try {
+            final String command = "qsub "
+                    + "-q queue" + numQueue + " "
+                    + "-v "
+                    + "experimentFolder=\"" + experimentDirectory.getAbsolutePath() + File.separator + "\","
+                    + "numExec=" + numExec + " "
+                    + "./delfos-qsub-group-job.sh;";
+
+            Global.showMessage("\n\n" + command + "\n\n");
+            Process pr = rt.exec(command);
+            pr.waitFor();
+        } catch (IOException ex) {
+            Logger.getLogger(DelfosQueueSubmitGroup.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (InterruptedException ex) {
+            Logger.getLogger(DelfosQueueSubmitGroup.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        try {
+            Thread.sleep(200);
+        } catch (InterruptedException ex) {
+            Logger.getLogger(DelfosQueueSubmitGroup.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
     }
 
     private void qsubExperimentsInDirectory(File directory, int numExec) {
@@ -87,9 +136,13 @@ public class DelfosQueueSubmitGroup extends CaseUseMode {
         List<File> findInDirectory = FileUtilities.findInDirectory(directory).stream()
                 .collect(Collectors.toList());
 
+        Global.showMessage("Find returned  " + findInDirectory.size() + " results\n");
+
         List<File> directoriesChild = findInDirectory.parallelStream()
                 .filter(directoryChild -> directoryChild.isDirectory())
                 .collect(Collectors.toList());
+
+        Global.showMessage("Relevant directories found " + directoriesChild.size() + "\n");
 
         List<File> datasetDirectories = directoriesChild.parallelStream().
                 filter(directoryChild -> directoryChild.getName().equals("dataset"))
@@ -98,6 +151,8 @@ public class DelfosQueueSubmitGroup extends CaseUseMode {
         List<File> experimentDirectories = datasetDirectories.parallelStream()
                 .map(directoryDataset -> directoryDataset.getParentFile())
                 .collect(Collectors.toList());
+
+        Global.showMessage("Submitting " + experimentDirectories.size() + " experiments\n");
 
         experimentDirectories.stream().forEachOrdered(experimentDirectory -> {
 
@@ -108,13 +163,12 @@ public class DelfosQueueSubmitGroup extends CaseUseMode {
                 final String command = "qsub "
                         + "-q queue" + numQueue + " "
                         + "-v "
-                        + "experimentFolder=" + experimentDirectory.getAbsolutePath() + File.separator + ","
+                        + "experimentFolder=\"" + experimentDirectory.getAbsolutePath() + File.separator + "\","
                         + "numExec=" + numExec + " "
                         + "./delfos-qsub-group-job.sh;";
 
-                System.out.println("\n\n" + command + "\n\n");
+                Global.showMessage("\n\n" + command + "\n\n");
                 Process pr = rt.exec(command);
-
                 pr.waitFor();
             } catch (IOException ex) {
                 Logger.getLogger(DelfosQueueSubmitGroup.class.getName()).log(Level.SEVERE, null, ex);
