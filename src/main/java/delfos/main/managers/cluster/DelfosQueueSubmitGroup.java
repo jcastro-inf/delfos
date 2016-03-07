@@ -111,6 +111,8 @@ public class DelfosQueueSubmitGroup extends CaseUseMode {
                         + "experimentFolder=" + experimentDirectory.getAbsolutePath() + File.separator + ","
                         + "numExec=" + numExec + " "
                         + "./delfos-qsub-group-job.sh;";
+
+                System.out.println("\n\n" + command + "\n\n");
                 Process pr = rt.exec(command);
 
                 pr.waitFor();
