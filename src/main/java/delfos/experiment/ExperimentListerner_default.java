@@ -18,6 +18,7 @@ package delfos.experiment;
 
 import delfos.common.Chronometer;
 import delfos.common.DateCollapse;
+import delfos.common.Global;
 import java.io.PrintStream;
 import java.util.Date;
 
@@ -98,6 +99,6 @@ public class ExperimentListerner_default implements ExperimentListener {
                     + "( remaining: unknown )";
         }
 
-        out.println(experimentMessage);
+        Global.printStandard(experimentMessage + "\n");
     }
 }

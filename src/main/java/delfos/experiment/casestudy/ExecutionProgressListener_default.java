@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,9 +16,10 @@
  */
 package delfos.experiment.casestudy;
 
-import java.io.PrintStream;
 import delfos.common.Chronometer;
 import delfos.common.DateCollapse;
+import delfos.common.Global;
+import java.io.PrintStream;
 
 /**
  * Listener por defecto que imprime los eventos de cambio en un Stream de
@@ -26,7 +27,7 @@ import delfos.common.DateCollapse;
  * milisegundos, como muy rápido.
  *
  * @author jcastro-inf ( https://github.com/jcastro-inf )
- * 
+ *
  * @version 1.0 14-Mayo-2013
  */
 public class ExecutionProgressListener_default implements ExecutionProgressListener {
@@ -78,7 +79,8 @@ public class ExecutionProgressListener_default implements ExecutionProgressListe
             String message = proceso + " --> "
                     + percent + "% --> "
                     + DateCollapse.collapse(remainingMiliSeconds);
-            out.println(message);
+
+            Global.printStandard(message + "\n");
             lastProgressJob = proceso;
             lastProgressPercent = percent;
 
