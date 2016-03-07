@@ -140,7 +140,7 @@ public class RecommenderSystem_cacheRecommendationModel<RecommendationModel> ext
                 model = loadedModel;
             } catch (FailureInPersistence ex) {
                 RecommendationModelBuildingProgressListener listener = this::fireBuildingProgressChangedEvent;
-                Global.showMessage("Building recommendation model: " + filePersistenceWithHashSuffix.getCompleteFileName() + "\n");
+                Global.showMessageTimestamped("Building recommendation model: " + filePersistenceWithHashSuffix.getCompleteFileName() + "\n");
                 getRecommenderSystem().addRecommendationModelBuildingProgressListener(listener);
                 try {
                     RecommendationModel computedModel = (RecommendationModel) getRecommenderSystem().buildRecommendationModel(datasetLoader);
