@@ -96,7 +96,9 @@ public class DelfosQueueSubmitGroup extends CaseUseMode {
 
         File experimentDirectory = xml.getParentFile();
 
-        int numQueue = (experimentDirectory.hashCode() % 2) + 1;
+        final int mod = Math.abs(experimentDirectory.hashCode()) % 2;
+
+        int numQueue = mod + 1;
 
         Runtime rt = Runtime.getRuntime();
         try {
