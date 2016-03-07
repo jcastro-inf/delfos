@@ -33,7 +33,6 @@ import delfos.main.Main;
 import delfos.main.managers.experiment.ExecuteGroupXML;
 import java.io.File;
 import java.lang.management.ManagementFactory;
-import java.text.DecimalFormat;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -77,10 +76,11 @@ public class TuringPreparator implements ExperimentPreparator {
         for (CaseStudy caseStudy : caseStudies) {
             String fileName = caseStudy.getRecommenderSystem().getAlias() + ".xml";
 
-            DecimalFormat format = new DecimalFormat("000");
-
-            String experimentNumber = format.format(i++);
             String thisIterationDirectory = caseStudy.getAlias();
+
+            thisIterationDirectory = thisIterationDirectory.replace("(", "");
+            thisIterationDirectory = thisIterationDirectory.replace(")", "");
+            thisIterationDirectory = thisIterationDirectory.replace(",", ".");
 
             //Clean directory
             File finalDirectoryRS = new File(experimentBaseDirectory + File.separator + thisIterationDirectory);
@@ -117,6 +117,10 @@ public class TuringPreparator implements ExperimentPreparator {
                 String experimentName
                         = "[" + datasetLoader.getAlias() + "]_"
                         + groupCaseStudy.getAlias();
+
+                experimentName = experimentName.replace("(", "");
+                experimentName = experimentName.replace(")", "");
+                experimentName = experimentName.replace(",", ".");
 
                 //Clean directory
                 File finalDirectoryRS = new File(experimentBaseDirectory.getAbsolutePath() + File.separator + experimentName);
