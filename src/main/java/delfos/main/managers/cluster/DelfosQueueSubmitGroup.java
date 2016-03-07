@@ -155,8 +155,9 @@ public class DelfosQueueSubmitGroup extends CaseUseMode {
         Global.showMessage("Submitting " + experimentDirectories.size() + " experiments\n");
 
         experimentDirectories.stream().forEachOrdered(experimentDirectory -> {
+            final int mod = Math.abs(experimentDirectory.hashCode()) % 2;
 
-            int numQueue = (experimentDirectory.hashCode() % 2) + 1;
+            int numQueue = mod + 1;
 
             Runtime rt = Runtime.getRuntime();
             try {
