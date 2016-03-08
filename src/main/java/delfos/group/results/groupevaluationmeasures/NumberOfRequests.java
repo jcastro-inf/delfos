@@ -16,17 +16,20 @@
  */
 package delfos.group.results.groupevaluationmeasures;
 
+import delfos.common.Global;
+import delfos.common.statisticalfuncions.MeanIterative;
+import delfos.dataset.basic.item.Item;
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RatingsDataset;
 import delfos.dataset.basic.rating.RelevanceCriteria;
 import delfos.group.groupsofusers.GroupOfUsers;
 import delfos.group.results.grouprecomendationresults.GroupRecommenderSystemResult;
-import java.util.Collection;
+import java.util.Set;
 
 /**
- * Medida de evaluación para calcular el número de solicitudes de predicción que
- * se hicieron al sistema.
+ * Medida de evaluación para calcular el número medio de solicitudes de
+ * predicción que se hicieron al sistema por grupo.
  *
  * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
@@ -44,14 +47,17 @@ public class NumberOfRequests extends GroupEvaluationMeasure {
             DatasetLoader<? extends Rating> trainingDatasetLoader,
             DatasetLoader<? extends Rating> testDatasetLoader) {
 
-        long solicitadas = 0;
-
-        for (GroupOfUsers groupOfUsers : groupRecommenderSystemResult.getGroupsOfUsers()) {
-            Collection<Integer> groupRequests = groupRecommenderSystemResult.getGroupInput(groupOfUsers).getItemsRequested();
-            solicitadas += groupRequests.size();
+        MeanIterative mean = new MeanIterative();
+        for (GroupOfUsers group : groupRecommenderSystemResult.getGroupsOfUsers()) {
+            Set<Item> requestsToGroup = groupRecommenderSystemResult.getGroupInput(group).getItemsRequested();
+            if (requestsToGroup == null) {
+                Global.showWarning("the group " + group + " has no requests (null)");
+                mean.addValue(0);
+            } else {
+                mean.addValue(requestsToGroup.size());
+            }
         }
-
-        return new GroupEvaluationMeasureResult(this, solicitadas);
+        return new GroupEvaluationMeasureResult(this, mean.getMean());
     }
 
     @Override

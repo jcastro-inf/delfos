@@ -95,33 +95,32 @@ public class RecommenderSystem_cacheRecommendationModel<RecommendationModel> ext
     public RecommendationModel buildRecommendationModel(DatasetLoader<? extends Rating> datasetLoader) throws CannotLoadRatingsDataset, CannotLoadContentDataset, CannotLoadUsersDataset {
 
         final RecommenderSystem<Object> recommenderSystem = getRecommenderSystem();
-        synchronized (generalExMut) {
-            if (!datasetLoaderExMuts.containsKey(datasetLoader)) {
-                datasetLoaderExMuts.put(datasetLoader, new Semaphore(1));
-            }
-
-            if (!cacheOfRecommendationModels.containsKey(datasetLoader)) {
-                cacheOfRecommendationModels.put(datasetLoader, new HashMap<>());
-            }
-
-            if (cacheOfRecommendationModels.get(datasetLoader).containsKey(recommenderSystem)) {
-                RecommendationModel recommendationModel = (RecommendationModel) cacheOfRecommendationModels
-                        .get(datasetLoader)
-                        .get(recommenderSystem);
-                return recommendationModel;
-            }
-        }
-
-        Semaphore exMutThisDatasetLoader = datasetLoaderExMuts.get(datasetLoader);
         RecommendationModel model;
+        Semaphore exMutThisDatasetLoader;
         try {
-            exMutThisDatasetLoader.acquire();
+            synchronized (generalExMut) {
+                if (!datasetLoaderExMuts.containsKey(datasetLoader)) {
+                    datasetLoaderExMuts.put(datasetLoader, new Semaphore(1));
+                }
+
+                if (!cacheOfRecommendationModels.containsKey(datasetLoader)) {
+                    cacheOfRecommendationModels.put(datasetLoader, new HashMap<>());
+                }
+
+                if (cacheOfRecommendationModels.get(datasetLoader).containsKey(recommenderSystem)) {
+                    RecommendationModel recommendationModel = (RecommendationModel) cacheOfRecommendationModels
+                            .get(datasetLoader)
+                            .get(recommenderSystem);
+                    return recommendationModel;
+                }
+
+                exMutThisDatasetLoader = datasetLoaderExMuts.get(datasetLoader);
+                exMutThisDatasetLoader.acquire();
+
+            }
 
             int ratingsDatasetHashCode = datasetLoader.getRatingsDataset().hashCode();
             String datasetLoaderAlias = datasetLoader.getAlias();
-
-            saveHashCodeExplanationInFile(datasetLoader);
-            saveHashCodeExplanationInFile(recommenderSystem);
 
             String rsNameIdentifier = "_rsHash=" + recommenderSystem.hashCode();
             String datasetLoaderString = "_datasetLoader=" + datasetLoaderAlias + "_DLHash=" + ratingsDatasetHashCode;
@@ -138,13 +137,10 @@ public class RecommenderSystem_cacheRecommendationModel<RecommendationModel> ext
                         filePersistenceWithHashSuffix,
                         datasetLoader.getUsersDataset().allIDs(),
                         datasetLoader.getContentDataset().allIDs());
-                Global.showMessageTimestamped("Loaded model from file '" + filePersistenceWithHashSuffix.getCompleteFileName() + "'");
                 model = loadedModel;
             } catch (FailureInPersistence ex) {
                 RecommendationModelBuildingProgressListener listener = this::fireBuildingProgressChangedEvent;
-
-                Global.showWarning("Recommendation model not found: " + filePersistenceWithHashSuffix.getCompleteFileName() + "\n");
-                Global.showWarning("\tThe recommender system model needs to be constructed.\n");
+                Global.showMessageTimestamped("Building recommendation model: " + filePersistenceWithHashSuffix.getCompleteFileName() + "\n");
                 getRecommenderSystem().addRecommendationModelBuildingProgressListener(listener);
                 try {
                     RecommendationModel computedModel = (RecommendationModel) getRecommenderSystem().buildRecommendationModel(datasetLoader);
@@ -158,9 +154,8 @@ public class RecommenderSystem_cacheRecommendationModel<RecommendationModel> ext
             }
 
             cacheOfRecommendationModels.get(datasetLoader).put(recommenderSystem, model);
-
-        } catch (InterruptedException ex) {
             exMutThisDatasetLoader.release();
+        } catch (InterruptedException ex) {
             Logger.getLogger(RecommenderSystem_cacheRecommendationModel.class.getName()).log(Level.SEVERE, null, ex);
             model = buildRecommendationModel(datasetLoader);
         }

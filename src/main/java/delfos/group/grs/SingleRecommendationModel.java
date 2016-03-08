@@ -27,13 +27,13 @@ public class SingleRecommendationModel implements Serializable{
     
     private static final long serialVersionUID = 121L;
 
-    private final Object RecommendationModel;
+    private final Object recommendationModel;
 
     public SingleRecommendationModel(Object RecommendationModel) {
-        this.RecommendationModel = RecommendationModel;
+        this.recommendationModel = RecommendationModel;
     }
 
     public Object getRecommendationModel() {
-        return RecommendationModel;
+        return recommendationModel;
     }
 }

@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,7 +16,9 @@
  */
 package delfos.rs.nonpersonalised.meanrating.arithmeticmean;
 
+import delfos.dataset.basic.item.Item;
 import java.io.Serializable;
+import java.util.Comparator;
 
 /**
  * Clase para almacenar el modelo del sistema de recomendación basado en
@@ -26,48 +28,41 @@ import java.io.Serializable;
  * @see MeanRatingRS
  *
  * @author jcastro-inf ( https://github.com/jcastro-inf )
- * @version 1.0 21-Feb-2013
  */
 public class MeanRating implements Serializable, Comparable<MeanRating> {
-    
+
     private static final long serialVersionUID = 103L;
+    public static final Comparator<MeanRating> BY_PREFERENCE_DESC
+            = (o1, o2) -> -Double.compare(o1.preference, o2.preference);
 
     /**
      * Id del producto.
      */
-    private int _idItem;
+    private Item item;
     /**
      * Valor de preferencia medio del producto.
      */
-    private Number _preference;
+    private Double preference;
 
-    
     /**
      * Se implementa el constructor por defecto para que el objeto sea
      * serializable.
      */
     protected MeanRating() {
     }
-    
 
-    /**
-     * Constructor que asigna los valores del objeto.
-     *
-     * @param idItem Producto sobre el que se realiza la recomendación
-     * @param preference Valor de preferencia medio del producto.
-     */
-    public MeanRating(Integer idItem, Number preference) {
-        this._idItem = idItem;
-        this._preference = preference;
+    public MeanRating(Item item, Double preference) {
+        this.item = item;
+        this.preference = preference;
     }
 
     /**
-     * ID del producto al que se refiere este objeto.
+     * Producto al que se refiere este objeto.
      *
-     * @return ID del producto al que se refiere este objeto.
+     * @return Producto al que se refiere este objeto.
      */
-    public int getIdItem() {
-        return _idItem;
+    public Item getItem() {
+        return item;
     }
 
     /**
@@ -76,13 +71,13 @@ public class MeanRating implements Serializable, Comparable<MeanRating> {
      *
      * @return Valoración media del producto.
      */
-    public Number getPreference() {
-        return _preference;
+    public double getPreference() {
+        return preference;
     }
 
     @Override
     public String toString() {
-        return "item:" + _idItem + "-->" + _preference;
+        return "item:" + item.getId() + "-->" + preference + " '" + item.getName() + "'";
     }
 
     /**
@@ -93,13 +88,6 @@ public class MeanRating implements Serializable, Comparable<MeanRating> {
      */
     @Override
     public int compareTo(MeanRating o) {
-        float diff = _preference.floatValue() - o._preference.floatValue();
-        if (diff == 0) {
-            return 0;
-        } else if (diff > 0) {
-            return -1;
-        } else {
-            return 1;
-        }
+        return MeanRating.BY_PREFERENCE_DESC.compare(this, o);
     }
 }

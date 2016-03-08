@@ -121,7 +121,7 @@ public class RandomRatingsDataset extends ParameterOwnerAdapter implements Ratin
                 ratings_byUser.get(idUser).put(idItem, new RatingWithTimestamp(idUser, idItem, rating, timestamp));
 
                 numGeneratedRatingWithTimestamps++;
-                int percent = (int) ((numGeneratedRatingWithTimestamps / (float) generateRatingWithTimestamps) * 100);
+                int percent = (int) ((numGeneratedRatingWithTimestamps / (double) generateRatingWithTimestamps) * 100);
                 if (percent != valorAnterior) {
                     Global.showInfoMessage(percent + "% generation of ratings dataset.\n");
                     valorAnterior = percent;
@@ -267,12 +267,12 @@ public class RandomRatingsDataset extends ParameterOwnerAdapter implements Ratin
     }
 
     @Override
-    public float getMeanRatingItem(int idItem) throws ItemNotFound {
+    public double getMeanRatingItem(int idItem) throws ItemNotFound {
         return dataset.getMeanRatingItem(idItem);
     }
 
     @Override
-    public float getMeanRatingUser(int idUser) throws UserNotFound {
+    public double getMeanRatingUser(int idUser) throws UserNotFound {
         return dataset.getMeanRatingUser(idUser);
     }
 
@@ -300,11 +300,11 @@ public class RandomRatingsDataset extends ParameterOwnerAdapter implements Ratin
     public boolean isRatedItem(int idItem) throws ItemNotFound {
         return dataset.isRatedItem(idItem);
     }
-    private float meanRating = Float.NaN;
+    private double meanRating = Double.NaN;
 
     @Override
-    public float getMeanRating() {
-        if (Float.isNaN(meanRating)) {
+    public double getMeanRating() {
+        if (Double.isNaN(meanRating)) {
             meanRating = RatingsDatasetAdapter.getMeanRating(this);
         }
         return meanRating;

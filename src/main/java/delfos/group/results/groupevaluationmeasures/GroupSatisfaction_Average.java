@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -72,7 +72,9 @@ public class GroupSatisfaction_Average extends GroupEvaluationMeasure {
         MeanIterative maeTotal = new MeanIterative();
 
         for (GroupOfUsers groupOfUsers : groupRecommenderSystemResult.getGroupsOfUsers()) {
-            Collection<Recommendation> groupRecommendations = groupRecommenderSystemResult.getGroupOutput(groupOfUsers).getRecommendations();
+            Collection<Recommendation> groupRecommendations = groupRecommenderSystemResult
+                    .getGroupOutput(groupOfUsers)
+                    .getRecommendations().getRecommendations();
 
             //Recorro todos los grupos
             MeanIterative maeGupos = new MeanIterative();
@@ -105,7 +107,7 @@ public class GroupSatisfaction_Average extends GroupEvaluationMeasure {
             }
             maeTotal.addValue(maeGupos.getMean());
         }
-        return new GroupEvaluationMeasureResult(this, (float) maeTotal.getMean());
+        return new GroupEvaluationMeasureResult(this, (double) maeTotal.getMean());
     }
 
     @Override

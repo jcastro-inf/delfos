@@ -1,6 +1,7 @@
 package delfos.group.results.groupevaluationmeasures;
 
 import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
+import delfos.dataset.basic.item.Item;
 import delfos.dataset.basic.loader.types.CompleteDatasetLoaderAbstract;
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
@@ -9,10 +10,9 @@ import delfos.dataset.basic.rating.RelevanceCriteria;
 import delfos.group.casestudy.parallelisation.SingleGroupRecommendationTaskInput;
 import delfos.group.casestudy.parallelisation.SingleGroupRecommendationTaskOutput;
 import delfos.group.groupsofusers.GroupOfUsers;
+import delfos.group.grs.recommendations.GroupRecommendations;
 import delfos.group.results.grouprecomendationresults.GroupRecommenderSystemResult;
-import delfos.rs.recommendation.Recommendation;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
@@ -53,12 +53,12 @@ public class MAETest {
         RelevanceCriteria relevanceCriteria = new RelevanceCriteria(4);
 
         GroupOfUsers groupOfUsers = new GroupOfUsers(1, 2);
-        Set<Integer> groupRequests = Arrays.asList(12, 13).stream().collect(Collectors.toSet());
+        Set<Item> groupRequests = Arrays.asList(new Item(12), new Item(13)).stream().collect(Collectors.toSet());
 
         List<SingleGroupRecommendationTaskInput> singleGroupRecommendationInputs = Arrays.asList(
                 new SingleGroupRecommendationTaskInput(null, datasetLoader, recommendationModel, groupOfUsers, groupRequests));
 
-        Collection<Recommendation> groupRecommendations = Collections.EMPTY_LIST;
+        GroupRecommendations groupRecommendations = new GroupRecommendations(groupOfUsers, Collections.EMPTY_LIST);
         long buildTime = 0;
         long groupBuildTime = 0;
         long groupRecommendationTime = 0;
@@ -85,8 +85,8 @@ public class MAETest {
                 datasetLoader);
 
         //Phase 3: Result checking
-        float expResult = Float.NaN;
-        float delta = 0.001f;
+        double expResult = Double.NaN;
+        double delta = 0.001f;
         assertEquals(expResult, groupMaeResult.getValue(), delta);
     }
 

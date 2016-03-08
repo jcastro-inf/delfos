@@ -84,11 +84,11 @@ public class DefaultMemoryRatingsDataset_UserIndexed_withMaps<RatingType extends
 
         ratings_byUser.get(idUser).put(idItem, rating);
 
-        if (rating.getRatingValue().floatValue() < rc.min()) {
-            rc = new DecimalDomain(rating.getRatingValue().floatValue(), rc.max());
+        if (rating.getRatingValue().doubleValue() < rc.min()) {
+            rc = new DecimalDomain(rating.getRatingValue().doubleValue(), rc.max());
         }
-        if (rating.getRatingValue().floatValue() > rc.max()) {
-            rc = new DecimalDomain(rc.min(), rating.getRatingValue().floatValue());
+        if (rating.getRatingValue().doubleValue() > rc.max()) {
+            rc = new DecimalDomain(rc.min(), rating.getRatingValue().doubleValue());
         }
     }
 

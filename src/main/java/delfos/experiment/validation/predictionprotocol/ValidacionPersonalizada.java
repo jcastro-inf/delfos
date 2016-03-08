@@ -18,7 +18,7 @@ package delfos.experiment.validation.predictionprotocol;
 
 import delfos.common.exceptions.dataset.users.UserNotFound;
 import delfos.common.parameters.Parameter;
-import delfos.common.parameters.restriction.FloatParameter;
+import delfos.common.parameters.restriction.DoubleParameter;
 import delfos.common.parameters.restriction.IntegerParameter;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RatingsDataset;
@@ -53,11 +53,11 @@ public class ValidacionPersonalizada extends PredictionProtocol {
     /**
      * Porcentaje de usuarios que se comprueban en la validación.
      */
-    public static Parameter userPercent = new Parameter("userPercent", new FloatParameter(0.0001f, 1, 1));
+    public static Parameter userPercent = new Parameter("userPercent", new DoubleParameter(0.0001f, 1, 1));
     /**
      * Porcentaje de valoraciones que se comprueban de cada usuario.
      */
-    public static Parameter ratingsToPredictPercent = new Parameter("ratingsToPredictPercent", new FloatParameter(0.0001f, 1, 1));
+    public static Parameter ratingsToPredictPercent = new Parameter("ratingsToPredictPercent", new DoubleParameter(0.0001f, 1, 1));
 
     /**
      * Constructor por defecto que deja el numero de valoraciones a 4
@@ -79,7 +79,7 @@ public class ValidacionPersonalizada extends PredictionProtocol {
      * @param ratingsToPredictPercentValue Porcentaje de valoraciones de un
      * usuario que se comprueban.
      */
-    public ValidacionPersonalizada(int minRatingsValue, float userPercentValue, float ratingsToPredictPercentValue) {
+    public ValidacionPersonalizada(int minRatingsValue, double userPercentValue, double ratingsToPredictPercentValue) {
         addParameter(minRatings);
         addParameter(ratingsToPredictPercent);
         addParameter(userPercent);
@@ -93,12 +93,12 @@ public class ValidacionPersonalizada extends PredictionProtocol {
     public Collection<Set<Integer>> getRecommendationRequests(RatingsDataset<? extends Rating> testRatingsDataset, int idUser) throws UserNotFound {
         Random random = new Random(getSeedValue());
 
-        float userPercentValue = (Float) getParameterValue(userPercent);
-        if (random.nextFloat() > userPercentValue) {
+        double userPercentValue = (Double) getParameterValue(userPercent);
+        if (random.nextDouble() > userPercentValue) {
             return new ArrayList<>();
         }
         int minRatingsValue = (Integer) getParameterValue(minRatings);
-        float ratingsToPredictPercentValue = (Float) getParameterValue(ratingsToPredictPercent);
+        double ratingsToPredictPercentValue = (Double) getParameterValue(ratingsToPredictPercent);
 
         Integer[] itemsRated = testRatingsDataset.getUserRatingsRated(idUser).keySet().toArray(new Integer[0]);
         int extraer = (int) (itemsRated.length * (1 - ratingsToPredictPercentValue));

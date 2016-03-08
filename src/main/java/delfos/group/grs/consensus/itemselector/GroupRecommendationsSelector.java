@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -20,11 +20,12 @@ import delfos.common.parameters.Parameter;
 import delfos.common.parameters.ParameterOwnerAdapter;
 import delfos.common.parameters.ParameterOwnerType;
 import delfos.common.parameters.restriction.IntegerParameter;
-import delfos.rs.recommendation.Recommendation;
+import delfos.dataset.basic.item.Item;
+import delfos.rs.recommendation.RecommendationsToUser;
 import java.util.Collection;
-import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.stream.Collectors;
 
 /**
  * @author jcastro-inf ( https://github.com/jcastro-inf )
@@ -33,32 +34,25 @@ import java.util.TreeSet;
  */
 public abstract class GroupRecommendationsSelector extends ParameterOwnerAdapter {
 
-    public static final Parameter NUMBER_OF_ITEM_SELECTED = new Parameter(
+    public static final Parameter NUMBER_OF_ITEMS_SELECTED = new Parameter(
             "NUMBER_OF_ITEM_SELECTED",
             new IntegerParameter(1, 3000, 10));
 
-    public GroupRecommendationsSelector() {
-    }
-
-    public GroupRecommendationsSelector(int numberOfItems) {
-        this();
-
-        setParameterValue(NUMBER_OF_ITEM_SELECTED, numberOfItems);
-    }
-
-    public Set<Integer> getRecommendationSelection(Map<Integer, Collection<Recommendation>> membersRecommendations) {
+    public Set<Item> getRecommendationSelection(Collection<RecommendationsToUser> membersRecommendations) {
         checkListsIntegrity(membersRecommendations);
-        return getItemsRecommended(membersRecommendations);
+        return unionItemsRecommended(membersRecommendations);
     }
 
-    private void checkListsIntegrity(Map<Integer, Collection<Recommendation>> membersRecommendations) {
-        Set<Integer> itemsRecommended = getItemsRecommended(membersRecommendations);
+    private void checkListsIntegrity(Collection<RecommendationsToUser> membersRecommendations) {
+        Set<Item> itemsRecommended = unionItemsRecommended(membersRecommendations);
 
-        for (int idMember : membersRecommendations.keySet()) {
-            Set<Integer> thisUserItemsRecommended = new TreeSet<>();
-            membersRecommendations.get(idMember).stream().forEach((r) -> {
-                thisUserItemsRecommended.add(r.getIdItem());
-            });
+        membersRecommendations.parallelStream().forEach(memberRecommendations -> {
+
+            Set<Item> thisUserItemsRecommended = memberRecommendations
+                    .getRecommendations().stream()
+                    .map(recommendation -> recommendation.getItem())
+                    .collect(Collectors.toSet());
+
             if (!itemsRecommended.equals(thisUserItemsRecommended)) {
                 Set<Integer> genMinusMem = new TreeSet(itemsRecommended);
                 genMinusMem.removeAll(thisUserItemsRecommended);
@@ -66,19 +60,20 @@ public abstract class GroupRecommendationsSelector extends ParameterOwnerAdapter
                 Set<Integer> memMinusGen = new TreeSet(thisUserItemsRecommended);
                 memMinusGen.removeAll(itemsRecommended);
 
-                throw new IllegalArgumentException("Recommendation list for member '" + idMember + "' is not the same (group '" + membersRecommendations.keySet().toString() + "')");
+                String message = "User " + memberRecommendations.getUser()
+                        + " has a different recommendation item set.";
+
+                throw new IllegalArgumentException(message);
             }
-        }
+        });
     }
 
-    private Set<Integer> getItemsRecommended(Map<Integer, Collection<Recommendation>> membersRecommendations) {
-        Set<Integer> itemsRecommended = new TreeSet<>();
-        membersRecommendations.keySet().stream().forEach((idMember) -> {
-            membersRecommendations.get(idMember).stream().forEach((recommendation) -> {
-                itemsRecommended.add(recommendation.getIdItem());
-            });
-        });
-
+    public static Set<Item> unionItemsRecommended(Collection<RecommendationsToUser> membersRecommendations) {
+        Set<Item> itemsRecommended
+                = membersRecommendations.parallelStream()
+                .flatMap((recommendationsToUser) -> recommendationsToUser.getRecommendations().parallelStream())
+                .map(recommendation -> recommendation.getItem())
+                .collect(Collectors.toSet());
         return itemsRecommended;
     }
 

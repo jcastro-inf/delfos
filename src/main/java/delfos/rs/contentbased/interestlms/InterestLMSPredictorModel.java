@@ -86,19 +86,19 @@ public class InterestLMSPredictorModel implements Serializable {
         predictors.put(idUser, userPredictor);
     }
 
-    protected float predict(int idUser, Item item) {
+    protected double predict(int idUser, Item item) {
 
-        float prediction = predictMinusOneToOne(idUser, item);
-        float predictionInDatasetRange = minusOneToOneDomain.convertToDecimalDomain(prediction, ratingDatasetDomain).floatValue();
+        double prediction = predictMinusOneToOne(idUser, item);
+        double predictionInDatasetRange = minusOneToOneDomain.convertToDecimalDomain(prediction, ratingDatasetDomain).doubleValue();
         return predictionInDatasetRange;
     }
 
-    private float predictMinusOneToOne(int idUser, Item item) {
+    private double predictMinusOneToOne(int idUser, Item item) {
         if (!userDefaultWeight.containsKey(idUser)) {
             initUserPredictor(idUser);
         }
 
-        float prediction = 0;
+        double prediction = 0;
 
         final double factor = 1.0 / (item.getFeatures().size());
 
@@ -116,8 +116,8 @@ public class InterestLMSPredictorModel implements Serializable {
 
     }
 
-    void enterFeedback(int idUser, Item item, float ratingInMinusOneToOneDomain) {
-        final float predictionInMinusOneToOne = predictMinusOneToOne(idUser, item);
+    void enterFeedback(int idUser, Item item, double ratingInMinusOneToOneDomain) {
+        final double predictionInMinusOneToOne = predictMinusOneToOne(idUser, item);
 
         final double factor = 1.0 / (item.getFeatures().size());
 
@@ -136,7 +136,7 @@ public class InterestLMSPredictorModel implements Serializable {
         baseWeight += learningModerator * (ratingInMinusOneToOneDomain - predictionInMinusOneToOne);
         userDefaultWeight.put(idUser, baseWeight);
 
-        float predictionAfterTrain = predictMinusOneToOne(idUser, item);
+        double predictionAfterTrain = predictMinusOneToOne(idUser, item);
         predictionAfterTrain += 0;
     }
 }

@@ -87,19 +87,9 @@ public class GroupOfUsers implements Comparable<GroupOfUsers>, Iterable<Integer>
         }
     }
 
-    public GroupOfUsers(Set<User> users) {
+    public GroupOfUsers(Collection<User> users) {
         members = new TreeSet<>(users);
         idMembers = users.stream().map(user -> user.getId()).collect(Collectors.toCollection(TreeSet::new));
-    }
-
-    @Deprecated
-    public GroupOfUsers(Collection<Integer> users) {
-        idMembers = new TreeSet<>(users);
-        members = users.stream().map(user -> new User(user)).collect(Collectors.toSet());
-
-        if (users.size() > idMembers.size()) {
-            Global.showWarning("There are repeated users in the origin collection of users");
-        }
     }
 
     /**
@@ -199,7 +189,7 @@ public class GroupOfUsers implements Comparable<GroupOfUsers>, Iterable<Integer>
         if (idTarget.startsWith(GROUP_ID_TARGET_PREFIX)) {
             String collectionToString = idTarget.substring(idTarget.indexOf(GROUP_ID_TARGET_PREFIX));
             Collection<Integer> groupMembers = extractGroupMembers(collectionToString);
-            return new GroupOfUsers(groupMembers);
+            return new GroupOfUsers(groupMembers.toArray(new Integer[0]));
         } else {
             throw new IllegalArgumentException("Not a group idTarget '" + idTarget + "'");
         }

@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,14 +16,14 @@
  */
 package delfos.rs.collaborativefiltering.predictiontechniques;
 
-import java.util.Collection;
-import delfos.dataset.basic.rating.Rating;
-import delfos.dataset.basic.rating.RatingsDataset;
-import delfos.rs.collaborativefiltering.knn.MatchRating;
+import delfos.common.Global;
 import delfos.common.exceptions.CouldNotPredictRating;
 import delfos.common.exceptions.dataset.items.ItemNotFound;
 import delfos.common.exceptions.dataset.users.UserNotFound;
-import delfos.common.Global;
+import delfos.dataset.basic.rating.Rating;
+import delfos.dataset.basic.rating.RatingsDataset;
+import delfos.rs.collaborativefiltering.knn.MatchRating;
+import java.util.Collection;
 
 /**
  * Esta técnica presupone que una predicción para un usuario concreto sobre un
@@ -42,12 +42,12 @@ public class ItemAverageAdjustment extends PredictionTechnique {
     private static final long serialVersionUID = 1L;
 
     @Override
-    public float predictRating(int idUser, int idItem, Collection<MatchRating> ratings, RatingsDataset<? extends Rating> rd) throws CouldNotPredictRating, ItemNotFound, UserNotFound {
-        float prediccion;
+    public double predictRating(int idUser, int idItem, Collection<MatchRating> ratings, RatingsDataset<? extends Rating> rd) throws CouldNotPredictRating, ItemNotFound, UserNotFound {
+        double prediccion;
 
-        float numerador = 0;
-        float denominador = 0;
-        float itemAverage = rd.getMeanRatingItem(idItem);
+        double numerador = 0;
+        double denominador = 0;
+        double itemAverage = rd.getMeanRatingItem(idItem);
 
         if (ratings.isEmpty()) {
             throw new CouldNotPredictRating("Match rating list is empty");
@@ -65,7 +65,7 @@ public class ItemAverageAdjustment extends PredictionTechnique {
             if (Global.isVerboseAnnoying()) {
                 str.append("item vecino ").append(matchRating.getIdItem()).append(" similitud ").append(matchRating.getWeight()).append(" rating ").append(matchRating.getRating()).append("\n");
             }
-            numerador += (matchRating.getRating().floatValue() - rd.getMeanRatingUser(matchRating.getIdUser())) * matchRating.getWeight();
+            numerador += (matchRating.getRating().doubleValue() - rd.getMeanRatingUser(matchRating.getIdUser())) * matchRating.getWeight();
             denominador += matchRating.getWeight();
         }
 
@@ -75,10 +75,10 @@ public class ItemAverageAdjustment extends PredictionTechnique {
             str.append("====================================================\n");
             Global.showInfoMessage(str.toString());
         }
-        if (Float.isInfinite(prediccion)) {
+        if (Double.isInfinite(prediccion)) {
             throw new CouldNotPredictRating("Prediction is infinite");
         }
-        if (Float.isNaN(prediccion)) {
+        if (Double.isNaN(prediccion)) {
             throw new CouldNotPredictRating("Prediction is NaN");
         }
 

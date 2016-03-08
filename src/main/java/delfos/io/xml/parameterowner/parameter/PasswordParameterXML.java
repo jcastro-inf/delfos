@@ -45,15 +45,15 @@ public class PasswordParameterXML {
      * @param p Parámetro a almacenar
      */
     public static Element getPasswordParameterElement(ParameterOwner parameterOwner, Parameter p) {
-        Element floatParameter = new Element(ParameterXML.PARAMETER_ELEMENT_NAME);
-        floatParameter.setAttribute(ParameterXML.PARAMETER_NAME, p.getName());
+        Element doubleParameter = new Element(ParameterXML.PARAMETER_ELEMENT_NAME);
+        doubleParameter.setAttribute(ParameterXML.PARAMETER_NAME, p.getName());
 
         PasswordParameter pp = (PasswordParameter) p.getRestriction();
 
-        floatParameter.setAttribute(ParameterXML.PARAMETER_TYPE, pp.getName());
-        floatParameter.setAttribute(VALUE_ATTRIBUTE, parameterOwner.getParameterValue(p).toString());
+        doubleParameter.setAttribute(ParameterXML.PARAMETER_TYPE, pp.getName());
+        doubleParameter.setAttribute(VALUE_ATTRIBUTE, parameterOwner.getParameterValue(p).toString());
 
-        return floatParameter;
+        return doubleParameter;
     }
 
     /**

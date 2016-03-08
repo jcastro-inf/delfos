@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -29,6 +29,7 @@ import delfos.common.exceptions.ratings.NotEnoughtUserInformation;
 import delfos.configfile.rs.single.RecommenderSystemConfiguration;
 import delfos.configfile.rs.single.RecommenderSystemConfigurationFileParser;
 import delfos.dataset.basic.item.ContentDataset;
+import delfos.dataset.basic.item.Item;
 import delfos.dataset.basic.loader.types.ContentDatasetLoader;
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
@@ -49,6 +50,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  *
@@ -147,7 +149,7 @@ class Recommend extends CaseUseSubManager {
                 throw new IllegalArgumentException(ex);
             }
 
-            Set<Integer> candidateItems;
+            Set<Item> candidateItems;
             try {
                 candidateItems = rsc.recommendationCandidatesSelector.candidateItems(datasetLoader, new User(idUser));
             } catch (UserNotFound ex) {
@@ -163,7 +165,11 @@ class Recommend extends CaseUseSubManager {
             Object RecommendationModel;
             try {
                 Global.showMessageTimestamped("Computing recommendations");
-                RecommendationModel = PersistenceMethodStrategy.loadModel(recommender, rsc.persistenceMethod, Arrays.asList(idUser), candidateItems);
+                RecommendationModel = PersistenceMethodStrategy.loadModel(
+                        recommender, rsc.persistenceMethod,
+                        Arrays.asList(idUser),
+                        candidateItems.stream().map(item -> item.getId()).collect(Collectors.toSet()),
+                        datasetLoader);
                 Global.showMessageTimestamped("Computed recommendations");
             } catch (FailureInPersistence ex) {
                 ERROR_CODES.FAILURE_IN_PERSISTENCE.exit(ex);
@@ -171,7 +177,9 @@ class Recommend extends CaseUseSubManager {
             }
 
             try {
-                recommendations = recommender.recommendToUser(datasetLoader, RecommendationModel, idUser, candidateItems);
+                recommendations = recommender.recommendToUser(datasetLoader, RecommendationModel, idUser,
+                        candidateItems.stream().map(item -> item.getId()).collect(Collectors.toSet())
+                );
             } catch (UserNotFound ex) {
                 ERROR_CODES.USER_NOT_FOUND.exit(ex);
                 throw new IllegalArgumentException(ex);

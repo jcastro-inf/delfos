@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -22,6 +22,7 @@ import delfos.common.parameters.restriction.ObjectParameter;
 import delfos.rs.output.sort.SortBy;
 import delfos.rs.recommendation.Recommendation;
 import delfos.rs.recommendation.Recommendations;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -37,6 +38,7 @@ public class RecommendationsOutputStandardRaw extends RecommendationsOutputMetho
 
     private static final long serialVersionUID = 1L;
 
+    public static final DecimalFormat format = new DecimalFormat("0.000");
     public static final Parameter SORT_BY = new Parameter("SORT_BY", new ObjectParameter(SortBy.values(), SortBy.SORT_BY_NO_SORT));
 
     /**
@@ -86,7 +88,14 @@ public class RecommendationsOutputStandardRaw extends RecommendationsOutputMetho
 
         Global.showln("Target '" + idTarget + "' recommendations:");
         for (Recommendation r : topNrecommendations) {
-            Global.showln("\t" + r.getItem() + "," + r.getItem().getName() + "," + r.getPreference());
+            String prediction;
+
+            if (Double.isFinite(r.getPreference().doubleValue())) {
+                prediction = format.format(r.getPreference().doubleValue());
+            } else {
+                prediction = "NaN";
+            }
+            Global.showln("\t" + r.getItem() + "," + r.getItem().getName() + "," + prediction);
         }
     }
 }

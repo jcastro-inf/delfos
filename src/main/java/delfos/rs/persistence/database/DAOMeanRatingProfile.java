@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -18,6 +18,9 @@ package delfos.rs.persistence.database;
 
 import delfos.common.Global;
 import delfos.databaseconnections.DatabaseConection;
+import delfos.dataset.basic.item.Item;
+import delfos.dataset.basic.loader.types.DatasetLoader;
+import delfos.dataset.basic.rating.Rating;
 import delfos.rs.nonpersonalised.meanrating.arithmeticmean.MeanRating;
 import delfos.rs.nonpersonalised.meanrating.arithmeticmean.MeanRatingRS;
 import delfos.rs.nonpersonalised.meanrating.arithmeticmean.MeanRatingRSModel;
@@ -60,16 +63,15 @@ public class DAOMeanRatingProfile implements RecommendationModelDatabasePersiste
 
             statement.execute("CREATE TABLE `" + PROFILE_TABLE + "` ("
                     + ID_COLUMN_NAME + " int(10) unsigned NOT NULL,"
-                    + PREFERENCE_COLUMN_NAME + " float unsigned NOT NULL,"
+                    + PREFERENCE_COLUMN_NAME + " double unsigned NOT NULL,"
                     + "PRIMARY KEY (" + ID_COLUMN_NAME + ")"
                     + ") ENGINE=MyISAM DEFAULT CHARSET=latin1;");
         }
     }
 
     @Override
-    public MeanRatingRSModel loadModel(DatabasePersistence databasePersistence, Collection<Integer> users, Collection<Integer> items) throws FailureInPersistence {
-        try (
-                Statement statement = databasePersistence.getConection().doConnection().createStatement()) {
+    public MeanRatingRSModel loadModel(DatabasePersistence databasePersistence, Collection<Integer> users, Collection<Integer> items, DatasetLoader<? extends Rating> datasetLoader) throws FailureInPersistence {
+        try (Statement statement = databasePersistence.getConection().doConnection().createStatement()) {
 
             List<MeanRating> profiles = new LinkedList<>();
 
@@ -79,7 +81,9 @@ public class DAOMeanRatingProfile implements RecommendationModelDatabasePersiste
             while (rst.next()) {
                 int idItem = rst.getInt(1);
                 double preference = rst.getDouble(2);
-                MeanRating meanRating = new MeanRating(idItem, preference);
+
+                Item item = datasetLoader.getContentDataset().get(idItem);
+                MeanRating meanRating = new MeanRating(item, preference);
                 profiles.add(meanRating);
             }
 
@@ -103,11 +107,11 @@ public class DAOMeanRatingProfile implements RecommendationModelDatabasePersiste
         try (
                 Statement statement = databasePersistence.getConection().doConnection().createStatement()) {
 
-            List<MeanRating> meanProfile = model.getRangedMeanRatings();
+            List<MeanRating> meanProfile = model.getSortedMeanRatings();
 
             for (MeanRating mr : meanProfile) {
                 String statementString = "INSERT INTO " + PROFILE_TABLE + "(" + ID_COLUMN_NAME + "," + PREFERENCE_COLUMN_NAME + ") "
-                        + "VALUES (" + mr.getIdItem() + "," + mr.getPreference().floatValue() + ");";
+                        + "VALUES (" + mr.getItem().getId() + "," + mr.getPreference() + ");";
                 Global.showInfoMessage(statementString + "\n");
                 statement.executeUpdate(statementString);
             }

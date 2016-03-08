@@ -33,7 +33,7 @@ public class ArmonicAggregationOfTwoValues extends TwoValuesAggregator {
     private final static long serialVersionUID = 1L;
 
     @Override
-    public float aggregateTwoValues(Number v1, Number v2) {
+    public double aggregateTwoValues(Number v1, Number v2) {
         double d1 = v1.doubleValue();
         double d2 = v2.doubleValue();
 
@@ -49,6 +49,6 @@ public class ArmonicAggregationOfTwoValues extends TwoValuesAggregator {
         if (d2 > 1) {
             throw new IllegalArgumentException("v2 es mayor que uno.");
         }
-        return (float) ((2 * d1 * d2) / (d1 + d2));
+        return (double) ((2 * d1 * d2) / (d1 + d2));
     }
 }

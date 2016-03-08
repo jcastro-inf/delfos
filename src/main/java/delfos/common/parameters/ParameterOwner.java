@@ -30,7 +30,7 @@ import java.util.TreeSet;
  * @author jcastro-inf ( https://github.com/jcastro-inf )
  * @version 1.0 08-Mar-2013
  */
-public interface ParameterOwner extends Serializable, Comparable<Object> {
+public interface ParameterOwner extends Serializable, Comparable<Object>, Cloneable {
 
     public static final Comparator<Object> SAME_CLASS_COMPARATOR_OBJECT = (Object o1, Object o2) -> {
         if (o1 instanceof ParameterOwner && o2 instanceof ParameterOwner) {
@@ -237,4 +237,6 @@ public interface ParameterOwner extends Serializable, Comparable<Object> {
 
         return this.getClass().equals(parameterOwner.getClass());
     }
+
+    public ParameterOwner clone();
 }

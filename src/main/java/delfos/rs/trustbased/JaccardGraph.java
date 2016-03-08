@@ -79,7 +79,7 @@ public class JaccardGraph extends WeightedGraphCalculation<Integer> {
             for (Integer idUser2 : users) {
                 if (!UJaccard.get(idUser1).containsKey(idUser2)) {
                     c.reset();
-                    float similarity;
+                    double similarity;
                     try {
 
                         similarity = jaccardForUsers.similarity(ratingsDataset, idUser1, idUser2);

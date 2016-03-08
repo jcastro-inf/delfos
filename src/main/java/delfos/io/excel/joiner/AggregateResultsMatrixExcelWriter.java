@@ -182,7 +182,7 @@ public class AggregateResultsMatrixExcelWriter {
 
     private static void addNumber(WritableSheet sheet, int column, int row,
             double value) throws WriteException, RowsExceededException {
-        double rounded = NumberRounder.round(value, 8);
+        double rounded = NumberRounder.round(value);
 
         jxl.write.Number number = new jxl.write.Number(column, row, rounded, decimalFormat);
         sheet.addCell(number);

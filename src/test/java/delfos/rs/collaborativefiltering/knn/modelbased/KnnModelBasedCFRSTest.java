@@ -1,6 +1,7 @@
 package delfos.rs.collaborativefiltering.knn.modelbased;
 
 import delfos.dataset.basic.item.ContentDataset;
+import delfos.dataset.basic.item.Item;
 import delfos.dataset.basic.user.User;
 import delfos.dataset.generated.random.RandomDatasetLoader;
 import delfos.recommendationcandidates.AllCatalogItems;
@@ -45,10 +46,12 @@ public class KnnModelBasedCFRSTest {
         KnnModelBasedCFRSModel model = instance.buildRecommendationModel(datasetLoader);
 
         User user = datasetLoader.getUsersDataset().get(1);
-        Set<Integer> candidateItems = new AllCatalogItems().candidateItems(datasetLoader, user);
+        Set<Item> candidateItems = new AllCatalogItems().candidateItems(datasetLoader, user);
 
         Collection<Recommendation> result = instance
-                .recommendToUser(datasetLoader, model, user.getId(), candidateItems);
+                .recommendToUser(datasetLoader, model, user.getId(),
+                        candidateItems.stream().map(item -> item.getId()).collect(Collectors.toSet())
+                );
     }
 
     @Test

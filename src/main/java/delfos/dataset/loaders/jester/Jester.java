@@ -99,7 +99,7 @@ public class Jester extends DatasetLoaderAbstract {
             TreeSet<Item> items = new TreeSet<>();
             try {
 
-                MultiSet<Float> nullRatings = new MultiSet<>();
+                MultiSet<Double> nullRatings = new MultiSet<>();
                 Workbook archivoExcel = Workbook.getWorkbook(new File(fileName));
                 for (int sheetNo = 0; sheetNo < 1; sheetNo++) {
                     Sheet hoja = archivoExcel.getSheet(sheetNo);
@@ -111,11 +111,11 @@ public class Jester extends DatasetLoaderAbstract {
                         int numRatingsUser_expected = Integer.parseInt(data);
                         for (int columna = 1; columna < numColumnas; columna++) {
                             data = hoja.getCell(columna, fila).getContents();
-                            float rating;
+                            double rating;
                             try {
-                                rating = Float.parseFloat(data);
+                                rating = Double.parseDouble(data);
                             } catch (NumberFormatException nfe) {
-                                rating = Float.parseFloat(data.replace(',', '.'));
+                                rating = Double.parseDouble(data.replace(',', '.'));
                             }
                             //Los 99 significa que no se ha valorado.
                             if (rating > 10 || rating < -10) {
@@ -134,7 +134,7 @@ public class Jester extends DatasetLoaderAbstract {
                     ratingsDataset = new BothIndexRatingsDataset(ratings);
                 }
 
-                nullRatings.removeAllOccurrences(new Float(99));
+                nullRatings.removeAllOccurrences(new Double(99));
                 if (!nullRatings.isEmpty()) {
                     Global.showInfoMessage(nullRatings.printContent());
                 }

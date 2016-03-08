@@ -65,7 +65,7 @@ public interface MultivaluedUserProfile extends Serializable {
      * @throws IllegalArgumentException Si no encuentra la característica o el
      * valor de la misma.
      */
-    public float getFeatureValueValue(Feature feature, Object featureValue);
+    public double getFeatureValueValue(Feature feature, Object featureValue);
 
     /**
      * Devuelve la ponderación de la característica indicada.
@@ -74,7 +74,7 @@ public interface MultivaluedUserProfile extends Serializable {
      * @return Ponderación de la característica. Si el perfil no contiene la
      * característica, devuelve cero.
      */
-    public float getFeatureValueWeight(Feature feature);
+    public double getFeatureValueWeight(Feature feature);
 
     /**
      * Devuelve los valores de la característica especificada definidos en este

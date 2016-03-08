@@ -93,12 +93,12 @@ public class EntropyDependenceCBRSUserProfile implements MultivaluedUserProfile 
      * valor de la misma.
      */
     @Override
-    public float getFeatureValueValue(Feature itemFeature, Object value) {
+    public double getFeatureValueValue(Feature itemFeature, Object value) {
         if (itemFeature.getType() == FeatureType.Nominal) {
             if (_nominalValues.containsKey(itemFeature)) {
                 Map<Object, Number> get = _nominalValues.get(itemFeature);
                 if (get.containsKey(value)) {
-                    return get.get(value).floatValue();
+                    return get.get(value).doubleValue();
                 }
             } else {
                 throw new IllegalArgumentException("Undefined nominal item feature " + itemFeature);
@@ -107,7 +107,7 @@ public class EntropyDependenceCBRSUserProfile implements MultivaluedUserProfile 
 
         if (itemFeature.getType() == FeatureType.Numerical) {
             if (_numericalValues.containsKey(itemFeature)) {
-                return _numericalValues.get(itemFeature).floatValue();
+                return _numericalValues.get(itemFeature).doubleValue();
             } else {
                 throw new IllegalArgumentException("Undefined numerical item feature " + itemFeature);
             }
@@ -135,7 +135,7 @@ public class EntropyDependenceCBRSUserProfile implements MultivaluedUserProfile 
                         if (_nominalValues.containsKey(itemFeature)) {
                             Map<Object, Number> treeMap = _nominalValues.get(itemFeature);
                             if (treeMap.containsKey(featureValue)) {
-                                treeMap.put(featureValue, treeMap.get(featureValue).floatValue() + 1);
+                                treeMap.put(featureValue, treeMap.get(featureValue).doubleValue() + 1);
                             } else {
                                 treeMap.put(featureValue, 1.0f);
                             }
@@ -148,10 +148,10 @@ public class EntropyDependenceCBRSUserProfile implements MultivaluedUserProfile 
 
                     case Numerical:
                         if (profileNumericalValues.containsKey(itemFeature)) {
-                            profileNumericalValues.get(itemFeature).add((Float) i.getFeatureValue(itemFeature));
+                            profileNumericalValues.get(itemFeature).add((Double) i.getFeatureValue(itemFeature));
                         } else {
                             Set<Number> lista = new TreeSet<Number>();
-                            lista.add((Float) i.getFeatureValue(itemFeature));
+                            lista.add((Double) i.getFeatureValue(itemFeature));
                             profileNumericalValues.put(itemFeature, lista);
                         }
                         break;
@@ -163,7 +163,7 @@ public class EntropyDependenceCBRSUserProfile implements MultivaluedUserProfile 
 
         for (Feature f : _nominalValues.keySet()) {
             for (Object value : _nominalValues.get(f).keySet()) {
-                float valor = _nominalValues.get(f).get(value).floatValue();
+                double valor = _nominalValues.get(f).get(value).doubleValue();
                 valor = valor / items.size();
                 _nominalValues.get(f).put(value, valor);
             }
@@ -222,9 +222,9 @@ public class EntropyDependenceCBRSUserProfile implements MultivaluedUserProfile 
     }
 
     @Override
-    public float getFeatureValueWeight(Feature feature) {
+    public double getFeatureValueWeight(Feature feature) {
         if (_weights.containsKey(feature)) {
-            return _weights.get(feature).floatValue();
+            return _weights.get(feature).doubleValue();
         } else {
             throw new IllegalArgumentException("The specified feature " + feature + " has no weight.");
         }

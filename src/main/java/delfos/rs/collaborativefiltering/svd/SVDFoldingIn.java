@@ -27,14 +27,12 @@ import delfos.common.exceptions.dataset.users.UserNotFound;
 import delfos.common.exceptions.ratings.NotEnoughtItemInformation;
 import delfos.common.exceptions.ratings.NotEnoughtUserInformation;
 import delfos.common.parameters.Parameter;
-import delfos.common.parameters.restriction.FloatParameter;
+import delfos.common.parameters.restriction.DoubleParameter;
 import delfos.common.parameters.restriction.IntegerParameter;
 import delfos.common.statisticalfuncions.MeanIterative;
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RatingsDataset;
-import delfos.rs.persistence.DatabasePersistence;
-import delfos.rs.persistence.FailureInPersistence;
 import delfos.rs.recommendation.Recommendation;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -59,7 +57,7 @@ public class SVDFoldingIn
      * que se modifican los valores para minimizar el error de predicción. Este
      * valor se aplica cuando se incrementa el modelo.
      */
-    public static final Parameter INCREMENTED_MODEL_LEARNING_RATE = new Parameter("increment_lRate", new FloatParameter(0.001f, 500f, 0.01f));
+    public static final Parameter INCREMENTED_MODEL_LEARNING_RATE = new Parameter("increment_lRate", new DoubleParameter(0.001f, 500f, 0.01f));
     /**
      * Número de iteraciones que se hacen por cada característica para minimizar
      * el error. Este valor se aplica cuando se incrementa el modelo.
@@ -110,16 +108,6 @@ public class SVDFoldingIn
     }
 
     @Override
-    public void saveRecommendationModel(DatabasePersistence databasePersistence, TryThisAtHomeSVDModel model) throws FailureInPersistence {
-        super.saveRecommendationModel(databasePersistence, model); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public TryThisAtHomeSVDModel loadRecommendationModel(DatabasePersistence databasePersistence, Collection<Integer> users, Collection<Integer> items) throws FailureInPersistence {
-        return super.loadRecommendationModel(databasePersistence, users, items); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
     public Number predictRating(DatasetLoader<? extends Rating> datasetLoader, TryThisAtHomeSVDModel model, int idUser, int idItem) throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset, NotEnoughtUserInformation {
 
         TryThisAtHomeSVDModel incrementedModel;
@@ -150,8 +138,8 @@ public class SVDFoldingIn
 
         if ((Boolean) getParameterValue(SMART_INITIALISATION)) {
             Random random = new Random(getSeedValue());
-            final double maxInitialisation = (float) Math.sqrt(ratingsDataset.getRatingsDomain().max().doubleValue() / numFeatures);
-            final double minInitialisation = (float) Math.sqrt(ratingsDataset.getRatingsDomain().min().doubleValue() / numFeatures);
+            final double maxInitialisation = (double) Math.sqrt(ratingsDataset.getRatingsDomain().max().doubleValue() / numFeatures);
+            final double minInitialisation = (double) Math.sqrt(ratingsDataset.getRatingsDomain().min().doubleValue() / numFeatures);
 
             for (int j = 0; j < numFeatures; j++) {
                 long seed = random.nextLong();

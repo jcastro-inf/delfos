@@ -73,7 +73,7 @@ public class RecommendationsJTableModel extends AbstractTableModel {
         for (Recommendation recommendation : recommendations.getRecommendations()) {
             datos[RECOMMENDATION_INDEX][rowIndex] = recommendation;
             datos[ID_ITEM_INDEX][rowIndex] = recommendation.getItem().getId();
-            datos[PREFERENCE_INDEX][rowIndex] = recommendation.getPreference().floatValue();
+            datos[PREFERENCE_INDEX][rowIndex] = recommendation.getPreference().doubleValue();
             datos[NAME_INDEX][rowIndex] = recommendation.getItem().getName();
 
             rowIndex++;

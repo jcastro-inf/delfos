@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,15 +16,6 @@
  */
 package delfos.group.grs.cww;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-import java.util.ListIterator;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeMap;
-import java.util.TreeSet;
 import delfos.common.Global;
 import delfos.common.aggregationoperators.weighted.WeightedAggregationOperator;
 import delfos.common.aggregationoperators.weighted.WeightedSumAggregation;
@@ -35,13 +26,14 @@ import delfos.common.exceptions.dataset.users.UserNotFound;
 import delfos.common.exceptions.ratings.NotEnoughtUserInformation;
 import delfos.common.parameters.Parameter;
 import delfos.common.parameters.restriction.BooleanParameter;
-import delfos.common.parameters.restriction.FloatParameter;
+import delfos.common.parameters.restriction.DoubleParameter;
 import delfos.common.parameters.restriction.ParameterOwnerRestriction;
 import delfos.common.parameters.restriction.RecommenderSystemParameterRestriction;
-import delfos.dataset.basic.rating.Rating;
-import delfos.dataset.loaders.given.DatasetLoaderGivenRatingsDataset;
+import delfos.dataset.basic.item.Item;
 import delfos.dataset.basic.loader.types.DatasetLoader;
+import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.generated.modifieddatasets.PseudoUserRatingsDataset;
+import delfos.dataset.loaders.given.DatasetLoaderGivenRatingsDataset;
 import delfos.dataset.util.DatasetPrinterDeprecated;
 import delfos.dataset.util.DatasetUtilities;
 import delfos.group.groupsofusers.GroupOfUsers;
@@ -50,8 +42,9 @@ import delfos.group.grs.SingleRecommendationModel;
 import delfos.group.grs.aggregation.GroupModelPseudoUser;
 import delfos.group.grs.cww.centrality.CentralityConceptDefinition;
 import delfos.group.grs.cww.centrality.definitions.AritmethicMeanConnectionWeightCentrality;
-import delfos.rs.RecommenderSystem;
+import delfos.group.grs.recommendations.GroupRecommendations;
 import delfos.rs.RecommendationModelBuildingProgressListener;
+import delfos.rs.RecommenderSystem;
 import delfos.rs.collaborativefiltering.knn.memorybased.nwr.KnnMemoryBasedNWR;
 import delfos.rs.recommendation.Recommendation;
 import delfos.rs.trustbased.StrongTermOverConnections;
@@ -59,6 +52,15 @@ import delfos.rs.trustbased.WeightedGraphAdapter;
 import delfos.rs.trustbased.WeightedGraphCalculation;
 import delfos.rs.trustbased.WeightedGraphNormaliser;
 import delfos.rs.trustbased.implicittrustcomputation.ShambourLu_UserBasedImplicitTrustComputation;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+import java.util.ListIterator;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
+import java.util.TreeSet;
 
 /**
  * Sistema de recomendación a grupos de usuarios que agrega las valoraciones de
@@ -87,8 +89,8 @@ public class CentralityWeightedAggregationGRS extends GroupRecommenderSystemAdap
             new ParameterOwnerRestriction(WeightedGraphCalculation.class, new ShambourLu_UserBasedImplicitTrustComputation(false)));
 
     public static final Parameter STRONG_APPLY = new Parameter("STRONG_APPLY", new BooleanParameter(Boolean.TRUE));
-    public static final Parameter STRONG_MIN = new Parameter("STRONG_MIN", new FloatParameter(0, 1.0f, 0.6f));
-    public static final Parameter STRONG_MAX = new Parameter("STRONG_MAX", new FloatParameter(0, 1.0f, 0.8f));
+    public static final Parameter STRONG_MIN = new Parameter("STRONG_MIN", new DoubleParameter(0, 1.0f, 0.6f));
+    public static final Parameter STRONG_MAX = new Parameter("STRONG_MAX", new DoubleParameter(0, 1.0f, 0.8f));
 
     public static final Parameter CENTRALITY_CONCEPT = new Parameter("CENTRALITY_CONCEPT", new ParameterOwnerRestriction(CentralityConceptDefinition.class, new AritmethicMeanConnectionWeightCentrality()));
 
@@ -155,15 +157,19 @@ public class CentralityWeightedAggregationGRS extends GroupRecommenderSystemAdap
     }
 
     @Override
-    public GroupModelPseudoUser buildGroupModel(DatasetLoader<? extends Rating> datasetLoader, SingleRecommendationModel RecommendationModel, GroupOfUsers groupOfUsers) throws UserNotFound, CannotLoadRatingsDataset {
+    public <RatingType extends Rating> GroupModelPseudoUser buildGroupModel(
+            DatasetLoader<RatingType> datasetLoader,
+            SingleRecommendationModel RecommendationModel,
+            GroupOfUsers groupOfUsers)
+            throws UserNotFound, CannotLoadRatingsDataset {
         Map<Integer, Number> groupRatings = getGroupRatings(datasetLoader, groupOfUsers, getSocialNetworkCalculator());
 
         return new GroupModelPseudoUser(groupOfUsers, groupRatings);
     }
 
     @Override
-    public Collection<Recommendation> recommendOnly(
-            DatasetLoader<? extends Rating> datasetLoader, SingleRecommendationModel RecommendationModel, GroupModelPseudoUser groupModel, GroupOfUsers groupOfUsers, java.util.Set<Integer> candidateItems)
+    public <RatingType extends Rating> GroupRecommendations recommendOnly(
+            DatasetLoader<RatingType> datasetLoader, SingleRecommendationModel RecommendationModel, GroupModelPseudoUser groupModel, GroupOfUsers groupOfUsers, Set<Item> candidateItems)
             throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset, NotEnoughtUserInformation {
 
         //Recojo los parámetros en variables
@@ -186,7 +192,7 @@ public class CentralityWeightedAggregationGRS extends GroupRecommenderSystemAdap
                 idGroup,
                 candidateItems);
 
-        return groupRecom;
+        return new GroupRecommendations(groupOfUsers, groupRecom);
     }
 
     @Override
@@ -223,7 +229,7 @@ public class CentralityWeightedAggregationGRS extends GroupRecommenderSystemAdap
         }
 
         if (isNormaliseSocialNetworkConnections()) {
-            userTrust = new WeightedGraphNormaliser<Integer>(userTrust);
+            userTrust = new WeightedGraphNormaliser<>(userTrust);
             if (Global.isVerboseAnnoying()) {
                 Global.showInfoMessage("Normalised graph\n");
                 DatasetPrinterDeprecated.printWeightedGraph(userTrust);
@@ -248,18 +254,18 @@ public class CentralityWeightedAggregationGRS extends GroupRecommenderSystemAdap
         }
 
         // Generate groupProfile.
-        Map<Integer, Number> groupRatings = new TreeMap<Integer, Number>();
+        Map<Integer, Number> groupRatings = new TreeMap<>();
         {
             WeightedAggregationOperator aggregationOperator = new WeightedSumAggregation();
-            Map<Integer, Map<Integer, ? extends Rating>> groupMembersRatings = new TreeMap<Integer, Map<Integer, ? extends Rating>>();
-            Set<Integer> itemsRatedByGroup = new TreeSet<Integer>();
+            Map<Integer, Map<Integer, ? extends Rating>> groupMembersRatings = new TreeMap<>();
+            Set<Integer> itemsRatedByGroup = new TreeSet<>();
             for (int idUser : groupOfUsers.getIdMembers()) {
                 groupMembersRatings.put(idUser, datasetLoader.getRatingsDataset().getUserRatingsRated(idUser));
                 itemsRatedByGroup.addAll(groupMembersRatings.get(idUser).keySet());
             }
             for (int idItem : itemsRatedByGroup) {
-                List<Double> ratingsValues = new ArrayList<Double>(groupOfUsers.size());
-                List<Double> memberWeights = new ArrayList<Double>(groupOfUsers.size());
+                List<Double> ratingsValues = new ArrayList<>(groupOfUsers.size());
+                List<Double> memberWeights = new ArrayList<>(groupOfUsers.size());
                 for (int idMember : groupOfUsers) {
                     Rating rating = groupMembersRatings.get(idMember).get(idItem);
                     if (rating != null) {

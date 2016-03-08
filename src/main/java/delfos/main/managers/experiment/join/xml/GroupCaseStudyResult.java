@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -21,7 +21,7 @@ import delfos.group.io.excel.casestudy.GroupCaseStudyExcel;
 import java.util.Comparator;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeSet;
+import java.util.stream.Collectors;
 
 public class GroupCaseStudyResult {
 
@@ -91,15 +91,15 @@ public class GroupCaseStudyResult {
     }
 
     public Set<String> getDefinedDataValidationParameters() {
-        return new TreeSet<>(dataValidationParameters.keySet());
+        return dataValidationParameters.keySet().parallelStream().collect(Collectors.toSet());
     }
 
     public Set<String> getDefinedTechniqueParameters() {
-        return new TreeSet<>(techniqueParameters.keySet());
+        return techniqueParameters.keySet().parallelStream().collect(Collectors.toSet());
     }
 
     public Set<String> getDefinedEvaluationMeasures() {
-        return new TreeSet<>(evaluationMeasuresValues.keySet());
+        return evaluationMeasuresValues.keySet().parallelStream().collect(Collectors.toSet());
     }
 
     public String getGroupCaseStudyAlias() {

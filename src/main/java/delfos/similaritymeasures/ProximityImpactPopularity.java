@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,16 +16,16 @@
  */
 package delfos.similaritymeasures;
 
-import java.util.Collection;
 import delfos.common.exceptions.CouldNotComputeSimilarity;
 import delfos.common.exceptions.dataset.items.ItemNotFound;
-import delfos.rs.collaborativefiltering.knn.CommonRating;
-import delfos.rs.collaborativefiltering.knn.RecommendationEntity;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RatingsDataset;
 import delfos.dataset.basic.rating.domain.Domain;
 import delfos.rs.RecommenderSystemAdapter;
+import delfos.rs.collaborativefiltering.knn.CommonRating;
+import delfos.rs.collaborativefiltering.knn.RecommendationEntity;
 import delfos.rs.collaborativefiltering.knn.memorybased.KnnMemoryBasedCFRS;
+import java.util.Collection;
 
 /**
  * Clase que implementa la medida del coseno para realizar una medida de
@@ -81,7 +81,7 @@ public class ProximityImpactPopularity extends SimilarityMeasureAdapter implemen
     }
 
     @Override
-    public float similarity(Collection<CommonRating> commonRatings, RatingsDataset<? extends Rating> ratings) throws CouldNotComputeSimilarity {
+    public double similarity(Collection<CommonRating> commonRatings, RatingsDataset<? extends Rating> ratings) throws CouldNotComputeSimilarity {
         double ret = 0;
         for (CommonRating commonRating : commonRatings) {
             if (commonRating.getCommonEntity().equals(RecommendationEntity.ITEM)) {
@@ -104,7 +104,7 @@ public class ProximityImpactPopularity extends SimilarityMeasureAdapter implemen
                 throw new UnsupportedOperationException("This measure is meant to be used only in User-based collaborative filtering");
             }
         }
-        return (float) ret;
+        return (double) ret;
     }
 
     @Override

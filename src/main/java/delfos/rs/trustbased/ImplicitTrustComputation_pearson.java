@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,19 +16,19 @@
  */
 package delfos.rs.trustbased;
 
+import delfos.ERROR_CODES;
+import delfos.common.Global;
+import delfos.common.exceptions.CouldNotComputeSimilarity;
+import delfos.common.exceptions.dataset.users.UserNotFound;
+import delfos.dataset.basic.rating.Rating;
+import delfos.dataset.basic.rating.RatingsDataset;
+import delfos.dataset.util.DatasetPrinterDeprecated;
+import delfos.similaritymeasures.PearsonCorrelationCoefficient;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
-import delfos.dataset.basic.rating.Rating;
-import delfos.dataset.basic.rating.RatingsDataset;
-import delfos.dataset.util.DatasetPrinterDeprecated;
-import delfos.ERROR_CODES;
-import delfos.similaritymeasures.PearsonCorrelationCoefficient;
-import delfos.common.exceptions.CouldNotComputeSimilarity;
-import delfos.common.exceptions.dataset.users.UserNotFound;
-import delfos.common.Global;
 
 /**
  * Algoritmo para calcular redes de confianza entre usuarios, utilizando las
@@ -90,16 +90,16 @@ public class ImplicitTrustComputation_pearson {
                 try {
                     neighborRatings = ratingsDataset.getUserRatingsRated(idUserNeighbor);
 
-                    List<Float> userList = new LinkedList<Float>();
-                    List<Float> neighborList = new LinkedList<Float>();
+                    List<Double> userList = new LinkedList<Double>();
+                    List<Double> neighborList = new LinkedList<Double>();
                     for (int idItem : userRatings.keySet()) {
                         if (neighborRatings.containsKey(idItem)) {
-                            userList.add(userRatings.get(idItem).getRatingValue().floatValue());
-                            neighborList.add(neighborRatings.get(idItem).getRatingValue().floatValue());
+                            userList.add(userRatings.get(idItem).getRatingValue().doubleValue());
+                            neighborList.add(neighborRatings.get(idItem).getRatingValue().doubleValue());
                         }
                     }
 
-                    float value;
+                    double value;
                     try {
                         value = pearsonCorrelationCoefficient.similarity(userList, neighborList);
                         pearson.get(idUser).put(idUserNeighbor, value);

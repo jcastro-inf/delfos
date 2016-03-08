@@ -33,7 +33,7 @@ public class WeightedSumAggregation extends WeightedAggregationOperator {
     private final static long serialVersionUID = 1L;
 
     @Override
-    public float aggregateValues(
+    public double aggregateValues(
             List<? extends Number> values,
             List<? extends Number> weights) {
 
@@ -63,6 +63,6 @@ public class WeightedSumAggregation extends WeightedAggregationOperator {
             throw new IllegalArgumentException("The weights sum is zero.");
         }
         double aggregateValue = numerador / denominador;
-        return (float) aggregateValue;
+        return (double) aggregateValue;
     }
 }

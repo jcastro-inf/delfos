@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -29,7 +29,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
@@ -110,19 +109,23 @@ public class XMLJoin extends CaseUseMode {
 
         AggregateResultsXML aggregateResultsXML = new AggregateResultsXML();
 
-        List<File> allFiles = new LinkedList<>();
-
-        resultsPaths.stream()
+        List<File> allFiles
+                = resultsPaths.parallelStream()
                 .map((path) -> new File(path))
-                .forEach((directory) -> {
+                .map((directory) -> {
                     if (!directory.exists()) {
                         FileNotFoundException notFound = new FileNotFoundException("Directory '" + directory + "' does not exists [" + directory.getAbsolutePath() + "]");
                         ERROR_CODES.CANNOT_READ_FILE.exit(notFound);
                     }
-                    allFiles.addAll(FileUtilities.findInDirectory(directory));
-                });
+                    return FileUtilities.findInDirectory(directory);
+                })
+                .flatMap(directories -> directories.parallelStream())
+                .filter(AggregateResultsXML.RESULTS_FILES)
+                .collect(Collectors.toList());
 
         List<File> relevantFiles = aggregateResultsXML.filterResultsFiles(allFiles);
+
+        Global.showMessage("Parsing " + relevantFiles.size() + " results files.\n");
 
         if (relevantFiles.isEmpty()) {
             return;
@@ -138,7 +141,7 @@ public class XMLJoin extends CaseUseMode {
 
         writeJoinIntoSpreadsheet(relevantFiles, outputFile);
 
-        System.out.println("Finished parsing " + relevantFiles.size() + " results files.");
+        Global.showMessage("Finished parsing " + relevantFiles.size() + " results files.\n");
 
     }
 
@@ -156,19 +159,22 @@ public class XMLJoin extends CaseUseMode {
     }
 
     public static void writeJoinIntoSpreadsheet(List<File> relevantFiles, File outputSpreadsheetFile) {
-        List<GroupCaseStudy> groupCaseStudies = relevantFiles.stream().map(file -> {
-            try {
-                return GroupCaseStudyXML.loadGroupCaseWithResults(file);
-            } catch (JDOMException | IOException ex) {
-                Logger.getLogger(XMLJoin.class.getName()).log(Level.SEVERE, null, ex);
-                return null;
-            }
-        })
+        List<GroupCaseStudy> groupCaseStudies = relevantFiles.parallelStream()
+                .map(file -> {
+                    try {
+                        return GroupCaseStudyXML.loadGroupCaseWithResults(file);
+                    } catch (JDOMException | IOException ex) {
+                        Logger.getLogger(XMLJoin.class.getName()).log(Level.SEVERE, null, ex);
+                        return null;
+                    }
+                })
                 .filter(groupCaseStudyConfiguration -> groupCaseStudyConfiguration != null)
                 .map(groupCaseStudyConfiguration -> groupCaseStudyConfiguration.createGroupCaseStudy())
                 .collect(Collectors.toList());
 
-        List<GroupCaseStudyResult> groupCaseStudyResults = groupCaseStudies.stream().map(groupCaseStudy -> new GroupCaseStudyResult(groupCaseStudy)).collect(Collectors.toList());
+        List<GroupCaseStudyResult> groupCaseStudyResults = groupCaseStudies.parallelStream()
+                .map(groupCaseStudy -> new GroupCaseStudyResult(groupCaseStudy))
+                .collect(Collectors.toList());
 
         List<String> dataValidationParametersOrder = obtainDataValidationParametersOrder(groupCaseStudyResults);
         List<String> techniqueParametersOrder = obtainTechniqueParametersOrder(groupCaseStudyResults);
@@ -233,24 +239,29 @@ public class XMLJoin extends CaseUseMode {
     }
 
     private static List<String> obtainDataValidationParametersOrder(List<GroupCaseStudyResult> groupCaseStudyResults) {
-        Set<String> commonParameters = new TreeSet<>();
+        List<String> commonParametersOrder
+                = groupCaseStudyResults.parallelStream()
+                .map((groupCaseStudyResult) -> (groupCaseStudyResult.getDefinedDataValidationParameters()))
+                .flatMap(dataValidationParameters -> dataValidationParameters.parallelStream())
+                .collect(Collectors.toSet())
+                .parallelStream()
+                .sorted()
+                .collect(Collectors.toList());
 
-        for (GroupCaseStudyResult groupCaseStudyResult : groupCaseStudyResults) {
-            commonParameters.addAll(groupCaseStudyResult.getDefinedDataValidationParameters());
-        }
-
-        List<String> commonParametersOrder = commonParameters.stream().sorted().collect(Collectors.toList());
         return commonParametersOrder;
     }
 
     private static List<String> obtainTechniqueParametersOrder(List<GroupCaseStudyResult> groupCaseStudyResults) {
-        Set<String> commonParameters = new TreeSet<>();
 
-        for (GroupCaseStudyResult groupCaseStudyResult : groupCaseStudyResults) {
-            commonParameters.addAll(groupCaseStudyResult.getDefinedTechniqueParameters());
-        }
+        List<String> commonParametersOrder
+                = groupCaseStudyResults.parallelStream()
+                .map((groupCaseStudyResult) -> (groupCaseStudyResult.getDefinedTechniqueParameters()))
+                .flatMap(dataValidationParameters -> dataValidationParameters.parallelStream())
+                .collect(Collectors.toSet())
+                .parallelStream()
+                .sorted()
+                .collect(Collectors.toList());
 
-        List<String> commonParametersOrder = commonParameters.stream().sorted().collect(Collectors.toList());
         return commonParametersOrder;
     }
 

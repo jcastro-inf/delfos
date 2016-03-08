@@ -17,9 +17,12 @@
 package delfos.rs.trustbased;
 
 import delfos.dataset.util.DatasetPrinter;
+import dnl.utils.text.table.TextTable;
 import it.unimi.dsi.fastutil.PriorityQueue;
 import it.unimi.dsi.fastutil.objects.ObjectHeapPriorityQueue;
+import java.io.PrintStream;
 import java.io.Serializable;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -29,6 +32,7 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
+import org.apache.commons.io.output.WriterOutputStream;
 
 /**
  * Grafo ponderado.
@@ -158,7 +162,7 @@ public class WeightedGraphAdapter<Node> implements Serializable, WeightedGraph<N
      */
     @Override
     public Collection<Node> allNodes() {
-        return new ArrayList<Node>(allNodes);
+        return new ArrayList<>(allNodes);
     }
 
     private double compositionOfConnections(double conn1, double conn2) {
@@ -184,21 +188,21 @@ public class WeightedGraphAdapter<Node> implements Serializable, WeightedGraph<N
     public PathBetweenNodes shortestPath(Node n1, Node n2) {
 
         if (n1 == n2) {
-            ArrayList<Node> oneNodePath = new ArrayList<Node>();
+            ArrayList<Node> oneNodePath = new ArrayList<>();
             oneNodePath.add(n1);
             return new PathBetweenNodes(this, oneNodePath);
         }
 
-        PriorityQueue<PathBetweenNodes> priorityList = new ObjectHeapPriorityQueue<PathBetweenNodes>();
+        PriorityQueue<PathBetweenNodes> priorityList = new ObjectHeapPriorityQueue<>();
 
         {
-            Set<Node> allButFirst = new TreeSet<Node>(allNodes);
+            Set<Node> allButFirst = new TreeSet<>(allNodes);
             allButFirst.remove(n1);
             allButFirst = Collections.unmodifiableSet(allButFirst);
 
             for (Node intermediateNode : allButFirst) {
 
-                List<Node> path = new ArrayList<Node>();
+                List<Node> path = new ArrayList<>();
                 path.add(n1);
                 path.add(intermediateNode);
                 PathBetweenNodes pathBetweenNodes = new PathBetweenNodes(this, path);
@@ -224,7 +228,7 @@ public class WeightedGraphAdapter<Node> implements Serializable, WeightedGraph<N
             for (Node intermediateNode : allNodes) {
                 if (!firsPath.getNodes().contains(intermediateNode)) {
 
-                    List<Node> newPath = new ArrayList<Node>(firsPath.getNodes());
+                    List<Node> newPath = new ArrayList<>(firsPath.getNodes());
                     newPath.add(intermediateNode);
 
                     PathBetweenNodes pathBetweenNodes = new PathBetweenNodes(this, newPath);
@@ -253,13 +257,10 @@ public class WeightedGraphAdapter<Node> implements Serializable, WeightedGraph<N
     public double centrality(Node node, int k) {
 
         double centralityValue = 0;
-        for (Node node2 : allNodes) {
-            if (node.equals(node2)) {
-                continue;
-            }
-
-            centralityValue += composition(node, node2, k);
-        }
+        centralityValue = allNodes.stream()
+                .filter((node2) -> !(node.equals(node2)))
+                .map((node2) -> composition(node, node2, k))
+                .reduce(centralityValue, (accumulator, _item) -> accumulator + _item);
 
         return centralityValue;
     }
@@ -270,27 +271,35 @@ public class WeightedGraphAdapter<Node> implements Serializable, WeightedGraph<N
         return printWeightedGraph;
     }
 
-    public double[][] asMatrix() {
+    public void printTable(WriterOutputStream outputStream) {
 
-        final List<Node> nodesSorted = nodesSortingForMatrix();
+        List<String> columnNames = new ArrayList<>();
+        columnNames.add("node\\node");
+        final List<Node> sortedNodes = this.allNodes.stream().sorted().collect(Collectors.toList());
 
-        double[][] matrix = new double[nodesSorted.size()][nodesSorted.size()];
+        Object[][] data = new Object[sortedNodes.size()][sortedNodes.size() + 1];
 
-        for (int indexRow = 0; indexRow < nodesSorted.size(); indexRow++) {
-            Node node = nodesSorted.get(indexRow);
+        columnNames.addAll(sortedNodes.stream().map(node -> node.toString()).collect(Collectors.toList()));
 
-            for (int indexColumn = 0; indexColumn < nodesSorted.size(); indexColumn++) {
-                Node node2 = nodesSorted.get(indexColumn);
-                double value = connections.get(node).get(node2).doubleValue();
-                matrix[indexRow][indexColumn] = value;
+        DecimalFormat format = new DecimalFormat("0.0000");
+
+        for (int node1index = 0; node1index < sortedNodes.size(); node1index++) {
+            Node node1 = sortedNodes.get(node1index);
+            int row = node1index;
+
+            data[row][0] = node1.toString();
+
+            for (int node2index = 0; node2index < sortedNodes.size(); node2index++) {
+                Node node2 = sortedNodes.get(node2index);
+                int column = node2index + 1;
+
+                double connection = connections.get(node1).get(node2).doubleValue();
+                data[row][column] = format.format(connection);
             }
         }
 
-        return matrix;
-    }
+        TextTable textTable = new TextTable(columnNames.toArray(new String[0]), data);
 
-    public List<Node> nodesSortingForMatrix() {
-        List<Node> nodesSorted = this.allNodes.stream().sorted().collect(Collectors.toList());
-        return Collections.unmodifiableList(nodesSorted);
+        textTable.printTable(new PrintStream(outputStream), 0);
     }
 }

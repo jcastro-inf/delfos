@@ -33,7 +33,7 @@ import delfos.rs.RecommenderSystemAdapter;
  */
 public class JaccardForUsers {
 
-    public float similarity(RatingsDataset<? extends Rating> ratings, int idUser1, int idUser2) throws CouldNotComputeSimilarity {
+    public double similarity(RatingsDataset<? extends Rating> ratings, int idUser1, int idUser2) throws CouldNotComputeSimilarity {
 
         //Calculo el Jaccard
         Collection<Integer> user1Ratings;
@@ -60,9 +60,9 @@ public class JaccardForUsers {
             return 0;
         } else {
 
-            float numCommon = intersection.size();
+            double numCommon = intersection.size();
 
-            float jaccard = numCommon / union.size();
+            double jaccard = numCommon / union.size();
             return jaccard;
         }
     }

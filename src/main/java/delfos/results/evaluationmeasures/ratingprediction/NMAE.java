@@ -76,7 +76,7 @@ public class NMAE extends EvaluationMeasure {
             Global.showWarning("Cannot compute 'MAE' since the RS did not predicted any recommendation!!");
         }
 
-        return new MeasureResult(this, (float) mean.getMean());
+        return new MeasureResult(this, (double) mean.getMean());
     }
 
     @Override

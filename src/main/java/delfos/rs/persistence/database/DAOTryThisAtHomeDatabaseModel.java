@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -19,6 +19,8 @@ package delfos.rs.persistence.database;
 import delfos.ERROR_CODES;
 import delfos.common.Global;
 import delfos.databaseconnections.DatabaseConection;
+import delfos.dataset.basic.loader.types.DatasetLoader;
+import delfos.dataset.basic.rating.Rating;
 import delfos.rs.collaborativefiltering.svd.TryThisAtHomeSVD;
 import delfos.rs.collaborativefiltering.svd.TryThisAtHomeSVDModel;
 import delfos.rs.persistence.DatabasePersistence;
@@ -103,14 +105,14 @@ public class DAOTryThisAtHomeDatabaseModel implements RecommendationModelDatabas
             st.execute("CREATE TABLE  " + getTemporalUserProfilesTable(prefix) + " ("
                     + "idUser int(10) NOT NULL,"
                     + "idFeature int(10) unsigned NOT NULL,"
-                    + "value float NOT NULL,"
+                    + "value double NOT NULL,"
                     + "PRIMARY KEY (idUser,idFeature)"
                     + ") ENGINE=InnoDB DEFAULT CHARSET=latin1;");
 
             st.execute("CREATE TABLE  " + getTemporalItemProfilesTable(prefix) + " ("
                     + "idItem int(10) unsigned NOT NULL,"
                     + "idFeature int(10) unsigned NOT NULL,"
-                    + "value float NOT NULL,"
+                    + "value double NOT NULL,"
                     + "PRIMARY KEY (idItem,idFeature)"
                     + ") ENGINE=InnoDB DEFAULT CHARSET=latin1;");
 
@@ -219,7 +221,7 @@ public class DAOTryThisAtHomeDatabaseModel implements RecommendationModelDatabas
     }
 
     @Override
-    public TryThisAtHomeSVDModel loadModel(DatabasePersistence databasePersistence, Collection<Integer> users, Collection<Integer> items) throws FailureInPersistence {
+    public TryThisAtHomeSVDModel loadModel(DatabasePersistence databasePersistence, Collection<Integer> users, Collection<Integer> items, DatasetLoader<? extends Rating> datasetLoader) throws FailureInPersistence {
 
         try {
             final String prefix = databasePersistence.getPrefix();

@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -49,8 +49,6 @@ import delfos.rs.trustbased.implicittrustcomputation.ShambourLu_UserBasedImplici
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Clase principal que sirve como punto de entrada para ejecutar la
@@ -73,12 +71,6 @@ public class MainGroup {
     public static boolean executeConsole_Group(ConsoleParameters consoleParameters) {
         GroupRecommenderSystemsFactory.getInstance().copyInSingleUserRecommender();
         GroupRatingsFilterFactory.getInstance();
-
-        if (consoleParameters.isParameterDefined("-default")) {
-            consoleParameters.printUnusedParameters(System.err);
-            defaultBehaviour();
-            return true;
-        }
 
         if (consoleParameters.isParameterDefined(ExecuteGroupXML.MODE_PARAMETER)) {
             try {
@@ -163,7 +155,7 @@ public class MainGroup {
             try {
                 filterMethodCaseStudy(NUM_EJECUCIONES, NUM_GROUPS, SIZE_OF_GROUPS, SEED);
             } catch (NumberFormatException | IOException ex) {
-                Logger.getLogger(MainGroup.class.getName()).log(Level.SEVERE, null, ex);
+                ERROR_CODES.COMMAND_LINE_PARAMETERS_ERROR.exit(ex);
             }
 
             return true;
@@ -257,11 +249,6 @@ public class MainGroup {
         } catch (CannotLoadRatingsDataset ex) {
             ERROR_CODES.CANNOT_LOAD_RATINGS_DATASET.exit(ex);
         }
-    }
-
-    private static void defaultBehaviour() {
-        DefaultExecution defaultExecution = new DefaultExecution();
-        defaultExecution.execute();
     }
 
     private static void xmlExperimentsExecution(String experimentsDirectory, String datasetDirectory, int numExecutions, long seed) {

@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -18,12 +18,16 @@ package delfos.rs.trustbased;
 
 import java.io.Serializable;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  *
  * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 18-jul-2013
+ * @param <Node>
  */
 public interface WeightedGraph<Node> extends Serializable {
 
@@ -58,7 +62,8 @@ public interface WeightedGraph<Node> extends Serializable {
      *
      * @param id1 Nodo origen.
      * @param id2 Nodo destino.
-     * @return Intensidad de la conexión entre dos nodos. Siempre devuelve un número concreto, si no existe conexión devuelve cero.
+     * @return Intensidad de la conexión entre dos nodos. Siempre devuelve un
+     * número concreto, si no existe conexión devuelve cero.
      */
     public Number connection(Node id1, Node id2);
 
@@ -70,5 +75,29 @@ public interface WeightedGraph<Node> extends Serializable {
      * @return
      */
     int maxK();
+
+    public default Double[][] asMatrix() {
+
+        final List<Node> nodesSorted = nodesSortingForMatrix();
+
+        Double[][] matrix = new Double[nodesSorted.size()][nodesSorted.size()];
+
+        for (int indexRow = 0; indexRow < nodesSorted.size(); indexRow++) {
+            Node node = nodesSorted.get(indexRow);
+
+            for (int indexColumn = 0; indexColumn < nodesSorted.size(); indexColumn++) {
+                Node node2 = nodesSorted.get(indexColumn);
+                double value = connection(node, node2).doubleValue();
+                matrix[indexRow][indexColumn] = value;
+            }
+        }
+
+        return matrix;
+    }
+
+    public default List<Node> nodesSortingForMatrix() {
+        List<Node> nodesSorted = allNodes().stream().sorted().collect(Collectors.toList());
+        return Collections.unmodifiableList(nodesSorted);
+    }
 
 }

@@ -61,14 +61,14 @@ public class PRSpaceGroupsXML {
 
     public static Element getElement(ConfusionMatricesCurve curve) {
         Element measureElement = new Element(MEASURE_ELEMENT);
-        measureElement.setAttribute(GroupEvaluationMeasure.VALUE,Float.toString(curve.getAreaPRSpace()));
+        measureElement.setAttribute(GroupEvaluationMeasure.VALUE,Double.toString(curve.getAreaPRSpace()));
         
         Element detailedResultElement = new Element(DETAILED_RESULT_ELEMENT);
 
         for (int i = 1; i < curve.size(); i++) {
             
-            String precision = Float.toString(curve.getPrecisionAt(i));
-            String recall = Float.toString(curve.getRecallAt(i));
+            String precision = Double.toString(curve.getPrecisionAt(i));
+            String recall = Double.toString(curve.getRecallAt(i));
             
             Element curvePointElement = new Element(CURVE_POINT_ELEMENT);
             curvePointElement.setAttribute(K_ATTRIBUTE, Integer.toString(i));

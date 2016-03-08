@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -26,6 +26,7 @@ import delfos.common.exceptions.dataset.users.UserNotFound;
 import delfos.common.exceptions.ratings.NotEnoughtUserInformation;
 import delfos.configfile.rs.single.RecommenderSystemConfiguration;
 import delfos.configfile.rs.single.RecommenderSystemConfigurationFileParser;
+import delfos.dataset.basic.item.Item;
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
 import delfos.group.groupsofusers.GroupOfUsers;
@@ -33,21 +34,19 @@ import delfos.group.grs.GroupRecommenderSystem;
 import delfos.group.grs.recommendations.GroupRecommendations;
 import delfos.main.managers.CaseUseSubManager;
 import delfos.main.managers.recommendation.ArgumentsRecommendation;
-import delfos.main.managers.recommendation.group.GroupRecommendation;
 import static delfos.main.managers.recommendation.group.GroupRecommendation.GROUP_MODE;
 import static delfos.main.managers.recommendation.group.GroupRecommendation.TARGET_GROUP;
 import delfos.recommendationcandidates.RecommendationCandidatesSelector;
 import delfos.rs.persistence.FailureInPersistence;
 import delfos.rs.persistence.PersistenceMethodStrategy;
-import delfos.rs.recommendation.Recommendation;
-import delfos.rs.recommendation.RecommendationComputationDetails;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  *
@@ -103,9 +102,9 @@ class Recommend extends CaseUseSubManager {
             DatasetLoader<? extends Rating> datasetLoader = rsc.datasetLoader;
             RecommendationCandidatesSelector candidatesSelector = rsc.recommendationCandidatesSelector;
 
-            Collection<Recommendation> recommendations = null;
+            GroupRecommendations recommendations = null;
 
-            Set<Integer> candidateItems;
+            Set<Item> candidateItems;
             try {
                 candidateItems = candidatesSelector.candidateItems(datasetLoader, targetGroup);
             } catch (UserNotFound ex) {
@@ -118,10 +117,11 @@ class Recommend extends CaseUseSubManager {
                 Global.showInfoMessage("\t" + candidateItems + "\n");
             }
 
-            Object RecommendationModel;
+            Object recommendationModel;
             try {
                 Global.showMessageTimestamped("Loading recommendation model");
-                RecommendationModel = PersistenceMethodStrategy.loadModel(groupRecommenderSystem, rsc.persistenceMethod, targetGroup.getIdMembers(), candidateItems);
+                recommendationModel = PersistenceMethodStrategy.loadModel(groupRecommenderSystem, rsc.persistenceMethod, targetGroup.getIdMembers(),
+                        candidateItems.stream().map(item -> item.getId()).collect(Collectors.toSet()), datasetLoader);
                 Global.showMessageTimestamped("Loaded recommendation model");
             } catch (FailureInPersistence ex) {
                 ERROR_CODES.FAILURE_IN_PERSISTENCE.exit(ex);
@@ -130,8 +130,13 @@ class Recommend extends CaseUseSubManager {
 
             Object groupModel;
             try {
-                groupModel = groupRecommenderSystem.buildGroupModel(datasetLoader, RecommendationModel, targetGroup);
-                recommendations = groupRecommenderSystem.recommendOnly(datasetLoader, RecommendationModel, groupModel, targetGroup, candidateItems);
+                groupModel = groupRecommenderSystem.buildGroupModel(datasetLoader, recommendationModel, targetGroup);
+                recommendations = groupRecommenderSystem.recommendOnly(
+                        datasetLoader,
+                        recommendationModel,
+                        groupModel,
+                        targetGroup,
+                        candidateItems);
             } catch (UserNotFound ex) {
                 ERROR_CODES.USER_NOT_FOUND.exit(ex);
                 throw new IllegalArgumentException(ex);
@@ -141,14 +146,14 @@ class Recommend extends CaseUseSubManager {
             } catch (NotEnoughtUserInformation ex) {
                 Global.showWarning("Recommender system '" + groupRecommenderSystem.getName() + "' reported: Not enought user information (group=" + targetGroup + ").");
                 //ERROR_CODES.USER_NOT_ENOUGHT_INFORMATION.exit(ex);
-                recommendations = new ArrayList<>();
+                recommendations = new GroupRecommendations(targetGroup, Collections.EMPTY_LIST);
             }
 
             if (Global.isVerboseAnnoying()) {
-                if (recommendations.isEmpty()) {
+                if (recommendations.getRecommendations().isEmpty()) {
                     Global.showWarning("Recommendation list for group '" + targetGroup + "' is empty, check for causes.");
                 } else {
-                    Global.showInfoMessage("Recommendation list for group '" + targetGroup + "' of size " + recommendations.size() + "\n");
+                    Global.showInfoMessage("Recommendation list for group '" + targetGroup + "' of size " + recommendations.getRecommendations().size() + "\n");
                     Global.showInfoMessage("\t" + recommendations.toString() + "\n");
                 }
             }
@@ -157,7 +162,7 @@ class Recommend extends CaseUseSubManager {
             chronometer.reset();
 
             Global.showMessageTimestamped("Writting recommendations\n");
-            rsc.recommdendationsOutputMethod.writeRecommendations(new GroupRecommendations(targetGroup, recommendations, new RecommendationComputationDetails().addDetail(RecommendationComputationDetails.DetailField.TimeTaken, timeTaken)));
+            rsc.recommdendationsOutputMethod.writeRecommendations(recommendations);
             Global.showMessageTimestamped("Wrote recommendations\n");
 
         } else {
@@ -203,6 +208,6 @@ class Recommend extends CaseUseSubManager {
             }
         }
 
-        return new GroupOfUsers(members);
+        return new GroupOfUsers(members.toArray(new Integer[0]));
     }
 }

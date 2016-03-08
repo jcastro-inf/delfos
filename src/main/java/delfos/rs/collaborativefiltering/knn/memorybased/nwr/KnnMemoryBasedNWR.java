@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -21,30 +21,28 @@ import delfos.common.exceptions.CouldNotPredictRating;
 import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
 import delfos.common.exceptions.dataset.items.ItemNotFound;
 import delfos.common.exceptions.dataset.users.UserNotFound;
-import delfos.common.parallelwork.MultiThreadExecutionManager;
 import delfos.dataset.basic.item.ContentDataset;
 import delfos.dataset.basic.item.Item;
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RatingsDataset;
 import delfos.dataset.basic.user.User;
-import delfos.rs.collaborativefiltering.knn.KnnCollaborativeRecommender;
 import delfos.rs.collaborativefiltering.knn.MatchRating;
 import delfos.rs.collaborativefiltering.knn.RecommendationEntity;
+import delfos.rs.collaborativefiltering.knn.memorybased.KnnMemoryBasedCFRS;
 import delfos.rs.collaborativefiltering.knn.memorybased.KnnMemoryModel;
+import delfos.rs.collaborativefiltering.knn.memorybased.KnnMemoryNeighborCalculator;
+import delfos.rs.collaborativefiltering.knn.memorybased.KnnMemoryNeighborTask;
 import delfos.rs.collaborativefiltering.predictiontechniques.PredictionTechnique;
 import delfos.rs.collaborativefiltering.profile.Neighbor;
 import delfos.rs.persistence.DatabasePersistence;
 import delfos.rs.persistence.FailureInPersistence;
 import delfos.rs.recommendation.Recommendation;
-import delfos.similaritymeasures.CollaborativeSimilarityMeasure;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -66,98 +64,28 @@ import java.util.stream.Collectors;
  * @version 1.0 Unknown date
  * @version 1.1 27-02-2013
  */
-public class KnnMemoryBasedNWR extends KnnCollaborativeRecommender<KnnMemoryModel> {
+public class KnnMemoryBasedNWR extends KnnMemoryBasedCFRS {
 
     private static final long serialVersionUID = 1L;
 
-    /**
-     * Constructor que añade los parámetros al sistema de recomendación y asigna
-     * la medida del coseno y la suma ponderada como medida de similitud y
-     * técnica de predicción respectivamente.
-     */
     public KnnMemoryBasedNWR() {
         super();
-        addParameter(NEIGHBORHOOD_SIZE);
-        addParameter(SIMILARITY_MEASURE);
-        addParameter(PREDICTION_TECHNIQUE);
-        addParameter(INVERSE_FREQUENCY);
-        addParameter(CASE_AMPLIFICATION);
-        addParameter(DEFAULT_RATING);
-        addParameter(DEFAULT_RATING_VALUE);
-        addParameter(RELEVANCE_FACTOR);
-        addParameter(RELEVANCE_FACTOR_VALUE);
-    }
-
-    public KnnMemoryBasedNWR(
-            CollaborativeSimilarityMeasure similarityMeasure,
-            Integer relevanceFactor,
-            Number defaultRating,
-            boolean inverseFrequency,
-            double caseAmplification,
-            int neighborhoodSize,
-            PredictionTechnique predictionTechnique) {
-
-        this();
-
-        setParameterValue(SIMILARITY_MEASURE, similarityMeasure);
-        setParameterValue(RELEVANCE_FACTOR, relevanceFactor != null);
-        setParameterValue(NEIGHBORHOOD_SIZE, neighborhoodSize);
-
-        if (relevanceFactor != null && relevanceFactor <= 0) {
-            throw new IllegalArgumentException("The relevance factor cannot be 0 or negative.");
-        }
-        if (relevanceFactor != null) {
-            setParameterValue(RELEVANCE_FACTOR_VALUE, relevanceFactor);
-        }
-        setParameterValue(DEFAULT_RATING, defaultRating != null);
-        if (defaultRating != null) {
-            setParameterValue(DEFAULT_RATING_VALUE, defaultRating);
-        }
-
-        setParameterValue(INVERSE_FREQUENCY, inverseFrequency);
-        setParameterValue(CASE_AMPLIFICATION, caseAmplification);
-        setParameterValue(PREDICTION_TECHNIQUE, predictionTechnique);
-    }
-
-    public KnnMemoryBasedNWR(
-            CollaborativeSimilarityMeasure similarityMeasure,
-            Integer relevanceFactor,
-            int neighborhoodSize,
-            PredictionTechnique predictionTechnique) {
-
-        this();
-
-        setParameterValue(SIMILARITY_MEASURE, similarityMeasure);
-        setParameterValue(RELEVANCE_FACTOR, relevanceFactor != null);
-        setParameterValue(NEIGHBORHOOD_SIZE, neighborhoodSize);
-
-        if (relevanceFactor != null && relevanceFactor <= 0) {
-            throw new IllegalArgumentException("The relevance factor cannot be 0 or negative.");
-        }
-        if (relevanceFactor != null) {
-            setParameterValue(RELEVANCE_FACTOR_VALUE, relevanceFactor);
-        }
-        setParameterValue(PREDICTION_TECHNIQUE, predictionTechnique);
     }
 
     @Override
     public KnnMemoryModel buildRecommendationModel(DatasetLoader<? extends Rating> datasetLoader) {
-        //No se necesitan perfiles porque se examina la base de datos directamente
         return new KnnMemoryModel();
     }
 
     @Override
     public Collection<Recommendation> recommendToUser(DatasetLoader<? extends Rating> datasetLoader, KnnMemoryModel model, Integer idUser, Set<Integer> candidateItems) throws UserNotFound {
-        if (Global.isVerboseAnnoying()) {
-            Global.showInfoMessage(new Date().toGMTString() + " --> Recommending for user '" + idUser + "'\n");
-        }
 
         PredictionTechnique predictionTechnique = (PredictionTechnique) getParameterValue(PREDICTION_TECHNIQUE);
         int neighborhoodSize = (Integer) getParameterValue(NEIGHBORHOOD_SIZE);
 
         try {
             List<Neighbor> neighbors;
-            neighbors = getNeighbors(datasetLoader.getRatingsDataset(), idUser);
+            neighbors = getNeighbors(datasetLoader, idUser);
 
             Collection<Recommendation> ret = recommendWithNeighbors(datasetLoader, idUser, neighbors, neighborhoodSize, candidateItems, predictionTechnique);
             if (Global.isVerboseAnnoying()) {
@@ -174,7 +102,7 @@ public class KnnMemoryBasedNWR extends KnnCollaborativeRecommender<KnnMemoryMode
      * ello, utiliza los valores especificados en los parámetros del algoritmo y
      * los datasets de valoraciones y productos que se indicaron al sistema
      *
-     * @param ratingsDataset Dataset de valoraciones.
+     * @param datasetLoader Dataset de valoraciones.
      * @param idUser id del usuario para el que se calculan sus vecinos
      * @return Devuelve una lista ordenada por similitud de los vecinos más
      * cercanos al usuario indicado
@@ -182,36 +110,20 @@ public class KnnMemoryBasedNWR extends KnnCollaborativeRecommender<KnnMemoryMode
      * datos
      */
     public List<Neighbor> getNeighbors(
-            RatingsDataset<? extends Rating> ratingsDataset,
+            DatasetLoader<? extends Rating> datasetLoader,
             int idUser)
             throws UserNotFound {
 
-        ratingsDataset.getUserRated(idUser);
+        User user = datasetLoader.getUsersDataset().get(idUser);
 
-        List<KnnMemoryBasedNWR_Task> tasks = new ArrayList<>();
-        ratingsDataset.allUsers().stream().forEach((idNeighbor) -> {
-            try {
-                tasks.add(new KnnMemoryBasedNWR_Task(ratingsDataset, idUser, idNeighbor, this));
-            } catch (UserNotFound ex) {
-            }
-        });
+        List<Neighbor> neigbors = datasetLoader.getUsersDataset().stream()
+                .filter(neighbor -> !Objects.equals(neighbor.getId(), user.getId()))
+                .map((neighbor) -> new KnnMemoryNeighborTask(datasetLoader, user, neighbor, this))
+                .map(new KnnMemoryNeighborCalculator())
+                .sorted(Neighbor.BY_SIMILARITY_DESC)
+                .collect(Collectors.toList());
 
-        MultiThreadExecutionManager<KnnMemoryBasedNWR_Task> multiThreadExecutionManager
-                = new MultiThreadExecutionManager<>(
-                        this.getName() + ":computeNeighborsOf" + idUser,
-                        tasks,
-                        KnnMemoryBasedNWR_TaskExecutor.class);
-
-        multiThreadExecutionManager.run();
-
-        List<Neighbor> ret = Collections.synchronizedList(new ArrayList<>());
-        multiThreadExecutionManager.getAllFinishedTasks().parallelStream().map((task) -> task.getNeighbor()).filter((neighbor) -> (neighbor != null)).forEach((neighbor) -> {
-            ret.add(neighbor);
-        });
-
-        ret.sort(Neighbor.BY_SIMILARITY_DESC);
-
-        return ret;
+        return neigbors;
     }
 
     /**
@@ -242,7 +154,7 @@ public class KnnMemoryBasedNWR extends KnnCollaborativeRecommender<KnnMemoryMode
             throws UserNotFound {
 
         List<Neighbor> neighborhood = _neighborhood.stream()
-                .filter(neighbor -> !Float.isNaN(neighbor.getSimilarity()))
+                .filter(neighbor -> !Double.isNaN(neighbor.getSimilarity()))
                 .filter(neighbor -> neighbor.getSimilarity() > 0)
                 .collect(Collectors.toList());
 
@@ -251,7 +163,7 @@ public class KnnMemoryBasedNWR extends KnnCollaborativeRecommender<KnnMemoryMode
         RatingsDataset ratingsDataset = datasetLoader.getRatingsDataset();
         ContentDataset contentDataset = datasetLoader.getContentDataset();
 
-        Collection<Recommendation> recommendationList = new LinkedList<>();
+        Collection<Recommendation> recommendationList = new ArrayList<>();
 
         List<Item> candidateItems = candidateIdItems.stream()
                 .map(idItem -> contentDataset.get(idItem))
@@ -259,7 +171,7 @@ public class KnnMemoryBasedNWR extends KnnCollaborativeRecommender<KnnMemoryMode
 
         for (Item item : candidateItems) {
 
-            Collection<MatchRating> match = new LinkedList<>();
+            Collection<MatchRating> match = new ArrayList<>();
             int numNeighborsUsed = 0;
             try {
                 Map<Integer, ? extends Rating> itemRatingsRated = ratingsDataset.getItemRatingsRated(item.getId());
@@ -277,7 +189,7 @@ public class KnnMemoryBasedNWR extends KnnCollaborativeRecommender<KnnMemoryMode
                 }
 
                 try {
-                    float predicted = predictionTechnique.predictRating(idUser, item.getId(), match, ratingsDataset);
+                    double predicted = predictionTechnique.predictRating(idUser, item.getId(), match, ratingsDataset);
                     recommendationList.add(new Recommendation(item, predicted));
 
                 } catch (CouldNotPredictRating ex) {
@@ -291,7 +203,7 @@ public class KnnMemoryBasedNWR extends KnnCollaborativeRecommender<KnnMemoryMode
     }
 
     @Override
-    public KnnMemoryModel loadRecommendationModel(DatabasePersistence databasePersistence, Collection<Integer> users, Collection<Integer> items) throws FailureInPersistence {
+    public KnnMemoryModel loadRecommendationModel(DatabasePersistence databasePersistence, Collection<Integer> users, Collection<Integer> items, DatasetLoader<? extends Rating> datasetLoader) throws FailureInPersistence {
         return new KnnMemoryModel();
     }
 

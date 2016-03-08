@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Random;
+import java.util.stream.Collectors;
 import static org.junit.Assert.assertEquals;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -191,7 +192,7 @@ public class UserUserMultipleCorrelationCoefficientTest {
                     users.add(idNeighborUser);
                     users.add(idFriendOfNeighborUser);
 
-                    String ratingsTable = DatasetPrinter.printCompactRatingTable(datasetLoader.getRatingsDataset(), users);
+                    String ratingsTable = DatasetPrinter.printCompactRatingTable(datasetLoader, users.stream().map(idUser -> datasetLoader.getUsersDataset().get(idUser)).collect(Collectors.toList()));
 
                     {
                         errOutput.write(contentLine);

@@ -19,7 +19,7 @@ package delfos.dataset.generated.modifieddatasets.userreductor;
 import delfos.common.Global;
 import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
 import delfos.common.parameters.Parameter;
-import delfos.common.parameters.restriction.FloatParameter;
+import delfos.common.parameters.restriction.DoubleParameter;
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RatingsDataset;
@@ -45,7 +45,7 @@ public class UserReductor_holdOut extends DatasetSampler {
      * Parámetro para especificar el porcentaje de usuarios que se conservará en
      * el dataset reducido.
      */
-    public static final Parameter usersPercentage = new Parameter("usersPercentage", new FloatParameter(0.0f, 1.0f, 0.1f));
+    public static final Parameter usersPercentage = new Parameter("usersPercentage", new DoubleParameter(0.0f, 1.0f, 0.1f));
     private UserReductor_allowedUsers<? extends Rating> ratingsDataset = null;
 
     public UserReductor_holdOut() {
@@ -67,7 +67,7 @@ public class UserReductor_holdOut extends DatasetSampler {
 
         Integer[] users = _ratingsDataset.allUsers().toArray(new Integer[1]);
         TreeSet<Integer> allowedUsers = new TreeSet<>();
-        float percentage = (Float) getParameterValue(usersPercentage);
+        double percentage = (Double) getParameterValue(usersPercentage);
         int numUsuarios = (int) (users.length * percentage);
         Global.showInfoMessage("Using " + numUsuarios + " users: " + "\n");
         for (int i = 0; i < numUsuarios; i++) {

@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -34,17 +34,17 @@ import java.util.ListIterator;
 public class PearsonCorrelationCoefficient extends WeightedSimilarityMeasureAdapter {
 
     @Override
-    public float similarity(List<Float> v1, List<Float> v2) {
+    public double similarity(List<Double> v1, List<Double> v2) {
         double pcc = pearsonCorrelationCoefficient(v1, v2);
 
-        return (float) pcc;
+        return (double) pcc;
     }
 
     @Override
-    public float weightedSimilarity(List<Float> v1, List<Float> v2, List<Float> weights) {
+    public double weightedSimilarity(List<Double> v1, List<Double> v2, List<Double> weights) {
         double pcc = pearsonCorrelationCoefficient_weighted(v1, v2, weights);
 
-        return (float) pcc;
+        return (double) pcc;
     }
 
     /**

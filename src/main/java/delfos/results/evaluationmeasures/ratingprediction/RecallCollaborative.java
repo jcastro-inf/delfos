@@ -44,7 +44,7 @@ public class RecallCollaborative extends EvaluationMeasure {
 
     @Override
     public MeasureResult getMeasureResult(RecommendationResults recommendationResults, RatingsDataset<? extends Rating> testDataset, RelevanceCriteria relevanceCriteria) {
-        float recall;
+        double recall;
         int relevantesRecomendadas = 0;
         int relevantesNoRecomendadas = 0;
         int noRelevantesRecomendadas = 0;
@@ -60,8 +60,8 @@ public class RecallCollaborative extends EvaluationMeasure {
 
                 for (int idItem : testDataset.getUserRated(idUser)) {
                     if (l.containsKey(idItem)) {
-                        float originalRating = userRatingsRated.get(idItem).getRatingValue().floatValue();
-                        float predictedRating = l.get(idItem).getPreference().floatValue();
+                        double originalRating = userRatingsRated.get(idItem).getRatingValue().doubleValue();
+                        double predictedRating = l.get(idItem).getPreference().doubleValue();
                         if (relevanceCriteria.isRelevant(originalRating)) {
                             if (relevanceCriteria.isRelevant(predictedRating)) {
                                 relevantesRecomendadas++;
@@ -86,7 +86,7 @@ public class RecallCollaborative extends EvaluationMeasure {
         if (relevantesRecomendadas + relevantesNoRecomendadas == 0) {
             recall = 0;
         } else {
-            recall = (float) relevantesRecomendadas / ((float) relevantesRecomendadas + (float) relevantesNoRecomendadas);
+            recall = (double) relevantesRecomendadas / ((double) relevantesRecomendadas + (double) relevantesNoRecomendadas);
         }
         return new MeasureResult(this, recall);
     }

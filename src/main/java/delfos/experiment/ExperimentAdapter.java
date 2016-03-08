@@ -81,7 +81,7 @@ public abstract class ExperimentAdapter extends ParameterOwnerAdapter implements
 
         int actual = this.getVueltaActual();
         int max = this.getNumVueltas();
-        float percentExperiment = (actual * 100.0f + executionProgressPercent) / max;
+        double percentExperiment = (actual * 100.0f + executionProgressPercent) / max;
         int newPercentExperiment = (int) percentExperiment;
         if (newPercentExperiment != experimentProgressPercent) {
             experimentProgressPercent = (int) (percentExperiment);

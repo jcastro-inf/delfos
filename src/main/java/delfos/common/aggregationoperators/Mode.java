@@ -32,7 +32,7 @@ public class Mode extends AggregationOperator {
     private final static long serialVersionUID = 1L;
 
     @Override
-    public float aggregateValues(Iterable<Number> values) {
+    public double aggregateValues(Iterable<Number> values) {
         MultiSet<Double> ms = new MultiSet();
         for (Number value : values) {
             Double d = value.doubleValue();
@@ -40,12 +40,12 @@ public class Mode extends AggregationOperator {
         }
 
         int maxFreq = 0;
-        float moda = 0;
+        double moda = 0;
 
         for (Double o : ms.keySet()) {
             if (ms.getFreq(o) > maxFreq) {
                 maxFreq = ms.getFreq(o);
-                moda = o.floatValue();
+                moda = o.doubleValue();
             }
         }
         return moda;

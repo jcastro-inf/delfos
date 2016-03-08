@@ -17,7 +17,6 @@
 package delfos.experiment.casestudy.defaultcase;
 
 import delfos.ERROR_CODES;
-import delfos.common.Chronometer;
 import delfos.common.Global;
 import delfos.common.exceptions.dataset.CannotLoadContentDataset;
 import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
@@ -55,9 +54,9 @@ import delfos.results.evaluationmeasures.EvaluationMeasure;
 import delfos.rs.RecommenderSystem;
 import delfos.rs.nonpersonalised.randomrecommender.RandomRecommender;
 import delfos.rs.recommendation.Recommendation;
+import delfos.rs.recommendation.RecommendationsToUser;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -65,6 +64,7 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 /**
  * Clase encargada de realizar las ejecuciones de los sistemas de recomendación
@@ -245,7 +245,7 @@ public class DefaultCaseStudy extends CaseStudy implements ParameterListener {
             Global.showInfoMessage(getAlias() + "validation.shuffle()\n");
             executionProgressFireEvent(getAlias() + "Performing validation split", 0, -1);
 
-            PairOfTrainTestRatingsDataset[] pairsValidation = validationTechnique.shuffle(datasetLoader);
+            PairOfTrainTestRatingsDataset<? extends Rating>[] pairsValidation = validationTechnique.shuffle(datasetLoader);
 
             if (_ejecucionActual == 0) {
                 initStructures(executionNumber, pairsValidation.length);
@@ -269,96 +269,52 @@ public class DefaultCaseStudy extends CaseStudy implements ParameterListener {
                 this.executionProgressFireEvent(getAlias() + " --> Recommendation process", 50, -1);
 
                 Collection<Integer> thisDatasetUsers = pairsValidation[_conjuntoActual].test.allUsers();
-                long recommendationTime = 0;
 
-                final MultiThreadExecutionManager_NotBlocking<SingleUserRecommendationTask> multiThreadExecutionManager_SingleRecommendation = new MultiThreadExecutionManager_NotBlocking<>(
-                        getAlias() + " -> Recommendation process",
-                        SingleUserRecommendationTaskExecutor.class);
+                Map<Integer, Collection<Recommendation>> predictions = thisDatasetUsers.parallelStream().map(idUser -> datasetLoader.getUsersDataset().get(idUser))
+                        .filter(user -> !predictionProtocolTechnique.getRecommendationRequests(pairsValidation[_conjuntoActual].test, user.getId()).isEmpty())
+                        .map(user -> {
+                            List<Recommendation> ret = predictionProtocolTechnique
+                            .getRecommendationRequests(pairsValidation[_conjuntoActual].test, user.getId())
+                            .parallelStream()
+                            .map(candidateItems -> {
 
-                multiThreadExecutionManager_SingleRecommendation.runInBackground();
+                                Integer idUser = user.getId();
+                                try {
+                                    Map<Integer, Set<Integer>> predictionRatings = new TreeMap<>();
+                                    predictionRatings.put(idUser, new TreeSet<>(candidateItems));
+                                    RatingsDataset<Rating> predictionRatingsDataset = ValidationDatasets.getInstance().createTrainingDataset((RatingsDataset<Rating>) datasetLoader.getRatingsDataset(), predictionRatings);
+                                    DatasetLoader<Rating> predictionDatasetLoader = new DatasetLoaderGivenRatingsDataset<>(
+                                            datasetLoader,
+                                            predictionRatingsDataset);
+                                    return new SingleUserRecommendationTask(
+                                            recommenderSystem,
+                                            predictionDatasetLoader,
+                                            model,
+                                            idUser,
+                                            candidateItems.stream().map(idItem -> datasetLoader.getContentDataset().get(idItem)).collect(Collectors.toSet())
+                                    );
 
-                {
-                    Chronometer chronometerWaitingForTaskAdded = new Chronometer();
-                    multiThreadExecutionManager_SingleRecommendation.addExecutionProgressListener((String proceso, int percent, long remainingMiliSeconds) -> {
-                        if (chronometerWaitingForTaskAdded.getTotalElapsed() > 1000) {
-                            executionProgressFireEvent(proceso, percent / 2 + 50, remainingMiliSeconds);
-                        }
-                    });
-                }
+                                } catch (UserNotFound ex) {
+                                    ERROR_CODES.USER_NOT_FOUND.exit(ex);
+                                    throw new IllegalStateException(ex);
+                                } catch (ItemNotFound ex) {
+                                    ERROR_CODES.ITEM_NOT_FOUND.exit(ex);
+                                    throw new IllegalStateException(ex);
+                                }
+                            }).map(new SingleUserRecommendationTaskExecutor())
+                            .map(recommendations2 -> recommendations2.getRecommendations())
+                            .flatMap(recommendations2 -> recommendations2.stream())
+                            .collect(Collectors.toList());
 
-                Global.showMessageTimestamped(getAlias() + " --> Creating recommendation tasks");
-                for (int idUser : thisDatasetUsers) {
-                    try {
-                        Collection<Set<Integer>> consultas = predictionProtocolTechnique.getRecommendationRequests(pairsValidation[_conjuntoActual].test, idUser);
-                        if (consultas.isEmpty()) {
-                            continue;
-                        }
-                        Collection<Recommendation> unionResultados = new ArrayList<>();
+                            return new RecommendationsToUser(user, ret);
+                        }).collect(Collectors.toMap(
+                                        recommendationsToUser -> recommendationsToUser.getUser().getId(),
+                                        recommendationsToUser -> recommendationsToUser.getRecommendations()));
 
-                        consultas.parallelStream().forEach((candidateItems) -> {
-                            try {
-                                Map<Integer, Set<Integer>> predictionRatings = new TreeMap<>();
-                                predictionRatings.put(idUser, new TreeSet<>(candidateItems));
-                                RatingsDataset<Rating> predictionRatingsDataset = ValidationDatasets.getInstance().createTrainingDataset((RatingsDataset<Rating>) datasetLoader.getRatingsDataset(), predictionRatings);
-                                DatasetLoader<Rating> predictionDatasetLoader = new DatasetLoaderGivenRatingsDataset<>(
-                                        datasetLoader,
-                                        predictionRatingsDataset);
-                                multiThreadExecutionManager_SingleRecommendation.addTask(new SingleUserRecommendationTask(recommenderSystem, predictionDatasetLoader, model, idUser, candidateItems));
-                            } catch (UserNotFound ex) {
-                                ERROR_CODES.USER_NOT_FOUND.exit(ex);
-                            } catch (ItemNotFound ex) {
-                                ERROR_CODES.ITEM_NOT_FOUND.exit(ex);
-                            }
-                        });
-
-                        esr.add(idUser, unionResultados);
-
-                    } catch (UserNotFound ex) {
-                        ERROR_CODES.USER_NOT_FOUND.exit(ex);
-                    }
-                }
-                Global.showMessageTimestamped(getAlias() + " --> Finished creating recommendation tasks");
-
-                try {
-                    multiThreadExecutionManager_SingleRecommendation.waitUntilFinished();
-                } catch (InterruptedException ex) {
-                    Logger.getLogger(DefaultCaseStudy.class.getName()).log(Level.SEVERE, null, ex);
-                }
-                executionProgressFireEvent(getAlias() + " --> Recommendation process", 100, -1);
-                executionProgressFireEvent("Union of recommendations", 0, -1);
-
-                Map<Integer, Collection<Recommendation>> predictions = Collections.synchronizedMap(new TreeMap<>());
-
-                //Para llevar el contador dentro de la expresión lambda de unión de recomendaciones.
-                class ThisTask {
-
-                    int thisTaskNum = 1;
-
-                    synchronized int getTaskNum() {
-                        return thisTaskNum++;
-                    }
-                }
-
-                ThisTask thisTaskNum = new ThisTask();
-                final Collection<SingleUserRecommendationTask> allFinishedTasks = multiThreadExecutionManager_SingleRecommendation.getAllFinishedTasks();
-
-                int numTasks = allFinishedTasks.size();
-                allFinishedTasks.stream().map((task) -> {
-                    int idUser = task.getIdUser();
-                    if (!predictions.containsKey(idUser)) {
-                        predictions.put(idUser, Collections.synchronizedList(new ArrayList<>()));
-                    }
-                    return task;
-                }).map((task) -> {
-                    predictions.get(task.getIdUser()).addAll(task.getRecommendationList());
-                    return task;
-                }).forEach((_item) -> {
-                    executionProgressFireEvent("Union of recommendations", (int) (thisTaskNum.getTaskNum() * 100.0f / numTasks), -1);
-                });
-                executionProgressFireEvent("Union of recommendations", 100, -1);
-
-                predictions.keySet().stream().forEach((idUser) -> {
-                    esr.add(idUser, predictions.get(idUser));
+                predictions.entrySet().stream().forEach((entry) -> {
+                    int idUser = entry.getKey();
+                    Collection<Recommendation> prediction = entry.getValue();
+                    esr.add(idUser, prediction);
                 });
 
                 multiThreadExecutionManagerEvaluationMeasures.addTask(new DefaultCaseStudyEvaluationMeasures_Task(
@@ -514,14 +470,14 @@ public class DefaultCaseStudy extends CaseStudy implements ParameterListener {
         });
     }
 
-    private int totalCaseStudyPercent(float percent) {
-        float totalPercent;
+    private int totalCaseStudyPercent(double percent) {
+        double totalPercent;
         int maxVueltas = executionNumber * getNumberOfSplits();
         int vueltasActual = _ejecucionActual * getNumberOfSplits() + _conjuntoActual;
-        totalPercent = (((float) vueltasActual) / (maxVueltas)) * 100;
+        totalPercent = (((double) vueltasActual) / (maxVueltas)) * 100;
 
-        float add;
-        add = (float) ((percent / 100.0) / maxVueltas) * 100;
+        double add;
+        add = (double) ((percent / 100.0) / maxVueltas) * 100;
         totalPercent += add;
 
         return (int) totalPercent;
@@ -615,7 +571,7 @@ public class DefaultCaseStudy extends CaseStudy implements ParameterListener {
         this.executionProgressPercent = executionProgressPercent;
         this.executionProgressRemainingTime = executionProgressRemainingTime;
 
-        float _experimentProgressPercent = (loopCount * 100 + executionProgressPercent) / numVueltas;
+        double _experimentProgressPercent = (loopCount * 100 + executionProgressPercent) / numVueltas;
 
         //Actualizo las variables que luego el listener del experimento pedirá.
         this.experimentProgressTask = this.getAlias();

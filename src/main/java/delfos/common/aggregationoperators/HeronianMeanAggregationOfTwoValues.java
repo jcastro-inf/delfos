@@ -33,7 +33,7 @@ public class HeronianMeanAggregationOfTwoValues extends TwoValuesAggregator {
     private final static long serialVersionUID = 1L;
 
     @Override
-    public float aggregateTwoValues(Number v1, Number v2) {
+    public double aggregateTwoValues(Number v1, Number v2) {
         double d1 = v1.doubleValue();
         double d2 = v2.doubleValue();
 
@@ -48,6 +48,6 @@ public class HeronianMeanAggregationOfTwoValues extends TwoValuesAggregator {
 
         h = h / 3;
 
-        return (float) h;
+        return (double) h;
     }
 }

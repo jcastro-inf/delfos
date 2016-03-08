@@ -23,7 +23,7 @@ import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
 import delfos.common.exceptions.dataset.items.ItemNotFound;
 import delfos.common.exceptions.dataset.users.UserNotFound;
 import delfos.common.parameters.Parameter;
-import delfos.common.parameters.restriction.FloatParameter;
+import delfos.common.parameters.restriction.DoubleParameter;
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RatingWithTimestamp;
@@ -57,7 +57,7 @@ public class HoldOutGroupMemberTemporalRatings extends GroupValidationTechnique 
 
     public static final Parameter TRAIN_PERCENT = new Parameter(
             "Training_percent",
-            new FloatParameter(0, 1, 0.8f),
+            new DoubleParameter(0, 1, 0.8f),
             "Porcentaje de valoraciones que contiene el conjunto de entrenamiento.");
 
     public HoldOutGroupMemberTemporalRatings() {
@@ -184,8 +184,8 @@ public class HoldOutGroupMemberTemporalRatings extends GroupValidationTechnique 
         return usersInGroups;
     }
 
-    private float getTrainPercent() {
-        return (Float) getParameterValue(TRAIN_PERCENT);
+    private double getTrainPercent() {
+        return (Double) getParameterValue(TRAIN_PERCENT);
     }
 
     private void checkRatingsWithTimestamp(RatingsDataset<? extends Rating> ratingsDataset) {

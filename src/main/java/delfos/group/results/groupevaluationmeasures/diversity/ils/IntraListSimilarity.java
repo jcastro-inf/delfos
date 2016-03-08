@@ -208,7 +208,7 @@ public class IntraListSimilarity extends GroupEvaluationMeasure {
 
         TryThisAtHomeSVDModel svdModel = getSVDModel(originalDatasetLoader);
 
-        List<Recommendation> recommendations = singleGroupRecommendationTaskOutput.getRecommendations().stream().sorted(Recommendation.BY_PREFERENCE_DESC).collect(Collectors.toList());
+        List<Recommendation> recommendations = singleGroupRecommendationTaskOutput.getRecommendations().getRecommendations().stream().sorted(Recommendation.BY_PREFERENCE_DESC).collect(Collectors.toList());
 
         recommendations = recommendations.subList(0, Math.min(maxlistSizeOfMeasure, recommendations.size()));
 
@@ -245,12 +245,12 @@ public class IntraListSimilarity extends GroupEvaluationMeasure {
                     continue;
                 }
 
-                List<Float> item1Features = svdModel.getItemFeatures(item1.getId()).stream().map(value -> ((Number) value).floatValue()).collect(Collectors.toList());
-                List<Float> item2Features = svdModel.getItemFeatures(item2.getId()).stream().map(value -> ((Number) value).floatValue()).collect(Collectors.toList());
+                List<Double> item1Features = svdModel.getItemFeatures(item1.getId()).stream().map(value -> ((Number) value).doubleValue()).collect(Collectors.toList());
+                List<Double> item2Features = svdModel.getItemFeatures(item2.getId()).stream().map(value -> ((Number) value).doubleValue()).collect(Collectors.toList());
 
-                float similarity = cosineCoefficient.similarity(item1Features, item2Features);
+                double similarity = cosineCoefficient.similarity(item1Features, item2Features);
 
-                if (Float.isFinite(similarity)) {
+                if (Double.isFinite(similarity)) {
                     sumOfSimilarities += similarity;
                 } else {
                     sumOfSimilarities += 1;

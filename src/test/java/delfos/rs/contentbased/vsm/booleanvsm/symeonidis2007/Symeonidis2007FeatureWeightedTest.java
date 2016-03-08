@@ -99,7 +99,7 @@ public class Symeonidis2007FeatureWeightedTest extends DelfosTest {
             SparseVector userExpected = MutableSparseVector.wrap(
                     new long[]{0, 1, 2},
                     new double[]{0.602, 0.250, 0.301});
-            SparseVector userActual = model.getBooleanFeaturesTransformation().getFloatValuesSparseVector(model.getUserProfile(idUser));
+            SparseVector userActual = model.getBooleanFeaturesTransformation().getDoubleValuesSparseVector(model.getUserProfile(idUser));
 
             for (long key : userExpected.keySet()) {
                 double expectedValue = userExpected.get(key);
@@ -114,7 +114,7 @@ public class Symeonidis2007FeatureWeightedTest extends DelfosTest {
             SparseVector userExpected = MutableSparseVector.wrap(
                     new long[]{0, 1},
                     new double[]{0.301, 0.250});
-            SparseVector userActual = model.getBooleanFeaturesTransformation().getFloatValuesSparseVector(model.getUserProfile(idUser));
+            SparseVector userActual = model.getBooleanFeaturesTransformation().getDoubleValuesSparseVector(model.getUserProfile(idUser));
 
             for (long key : userExpected.keySet()) {
                 double expectedValue = userExpected.get(key);
@@ -129,7 +129,7 @@ public class Symeonidis2007FeatureWeightedTest extends DelfosTest {
             SparseVector userExpected = MutableSparseVector.wrap(
                     new long[]{3},
                     new double[]{0.602});
-            SparseVector userActual = model.getBooleanFeaturesTransformation().getFloatValuesSparseVector(model.getUserProfile(idUser));
+            SparseVector userActual = model.getBooleanFeaturesTransformation().getDoubleValuesSparseVector(model.getUserProfile(idUser));
 
             for (long key : userExpected.keySet()) {
                 double expectedValue = userExpected.get(key);
@@ -144,7 +144,7 @@ public class Symeonidis2007FeatureWeightedTest extends DelfosTest {
             SparseVector userExpected = MutableSparseVector.wrap(
                     new long[]{1, 2},
                     new double[]{0.25, 0.301});
-            SparseVector userActual = model.getBooleanFeaturesTransformation().getFloatValuesSparseVector(model.getUserProfile(idUser));
+            SparseVector userActual = model.getBooleanFeaturesTransformation().getDoubleValuesSparseVector(model.getUserProfile(idUser));
 
             for (long key : userExpected.keySet()) {
                 double expectedValue = userExpected.get(key);

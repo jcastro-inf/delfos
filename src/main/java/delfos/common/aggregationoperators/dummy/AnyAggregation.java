@@ -21,9 +21,9 @@ import delfos.common.aggregationoperators.AggregationOperator;
 public class AnyAggregation extends AggregationOperator {
 
     @Override
-    public float aggregateValues(Iterable<Number> values) {
+    public double aggregateValues(Iterable<Number> values) {
         if (isTrivialCase(values)) {
-            return values.iterator().next().floatValue();
+            return values.iterator().next().doubleValue();
         } else {
             throw new IllegalStateException("Not a trivial case of aggregation " + values.toString());
         }

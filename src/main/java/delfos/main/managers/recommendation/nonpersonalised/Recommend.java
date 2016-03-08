@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -39,6 +39,7 @@ import delfos.rs.recommendation.SingleUserRecommendations;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Collection;
+import java.util.stream.Collectors;
 
 /**
  *
@@ -96,7 +97,7 @@ class Recommend extends CaseUseSubManager {
 
             Collection<Integer> candidateItems;
             try {
-                candidateItems = rsc.recommendationCandidatesSelector.candidateItems(rsc.datasetLoader, user);
+                candidateItems = rsc.recommendationCandidatesSelector.candidateItems(rsc.datasetLoader, user).stream().map(item -> item.getId()).collect(Collectors.toSet());
             } catch (UserNotFound ex) {
                 if (rsc.datasetLoader instanceof ContentDatasetLoader) {
                     ContentDatasetLoader contentDatasetLoader = (ContentDatasetLoader) rsc.datasetLoader;

@@ -38,7 +38,7 @@ public abstract class TwoValuesAggregator extends ParameterOwnerAdapter {
      *
      * @throws IllegalArgumentException Si alguno de los parametros es null.
      */
-    public abstract float aggregateTwoValues(Number v1, Number v2);
+    public abstract double aggregateTwoValues(Number v1, Number v2);
 
     @Override
     public boolean equals(Object obj) {

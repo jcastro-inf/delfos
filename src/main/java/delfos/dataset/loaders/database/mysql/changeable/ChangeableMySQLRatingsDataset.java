@@ -137,7 +137,7 @@ public final class ChangeableMySQLRatingsDataset implements RatingsDataset<Ratin
                 + "VALUES ("
                 + idUser + ","
                 + idItem + ","
-                + ratingValue.getRatingValue().floatValue() + ","
+                + ratingValue.getRatingValue().doubleValue() + ","
                 + "'" + date.toString() + "');";
         try (Statement statement = mySQLConnection.doConnection().createStatement()) {
             statement.execute(insert);
@@ -149,7 +149,7 @@ public final class ChangeableMySQLRatingsDataset implements RatingsDataset<Ratin
         for (Rating r : ratingsDataset) {
             ratings.add(r);
         }
-        ratings.add(new RatingWithTimestamp(idUser, idItem, ratingValue.getRatingValue().floatValue(), System.currentTimeMillis()));
+        ratings.add(new RatingWithTimestamp(idUser, idItem, ratingValue.getRatingValue().doubleValue(), System.currentTimeMillis()));
 
         ratingsDataset = new BothIndexRatingsDataset(ratings);
     }
@@ -186,7 +186,7 @@ public final class ChangeableMySQLRatingsDataset implements RatingsDataset<Ratin
             String createTable = "CREATE TABLE IF NOT EXISTS `" + getRatingsTable_nameWithPrefix() + "` (\n"
                     + "`" + ratingsTable_UserIDField + "` int(11) NOT NULL,\n"
                     + "`" + ratingsTable_ItemIDField + "` int(11) NOT NULL,\n"
-                    + "`" + ratingsTable_RatingField + "` float NOT NULL,\n"
+                    + "`" + ratingsTable_RatingField + "` double NOT NULL,\n"
                     + "`" + ratingsTable_TimestampField + "` timestamp,\n"
                     + "  PRIMARY KEY (`" + ratingsTable_UserIDField + "`,`" + ratingsTable_ItemIDField + "`)\n"
                     + ") ENGINE=MyISAM DEFAULT CHARSET=latin1;";
@@ -207,7 +207,7 @@ public final class ChangeableMySQLRatingsDataset implements RatingsDataset<Ratin
             while (result.next()) {
                 int idUser = result.getInt(1);
                 int idItem = result.getInt(2);
-                float ratingValue = result.getFloat(3);
+                double ratingValue = result.getDouble(3);
                 Date timestamp = result.getDate(4);
 
                 long timestamp_ms = timestamp.getTime();
@@ -226,12 +226,12 @@ public final class ChangeableMySQLRatingsDataset implements RatingsDataset<Ratin
     }
 
     @Override
-    public float getMeanRatingItem(int idItem) throws ItemNotFound {
+    public double getMeanRatingItem(int idItem) throws ItemNotFound {
         return ratingsDataset.getMeanRatingItem(idItem);
     }
 
     @Override
-    public float getMeanRatingUser(int idUser) throws UserNotFound {
+    public double getMeanRatingUser(int idUser) throws UserNotFound {
         return ratingsDataset.getMeanRatingUser(idUser);
     }
 
@@ -261,7 +261,7 @@ public final class ChangeableMySQLRatingsDataset implements RatingsDataset<Ratin
     }
 
     @Override
-    public float getMeanRating() {
+    public double getMeanRating() {
         return ratingsDataset.getMeanRating();
     }
 

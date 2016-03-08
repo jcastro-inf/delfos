@@ -18,7 +18,7 @@ package delfos.rs.collaborativefiltering.knn;
 
 import delfos.common.parameters.Parameter;
 import delfos.common.parameters.restriction.BooleanParameter;
-import delfos.common.parameters.restriction.FloatParameter;
+import delfos.common.parameters.restriction.DoubleParameter;
 import delfos.common.parameters.restriction.IntegerParameter;
 import delfos.common.parameters.restriction.ParameterOwnerRestriction;
 import delfos.rs.collaborativefiltering.CollaborativeRecommender;
@@ -67,7 +67,7 @@ public abstract class KnnCollaborativeRecommender<RecommendationModel>
      * el valor de este parámetro es 1, no aplica cambios, ya que esta mejora
      * eleva la similitud calculada al valor de ampliación de casos
      */
-    public static final Parameter CASE_AMPLIFICATION = new Parameter("Case_amplification", new FloatParameter(1.0f, 10.0f, 1.0f));
+    public static final Parameter CASE_AMPLIFICATION = new Parameter("Case_amplification", new DoubleParameter(1.0f, 10.0f, 1.0f));
     /**
      * Indica si se imputa un valor por defecto a las valoraciones no conocidas
      * de los usuarios. Esta mejora sirve para poder calcular la similitud

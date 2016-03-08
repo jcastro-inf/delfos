@@ -42,20 +42,20 @@ public class FileParameterXML {
      * @param p Parámetro a almacenar
      */
     public static Element getFileParameterElement(ParameterOwner parameterOwner, Parameter p) {
-        Element floatParameter = new Element(ParameterXML.PARAMETER_ELEMENT_NAME);
-        floatParameter.setAttribute(ParameterXML.PARAMETER_NAME, p.getName());
+        Element doubleParameter = new Element(ParameterXML.PARAMETER_ELEMENT_NAME);
+        doubleParameter.setAttribute(ParameterXML.PARAMETER_NAME, p.getName());
 
         FileParameter fp = (FileParameter) p.getRestriction();
 
-        floatParameter.setAttribute(ParameterXML.PARAMETER_TYPE, fp.getName());
-        floatParameter.setAttribute(ParameterXML.PARAMETER_VALUE, parameterOwner.getParameterValue(p).toString());
+        doubleParameter.setAttribute(ParameterXML.PARAMETER_TYPE, fp.getName());
+        doubleParameter.setAttribute(ParameterXML.PARAMETER_VALUE, parameterOwner.getParameterValue(p).toString());
 
 //        for (String extension : fp.getAllowedExtensions()) {
 //            Element allowedExtension = new Element(EXTENSIONS_ELEMENTS);
 //            allowedExtension.setAttribute(ParameterXML.PARAMETER_VALUE, extension);
-//            floatParameter.addContent(allowedExtension);
+//            doubleParameter.addContent(allowedExtension);
 //        }
-        return floatParameter;
+        return doubleParameter;
     }
 
     /**

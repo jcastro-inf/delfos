@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -200,8 +200,8 @@ public class TrustModificationKnnMemory extends CollaborativeRecommender<Object>
      * @param ratingsDataset Conjunto de valoraciones.
      * @param idUser Id del usuario activo
      * @param vecinos Vecinos del usuario activo
-     * @param candidateItems Lista de productos que se consideran recomendables, es
-     * decir, que podrían ser recomendados si la predicción es alta
+     * @param candidateItems Lista de productos que se consideran recomendables,
+     * es decir, que podrían ser recomendados si la predicción es alta
      * @return Lista de recomendaciones para el usuario, ordenadas por
      * valoracion predicha.
      * @throws UserNotFound Si el usuario activo o alguno de los vecinos
@@ -251,7 +251,7 @@ public class TrustModificationKnnMemory extends CollaborativeRecommender<Object>
             }
 
             try {
-                float predicted = predictionTechnique_.predictRating(idUser, idItem, match, ratingsDataset);
+                double predicted = predictionTechnique_.predictRating(idUser, idItem, match, ratingsDataset);
                 recommendationList.add(new Recommendation(idItem, predicted));
 
             } catch (CouldNotPredictRating ex) {
@@ -264,7 +264,7 @@ public class TrustModificationKnnMemory extends CollaborativeRecommender<Object>
     }
 
     @Override
-    public Object loadRecommendationModel(DatabasePersistence databasePersistence, Collection<Integer> users, Collection<Integer> items) throws FailureInPersistence {
+    public Object loadRecommendationModel(DatabasePersistence databasePersistence, Collection<Integer> users, Collection<Integer> items, DatasetLoader<? extends Rating> datasetLoader) throws FailureInPersistence {
         return 1l;
     }
 

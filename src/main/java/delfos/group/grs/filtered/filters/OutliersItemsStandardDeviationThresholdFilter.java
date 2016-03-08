@@ -24,7 +24,7 @@ import java.util.TreeMap;
 import delfos.common.Global;
 import delfos.common.decimalnumbers.NumberRounder;
 import delfos.common.parameters.Parameter;
-import delfos.common.parameters.restriction.FloatParameter;
+import delfos.common.parameters.restriction.DoubleParameter;
 import delfos.common.statisticalfuncions.StandardDeviation;
 import delfos.dataset.util.DatasetUtilities;
 
@@ -38,7 +38,7 @@ public class OutliersItemsStandardDeviationThresholdFilter extends GroupRatingsF
 
     private static final long serialVersionUID = 1L;
 
-    public static final Parameter THRESHOLD = new Parameter("THRESHOLD", new FloatParameter(0, 1000f, 0.8f));
+    public static final Parameter THRESHOLD = new Parameter("THRESHOLD", new DoubleParameter(0, 1000f, 0.8f));
 
     private double oldThreshold = 0.8;
 
@@ -48,7 +48,7 @@ public class OutliersItemsStandardDeviationThresholdFilter extends GroupRatingsF
 
         addParammeterListener(() -> {
             double newThreshold = ((Number) getParameterValue(THRESHOLD)).doubleValue();
-            newThreshold = NumberRounder.round(newThreshold, 2);
+            newThreshold = NumberRounder.round(newThreshold);
 
             if (oldThreshold != newThreshold) {
                 oldThreshold = newThreshold;

@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -92,7 +92,8 @@ public interface GenericRecommenderSystem<RecommendationModel>
     public RecommendationModel loadRecommendationModel(
             DatabasePersistence databasePersistence,
             Collection<Integer> users,
-            Collection<Integer> items)
+            Collection<Integer> items,
+            DatasetLoader<? extends Rating> datasetLoader)
             throws FailureInPersistence;
 
     public void saveRecommendationModel(

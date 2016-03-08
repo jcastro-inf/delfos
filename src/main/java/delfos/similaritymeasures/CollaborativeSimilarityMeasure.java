@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,14 +16,14 @@
  */
 package delfos.similaritymeasures;
 
-import java.util.Collection;
+import delfos.common.exceptions.CouldNotComputeSimilarity;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RatingsDataset;
+import delfos.rs.RecommenderSystemAdapter;
 import delfos.rs.collaborativefiltering.knn.CommonRating;
 import delfos.rs.collaborativefiltering.knn.memorybased.KnnMemoryBasedCFRS;
 import delfos.rs.collaborativefiltering.knn.modelbased.KnnModelBasedCFRS;
-import delfos.rs.RecommenderSystemAdapter;
-import delfos.common.exceptions.CouldNotComputeSimilarity;
+import java.util.Collection;
 
 /**
  * Interfaz para definir una medida de similitud especialmente diseñada para ser
@@ -54,7 +54,7 @@ public interface CollaborativeSimilarityMeasure extends SimilarityMeasure {
      * @throws CouldNotComputeSimilarity Si no se puede calcular la similitud,
      * porque no existen datos suficientes para ello.
      */
-    public float similarity(Collection<CommonRating> commonRatings, RatingsDataset<? extends Rating> ratings) throws CouldNotComputeSimilarity;
+    public double similarity(Collection<CommonRating> commonRatings, RatingsDataset<? extends Rating> ratings) throws CouldNotComputeSimilarity;
 
     /**
      * Devuelve true si la medida de similitud se puede utilizar con un sistema

@@ -130,7 +130,7 @@ public class Item implements Comparable<Item>, EntityWithFeatures, Serializable 
      * @param latitude Latitud del producto.
      * @param longitude Longitud del producto.
      */
-    public Item(int idItem, String name, Feature[] features, Object[] values, float latitude, float longitude) {
+    public Item(int idItem, String name, Feature[] features, Object[] values, double latitude, double longitude) {
         this.idItem = idItem;
         this.name = name;
 
@@ -150,7 +150,7 @@ public class Item implements Comparable<Item>, EntityWithFeatures, Serializable 
      * @param feature característica que se desea consultar
      * @return devuelve un objeto con el valor de la característica. Si la
      * característica es nominal, es de tipo <code>{@link String}</code>; si es
-     * numérico, devuelve un <code>{@link Float}</code>
+     * numérico, devuelve un <code>{@link Double}</code>
      */
     @Override
     public Object getFeatureValue(Feature feature) {

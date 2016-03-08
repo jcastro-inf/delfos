@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,16 +16,16 @@
  */
 package delfos.group.experiment.validation.groupformation;
 
+import delfos.common.parameters.Parameter;
+import delfos.common.parameters.restriction.StringParameter;
+import delfos.dataset.basic.loader.types.DatasetLoader;
+import delfos.dataset.basic.rating.Rating;
+import delfos.group.groupsofusers.GroupOfUsers;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import delfos.common.parameters.Parameter;
-import delfos.common.parameters.restriction.StringParameter;
-import delfos.dataset.basic.rating.Rating;
-import delfos.dataset.basic.loader.types.DatasetLoader;
-import delfos.group.groupsofusers.GroupOfUsers;
 
 /**
  *
@@ -95,7 +95,7 @@ public class GivenGroups extends GroupFormationTechnique {
 
             Collection<Integer> idMembers = new LinkedList<>();
             Arrays.asList(group.split(",")).stream().forEach((idMember) -> idMembers.add(Integer.parseInt(idMember)));
-            ret.add(new GroupOfUsers(idMembers));
+            ret.add(new GroupOfUsers(idMembers.toArray(new Integer[0])));
         }
 
         return ret;

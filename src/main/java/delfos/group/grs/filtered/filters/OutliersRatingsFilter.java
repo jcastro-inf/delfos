@@ -28,7 +28,7 @@ import delfos.common.Global;
 import delfos.common.decimalnumbers.NumberRounder;
 import delfos.common.parameters.Parameter;
 import delfos.common.parameters.restriction.BooleanParameter;
-import delfos.common.parameters.restriction.FloatParameter;
+import delfos.common.parameters.restriction.DoubleParameter;
 import delfos.common.statisticalfuncions.MeanIterative;
 import delfos.dataset.util.DatasetPrinterDeprecated;
 
@@ -48,12 +48,12 @@ public class OutliersRatingsFilter extends GroupRatingsFilter {
      * mayor que este valor.
      */
     public static final Parameter DIFFERENCE_THRESHOLD
-            = new Parameter("DIFFERENCE_THRESHOLD", new FloatParameter(0, Float.MAX_VALUE, 0.5f));
+            = new Parameter("DIFFERENCE_THRESHOLD", new DoubleParameter(0, Double.MAX_VALUE, 0.5f));
     /**
      * Se eliminan como máximo esta proporción de ratings.
      */
     public static final Parameter PERCENTAGE_MAX_FILTERED_OUT
-            = new Parameter("PERCENTAGE_MAX_FILTERED_THRESHOLD", new FloatParameter(0, 1f, 0.2f));
+            = new Parameter("PERCENTAGE_MAX_FILTERED_THRESHOLD", new DoubleParameter(0, 1f, 0.2f));
     /**
      * Protege las valoraciones del grupo para que al menos exista una
      * valoración de cada producto. Por defecto vale false.
@@ -80,8 +80,8 @@ public class OutliersRatingsFilter extends GroupRatingsFilter {
             boolean newKEEP_AT_LEAST_ONE_RATING = (Boolean) getParameterValue(KEEP_AT_LEAST_ONE_RATING);
             String newAlias = getAlias();
 
-            newDIFFERENCE_THRESHOLD = NumberRounder.round(newDIFFERENCE_THRESHOLD, 2);
-            newPERCENTAGE_MAX_FILTERED_OUT = NumberRounder.round(newPERCENTAGE_MAX_FILTERED_OUT, 2);
+            newDIFFERENCE_THRESHOLD = NumberRounder.round(newDIFFERENCE_THRESHOLD);
+            newPERCENTAGE_MAX_FILTERED_OUT = NumberRounder.round(newPERCENTAGE_MAX_FILTERED_OUT);
 
             String oldAliasOldParameters
                     = OutliersRatingsFilter.class.getSimpleName()
@@ -261,15 +261,15 @@ public class OutliersRatingsFilter extends GroupRatingsFilter {
             }
         }
 
-        float partialPercent = (eliminados * 100.0f) / borrarMax;
-        float totalPercent = (eliminados * 100.0f) / totalRatingsGrupo;
+        double partialPercent = (eliminados * 100.0f) / borrarMax;
+        double totalPercent = (eliminados * 100.0f) / totalRatingsGrupo;
 
         if (Global.isVerboseAnnoying()) {
             Global.showInfoMessage(
                     "Ratings del grupo " + originalSet.keySet() + " eliminados: "
                     + eliminados + " de " + totalRatingsGrupo
-                    + " (P: " + NumberRounder.round(partialPercent, 2)
-                    + "% T: " + NumberRounder.round(totalPercent, 2) + "%)\n");
+                    + " (P: " + NumberRounder.round(partialPercent)
+                    + "% T: " + NumberRounder.round(totalPercent) + "%)\n");
         }
         return ratingsToReturn;
     }

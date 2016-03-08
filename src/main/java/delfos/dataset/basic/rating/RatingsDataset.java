@@ -120,7 +120,7 @@ public interface RatingsDataset<RatingType extends Rating> extends Iterable<Rati
      *
      * @throws ItemNotFound Si el producto no existe.
      */
-    public float getMeanRatingItem(int idItem) throws ItemNotFound;
+    public double getMeanRatingItem(int idItem) throws ItemNotFound;
 
     /**
      * Devuelve el la valoración media que un usuario ha dado a los productos.
@@ -131,7 +131,7 @@ public interface RatingsDataset<RatingType extends Rating> extends Iterable<Rati
      *
      * @throws UserNotFound Si el usuario no existe.
      */
-    public float getMeanRatingUser(int idUser) throws UserNotFound;
+    public double getMeanRatingUser(int idUser) throws UserNotFound;
 
     /**
      * Devuelve el dominio de valoración de este dataset.
@@ -194,5 +194,5 @@ public interface RatingsDataset<RatingType extends Rating> extends Iterable<Rati
      *
      * @return Valoración media.
      */
-    public float getMeanRating();
+    public double getMeanRating();
 }

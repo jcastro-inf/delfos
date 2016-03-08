@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -17,31 +17,32 @@
 package delfos.group.casestudy.parallelisation;
 
 import delfos.group.groupsofusers.GroupOfUsers;
-import delfos.rs.recommendation.Recommendation;
-import java.util.Collection;
-import java.util.Collections;
+import delfos.group.grs.recommendations.GroupRecommendations;
 
 /**
- * Stores the output of the calculation of the recommendations with the stream
- * function {@link SingleGroupRecommendationFunction}
+ * Stores the output of the calculation of the groupRecommendations with the stream
+ function {@link SingleGroupRecommendationFunction}
  *
  * @author jcastro-inf ( https://github.com/jcastro-inf )
  */
 public class SingleGroupRecommendationTaskOutput {
 
     private final GroupOfUsers group;
-    private final Collection<Recommendation> recommendations;
+    private final GroupRecommendations groupRecommendations;
     private final long buildGroupModelTime;
     private final long recommendationTime;
 
-    public SingleGroupRecommendationTaskOutput(GroupOfUsers group, Collection<Recommendation> recommendations, long buildGroupModelTime, long recommendationTime) {
+    public SingleGroupRecommendationTaskOutput(GroupOfUsers group,
+            GroupRecommendations recommendations,
+            long buildGroupModelTime,
+            long recommendationTime) {
         this.group = group;
-        this.recommendations = recommendations;
+        this.groupRecommendations = recommendations;
         this.buildGroupModelTime = buildGroupModelTime;
         this.recommendationTime = recommendationTime;
     }
 
-    public SingleGroupRecommendationTaskOutput(GroupOfUsers group, Collection<Recommendation> recommendations) {
+    public SingleGroupRecommendationTaskOutput(GroupOfUsers group, GroupRecommendations recommendations) {
         this(group, recommendations, -1, -1);
     }
 
@@ -57,7 +58,7 @@ public class SingleGroupRecommendationTaskOutput {
         return recommendationTime;
     }
 
-    public Collection<Recommendation> getRecommendations() {
-        return Collections.unmodifiableCollection(recommendations);
+    public GroupRecommendations getRecommendations() {
+        return groupRecommendations;
     }
 }

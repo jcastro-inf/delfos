@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,38 +16,48 @@
  */
 package delfos.group.grs.consensus.itemselector;
 
+import delfos.dataset.basic.item.Item;
+import delfos.dataset.basic.user.User;
 import delfos.experiment.SeedHolder;
-import delfos.rs.recommendation.Recommendation;
+import delfos.rs.recommendation.RecommendationsToUser;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Map;
+import java.util.List;
 import java.util.Random;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.stream.Collectors;
 
 public class RandomSelection extends GroupRecommendationsSelector implements SeedHolder {
 
     public RandomSelection() {
         super();
 
-        addParameter(NUMBER_OF_ITEM_SELECTED);
+        addParameter(NUMBER_OF_ITEMS_SELECTED);
         addParameter(SEED);
     }
 
     @Override
-    public Set<Integer> getRecommendationSelection(Map<Integer, Collection<Recommendation>> membersRecommendations) {
-        Set<Integer> itemsToSelect = super.getRecommendationSelection(membersRecommendations);
+    public Set<Item> getRecommendationSelection(Collection<RecommendationsToUser> membersRecommendations) {
+        List<Item> itemsToSelect = membersRecommendations.stream().
+                flatMap(memberRecommendations -> memberRecommendations.getRecommendations().stream())
+                .map(recommendation -> recommendation.getItem())
+                .distinct().collect(Collectors.toList());
 
-        long groupSeed = getGroupSeed(membersRecommendations.keySet());
+        Set<User> members = membersRecommendations.stream()
+                .map(memberRecommendation -> memberRecommendation.getUser())
+                .collect(Collectors.toSet());
+
+        long groupSeed = getGroupSeed(members);
         long numItems = getNumItemsSelect();
         Random random = new Random(groupSeed);
 
-        Set<Integer> itemsSelected = new TreeSet<>();
+        Set<Item> itemsSelected = new TreeSet<>();
 
         while (itemsSelected.size() < numItems) {
             int nextRandom = random.nextInt(itemsToSelect.size());
-            int idItem = itemsToSelect.toArray(new Integer[0])[nextRandom];
-            itemsSelected.add(idItem);
+            Item item = itemsToSelect.remove(nextRandom);
+            itemsSelected.add(item);
         }
 
         itemsSelected = Collections.unmodifiableSet(itemsSelected);
@@ -65,16 +75,18 @@ public class RandomSelection extends GroupRecommendationsSelector implements See
         return (Long) getParameterValue(SEED);
     }
 
-    private long getGroupSeed(Set<Integer> keySet) {
+    private long getGroupSeed(Set<User> users) {
         long seedValue = getSeedValue();
 
-        for (int idUser : keySet) {
-            seedValue += idUser;
-        }
+        int userHashSum = users.stream()
+                .mapToInt(user -> user.getId().hashCode())
+                .sum();
+
+        seedValue += userHashSum;
         return seedValue;
     }
 
     public int getNumItemsSelect() {
-        return (Integer) getParameterValue(NUMBER_OF_ITEM_SELECTED);
+        return (Integer) getParameterValue(NUMBER_OF_ITEMS_SELECTED);
     }
 }

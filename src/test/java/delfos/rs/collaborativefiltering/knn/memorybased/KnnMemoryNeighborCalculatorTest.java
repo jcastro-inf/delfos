@@ -13,10 +13,10 @@ import delfos.dataset.basic.loader.types.UsersDatasetLoader;
 import delfos.dataset.basic.rating.RatingsDataset;
 import delfos.dataset.basic.user.User;
 import delfos.dataset.basic.user.UsersDataset;
+import delfos.rs.collaborativefiltering.knn.KnnCollaborativeRecommender;
 import delfos.rs.collaborativefiltering.knn.RecommendationEntity;
 import delfos.rs.collaborativefiltering.predictiontechniques.WeightedSum;
 import delfos.rs.collaborativefiltering.profile.Neighbor;
-import delfos.similaritymeasures.CosineCoefficient;
 import delfos.similaritymeasures.PearsonCorrelationCoefficient;
 import org.junit.Assert;
 import org.junit.Test;
@@ -32,7 +32,15 @@ public class KnnMemoryNeighborCalculatorTest {
 
     @Test
     public void testCosineSimilarityML100kUser1User2() {
-        KnnMemoryBasedCFRS knnMemory = new KnnMemoryBasedCFRS(new CosineCoefficient(), null, null, false, 1, 20, new WeightedSum());
+        KnnMemoryBasedCFRS knnMemory = new KnnMemoryBasedCFRS();
+
+        knnMemory.setParameterValue(KnnCollaborativeRecommender.SIMILARITY_MEASURE, new PearsonCorrelationCoefficient());
+        knnMemory.setParameterValue(KnnCollaborativeRecommender.RELEVANCE_FACTOR, 30);
+        knnMemory.setParameterValue(KnnCollaborativeRecommender.DEFAULT_RATING_VALUE, null);
+        knnMemory.setParameterValue(KnnCollaborativeRecommender.DEFAULT_RATING, false);
+        knnMemory.setParameterValue(KnnCollaborativeRecommender.CASE_AMPLIFICATION, 1);
+        knnMemory.setParameterValue(KnnCollaborativeRecommender.NEIGHBORHOOD_SIZE, 20);
+        knnMemory.setParameterValue(KnnCollaborativeRecommender.PREDICTION_TECHNIQUE, new WeightedSum());
 
         DatasetLoader ml100k = ConfiguredDatasetsFactory.getInstance().getDatasetLoader("ml-100k");
 
@@ -55,7 +63,15 @@ public class KnnMemoryNeighborCalculatorTest {
 
     @Test
     public void testPearsonSimilarityML100kUser1User2() {
-        KnnMemoryBasedCFRS knnMemory = new KnnMemoryBasedCFRS(new PearsonCorrelationCoefficient(), null, null, false, 1, 20, new WeightedSum());
+        KnnMemoryBasedCFRS knnMemory = new KnnMemoryBasedCFRS();
+
+        knnMemory.setParameterValue(KnnCollaborativeRecommender.SIMILARITY_MEASURE, new PearsonCorrelationCoefficient());
+        knnMemory.setParameterValue(KnnCollaborativeRecommender.RELEVANCE_FACTOR, 30);
+        knnMemory.setParameterValue(KnnCollaborativeRecommender.DEFAULT_RATING_VALUE, null);
+        knnMemory.setParameterValue(KnnCollaborativeRecommender.DEFAULT_RATING, false);
+        knnMemory.setParameterValue(KnnCollaborativeRecommender.CASE_AMPLIFICATION, 1);
+        knnMemory.setParameterValue(KnnCollaborativeRecommender.NEIGHBORHOOD_SIZE, 20);
+        knnMemory.setParameterValue(KnnCollaborativeRecommender.PREDICTION_TECHNIQUE, new WeightedSum());
 
         DatasetLoader ml100k = ConfiguredDatasetsFactory.getInstance().getDatasetLoader("ml-100k");
 

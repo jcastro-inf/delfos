@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,6 +16,13 @@
  */
 package delfos.group.experiment.validation.groupformation;
 
+import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
+import delfos.common.parameters.Parameter;
+import delfos.common.parameters.restriction.IntegerParameter;
+import delfos.dataset.basic.loader.types.DatasetLoader;
+import delfos.dataset.basic.rating.Rating;
+import delfos.dataset.basic.user.User;
+import delfos.group.groupsofusers.GroupOfUsers;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -23,12 +30,6 @@ import java.util.HashSet;
 import java.util.Random;
 import java.util.Set;
 import java.util.TreeSet;
-import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
-import delfos.common.parameters.Parameter;
-import delfos.common.parameters.restriction.IntegerParameter;
-import delfos.dataset.basic.rating.Rating;
-import delfos.dataset.basic.loader.types.DatasetLoader;
-import delfos.group.groupsofusers.GroupOfUsers;
 
 /**
  * Validación de grupos que genera grupos de usuarios, utilizando miembros
@@ -38,7 +39,7 @@ import delfos.group.groupsofusers.GroupOfUsers;
  */
 public class ProbabilityDistributionOfSizes extends GroupFormationTechnique {
 
-    private float[] acumulateProbabilities = null;
+    private double[] acumulateProbabilities = null;
 
     /**
      * Parámetro para establecer el número de usuarios que tendrán los grupos
@@ -73,12 +74,12 @@ public class ProbabilityDistributionOfSizes extends GroupFormationTechnique {
             norma += x;
         }
 
-        acumulateProbabilities = new float[probabilitiesVector.length];
+        acumulateProbabilities = new double[probabilitiesVector.length];
 
-        acumulateProbabilities[0] = (float) (probabilitiesVector[0] / norma);
-        float anterior = acumulateProbabilities[0];
+        acumulateProbabilities[0] = (double) (probabilitiesVector[0] / norma);
+        double anterior = acumulateProbabilities[0];
         for (int i = 1; i < probabilitiesVector.length; i++) {
-            acumulateProbabilities[i] = (float) (anterior + probabilitiesVector[i] / norma);
+            acumulateProbabilities[i] = (double) (anterior + probabilitiesVector[i] / norma);
             anterior = acumulateProbabilities[i];
         }
     }
@@ -94,21 +95,21 @@ public class ProbabilityDistributionOfSizes extends GroupFormationTechnique {
 
         Set<GroupOfUsers> grupos = new HashSet<>(numGroupsValue);
 
-        ArrayList<Integer> usuarios;
-        usuarios = new ArrayList<>(datasetLoader.getRatingsDataset().allUsers());
+        ArrayList<User> usuarios;
+        usuarios = new ArrayList<>(datasetLoader.getUsersDataset());
 
         int indexGrupoActual = 0;
         while (grupos.size() < numGroupsValue) {
 
-            Set<Integer> usersGrupoActual = new TreeSet<>();
+            Set<User> usersGrupoActual = new TreeSet<>();
 
             int groupSize = getGroupSize(random.nextLong());
             while (usersGrupoActual.size() < groupSize) {
-                int idUser = usuarios.remove(random.nextInt(usuarios.size()));
+                User idUser = usuarios.remove(random.nextInt(usuarios.size()));
                 usersGrupoActual.add(idUser);
 
                 if (usuarios.isEmpty()) {
-                    usuarios.addAll(datasetLoader.getRatingsDataset().allUsers());
+                    usuarios.addAll(datasetLoader.getUsersDataset());
                 }
             }
             boolean add = grupos.add(new GroupOfUsers(usersGrupoActual));
@@ -119,7 +120,7 @@ public class ProbabilityDistributionOfSizes extends GroupFormationTechnique {
             }
 
             if (usuarios.isEmpty()) {
-                usuarios.addAll(datasetLoader.getRatingsDataset().allUsers());
+                usuarios.addAll(datasetLoader.getUsersDataset());
             }
         }
         GroupOfUsers[] groupOfUsers = new GroupOfUsers[grupos.size()];
@@ -136,7 +137,7 @@ public class ProbabilityDistributionOfSizes extends GroupFormationTechnique {
     }
 
     private int getGroupSize(long seed) {
-        float r = new Random(seed).nextFloat();
+        double r = new Random(seed).nextDouble();
         int size = -1;
 
         for (int i = 0; i < acumulateProbabilities.length; i++) {

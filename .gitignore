@@ -18,3 +18,4 @@
 *.jar
 
 *.tar.gz
+hs_err_*

@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,19 +16,18 @@
  */
 package delfos.rs.contentbased.vsm.booleanvsm.profile;
 
+import delfos.common.Global;
+import delfos.dataset.basic.features.Feature;
+import delfos.dataset.basic.item.Item;
 import java.io.Serializable;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
-import delfos.dataset.basic.item.Item;
-import delfos.dataset.basic.features.Feature;
-import delfos.common.Global;
 
 /**
  * Perfil de usuario utilizado por el sistema de recomendación basado en
- * contenido
- * <code>{@link TfIdfCBRS}</code>
+ * contenido <code>{@link TfIdfCBRS}</code>
  *
  * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
@@ -49,12 +48,12 @@ public class BooleanUserProfileIterativeCreation implements BooleanUserProfile, 
      * Valores del perfil de usuario para cada característica. Como es un perfil
      * booleano, las características se componen de (característica,valor).
      */
-    private Map<Feature, Map<Object, Float>> _profileValues;
+    private final Map<Feature, Map<Object, Double>> _profileValues;
     /**
      * Ponderación para cada característica. Como es un perfil booleano, las
      * características se componen de (característica,valor).
      */
-    private Map<Feature, Map<Object, Float>> _profileWeights;
+    private final Map<Feature, Map<Object, Double>> _profileWeights;
     /**
      * Conjunto de productos que el usuario ha valorado.
      */
@@ -72,9 +71,9 @@ public class BooleanUserProfileIterativeCreation implements BooleanUserProfile, 
      */
     public BooleanUserProfileIterativeCreation(int idUser) {
         this._idUser = idUser;
-        _profileValues = new TreeMap<Feature, Map<Object, Float>>();
-        _profileWeights = new TreeMap<Feature, Map<Object, Float>>();
-        _valuedItems = new TreeSet<Integer>();
+        _profileValues = new TreeMap<>();
+        _profileWeights = new TreeMap<>();
+        _valuedItems = new TreeSet<>();
     }
 
     @Override
@@ -119,22 +118,21 @@ public class BooleanUserProfileIterativeCreation implements BooleanUserProfile, 
         } else {
         }
 
-
         if (relevant && _valuedItems != null && !_valuedItems.contains(i.getId())) {
             _numValoradasPositivamente++;
             for (Feature f : i.getFeatures()) {
                 Object value = i.getFeatureValue(f);
                 if (_profileValues.containsKey(f)) {
-                    Map<Object, Float> treeMap = _profileValues.get(f);
+                    Map<Object, Double> treeMap = _profileValues.get(f);
                     if (treeMap.containsKey(value)) {
-                        float featureValue = treeMap.get(value);
+                        double featureValue = treeMap.get(value);
                         treeMap.put(value, featureValue + 1);
                     } else {
-                        treeMap.put(value, 1.0f);
+                        treeMap.put(value, 1.0);
                     }
                 } else {
-                    Map<Object, Float> treeMap = new TreeMap<Object, Float>();
-                    treeMap.put(value, 1.0f);
+                    Map<Object, Double> treeMap = new TreeMap<Object, Double>();
+                    treeMap.put(value, 1.0);
                     _profileValues.put(f, treeMap);
                 }
             }
@@ -145,48 +143,15 @@ public class BooleanUserProfileIterativeCreation implements BooleanUserProfile, 
         }
     }
 
-//    /**
-//     * Crea los pesos iniciales del perfil basándose en el numero de items
-//     * valorados positivamente por el usuario al que pertenece el perfil
-//     */
-//    public void createOcurrencyBasedWeights() {
-//        _weights = new TreeMap<Feature, Map<Object, Float>>();
-//        for (Feature f : _profileValues.keySet()) {
-//            _weights.put(f, new TreeMap<Object, Float>());
-//
-//            Map<Object, Float> get = _profileValues.get(f);
-//
-//            for (Object value : get.keySet()) {
-//                _weights.get(f).put(value, get.get(value).floatValue());
-//            }
-//        }
-//    }
-//    /**
-//     * Aplica las frecuencias inversas (Inverse User Frequence) a los pesos del
-//     * perfil.
-//     *
-//     * @param allIuf Frecuencias inversas de cada (característica,valor)
-//     */
-//    public void applyInverseUserFrequence(Map<Feature, Map<Object, Float>> allIuf) {
-//        for (Feature f : _weights.keySet()) {
-//            Map<Object, Float> get = _weights.get(f);
-//
-//            for (Object value : get.keySet()) {
-//                float weight = _weights.get(f).get(value);
-//                weight = weight * allIuf.get(f).get(value);
-//                _weights.get(f).put(value, weight);
-//            }
-//        }
-//    }
     /**
      * Normaliza los valores del perfil dividiendo por el numero de peliculas
      * valoradas positivamente
      */
     public void normalizeValues() {
         for (Feature f : _profileValues.keySet()) {
-            Map<Object, Float> get = _profileValues.get(f);
+            Map<Object, Double> get = _profileValues.get(f);
             for (Object value : get.keySet()) {
-                float featureValue = get.get(value);
+                double featureValue = get.get(value);
                 featureValue = featureValue / _numValoradasPositivamente;
                 get.put(value, featureValue);
             }
@@ -198,19 +163,19 @@ public class BooleanUserProfileIterativeCreation implements BooleanUserProfile, 
      * que cumple la propiedad Sum(pesos) = 1
      */
     public void normalizeWeights() {
-        float norma = 0;
+        double norma = 0;
         for (Feature f : _profileWeights.keySet()) {
-            Map<Object, Float> get = _profileWeights.get(f);
+            Map<Object, Double> get = _profileWeights.get(f);
             for (Object value : get.keySet()) {
                 norma += _profileWeights.get(f).get(value);
             }
         }
 
         for (Feature f : _profileWeights.keySet()) {
-            Map<Object, Float> get = _profileWeights.get(f);
+            Map<Object, Double> get = _profileWeights.get(f);
 
             for (Object value : get.keySet()) {
-                float weight = _profileWeights.get(f).get(value);
+                double weight = _profileWeights.get(f).get(value);
                 weight = weight / norma;
                 _profileWeights.get(f).put(value, weight);
             }
@@ -224,7 +189,7 @@ public class BooleanUserProfileIterativeCreation implements BooleanUserProfile, 
 
     @Override
     public Set<Object> getValuedFeatureValues(Feature f) {
-        Map<Object, Float> get = _profileValues.get(f);
+        Map<Object, Double> get = _profileValues.get(f);
         if (get == null) {
             return new TreeSet<Object>();
         } else {
@@ -249,7 +214,7 @@ public class BooleanUserProfileIterativeCreation implements BooleanUserProfile, 
     @Override
     public void cleanProfile() {
         _valuedItems.clear();
-        _valuedItems = new TreeSet<Integer>();
+        _valuedItems = new TreeSet<>();
 
         for (Feature feature : getFeatures()) {
             for (Object featureValue : getValuedFeatureValues(feature)) {
@@ -261,9 +226,9 @@ public class BooleanUserProfileIterativeCreation implements BooleanUserProfile, 
         }
     }
 
-    public void setWeight(Feature f, Object value, float weight) {
+    public void setWeight(Feature f, Object value, double weight) {
         if (!_profileWeights.containsKey(f)) {
-            _profileWeights.put(f, new TreeMap<Object, Float>());
+            _profileWeights.put(f, new TreeMap<>());
         }
 
         _profileWeights.get(f).put(value, weight);

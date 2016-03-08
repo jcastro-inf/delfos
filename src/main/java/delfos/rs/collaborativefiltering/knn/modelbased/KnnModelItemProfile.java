@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -87,7 +87,7 @@ public class KnnModelItemProfile extends CollaborativeFilteringItemProfile imple
      * @param idItemNeighbor Producto vecino.
      * @param similarity Similitud del vecino.
      */
-    public void addItem(int idItemNeighbor, float similarity) {
+    public void addItem(int idItemNeighbor, double similarity) {
         neighborsSimilarity.add(new Neighbor(RecommendationEntity.ITEM, idItemNeighbor, similarity));
     }
 

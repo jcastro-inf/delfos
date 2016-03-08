@@ -79,7 +79,7 @@ public class DatasetPrinterDeprecated {
                             throw new UserNotFound(idUser);
                         }
                         Number value = values.get(idUser).get(idUser2);
-                        Global.showInfoMessage("" + NumberRounder.round(value, numDecimals) + "\t|");
+                        Global.showInfoMessage("" + NumberRounder.round(value) + "\t|");
                     }
                 } catch (UserNotFound ex) {
                     Global.showInfoMessage(" - \t|");
@@ -116,7 +116,7 @@ public class DatasetPrinterDeprecated {
             Global.showInfoMessage("|U_" + idUser + "\t|");
 
             Number value = values.get(idUser);
-            Global.showInfoMessage("" + NumberRounder.round(value, numDecimals) + "\t|\n");
+            Global.showInfoMessage("" + NumberRounder.round(value) + "\t|\n");
         }
 
         //Cierro la tabla
@@ -139,7 +139,7 @@ public class DatasetPrinterDeprecated {
 
             Global.showInfoMessage("|U_" + idUser + "\t|");
             for (Neighbor n : neighbors.get(idUser)) {
-                Global.showInfoMessage("U_" + n.getIdNeighbor() + " -> [" + NumberRounder.round(n.getSimilarity(), numDecimals) + "]\t|");
+                Global.showInfoMessage("U_" + n.getIdNeighbor() + " -> [" + NumberRounder.round(n.getSimilarity()) + "]\t|");
             }
             Global.showInfoMessage("\n");
         }
@@ -161,7 +161,7 @@ public class DatasetPrinterDeprecated {
 
             Global.showInfoMessage("|I_" + idItem + "\t|");
             for (Neighbor n : neighbors.get(idItem)) {
-                Global.showInfoMessage("I_" + n.getIdNeighbor() + " -> [" + NumberRounder.round(n.getSimilarity(), numDecimals) + "]\t|");
+                Global.showInfoMessage("I_" + n.getIdNeighbor() + " -> [" + NumberRounder.round(n.getSimilarity()) + "]\t|");
             }
             Global.showInfoMessage("\n");
         }
@@ -218,7 +218,7 @@ public class DatasetPrinterDeprecated {
             for (Integer idUser2 : users) {
 
                 Number value = weightedGraph.connection(idUser, idUser2);
-                Global.showInfoMessage("" + NumberRounder.round(value, numDecimals) + "\t|");
+                Global.showInfoMessage("" + NumberRounder.round(value) + "\t|");
             }
             Global.showInfoMessage("\n");
         }
@@ -278,7 +278,7 @@ public class DatasetPrinterDeprecated {
                         Global.showInfoMessage("\t - \t|");
                     } else {
 
-                        Global.showInfoMessage("\t" + NumberRounder.round(rating.getRatingValue(), numDecimals) + "\t|");
+                        Global.showInfoMessage("\t" + NumberRounder.round(rating.getRatingValue()) + "\t|");
                     }
                 } catch (UserNotFound ex) {
                     Global.showInfoMessage("\t - \t|");
@@ -399,7 +399,7 @@ public class DatasetPrinterDeprecated {
                         Global.showInfoMessage(" - \t|");
                     } else {
 
-                        Global.showInfoMessage("" + NumberRounder.round(rating.getRatingValue(), numDecimals) + "\t|");
+                        Global.showInfoMessage("" + NumberRounder.round(rating.getRatingValue()) + "\t|");
                     }
                 } catch (UserNotFound ex) {
                     Global.showInfoMessage(" - \t|");

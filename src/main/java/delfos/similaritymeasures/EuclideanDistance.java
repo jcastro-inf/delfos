@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -36,27 +36,27 @@ public class EuclideanDistance extends BasicSimilarityMeasureAdapter {
     private static final long serialVersionUID = 1L;
 
     @Override
-    public float similarity(List<Float> v1, List<Float> v2) {
+    public double similarity(List<Double> v1, List<Double> v2) {
         double sum = 0;
-        Iterator<Float> i1 = v1.listIterator();
-        Iterator<Float> i2 = v2.listIterator();
+        Iterator<Double> i1 = v1.listIterator();
+        Iterator<Double> i2 = v2.listIterator();
         for (int i = 0; i < v1.size(); i++) {
             sum += Math.pow(i1.next() - i2.next(), 2);
         }
         sum = 1 / (1 + Math.sqrt(sum));
-        return (float) sum;
+        return (double) sum;
     }
 
     @Override
-    public float weightedSimilarity(List<Float> v1, List<Float> v2, List<Float> weights) {
+    public double weightedSimilarity(List<Double> v1, List<Double> v2, List<Double> weights) {
         double sum = 0;
-        Iterator<Float> i1 = v1.listIterator();
-        Iterator<Float> i2 = v2.listIterator();
-        Iterator<Float> w = weights.listIterator();
+        Iterator<Double> i1 = v1.listIterator();
+        Iterator<Double> i2 = v2.listIterator();
+        Iterator<Double> w = weights.listIterator();
         for (int i = 0; i < v1.size(); i++) {
             sum += w.next() * Math.pow(i1.next() - i2.next(), 2);
         }
         sum = 1 / (1 + Math.sqrt(sum));
-        return (float) sum;
+        return (double) sum;
     }
 }

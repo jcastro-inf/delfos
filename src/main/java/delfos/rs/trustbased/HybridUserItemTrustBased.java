@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -17,7 +17,6 @@
 package delfos.rs.trustbased;
 
 import delfos.ERROR_CODES;
-import delfos.algorithm.Algorithm;
 import delfos.common.Global;
 import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
 import delfos.common.exceptions.dataset.items.ItemNotFound;
@@ -149,8 +148,12 @@ public class HybridUserItemTrustBased extends CollaborativeRecommender<HybridUse
     private HybridUserItemTrustBasedModel.UserBasedTrustModuleModel buildUserModel(DatasetLoader<? extends Rating> datasetLoader) throws CannotLoadRatingsDataset {
 
         ShambourLu_UserBasedImplicitTrustComputation implicitTrustComputation = new ShambourLu_UserBasedImplicitTrustComputation(getPropageteUsersTrustValue());
-        implicitTrustComputation.addProgressListener((Algorithm algorithm) -> {
-            HybridUserItemTrustBased.this.fireBuildingProgressChangedEvent("(1/6) " + algorithm.getProgressTask(), algorithm.getProgressPercent(), algorithm.getProgressRemainingTime());
+
+        implicitTrustComputation.addProgressListener((event) -> {
+            HybridUserItemTrustBased.this.fireBuildingProgressChangedEvent(
+                    event.getTask(),
+                    event.getPercent(),
+                    event.getRemainingTime());
         });
 
         WeightedGraphAdapter<Integer> usersTrust = implicitTrustComputation.computeTrustValues(datasetLoader, datasetLoader.getRatingsDataset().allUsers());
@@ -233,7 +236,7 @@ public class HybridUserItemTrustBased extends CollaborativeRecommender<HybridUse
                         continue;
                     }
 
-                    float trustBetweenUsers = usersTrust.connection(idUser, idUserNeighbour).floatValue();
+                    double trustBetweenUsers = usersTrust.connection(idUser, idUserNeighbour).doubleValue();
                     if (trustBetweenUsers > 0) {
                         neighborsOfUser.add(new Neighbor(RecommendationEntity.USER, idUserNeighbour, trustBetweenUsers));
                     }
@@ -256,8 +259,8 @@ public class HybridUserItemTrustBased extends CollaborativeRecommender<HybridUse
 
         ShambourLu_ItemBasedImplicitTrustComputation implicitTrustComputation = new ShambourLu_ItemBasedImplicitTrustComputation();
 
-        implicitTrustComputation.addProgressListener((Algorithm algorithm) -> {
-            HybridUserItemTrustBased.this.fireBuildingProgressChangedEvent("(4/6) " + algorithm.getProgressTask(), algorithm.getProgressPercent(), algorithm.getProgressRemainingTime());
+        implicitTrustComputation.addProgressListener((event) -> {
+            HybridUserItemTrustBased.this.fireBuildingProgressChangedEvent(event.getTask(), event.getPercent(), event.getRemainingTime());
         });
 
         WeightedGraphAdapter<Integer> itemBasedTrust = implicitTrustComputation.computeTrustValues(datasetLoader, datasetLoader.getRatingsDataset().allRatedItems());
@@ -345,7 +348,7 @@ public class HybridUserItemTrustBased extends CollaborativeRecommender<HybridUse
                         continue;
                     }
 
-                    float trustBetweenItems = itemBasedTrust.connection(idItem, idItemNeighbour).floatValue();
+                    double trustBetweenItems = itemBasedTrust.connection(idItem, idItemNeighbour).doubleValue();
                     neighborsOfItem.add(new Neighbor(RecommendationEntity.ITEM, idItemNeighbour, trustBetweenItems));
 
                 }
@@ -445,7 +448,7 @@ public class HybridUserItemTrustBased extends CollaborativeRecommender<HybridUse
         WeightedGraph<Integer> usersTrust = userBasedTrustModuleModel.getUsersTrust();
 
         for (Neighbor userNeighbor : usersNeighbours.get(idUser)) {
-            float neighbourMeanRating;
+            double neighbourMeanRating;
             int idUserNeighbour = userNeighbor.getIdNeighbor();
             Map<Integer, ? extends Rating> neighbourRatings;
             try {

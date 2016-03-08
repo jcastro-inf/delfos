@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,30 +16,34 @@
  */
 package delfos.group.grs.aggregation;
 
+import delfos.dataset.basic.item.Item;
+import delfos.dataset.basic.rating.Rating;
+import delfos.group.groupsofusers.GroupOfUsers;
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.Map;
-import delfos.group.groupsofusers.GroupOfUsers;
 
 /**
  * Modelo de un grupo que almacena la valoración del grupo para cada producto.
  *
  * @author jcastro-inf ( https://github.com/jcastro-inf )
  * @version 1.0 29-May-2013
+ * @param <RatingType>
  */
-public class GroupModelPseudoUser implements Serializable {
+public class GroupModelPseudoUser<RatingType extends Rating> implements Serializable {
 
     private static final long serialVersionUID = 124L;
 
-    private final Map<Integer, Number> ratings;
     private final GroupOfUsers group;
+    private final Map<Item, RatingType> ratings;
 
-    public GroupModelPseudoUser(GroupOfUsers group, Map<Integer, Number> ratings) {
-        this.ratings = ratings;
+    public GroupModelPseudoUser(GroupOfUsers group, Map<Item, RatingType> ratings) {
+
         this.group = group;
+        this.ratings = ratings;
     }
 
-    public Map<Integer, Number> getRatings() {
+    public Map<Item, RatingType> getRatings() {
         return Collections.unmodifiableMap(ratings);
     }
 

@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -37,15 +37,15 @@ public class BasicMultivaluedUserProfile implements MultivaluedUserProfile {
     /**
      * Valor para cada valor de cada característica nominal.
      */
-    protected Map<Feature, Map<Object, Float>> _nominalValues;
+    protected Map<Feature, Map<Object, Double>> _nominalValues;
     /**
      * Valor para cada característica numérica.
      */
-    protected Map<Feature, Float> _numericalValues;
+    protected Map<Feature, Double> _numericalValues;
     /**
      * Ponderación para cada característica.
      */
-    protected Map<Feature, Float> _weights;
+    protected Map<Feature, Double> _weights;
     /**
      * Id del usuario al que se refiere el perfil.
      */
@@ -71,7 +71,7 @@ public class BasicMultivaluedUserProfile implements MultivaluedUserProfile {
      * nominal.
      * @param valuesNumerical Valor para cada característica numérica.
      */
-    public BasicMultivaluedUserProfile(int idUser, Map<Feature, Map<Object, Float>> valuesNominal, Map<Feature, Float> valuesNumerical) {
+    public BasicMultivaluedUserProfile(int idUser, Map<Feature, Map<Object, Double>> valuesNominal, Map<Feature, Double> valuesNumerical) {
         this(idUser);
         this._nominalValues = valuesNominal;
         this._numericalValues = valuesNumerical;
@@ -88,10 +88,10 @@ public class BasicMultivaluedUserProfile implements MultivaluedUserProfile {
      * valor de la misma.
      */
     @Override
-    public float getFeatureValueValue(Feature itemFeature, Object value) {
+    public double getFeatureValueValue(Feature itemFeature, Object value) {
         if (itemFeature.getType() == FeatureType.Nominal) {
             if (_nominalValues.containsKey(itemFeature)) {
-                Map<Object, Float> get = _nominalValues.get(itemFeature);
+                Map<Object, Double> get = _nominalValues.get(itemFeature);
                 if (get.containsKey(value)) {
                     return get.get(value);
                 }
@@ -128,15 +128,15 @@ public class BasicMultivaluedUserProfile implements MultivaluedUserProfile {
                     case Nominal:
                         Object featureValue = i.getFeatureValue(itemFeature);
                         if (_nominalValues.containsKey(itemFeature)) {
-                            Map<Object, Float> treeMap = _nominalValues.get(itemFeature);
+                            Map<Object, Double> treeMap = _nominalValues.get(itemFeature);
                             if (treeMap.containsKey(featureValue)) {
                                 treeMap.put(featureValue, treeMap.get(featureValue) + 1);
                             } else {
-                                treeMap.put(featureValue, 1.0f);
+                                treeMap.put(featureValue, 1.0);
                             }
                         } else {
-                            Map<Object, Float> treeMap = new TreeMap<Object, Float>();
-                            treeMap.put(featureValue, 1.0f);
+                            Map<Object, Double> treeMap = new TreeMap<Object, Double>();
+                            treeMap.put(featureValue, 1.0);
                             _nominalValues.put(itemFeature, treeMap);
                         }
                         break;
@@ -158,13 +158,13 @@ public class BasicMultivaluedUserProfile implements MultivaluedUserProfile {
 
         for (Feature f : _nominalValues.keySet()) {
             for (Object value : _nominalValues.get(f).keySet()) {
-                float valor = _nominalValues.get(f).get(value);
+                double valor = _nominalValues.get(f).get(value);
                 valor = valor / items.size();
                 _nominalValues.get(f).put(value, valor);
             }
         }
 
-        _numericalValues = new TreeMap<Feature, Float>();
+        _numericalValues = new TreeMap<Feature, Double>();
         for (Feature f : profileNumericalValues.keySet()) {
             Set<Number> get = profileNumericalValues.get(f);
             _numericalValues.put(f, condensationFormula.aggregateValues(get));
@@ -246,7 +246,7 @@ public class BasicMultivaluedUserProfile implements MultivaluedUserProfile {
     }
 
     @Override
-    public float getFeatureValueWeight(Feature itemFeature) {
+    public double getFeatureValueWeight(Feature itemFeature) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 }

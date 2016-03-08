@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -20,14 +20,18 @@ import delfos.Constants;
 import delfos.ERROR_CODES;
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
+import delfos.dataset.basic.user.User;
+import delfos.group.grs.recommendations.GroupRecommendations;
 import delfos.rs.recommendation.Recommendation;
+import delfos.rs.recommendation.RecommendationsToUser;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
@@ -51,21 +55,29 @@ public class ConsensusOfIndividualRecommendationsToXML {
     public static final String RECOMMENDATION_ELEMENT_PREFERENCE_ATTRIBUTE_NAME = "preference";
     public static final String RECOMMENDATION_ELEMENT_RANK_ATTRIBUTE_NAME = "rank";
 
-    public static void writeConsensusInputXML(DatasetLoader datasetLoader, Collection<Recommendation> groupRecommendations, Map<Integer, Collection<Recommendation>> singleUserRecommendations, File outputFile) {
+    public static void writeConsensusInputXML(DatasetLoader datasetLoader,
+            GroupRecommendations groupRecommendations,
+            Collection<RecommendationsToUser> membersRecommendations,
+            File outputFile) {
 
         Element root = new Element(CONSENSUS_ROOT_ELEMENT_NAME);
 
-        for (int idMember : singleUserRecommendations.keySet()) {
+        for (RecommendationsToUser recommendationsToMember : membersRecommendations) {
+            User member = recommendationsToMember.getUser();
             Element thisMemberElement = new Element(MEMBER_ELEMENT_NAME);
-            thisMemberElement.setAttribute(MEMBER_ELEMENT_NAME_ID_ATTRIBUTE_NAME, Integer.toString(idMember));
+            thisMemberElement.setAttribute(MEMBER_ELEMENT_NAME_ID_ATTRIBUTE_NAME,
+                    Integer.toString(member.getId()));
 
-            ArrayList<Recommendation> sortedRecommendations = new ArrayList<>(singleUserRecommendations.get(idMember));
-            Collections.sort(sortedRecommendations, Recommendation.BY_PREFERENCE_DESC);
+            List<Recommendation> sortedRecommendations = recommendationsToMember
+                    .getRecommendations().stream()
+                    .sorted(Recommendation.BY_PREFERENCE_DESC)
+                    .collect(Collectors.toList());
 
             int rank = 1;
             for (Recommendation r : sortedRecommendations) {
                 Element recommendation = new Element(RECOMMENDATION_ELEMENT_NAME);
-                recommendation.setAttribute(RECOMMENDATION_ELEMENT_ID_ITEM_ATTRIBUTE_NAME, Integer.toString(r.getIdItem()));
+                recommendation.setAttribute(RECOMMENDATION_ELEMENT_ID_ITEM_ATTRIBUTE_NAME,
+                        Integer.toString(r.getItem().getId()));
 
                 double preferenceInDomain = datasetLoader.getRatingsDataset().getRatingsDomain().trimValueToDomain(r.getPreference()).doubleValue();
                 recommendation.setAttribute(RECOMMENDATION_ELEMENT_PREFERENCE_ATTRIBUTE_NAME, Double.toString(preferenceInDomain));
@@ -78,12 +90,14 @@ public class ConsensusOfIndividualRecommendationsToXML {
         }
 
         Element groupElement = new Element(GROUP_ELEMENT_NAME);
-        String members = singleUserRecommendations.keySet().toString();
+        String members = groupRecommendations.getGroupOfUsers().toString();
         groupElement.setAttribute(GROUP_ELEMENT_MEMBERS_ATTRIBUTE_NAME, members);
         int rank = 1;
 
-        ArrayList<Recommendation> sortedGroupRecommendations = new ArrayList<>(groupRecommendations);
-        Collections.sort(sortedGroupRecommendations, Recommendation.BY_PREFERENCE_DESC);
+        List<Recommendation> sortedGroupRecommendations = groupRecommendations
+                .getRecommendations().stream()
+                .sorted(Recommendation.BY_PREFERENCE_DESC)
+                .collect(Collectors.toList());
         for (Recommendation r : sortedGroupRecommendations) {
 
             Element recommendation = new Element(RECOMMENDATION_ELEMENT_NAME);
@@ -95,15 +109,6 @@ public class ConsensusOfIndividualRecommendationsToXML {
             rank++;
         }
         root.addContent(groupElement);
-        StringBuilder str = new StringBuilder();
-
-        Integer[] idMembers = singleUserRecommendations.keySet().toArray(new Integer[0]);
-
-        str.append(idMembers[0]);
-        for (int i = 1; i < idMembers.length; i++) {
-            str.append(",").append(idMembers[i]);
-
-        }
 
         Document doc = new Document();
         doc.addContent(root);

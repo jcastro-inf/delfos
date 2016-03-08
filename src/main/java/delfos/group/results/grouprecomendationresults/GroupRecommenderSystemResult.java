@@ -43,7 +43,14 @@ public class GroupRecommenderSystemResult {
 
     private final long modelBuildTime;
 
-    public GroupRecommenderSystemResult(List<SingleGroupRecommendationTaskInput> singleGroupRecommendationInputs, List<SingleGroupRecommendationTaskOutput> singleGroupRecommendationOutputs, String caseStudyAlias, int thisExecution, int thisSplit, long modelBuildTime) {
+    public GroupRecommenderSystemResult(
+            List<SingleGroupRecommendationTaskInput> singleGroupRecommendationInputs,
+            List<SingleGroupRecommendationTaskOutput> singleGroupRecommendationOutputs,
+            String caseStudyAlias,
+            int thisExecution,
+            int thisSplit,
+            long modelBuildTime
+    ) {
 
         validateSameGroups(singleGroupRecommendationInputs, singleGroupRecommendationOutputs);
 

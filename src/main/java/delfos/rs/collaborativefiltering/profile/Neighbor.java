@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -40,27 +40,27 @@ public class Neighbor implements Comparable<Neighbor>, Serializable {
 
     public static final Comparator<Neighbor> BY_ID = (Neighbor o1, Neighbor o2) -> Integer.compare(o1.getIdNeighbor(), o2.getIdNeighbor());
     public static final Comparator<Neighbor> BY_SIMILARITY_ASC = (Neighbor o1, Neighbor o2) -> {
-        if (Float.isNaN(o1.similarity) && Float.isNaN(o2.similarity)) {
+        if (Double.isNaN(o1.similarity) && Double.isNaN(o2.similarity)) {
             return BY_ID.compare(o1, o2);
-        } else if (Float.isNaN(o1.similarity)) {
+        } else if (Double.isNaN(o1.similarity)) {
             return 1;
-        } else if (Float.isNaN(o2.similarity)) {
+        } else if (Double.isNaN(o2.similarity)) {
             return -1;
-        } else if (Float.compare(o1.getSimilarity(), o2.getSimilarity()) != 0) {
-            return Float.compare(o1.getSimilarity(), o2.getSimilarity());
+        } else if (Double.compare(o1.getSimilarity(), o2.getSimilarity()) != 0) {
+            return Double.compare(o1.getSimilarity(), o2.getSimilarity());
         } else {
             return BY_ID.compare(o1, o2);
         }
     };
     public static final Comparator<Neighbor> BY_SIMILARITY_DESC = (Neighbor o1, Neighbor o2) -> {
-        if (Float.isNaN(o1.similarity) && Float.isNaN(o2.similarity)) {
+        if (Double.isNaN(o1.similarity) && Double.isNaN(o2.similarity)) {
             return BY_ID.compare(o1, o2);
-        } else if (Float.isNaN(o1.similarity)) {
+        } else if (Double.isNaN(o1.similarity)) {
             return 1;
-        } else if (Float.isNaN(o2.similarity)) {
+        } else if (Double.isNaN(o2.similarity)) {
             return -1;
-        } else if (-Float.compare(o1.getSimilarity(), o2.getSimilarity()) != 0) {
-            return -Float.compare(o1.getSimilarity(), o2.getSimilarity());
+        } else if (-Double.compare(o1.getSimilarity(), o2.getSimilarity()) != 0) {
+            return -Double.compare(o1.getSimilarity(), o2.getSimilarity());
         } else {
             return BY_ID.compare(o1, o2);
         }
@@ -90,7 +90,7 @@ public class Neighbor implements Comparable<Neighbor>, Serializable {
     /**
      * Similitud con el objeto del que es vecino.
      */
-    private final float similarity;
+    private final double similarity;
 
     public Neighbor() {
         this.recommendationEntity = null;
@@ -110,14 +110,14 @@ public class Neighbor implements Comparable<Neighbor>, Serializable {
     public Neighbor(RecommendationEntity entity, int idNeighbor, double similarity) {
         this.recommendationEntity = entity;
         this.idNeighbor = idNeighbor;
-        this.similarity = (float) similarity;
+        this.similarity = (double) similarity;
     }
 
     public Neighbor(RecommendationEntity recommendationEntity, EntityWithFeatures neighbor, double similarity) {
         this.recommendationEntity = recommendationEntity;
         this.idNeighbor = neighbor.getId();
         this.neighbor = neighbor;
-        this.similarity = (float) similarity;
+        this.similarity = (double) similarity;
     }
 
     /**
@@ -134,7 +134,7 @@ public class Neighbor implements Comparable<Neighbor>, Serializable {
      *
      * @return Similitud.
      */
-    public float getSimilarity() {
+    public double getSimilarity() {
         return similarity;
     }
 
@@ -164,7 +164,7 @@ public class Neighbor implements Comparable<Neighbor>, Serializable {
         int hash = 3;
         hash = 97 * hash + (this.recommendationEntity != null ? this.recommendationEntity.hashCode() : 0);
         hash = 97 * hash + this.idNeighbor;
-        hash = 97 * hash + Float.floatToIntBits(this.similarity);
+        hash = 97 * hash + Double.hashCode(this.similarity);
         return hash;
     }
 

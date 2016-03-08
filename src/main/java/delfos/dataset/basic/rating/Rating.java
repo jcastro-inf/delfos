@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -122,11 +122,6 @@ public class Rating implements Comparable<Rating>, Serializable, Cloneable {
         return "(u=" + getIdUser() + " i=" + getIdItem() + " r=" + ratingString + ")";
     }
 
-    @Override
-    public Rating clone() throws CloneNotSupportedException {
-        return new Rating(getIdUser(), getIdItem(), getRatingValue());
-    }
-
     /**
      * @return the idUser
      */
@@ -155,4 +150,22 @@ public class Rating implements Comparable<Rating>, Serializable, Cloneable {
     public Number getRatingValue() {
         return ratingValue;
     }
+
+    public Rating copyWithUser(User user) {
+        return new Rating(user, item, ratingValue);
+    }
+
+    public Rating copyWithItem(Item item) {
+        return new Rating(user, item, ratingValue);
+    }
+
+    public Rating copyWithRatingValue(Number ratingValue) {
+        return new Rating(user, item, ratingValue);
+    }
+
+    @Override
+    public Rating clone() throws CloneNotSupportedException {
+        return (Rating) super.clone(); //To change body of generated methods, choose Tools | Templates.
+    }
+
 }

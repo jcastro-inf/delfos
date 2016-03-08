@@ -162,8 +162,12 @@ public class SOMRS_IllustrativeExample {
 
                 for (GroupOfUsers groupOfUsers : getGroupFormationTechnique().shuffle(datasetLoader)) {
                     try {
-                        GroupModelPseudoUser groupModel = consensusGRS.buildGroupModel(datasetLoader, recommendationModel, groupOfUsers);
-                        GroupRecommendationsWithMembersRecommendations groupRecommendationsWithMembersRecommendations = consensusGRS.recommendOnlyWithMembersRecommendations(datasetLoader, recommendationModel, groupModel, groupOfUsers, candidates.candidateItems(datasetLoader, groupOfUsers));
+                        GroupModelPseudoUser groupModel = consensusGRS
+                                .buildGroupModel(datasetLoader, recommendationModel, groupOfUsers);
+
+                        GroupRecommendationsWithMembersRecommendations groupRecommendationsWithMembersRecommendations
+                                = consensusGRS.recommendOnly(datasetLoader, recommendationModel, groupModel, groupOfUsers,
+                                        candidates.candidateItems(datasetLoader, groupOfUsers));
                     } catch (NotEnoughtUserInformation ex) {
                         Global.showWarning("Cannot recommend to group '" + groupOfUsers + "', not enough user information.\n" + ex.toString());
                     }

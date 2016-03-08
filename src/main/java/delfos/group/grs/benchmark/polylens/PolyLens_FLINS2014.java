@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,8 +16,6 @@
  */
 package delfos.group.grs.benchmark.polylens;
 
-import java.util.Collection;
-import java.util.List;
 import delfos.common.aggregationoperators.Mean;
 import delfos.common.exceptions.dataset.CannotLoadContentDataset;
 import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
@@ -26,18 +24,23 @@ import delfos.common.exceptions.dataset.users.UserNotFound;
 import delfos.common.exceptions.ratings.NotEnoughtUserInformation;
 import delfos.common.parameters.Parameter;
 import delfos.common.parameters.restriction.IntegerParameter;
-import delfos.dataset.basic.rating.Rating;
+import delfos.dataset.basic.item.Item;
 import delfos.dataset.basic.loader.types.DatasetLoader;
+import delfos.dataset.basic.rating.Rating;
 import delfos.group.groupsofusers.GroupOfUsers;
 import delfos.group.grs.GroupRecommenderSystemAdapter;
 import delfos.group.grs.SingleRecommendationModel;
 import delfos.group.grs.aggregation.AggregationOfIndividualRatings;
 import delfos.group.grs.aggregation.GroupModelPseudoUser;
+import delfos.group.grs.recommendations.GroupRecommendations;
+import delfos.rs.collaborativefiltering.knn.KnnCollaborativeRecommender;
 import delfos.rs.collaborativefiltering.knn.memorybased.nwr.KnnMemoryBasedNWR;
 import delfos.rs.collaborativefiltering.predictiontechniques.WeightedSum;
 import delfos.rs.explanation.GroupModelWithExplanation;
 import delfos.rs.recommendation.Recommendation;
 import delfos.similaritymeasures.PearsonCorrelationCoefficient;
+import java.util.Collection;
+import java.util.Set;
 
 /**
  * Sistema que propone el paper
@@ -68,7 +71,16 @@ public class PolyLens_FLINS2014 extends GroupRecommenderSystemAdapter<SingleReco
     public static final Parameter neighborhoodSize = new Parameter("Neighborhood_size", new IntegerParameter(1, 9999, 60));
 
     public PolyLens_FLINS2014() {
-        final KnnMemoryBasedNWR knnMemory = new KnnMemoryBasedNWR(new PearsonCorrelationCoefficient(), 20, null, false, 1, 60, new WeightedSum());
+        final KnnMemoryBasedNWR knnMemory = new KnnMemoryBasedNWR();
+
+        knnMemory.setParameterValue(KnnCollaborativeRecommender.SIMILARITY_MEASURE, new PearsonCorrelationCoefficient());
+        knnMemory.setParameterValue(KnnCollaborativeRecommender.RELEVANCE_FACTOR, 20);
+        knnMemory.setParameterValue(KnnCollaborativeRecommender.DEFAULT_RATING_VALUE, null);
+        knnMemory.setParameterValue(KnnCollaborativeRecommender.DEFAULT_RATING, false);
+        knnMemory.setParameterValue(KnnCollaborativeRecommender.CASE_AMPLIFICATION, 1);
+        knnMemory.setParameterValue(KnnCollaborativeRecommender.NEIGHBORHOOD_SIZE, 60);
+        knnMemory.setParameterValue(KnnCollaborativeRecommender.PREDICTION_TECHNIQUE, new WeightedSum());
+
         aggregationOfIndividualRatings = new AggregationOfIndividualRatings(knnMemory, new Mean());
         addParameter(neighborhoodSize);
 
@@ -94,8 +106,8 @@ public class PolyLens_FLINS2014 extends GroupRecommenderSystemAdapter<SingleReco
     }
 
     @Override
-    public GroupModelPseudoUser buildGroupModel(
-            DatasetLoader<? extends Rating> datasetLoader,
+    public <RatingType extends Rating> GroupModelPseudoUser buildGroupModel(
+            DatasetLoader<RatingType> datasetLoader,
             SingleRecommendationModel RecommendationModel,
             GroupOfUsers groupOfUsers)
             throws UserNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset, NotEnoughtUserInformation {
@@ -103,10 +115,15 @@ public class PolyLens_FLINS2014 extends GroupRecommenderSystemAdapter<SingleReco
     }
 
     @Override
-    public Collection<Recommendation> recommendOnly(
-            DatasetLoader<? extends Rating> datasetLoader, SingleRecommendationModel RecommendationModel, GroupModelPseudoUser groupModel, GroupOfUsers groupOfUsers, java.util.Set<Integer> candidateItems)
+    public <RatingType extends Rating> GroupRecommendations recommendOnly(
+            DatasetLoader<RatingType> datasetLoader, SingleRecommendationModel recommendationModel, GroupModelPseudoUser groupModel, GroupOfUsers groupOfUsers, Set<Item> candidateItems)
             throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset, NotEnoughtUserInformation {
-        return aggregationOfIndividualRatings.recommendOnly(datasetLoader, RecommendationModel, new GroupModelWithExplanation<>(groupModel, "No Explanation Provided"), groupOfUsers, candidateItems);
+        return aggregationOfIndividualRatings.recommendOnly(
+                datasetLoader,
+                recommendationModel,
+                new GroupModelWithExplanation<>(groupModel, "No Explanation Provided"),
+                groupOfUsers,
+                candidateItems);
     }
 
 }

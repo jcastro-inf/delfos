@@ -76,7 +76,7 @@ public class CosineDistance_noNull extends DistanceFunction {
         if (denominator1 == 0 || denominator2 == 0) {
             return 0;
         } else {
-            float coseno = (float) (numerator / (Math.sqrt(denominator1) * Math.sqrt(denominator2)));
+            double coseno = (double) (numerator / (Math.sqrt(denominator1) * Math.sqrt(denominator2)));
             return coseno;
         }
 

@@ -90,7 +90,7 @@ public class DAOEntropyDependenceCBRSModel {
 
             String createStatementString1 = "CREATE TABLE IF NOT EXISTS " + getFEATURE_WEIGHTS_TABLE_NAME_TEMP(databasePersistence) + " (\n"
                     + FEATURE_WEIGHTS_FIELD_FEATURE + " varchar(255) NOT NULL,\n"
-                    + FEATURE_WEIGHTS_FIELD_WEIGHT + " float NOT NULL\n"
+                    + FEATURE_WEIGHTS_FIELD_WEIGHT + " double NOT NULL\n"
                     + ") DEFAULT CHARSET=latin1;\n";
             createStatement.execute("DROP TABLE IF EXISTS " + getFEATURE_WEIGHTS_TABLE_NAME_TEMP(databasePersistence) + ";");
             createStatement.execute(createStatementString1);
@@ -146,7 +146,7 @@ public class DAOEntropyDependenceCBRSModel {
                 statement.executeUpdate(insertFeatureType);
 
                 //Hago el insert en la tabla de ponderaciones.
-                String featureWeight = Float.toString(model.getEntropy(feature));
+                String featureWeight = Double.toString(model.getEntropy(feature));
                 String insertFeatureWeight = "Insert into " + getFEATURE_WEIGHTS_TABLE_NAME_TEMP(databasePersistence) + "(" + FEATURE_WEIGHTS_FIELD_FEATURE + "," + FEATURE_WEIGHTS_FIELD_WEIGHT + ") values"
                         + "('" + featureName + "'," + featureWeight + ")";
                 statement.executeUpdate(insertFeatureWeight);

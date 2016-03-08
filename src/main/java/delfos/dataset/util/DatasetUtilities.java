@@ -24,11 +24,13 @@ import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.user.User;
 import delfos.group.groupsofusers.GroupOfUsers;
 import delfos.rs.recommendation.Recommendation;
+import delfos.rs.recommendation.RecommendationsToUser;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.stream.Collectors;
 
 /**
  * Clase para transformar mapas de valoraciones
@@ -207,6 +209,21 @@ public class DatasetUtilities {
             }
         }
         return mapIndexedByBThenA;
+    }
+
+    public static Map<User, Map<Item, Recommendation>> convertToMapOfRecommendationsByMember(
+            Collection<RecommendationsToUser> recommendationsForConsensusByMember) {
+
+        return recommendationsForConsensusByMember.parallelStream().collect(Collectors.toMap(
+                memberRecommendations -> memberRecommendations.getUser(),
+                memberRecommendations -> memberRecommendations
+                .getRecommendations().stream()
+                .collect(Collectors.toMap(
+                                recommendation -> recommendation.getItem(),
+                                recommendation -> recommendation)
+                )
+        )
+        );
     }
 
 }

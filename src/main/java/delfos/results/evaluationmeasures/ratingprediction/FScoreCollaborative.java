@@ -28,7 +28,7 @@ import delfos.results.MeasureResult;
 import delfos.common.exceptions.dataset.users.UserNotFound;
 import delfos.common.Global;
 import delfos.common.parameters.Parameter;
-import delfos.common.parameters.restriction.FloatParameter;
+import delfos.common.parameters.restriction.DoubleParameter;
 
 /**
  * Clase que implementa el algoritmo de cálculo de la F-Medida en predicción en
@@ -47,7 +47,7 @@ public class FScoreCollaborative extends EvaluationMeasure {
      * Parámetro para controlar el peso que se asigna a la precisión y al
      * recall. Por defecto vale 1 (igual peso)
      */
-    public final static Parameter beta = new Parameter("Beta", new FloatParameter(0.0f, Float.MAX_VALUE, 1.0f));
+    public final static Parameter beta = new Parameter("Beta", new DoubleParameter(0.0f, Double.MAX_VALUE, 1.0f));
 
     /**
      * Crea una instancia de la F-Medida (en inglés <i>F-Score</i> o
@@ -60,8 +60,8 @@ public class FScoreCollaborative extends EvaluationMeasure {
 
     @Override
     public MeasureResult getMeasureResult(RecommendationResults recommendationResults, RatingsDataset<? extends Rating> testDataset, RelevanceCriteria relevanceCriteria) {
-        float precision, recall, fMeasure;
-        float beta_ = (Float) getParameterValue(beta);
+        double precision, recall, fMeasure;
+        double beta_ = (Double) getParameterValue(beta);
         int relevantesRecomendadas = 0;
         int relevantesNoRecomendadas = 0;
         int noRelevantesRecomendadas = 0;
@@ -96,16 +96,16 @@ public class FScoreCollaborative extends EvaluationMeasure {
             }
         }
 
-        if (((float) relevantesRecomendadas + (float) noRelevantesRecomendadas) == 0) {
+        if (((double) relevantesRecomendadas + (double) noRelevantesRecomendadas) == 0) {
             precision = 0;
         } else {
-            precision = (float) relevantesRecomendadas / ((float) relevantesRecomendadas + (float) noRelevantesRecomendadas);
+            precision = (double) relevantesRecomendadas / ((double) relevantesRecomendadas + (double) noRelevantesRecomendadas);
         }
 
-        if (((float) relevantesRecomendadas + (float) relevantesNoRecomendadas) == 0) {
+        if (((double) relevantesRecomendadas + (double) relevantesNoRecomendadas) == 0) {
             recall = 0;
         } else {
-            recall = (float) relevantesRecomendadas / ((float) relevantesRecomendadas + (float) relevantesNoRecomendadas);
+            recall = (double) relevantesRecomendadas / ((double) relevantesRecomendadas + (double) relevantesNoRecomendadas);
         }
 
         if ((beta_ * beta_ * precision + recall) == 0) {

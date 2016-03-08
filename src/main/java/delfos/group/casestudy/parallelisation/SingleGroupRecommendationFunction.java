@@ -18,13 +18,12 @@ package delfos.group.casestudy.parallelisation;
 
 import delfos.common.Chronometer;
 import delfos.common.exceptions.ratings.NotEnoughtUserInformation;
+import delfos.dataset.basic.item.Item;
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
 import delfos.group.groupsofusers.GroupOfUsers;
-import delfos.rs.recommendation.Recommendation;
+import delfos.group.grs.recommendations.GroupRecommendations;
 import delfos.utils.algorithm.progress.ProgressChangedController;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.Set;
 import java.util.function.Function;
 
@@ -42,10 +41,6 @@ public class SingleGroupRecommendationFunction implements Function<SingleGroupRe
         this.recommendationProgress = null;
     }
 
-    public SingleGroupRecommendationFunction(ProgressChangedController recommendationProgress) {
-        this.recommendationProgress = recommendationProgress;
-    }
-
     @Override
     public SingleGroupRecommendationTaskOutput apply(SingleGroupRecommendationTaskInput task) {
 
@@ -55,9 +50,9 @@ public class SingleGroupRecommendationFunction implements Function<SingleGroupRe
 
         final DatasetLoader<? extends Rating> datasetLoader = task.getDatasetLoader();
         final Object recommendationModel = task.getRecommendationModel();
-        final Set<Integer> itemsRequested = task.getItemsRequested();
+        final Set<Item> itemsRequested = task.getItemsRequested();
 
-        Collection<Recommendation> recommendations = Collections.EMPTY_LIST;
+        GroupRecommendations recommendations = null;
         long buildTime = -1;
         long recommendationTime = -1;
 
@@ -82,7 +77,9 @@ public class SingleGroupRecommendationFunction implements Function<SingleGroupRe
 
         notifyProgress();
 
-        SingleGroupRecommendationTaskOutput groupRecommendationTaskOutput = new SingleGroupRecommendationTaskOutput(groupOfUsers, recommendations, buildTime, recommendationTime);
+        SingleGroupRecommendationTaskOutput groupRecommendationTaskOutput
+                = new SingleGroupRecommendationTaskOutput(
+                        groupOfUsers, recommendations, buildTime, recommendationTime);
 
         return groupRecommendationTaskOutput;
     }

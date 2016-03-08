@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,12 +16,6 @@
  */
 package delfos.group.grs.filtered;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeMap;
-import java.util.TreeSet;
 import delfos.common.Global;
 import delfos.common.aggregationoperators.Mean;
 import delfos.common.exceptions.dataset.CannotLoadContentDataset;
@@ -33,11 +27,11 @@ import delfos.common.parameters.Parameter;
 import delfos.common.parameters.ParameterListener;
 import delfos.common.parameters.restriction.ParameterOwnerRestriction;
 import delfos.common.parameters.restriction.RecommenderSystemParameterRestriction;
-import delfos.dataset.basic.rating.Rating;
-import delfos.dataset.loaders.given.DatasetLoaderGivenRatingsDataset;
+import delfos.dataset.basic.item.Item;
 import delfos.dataset.basic.loader.types.DatasetLoader;
+import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.generated.modifieddatasets.PseudoUserRatingsDataset_manyPseudoUsers;
-import delfos.group.groupsofusers.GroupOfUsers;
+import delfos.dataset.loaders.given.DatasetLoaderGivenRatingsDataset;
 import delfos.group.groupsofusers.GroupOfUsers;
 import delfos.group.grs.GroupRecommenderSystem;
 import delfos.group.grs.GroupRecommenderSystemAdapter;
@@ -45,11 +39,16 @@ import delfos.group.grs.aggregation.AggregationOfIndividualRatings;
 import delfos.group.grs.aggregation.GroupModelRatingsPreFilter;
 import delfos.group.grs.filtered.filters.GroupRatingsFilter;
 import delfos.group.grs.filtered.filters.OutliersRatingsFilter;
+import delfos.group.grs.recommendations.GroupRecommendations;
 import delfos.rs.RecommendationModelBuildingProgressListener;
 import delfos.rs.collaborativefiltering.knn.modelbased.KnnModelBasedCFRS;
 import delfos.rs.explanation.GroupModelWithExplanation;
 import delfos.rs.explanation.NestedExplanation;
-import delfos.rs.recommendation.Recommendation;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
+import java.util.TreeSet;
+import java.util.stream.Collectors;
 
 /**
  * Implementa la unión de un sistema de recomendación con un algoritmo de
@@ -58,7 +57,8 @@ import delfos.rs.recommendation.Recommendation;
  * @author jcastro-inf ( https://github.com/jcastro-inf )
  * @version 1.0 07-May-2013
  */
-public class GroupRecommenderSystemWithPreFilter extends GroupRecommenderSystemAdapter<Object, GroupModelWithExplanation<GroupModelRatingsPreFilter, ? extends Object>> {
+public class GroupRecommenderSystemWithPreFilter
+        extends GroupRecommenderSystemAdapter<Object, GroupModelWithExplanation<GroupModelRatingsPreFilter, Object>> {
 
     private static final long serialVersionUID = 1L;
     /**
@@ -133,7 +133,11 @@ public class GroupRecommenderSystemWithPreFilter extends GroupRecommenderSystemA
     }
 
     @Override
-    public GroupModelWithExplanation<GroupModelRatingsPreFilter, ? extends Object> buildGroupModel(DatasetLoader<? extends Rating> datasetLoader, Object RecommendationModel, GroupOfUsers groupOfUsers) throws UserNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset, NotEnoughtUserInformation {
+    public <RatingType extends Rating> GroupModelWithExplanation<GroupModelRatingsPreFilter, Object> buildGroupModel(
+            DatasetLoader<RatingType> datasetLoader,
+            Object RecommendationModel,
+            GroupOfUsers groupOfUsers)
+            throws UserNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset, NotEnoughtUserInformation {
         Map<Integer, Map<Integer, Rating>> filteredRatings = getGroupRatingsFilter().getFilteredRatings(datasetLoader.getRatingsDataset(), groupOfUsers);
 
         checkFilteredRatings(datasetLoader, groupOfUsers, filteredRatings);
@@ -156,7 +160,7 @@ public class GroupRecommenderSystemWithPreFilter extends GroupRecommenderSystemA
 
         Object innerGRSGroupModel = getGroupRecommenderSystem().buildGroupModel(new DatasetLoaderGivenRatingsDataset(datasetLoader, modifiedDataset),
                 RecommendationModel,
-                new GroupOfUsers(pseudoMembers.keySet()));
+                new GroupOfUsers(pseudoMembers.keySet().stream().map(idUser -> datasetLoader.getUsersDataset().get(idUser)).collect(Collectors.toSet())));
 
         final Object explanation;
         if (innerGRSGroupModel instanceof GroupModelWithExplanation) {
@@ -184,8 +188,8 @@ public class GroupRecommenderSystemWithPreFilter extends GroupRecommenderSystemA
     }
 
     @Override
-    public Collection<Recommendation> recommendOnly(
-            DatasetLoader<? extends Rating> datasetLoader, Object RecommendationModel, GroupModelWithExplanation<GroupModelRatingsPreFilter, ? extends Object> groupModelWithExplanation, GroupOfUsers groupOfUsers, java.util.Set<Integer> candidateItems)
+    public <RatingType extends Rating> GroupRecommendations recommendOnly(
+            DatasetLoader<RatingType> datasetLoader, Object RecommendationModel, GroupModelWithExplanation<GroupModelRatingsPreFilter, Object> groupModelWithExplanation, GroupOfUsers groupOfUsers, Set<Item> candidateItems)
             throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset, NotEnoughtUserInformation {
 
         Object innerGRSGroupModel = groupModelWithExplanation.getGroupModel().getInnerGRSGroupModel();
@@ -204,11 +208,15 @@ public class GroupRecommenderSystemWithPreFilter extends GroupRecommenderSystemA
         }
 
         try {
-            Collection<Recommendation> recommendations = getGroupRecommenderSystem().recommendOnly(new DatasetLoaderGivenRatingsDataset(datasetLoader, modifiedDataset),
-                    RecommendationModel,
-                    innerGRSGroupModel,
-                    new GroupOfUsers(pseudoMembers.keySet()),
-                    candidateItems);
+            GroupRecommendations recommendations = getGroupRecommenderSystem()
+                    .recommendOnly(
+                            new DatasetLoaderGivenRatingsDataset(datasetLoader, modifiedDataset),
+                            RecommendationModel,
+                            innerGRSGroupModel,
+                            new GroupOfUsers(pseudoMembers.keySet().stream()
+                                    .map(idUser -> datasetLoader.getUsersDataset().get(idUser))
+                                    .collect(Collectors.toSet())),
+                            candidateItems);
             return recommendations;
         } catch (UserNotFound ex) {
             throw new UserNotFound(pseudoMembers.get(ex.getIdUser()), ex);

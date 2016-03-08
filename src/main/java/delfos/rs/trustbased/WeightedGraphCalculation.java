@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,12 +16,14 @@
  */
 package delfos.rs.trustbased;
 
-import java.util.Collection;
-import delfos.algorithm.AlgorithmAdapter;
-import delfos.dataset.basic.rating.Rating;
-import delfos.dataset.basic.loader.types.DatasetLoader;
+import delfos.algorithm.AlgorithmWithExecutionProgressDefault;
 import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
 import delfos.common.parameters.ParameterOwnerType;
+import delfos.dataset.basic.item.Item;
+import delfos.dataset.basic.loader.types.DatasetLoader;
+import delfos.dataset.basic.rating.Rating;
+import delfos.dataset.basic.user.User;
+import java.util.Collection;
 
 /**
  *
@@ -30,7 +32,7 @@ import delfos.common.parameters.ParameterOwnerType;
  * @param <Node> Tipo de los nodos del grafo.
  * @version 1.0 03-Jun-2013
  */
-public abstract class WeightedGraphCalculation<Node> extends AlgorithmAdapter {
+public abstract class WeightedGraphCalculation<Node> extends AlgorithmWithExecutionProgressDefault {
 
     /**
      * Calcula un grafo ponderado a partir del conjunto de datos indicado,
@@ -41,7 +43,9 @@ public abstract class WeightedGraphCalculation<Node> extends AlgorithmAdapter {
      * @param users Usuarios para los que se calcula la red de confianza.
      * @return
      */
-    public abstract WeightedGraphAdapter<Node> computeTrustValues(DatasetLoader<? extends Rating> datasetLoader, Collection<Integer> users) throws CannotLoadRatingsDataset;
+    public abstract WeightedGraphAdapter<Node> computeTrustValues(
+            DatasetLoader<? extends Rating> datasetLoader,
+            Collection<Integer> users) throws CannotLoadRatingsDataset;
 
     /**
      * Calcula el grafo difuso del dataset indicado como parámetro, tomando
@@ -58,6 +62,18 @@ public abstract class WeightedGraphCalculation<Node> extends AlgorithmAdapter {
     @Override
     public ParameterOwnerType getParameterOwnerType() {
         return ParameterOwnerType.WEIGHTED_GRAPH_CALCULATION;
+    }
+
+    public WeightedGraph<Node> computeWeightedGraphForItem(DatasetLoader<? extends Rating> datasetLoader,
+            WeightedGraph<Node> weightedGraph,
+            Collection<User> users,
+            Item item) {
+        return weightedGraph;
+    }
+
+    @Override
+    public String toString() {
+        return getAlias();
     }
 
 }

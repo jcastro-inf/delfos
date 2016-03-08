@@ -20,6 +20,7 @@ import delfos.dataset.basic.user.User;
 import delfos.group.groupsofusers.GroupOfUsers;
 import delfos.rs.recommendation.Recommendation;
 import delfos.rs.recommendation.Recommendations;
+import delfos.rs.recommendation.RecommendationsToUser;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Map;
@@ -32,7 +33,7 @@ import java.util.TreeSet;
  *
  * @author jcastro-inf ( https://github.com/jcastro-inf )
  */
-public class GroupRecommendationsWithMembersRecommendations extends Recommendations {
+public class GroupRecommendationsWithMembersRecommendations extends GroupRecommendations {
 
     private static final long serialVersionUID = 34235l;
 
@@ -44,9 +45,18 @@ public class GroupRecommendationsWithMembersRecommendations extends Recommendati
         targetGroupOfUsers = null;
     }
 
-    public GroupRecommendationsWithMembersRecommendations(GroupRecommendations groupRecommendations, Recommendations... membersRecommendations) {
+    public GroupRecommendationsWithMembersRecommendations(
+            GroupRecommendations groupRecommendations,
+            Collection<RecommendationsToUser> membersRecommendations) {
+
+        this(groupRecommendations, membersRecommendations.toArray(new RecommendationsToUser[0]));
+    }
+
+    public GroupRecommendationsWithMembersRecommendations(
+            GroupRecommendations groupRecommendations,
+            RecommendationsToUser... membersRecommendations) {
         super(
-                groupRecommendations.getTargetIdentifier(),
+                groupRecommendations.getGroupOfUsers(),
                 groupRecommendations.getRecommendations(),
                 groupRecommendations.getRecommendationComputationDetails()
         );
@@ -57,7 +67,7 @@ public class GroupRecommendationsWithMembersRecommendations extends Recommendati
 
         this.membersRecommendations = new TreeMap<>();
         for (Recommendations memberRecommendations : membersRecommendations) {
-            User member = User.parseIdTarget(memberRecommendations.getTargetIdentifier());
+            User member = (User) memberRecommendations.getTarget();
             this.membersRecommendations.put(member, memberRecommendations);
         }
 

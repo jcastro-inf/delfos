@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,22 +16,31 @@
  */
 package delfos.dataset.util;
 
-import delfos.ERROR_CODES;
 import delfos.common.Global;
 import delfos.common.decimalnumbers.NumberRounder;
 import delfos.common.exceptions.dataset.items.ItemNotFound;
 import delfos.common.exceptions.dataset.users.UserNotFound;
+import delfos.dataset.basic.item.Item;
+import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RatingsDataset;
+import delfos.dataset.basic.user.User;
 import delfos.dataset.storage.memory.BothIndexRatingsDataset;
 import delfos.rs.collaborativefiltering.profile.Neighbor;
 import delfos.rs.trustbased.WeightedGraph;
+import dnl.utils.text.table.TextTable;
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 /**
  * Clase para transformar datasets a cadenas con formato amigable para el
@@ -73,7 +82,7 @@ public class DatasetPrinter {
                             throw new UserNotFound(idUser);
                         }
                         Number value = values.get(idUser).get(idUser2);
-                        Global.showInfoMessage("" + NumberRounder.round(value, numDecimals) + "\t|");
+                        Global.showInfoMessage("" + NumberRounder.round(value) + "\t|");
                     }
                 } catch (UserNotFound ex) {
                     Global.showInfoMessage(" - \t|");
@@ -105,7 +114,7 @@ public class DatasetPrinter {
             Global.showInfoMessage("|U_" + idUser + "\t|");
 
             Number value = values.get(idUser);
-            Global.showInfoMessage("" + NumberRounder.round(value, numDecimals) + "\t|\n");
+            Global.showInfoMessage("" + NumberRounder.round(value) + "\t|\n");
         }
 
         //Cierro la tabla
@@ -123,7 +132,7 @@ public class DatasetPrinter {
 
             Global.showInfoMessage("|U_" + idUser + "\t|");
             for (Neighbor n : neighbors.get(idUser)) {
-                Global.showInfoMessage("U_" + n.getIdNeighbor() + " -> [" + NumberRounder.round(n.getSimilarity(), numDecimals) + "]\t|");
+                Global.showInfoMessage("U_" + n.getIdNeighbor() + " -> [" + NumberRounder.round(n.getSimilarity()) + "]\t|");
             }
             Global.showInfoMessage("\n");
         }
@@ -140,7 +149,7 @@ public class DatasetPrinter {
 
             Global.showInfoMessage("|I_" + idItem + "\t|");
             for (Neighbor n : neighbors.get(idItem)) {
-                Global.showInfoMessage("I_" + n.getIdNeighbor() + " -> [" + NumberRounder.round(n.getSimilarity(), numDecimals) + "]\t|");
+                Global.showInfoMessage("I_" + n.getIdNeighbor() + " -> [" + NumberRounder.round(n.getSimilarity()) + "]\t|");
             }
             Global.showInfoMessage("\n");
         }
@@ -181,7 +190,7 @@ public class DatasetPrinter {
             for (Node idUser2 : users) {
 
                 Number value = weightedGraph.connection(idUser, idUser2);
-                str.append("").append(NumberRounder.round(value, numDecimals)).append("\t|");
+                str.append("").append(NumberRounder.round(value)).append("\t|");
             }
             str.append("\n");
         }
@@ -228,7 +237,7 @@ public class DatasetPrinter {
                         Global.showInfoMessage("\t - \t|");
                     } else {
 
-                        Global.showInfoMessage("\t" + NumberRounder.round(rating.getRatingValue(), numDecimals) + "\t|");
+                        Global.showInfoMessage("\t" + NumberRounder.round(rating.getRatingValue()) + "\t|");
                     }
                 } catch (UserNotFound | ItemNotFound ex) {
                     Global.showInfoMessage("\t - \t|");
@@ -319,7 +328,7 @@ public class DatasetPrinter {
                         str.append(" - \t|");
                     } else {
 
-                        str.append("").append(NumberRounder.round(rating.getRatingValue(), numDecimals)).append("\t|");
+                        str.append("").append(NumberRounder.round(rating.getRatingValue())).append("\t|");
                     }
                 } catch (UserNotFound | ItemNotFound ex) {
                     str.append(" - \t|");
@@ -339,65 +348,56 @@ public class DatasetPrinter {
         return str.toString();
     }
 
-    public static String printCompactRatingTable(RatingsDataset<? extends Rating> ratingsDataset, Collection<Integer> users) {
+    public static String printCompactRatingTable(DatasetLoader<? extends Rating> datasetLoader, Collection<User> _users) {
 
-        Collection<Integer> items = new TreeSet<>();
-        users.stream().forEach((idUser) -> {
-            try {
-                Collection<Integer> userRated = ratingsDataset.getUserRated(idUser);
-                items.addAll(userRated);
-            } catch (UserNotFound ex) {
-                ERROR_CODES.USER_NOT_FOUND.exit(ex);
-            }
-        });
+        final List<User> users = _users.stream().sorted(User.BY_ID).collect(Collectors.toList());
+        final List<Item> itemsAllUsersRated = users.stream()
+                .map(user -> datasetLoader.getRatingsDataset().getUserRated(user.getId()))
+                .map(userRated
+                        -> userRated.stream()
+                        .map(idItem -> datasetLoader.getContentDataset().get(idItem))
+                        .collect(Collectors.toSet())
+                )
+                .flatMap(set -> set.stream())
+                .collect(Collectors.toSet())
+                .stream()
+                .sorted(Item.BY_ID)
+                .collect(Collectors.toList());
 
-        StringBuilder str = new StringBuilder();
+        List<String> columnNames = new ArrayList<>();
+        columnNames.add("user\\items");
+        columnNames.addAll(itemsAllUsersRated.stream()
+                .map(item -> "Item_" + item.getId())
+                .collect(Collectors.toList()));
 
-        //Escribo la cabecera
-        {
-            str.append("|\t|");
-            items.stream().forEach((idItem) -> {
-                str.append("I_").append(idItem).append("\t|");
-            });
-            str.append("\n");
+        Object[][] data = new Object[users.size()][itemsAllUsersRated.size() + 1];
 
-            str.append("+-------+");
-            items.stream().forEach((_item) -> {
-                str.append("-------+");
-            });
-            str.append("\n");
-        }
+        DecimalFormat format = new DecimalFormat("0.0000");
 
-        users.stream().map((idUser) -> {
-            str.append("|U_").append(idUser).append("\t|");
-            return idUser;
-        }).map((idUser) -> {
-            items.stream().forEach((idItem) -> {
-                try {
-                    Rating rating = ratingsDataset.getRating(idUser, idItem);
-                    if (rating == null) {
-                        str.append(" - \t|");
-                    } else {
+        IntStream.range(0, users.size()).forEach(indexUser -> {
+            User user = users.get(indexUser);
 
-                        str.append("").append(NumberRounder.round(rating.getRatingValue(), numDecimals)).append("\t|");
-                    }
-                } catch (UserNotFound | ItemNotFound ex) {
-                    str.append(" - \t|");
+            data[indexUser][0] = user.toString();
+
+            Map<Integer, ? extends Rating> userRatingsRated = datasetLoader.getRatingsDataset().getUserRatingsRated(user.getId());
+
+            IntStream.range(0, itemsAllUsersRated.size()).forEach(indexItem -> {
+                Item item = itemsAllUsersRated.get(indexItem);
+                if (userRatingsRated.containsKey(item.getId())) {
+                    data[indexUser][indexItem + 1] = format.format(userRatingsRated.get(item.getId()).getRatingValue().doubleValue());
+                } else {
+                    data[indexUser][indexItem + 1] = "";
                 }
             });
-            return idUser;
-        }).forEach((_item) -> {
-            str.append("\n");
         });
 
-        //Cierro la tabla
-        str.append("+-------+");
-        items.stream().forEach((_item) -> {
-            str.append("-------+");
-        });
-        str.append("\n");
+        TextTable textTable = new TextTable(columnNames.toArray(new String[0]), data);
 
-        return str.toString();
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        PrintStream recordingStream = new PrintStream(baos);
+        textTable.printTable(recordingStream, 0);
+
+        return baos.toString();
     }
 
     public static String datasetDiff(RatingsDataset<? extends Rating> rd1, RatingsDataset<? extends Rating> rd2) {

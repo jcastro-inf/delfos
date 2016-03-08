@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,6 +16,7 @@
  */
 package delfos.group.grs.consensus;
 
+import delfos.group.grs.recommendations.GroupRecommendations;
 import delfos.rs.recommendation.Recommendation;
 import java.util.Collection;
 
@@ -30,6 +31,7 @@ public class ConsensusOutputModel {
     public final int round;
 
     public final Collection<Recommendation> consensusRecommendations;
+    GroupRecommendations groupRecommendation;
 
     public ConsensusOutputModel() {
         this.consensusDegree = 0;

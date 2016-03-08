@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -42,10 +42,11 @@ public class ParameterChain {
      * groupCaseStudyResults and also have at least two case study with
      * different value for the terminal value.
      *
+     * @param <ParameterOwnerType>
      * @param groupCaseStudys
      * @return
      */
-    public static List<ParameterChain> obtainDifferentChains(List<GroupCaseStudy> groupCaseStudys) {
+    public static <ParameterOwnerType extends ParameterOwner> List<ParameterChain> obtainDifferentChains(List<ParameterOwnerType> groupCaseStudys) {
 
         if (groupCaseStudys.isEmpty()) {
             return Collections.EMPTY_LIST;
@@ -54,7 +55,7 @@ public class ParameterChain {
         List<ParameterChain> allParameterChains = obtainAllParameterChains(
                 groupCaseStudys.iterator().next());
 
-        for (GroupCaseStudy groupCaseStudy : groupCaseStudys) {
+        for (ParameterOwner groupCaseStudy : groupCaseStudys) {
             List<ParameterChain> thisCaseStudyParameterChains
                     = obtainAllParameterChains(groupCaseStudy);
 
@@ -79,8 +80,9 @@ public class ParameterChain {
         //Delete chains applicable to only one groupCaseStudy
         List<ParameterChain> chainsApplicableToMoreThanOne = allParameterChains.stream()
                 .filter(parameterChain -> {
-                    List<GroupCaseStudy> applicableTo = groupCaseStudys.stream()
-                    .filter(groupCaseStudy -> parameterChain.isApplicableTo(groupCaseStudy)).collect(Collectors.toList());
+                    List< ? extends ParameterOwner> applicableTo = groupCaseStudys.stream()
+                    .filter(groupCaseStudy -> parameterChain.isApplicableTo(groupCaseStudy))
+                    .collect(Collectors.toList());
                     boolean applicableToMoreThanOne = applicableTo.size() > 1;
                     return applicableToMoreThanOne;
                 })
@@ -146,7 +148,7 @@ public class ParameterChain {
         return dataValidationParameterChains;
     }
 
-    public static List<ParameterChain> obtainAllParameterChains(ParameterOwner rootParameterOwner) {
+    public static <ParameterOwnerType extends ParameterOwner> List<ParameterChain> obtainAllParameterChains(ParameterOwnerType rootParameterOwner) {
 
         List<ParameterChain> allParameterChains = new ArrayList<>();
 
@@ -446,7 +448,7 @@ public class ParameterChain {
         return str.toString();
     }
 
-    boolean isApplicableTo(ParameterOwner parameterOwner) {
+    <ParameterOwnerType extends ParameterOwner> boolean isApplicableTo(ParameterOwnerType parameterOwner) {
         try {
             validateThatIsApplicableTo(parameterOwner);
             return true;

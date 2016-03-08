@@ -352,7 +352,7 @@ public class SingleExperiment_TraditionalRecommender_Window extends JFrame imple
             int n = (Integer) spinerN.getValue();
             DatasetLoader<? extends Rating> mdc = (DatasetLoader) datasetSelector.getSelectedItem();
 
-            RelevanceCriteria rc = new RelevanceCriteria(((Number) spinerRelevancia.getValue()).floatValue());
+            RelevanceCriteria rc = new RelevanceCriteria(((Number) spinerRelevancia.getValue()).doubleValue());
 
             PredictionProtocol pvt = (PredictionProtocol) comboPredictionValidationTechniques.getSelectedItem();
 

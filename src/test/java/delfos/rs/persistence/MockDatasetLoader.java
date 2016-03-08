@@ -43,12 +43,12 @@ public class MockDatasetLoader extends CompleteDatasetLoaderAbstract_withTrust<R
             FeatureGenerator featureGenerator = new FeatureGenerator();
 
             Feature[] features = new Feature[4];
-            featureGenerator.createFeature("feature1_float", FeatureType.Numerical);
+            featureGenerator.createFeature("feature1_double", FeatureType.Numerical);
             featureGenerator.createFeature("feature2_int", FeatureType.Numerical);
             featureGenerator.createFeature("feature3_class", FeatureType.Nominal);
             featureGenerator.createFeature("feature4_boolean", FeatureType.Nominal);
 
-            features[0] = featureGenerator.searchFeature("feature1_float");
+            features[0] = featureGenerator.searchFeature("feature1_double");
             features[1] = featureGenerator.searchFeature("feature2_int");
             features[2] = featureGenerator.searchFeature("feature3_class");
             features[3] = featureGenerator.searchFeature("feature4_boolean");

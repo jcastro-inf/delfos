@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,10 +16,11 @@
  */
 package delfos.experiment;
 
-import java.io.PrintStream;
-import java.util.Date;
 import delfos.common.Chronometer;
 import delfos.common.DateCollapse;
+import delfos.common.Global;
+import java.io.PrintStream;
+import java.util.Date;
 
 /**
  * Listener por defecto, que escribe en la salida indicada el progreso con una
@@ -83,15 +84,21 @@ public class ExperimentListerner_default implements ExperimentListener {
 
     private void printProgress(ExperimentProgress algorithmExperiment) {
 
-        String experimentMessage = new Date().toString() + " ==== Experiment ==== " + algorithmExperiment.getExperimentProgressTask() + " --> "
-                + algorithmExperiment.getExperimentProgressPercent() + "% --> "
-                + DateCollapse.collapse(algorithmExperiment.getExperimentProgressRemainingTime());
+        String experimentMessage
+                = new Date().toString()
+                + " => " + algorithmExperiment.getExperimentProgressTask()
+                + " --> " + algorithmExperiment.getExperimentProgressPercent() + "% ";
 
-        String executionMessage = new Date().toString() + "      Execution       " + algorithmExperiment.getExecutionProgressTask() + " --> "
-                + algorithmExperiment.getExecutionProgressPercent() + "% --> "
-                + DateCollapse.collapse(algorithmExperiment.getExecutionProgressRemainingTime());
+        if (algorithmExperiment.getExperimentProgressRemainingTime() > 0) {
+            experimentMessage = experimentMessage
+                    + "( remaining: "
+                    + DateCollapse.collapse(algorithmExperiment.getExperimentProgressRemainingTime())
+                    + " )";
+        } else if (algorithmExperiment.getExperimentProgressRemainingTime() < 0) {
+            experimentMessage = experimentMessage
+                    + "( remaining: unknown )";
+        }
 
-        out.println(experimentMessage);
-        out.println(executionMessage);
+        Global.printStandard(experimentMessage + "\n");
     }
 }

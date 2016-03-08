@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,19 +16,19 @@
  */
 package delfos.similaritymeasures.useruser;
 
+import delfos.common.parameters.Parameter;
+import delfos.common.parameters.restriction.ParameterOwnerRestriction;
+import delfos.dataset.basic.loader.types.DatasetLoader;
+import delfos.dataset.basic.rating.Rating;
+import delfos.similaritymeasures.BasicSimilarityMeasure;
+import delfos.similaritymeasures.PearsonCorrelationCoefficient;
+import delfos.similaritymeasures.SimilarityMeasure;
+import delfos.similaritymeasures.SimilarityMeasureAdapter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
-import delfos.common.parameters.Parameter;
-import delfos.common.parameters.restriction.ParameterOwnerRestriction;
-import delfos.dataset.basic.rating.Rating;
-import delfos.dataset.basic.loader.types.DatasetLoader;
-import delfos.similaritymeasures.BasicSimilarityMeasure;
-import delfos.similaritymeasures.PearsonCorrelationCoefficient;
-import delfos.similaritymeasures.SimilarityMeasure;
-import delfos.similaritymeasures.SimilarityMeasureAdapter;
 
 /**
  *
@@ -67,14 +67,14 @@ public class UserUserSimilarityWrapper extends SimilarityMeasureAdapter implemen
         Set<Integer> commonItems = new TreeSet<>(user1Ratings.keySet());
         commonItems.retainAll(user2Ratings.keySet());
 
-        List<Float> v1 = new ArrayList<>();
-        List<Float> v2 = new ArrayList<>();
+        List<Double> v1 = new ArrayList<>();
+        List<Double> v2 = new ArrayList<>();
 
         commonItems.stream().map((idItem) -> {
-            v1.add(user1Ratings.get(idItem).getRatingValue().floatValue());
+            v1.add(user1Ratings.get(idItem).getRatingValue().doubleValue());
             return idItem;
         }).forEach((idItem) -> {
-            v2.add(user2Ratings.get(idItem).getRatingValue().floatValue());
+            v2.add(user2Ratings.get(idItem).getRatingValue().doubleValue());
         });
 
         double similarity = basicSimilarityMeasure.similarity(v1, v2);

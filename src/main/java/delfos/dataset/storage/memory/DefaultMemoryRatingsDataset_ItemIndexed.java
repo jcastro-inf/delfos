@@ -94,11 +94,11 @@ public class DefaultMemoryRatingsDataset_ItemIndexed<RatingType extends Rating> 
         }
         ratings.get(itemsIndex.get(idItem)).add(rating);
 
-        if (rating.getRatingValue().floatValue() < rc.min()) {
-            rc = new DecimalDomain(rating.getRatingValue().floatValue(), rc.max());
+        if (rating.getRatingValue().doubleValue() < rc.min()) {
+            rc = new DecimalDomain(rating.getRatingValue().doubleValue(), rc.max());
         }
-        if (rating.getRatingValue().floatValue() > rc.max()) {
-            rc = new DecimalDomain(rc.min(), rating.getRatingValue().floatValue());
+        if (rating.getRatingValue().doubleValue() > rc.max()) {
+            rc = new DecimalDomain(rc.min(), rating.getRatingValue().doubleValue());
         }
     }
 

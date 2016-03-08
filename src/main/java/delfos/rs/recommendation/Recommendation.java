@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -26,6 +26,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 /**
@@ -34,6 +35,9 @@ import java.util.stream.Collectors;
  * @author jcastro-inf ( https://github.com/jcastro-inf )
  */
 public class Recommendation implements Comparable<Recommendation>, Serializable {
+
+    public static final Predicate<? super Recommendation> NON_COVERAGE_FAILURES
+            = (recommendation) -> !Double.isNaN(recommendation.getPreference().doubleValue());
 
     public static final Comparator<Recommendation> BY_ID = (Recommendation o1, Recommendation o2) -> {
         validateComparatorParameters(o1, o2);

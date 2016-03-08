@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,13 +16,14 @@
  */
 package delfos.recommendationcandidates;
 
-import delfos.dataset.basic.loader.types.ContentDatasetLoader;
+import delfos.common.exceptions.dataset.users.UserNotFound;
+import delfos.dataset.basic.item.Item;
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.user.User;
 import delfos.group.groupsofusers.GroupOfUsers;
 import java.util.Set;
-import java.util.TreeSet;
+import java.util.stream.Collectors;
 
 /**
  * Devuelve todos los productos del catálogo.
@@ -33,22 +34,13 @@ import java.util.TreeSet;
 public class AllCatalogItems extends RecommendationCandidatesSelector {
 
     @Override
-    public Set<Integer> candidateItems(DatasetLoader<? extends Rating> datasetLoader, User user) {
-        Set<Integer> candidateItems = new TreeSet<>();
-
-        if (datasetLoader instanceof ContentDatasetLoader) {
-            ContentDatasetLoader contentDatasetLoader = (ContentDatasetLoader) datasetLoader;
-            candidateItems.addAll(contentDatasetLoader.getContentDataset().getAvailableItems());
-        } else {
-            candidateItems.addAll(datasetLoader.getRatingsDataset().allRatedItems());
-        }
-
-        return candidateItems;
+    public Set<Item> candidateItems(DatasetLoader<? extends Rating> datasetLoader, User user) throws UserNotFound {
+        return datasetLoader.getContentDataset().stream().collect(Collectors.toSet());
     }
 
     @Override
-    public Set<Integer> candidateItems(DatasetLoader<? extends Rating> datasetLoader, GroupOfUsers groupOfUsers) {
-        return candidateItems(datasetLoader, User.ANONYMOUS_USER);
+    public Set<Item> candidateItems(DatasetLoader<? extends Rating> datasetLoader, GroupOfUsers groupOfUsers) throws UserNotFound {
+        return datasetLoader.getContentDataset().stream().collect(Collectors.toSet());
     }
 
 }

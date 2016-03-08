@@ -63,7 +63,7 @@ public class RMSE extends EvaluationMeasure {
                                 && calculatedRating != null
                                 && !Double.isNaN(calculatedRating.doubleValue())
                                 && !Double.isInfinite(calculatedRating.doubleValue())) {
-                            mean.addValue(Math.pow(Math.abs(trueRating.floatValue() - calculatedRating.floatValue()), 2));
+                            mean.addValue(Math.pow(Math.abs(trueRating.doubleValue() - calculatedRating.doubleValue()), 2));
                         }
                     }
                 } catch (UserNotFound ex) {
@@ -76,7 +76,7 @@ public class RMSE extends EvaluationMeasure {
             Global.showWarning("Cannot compute 'MAE' since the RS did not predicted any recommendation!!");
         }
 
-        return new MeasureResult(this, (float) Math.sqrt(mean.getMean()));
+        return new MeasureResult(this, (double) Math.sqrt(mean.getMean()));
     }
 
     @Override

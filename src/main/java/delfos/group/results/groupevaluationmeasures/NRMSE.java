@@ -64,7 +64,9 @@ public class NRMSE extends GroupEvaluationMeasure {
         Domain originalDomain = testDataset.getRatingsDomain();
 
         for (GroupOfUsers groupOfUsers : groupRecommenderSystemResult.getGroupsOfUsers()) {
-            Collection<Recommendation> groupRecommendations = groupRecommenderSystemResult.getGroupOutput(groupOfUsers).getRecommendations();
+            Collection<Recommendation> groupRecommendations = groupRecommenderSystemResult
+                    .getGroupOutput(groupOfUsers)
+                    .getRecommendations().getRecommendations();
 
             Map<Integer, Map<Integer, ? extends Rating>> groupTrueRatings = new TreeMap<>();
             for (int idUser : groupOfUsers.getIdMembers()) {
@@ -97,7 +99,7 @@ public class NRMSE extends GroupEvaluationMeasure {
         if (nrmse.getNumValues() == 0) {
             return new GroupEvaluationMeasureResult(this, Double.NaN);
         } else {
-            float rmseValue = (float) Math.sqrt(nrmse.getMean());
+            double rmseValue = (double) Math.sqrt(nrmse.getMean());
             return new GroupEvaluationMeasureResult(this, rmseValue);
         }
 

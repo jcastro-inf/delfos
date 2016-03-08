@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,6 +16,17 @@
  */
 package delfos.rs.trustbased;
 
+import delfos.ERROR_CODES;
+import delfos.algorithm.AlgorithmExecutionProgressListener;
+import delfos.common.Global;
+import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
+import delfos.common.parameters.Parameter;
+import delfos.common.parameters.restriction.ParameterOwnerRestriction;
+import delfos.common.parameters.restriction.StringParameter;
+import delfos.dataset.basic.loader.types.DatasetLoader;
+import delfos.dataset.basic.rating.Rating;
+import delfos.rs.persistence.FailureInPersistence;
+import delfos.rs.trustbased.implicittrustcomputation.ShambourLu_UserBasedImplicitTrustComputation;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.ObjectInputStream;
@@ -25,19 +36,6 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.Map;
 import java.util.TreeMap;
-import delfos.algorithm.Algorithm;
-import delfos.algorithm.AlgorithmProgressListener;
-import delfos.dataset.basic.rating.Rating;
-import delfos.dataset.basic.loader.types.DatasetLoader;
-import delfos.ERROR_CODES;
-import delfos.rs.persistence.FailureInPersistence;
-import delfos.rs.trustbased.implicittrustcomputation.ShambourLu_UserBasedImplicitTrustComputation;
-import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
-import delfos.common.Global;
-import delfos.common.parameters.Parameter;
-import delfos.common.parameters.ParameterListener;
-import delfos.common.parameters.restriction.ParameterOwnerRestriction;
-import delfos.common.parameters.restriction.StringParameter;
 
 /**
  * Envoltura para evitar que se recalcule el grafo en solicitudes sobre el mismo
@@ -67,12 +65,7 @@ public class FixedGraph<Node> extends WeightedGraphCalculation<Node> {
         addParameter(FILE_NAME);
         addParameter(weightedGraphCalculation);
 
-        addParammeterListener(new ParameterListener() {
-            @Override
-            public void parameterChanged() {
-                models.clear();
-            }
-        });
+        addParammeterListener(models::clear);
     }
 
     public FixedGraph(String fileName, WeightedGraphCalculation<Node> weightedGraphCalculation) {
@@ -103,14 +96,8 @@ public class FixedGraph<Node> extends WeightedGraphCalculation<Node> {
         synchronized (models) {
             if (!models.containsKey(datasetLoader)) {
 
-                AlgorithmProgressListener listener = new AlgorithmProgressListener() {
-                    @Override
-                    public void progressChanged(Algorithm algorithm) {
-                        fireProgressChanged(
-                                algorithm.getProgressTask(),
-                                algorithm.getProgressPercent(),
-                                algorithm.getProgressRemainingTime());
-                    }
+                AlgorithmExecutionProgressListener listener = (event) -> {
+                    fireProgressChanged(event.getTask(), event.getPercent(), event.getRemainingTime());
                 };
 
                 try {
@@ -148,10 +135,8 @@ public class FixedGraph<Node> extends WeightedGraphCalculation<Node> {
     }
 
     private WeightedGraphAdapter<Node> loadGraph(String fileName) throws FailureInPersistence {
-        try {
-            ObjectInputStream ois = new ObjectInputStream(new FileInputStream(fileName));
+        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(fileName));) {
             WeightedGraphAdapter<Node> weightedGraph = (WeightedGraphAdapter<Node>) ois.readObject();
-            ois.close();
             return weightedGraph;
         } catch (Throwable ex) {
             Global.showWarning("The persistence for " + this.getClass() + " couldn't load the graph.");

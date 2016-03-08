@@ -24,7 +24,7 @@ import java.util.TreeMap;
 import delfos.common.Global;
 import delfos.common.decimalnumbers.NumberRounder;
 import delfos.common.parameters.Parameter;
-import delfos.common.parameters.restriction.FloatParameter;
+import delfos.common.parameters.restriction.DoubleParameter;
 import delfos.common.statisticalfuncions.StandardDeviation;
 import delfos.dataset.util.DatasetUtilities;
 
@@ -38,7 +38,7 @@ public class OutliersItemsStandardDeviationTopPercentFilter extends GroupRatings
 
     private static final long serialVersionUID = 1L;
 
-    public static final Parameter PERCENTAGE_FILTERED_OUT = new Parameter("PERCENTAGE_FILTERED_OUT", new FloatParameter(0, 1f, 0.2f));
+    public static final Parameter PERCENTAGE_FILTERED_OUT = new Parameter("PERCENTAGE_FILTERED_OUT", new DoubleParameter(0, 1f, 0.2f));
 
     private double oldPercentageFilteredOut = 0.2;
 
@@ -48,7 +48,7 @@ public class OutliersItemsStandardDeviationTopPercentFilter extends GroupRatings
 
         addParammeterListener(() -> {
             double newPercetnageFilteredOut = ((Number) getParameterValue(PERCENTAGE_FILTERED_OUT)).doubleValue();
-            newPercetnageFilteredOut = NumberRounder.round(newPercetnageFilteredOut, 2);
+            newPercetnageFilteredOut = NumberRounder.round(newPercetnageFilteredOut);
 
             if (oldPercentageFilteredOut != newPercetnageFilteredOut) {
                 oldPercentageFilteredOut = newPercetnageFilteredOut;

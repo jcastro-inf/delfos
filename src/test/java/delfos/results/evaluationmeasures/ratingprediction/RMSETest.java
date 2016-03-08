@@ -43,8 +43,8 @@ public class RMSETest {
         MeasureResult result = instance.getMeasureResult(recommendationResults, testDataset, relevanceCriteria);
 
         //Phase 3: Result checking
-        float expResult = Float.NaN;
-        float delta = 0.001f;
+        double expResult = Double.NaN;
+        double delta = 0.001f;
         assertEquals(expResult, result.getValue(), delta);
     }
 
@@ -84,8 +84,8 @@ public class RMSETest {
         MeasureResult result = instance.getMeasureResult(recommendationResults, testDataset, relevanceCriteria);
 
         //Phase 3: Result checking
-        float expResult = 1;
-        float delta = 0.001f;
+        double expResult = 1;
+        double delta = 0.001f;
         assertEquals(expResult, result.getValue(), delta);
     }
 
@@ -125,8 +125,8 @@ public class RMSETest {
         MeasureResult result = instance.getMeasureResult(recommendationResults, testDataset, relevanceCriteria);
 
         //Phase 3: Result checking
-        float expResult = 2;
-        float delta = 0.001f;
+        double expResult = 2;
+        double delta = 0.001f;
         assertEquals(expResult, result.getValue(), delta);
     }
 
@@ -159,8 +159,8 @@ public class RMSETest {
         MeasureResult result = instance.getMeasureResult(recommendationResults, testDataset, relevanceCriteria);
 
         //Phase 3: Result checking
-        float expResult = 0;
-        float delta = 0.001f;
+        double expResult = 0;
+        double delta = 0.001f;
         assertEquals(expResult, result.getValue(), delta);
     }
 
@@ -188,8 +188,8 @@ public class RMSETest {
         MeasureResult result = instance.getMeasureResult(recommendationResults, testDataset, relevanceCriteria);
 
         //Phase 3: Result checking
-        float expResult = 1.732f;
-        float delta = 0.001f;
+        double expResult = 1.732f;
+        double delta = 0.001f;
         assertEquals(expResult, result.getValue(), delta);
     }
 }

@@ -68,7 +68,7 @@ public class RatingsJTableModel extends AbstractTableModel {
             Item item = contentDataset.get(rating.getIdItem());
 
             datos[0][index] = item.getId();
-            datos[1][index] = rating.getRatingValue().floatValue();
+            datos[1][index] = rating.getRatingValue().doubleValue();
             datos[2][index] = item.getName();
 
             index++;

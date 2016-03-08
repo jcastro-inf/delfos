@@ -24,6 +24,7 @@ import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
 import delfos.common.exceptions.dataset.items.ItemNotFound;
 import delfos.common.exceptions.dataset.users.UserNotFound;
 import delfos.common.exceptions.ratings.NotEnoughtUserInformation;
+import delfos.dataset.basic.item.Item;
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RelevanceCriteria;
@@ -37,6 +38,7 @@ import delfos.group.experiment.validation.validationtechniques.GroupValidationTe
 import delfos.group.groupsofusers.GroupOfUsers;
 import delfos.group.groupsofusers.measuresovergroups.GroupMeasure;
 import delfos.group.grs.GroupRecommenderSystem;
+import delfos.group.grs.recommendations.GroupRecommendations;
 import delfos.group.results.groupevaluationmeasures.GroupEvaluationMeasure;
 import delfos.group.results.groupevaluationmeasures.GroupEvaluationMeasureResult;
 import delfos.group.results.grouprecomendationresults.GroupRecommenderSystemResult;
@@ -119,7 +121,7 @@ public class GroupLevelCaseStudy {
                 for (GroupRecommenderSystem groupRecommenderSystem : groupRecommenderSystems) {
                     Object recommendationModel = groupRecommenderSystem.buildRecommendationModel(trainingDatasetLoader);
                     Collection<Recommendation> allPredictions = new ArrayList<>();
-                    Set<Integer> requests = new TreeSet<>();
+                    Set<Item> requests = new TreeSet<>();
 
                     for (GroupRecommendationRequest groupRecommendationRequest : predictionProtocol.getGroupRecommendationRequests(trainingDatasetLoader, testDatasetLoader, group)) {
 
@@ -128,14 +130,14 @@ public class GroupLevelCaseStudy {
                                 recommendationModel,
                                 group);
 
-                        Collection<Recommendation> groupRecommendations = groupRecommenderSystem.recommendOnly(
+                        GroupRecommendations groupRecommendations = groupRecommenderSystem.recommendOnly(
                                 groupRecommendationRequest.predictionPhaseDatasetLoader,
                                 recommendationModel,
                                 groupModel,
                                 group,
                                 groupRecommendationRequest.itemsToPredict);
 
-                        allPredictions.addAll(groupRecommendations);
+                        allPredictions.addAll(groupRecommendations.getRecommendations());
                         requests.addAll(groupRecommendationRequest.itemsToPredict);
                     }
 
@@ -145,7 +147,7 @@ public class GroupLevelCaseStudy {
                     }
 
                     for (GroupEvaluationMeasure evaluationMeasure : evaluationMeasures) {
-                        Map<GroupOfUsers, Collection<Integer>> _requests = new TreeMap<>();
+                        Map<GroupOfUsers, Collection<Item>> _requests = new TreeMap<>();
                         _requests.put(group, requests);
                         Map<GroupOfUsers, Collection<Recommendation>> _recommendations = new TreeMap<>();
                         _recommendations.put(group, allPredictions);
@@ -159,7 +161,7 @@ public class GroupLevelCaseStudy {
                                         requests));
 
                         List<SingleGroupRecommendationTaskOutput> singleGroupRecommendationOutputs = Arrays.asList(
-                                new SingleGroupRecommendationTaskOutput(group, allPredictions, 0, 0)
+                                new SingleGroupRecommendationTaskOutput(group, new GroupRecommendations(group, allPredictions), 0, 0)
                         );
 
                         GroupRecommenderSystemResult groupRecommendationResult = new GroupRecommenderSystemResult(

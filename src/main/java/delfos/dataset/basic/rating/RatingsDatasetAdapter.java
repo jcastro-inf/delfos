@@ -44,11 +44,11 @@ public abstract class RatingsDatasetAdapter<RatingType extends Rating> implement
     /**
      * Buffer para almacenar la valoración media de cada usuario.
      */
-    protected final Map<Integer, Float> mediaUsers = Collections.synchronizedMap(new TreeMap<Integer, Float>());
+    protected final Map<Integer, Double> mediaUsers = Collections.synchronizedMap(new TreeMap<Integer, Double>());
     /**
      * Buffer para almacenar la valoración media de cada producto.
      */
-    protected final Map<Integer, Float> mediaItems = Collections.synchronizedMap(new TreeMap<Integer, Float>());
+    protected final Map<Integer, Double> mediaItems = Collections.synchronizedMap(new TreeMap<Integer, Double>());
 
     /**
      * Devuelve la valoración que un usuario ha hecho sobre un item determinado
@@ -134,18 +134,18 @@ public abstract class RatingsDatasetAdapter<RatingType extends Rating> implement
      * @throws delfos.common.exceptions.dataset.items.ItemNotFound
      */
     @Override
-    public float getMeanRatingItem(int idItem) throws ItemNotFound {
+    public double getMeanRatingItem(int idItem) throws ItemNotFound {
 
         synchronized (mediaItems) {
             if (!mediaItems.containsKey(idItem)) {
                 Map<Integer, RatingType> actualRatings = getItemRatingsRated(idItem);
-                float media = 0;
+                double media = 0;
                 for (RatingType rating : actualRatings.values()) {
-                    media += rating.getRatingValue().floatValue() / actualRatings.size();
+                    media += rating.getRatingValue().doubleValue() / actualRatings.size();
                 }
                 mediaItems.put(idItem, media);
             }
-            Float get = mediaItems.get(idItem);
+            Double get = mediaItems.get(idItem);
             if (get == null) {
                 throw new ItemNotFound(idItem);
             }
@@ -163,16 +163,16 @@ public abstract class RatingsDatasetAdapter<RatingType extends Rating> implement
      * @throws UserNotFound Si el usuario no existe.
      */
     @Override
-    public float getMeanRatingUser(int idUser) throws UserNotFound {
+    public double getMeanRatingUser(int idUser) throws UserNotFound {
         if (!mediaUsers.containsKey(idUser)) {
             Map<Integer, RatingType> actualRatings = getUserRatingsRated(idUser);
-            float media = 0;
+            double media = 0;
             for (RatingType rating : actualRatings.values()) {
-                media += rating.getRatingValue().floatValue() / actualRatings.size();
+                media += rating.getRatingValue().doubleValue() / actualRatings.size();
             }
             mediaUsers.put(idUser, media);
         }
-        Float get = mediaUsers.get(idUser);
+        Double get = mediaUsers.get(idUser);
         if (get == null) {
             throw new UserNotFound(idUser);
         }
@@ -259,18 +259,18 @@ public abstract class RatingsDatasetAdapter<RatingType extends Rating> implement
     public final Iterator<RatingType> iterator() {
         return new IteratorRatingsDataset<>(this);
     }
-    private float meanRatingValue = Float.NaN;
+    private double meanRatingValue = Double.NaN;
 
     @Override
-    public float getMeanRating() {
+    public double getMeanRating() {
 
-        if (Float.isNaN(meanRatingValue)) {
+        if (Double.isNaN(meanRatingValue)) {
             synchronized (this) {
                 MeanIterative meanRating = new MeanIterative();
                 for (Rating r : this) {
-                    meanRating.addValue(r.getRatingValue().floatValue());
+                    meanRating.addValue(r.getRatingValue().doubleValue());
                 }
-                meanRatingValue = (float) meanRating.getMean();
+                meanRatingValue = (double) meanRating.getMean();
             }
 
         }
@@ -284,13 +284,13 @@ public abstract class RatingsDatasetAdapter<RatingType extends Rating> implement
      * @param ratingsDataset
      * @return
      */
-    public static <RatingType extends Rating> float getMeanRating(RatingsDataset<RatingType> ratingsDataset) {
+    public static <RatingType extends Rating> double getMeanRating(RatingsDataset<RatingType> ratingsDataset) {
         MeanIterative meanRating = new MeanIterative();
         for (Rating r : ratingsDataset) {
-            meanRating.addValue(r.getRatingValue().floatValue());
+            meanRating.addValue(r.getRatingValue().doubleValue());
         }
 
-        return (float) meanRating.getMean();
+        return (double) meanRating.getMean();
     }
 
     @Override

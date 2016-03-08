@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,13 +16,13 @@
  */
 package delfos.rs.collaborativefiltering.predictiontechniques;
 
-import java.util.Collection;
-import delfos.dataset.basic.rating.Rating;
-import delfos.dataset.basic.rating.RatingsDataset;
-import delfos.rs.collaborativefiltering.knn.MatchRating;
 import delfos.common.exceptions.CouldNotPredictRating;
 import delfos.common.exceptions.dataset.items.ItemNotFound;
 import delfos.common.exceptions.dataset.users.UserNotFound;
+import delfos.dataset.basic.rating.Rating;
+import delfos.dataset.basic.rating.RatingsDataset;
+import delfos.rs.collaborativefiltering.knn.MatchRating;
+import java.util.Collection;
 
 /**
  * Implementa la técnica de predicción de la suma ponderada con normalización de
@@ -38,14 +38,14 @@ public class WeightedSumAdjusted extends PredictionTechnique {
     private static final long serialVersionUID = 1L;
 
     @Override
-    public float predictRating(int idUser, int idItem, Collection<MatchRating> ratings, RatingsDataset<? extends Rating> rd) throws CouldNotPredictRating {
-        float prediccion, numerador = 0, denominador = 0;
+    public double predictRating(int idUser, int idItem, Collection<MatchRating> ratings, RatingsDataset<? extends Rating> rd) throws CouldNotPredictRating {
+        double prediccion, numerador = 0, denominador = 0;
 
         if (ratings.isEmpty()) {
             throw new CouldNotPredictRating("Match rating list is empty");
         }
         for (MatchRating matchRating : ratings) {
-            float avgRating = 0;
+            double avgRating = 0;
             switch (matchRating.getEntity()) {
                 case USER:
                     try {
@@ -65,7 +65,7 @@ public class WeightedSumAdjusted extends PredictionTechnique {
                     throw new UnsupportedOperationException("Entity type isnt a user or item: " + matchRating.getEntity());
             }
 
-            numerador += (matchRating.getRating().floatValue() - avgRating) * matchRating.getWeight();
+            numerador += (matchRating.getRating().doubleValue() - avgRating) * matchRating.getWeight();
             denominador += matchRating.getWeight();
         }
 
@@ -75,10 +75,10 @@ public class WeightedSumAdjusted extends PredictionTechnique {
             throw new CouldNotPredictRating(ex.getMessage());
         }
 
-        if (Float.isInfinite(prediccion)) {
+        if (Double.isInfinite(prediccion)) {
             throw new CouldNotPredictRating("Prediction is infinite");
         }
-        if (Float.isNaN(prediccion)) {
+        if (Double.isNaN(prediccion)) {
             throw new CouldNotPredictRating("Prediction is NaN");
         }
 

@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,15 +16,15 @@
  */
 package delfos.rs.collaborativefiltering.predictiontechniques;
 
-import java.util.Collection;
-import delfos.dataset.basic.rating.Rating;
-import delfos.dataset.basic.rating.RatingsDataset;
-import delfos.rs.collaborativefiltering.knn.MatchRating;
 import delfos.common.exceptions.CouldNotPredictRating;
 import delfos.common.exceptions.dataset.items.ItemNotFound;
 import delfos.common.exceptions.dataset.users.UserNotFound;
 import delfos.common.parameters.ParameterOwnerAdapter;
 import delfos.common.parameters.ParameterOwnerType;
+import delfos.dataset.basic.rating.Rating;
+import delfos.dataset.basic.rating.RatingsDataset;
+import delfos.rs.collaborativefiltering.knn.MatchRating;
+import java.util.Collection;
 
 /**
  * Métodos que una clase que implemente una técnica de predicción de ratings
@@ -56,7 +56,7 @@ public abstract class PredictionTechnique extends ParameterOwnerAdapter {
      * @throws UserNotFound Si el usuario no existe.
      * @throws ItemNotFound Si el producto no existe.
      */
-    public abstract float predictRating(int idUser, int idItem, Collection<MatchRating> ratings, RatingsDataset<? extends Rating> ratingsDataset) throws CouldNotPredictRating, UserNotFound, ItemNotFound;
+    public abstract double predictRating(int idUser, int idItem, Collection<MatchRating> ratings, RatingsDataset<? extends Rating> ratingsDataset) throws CouldNotPredictRating, UserNotFound, ItemNotFound;
 
     @Override
     public boolean equals(Object obj) {

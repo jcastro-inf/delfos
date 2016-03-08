@@ -109,7 +109,7 @@ public class MovieLens1MillionRatingsDatasetToCSV {
                 try {
                     int idUser = Integer.parseInt(reader.get(0));
                     int idItem = Integer.parseInt(reader.get(1));
-                    Number rating = Float.parseFloat(reader.get(2));
+                    Number rating = Double.parseDouble(reader.get(2));
                     long timestamp = Long.parseLong(reader.get(3));
                     ratings.add(new RatingWithTimestamp(idUser, idItem, rating, timestamp));
 

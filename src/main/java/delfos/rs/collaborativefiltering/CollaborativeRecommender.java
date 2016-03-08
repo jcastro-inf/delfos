@@ -88,10 +88,10 @@ public abstract class CollaborativeRecommender<RecommendationModel>
      */
     public Number toRatingRange(DatasetLoader<? extends Rating> datasetLoader, Number rating) {
         try {
-            if (rating.floatValue() < datasetLoader.getRatingsDataset().getRatingsDomain().min().doubleValue()) {
+            if (rating.doubleValue() < datasetLoader.getRatingsDataset().getRatingsDomain().min().doubleValue()) {
                 return datasetLoader.getRatingsDataset().getRatingsDomain().min();
             }
-            if (rating.floatValue() > datasetLoader.getRatingsDataset().getRatingsDomain().max().doubleValue()) {
+            if (rating.doubleValue() > datasetLoader.getRatingsDataset().getRatingsDomain().max().doubleValue()) {
                 return datasetLoader.getRatingsDataset().getRatingsDomain().max();
             }
             return rating;

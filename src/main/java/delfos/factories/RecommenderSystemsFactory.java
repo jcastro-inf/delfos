@@ -16,7 +16,6 @@
  */
 package delfos.factories;
 
-import delfos.group.grs.itemweighted.knn.memory.KnnMemoryBasedNWR_itemWeighted;
 import delfos.rs.GenericRecommenderSystem;
 import delfos.rs.RecommenderSystem;
 import delfos.rs.bias.PredictUserItemBias;
@@ -26,8 +25,6 @@ import delfos.rs.bufferedrecommenders.RecommenderSystem_fixedFilePersistence;
 import delfos.rs.collaborativefiltering.CollaborativeRecommender;
 import delfos.rs.collaborativefiltering.Recommender_DatasetProperties;
 import delfos.rs.collaborativefiltering.knn.memorybased.KnnMemoryBasedCFRS;
-import delfos.rs.collaborativefiltering.knn.memorybased.multicorrelation.KnnMultiCorrelation;
-import delfos.rs.collaborativefiltering.knn.memorybased.multicorrelation.jaccard.RSTest;
 import delfos.rs.collaborativefiltering.knn.memorybased.nwr.KnnMemoryBasedNWR;
 import delfos.rs.collaborativefiltering.knn.modelbased.KnnModelBasedCFRS;
 import delfos.rs.collaborativefiltering.knn.modelbased.nwr.KnnModelBased_NWR;
@@ -128,12 +125,6 @@ public class RecommenderSystemsFactory extends Factory<GenericRecommenderSystem>
 
         //Sistemas basados en confianza
         instance.addClass(TrustModificationKnnMemory.class);
-        instance.addClass(KnnMultiCorrelation.class);
-
-        instance.addClass(RSTest.class);
-
-        //Natural noise
-        instance.addClass(KnnMemoryBasedNWR_itemWeighted.class);
 
         //RS completos, cobertura = 1.
         instance.addClass(PredictUserItemBias.class);
@@ -143,6 +134,7 @@ public class RecommenderSystemsFactory extends Factory<GenericRecommenderSystem>
     }
 
     /**
+     * 1
      * Devuelve los sistemas de recomendación que no son colaborativos, es
      * decir, los sistemas de recomendación que no usan predicción de
      * valoraciones.

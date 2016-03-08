@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -68,7 +68,9 @@ public class PrintNeighborsToXML extends GroupEvaluationMeasureInformationPrinte
         Element neighborsDetails = new Element("NeighborsDetails");
 
         for (GroupOfUsers groupOfUsers : groupRecommenderSystemResult.getGroupsOfUsers()) {
-            Collection<Recommendation> groupRecommendations = groupRecommenderSystemResult.getGroupOutput(groupOfUsers).getRecommendations();
+            Collection<Recommendation> groupRecommendations = groupRecommenderSystemResult
+                    .getGroupOutput(groupOfUsers)
+                    .getRecommendations().getRecommendations();
 
             List<Neighbor> neighbors;
 

@@ -18,9 +18,15 @@ package delfos.common;
 
 import delfos.ConsoleParameters;
 import java.io.BufferedReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.PrintStream;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Clase que encapsula los métodos para mostrar información en la consola (o en
@@ -31,6 +37,33 @@ import java.util.Date;
  * @version 1.0 (03/01/2013)
  */
 public class Global {
+
+    private static final List<PrintStream> standardOutputWriters = new ArrayList<>();
+    private static final List<PrintStream> errorOutputWriters = new ArrayList<>();
+
+    private static final List<FileWriter> standardOutputLoggers = new ArrayList<>();
+    private static final List<FileWriter> errorOutputLoggers = new ArrayList<>();
+
+    static {
+        standardOutputWriters.add(System.out);
+        errorOutputWriters.add(System.err);
+    }
+
+    public static void addStandardOutputLogger(FileWriter fileWriter) {
+        standardOutputLoggers.add(fileWriter);
+    }
+
+    public static void addErrorOutputLogger(FileWriter fileWriter) {
+        errorOutputLoggers.add(fileWriter);
+    }
+
+    public static void removeStandardOutputLogger(FileWriter fileWriter) {
+        standardOutputLoggers.remove(fileWriter);
+    }
+
+    public static void removeErrorOutputLogger(FileWriter fileWriter) {
+        errorOutputLoggers.remove(fileWriter);
+    }
 
     public static boolean isPrintDatasets() {
         return false;
@@ -51,8 +84,7 @@ public class Global {
         }
 
         while (true) {
-            System.out.print(textOfQuestion);
-            System.out.println("");
+            printStandard(textOfQuestion + "\n");
 
             //  open up standard input
             BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
@@ -72,7 +104,7 @@ public class Global {
                         return false;
                     }
                 } else {
-                    System.out.println("Answer was null. Assuming answer is yes");
+                    printStandard("Answer was null. Assuming answer is yes\n");
                     return true;
                 }
 
@@ -80,7 +112,7 @@ public class Global {
             }
 
             //Ha respondido algo distinto, insistir
-            System.out.println("The answer should be yes or no (y/n).");
+            printStandard("The answer should be yes or no (y/n).\n");
         }
     }
     private static boolean defaultAnswerYes = false;
@@ -100,11 +132,7 @@ public class Global {
      */
     public static void showThreadMessage(String warningMessage) {
         if (messageLevelPrinted.isPrinted(MessageLevel.THREAD)) {
-            System.err.println("\tTHREAD: " + warningMessage);
-
-            if (doublePrint) {
-                System.out.println("\tTHREAD: " + warningMessage);
-            }
+            printError("\tTHREAD: " + warningMessage + "\n");
         }
     }
 
@@ -148,11 +176,11 @@ public class Global {
     }
 
     public static void show(String message) {
-        System.out.print(message);
+        printStandard(message);
     }
 
     public static void showln(String message) {
-        System.out.println(message);
+        printStandard(message + "\n");
     }
 
     public enum MessageLevel {
@@ -240,8 +268,6 @@ public class Global {
      */
     private static MessageLevel messageLevelPrinted = MessageLevel.MESSAGE;
 
-    private static boolean doublePrint = false;
-
     /**
      * Muestra la cadena indicada como parámetro en la salida por defecto.
      *
@@ -249,10 +275,7 @@ public class Global {
      */
     public static void showInfoMessage(String message) {
         if (messageLevelPrinted.isPrinted(MessageLevel.INFO)) {
-            System.out.print(message);
-            if (doublePrint) {
-                System.err.print(message);
-            }
+            printStandard(message);
         }
     }
 
@@ -263,10 +286,7 @@ public class Global {
      */
     public static void showMessage(String message) {
         if (messageLevelPrinted.isPrinted(MessageLevel.MESSAGE)) {
-            System.out.print(message);
-            if (doublePrint) {
-                System.err.print(message);
-            }
+            printStandard(message);
         }
     }
 
@@ -279,10 +299,6 @@ public class Global {
     public static void showError(Throwable ex) {
         if (messageLevelPrinted.isPrinted(MessageLevel.ERROR)) {
             ex.printStackTrace(System.err);
-
-            if (doublePrint) {
-                ex.printStackTrace(System.out);
-            }
         }
     }
 
@@ -293,11 +309,7 @@ public class Global {
      */
     public static void showWarning(String warningMessage) {
         if (messageLevelPrinted.isPrinted(MessageLevel.WARNING)) {
-            System.err.println("WARNING: " + warningMessage);
-
-            if (doublePrint) {
-                System.out.println("WARNING: " + warningMessage);
-            }
+            printError("WARNING: " + warningMessage + "\n");
         }
     }
 
@@ -310,10 +322,6 @@ public class Global {
     public static void showWarning(Throwable ex) {
         if (messageLevelPrinted.isPrinted(MessageLevel.WARNING)) {
             ex.printStackTrace(System.err);
-
-            if (doublePrint) {
-                ex.printStackTrace(System.out);
-            }
         }
     }
 
@@ -324,10 +332,6 @@ public class Global {
      */
     public static boolean isInfoPrinted() {
         return messageLevelPrinted.isPrinted(MessageLevel.INFO);
-    }
-
-    public static boolean isDoublePrint() {
-        return doublePrint;
     }
 
     public static boolean isDebugPrinted() {
@@ -342,18 +346,31 @@ public class Global {
         messageLevelPrinted = messageLevel;
     }
 
-    /**
-     * Establece si se debe escribir los mensajes de error y warning en ambas
-     * salidas, la salida por defecto y la de error.
-     *
-     * <p>
-     * <p>
-     * NOTA: Si la salida por defecto y la salida de error es la misma, se
-     * pueden producir colisiones en la escritura.
-     *
-     * @param doublePrint
-     */
-    public static void setDoublePrint(boolean doublePrint) {
-        Global.doublePrint = doublePrint;
+    public static void printStandard(String message) {
+        standardOutputLoggers.stream().forEach(logger -> {
+            try {
+                logger.append(message);
+            } catch (IOException ex) {
+                Logger.getLogger(Global.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        });
+
+        standardOutputWriters.stream().forEach(logger -> {
+            logger.append(message);
+        });
+    }
+
+    public static void printError(String message) {
+        errorOutputLoggers.stream().forEach(logger -> {
+            try {
+                logger.append(message);
+            } catch (IOException ex) {
+                Logger.getLogger(Global.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        });
+
+        errorOutputWriters.stream().forEach(logger -> {
+            logger.append(message);
+        });
     }
 }

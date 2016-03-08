@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -123,6 +123,8 @@ public class Main {
 
         caseUse.add(delfos.main.managers.experiment.join.excel.ExcelJoin.getInstance());
         caseUse.add(delfos.main.managers.experiment.join.xml.XMLJoin.getInstance());
+
+        caseUse.add(delfos.main.managers.cluster.DelfosQueueSubmitGroup.getInstance());
 
         return caseUse;
     }

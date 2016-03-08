@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -50,7 +50,7 @@ public interface BasicSimilarityMeasure extends SimilarityMeasure {
      * @throws IllegalArgumentException Si los vectores no tienen la misma
      * dimensión.
      */
-    public float similarity(float[] v1, float[] v2);
+    public double similarity(double[] v1, double[] v2);
 
     /**
      * Calcula la medida de similitud entre los vectores v1 y v2.
@@ -63,5 +63,5 @@ public interface BasicSimilarityMeasure extends SimilarityMeasure {
      * @throws IllegalArgumentException Si los vectores no tienen la misma
      * dimensión.
      */
-    public float similarity(List<Float> v1, List<Float> v2);
+    public double similarity(List<Double> v1, List<Double> v2);
 }

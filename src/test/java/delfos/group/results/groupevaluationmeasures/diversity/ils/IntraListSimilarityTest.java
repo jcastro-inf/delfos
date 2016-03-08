@@ -2,6 +2,7 @@ package delfos.group.results.groupevaluationmeasures.diversity.ils;
 
 import delfos.common.aggregationoperators.Mean;
 import delfos.configureddatasets.ConfiguredDatasetsFactory;
+import delfos.dataset.basic.item.Item;
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RatingsDataset;
@@ -80,7 +81,7 @@ public class IntraListSimilarityTest {
         GroupRecommenderSystem grs = new AggregationOfIndividualRatings(new KnnMemoryBasedNWR(), new Mean());
         Object buildRecommendationModel = grs.buildRecommendationModel(originalDatasetLoader);
 
-        Set<Integer> candidateItems = new OnlyNewItems().candidateItems(originalDatasetLoader, groupOfUsers);
+        Set<Item> candidateItems = new OnlyNewItems().candidateItems(originalDatasetLoader, groupOfUsers);
 
         SingleGroupRecommendationTaskInput singleGroupRecommendationTaskInput
                 = new SingleGroupRecommendationTaskInput(

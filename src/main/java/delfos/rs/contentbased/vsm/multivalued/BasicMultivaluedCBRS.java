@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -117,7 +117,7 @@ public class BasicMultivaluedCBRS extends ContentBasedRecommender<MultivaluedUse
                 profile.addItems(items, condensationFormula_);
                 userProfiles.put(idUser, profile);
 
-                fireBuildingProgressChangedEvent("Profile creation", (int) ((float) i * 100 / allUsers.size()), -1);
+                fireBuildingProgressChangedEvent("Profile creation", (int) ((double) i * 100 / allUsers.size()), -1);
                 i++;
             } catch (UserNotFound ex) {
                 Global.showError(ex);
@@ -184,23 +184,23 @@ public class BasicMultivaluedCBRS extends ContentBasedRecommender<MultivaluedUse
             try {
                 Item item = contentDataset.get(idItem);
                 //Extraer v1 y v2 del perfil del usuario y del perfil del item
-                ArrayList<Float> arrayUser = new ArrayList<>();
-                ArrayList<Float> arrayItem = new ArrayList<>();
+                ArrayList<Double> arrayUser = new ArrayList<>();
+                ArrayList<Double> arrayItem = new ArrayList<>();
                 for (Feature f : item.getFeatures()) {
                     Object value = item.getFeatureValue(f);
                     if (userProfile.contains(f, value)) {
                         if (f.getType() == FeatureType.Nominal) {
-                            arrayItem.add(1.0f);
+                            arrayItem.add(1.0);
                             arrayUser.add(userProfile.getFeatureValueValue(f, value));
                         } else {
-                            arrayItem.add((float) ((((Number) item.getFeatureValue(f)).doubleValue() - contentDataset.getMinValue(f)) / (contentDataset.getMaxValue(f) - contentDataset.getMinValue(f))));
-                            arrayUser.add((float) (((userProfile.getFeatureValueValue(f, value)) - contentDataset.getMinValue(f)) / (contentDataset.getMaxValue(f) - contentDataset.getMinValue(f))));
+                            arrayItem.add((double) ((((Number) item.getFeatureValue(f)).doubleValue() - contentDataset.getMinValue(f)) / (contentDataset.getMaxValue(f) - contentDataset.getMinValue(f))));
+                            arrayUser.add((double) (((userProfile.getFeatureValueValue(f, value)) - contentDataset.getMinValue(f)) / (contentDataset.getMaxValue(f) - contentDataset.getMinValue(f))));
                         }
                     }
 
                 }
-                float[] vUser = new float[arrayUser.size()];
-                float[] vItem = new float[arrayUser.size()];
+                double[] vUser = new double[arrayUser.size()];
+                double[] vItem = new double[arrayUser.size()];
                 for (int j = 0; j < arrayUser.size(); j++) {
                     vUser[j] = arrayUser.get(j);
                     vItem[j] = arrayItem.get(j);

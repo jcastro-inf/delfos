@@ -57,9 +57,9 @@ public class EntropyDependenceCBRSModel extends TreeMap<Integer, EntropyDependen
      * @return Ponderación de la característica. Si el perfil no contiene la
      * característica, devuelve cero.
      */
-    public float getEntropy(Feature feature) {
+    public double getEntropy(Feature feature) {
         if (_weights.containsKey(feature)) {
-            return _weights.get(feature).floatValue();
+            return _weights.get(feature).doubleValue();
         } else {
             throw new IllegalArgumentException("The model does not have the feature " + feature);
         }

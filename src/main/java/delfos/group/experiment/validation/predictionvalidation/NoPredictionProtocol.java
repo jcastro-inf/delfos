@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -25,6 +25,7 @@ import delfos.group.groupsofusers.GroupOfUsers;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Implementa el protocolo de predicción HoldOut, que divide el conjunto de
@@ -59,7 +60,8 @@ public class NoPredictionProtocol extends GroupPredictionProtocol {
         return Arrays.asList(new GroupRecommendationRequest(
                 group,
                 trainDatasetLoader,
-                getRatedItems(testDatasetLoader, group)));
+                getRatedItems(testDatasetLoader, group).stream().map(idItem -> trainDatasetLoader.getContentDataset().get(idItem)).collect(Collectors.toSet())
+        ));
 
     }
 

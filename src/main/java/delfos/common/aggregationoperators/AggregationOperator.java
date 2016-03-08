@@ -38,7 +38,7 @@ public abstract class AggregationOperator extends TwoValuesAggregator {
      * @throws IllegalArgumentException Si no contiene ningún valor para agregar
      * o si es nulo.
      */
-    public abstract float aggregateValues(Iterable<Number> values);
+    public abstract double aggregateValues(Iterable<Number> values);
 
     /**
      * Método que agrega los valores especificados en un único valor.
@@ -49,7 +49,7 @@ public abstract class AggregationOperator extends TwoValuesAggregator {
      * @throws IllegalArgumentException Si no contiene ningún valor para agregar
      * o si es nulo.
      */
-    public final float aggregateValues(Number... values) {
+    public final double aggregateValues(Number... values) {
         return aggregateValues(Arrays.asList(values));
     }
 
@@ -63,7 +63,7 @@ public abstract class AggregationOperator extends TwoValuesAggregator {
     }
 
     @Override
-    public final float aggregateTwoValues(Number v1, Number v2) {
+    public final double aggregateTwoValues(Number v1, Number v2) {
         return aggregateValues(v1, v2);
     }
 }

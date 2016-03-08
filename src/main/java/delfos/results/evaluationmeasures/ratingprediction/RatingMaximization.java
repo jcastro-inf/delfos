@@ -80,6 +80,6 @@ public class RatingMaximization extends EvaluationMeasure {
             double minValue = numRecommendations * testDataset.getRatingsDomain().min().doubleValue();
             value = (value - minValue) / (maxValue - minValue);
         }
-        return new MeasureResult(this, (float) value);
+        return new MeasureResult(this, (double) value);
     }
 }

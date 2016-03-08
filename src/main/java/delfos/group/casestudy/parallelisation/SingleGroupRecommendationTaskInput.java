@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,6 +16,7 @@
  */
 package delfos.group.casestudy.parallelisation;
 
+import delfos.dataset.basic.item.Item;
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
 import delfos.group.groupsofusers.GroupOfUsers;
@@ -35,10 +36,14 @@ public class SingleGroupRecommendationTaskInput {
     private final GroupRecommenderSystem groupRecommenderSystem;
     private final DatasetLoader<? extends Rating> datasetLoader;
     private final Object RecommendationModel;
-    private final Set<Integer> candidateItems;
+    private final Set<Item> candidateItems;
 
-    public SingleGroupRecommendationTaskInput(GroupRecommenderSystem groupRecommenderSystem, DatasetLoader<? extends Rating> datasetLoader,
-            Object RecommendationModel, GroupOfUsers group, Set<Integer> candidateItems) {
+    public SingleGroupRecommendationTaskInput(
+            GroupRecommenderSystem groupRecommenderSystem,
+            DatasetLoader<? extends Rating> datasetLoader,
+            Object RecommendationModel,
+            GroupOfUsers group,
+            Set<Item> candidateItems) {
         this.groupOfUsers = group;
         this.groupRecommenderSystem = groupRecommenderSystem;
         this.datasetLoader = datasetLoader;
@@ -74,7 +79,7 @@ public class SingleGroupRecommendationTaskInput {
         return RecommendationModel;
     }
 
-    public Set<Integer> getItemsRequested() {
+    public Set<Item> getItemsRequested() {
         return Collections.unmodifiableSet(candidateItems);
     }
 }

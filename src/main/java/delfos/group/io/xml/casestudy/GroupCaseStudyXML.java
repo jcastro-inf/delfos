@@ -88,10 +88,11 @@ public class GroupCaseStudyXML {
         int numSplits = c.getGroupValidationTechnique().getNumberOfSplits();
         for (int nexecution = 0; nexecution < numExecutions; nexecution++) {
             ejecucion = new Element("Execution");
+            ejecucion.setAttribute("execution", Integer.toString(numSplits));
             for (int nSplit = 0; nSplit < numSplits; nSplit++) {
                 Element split = new Element("Split");
+                split.setAttribute("split", Integer.toString(nSplit));
                 for (GroupEvaluationMeasure em : c.getEvaluationMeasures()) {
-
                     GroupEvaluationMeasureResult mr = c.getMeasureResult(em, nexecution, nSplit);
                     split.addContent((Element) mr.getXMLElement().clone());
                 }

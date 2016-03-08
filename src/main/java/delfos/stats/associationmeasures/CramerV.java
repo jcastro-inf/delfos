@@ -36,7 +36,7 @@ public class CramerV {
     public CramerV() {
     }
 
-    public float association(List<? extends Object> v1, List<? extends Object> v2) throws CannotComputeAssociation {
+    public double association(List<? extends Object> v1, List<? extends Object> v2) throws CannotComputeAssociation {
 
         if (v1 == null) {
             throw new IllegalArgumentException("The list v1 cannot be null.");
@@ -68,19 +68,19 @@ public class CramerV {
 
         //la variable i va a ser siempre la característica elegido
         //la variable j siempre es la puntuación
-        float numerador = 0;
+        double numerador = 0;
         for (Iterator it = doubleIndex.iteratorType1Values(); it.hasNext();) {
             Object value1 = it.next();
             for (Iterator it2 = doubleIndex.iteratorType2Values(); it2.hasNext();) {
                 Object value2 = it2.next();
-                float freqPar = doubleIndex.frequencyOfPair(value1, value2);
-                float freqValor = doubleIndex.frequencyOfType1Value(value1);
-                float freqPuntuacion = doubleIndex.frequencyOfType2Value(value2);
+                double freqPar = doubleIndex.frequencyOfPair(value1, value2);
+                double freqValor = doubleIndex.frequencyOfType1Value(value1);
+                double freqPuntuacion = doubleIndex.frequencyOfType2Value(value2);
 
                 numerador += Math.pow(freqPar - ((freqValor * freqPuntuacion) / doubleIndex.size()), 2) / ((freqValor * freqPuntuacion) / doubleIndex.size());
             }
         }
-        float denominador = doubleIndex.size() * (Math.min(doubleIndex.numDistinctType1Values(), doubleIndex.numDistinctType2Values()) - 1);
+        double denominador = doubleIndex.size() * (Math.min(doubleIndex.numDistinctType1Values(), doubleIndex.numDistinctType2Values()) - 1);
         if (numerador == 0 && denominador == 0) {
 
             Global.showWarning("Numerator and denominator are zero for:");
@@ -101,7 +101,7 @@ public class CramerV {
                         + "List variable 1: " + v1 + "\n"
                         + "List variable 2: " + v2 + "\n");
             }
-            float cramer = (float) Math.sqrt(numerador / denominador);
+            double cramer = (double) Math.sqrt(numerador / denominador);
             return cramer;
         }
     }

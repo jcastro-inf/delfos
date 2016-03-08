@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -67,7 +67,9 @@ public class PrintGroupRatingsToPlainText extends GroupEvaluationMeasureInformat
         StringBuilder str = new StringBuilder();
 
         for (GroupOfUsers groupOfUsers : groupRecommenderSystemResult.getGroupsOfUsers()) {
-            Collection<Recommendation> groupRecommendation = groupRecommenderSystemResult.getGroupOutput(groupOfUsers).getRecommendations();
+            Collection<Recommendation> groupRecommendation = groupRecommenderSystemResult
+                    .getGroupOutput(groupOfUsers)
+                    .getRecommendations().getRecommendations();
 
             List<Neighbor> neighbors;
 
@@ -108,7 +110,7 @@ public class PrintGroupRatingsToPlainText extends GroupEvaluationMeasureInformat
             }
         }
 
-        FileUtilities.createDirectoriesForFile(output);
+        FileUtilities.createDirectoriesForFileIfNotExist(output);
 
         try (BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(output))) {
             bufferedWriter.write(str.toString());

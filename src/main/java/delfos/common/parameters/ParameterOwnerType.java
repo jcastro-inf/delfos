@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,7 +16,6 @@
  */
 package delfos.common.parameters;
 
-import delfos.common.aggregationoperators.penalty.functions.PenaltyFuncionsFactory;
 import delfos.factories.AggregationOperatorFactory;
 import delfos.factories.DatasetLoadersFactory;
 import delfos.factories.EvaluationMeasuresFactory;
@@ -36,8 +35,6 @@ import delfos.group.factories.GroupRecommendationsSelectorFactory;
 import delfos.group.factories.GroupRecommenderSystemsFactory;
 import delfos.group.factories.GroupValidationTechniquesFactory;
 import delfos.group.grs.cww.centrality.CentralityConceptDefinitionFactory;
-import delfos.group.grs.itemweighted.measures.GroupItemWeightFactory;
-import delfos.group.grs.penalty.grouper.GrouperFactory;
 import delfos.rs.trustbased.belieffunctions.BeliefFunctionsFactory;
 
 /**
@@ -79,7 +76,6 @@ public enum ParameterOwnerType {
     BELIEF_FUNCTION,
     RECOMMENDATION_CANDIDATES_SELECTOR,
     CASE_STUDY,
-    PENALTY_FUNCION,
     GROUPER,
     GROUP_RECOMMENDATION_SELECTION_MODE, NON_PERSONALISED_RECOMMENDER_SYSTEM;
 
@@ -112,12 +108,8 @@ public enum ParameterOwnerType {
                 return GroupRecommendationsSelectorFactory.getInstance().getClassByName(className);
             case GROUP_VALIDATION_TECHNIQUE:
                 return GroupValidationTechniquesFactory.getInstance().getClassByName(className);
-            case GROUPER:
-                return GrouperFactory.getInstance().getClassByName(className);
             case NON_PERSONALISED_RECOMMENDER_SYSTEM:
                 return RecommenderSystemsFactory.getInstance().getClassByName(className);
-            case PENALTY_FUNCION:
-                return PenaltyFuncionsFactory.getInstance().getClassByName(className);
             case PREDICTION_PROTOCOL_TECHNIQUE:
                 return PredictionProtocolFactory.getInstance().getClassByName(className);
             case PREDICTION_TECHNIQUE:
@@ -134,8 +126,6 @@ public enum ParameterOwnerType {
                 return ValidationTechniquesFactory.getInstance().getClassByName(className);
             case WEIGHTED_GRAPH_CALCULATION:
                 return WeightedGraphCalculatorFactory.getInstance().getClassByName(className);
-            case GROUP_ITEM_WEIGHT:
-                return GroupItemWeightFactory.getInstance().getClassByName(className);
             default:
                 throw new IllegalArgumentException("This parameter owner type '" + this + "' does not have an associated factory.");
         }

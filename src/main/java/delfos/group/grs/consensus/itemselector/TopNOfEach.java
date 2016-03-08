@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,7 +16,10 @@
  */
 package delfos.group.grs.consensus.itemselector;
 
+import delfos.dataset.basic.item.Item;
+import delfos.dataset.basic.user.User;
 import delfos.rs.recommendation.Recommendation;
+import delfos.rs.recommendation.RecommendationsToUser;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
@@ -30,31 +33,32 @@ public class TopNOfEach extends GroupRecommendationsSelector {
     public TopNOfEach() {
         super();
 
-        addParameter(NUMBER_OF_ITEM_SELECTED);
+        addParameter(NUMBER_OF_ITEMS_SELECTED);
     }
 
     @Override
-    public Set<Integer> getRecommendationSelection(Map<Integer, Collection<Recommendation>> membersRecommendations) {
+    public Set<Item> getRecommendationSelection(Collection<RecommendationsToUser> membersRecommendations) {
         super.getRecommendationSelection(membersRecommendations);
 
-        Set<Integer> itemsSelected = new TreeSet<>();
-        Map<Integer, LinkedList<Recommendation>> removableRecommendations = new TreeMap<>();
+        Set<Item> itemsSelected = new TreeSet<>();
+        Map<User, LinkedList<Recommendation>> removableRecommendations = new TreeMap<>();
         int numItemsToSelect = getNumItemsSelect();
 
-        membersRecommendations.entrySet().stream().forEach((entry) -> {
-            LinkedList<Recommendation> sortedRemovableRecommendation = new LinkedList<>(entry.getValue());
+        membersRecommendations.stream().forEach((entry) -> {
+            User member = entry.getUser();
+            LinkedList<Recommendation> sortedRemovableRecommendation = new LinkedList<>(entry.getRecommendations());
             Collections.sort(sortedRemovableRecommendation, Recommendation.BY_PREFERENCE_DESC);
-            removableRecommendations.put(entry.getKey(), sortedRemovableRecommendation);
+            removableRecommendations.put(member, sortedRemovableRecommendation);
         });
 
         while (itemsSelected.size() != numItemsToSelect) {
-            for (int idUser : removableRecommendations.keySet()) {
+            for (User idUser : removableRecommendations.keySet()) {
                 LinkedList<Recommendation> removableRecommendationsThisUser = removableRecommendations.get(idUser);
 
                 Recommendation firstRecommendation = null;
                 do {
                     firstRecommendation = removableRecommendationsThisUser.removeFirst();
-                } while (!itemsSelected.add(firstRecommendation.getIdItem()));
+                } while (!itemsSelected.add(firstRecommendation.getItem()));
 
                 if (itemsSelected.size() == numItemsToSelect) {
                     break;
@@ -66,6 +70,6 @@ public class TopNOfEach extends GroupRecommendationsSelector {
     }
 
     public int getNumItemsSelect() {
-        return (Integer) getParameterValue(NUMBER_OF_ITEM_SELECTED);
+        return (Integer) getParameterValue(NUMBER_OF_ITEMS_SELECTED);
     }
 }

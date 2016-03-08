@@ -32,9 +32,11 @@ import delfos.io.xml.casestudy.CaseStudyXML;
 import delfos.main.Main;
 import delfos.main.managers.experiment.ExecuteGroupXML;
 import java.io.File;
-import java.text.DecimalFormat;
+import java.lang.management.ManagementFactory;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
+import java.util.Random;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -56,6 +58,17 @@ public class TuringPreparator implements ExperimentPreparator {
         this.parallel = parallel;
     }
 
+    public Random getRandomToShuffleExperiments() {
+
+        String name = ManagementFactory.getRuntimeMXBean().getName();
+
+        int seed = name.hashCode();
+
+        Random random = new Random(seed);
+
+        return random;
+    }
+
     @Override
     public void prepareExperiment(File experimentBaseDirectory, List<CaseStudy> caseStudies, DatasetLoader<? extends Rating> datasetLoader) {
 
@@ -63,10 +76,11 @@ public class TuringPreparator implements ExperimentPreparator {
         for (CaseStudy caseStudy : caseStudies) {
             String fileName = caseStudy.getRecommenderSystem().getAlias() + ".xml";
 
-            DecimalFormat format = new DecimalFormat("000");
-
-            String experimentNumber = format.format(i++);
             String thisIterationDirectory = caseStudy.getAlias();
+
+            thisIterationDirectory = thisIterationDirectory.replace("(", "");
+            thisIterationDirectory = thisIterationDirectory.replace(")", "");
+            thisIterationDirectory = thisIterationDirectory.replace(",", ".");
 
             //Clean directory
             File finalDirectoryRS = new File(experimentBaseDirectory + File.separator + thisIterationDirectory);
@@ -104,6 +118,10 @@ public class TuringPreparator implements ExperimentPreparator {
                         = "[" + datasetLoader.getAlias() + "]_"
                         + groupCaseStudy.getAlias();
 
+                experimentName = experimentName.replace("(", "");
+                experimentName = experimentName.replace(")", "");
+                experimentName = experimentName.replace(",", ".");
+
                 //Clean directory
                 File finalDirectoryRS = new File(experimentBaseDirectory.getAbsolutePath() + File.separator + experimentName);
                 File finalDirectoryDataset = new File(finalDirectoryRS.getAbsolutePath() + File.separator + "dataset");
@@ -122,6 +140,8 @@ public class TuringPreparator implements ExperimentPreparator {
     public void executeAllExperimentsInDirectory(File directory) {
         List<File> experimentsToBeExecuted = Arrays.asList(directory.listFiles());
 
+        Collections.shuffle(experimentsToBeExecuted, getRandomToShuffleExperiments());
+
         Stream<File> experimentsToBeExecutedStream
                 = parallel
                         ? experimentsToBeExecuted.parallelStream()
@@ -129,10 +149,8 @@ public class TuringPreparator implements ExperimentPreparator {
 
         experimentsToBeExecutedStream.forEach((singleExperimentDirectory) -> {
             String[] args = {
-                ExecuteGroupXML.SEED_PARAMETER, "123456",
                 ExecuteGroupXML.MODE_PARAMETER,
                 ExecuteGroupXML.XML_DIRECTORY, singleExperimentDirectory.getPath(),
-                ExecuteGroupXML.NUM_EXEC_PARAMETER, "1",
                 Constants.PRINT_FULL_XML,
                 Constants.RAW_DATA};
             Main.mainWithExceptions(args);
@@ -141,6 +159,8 @@ public class TuringPreparator implements ExperimentPreparator {
 
     public void executeAllExperimentsInDirectory(File directory, int numExec) {
         List<File> experimentsToBeExecuted = Arrays.asList(directory.listFiles());
+
+        Collections.shuffle(experimentsToBeExecuted, getRandomToShuffleExperiments());
 
         Stream<File> experimentsToBeExecutedStream
                 = parallel
@@ -169,6 +189,8 @@ public class TuringPreparator implements ExperimentPreparator {
 
     public void executeAllExperimentsInDirectory_withSeed(File directory, int numExec, int seedValue) {
         List<File> experimentsToBeExecuted = Arrays.asList(directory.listFiles());
+
+        Collections.shuffle(experimentsToBeExecuted, getRandomToShuffleExperiments());
 
         Stream<File> stream = parallel ? experimentsToBeExecuted.parallelStream() : experimentsToBeExecuted.stream();
         stream.forEach((singleExperimentDirectory) -> {

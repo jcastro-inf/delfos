@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,22 +16,23 @@
  */
 package delfos.rs.collaborativefiltering.knn.memorybased;
 
-import delfos.ERROR_CODES;
 import delfos.common.exceptions.CouldNotComputeSimilarity;
 import delfos.common.exceptions.dataset.items.ItemNotFound;
+import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
-import delfos.dataset.basic.rating.RatingsDataset;
 import delfos.dataset.basic.user.User;
 import delfos.rs.collaborativefiltering.knn.CommonRating;
+import delfos.rs.collaborativefiltering.knn.KnnCollaborativeRecommender;
 import delfos.rs.collaborativefiltering.knn.RecommendationEntity;
 import delfos.rs.collaborativefiltering.profile.Neighbor;
 import delfos.similaritymeasures.CollaborativeSimilarityMeasure;
-import java.util.List;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 
 public final class KnnMemoryNeighborCalculator implements Function<KnnMemoryNeighborTask, Neighbor> {
 
@@ -41,107 +42,112 @@ public final class KnnMemoryNeighborCalculator implements Function<KnnMemoryNeig
 
     @Override
     public Neighbor apply(KnnMemoryNeighborTask task) {
-        User user = task.user;
-        User neighbor = task.neighborUser;
 
-        KnnMemoryBasedCFRS rs = task.rs;
-        RatingsDataset<? extends Rating> ratingsDataset = task.datasetLoader.getRatingsDataset();
+        KnnCollaborativeRecommender rs = task.rs;
+        DatasetLoader<? extends Rating> datasetLoader = task.datasetLoader;
+
+        User user = task.user;
+        User neighbor = task.neighbor;
 
         if (user.equals(neighbor)) {
             return new Neighbor(RecommendationEntity.USER, neighbor, Double.NaN);
         }
+        CollaborativeSimilarityMeasure similarityMeasure_ = (CollaborativeSimilarityMeasure) rs.getParameterValue(KnnCollaborativeRecommender.SIMILARITY_MEASURE);
 
-        CollaborativeSimilarityMeasure similarityMeasure_ = (CollaborativeSimilarityMeasure) rs.getParameterValue(KnnMemoryBasedCFRS.SIMILARITY_MEASURE);
+        boolean defaultRating_ = (Boolean) rs.getParameterValue(KnnCollaborativeRecommender.DEFAULT_RATING);
 
-        Byte defaultRatingValue_ = 0;
-        boolean defaultRating_ = (Boolean) rs.getParameterValue(KnnMemoryBasedCFRS.DEFAULT_RATING);
-        if (defaultRating_) {
-            defaultRatingValue_ = ((Integer) rs.getParameterValue(KnnMemoryBasedCFRS.DEFAULT_RATING_VALUE)).byteValue();
-        }
+        boolean inverseFrequency_ = (Boolean) rs.getParameterValue(KnnCollaborativeRecommender.INVERSE_FREQUENCY);
+        double caseAmp = ((Number) rs.getParameterValue(KnnCollaborativeRecommender.CASE_AMPLIFICATION)).doubleValue();
+        boolean relevanceFactor_ = (Boolean) rs.getParameterValue(KnnCollaborativeRecommender.RELEVANCE_FACTOR);
+        int relevanceFactorValue_ = (Integer) rs.getParameterValue(KnnCollaborativeRecommender.RELEVANCE_FACTOR_VALUE);
 
-        boolean inverseFrequency_ = (Boolean) rs.getParameterValue(KnnMemoryBasedCFRS.INVERSE_FREQUENCY);
-        float caseAmp = ((Number) rs.getParameterValue(KnnMemoryBasedCFRS.CASE_AMPLIFICATION)).floatValue();
-        boolean relevanceFactor_ = (Boolean) rs.getParameterValue(KnnMemoryBasedCFRS.RELEVANCE_FACTOR);
-        int relevanceFactorValue_ = (Integer) rs.getParameterValue(KnnMemoryBasedCFRS.RELEVANCE_FACTOR_VALUE);
+        Map<Integer, ? extends Rating> activeUserRated = datasetLoader.getRatingsDataset()
+                .getUserRatingsRated(user.getId());
+        Map<Integer, ? extends Rating> neighborRatings = datasetLoader.getRatingsDataset()
+                .getUserRatingsRated(neighbor.getId());
 
-        final Map<Integer, ? extends Rating> userRatings = ratingsDataset.getUserRatingsRated(user.getId());
-        final Map<Integer, ? extends Rating> neighborRatings = ratingsDataset.getUserRatingsRated(neighbor.getId());
+        Set<Integer> intersectionSet = new TreeSet<>(activeUserRated.keySet());
+        intersectionSet.retainAll(neighborRatings.keySet());
 
-        Set<Integer> intersectionSet = userRatings.keySet().stream()
-                .filter(idItem -> neighborRatings.containsKey(idItem))
-                .collect(Collectors.toSet());
+        Collection<CommonRating> common;
 
-        List<CommonRating> ratingsForSimilarity = intersectionSet.parallelStream()
-                .sorted((i1, i2) -> Integer.compare(i1, i2))
-                .map(idItem -> {
-                    Rating userRating = userRatings.get(idItem);
-                    Rating neighborRating = neighborRatings.get(idItem);
-
-                    CommonRating commonRating = new CommonRating(
-                            RecommendationEntity.ITEM, idItem,
-                            RecommendationEntity.USER, user.getId(), neighbor.getId(),
-                            userRating.getRatingValue().floatValue(), neighborRating.getRatingValue().floatValue());
-                    return commonRating;
-                }).collect(Collectors.toList());
-
-        if (defaultRating_) {
-            Set<Integer> onlyOneRated = new TreeSet<>();
-
-            onlyOneRated.addAll(userRatings.keySet());
-            onlyOneRated.addAll(neighborRatings.keySet());
-
-            onlyOneRated.removeAll(intersectionSet);
-
-            Set<Integer> union = new TreeSet<>(userRatings.keySet());
-            union.addAll(neighborRatings.keySet());
-            if (union.isEmpty()) {
-                return new Neighbor(RecommendationEntity.USER, neighbor, Double.NaN);
-            }
-            for (int idItem : onlyOneRated) {
-                float userRating = userRatings.containsKey(idItem)
-                        ? userRatings.get(idItem).getRatingValue().floatValue()
-                        : defaultRatingValue_;
-
-                float neighborRating = neighborRatings.containsKey(idItem)
-                        ? neighborRatings.get(idItem).getRatingValue().floatValue()
-                        : defaultRatingValue_;
-                CommonRating commonRatingCompletedWithDefault = new CommonRating(
-                        RecommendationEntity.ITEM, idItem,
-                        RecommendationEntity.USER, user.getId(), neighbor.getId(),
-                        userRating, neighborRating);
-                ratingsForSimilarity.add(commonRatingCompletedWithDefault);
-            }
+        if (!defaultRating_) {
+            common = CommonRating.intersection(datasetLoader, user, neighbor);
+        } else {
+            common = getCommonRatingUnion(datasetLoader, rs, user, activeUserRated, neighbor, neighborRatings);
         }
 
         if (inverseFrequency_) {
-            int numAllUsers = ratingsDataset.allUsers().size();
-            for (CommonRating commonRating : ratingsForSimilarity) {
+            int numAllUsers = datasetLoader.getRatingsDataset().allUsers().size();
+            for (CommonRating c : common) {
                 try {
-                    float numUserRatedThisItem = ratingsDataset.sizeOfItemRatings(commonRating.getIdCommon());
-                    float inverseFrequencyValue = numAllUsers / numUserRatedThisItem;
-                    inverseFrequencyValue = (float) Math.log(inverseFrequencyValue);
-                    commonRating.setWeight(inverseFrequencyValue);
+                    double numUserRatedThisItem = datasetLoader.getRatingsDataset().sizeOfItemRatings(c.getIdCommon());
+                    double inverseFrequencyValue = numAllUsers / numUserRatedThisItem;
+                    inverseFrequencyValue = (double) Math.log(inverseFrequencyValue);
+                    c.setWeight(inverseFrequencyValue);
                 } catch (ItemNotFound ex) {
-                    ERROR_CODES.ITEM_NOT_FOUND.exit(ex);
+                    throw new IllegalArgumentException("Cant find product '" + c.getIdCommon());
                 }
             }
         }
 
-        float sim;
+        double sim;
         try {
-            sim = similarityMeasure_.similarity(ratingsForSimilarity, ratingsDataset);
+            sim = similarityMeasure_.similarity(common, datasetLoader.getRatingsDataset());
 
             if (sim > 0) {
                 if (relevanceFactor_) {
+
                     if (intersectionSet.size() < relevanceFactorValue_) {
-                        sim = sim * ((float) intersectionSet.size() / relevanceFactorValue_);
+                        sim = sim * ((double) intersectionSet.size() / relevanceFactorValue_);
                     }
                 }
-                sim = (float) Math.pow(sim, caseAmp);
+                sim = (double) Math.pow(sim, caseAmp);
             }
         } catch (CouldNotComputeSimilarity ex) {
-            sim = Float.NaN;
+            sim = Double.NaN;
         }
         return new Neighbor(RecommendationEntity.USER, neighbor, sim);
     }
+
+    private Collection<CommonRating> getCommonRatingUnion(DatasetLoader<? extends Rating> datasetLoader, KnnCollaborativeRecommender rs, User user, Map<Integer, ? extends Rating> activeUserRated, User neighbor, Map<Integer, ? extends Rating> neighborRatings) {
+
+        byte defaultRatingValue = ((Integer) rs.getParameterValue(KnnCollaborativeRecommender.DEFAULT_RATING_VALUE)).byteValue();
+
+        Set<Integer> union = new TreeSet<>(activeUserRated.keySet());
+
+        union.addAll(neighborRatings.keySet());
+        if (union.isEmpty()) {
+            return Collections.EMPTY_LIST;
+        }
+
+        Collection<CommonRating> common = new ArrayList<>();
+        for (int idItem : union) {
+            Rating r1 = activeUserRated.get(idItem);
+            Rating r2 = neighborRatings.get(idItem);
+
+            double d1;
+            if (r1 == null) {
+                d1 = defaultRatingValue;
+            } else {
+                d1 = r1.getRatingValue().doubleValue();
+            }
+
+            double d2;
+            if (r2 == null) {
+                d2 = defaultRatingValue;
+            } else {
+                d2 = r2.getRatingValue().doubleValue();
+            }
+            common.add(new CommonRating(
+                    RecommendationEntity.ITEM,
+                    idItem,
+                    RecommendationEntity.USER,
+                    user.getId(), neighbor.getId(),
+                    d1, d2));
+        }
+
+        return common;
+    }
+
 }
