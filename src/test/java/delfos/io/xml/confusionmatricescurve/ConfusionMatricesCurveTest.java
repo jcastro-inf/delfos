@@ -1,6 +1,11 @@
 package delfos.io.xml.confusionmatricescurve;
 
+import delfos.common.Global;
+import delfos.constants.DelfosTest;
+import delfos.io.xml.UnrecognizedElementException;
 import delfos.io.xml.evaluationmeasures.confusionmatricescurve.ConfusionMatricesCurveXML;
+import delfos.results.evaluationmeasures.confusionmatrix.ConfusionMatricesCurve;
+import delfos.results.evaluationmeasures.confusionmatrix.ConfusionMatrix;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -8,11 +13,6 @@ import java.util.Random;
 import org.jdom2.Element;
 import org.junit.Assert;
 import org.junit.Test;
-import delfos.io.xml.UnrecognizedElementException;
-import delfos.results.evaluationmeasures.confusionmatrix.ConfusionMatricesCurve;
-import delfos.results.evaluationmeasures.confusionmatrix.ConfusionMatrix;
-import delfos.common.Global;
-import delfos.constants.DelfosTest;
 
 /**
  * Test para la clases {@link ConfusionMatricesCurve} y
@@ -39,7 +39,7 @@ public class ConfusionMatricesCurveTest extends DelfosTest {
      */
     private List<Boolean> generateDummyRecommendations(long seed, int numRecommendations) {
         Random r = new Random(seed);
-        List<Boolean> ret = new ArrayList<Boolean>();
+        List<Boolean> ret = new ArrayList<>();
 
         for (int i = 0; i < numRecommendations; i++) {
             ret.add(r.nextBoolean());
@@ -53,6 +53,8 @@ public class ConfusionMatricesCurveTest extends DelfosTest {
      * correctamente si se llaman seguidos. Este test si funciona, quiere decir
      * que la clase funciona correctamente, pero si falla, no describe mucho
      * dónde puede estar el error, ya que testea una gran cantidad de código.
+     *
+     * @throws delfos.io.xml.UnrecognizedElementException
      */
     @Test
     public void testPairOfGetElementAndGetCurve() throws UnrecognizedElementException {
@@ -70,8 +72,8 @@ public class ConfusionMatricesCurveTest extends DelfosTest {
 
                     Element element = ConfusionMatricesCurveXML.getElement(curve);
 
-                    ConfusionMatricesCurve newCurve =
-                            ConfusionMatricesCurveXML.getConfusionMatricesCurve(element);
+                    ConfusionMatricesCurve newCurve
+                            = ConfusionMatricesCurveXML.getConfusionMatricesCurve(element);
 
                     //Test limits of initial curve.
                     assert curve.getTruePositiveRateAt(0) == 0;
@@ -128,7 +130,7 @@ public class ConfusionMatricesCurveTest extends DelfosTest {
          o negativa), pero debe haber variedad para que la curva sea correcta*/
 
         int numExamples = 10;
-        List<Boolean> r = new ArrayList<Boolean>(numExamples);
+        List<Boolean> r = new ArrayList<>(numExamples);
         while (r.size() < numExamples) {
             r.add(Boolean.TRUE);
         }
@@ -143,7 +145,7 @@ public class ConfusionMatricesCurveTest extends DelfosTest {
     public void testAllNegatives() {
         Global.showInfoMessage("testAllNegatives\n");
         int numExamples = 10;
-        List<Boolean> r = new ArrayList<Boolean>(numExamples);
+        List<Boolean> r = new ArrayList<>(numExamples);
         while (r.size() < numExamples) {
             r.add(Boolean.FALSE);
         }
@@ -159,7 +161,7 @@ public class ConfusionMatricesCurveTest extends DelfosTest {
     public void testAllPositivesButOne() {
         Global.showInfoMessage("testAllPositivesButOne\n");
         int numExamples = 10;
-        List<Boolean> r = new ArrayList<Boolean>(numExamples);
+        List<Boolean> r = new ArrayList<>(numExamples);
         while (r.size() < numExamples - 1) {
             r.add(Boolean.TRUE);
         }
@@ -178,7 +180,7 @@ public class ConfusionMatricesCurveTest extends DelfosTest {
     public void testAllNegativesButOne() {
         Global.showInfoMessage("testAllNegativesButOne\n");
         int numExamples = 10;
-        List<Boolean> r = new ArrayList<Boolean>(numExamples);
+        List<Boolean> r = new ArrayList<>(numExamples);
         while (r.size() < numExamples - 1) {
             r.add(Boolean.TRUE);
         }
@@ -196,9 +198,9 @@ public class ConfusionMatricesCurveTest extends DelfosTest {
     @Test
     public void testAreaIsZeroPointFive() {
         Global.showInfoMessage("testAreaIsZeroPointFive\n");
-        int numElements = 999;
+        int numElements = 99999;
 
-        List<Boolean> recomm_1 = new ArrayList<Boolean>(numElements);
+        List<Boolean> recomm_1 = new ArrayList<>(numElements);
         for (int i = 0; i < numElements; i++) {
             recomm_1.add(i % 2 == 1);
         }
@@ -207,9 +209,8 @@ public class ConfusionMatricesCurveTest extends DelfosTest {
         Global.showInfoMessage("Area = " + areaUnderROC1 + "\n");
         Assert.assertEquals(0.5, areaUnderROC1, 0.001);
 
-
-        numElements = 1000;
-        List<Boolean> recomm_2 = new ArrayList<Boolean>(numElements);
+        numElements = 100000;
+        List<Boolean> recomm_2 = new ArrayList<>(numElements);
         for (int i = 0; i < numElements; i++) {
             recomm_2.add(i % 2 == 1);
         }
@@ -226,7 +227,7 @@ public class ConfusionMatricesCurveTest extends DelfosTest {
 
         //Agregar dos veces lo mismo tiene la misma area
         {
-            List<ConfusionMatricesCurve> curves = new ArrayList<ConfusionMatricesCurve>(2);
+            List<ConfusionMatricesCurve> curves = new ArrayList<>(2);
             curves.add(new ConfusionMatricesCurve(r1));
             curves.add(new ConfusionMatricesCurve(r1));
 
@@ -235,10 +236,9 @@ public class ConfusionMatricesCurveTest extends DelfosTest {
             Assert.assertEquals(new ConfusionMatricesCurve(r1).getAreaUnderROC(), agregada.getAreaUnderROC(), 0.01);
         }
 
-
         //Area de la agregada es igual a la media de las áreas para la misma longitud.
         {
-            List<ConfusionMatricesCurve> curves = new ArrayList<ConfusionMatricesCurve>(2);
+            List<ConfusionMatricesCurve> curves = new ArrayList<>(2);
             curves.add(new ConfusionMatricesCurve(r1));
             curves.add(new ConfusionMatricesCurve(r2));
 
@@ -247,14 +247,13 @@ public class ConfusionMatricesCurveTest extends DelfosTest {
             Assert.assertEquals(new ConfusionMatricesCurve(r1).getAreaUnderROC(), agregada.getAreaUnderROC(), 0.01);
         }
 
-
         {
-            r1 = new ArrayList<Boolean>(3);
+            r1 = new ArrayList<>(3);
             r1.add(true);
             r1.add(false);
             r1.add(true);
 
-            r2 = new ArrayList<Boolean>(2);
+            r2 = new ArrayList<>(2);
             r2.add(true);
             r2.add(false);
 
@@ -264,17 +263,15 @@ public class ConfusionMatricesCurveTest extends DelfosTest {
             matrices[2] = new ConfusionMatrix(2, 1, 2, 0);
             matrices[3] = new ConfusionMatrix(2, 0, 3, 0);
 
-
             ConfusionMatricesCurve c1 = new ConfusionMatricesCurve(r1);
             ConfusionMatricesCurve c2 = new ConfusionMatricesCurve(r2);
 
-            List<ConfusionMatricesCurve> listaCurvas = new LinkedList<ConfusionMatricesCurve>();
+            List<ConfusionMatricesCurve> listaCurvas = new LinkedList<>();
             listaCurvas.add(c1);
             listaCurvas.add(c2);
 
             ConfusionMatricesCurve hardCodedAggregation = new ConfusionMatricesCurve(matrices);
             ConfusionMatricesCurve implementedAggregation = ConfusionMatricesCurve.mergeCurves(listaCurvas);
-
 
             Global.showInfoMessage(hardCodedAggregation.printCurve() + "\n");
 
