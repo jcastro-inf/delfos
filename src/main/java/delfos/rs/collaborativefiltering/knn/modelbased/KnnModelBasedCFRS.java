@@ -16,19 +16,16 @@
  */
 package delfos.rs.collaborativefiltering.knn.modelbased;
 
-import delfos.common.exceptions.CouldNotComputeSimilarity;
 import delfos.common.exceptions.CouldNotPredictRating;
 import delfos.common.exceptions.dataset.CannotLoadContentDataset;
 import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
 import delfos.common.exceptions.dataset.items.ItemNotFound;
 import delfos.common.exceptions.dataset.users.UserNotFound;
-import delfos.common.parallelwork.MultiThreadExecutionManager;
-import delfos.dataset.basic.item.ContentDataset;
+import delfos.common.parameters.Parameter;
+import delfos.common.parameters.restriction.IntegerParameter;
 import delfos.dataset.basic.item.Item;
-import delfos.dataset.basic.loader.types.ContentDatasetLoader;
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
-import delfos.dataset.basic.rating.RatingsDataset;
 import delfos.rs.collaborativefiltering.CollaborativeRecommender;
 import delfos.rs.collaborativefiltering.knn.CommonRating;
 import delfos.rs.collaborativefiltering.knn.KnnCollaborativeRecommender;
@@ -40,16 +37,13 @@ import delfos.rs.persistence.DatabasePersistence;
 import delfos.rs.persistence.FailureInPersistence;
 import delfos.rs.recommendation.Recommendation;
 import delfos.similaritymeasures.CollaborativeSimilarityMeasure;
-import java.util.ArrayList;
+import delfos.utils.algorithm.progress.ProgressChangedController;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeMap;
-import java.util.TreeSet;
 import java.util.stream.Collectors;
 
 /**
@@ -65,14 +59,19 @@ import java.util.stream.Collectors;
  * ({@link KnnModelBasedCFRS#PREDICTION_TECHNIQUE})
  *
  * @author jcastro-inf ( https://github.com/jcastro-inf )
- *
- * @version 1.0 Unknown date
- * @version 1.1 28-02-2013
  */
 public class KnnModelBasedCFRS
         extends KnnCollaborativeRecommender<KnnModelBasedCFRSModel> {
 
     private static final long serialVersionUID = 1L;
+
+    /**
+     * Parámetro para almacenar el número de vecinos que se almacenan en el
+     * perfil de cada producto. Si no se modifica, su valor por defecto es 20
+     */
+    public static final Parameter NEIGHBORHOOD_SIZE_STORE = new Parameter(
+            "Neighborhood_size_store",
+            new IntegerParameter(1, 9999, 1000));
 
     /**
      * Constructor por defecto que llama al constructor por defecto de la clase
@@ -86,33 +85,51 @@ public class KnnModelBasedCFRS
         addParameter(PREDICTION_TECHNIQUE);
         addParameter(RELEVANCE_FACTOR);
         addParameter(RELEVANCE_FACTOR_VALUE);
+        addParameter(NEIGHBORHOOD_SIZE_STORE);
+
+        addParammeterListener(() -> {
+            int neighborhoodSize = getNeighborhoodSize();
+            int neighborhoodSizeStore = getNeighborhoodSizeStore();
+
+            if (neighborhoodSizeStore < neighborhoodSize) {
+                throw new IllegalArgumentException("The neighborhood size store must be greater than the neighborhood size.");
+            }
+        });
     }
 
     @Override
     public KnnModelBasedCFRSModel buildRecommendationModel(DatasetLoader<? extends Rating> datasetLoader) throws CannotLoadRatingsDataset {
-        final RatingsDataset<? extends Rating> ratingsDataset = datasetLoader.getRatingsDataset();
+        CollaborativeSimilarityMeasure similarityMeasure = getSimilarityMeasure();
+        Integer relevanceFactorValue = isRelevanceFactorApplied() ? getRelevanceFactorValue() : null;
 
-        List<KnnModelBasedCBRS_Task> tasks = new ArrayList<>(datasetLoader.getContentDataset().size());
-        for (Item item : datasetLoader.getContentDataset()) {
-            tasks.add(new KnnModelBasedCBRS_Task(item, this, datasetLoader));
-        }
+        ProgressChangedController iknnModelProgress = new ProgressChangedController(
+                getAlias() + " for dataset " + datasetLoader.getAlias(),
+                datasetLoader.getContentDataset().size(),
+                this::fireBuildingProgressChangedEvent
+        );
 
-        MultiThreadExecutionManager<KnnModelBasedCBRS_Task> executionManager = new MultiThreadExecutionManager<>(
-                "Item-item model calculation",
-                tasks,
-                KnnModelBasedCBRS_TaskExecutor.class);
+        List<KnnModelItemProfile> allItemModels = datasetLoader.getContentDataset().parallelStream().map(item -> {
+            List<Neighbor> thisItemNeighbors = getNeighbors(
+                    datasetLoader,
+                    item,
+                    similarityMeasure,
+                    relevanceFactorValue
+            );
 
-        executionManager.addExecutionProgressListener(this::fireBuildingProgressChangedEvent);
-        executionManager.run();
-        Map<Integer, KnnModelItemProfile> itemsProfiles = new TreeMap<>();
-        for (KnnModelBasedCBRS_Task finishedTasks : executionManager.getAllFinishedTasks()) {
-            List<Neighbor> neighbors = finishedTasks.getNeighbors();
-            itemsProfiles.put(finishedTasks.item.getId(), new KnnModelItemProfile(finishedTasks.getItem().getId(), neighbors));
-        }
+            thisItemNeighbors.sort(Neighbor.BY_SIMILARITY_DESC);
 
-        fireBuildingProgressChangedEvent("Finished item-item model calculation", 100, -1);
-        return new KnnModelBasedCFRSModel(itemsProfiles);
+            thisItemNeighbors = thisItemNeighbors.stream()
+                    .limit(getNeighborhoodSizeStore())
+                    .collect(Collectors.toList());
 
+            iknnModelProgress.setTaskFinished();
+
+            return new KnnModelItemProfile(item.getId(), thisItemNeighbors);
+        }).collect(Collectors.toList());
+
+        Map<Integer, KnnModelItemProfile> itemModels_byItem = allItemModels.parallelStream().collect(Collectors.toMap(itemModel -> itemModel.getIdItem(), itemModel -> itemModel));
+
+        return new KnnModelBasedCFRSModel(itemModels_byItem);
     }
 
     @Override
@@ -177,61 +194,40 @@ public class KnnModelBasedCFRS
      * The neighbors will be selected in the prediction step.
      *
      * @param datasetLoader Data set used.
-     * @param item Target item, for which the neighbors are computed.
+     * @param item1 Target item, for which the neighbors are computed.
+     * @param similarityMeasure
+     * @param relevanceFactorValue
      * @return A list wit a Neighbor object for each item in the dataset, sorted
      * by similarity desc.
      */
-    public List<Neighbor> getNeighbors(DatasetLoader<? extends Rating> datasetLoader, Item item) {
-        CollaborativeSimilarityMeasure similarityMeasureValue = (CollaborativeSimilarityMeasure) getParameterValue(SIMILARITY_MEASURE);
+    public static List<Neighbor> getNeighbors(
+            DatasetLoader<? extends Rating> datasetLoader,
+            Item item1,
+            CollaborativeSimilarityMeasure similarityMeasure,
+            Integer relevanceFactorValue
+    ) {
 
-        boolean isRelevanceFactorApplied = (Boolean) getParameterValue(RELEVANCE_FACTOR);
-        int relevanceFactorIntValue = (Integer) getParameterValue(RELEVANCE_FACTOR_VALUE);
+        List<Neighbor> neighbors = datasetLoader.getContentDataset().parallelStream()
+                .filter(item2 -> {
+                    return !item1.equals(item2);
+                })
+                .map(item2 -> {
+                    Collection<CommonRating> commonRatings = CommonRating.intersection(datasetLoader, item1, item2);
 
-        RatingsDataset<? extends Rating> ratingsDataset = datasetLoader.getRatingsDataset();
-        ContentDataset contentDataset = ((ContentDatasetLoader) datasetLoader).getContentDataset();
+                    if (commonRatings.isEmpty()) {
+                        return new Neighbor(RecommendationEntity.ITEM, item2, Double.NaN);
+                    }
 
-        List<Neighbor> itemsSimilares = new ArrayList<>();
-        Map<Integer, ? extends Rating> usersRatingsToTargetItem = ratingsDataset
-                .getItemRatingsRated(item.getId());
+                    double similarity = similarityMeasure.similarity(commonRatings, datasetLoader.getRatingsDataset());
 
-        Set<Item> possibleNeighbors = contentDataset.parallelStream()
-                .filter((item2 -> !item.equals(item2)))
-                .collect(Collectors.toCollection(TreeSet::new));
+                    similarity = relevanceFactorValue != null ? similarity * Math.min(1.0, commonRatings.size() / relevanceFactorValue.doubleValue()) : similarity;
 
-        for (Item itemNeighbor : possibleNeighbors) {
-            Map<Integer, ? extends Rating> usersRatingsToNeighborItem = ratingsDataset.getItemRatingsRated(itemNeighbor.getId());
-            Set<Integer> intersection = new HashSet<>(usersRatingsToTargetItem.keySet());
+                    Neighbor neighbor = new Neighbor(RecommendationEntity.ITEM, item2, similarity);
+                    return neighbor;
+                })
+                .collect(Collectors.toList());
 
-            intersection.retainAll(usersRatingsToNeighborItem.keySet());
-
-            List<CommonRating> common = intersection.stream()
-                    .map((idUser -> new CommonRating(
-                                    RecommendationEntity.USER,
-                                    idUser,
-                                    RecommendationEntity.ITEM,
-                                    item.getId(),
-                                    itemNeighbor.getId(),
-                                    usersRatingsToTargetItem.get(idUser).getRatingValue().doubleValue(),
-                                    usersRatingsToNeighborItem.get(idUser).getRatingValue().doubleValue())))
-                    .collect(Collectors.toList());
-
-            double similarity;
-            try {
-                similarity = similarityMeasureValue.similarity(common, ratingsDataset);
-                if (similarity > 0
-                        && isRelevanceFactorApplied
-                        && common.size() < relevanceFactorIntValue) {
-                    similarity = (similarity * (common.size() / (double) relevanceFactorIntValue));
-                }
-            } catch (CouldNotComputeSimilarity ex) {
-                similarity = Double.NaN;
-            }
-            itemsSimilares.add(new Neighbor(RecommendationEntity.ITEM, itemNeighbor, similarity));
-
-        }
-        itemsSimilares.sort(Neighbor.BY_SIMILARITY_DESC);
-
-        return itemsSimilares;
+        return neighbors;
     }
 
     @Override
@@ -244,5 +240,9 @@ public class KnnModelBasedCFRS
     public void saveRecommendationModel(DatabasePersistence databasePersistence, KnnModelBasedCFRSModel model) throws FailureInPersistence {
         DAOKnnModelBasedDatabaseModel dao = new DAOKnnModelBasedDatabaseModel();
         dao.saveModel(databasePersistence, model);
+    }
+
+    public final int getNeighborhoodSizeStore() {
+        return (Integer) getParameterValue(NEIGHBORHOOD_SIZE_STORE);
     }
 }

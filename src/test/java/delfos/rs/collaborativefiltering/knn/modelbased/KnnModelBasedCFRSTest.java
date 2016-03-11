@@ -61,9 +61,15 @@ public class KnnModelBasedCFRSTest {
 
         KnnModelBasedCFRS instance = new KnnModelBasedCFRS();
 
+        Integer relevanceFactor = instance.isRelevanceFactorApplied() ? instance.getRelevanceFactorValue() : null;
+
         boolean requirementViolated = contentDataset.stream().anyMatch(item -> {
 
-            List<Neighbor> neighbors = instance.getNeighbors(datasetLoader, item);
+            List<Neighbor> neighbors = KnnModelBasedCFRS.getNeighbors(
+                    datasetLoader,
+                    item, instance.getSimilarityMeasure(),
+                    relevanceFactor
+            );
 
             Set<Integer> allItems = contentDataset.parallelStream()
                     .map(itemInner -> itemInner.getId())

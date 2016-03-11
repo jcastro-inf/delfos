@@ -258,7 +258,12 @@ public class CaseStudyAllBaselines {
     }
 
     private RecommenderSystem getKnnItemRecommender() {
-        KnnModelBased_NWR knnItem = new KnnModelBased_NWR(new PearsonCorrelationCoefficient(), 30, 60, new WeightedSum());
+        KnnModelBased_NWR knnItem = new KnnModelBased_NWR();
+
+        knnItem.setSIMILARITY_MEASURE(new PearsonCorrelationCoefficient());
+        knnItem.setRELEVANCE_FACTOR_VALUE(30);
+        knnItem.setNeighborhoodSize(60);
+        knnItem.setPREDICTION_TECHNIQUE(new WeightedSum());
 
         File directory = new File(
                 Constants.getTempDirectory().getAbsoluteFile() + File.separator
