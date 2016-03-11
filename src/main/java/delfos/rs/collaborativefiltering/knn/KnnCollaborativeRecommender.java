@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -22,6 +22,7 @@ import delfos.common.parameters.restriction.DoubleParameter;
 import delfos.common.parameters.restriction.IntegerParameter;
 import delfos.common.parameters.restriction.ParameterOwnerRestriction;
 import delfos.rs.collaborativefiltering.CollaborativeRecommender;
+import delfos.rs.collaborativefiltering.knn.memorybased.KnnMemoryBasedCFRS;
 import delfos.rs.collaborativefiltering.predictiontechniques.PredictionTechnique;
 import delfos.rs.collaborativefiltering.predictiontechniques.WeightedSum;
 import delfos.similaritymeasures.CollaborativeSimilarityMeasure;
@@ -103,4 +104,61 @@ public abstract class KnnCollaborativeRecommender<RecommendationModel>
      * @see KnnModelBasedCFRS#relevanceFactor
      */
     public static final Parameter RELEVANCE_FACTOR_VALUE = new Parameter("Relevance_factor_value", new IntegerParameter(1, 9999, 20));
+
+    public final CollaborativeSimilarityMeasure getSimilarityMeasure() {
+        return (CollaborativeSimilarityMeasure) getParameterValue(SIMILARITY_MEASURE);
+    }
+
+    public KnnCollaborativeRecommender setNeighborhoodSize(int neighborhoodSize) {
+        setParameterValue(NEIGHBORHOOD_SIZE, neighborhoodSize);
+        return this;
+    }
+
+    public KnnCollaborativeRecommender setSIMILARITY_MEASURE(CollaborativeSimilarityMeasure similarityMeasure) {
+        setParameterValue(SIMILARITY_MEASURE, similarityMeasure);
+        return this;
+    }
+
+    public KnnCollaborativeRecommender setPREDICTION_TECHNIQUE(PredictionTechnique predictionTechnique) {
+        setParameterValue(PREDICTION_TECHNIQUE, predictionTechnique);
+        return this;
+    }
+
+    public KnnCollaborativeRecommender setINVERSE_FREQUENCY(boolean inverseFrequency) {
+        setParameterValue(INVERSE_FREQUENCY, inverseFrequency);
+        return this;
+    }
+
+    public KnnCollaborativeRecommender setCASE_AMPLIFICATION(double caseAmplification) {
+        setParameterValue(CASE_AMPLIFICATION, caseAmplification);
+        return this;
+    }
+
+    public KnnCollaborativeRecommender setDEFAULT_RATING_VALUE(Double defaultRatingValue) {
+        setParameterValue(DEFAULT_RATING, defaultRatingValue != null);
+        if (defaultRatingValue != null) {
+            setParameterValue(DEFAULT_RATING_VALUE, defaultRatingValue);
+        }
+        return this;
+    }
+
+    public KnnCollaborativeRecommender setRELEVANCE_FACTOR_VALUE(Integer relevanceFactorValue) {
+        setParameterValue(RELEVANCE_FACTOR, relevanceFactorValue != null);
+        if (relevanceFactorValue != null) {
+            setParameterValue(RELEVANCE_FACTOR_VALUE, relevanceFactorValue);
+        }
+        return this;
+    }
+
+    public boolean isRelevanceFactorApplied() {
+        return (Boolean) getParameterValue(RELEVANCE_FACTOR);
+    }
+
+    public Integer getRelevanceFactorValue() {
+        return (Integer) getParameterValue(RELEVANCE_FACTOR_VALUE);
+    }
+
+    public int getNeighborhoodSize() {
+        return (Integer) getParameterValue(NEIGHBORHOOD_SIZE);
+    }
 }

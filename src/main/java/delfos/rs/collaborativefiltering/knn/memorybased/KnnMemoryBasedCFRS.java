@@ -39,7 +39,6 @@ import delfos.rs.persistence.FailureInPersistence;
 import delfos.rs.recommendation.Recommendation;
 import delfos.rs.recommendation.Recommendations;
 import delfos.rs.recommendation.RecommendationsWithNeighbors;
-import delfos.similaritymeasures.CollaborativeSimilarityMeasure;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
@@ -252,40 +251,4 @@ public class KnnMemoryBasedCFRS extends KnnCollaborativeRecommender<KnnMemoryMod
         return recommendToUser.getRecommendations();
     }
 
-    public KnnMemoryBasedCFRS setNeighborhoodSize(int neighborhoodSize) {
-        setParameterValue(NEIGHBORHOOD_SIZE, neighborhoodSize);
-        return this;
-    }
-
-    public KnnMemoryBasedCFRS setSIMILARITY_MEASURE(CollaborativeSimilarityMeasure similarityMeasure) {
-        setParameterValue(SIMILARITY_MEASURE, similarityMeasure);
-        return this;
-    }
-
-    public KnnMemoryBasedCFRS setPREDICTION_TECHNIQUE(PredictionTechnique predictionTechnique) {
-        setParameterValue(PREDICTION_TECHNIQUE, predictionTechnique);
-        return this;
-    }
-
-    public KnnMemoryBasedCFRS setINVERSE_FREQUENCY(boolean inverseFrequency) {
-        setParameterValue(INVERSE_FREQUENCY, inverseFrequency);
-        return this;
-    }
-
-    public KnnMemoryBasedCFRS setCASE_AMPLIFICATION(double caseAmplification) {
-        setParameterValue(CASE_AMPLIFICATION, caseAmplification);
-        return this;
-    }
-
-    public KnnMemoryBasedCFRS setDEFAULT_RATING_VALUE(Double defaultRatingValue) {
-        setParameterValue(DEFAULT_RATING, defaultRatingValue != null);
-        setParameterValue(DEFAULT_RATING_VALUE, defaultRatingValue);
-        return this;
-    }
-
-    public KnnMemoryBasedCFRS setRELEVANCE_FACTOR_VALUE(Integer relevanceFactorValue) {
-        setParameterValue(RELEVANCE_FACTOR, relevanceFactorValue != null);
-        setParameterValue(RELEVANCE_FACTOR_VALUE, relevanceFactorValue);
-        return this;
-    }
 }
