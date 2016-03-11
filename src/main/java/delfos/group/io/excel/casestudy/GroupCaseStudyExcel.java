@@ -42,7 +42,9 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -912,7 +914,11 @@ public class GroupCaseStudyExcel {
     }
 
     public static void writeMatrixInSheet(WritableWorkbook workbook, String evaluationMeasure, CaseStudyResultMatrix matrix) throws WriteException {
-        WritableSheet allCasesAggregateResults = workbook.createSheet(evaluationMeasure, workbook.getNumberOfSheets());
+        writeMatrixInSheet(workbook, evaluationMeasure, matrix, evaluationMeasure);
+    }
+
+    public static void writeMatrixInSheet(WritableWorkbook workbook, String evaluationMeasure, CaseStudyResultMatrix matrix, String sheetName) throws WriteException {
+        WritableSheet allCasesAggregateResults = workbook.createSheet(sheetName, workbook.getNumberOfSheets());
         createLabel(allCasesAggregateResults);
 
         {
@@ -1067,20 +1073,52 @@ public class GroupCaseStudyExcel {
         dataValidationAliases.addAll(groupCaseStudyResults);
         techniqueAliases.addAll(groupCaseStudyResults);
 
-        List<ParameterChain> differentChainsWithAliases = ParameterChain.obtainDifferentChains(groupCaseStudys);
+        List<ParameterChain> differentChainsWithAliases = ParameterChain
+                .obtainDifferentChains(groupCaseStudys);
 
-        List<ParameterChain> differentChains = differentChainsWithAliases.stream().filter(chain -> !chain.isAlias()).collect(Collectors.toList());
+        List<ParameterChain> differentChains = differentChainsWithAliases
+                .stream()
+                .filter(chain -> !chain.isAlias()).collect(Collectors.toList());
+
+        List<Combination> obtainCombinations = obtainCombinations(differentChains);
+
+        obtainCombinations = obtainCombinations.parallelStream()
+                .filter(combination -> !combination.isEmpty())
+                .collect(Collectors.toList());
+
+        obtainCombinations = obtainCombinations.parallelStream().distinct().collect(Collectors.toList());
+
+        obtainCombinations.forEach(combination -> {
+            try {
+
+                String sheetName = evaluationMeasure;
+                for (ParameterChain chain : combination.column) {
+                    sheetName = sheetName + "_" + chain.getParameterName();
+                }
+
+                writeRowAndColumnCombination(combination.row, groupCaseStudys, combination.column, evaluationMeasure, groupCaseStudyResults, workbook, sheetName);
+            } catch (WriteException ex) {
+                Logger.getLogger(GroupCaseStudyExcel.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        });
 
         List<ParameterChain> columnChains = differentChains.stream()
                 .filter(chain -> chain.isDataValidationParameter())
                 .filter(chain -> !chain.isNumExecutions())
                 .collect(Collectors.toList());
-        List<ParameterChain> rowChains = differentChains.stream().filter(chain -> chain.isTechniqueParameter()).collect(Collectors.toList());
+
+        List<ParameterChain> rowChains = differentChains.stream()
+                .filter(chain -> chain.isTechniqueParameter())
+                .collect(Collectors.toList());
 
         writeRowAndColumnCombination(rowChains, groupCaseStudys, columnChains, evaluationMeasure, groupCaseStudyResults, workbook);
     }
 
     public static void writeRowAndColumnCombination(List<ParameterChain> rowChains, List<GroupCaseStudy> groupCaseStudys, List<ParameterChain> columnChains, String evaluationMeasure, List<GroupCaseStudyResult> groupCaseStudyResults, WritableWorkbook workbook) throws WriteException {
+        writeRowAndColumnCombination(rowChains, groupCaseStudys, columnChains, evaluationMeasure, groupCaseStudyResults, workbook, evaluationMeasure);
+    }
+
+    public static void writeRowAndColumnCombination(List<ParameterChain> rowChains, List<GroupCaseStudy> groupCaseStudys, List<ParameterChain> columnChains, String evaluationMeasure, List<GroupCaseStudyResult> groupCaseStudyResults, WritableWorkbook workbook, String sheetName) throws WriteException {
         if (rowChains.isEmpty()) {
             ParameterChain grsAliasChain = new ParameterChain(groupCaseStudys.get(0))
                     .createWithNode(GroupCaseStudy.GROUP_RECOMMENDER_SYSTEM, null)
@@ -1105,7 +1143,101 @@ public class GroupCaseStudyExcel {
         writeMatrixInSheet(workbook, evaluationMeasure, matrix);
     }
 
-    private GroupCaseStudyExcel() {
+    public static final Comparator<List<ParameterChain>> ComparatorOfListsOfChains = (l1, l2) -> {
+        for (int index = 0; index < Math.min(l1.size(), l2.size()); index++) {
+
+            ParameterChain e1 = l1.get(index);
+            ParameterChain e2 = l2.get(index);
+
+            int compare = e1.compareTo(e2);
+
+            if (compare != 0) {
+                return compare;
+            }
+        }
+        return Integer.compare(l1.size(), l2.size());
+    };
+
+    public static List<Combination> obtainCombinations(List<ParameterChain> chains) {
+        List<ParameterChain> sortedChains = chains.parallelStream().sorted().collect(Collectors.toList());
+
+        if (sortedChains.isEmpty()) {
+            return Collections.EMPTY_LIST;
+        } else if (sortedChains.size() == 1) {
+            List<Combination> combinations = new ArrayList<>();
+
+            combinations.add(new Combination(chains, Collections.EMPTY_LIST));
+            combinations.add(new Combination(Collections.EMPTY_LIST, chains));
+
+            return combinations;
+        } else {
+
+            List<Combination> allCombinations = new ArrayList<>();
+
+            for (ParameterChain chain : chains) {
+                List<ParameterChain> chainsWithoutMe = new ArrayList<>(chains);
+                chainsWithoutMe.remove(chain);
+
+                List<Combination> obtainCombinationsWithoutMe = obtainCombinations(chainsWithoutMe);
+
+                for (Combination combinationWithoutMe : obtainCombinationsWithoutMe) {
+
+                    List<ParameterChain> rowWithMe = combinationWithoutMe.row.stream().collect(Collectors.toList());
+                    rowWithMe.add(chain);
+
+                    List<ParameterChain> columnWithMe = combinationWithoutMe.row.stream().collect(Collectors.toList());
+                    columnWithMe.add(chain);
+
+                    allCombinations.add(new Combination(combinationWithoutMe.row, columnWithMe));
+                    allCombinations.add(new Combination(rowWithMe, combinationWithoutMe.column));
+                }
+
+                allCombinations.add(new Combination(chainsWithoutMe, Arrays.asList(chain)));
+
+            }
+
+            return allCombinations;
+        }
+    }
+
+    public static class Combination implements Comparable<Combination> {
+
+        List<ParameterChain> row;
+        List<ParameterChain> column;
+
+        public Combination(List<ParameterChain> row, List<ParameterChain> column) {
+            this.row = row.parallelStream().sorted().collect(Collectors.toList());
+            this.column = column.parallelStream().sorted().collect(Collectors.toList());
+        }
+
+        public boolean isEmpty() {
+            return row.isEmpty() || column.isEmpty();
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (obj instanceof Combination) {
+                Combination combination = (Combination) obj;
+
+                if (ComparatorOfListsOfChains.compare(this.row, combination.row) == 0) {
+                    return true;
+                } else if (ComparatorOfListsOfChains.compare(this.row, combination.column) == 0) {
+                    return true;
+                } else if (ComparatorOfListsOfChains.compare(this.column, combination.row) == 0) {
+                    return true;
+                } else {
+                    return false;
+                }
+            } else {
+                throw new IllegalStateException("arg");
+            }
+        }
+
+        @Override
+        public int compareTo(Combination o) {
+            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        }
+
     }
 
 }
