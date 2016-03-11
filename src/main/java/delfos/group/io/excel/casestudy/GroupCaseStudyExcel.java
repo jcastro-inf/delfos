@@ -865,28 +865,7 @@ public class GroupCaseStudyExcel {
                 .collect(Collectors.toList());
         List<ParameterChain> techniqueDifferentChains = differentChains.stream().filter(chain -> chain.isTechniqueParameter()).collect(Collectors.toList());
 
-        if (techniqueDifferentChains.isEmpty()) {
-            ParameterChain grsAliasChain = new ParameterChain(groupCaseStudys.get(0))
-                    .createWithNode(GroupCaseStudy.GROUP_RECOMMENDER_SYSTEM, null)
-                    .createWithLeaf(ParameterOwner.ALIAS, null);
-            techniqueDifferentChains.add(grsAliasChain);
-        }
-        if (dataValidationDifferentChains.isEmpty()) {
-            ParameterChain datasetLoaderAliasChain = new ParameterChain(groupCaseStudys.get(0))
-                    .createWithNode(GroupCaseStudy.DATASET_LOADER, null)
-                    .createWithLeaf(ParameterOwner.ALIAS, null);
-
-            ParameterChain groupFormationTechniqueAliasChain = new ParameterChain(groupCaseStudys.get(0))
-                    .createWithNode(GroupCaseStudy.GROUP_FORMATION_TECHNIQUE, null)
-                    .createWithLeaf(ParameterOwner.ALIAS, null);
-
-            dataValidationDifferentChains.add(datasetLoaderAliasChain);
-            dataValidationDifferentChains.add(groupFormationTechniqueAliasChain);
-        }
-
-        CaseStudyResultMatrix matrix = prepareExcelMatrix(techniqueDifferentChains, dataValidationDifferentChains, evaluationMeasure, groupCaseStudyResults);
-
-        writeMatrixInSheet(workbook, evaluationMeasure, matrix);
+        writeRowAndColumnCombination(techniqueDifferentChains, groupCaseStudys, dataValidationDifferentChains, evaluationMeasure, groupCaseStudyResults, workbook);
     }
 
     public static boolean isOnlyOneColumn(List<GroupCaseStudyResult> groupCaseStudyResults) {
@@ -929,28 +908,7 @@ public class GroupCaseStudyExcel {
                 .collect(Collectors.toList());
         List<ParameterChain> techniqueDifferentChains = differentChains.stream().filter(chain -> chain.isTechniqueParameter()).collect(Collectors.toList());
 
-        if (techniqueDifferentChains.isEmpty()) {
-            ParameterChain grsAliasChain = new ParameterChain(groupCaseStudys.get(0))
-                    .createWithNode(GroupCaseStudy.GROUP_RECOMMENDER_SYSTEM, null)
-                    .createWithLeaf(ParameterOwner.ALIAS, null);
-            techniqueDifferentChains.add(grsAliasChain);
-        }
-        if (dataValidationDifferentChains.isEmpty()) {
-            ParameterChain datasetLoaderAliasChain = new ParameterChain(groupCaseStudys.get(0))
-                    .createWithNode(GroupCaseStudy.DATASET_LOADER, null)
-                    .createWithLeaf(ParameterOwner.ALIAS, null);
-
-            ParameterChain groupFormationTechniqueAliasChain = new ParameterChain(groupCaseStudys.get(0))
-                    .createWithNode(GroupCaseStudy.GROUP_FORMATION_TECHNIQUE, null)
-                    .createWithLeaf(ParameterOwner.ALIAS, null);
-
-            dataValidationDifferentChains.add(datasetLoaderAliasChain);
-            dataValidationDifferentChains.add(groupFormationTechniqueAliasChain);
-        }
-
-        CaseStudyResultMatrix matrix = prepareExcelMatrix(techniqueDifferentChains, dataValidationDifferentChains, evaluationMeasure, groupCaseStudyResults);
-
-        writeMatrixInSheet(workbook, evaluationMeasure, matrix);
+        writeRowAndColumnCombination(techniqueDifferentChains, groupCaseStudys, dataValidationDifferentChains, evaluationMeasure, groupCaseStudyResults, workbook);
     }
 
     public static void writeMatrixInSheet(WritableWorkbook workbook, String evaluationMeasure, CaseStudyResultMatrix matrix) throws WriteException {
@@ -1113,19 +1071,23 @@ public class GroupCaseStudyExcel {
 
         List<ParameterChain> differentChains = differentChainsWithAliases.stream().filter(chain -> !chain.isAlias()).collect(Collectors.toList());
 
-        List<ParameterChain> dataValidationDifferentChains = differentChains.stream()
+        List<ParameterChain> columnChains = differentChains.stream()
                 .filter(chain -> chain.isDataValidationParameter())
                 .filter(chain -> !chain.isNumExecutions())
                 .collect(Collectors.toList());
-        List<ParameterChain> techniqueDifferentChains = differentChains.stream().filter(chain -> chain.isTechniqueParameter()).collect(Collectors.toList());
+        List<ParameterChain> rowChains = differentChains.stream().filter(chain -> chain.isTechniqueParameter()).collect(Collectors.toList());
 
-        if (techniqueDifferentChains.isEmpty()) {
+        writeRowAndColumnCombination(rowChains, groupCaseStudys, columnChains, evaluationMeasure, groupCaseStudyResults, workbook);
+    }
+
+    public static void writeRowAndColumnCombination(List<ParameterChain> rowChains, List<GroupCaseStudy> groupCaseStudys, List<ParameterChain> columnChains, String evaluationMeasure, List<GroupCaseStudyResult> groupCaseStudyResults, WritableWorkbook workbook) throws WriteException {
+        if (rowChains.isEmpty()) {
             ParameterChain grsAliasChain = new ParameterChain(groupCaseStudys.get(0))
                     .createWithNode(GroupCaseStudy.GROUP_RECOMMENDER_SYSTEM, null)
                     .createWithLeaf(ParameterOwner.ALIAS, null);
-            techniqueDifferentChains.add(grsAliasChain);
+            rowChains.add(grsAliasChain);
         }
-        if (dataValidationDifferentChains.isEmpty()) {
+        if (columnChains.isEmpty()) {
             ParameterChain datasetLoaderAliasChain = new ParameterChain(groupCaseStudys.get(0))
                     .createWithNode(GroupCaseStudy.DATASET_LOADER, null)
                     .createWithLeaf(ParameterOwner.ALIAS, null);
@@ -1134,11 +1096,11 @@ public class GroupCaseStudyExcel {
                     .createWithNode(GroupCaseStudy.GROUP_FORMATION_TECHNIQUE, null)
                     .createWithLeaf(ParameterOwner.ALIAS, null);
 
-            dataValidationDifferentChains.add(datasetLoaderAliasChain);
-            dataValidationDifferentChains.add(groupFormationTechniqueAliasChain);
+            columnChains.add(datasetLoaderAliasChain);
+            columnChains.add(groupFormationTechniqueAliasChain);
         }
 
-        CaseStudyResultMatrix matrix = prepareExcelMatrix(techniqueDifferentChains, dataValidationDifferentChains, evaluationMeasure, groupCaseStudyResults);
+        CaseStudyResultMatrix matrix = prepareExcelMatrix(rowChains, columnChains, evaluationMeasure, groupCaseStudyResults);
 
         writeMatrixInSheet(workbook, evaluationMeasure, matrix);
     }

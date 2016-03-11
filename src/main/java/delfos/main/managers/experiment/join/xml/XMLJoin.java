@@ -230,6 +230,14 @@ public class XMLJoin extends CaseUseMode {
                         techniqueParametersOrder,
                         evaluationMeasure,
                         workbook);
+                if (GroupCaseStudyExcel.isOnlyOneColumn(groupCaseStudyResults)) {
+                    GroupCaseStudyExcel.writeEvaluationMeasureParameterCombinationsSheets(
+                            groupCaseStudyResults,
+                            dataValidationParametersOrder,
+                            techniqueParametersOrder,
+                            evaluationMeasure,
+                            workbook);
+                }
             } catch (WriteException | IOException ex) {
                 ERROR_CODES.CANNOT_WRITE_FILE.exit(ex);
             }
