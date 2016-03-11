@@ -16,7 +16,6 @@
  */
 package delfos.rs.collaborativefiltering.knn.modelbased;
 
-import delfos.common.DateCollapse;
 import delfos.common.exceptions.CouldNotPredictRating;
 import delfos.common.exceptions.dataset.CannotLoadContentDataset;
 import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
@@ -106,8 +105,7 @@ public class KnnModelBasedCFRS
         ProgressChangedController iknnModelProgress = new ProgressChangedController(
                 getAlias() + " for dataset " + datasetLoader.getAlias(),
                 datasetLoader.getContentDataset().size(),
-                this::fireBuildingProgressChangedEvent,
-                (task, percent, time) -> System.out.println(task + " -> " + percent + "% (" + DateCollapse.collapse(time) + ")")
+                this::fireBuildingProgressChangedEvent
         );
 
         List<KnnModelItemProfile> allItemModels = datasetLoader.getContentDataset().parallelStream().map(item -> {
