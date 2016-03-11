@@ -843,7 +843,7 @@ public class GroupCaseStudyExcel {
 
     }
 
-    public static void writeEvaluationMeasureSpecificFile(List<GroupCaseStudyResult> groupCaseStudyResults, List<String> dataValidationParametersOrder, List<String> techniqueParametersOrder, String evaluationMeasure, WritableWorkbook workbook) throws WriteException, IOException {
+    public static void writeEvaluationMeasureSpecificSheet(List<GroupCaseStudyResult> groupCaseStudyResults, List<String> dataValidationParametersOrder, List<String> techniqueParametersOrder, String evaluationMeasure, WritableWorkbook workbook) throws WriteException, IOException {
 
         List<GroupCaseStudy> groupCaseStudys = groupCaseStudyResults.stream().map(groupCaseStudyResult -> groupCaseStudyResult.getGroupCaseStudy()).collect(Collectors.toList());
 
@@ -884,48 +884,76 @@ public class GroupCaseStudyExcel {
             dataValidationDifferentChains.add(groupFormationTechniqueAliasChain);
         }
 
-        CaseStudyResultMatrix matrix = new CaseStudyResultMatrix(techniqueDifferentChains, dataValidationDifferentChains, evaluationMeasure);
+        CaseStudyResultMatrix matrix = prepareExcelMatrix(techniqueDifferentChains, dataValidationDifferentChains, evaluationMeasure, groupCaseStudyResults);
 
-        matrix.prepareColumnAndRowNames(groupCaseStudyResults);
+        writeMatrixInSheet(workbook, evaluationMeasure, matrix);
+    }
 
-        List<GroupCaseStudyResult> groupCaseStudyResultsMaxNumExecutions = new ArrayList<>();
-        for (String rowName : matrix.getRowNames()) {
-            for (String columnName : matrix.getColumnNames()) {
+    public static boolean isOnlyOneColumn(List<GroupCaseStudyResult> groupCaseStudyResults) {
+        List<GroupCaseStudy> groupCaseStudys = groupCaseStudyResults.stream().map(groupCaseStudyResult -> groupCaseStudyResult.getGroupCaseStudy()).collect(Collectors.toList());
 
-                List<GroupCaseStudyResult> thisCellGroupCaseStudys = groupCaseStudyResults.stream()
-                        .filter(groupCaseStudyResult -> matrix.getRow((ParameterOwner) groupCaseStudyResult.getGroupCaseStudy()).equals(rowName))
-                        .filter(groupCaseStudyResult -> matrix.getColumn((ParameterOwner) groupCaseStudyResult.getGroupCaseStudy()).equals(columnName))
-                        .sorted(((groupCaseStudyResult1, groupCaseStudyResult2) -> Integer.compare(groupCaseStudyResult1.getNumExecutions(), groupCaseStudyResult2.getNumExecutions())))
-                        .collect(Collectors.toList());
-                Collections.reverse(thisCellGroupCaseStudys);
+        List<ParameterChain> differentChainsWithAliases = ParameterChain.obtainDifferentChains(groupCaseStudys);
 
-                if (thisCellGroupCaseStudys.isEmpty()) {
-                    continue;
-                }
+        List<ParameterChain> differentChains = differentChainsWithAliases.stream().filter(chain -> !chain.isAlias()).collect(Collectors.toList());
 
-                if (thisCellGroupCaseStudys.size() == 1) {
-                    groupCaseStudyResultsMaxNumExecutions.addAll(thisCellGroupCaseStudys);
-                } else {
+        List<ParameterChain> dataValidationDifferentChains = differentChains.stream()
+                .filter(chain -> chain.isDataValidationParameter())
+                .filter(chain -> !chain.isNumExecutions())
+                .collect(Collectors.toList());
+        if (dataValidationDifferentChains.isEmpty() || dataValidationDifferentChains.size() == 1) {
+            return true;
+        } else {
+            return false;
+        }
+    }
 
-                    if (Global.isVerboseAnnoying()) {
-                        String row = matrix.getRow(thisCellGroupCaseStudys.get(0).getGroupCaseStudy());
-                        String column = matrix.getColumn(thisCellGroupCaseStudys.get(0).getGroupCaseStudy());
-                        Global.show("Executions for cell (" + row + "," + column + ")\n");
-                        for (GroupCaseStudyResult groupCaseStudyResultsMaxNumExecution : thisCellGroupCaseStudys) {
-                            Global.show(groupCaseStudyResultsMaxNumExecution.getNumExecutions() + "\n");
-                        }
-                    }
+    public static void writeEvaluationMeasureSpecificFileParameter(List<GroupCaseStudyResult> groupCaseStudyResults, List<String> dataValidationParametersOrder, List<String> techniqueParametersOrder, String evaluationMeasure, WritableWorkbook workbook) throws WriteException, IOException {
 
-                    groupCaseStudyResultsMaxNumExecutions.add(thisCellGroupCaseStudys.get(0));
-                }
-            }
+        List<GroupCaseStudy> groupCaseStudys = groupCaseStudyResults.stream().map(groupCaseStudyResult -> groupCaseStudyResult.getGroupCaseStudy()).collect(Collectors.toList());
+
+        Set<GroupCaseStudyResult> dataValidationAliases = new TreeSet<>(
+                GroupCaseStudyResult.dataValidationComparator);
+        Set<GroupCaseStudyResult> techniqueAliases = new TreeSet<>(
+                GroupCaseStudyResult.techniqueComparator);
+
+        dataValidationAliases.addAll(groupCaseStudyResults);
+        techniqueAliases.addAll(groupCaseStudyResults);
+
+        List<ParameterChain> differentChainsWithAliases = ParameterChain.obtainDifferentChains(groupCaseStudys);
+
+        List<ParameterChain> differentChains = differentChainsWithAliases.stream().filter(chain -> !chain.isAlias()).collect(Collectors.toList());
+
+        List<ParameterChain> dataValidationDifferentChains = differentChains.stream()
+                .filter(chain -> chain.isDataValidationParameter())
+                .filter(chain -> !chain.isNumExecutions())
+                .collect(Collectors.toList());
+        List<ParameterChain> techniqueDifferentChains = differentChains.stream().filter(chain -> chain.isTechniqueParameter()).collect(Collectors.toList());
+
+        if (techniqueDifferentChains.isEmpty()) {
+            ParameterChain grsAliasChain = new ParameterChain(groupCaseStudys.get(0))
+                    .createWithNode(GroupCaseStudy.GROUP_RECOMMENDER_SYSTEM, null)
+                    .createWithLeaf(ParameterOwner.ALIAS, null);
+            techniqueDifferentChains.add(grsAliasChain);
+        }
+        if (dataValidationDifferentChains.isEmpty()) {
+            ParameterChain datasetLoaderAliasChain = new ParameterChain(groupCaseStudys.get(0))
+                    .createWithNode(GroupCaseStudy.DATASET_LOADER, null)
+                    .createWithLeaf(ParameterOwner.ALIAS, null);
+
+            ParameterChain groupFormationTechniqueAliasChain = new ParameterChain(groupCaseStudys.get(0))
+                    .createWithNode(GroupCaseStudy.GROUP_FORMATION_TECHNIQUE, null)
+                    .createWithLeaf(ParameterOwner.ALIAS, null);
+
+            dataValidationDifferentChains.add(datasetLoaderAliasChain);
+            dataValidationDifferentChains.add(groupFormationTechniqueAliasChain);
         }
 
-        groupCaseStudyResultsMaxNumExecutions.stream().forEach(groupCaseStudyResult -> {
-            java.lang.Number evaluationMeasureValue = groupCaseStudyResult.getEvaluationMeasureValue(evaluationMeasure);
-            matrix.addValue(groupCaseStudyResult.getGroupCaseStudy(), evaluationMeasureValue);
-        });
+        CaseStudyResultMatrix matrix = prepareExcelMatrix(techniqueDifferentChains, dataValidationDifferentChains, evaluationMeasure, groupCaseStudyResults);
 
+        writeMatrixInSheet(workbook, evaluationMeasure, matrix);
+    }
+
+    public static void writeMatrixInSheet(WritableWorkbook workbook, String evaluationMeasure, CaseStudyResultMatrix matrix) throws WriteException {
         WritableSheet allCasesAggregateResults = workbook.createSheet(evaluationMeasure, workbook.getNumberOfSheets());
         createLabel(allCasesAggregateResults);
 
@@ -964,6 +992,48 @@ public class GroupCaseStudyExcel {
         }
 
         autoSizeColumns(allCasesAggregateResults);
+    }
+
+    public static CaseStudyResultMatrix prepareExcelMatrix(List<ParameterChain> rowChains, List<ParameterChain> columnChains, String evaluationMeasure, List<GroupCaseStudyResult> groupCaseStudyResults) {
+        CaseStudyResultMatrix matrix = new CaseStudyResultMatrix(rowChains, columnChains, evaluationMeasure);
+        matrix.prepareColumnAndRowNames(groupCaseStudyResults);
+        List<GroupCaseStudyResult> groupCaseStudyResultsMaxNumExecutions = new ArrayList<>();
+        for (String rowName : matrix.getRowNames()) {
+            for (String columnName : matrix.getColumnNames()) {
+
+                List<GroupCaseStudyResult> thisCellGroupCaseStudys = groupCaseStudyResults.stream()
+                        .filter(groupCaseStudyResult -> matrix.getRow((ParameterOwner) groupCaseStudyResult.getGroupCaseStudy()).equals(rowName))
+                        .filter(groupCaseStudyResult -> matrix.getColumn((ParameterOwner) groupCaseStudyResult.getGroupCaseStudy()).equals(columnName))
+                        .sorted(((groupCaseStudyResult1, groupCaseStudyResult2) -> Integer.compare(groupCaseStudyResult1.getNumExecutions(), groupCaseStudyResult2.getNumExecutions())))
+                        .collect(Collectors.toList());
+                Collections.reverse(thisCellGroupCaseStudys);
+
+                if (thisCellGroupCaseStudys.isEmpty()) {
+                    continue;
+                }
+
+                if (thisCellGroupCaseStudys.size() == 1) {
+                    groupCaseStudyResultsMaxNumExecutions.addAll(thisCellGroupCaseStudys);
+                } else {
+
+                    if (Global.isVerboseAnnoying()) {
+                        String row = matrix.getRow(thisCellGroupCaseStudys.get(0).getGroupCaseStudy());
+                        String column = matrix.getColumn(thisCellGroupCaseStudys.get(0).getGroupCaseStudy());
+                        Global.show("Executions for cell (" + row + "," + column + ")\n");
+                        for (GroupCaseStudyResult groupCaseStudyResultsMaxNumExecution : thisCellGroupCaseStudys) {
+                            Global.show(groupCaseStudyResultsMaxNumExecution.getNumExecutions() + "\n");
+                        }
+                    }
+
+                    groupCaseStudyResultsMaxNumExecutions.add(thisCellGroupCaseStudys.get(0));
+                }
+            }
+        }
+        groupCaseStudyResultsMaxNumExecutions.stream().forEach(groupCaseStudyResult -> {
+            java.lang.Number evaluationMeasureValue = groupCaseStudyResult.getEvaluationMeasureValue(evaluationMeasure);
+            matrix.addValue(groupCaseStudyResult.getGroupCaseStudy(), evaluationMeasureValue);
+        });
+        return matrix;
     }
 
     public static void writeNumExecutionsSheet(List<GroupCaseStudyResult> groupCaseStudyResults, List<String> dataValidationParametersOrder, List<String> techniqueParametersOrder, List<String> evaluationMeasuresOrder, WritableWorkbook workbook) throws WriteException {
@@ -1008,8 +1078,13 @@ public class GroupCaseStudyExcel {
             dataValidationDifferentChains.add(groupFormationTechniqueAliasChain);
         }
 
-        CaseStudyResultMatrix matrix = new CaseStudyResultMatrix(techniqueDifferentChains, dataValidationDifferentChains, GroupCaseStudy.NUM_EXECUTIONS.getName());
+        CaseStudyResultMatrix matrix = getNumExecutionsMatrix(techniqueDifferentChains, dataValidationDifferentChains, groupCaseStudyResults);
 
+        writeMatrixInSheet(workbook, GroupCaseStudy.NUM_EXECUTIONS.getName(), matrix);
+    }
+
+    public static CaseStudyResultMatrix getNumExecutionsMatrix(List<ParameterChain> techniqueDifferentChains, List<ParameterChain> dataValidationDifferentChains, List<GroupCaseStudyResult> groupCaseStudyResults) {
+        CaseStudyResultMatrix matrix = new CaseStudyResultMatrix(techniqueDifferentChains, dataValidationDifferentChains, GroupCaseStudy.NUM_EXECUTIONS.getName());
         groupCaseStudyResults.stream().forEach(groupCaseStudyResult -> {
             int numExecutions = groupCaseStudyResult.getNumExecutions();
             java.lang.Number existingNumExecutions = matrix.getValue(groupCaseStudyResult.getGroupCaseStudy());
@@ -1020,45 +1095,7 @@ public class GroupCaseStudyExcel {
                 matrix.addValue(groupCaseStudyResult.getGroupCaseStudy(), numExecutions);
             }
         });
-
-        WritableSheet allCasesAggregateResults = workbook.createSheet(GroupCaseStudy.NUM_EXECUTIONS.getName(), workbook.getNumberOfSheets());
-        createLabel(allCasesAggregateResults);
-
-        {
-
-            int column = 0;
-            int row = 0;
-
-            //Titles ROW
-            addTitleText(allCasesAggregateResults, column, row, GroupCaseStudy.NUM_EXECUTIONS.getName());
-            column++;
-
-            for (String columnName : matrix.getColumnNames()) {
-                setCellContent(allCasesAggregateResults, column, row, columnName);
-                column++;
-            }
-
-            row++;
-
-            //Titles row
-            for (String rowName : matrix.getRowNames()) {
-
-                column = 0;
-                setCellContent(allCasesAggregateResults, column, row, rowName);
-                column++;
-                for (String columnName : matrix.getColumnNames()) {
-
-                    if (matrix.containsValue(rowName, columnName)) {
-                        Object value = matrix.getValue(rowName, columnName);
-                        setCellContent(allCasesAggregateResults, column, row, value);
-                    }
-                    column++;
-                }
-                row++;
-            }
-        }
-
-        autoSizeColumns(allCasesAggregateResults);
+        return matrix;
     }
 
     private GroupCaseStudyExcel() {

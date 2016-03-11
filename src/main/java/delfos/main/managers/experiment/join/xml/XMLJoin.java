@@ -224,7 +224,7 @@ public class XMLJoin extends CaseUseMode {
 
         for (String evaluationMeasure : evaluationMeasuresOrder) {
             try {
-                GroupCaseStudyExcel.writeEvaluationMeasureSpecificFile(
+                GroupCaseStudyExcel.writeEvaluationMeasureSpecificSheet(
                         groupCaseStudyResults,
                         dataValidationParametersOrder,
                         techniqueParametersOrder,
