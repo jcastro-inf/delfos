@@ -18,7 +18,6 @@ package delfos.main.managers.experiment.join.xml;
 
 import delfos.ConsoleParameters;
 import delfos.ERROR_CODES;
-import delfos.UndefinedParameterException;
 import delfos.common.FileUtilities;
 import delfos.common.Global;
 import delfos.group.casestudy.defaultcase.GroupCaseStudy;
@@ -75,32 +74,38 @@ public class XMLJoin extends CaseUseMode {
 
     @Override
     public void manageCaseUse(ConsoleParameters consoleParameters) {
-        try {
-            List<String> resultsPaths = consoleParameters.getValues(RESULTS_PATH_PARAMETER);
 
-            File outputFile;
-            if (consoleParameters.isParameterDefined(OUTPUT_FILE_PARAMETER)) {
-                outputFile = new File(consoleParameters.getValue(OUTPUT_FILE_PARAMETER));
-            } else {
-                String firstPath = resultsPaths.get(0);
+        List<String> resultsPaths = getInputs(consoleParameters);
 
-                if (firstPath.endsWith(File.separator)) {
-                    firstPath = firstPath.substring(0, firstPath.length() - 1);
-                }
+        File outputFile = getOutputFile(consoleParameters, resultsPaths);
 
-                String firstPathCleaned = firstPath
-                        .replace(File.separatorChar, '.');
+        consoleParameters.printUnusedParameters(System.err);
+        mergeResultsIntoOutput(resultsPaths, outputFile);
 
-                outputFile = new File(firstPathCleaned + ".xls");
+    }
+
+    public List<String> getInputs(ConsoleParameters consoleParameters) {
+        List<String> resultsPaths = consoleParameters.getValues(RESULTS_PATH_PARAMETER);
+        return resultsPaths;
+    }
+
+    public File getOutputFile(ConsoleParameters consoleParameters, List<String> resultsPaths) {
+        File outputFile;
+        if (consoleParameters.isParameterDefined(OUTPUT_FILE_PARAMETER)) {
+            outputFile = new File(consoleParameters.getValue(OUTPUT_FILE_PARAMETER));
+        } else {
+            String firstPath = resultsPaths.get(0);
+
+            if (firstPath.endsWith(File.separator)) {
+                firstPath = firstPath.substring(0, firstPath.length() - 1);
             }
 
-            consoleParameters.printUnusedParameters(System.err);
-            mergeResultsIntoOutput(resultsPaths, outputFile);
-        } catch (UndefinedParameterException ex) {
-            ERROR_CODES.COMMAND_LINE_PARAMETER_IS_NOT_DEFINED.exit(ex);
+            String firstPathCleaned = firstPath
+                    .replace(File.separatorChar, '.');
 
-            consoleParameters.printUnusedParameters(System.err);
+            outputFile = new File(firstPathCleaned + ".xls");
         }
+        return outputFile;
     }
 
     public static void mergeResultsIntoOutput(List<String> resultsPaths, File outputFile) {
