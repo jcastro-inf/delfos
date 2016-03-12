@@ -48,6 +48,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
@@ -1080,15 +1081,14 @@ public class GroupCaseStudyExcel {
                 .stream()
                 .filter(chain -> !chain.isAlias()).collect(Collectors.toList());
 
-        List<Combination> obtainCombinations = obtainCombinations(differentChains);
+        List<Combination> obtainCombinations = obtainAllTwoPartitions(differentChains);
 
-        obtainCombinations = obtainCombinations.parallelStream()
-                .filter(combination -> !combination.isEmpty())
-                .collect(Collectors.toList());
+        Set<Combination> distinctCominations = obtainCombinations
+                .stream()
+                .filter(combination -> combination.row.size() + combination.column.size() == differentChains.size())
+                .collect(Collectors.toCollection(TreeSet::new));
 
-        obtainCombinations = obtainCombinations.parallelStream().distinct().collect(Collectors.toList());
-
-        obtainCombinations.forEach(combination -> {
+        distinctCominations.forEach(combination -> {
             try {
 
                 String sheetName = evaluationMeasure;
@@ -1096,7 +1096,17 @@ public class GroupCaseStudyExcel {
                     sheetName = sheetName + "_" + chain.getParameterName();
                 }
 
-                writeRowAndColumnCombination(combination.row, groupCaseStudys, combination.column, evaluationMeasure, groupCaseStudyResults, workbook, sheetName);
+                List<ParameterChain> rowList = combination.row.stream().sorted().collect(Collectors.toList());
+                List<ParameterChain> columnList = combination.column.stream().sorted().collect(Collectors.toList());
+                writeRowAndColumnCombination(
+                        rowList,
+                        groupCaseStudys,
+                        columnList,
+                        evaluationMeasure,
+                        groupCaseStudyResults,
+                        workbook,
+                        sheetName
+                );
             } catch (WriteException ex) {
                 Logger.getLogger(GroupCaseStudyExcel.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -1118,7 +1128,14 @@ public class GroupCaseStudyExcel {
         writeRowAndColumnCombination(rowChains, groupCaseStudys, columnChains, evaluationMeasure, groupCaseStudyResults, workbook, evaluationMeasure);
     }
 
-    public static void writeRowAndColumnCombination(List<ParameterChain> rowChains, List<GroupCaseStudy> groupCaseStudys, List<ParameterChain> columnChains, String evaluationMeasure, List<GroupCaseStudyResult> groupCaseStudyResults, WritableWorkbook workbook, String sheetName) throws WriteException {
+    public static void writeRowAndColumnCombination(
+            List<ParameterChain> rowChains,
+            List<GroupCaseStudy> groupCaseStudys,
+            List<ParameterChain> columnChains,
+            String evaluationMeasure,
+            List<GroupCaseStudyResult> groupCaseStudyResults,
+            WritableWorkbook workbook,
+            String sheetName) throws WriteException {
         if (rowChains.isEmpty()) {
             ParameterChain grsAliasChain = new ParameterChain(groupCaseStudys.get(0))
                     .createWithNode(GroupCaseStudy.GROUP_RECOMMENDER_SYSTEM, null)
@@ -1138,12 +1155,20 @@ public class GroupCaseStudyExcel {
             columnChains.add(groupFormationTechniqueAliasChain);
         }
 
-        CaseStudyResultMatrix matrix = prepareExcelMatrix(rowChains, columnChains, evaluationMeasure, groupCaseStudyResults);
+        CaseStudyResultMatrix matrix = prepareExcelMatrix(
+                rowChains,
+                columnChains,
+                evaluationMeasure,
+                groupCaseStudyResults);
 
         writeMatrixInSheet(workbook, evaluationMeasure, matrix);
     }
 
-    public static final Comparator<List<ParameterChain>> ComparatorOfListsOfChains = (l1, l2) -> {
+    public static final Comparator<Set<ParameterChain>> ComparatorOfListsOfChains = (s1, s2) -> {
+
+        List<ParameterChain> l1 = new ArrayList<>(s1);
+        List<ParameterChain> l2 = new ArrayList<>(s2);
+
         for (int index = 0; index < Math.min(l1.size(), l2.size()); index++) {
 
             ParameterChain e1 = l1.get(index);
@@ -1158,18 +1183,21 @@ public class GroupCaseStudyExcel {
         return Integer.compare(l1.size(), l2.size());
     };
 
-    public static List<Combination> obtainCombinations(List<ParameterChain> chains) {
+    public static List<Combination> obtainAllTwoPartitions(List<ParameterChain> chains) {
         List<ParameterChain> sortedChains = chains.parallelStream().sorted().collect(Collectors.toList());
 
-        if (sortedChains.isEmpty()) {
+        if (sortedChains.isEmpty() || sortedChains.size() == 1) {
             return Collections.EMPTY_LIST;
-        } else if (sortedChains.size() == 1) {
-            List<Combination> combinations = new ArrayList<>();
+        } else if (sortedChains.size() == 2) {
 
-            combinations.add(new Combination(chains, Collections.EMPTY_LIST));
-            combinations.add(new Combination(Collections.EMPTY_LIST, chains));
+            ParameterChain element1 = chains.get(0);
+            ParameterChain element2 = chains.get(1);
 
-            return combinations;
+            Combination combination = new Combination(
+                    Arrays.asList(element1),
+                    Arrays.asList(element2));
+
+            return Arrays.asList(combination);
         } else {
 
             List<Combination> allCombinations = new ArrayList<>();
@@ -1178,14 +1206,14 @@ public class GroupCaseStudyExcel {
                 List<ParameterChain> chainsWithoutMe = new ArrayList<>(chains);
                 chainsWithoutMe.remove(chain);
 
-                List<Combination> obtainCombinationsWithoutMe = obtainCombinations(chainsWithoutMe);
+                List<Combination> obtainCombinationsWithoutMe = obtainAllTwoPartitions(chainsWithoutMe);
 
                 for (Combination combinationWithoutMe : obtainCombinationsWithoutMe) {
 
-                    List<ParameterChain> rowWithMe = combinationWithoutMe.row.stream().collect(Collectors.toList());
+                    Set<ParameterChain> rowWithMe = combinationWithoutMe.row.stream().collect(Collectors.toSet());
                     rowWithMe.add(chain);
 
-                    List<ParameterChain> columnWithMe = combinationWithoutMe.row.stream().collect(Collectors.toList());
+                    Set<ParameterChain> columnWithMe = combinationWithoutMe.column.stream().collect(Collectors.toSet());
                     columnWithMe.add(chain);
 
                     allCombinations.add(new Combination(combinationWithoutMe.row, columnWithMe));
@@ -1202,12 +1230,37 @@ public class GroupCaseStudyExcel {
 
     public static class Combination implements Comparable<Combination> {
 
-        List<ParameterChain> row;
-        List<ParameterChain> column;
+        Set<ParameterChain> row;
+        Set<ParameterChain> column;
 
         public Combination(List<ParameterChain> row, List<ParameterChain> column) {
-            this.row = row.parallelStream().sorted().collect(Collectors.toList());
-            this.column = column.parallelStream().sorted().collect(Collectors.toList());
+            this.row = row.parallelStream().sorted().collect(Collectors.toSet());
+            this.column = column.parallelStream().sorted().collect(Collectors.toSet());
+
+            if (this.row.size() < this.column.size()) {
+                Set<ParameterChain> aux = this.row;
+                this.row = this.column;
+                this.column = aux;
+            }
+        }
+
+        public Combination(Set<ParameterChain> row, Set<ParameterChain> column) {
+            this.row = row.parallelStream().sorted().collect(Collectors.toSet());
+            this.column = column.parallelStream().sorted().collect(Collectors.toSet());
+
+            if (this.row.size() < this.column.size()) {
+                Set<ParameterChain> aux = this.row;
+                this.row = this.column;
+                this.column = aux;
+            }
+        }
+
+        @Override
+        public String toString() {
+            List<String> rowIDs = row.stream().map(chain -> chain.getParameterName()).sorted().collect(Collectors.toList());
+            List<String> columnIDs = column.stream().map(chain -> chain.getParameterName()).sorted().collect(Collectors.toList());
+            return "[row={" + rowIDs.toString()
+                    + "}, column={" + columnIDs.toString() + "}]";
         }
 
         public boolean isEmpty() {
@@ -1234,8 +1287,25 @@ public class GroupCaseStudyExcel {
         }
 
         @Override
+        public int hashCode() {
+            int hash = 7;
+            hash = 13 * hash + Objects.hashCode(this.row.hashCode());
+            hash = 13 * hash + Objects.hashCode(this.column.hashCode());
+            return hash;
+        }
+
+        @Override
         public int compareTo(Combination o) {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            int compareRow = ComparatorOfListsOfChains.compare(this.row, o.row);
+            int compareColumn = ComparatorOfListsOfChains.compare(this.column, o.column);
+
+            if (compareRow == 0 && compareColumn == 0) {
+                return 0;
+            } else if (compareRow == 0) {
+                return compareColumn;
+            } else {
+                return compareRow;
+            }
         }
 
     }

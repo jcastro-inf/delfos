@@ -465,4 +465,19 @@ public class ParameterChain implements Comparable<ParameterChain> {
     public String getParameterName() {
         return leaf.getParameter().getName();
     }
+
+    @Override
+    public int hashCode() {
+        return this.toString().toLowerCase().hashCode();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof ParameterChain) {
+            return this.toString().equalsIgnoreCase(obj.toString());
+        } else {
+            return false;
+        }
+    }
+
 }

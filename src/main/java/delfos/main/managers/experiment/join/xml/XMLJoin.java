@@ -222,7 +222,7 @@ public class XMLJoin extends CaseUseMode {
             ERROR_CODES.CANNOT_WRITE_FILE.exit(ex);
         }
 
-        for (String evaluationMeasure : evaluationMeasuresOrder) {
+        evaluationMeasuresOrder.parallelStream().forEach(evaluationMeasure -> {
             try {
                 GroupCaseStudyExcel.writeEvaluationMeasureSpecificSheet(
                         groupCaseStudyResults,
@@ -230,17 +230,27 @@ public class XMLJoin extends CaseUseMode {
                         techniqueParametersOrder,
                         evaluationMeasure,
                         workbook);
-                if (GroupCaseStudyExcel.isOnlyOneColumn(groupCaseStudyResults)) {
+
+            } catch (WriteException | IOException ex) {
+                ERROR_CODES.CANNOT_WRITE_FILE.exit(ex);
+            }
+        });
+
+        if (GroupCaseStudyExcel.isOnlyOneColumn(groupCaseStudyResults)) {
+            evaluationMeasuresOrder.parallelStream().forEach(evaluationMeasure -> {
+
+                try {
                     GroupCaseStudyExcel.writeEvaluationMeasureParameterCombinationsSheets(
                             groupCaseStudyResults,
                             dataValidationParametersOrder,
                             techniqueParametersOrder,
                             evaluationMeasure,
                             workbook);
+                } catch (WriteException ex) {
+                    ERROR_CODES.CANNOT_WRITE_FILE.exit(ex);
                 }
-            } catch (WriteException | IOException ex) {
-                ERROR_CODES.CANNOT_WRITE_FILE.exit(ex);
-            }
+
+            });
         }
 
         try {
