@@ -914,13 +914,14 @@ public class GroupCaseStudyExcel {
         writeRowAndColumnCombination(techniqueDifferentChains, groupCaseStudys, dataValidationDifferentChains, evaluationMeasure, groupCaseStudyResults, workbook);
     }
 
-    public static void writeMatrixInSheet(WritableWorkbook workbook, String evaluationMeasure, CaseStudyResultMatrix matrix) throws WriteException {
-        writeMatrixInSheet(workbook, evaluationMeasure, matrix, evaluationMeasure);
-    }
+    public static void writeMatrixInSheet(
+            WritableWorkbook workbook,
+            String evaluationMeasure,
+            CaseStudyResultMatrix matrix,
+            String sheetName) throws WriteException {
 
-    public static void writeMatrixInSheet(WritableWorkbook workbook, String evaluationMeasure, CaseStudyResultMatrix matrix, String sheetName) throws WriteException {
-        WritableSheet allCasesAggregateResults = workbook.createSheet(sheetName, workbook.getNumberOfSheets());
-        createLabel(allCasesAggregateResults);
+        WritableSheet sheet = workbook.createSheet(sheetName, workbook.getNumberOfSheets());
+        createLabel(sheet);
 
         {
 
@@ -928,11 +929,11 @@ public class GroupCaseStudyExcel {
             int row = 0;
 
             //Titles ROW
-            addTitleText(allCasesAggregateResults, column, row, evaluationMeasure);
+            addTitleText(sheet, column, row, evaluationMeasure);
             column++;
 
             for (String columnName : matrix.getColumnNames()) {
-                setCellContent(allCasesAggregateResults, column, row, columnName);
+                setCellContent(sheet, column, row, columnName);
                 column++;
             }
 
@@ -942,13 +943,13 @@ public class GroupCaseStudyExcel {
             for (String rowName : matrix.getRowNames()) {
 
                 column = 0;
-                setCellContent(allCasesAggregateResults, column, row, rowName);
+                setCellContent(sheet, column, row, rowName);
                 column++;
                 for (String columnName : matrix.getColumnNames()) {
 
                     if (matrix.containsValue(rowName, columnName)) {
                         Object value = matrix.getValue(rowName, columnName);
-                        setCellContent(allCasesAggregateResults, column, row, value);
+                        setCellContent(sheet, column, row, value);
                     }
                     column++;
                 }
@@ -956,7 +957,7 @@ public class GroupCaseStudyExcel {
             }
         }
 
-        autoSizeColumns(allCasesAggregateResults);
+        autoSizeColumns(sheet);
     }
 
     public static CaseStudyResultMatrix prepareExcelMatrix(List<ParameterChain> rowChains, List<ParameterChain> columnChains, String evaluationMeasure, List<GroupCaseStudyResult> groupCaseStudyResults) {
@@ -1045,7 +1046,7 @@ public class GroupCaseStudyExcel {
 
         CaseStudyResultMatrix matrix = getNumExecutionsMatrix(techniqueDifferentChains, dataValidationDifferentChains, groupCaseStudyResults);
 
-        writeMatrixInSheet(workbook, GroupCaseStudy.NUM_EXECUTIONS.getName(), matrix);
+        writeMatrixInSheet(workbook, GroupCaseStudy.NUM_EXECUTIONS.getName(), matrix, GroupCaseStudy.NUM_EXECUTIONS.getName());
     }
 
     public static CaseStudyResultMatrix getNumExecutionsMatrix(List<ParameterChain> techniqueDifferentChains, List<ParameterChain> dataValidationDifferentChains, List<GroupCaseStudyResult> groupCaseStudyResults) {
@@ -1088,7 +1089,7 @@ public class GroupCaseStudyExcel {
                 .filter(combination -> combination.row.size() + combination.column.size() == differentChains.size())
                 .collect(Collectors.toCollection(TreeSet::new));
 
-        distinctCominations.forEach(combination -> {
+        distinctCominations.parallelStream().forEach(combination -> {
             try {
 
                 String sheetName = evaluationMeasure;
@@ -1161,7 +1162,7 @@ public class GroupCaseStudyExcel {
                 evaluationMeasure,
                 groupCaseStudyResults);
 
-        writeMatrixInSheet(workbook, evaluationMeasure, matrix);
+        writeMatrixInSheet(workbook, evaluationMeasure, matrix, sheetName);
     }
 
     public static final Comparator<Set<ParameterChain>> ComparatorOfListsOfChains = (s1, s2) -> {
