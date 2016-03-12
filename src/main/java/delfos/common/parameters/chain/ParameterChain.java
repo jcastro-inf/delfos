@@ -35,7 +35,7 @@ import java.util.stream.Collectors;
  * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  */
-public class ParameterChain {
+public class ParameterChain implements Comparable<ParameterChain> {
 
     /**
      * Returns the parameter chains that are common to at least two
@@ -456,4 +456,28 @@ public class ParameterChain {
             return false;
         }
     }
+
+    @Override
+    public int compareTo(ParameterChain o) {
+        return this.toString().compareToIgnoreCase(o.toString());
+    }
+
+    public String getParameterName() {
+        return leaf.getParameter().getName();
+    }
+
+    @Override
+    public int hashCode() {
+        return this.toString().toLowerCase().hashCode();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof ParameterChain) {
+            return this.toString().equalsIgnoreCase(obj.toString());
+        } else {
+            return false;
+        }
+    }
+
 }
