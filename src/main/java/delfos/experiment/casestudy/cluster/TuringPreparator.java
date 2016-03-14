@@ -60,9 +60,11 @@ public class TuringPreparator implements ExperimentPreparator {
 
     public Random getRandomToShuffleExperiments() {
 
-        String name = ManagementFactory.getRuntimeMXBean().getName();
+        String runtimeXMLBeanName = ManagementFactory.getRuntimeMXBean().getName();
 
-        int seed = name.hashCode();
+        String hostName = runtimeXMLBeanName.split("@")[1];
+
+        int seed = hostName.hashCode();
 
         Random random = new Random(seed);
 
