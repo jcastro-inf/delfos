@@ -39,11 +39,7 @@ import delfos.rs.persistence.FilePersistence;
 import delfos.rs.recommendation.Recommendation;
 import java.io.File;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.Semaphore;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.apache.commons.collections4.map.LRUMap;
 
 /**
  * Recommender system that stores the recommendation model generated in a common
@@ -72,8 +68,7 @@ public class RecommenderSystem_cacheRecommendationModel<RecommendationModel> ext
 
     private static final Object generalExMut = "GeneralExMut";
 
-    private static final Map<DatasetLoader, Semaphore> datasetLoaderExMuts = new HashMap<>();
-    private static final Map<DatasetLoader, Map<RecommenderSystem, Object>> cacheOfRecommendationModels = new HashMap<>();
+    private static final LRUMap<String, Object> cacheOfRecommendationModels = new LRUMap<>(100);
 
     public RecommenderSystem_cacheRecommendationModel() {
         super();
@@ -95,71 +90,77 @@ public class RecommenderSystem_cacheRecommendationModel<RecommendationModel> ext
     public RecommendationModel buildRecommendationModel(DatasetLoader<? extends Rating> datasetLoader) throws CannotLoadRatingsDataset, CannotLoadContentDataset, CannotLoadUsersDataset {
 
         final RecommenderSystem<Object> recommenderSystem = getRecommenderSystem();
-        RecommendationModel model;
-        Semaphore exMutThisDatasetLoader;
-        try {
-            synchronized (generalExMut) {
-                if (!datasetLoaderExMuts.containsKey(datasetLoader)) {
-                    datasetLoaderExMuts.put(datasetLoader, new Semaphore(1));
-                }
+        String recommendationModelKey = "dl=" + datasetLoader.hashCode() + "_rs=" + recommenderSystem.hashCode();
 
-                if (!cacheOfRecommendationModels.containsKey(datasetLoader)) {
-                    cacheOfRecommendationModels.put(datasetLoader, new HashMap<>());
-                }
+        recommendationModelKey = recommendationModelKey + "";
 
-                if (cacheOfRecommendationModels.get(datasetLoader).containsKey(recommenderSystem)) {
-                    RecommendationModel recommendationModel = (RecommendationModel) cacheOfRecommendationModels
-                            .get(datasetLoader)
-                            .get(recommenderSystem);
-                    return recommendationModel;
-                }
+        boolean buildModel = false;
 
-                exMutThisDatasetLoader = datasetLoaderExMuts.get(datasetLoader);
-                exMutThisDatasetLoader.acquire();
+        synchronized (generalExMut) {
+            if (cacheOfRecommendationModels.containsKey(recommendationModelKey)
+                    && cacheOfRecommendationModels.get(recommendationModelKey) != null) {
 
+                return (RecommendationModel) cacheOfRecommendationModels.get(recommendationModelKey);
             }
-
-            int ratingsDatasetHashCode = datasetLoader.getRatingsDataset().hashCode();
-            String datasetLoaderAlias = datasetLoader.getAlias();
-
-            String rsNameIdentifier = "_rsHash=" + recommenderSystem.hashCode();
-            String datasetLoaderString = "_datasetLoader=" + datasetLoaderAlias + "_DLHash=" + ratingsDatasetHashCode;
-
-            FilePersistence filePersistenceWithHashSuffix = new FilePersistence(
-                    recommenderSystem.getName(),
-                    extension,
-                    (File) getParameterValue(RECOMMENDATION_MODELS_DIRECTORY))
-                    .copyWithSuffix(rsNameIdentifier)
-                    .copyWithSuffix(datasetLoaderString);
-
-            try {
-                RecommendationModel loadedModel = (RecommendationModel) getRecommenderSystem().loadRecommendationModel(
-                        filePersistenceWithHashSuffix,
-                        datasetLoader.getUsersDataset().allIDs(),
-                        datasetLoader.getContentDataset().allIDs());
-                model = loadedModel;
-            } catch (FailureInPersistence ex) {
-                RecommendationModelBuildingProgressListener listener = this::fireBuildingProgressChangedEvent;
-                Global.showMessageTimestamped("Building recommendation model: " + filePersistenceWithHashSuffix.getCompleteFileName() + "\n");
-                getRecommenderSystem().addRecommendationModelBuildingProgressListener(listener);
+            if (!cacheOfRecommendationModels.containsKey(recommendationModelKey)) {
+                cacheOfRecommendationModels.put(recommendationModelKey, null);
+                buildModel = true;
+            } else {
                 try {
-                    RecommendationModel computedModel = (RecommendationModel) getRecommenderSystem().buildRecommendationModel(datasetLoader);
-                    model = computedModel;
-                    getRecommenderSystem().saveRecommendationModel(filePersistenceWithHashSuffix, computedModel);
-                } catch (FailureInPersistence ex1) {
-                    ERROR_CODES.FAILURE_IN_PERSISTENCE.exit(ex1);
-                    model = null;
+                    generalExMut.wait();
+                } catch (InterruptedException ex) {
+
                 }
-                getRecommenderSystem().removeRecommendationModelBuildingProgressListener(listener);
             }
 
-            cacheOfRecommendationModels.get(datasetLoader).put(recommenderSystem, model);
-            exMutThisDatasetLoader.release();
-        } catch (InterruptedException ex) {
-            Logger.getLogger(RecommenderSystem_cacheRecommendationModel.class.getName()).log(Level.SEVERE, null, ex);
-            model = buildRecommendationModel(datasetLoader);
         }
-        return (RecommendationModel) model;
+
+        if (buildModel) {
+            RecommendationModel recommendationModel = actuallyBuildRecommendationModel(datasetLoader, recommenderSystem);
+
+            synchronized (generalExMut) {
+                cacheOfRecommendationModels.put(recommendationModelKey, recommendationModel);
+                generalExMut.notifyAll();
+            }
+            return recommendationModel;
+        } else {
+            return buildRecommendationModel(datasetLoader);
+        }
+    }
+
+    public RecommendationModel actuallyBuildRecommendationModel(DatasetLoader<? extends Rating> datasetLoader, final RecommenderSystem<Object> recommenderSystem) throws CannotLoadRatingsDataset, RuntimeException {
+        RecommendationModel model;
+        int ratingsDatasetHashCode = datasetLoader.getRatingsDataset().hashCode();
+        String datasetLoaderAlias = datasetLoader.getAlias();
+        String rsNameIdentifier = "_rsHash=" + recommenderSystem.hashCode();
+        String datasetLoaderString = "_datasetLoader=" + datasetLoaderAlias + "_DLHash=" + ratingsDatasetHashCode;
+        FilePersistence filePersistenceWithHashSuffix = new FilePersistence(
+                recommenderSystem.getName(),
+                extension,
+                (File) getParameterValue(RECOMMENDATION_MODELS_DIRECTORY))
+                .copyWithSuffix(rsNameIdentifier)
+                .copyWithSuffix(datasetLoaderString);
+        try {
+            RecommendationModel loadedModel = (RecommendationModel) getRecommenderSystem().loadRecommendationModel(
+                    filePersistenceWithHashSuffix,
+                    datasetLoader.getUsersDataset().allIDs(),
+                    datasetLoader.getContentDataset().allIDs());
+            model = loadedModel;
+        } catch (FailureInPersistence ex) {
+            RecommendationModelBuildingProgressListener listener = this::fireBuildingProgressChangedEvent;
+            Global.showMessageTimestamped("Building recommendation model: " + filePersistenceWithHashSuffix.getCompleteFileName() + "\n");
+            getRecommenderSystem().addRecommendationModelBuildingProgressListener(listener);
+            try {
+                RecommendationModel computedModel = (RecommendationModel) getRecommenderSystem().buildRecommendationModel(datasetLoader);
+                model = computedModel;
+                getRecommenderSystem().saveRecommendationModel(filePersistenceWithHashSuffix, computedModel);
+            } catch (FailureInPersistence ex1) {
+                ERROR_CODES.FAILURE_IN_PERSISTENCE.exit(ex1);
+                model = null;
+            }
+            getRecommenderSystem().removeRecommendationModelBuildingProgressListener(listener);
+        }
+        return model;
     }
 
     @Override
