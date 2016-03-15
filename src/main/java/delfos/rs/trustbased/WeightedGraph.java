@@ -16,11 +16,16 @@
  */
 package delfos.rs.trustbased;
 
+import dnl.utils.text.table.TextTable;
+import java.io.PrintStream;
 import java.io.Serializable;
+import java.text.DecimalFormat;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
+import org.apache.commons.io.output.WriterOutputStream;
 
 /**
  *
@@ -100,4 +105,38 @@ public interface WeightedGraph<Node> extends Serializable {
         return Collections.unmodifiableList(nodesSorted);
     }
 
+    public default void printTable(PrintStream outputStream) {
+        List<String> columnNames = new ArrayList<>();
+        columnNames.add("node\\node");
+        final List<Node> sortedNodes = this.allNodes().stream().sorted().collect(Collectors.toList());
+
+        Object[][] data = new Object[sortedNodes.size()][sortedNodes.size() + 1];
+
+        columnNames.addAll(sortedNodes.stream().map(node -> node.toString()).collect(Collectors.toList()));
+
+        DecimalFormat format = new DecimalFormat("0.0000");
+
+        for (int node1index = 0; node1index < sortedNodes.size(); node1index++) {
+            Node node1 = sortedNodes.get(node1index);
+            int row = node1index;
+
+            data[row][0] = node1.toString();
+
+            for (int node2index = 0; node2index < sortedNodes.size(); node2index++) {
+                Node node2 = sortedNodes.get(node2index);
+                int column = node2index + 1;
+
+                double connection = this.connection(node1, node2).doubleValue();
+                data[row][column] = format.format(connection);
+            }
+        }
+
+        TextTable textTable = new TextTable(columnNames.toArray(new String[0]), data);
+
+        textTable.printTable(outputStream, 0);
+    }
+
+    public default void printTable(WriterOutputStream outputStream) {
+        printTable(new PrintStream(outputStream));
+    }
 }
