@@ -17,6 +17,7 @@
 package delfos.rs.trustbased;
 
 import dnl.utils.text.table.TextTable;
+import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.io.Serializable;
 import java.text.DecimalFormat;
@@ -24,6 +25,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 import org.apache.commons.io.output.WriterOutputStream;
 
@@ -100,22 +102,42 @@ public interface WeightedGraph<Node> extends Serializable {
         return matrix;
     }
 
+    public default double[][] asMatrixUnboxed() {
+
+        final List<Node> nodesSorted = nodesSortingForMatrix();
+
+        double[][] matrix = new double[nodesSorted.size()][nodesSorted.size()];
+
+        for (int indexRow = 0; indexRow < nodesSorted.size(); indexRow++) {
+            Node node = nodesSorted.get(indexRow);
+
+            for (int indexColumn = 0; indexColumn < nodesSorted.size(); indexColumn++) {
+                Node node2 = nodesSorted.get(indexColumn);
+                double value = connection(node, node2).doubleValue();
+                matrix[indexRow][indexColumn] = value;
+            }
+        }
+
+        return matrix;
+    }
+
     public default List<Node> nodesSortingForMatrix() {
         List<Node> nodesSorted = allNodes().stream().sorted().collect(Collectors.toList());
         return Collections.unmodifiableList(nodesSorted);
     }
 
     public default void printTable(PrintStream outputStream) {
+        TextTable textTable = getTextTable();
+        textTable.printTable(outputStream, 0);
+    }
+
+    public default TextTable getTextTable() {
         List<String> columnNames = new ArrayList<>();
         columnNames.add("node\\node");
         final List<Node> sortedNodes = this.allNodes().stream().sorted().collect(Collectors.toList());
-
         Object[][] data = new Object[sortedNodes.size()][sortedNodes.size() + 1];
-
         columnNames.addAll(sortedNodes.stream().map(node -> node.toString()).collect(Collectors.toList()));
-
         DecimalFormat format = new DecimalFormat("0.0000");
-
         for (int node1index = 0; node1index < sortedNodes.size(); node1index++) {
             Node node1 = sortedNodes.get(node1index);
             int row = node1index;
@@ -130,13 +152,65 @@ public interface WeightedGraph<Node> extends Serializable {
                 data[row][column] = format.format(connection);
             }
         }
-
         TextTable textTable = new TextTable(columnNames.toArray(new String[0]), data);
+        return textTable;
+    }
 
-        textTable.printTable(outputStream, 0);
+    public default TextTable getTextTable(Set<Node> nodes) {
+        validateParameters(nodes);
+
+        List<String> columnNames = new ArrayList<>();
+        columnNames.add("node\\node");
+        final List<Node> sortedNodes = this.allNodes().stream().sorted().filter(node -> nodes.contains(node)).collect(Collectors.toList());
+        Object[][] data = new Object[sortedNodes.size()][sortedNodes.size() + 1];
+        columnNames.addAll(sortedNodes.stream().map(node -> node.toString()).collect(Collectors.toList()));
+        DecimalFormat format = new DecimalFormat("0.0000");
+        for (int node1index = 0; node1index < sortedNodes.size(); node1index++) {
+            Node node1 = sortedNodes.get(node1index);
+            int row = node1index;
+
+            data[row][0] = node1.toString();
+
+            for (int node2index = 0; node2index < sortedNodes.size(); node2index++) {
+                Node node2 = sortedNodes.get(node2index);
+                int column = node2index + 1;
+
+                double connection = this.connection(node1, node2).doubleValue();
+                data[row][column] = format.format(connection);
+            }
+        }
+        TextTable textTable = new TextTable(columnNames.toArray(new String[0]), data);
+        return textTable;
+    }
+
+    default void validateParameters(Set<Node> nodes) throws IllegalArgumentException {
+        boolean allMatch = nodes.parallelStream().allMatch(node -> this.allNodes().contains(node));
+        if (!allMatch) {
+            throw new IllegalArgumentException("Specified nodes are not present in the weighted graph");
+        }
     }
 
     public default void printTable(WriterOutputStream outputStream) {
         printTable(new PrintStream(outputStream));
+    }
+
+    public default String toStringTable() {
+        TextTable textTable = getTextTable();
+
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        PrintStream recordingStream = new PrintStream(baos);
+        textTable.printTable(recordingStream, 0);
+
+        return baos.toString();
+    }
+
+    public default String toStringTable(Set<Node> nodes) {
+        TextTable textTable = getTextTable(nodes);
+
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        PrintStream recordingStream = new PrintStream(baos);
+        textTable.printTable(recordingStream, 0);
+
+        return baos.toString();
     }
 }
