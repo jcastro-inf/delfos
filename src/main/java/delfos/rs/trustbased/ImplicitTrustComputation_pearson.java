@@ -53,7 +53,7 @@ public class ImplicitTrustComputation_pearson {
      * @param users Usuarios para los que se calcula la red de confianza.
      * @return
      */
-    public WeightedGraphAdapter<Integer> computeTrustValues(RatingsDataset<? extends Rating> ratingsDataset, Collection<Integer> users) {
+    public WeightedGraph<Integer> computeTrustValues(RatingsDataset<? extends Rating> ratingsDataset, Collection<Integer> users) {
         boolean printPartialResults;
 
         printPartialResults = ratingsDataset.allRatedItems().size() <= 100 && ratingsDataset.allUsers().size() <= 28;
@@ -118,6 +118,6 @@ public class ImplicitTrustComputation_pearson {
             DatasetPrinterDeprecated.printCompactUserUserTable(pearson, users);
         }
 
-        return new WeightedGraphAdapter<Integer>(pearson);
+        return new WeightedGraph<Integer>(pearson);
     }
 }

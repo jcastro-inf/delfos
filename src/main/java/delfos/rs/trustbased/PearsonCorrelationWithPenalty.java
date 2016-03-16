@@ -57,7 +57,7 @@ public class PearsonCorrelationWithPenalty extends WeightedGraphCalculation<Inte
     }
 
     @Override
-    public WeightedGraphAdapter<Integer> computeTrustValues(DatasetLoader<? extends Rating> datasetLoader, Collection<Integer> users) throws CannotLoadRatingsDataset {
+    public WeightedGraph<Integer> computeTrustValues(DatasetLoader<? extends Rating> datasetLoader, Collection<Integer> users) throws CannotLoadRatingsDataset {
         boolean printPartialResults;
 
         final RatingsDataset<? extends Rating> ratingsDataset = datasetLoader.getRatingsDataset();
@@ -106,7 +106,7 @@ public class PearsonCorrelationWithPenalty extends WeightedGraphCalculation<Inte
                 thisLoop++;
             }
         }
-        WeightedGraphAdapter<Integer> pccGraph = new WeightedGraphAdapter<Integer>(pccMatrix);
+        WeightedGraph<Integer> pccGraph = new WeightedGraph<Integer>(pccMatrix);
 
         return pccGraph;
     }

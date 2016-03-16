@@ -43,7 +43,7 @@ public abstract class WeightedGraphCalculation<Node> extends AlgorithmWithExecut
      * @param users Usuarios para los que se calcula la red de confianza.
      * @return
      */
-    public abstract WeightedGraphAdapter<Node> computeTrustValues(
+    public abstract WeightedGraph<Node> computeTrustValues(
             DatasetLoader<? extends Rating> datasetLoader,
             Collection<Integer> users) throws CannotLoadRatingsDataset;
 
@@ -55,7 +55,7 @@ public abstract class WeightedGraphCalculation<Node> extends AlgorithmWithExecut
      * @return
      * @throws CannotLoadRatingsDataset
      */
-    public WeightedGraphAdapter<Node> computeTrustValues(DatasetLoader<? extends Rating> datasetLoader) throws CannotLoadRatingsDataset {
+    public WeightedGraph<Node> computeTrustValues(DatasetLoader<? extends Rating> datasetLoader) throws CannotLoadRatingsDataset {
         return computeTrustValues(datasetLoader, datasetLoader.getRatingsDataset().allUsers());
     }
 

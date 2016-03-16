@@ -21,7 +21,7 @@ import java.util.List;
 import delfos.common.parameters.ParameterOwnerType;
 import delfos.group.grs.cww.centrality.CentralityConceptDefinition;
 import delfos.rs.trustbased.PathBetweenNodes;
-import delfos.rs.trustbased.WeightedGraphAdapter;
+import delfos.rs.trustbased.WeightedGraph;
 
 /**
  *
@@ -35,7 +35,7 @@ public class BetweennessCentrality extends CentralityConceptDefinition<Integer> 
     }
 
     @Override
-    public double centrality(WeightedGraphAdapter<Integer> weightedGraph, Integer node) {
+    public double centrality(WeightedGraph<Integer> weightedGraph, Integer node) {
         List<PathBetweenNodes<Integer>> allShortestPaths = new ArrayList<PathBetweenNodes<Integer>>();
         ArrayList<Integer> allNodesButThis = new ArrayList<Integer>(weightedGraph.allNodes());
         allNodesButThis.remove(node);

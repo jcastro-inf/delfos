@@ -27,7 +27,7 @@ import delfos.dataset.basic.rating.RatingsDataset;
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.util.DatasetPrinterDeprecated;
 import delfos.ERROR_CODES;
-import delfos.rs.trustbased.WeightedGraphAdapter;
+import delfos.rs.trustbased.WeightedGraph;
 import delfos.rs.trustbased.WeightedGraphCalculation;
 import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
 import delfos.common.exceptions.dataset.items.ItemNotFound;
@@ -60,7 +60,7 @@ public class ShambourLu_ItemBasedImplicitTrustComputation extends WeightedGraphC
      * @return
      */
     @Override
-    public WeightedGraphAdapter<Integer> computeTrustValues(DatasetLoader<? extends Rating> datasetLoader, Collection<Integer> items) throws CannotLoadRatingsDataset {
+    public WeightedGraph<Integer> computeTrustValues(DatasetLoader<? extends Rating> datasetLoader, Collection<Integer> items) throws CannotLoadRatingsDataset {
         boolean printPartialResults;
 
         final RatingsDataset<? extends Rating> ratingsDataset = datasetLoader.getRatingsDataset();
@@ -217,6 +217,6 @@ public class ShambourLu_ItemBasedImplicitTrustComputation extends WeightedGraphC
             DatasetPrinterDeprecated.printCompactUserUserTable(itemBasedTrust, items);
         }
 
-        return new WeightedGraphAdapter<Integer>(itemBasedTrust);
+        return new WeightedGraph<Integer>(itemBasedTrust);
     }
 }

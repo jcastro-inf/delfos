@@ -4,7 +4,7 @@ import delfos.group.grs.cww.centrality.definitions.ClosenessCentrality;
 import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 import delfos.group.grs.cww.WeightedGraphMOCK;
-import delfos.rs.trustbased.WeightedGraphAdapter;
+import delfos.rs.trustbased.WeightedGraph;
 
 /**
  *
@@ -18,7 +18,7 @@ public class ClosenessCentralityTest {
     @Test
     public void testCentralityOfUser() {
 
-        WeightedGraphAdapter<Integer> weightedGraph = new WeightedGraphMOCK();
+        WeightedGraph<Integer> weightedGraph = new WeightedGraphMOCK();
 
         ClosenessCentrality instance = new ClosenessCentrality();
 

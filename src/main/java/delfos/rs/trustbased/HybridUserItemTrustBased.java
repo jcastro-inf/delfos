@@ -156,7 +156,7 @@ public class HybridUserItemTrustBased extends CollaborativeRecommender<HybridUse
                     event.getRemainingTime());
         });
 
-        WeightedGraphAdapter<Integer> usersTrust = implicitTrustComputation.computeTrustValues(datasetLoader, datasetLoader.getRatingsDataset().allUsers());
+        WeightedGraph<Integer> usersTrust = implicitTrustComputation.computeTrustValues(datasetLoader, datasetLoader.getRatingsDataset().allUsers());
 
         RatingsDataset<? extends Rating> ratingsDataset = datasetLoader.getRatingsDataset();
 
@@ -263,7 +263,7 @@ public class HybridUserItemTrustBased extends CollaborativeRecommender<HybridUse
             HybridUserItemTrustBased.this.fireBuildingProgressChangedEvent(event.getTask(), event.getPercent(), event.getRemainingTime());
         });
 
-        WeightedGraphAdapter<Integer> itemBasedTrust = implicitTrustComputation.computeTrustValues(datasetLoader, datasetLoader.getRatingsDataset().allRatedItems());
+        WeightedGraph<Integer> itemBasedTrust = implicitTrustComputation.computeTrustValues(datasetLoader, datasetLoader.getRatingsDataset().allRatedItems());
         RatingsDataset<? extends Rating> ratingsDataset = datasetLoader.getRatingsDataset();
 
         boolean printPartialResults;

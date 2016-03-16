@@ -28,7 +28,7 @@ import delfos.dataset.util.DatasetPrinter;
  * @version 15-ene-2014
  * @param <Node>
  */
-public class WeightedGraphNormaliser<Node> extends WeightedGraphAdapter<Node> {
+public class WeightedGraphNormaliser<Node> extends WeightedGraph<Node> {
 
     private static final long serialVersionUID = 1L;
 
@@ -84,7 +84,7 @@ public class WeightedGraphNormaliser<Node> extends WeightedGraphAdapter<Node> {
             }
             this.connections.put(nodeSource, thisNodeConnections);
         }
-        WeightedGraphAdapter<Node> normalisedGraph = new WeightedGraphAdapter<Node>(connections);
+        WeightedGraph<Node> normalisedGraph = new WeightedGraph<Node>(connections);
 
         if (Global.isVerboseAnnoying()) {
             String printNormalisedGraph = DatasetPrinter.printWeightedGraph(normalisedGraph);

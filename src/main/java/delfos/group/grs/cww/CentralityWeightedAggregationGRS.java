@@ -48,7 +48,7 @@ import delfos.rs.RecommenderSystem;
 import delfos.rs.collaborativefiltering.knn.memorybased.nwr.KnnMemoryBasedNWR;
 import delfos.rs.recommendation.Recommendation;
 import delfos.rs.trustbased.StrongTermOverConnections;
-import delfos.rs.trustbased.WeightedGraphAdapter;
+import delfos.rs.trustbased.WeightedGraph;
 import delfos.rs.trustbased.WeightedGraphCalculation;
 import delfos.rs.trustbased.WeightedGraphNormaliser;
 import delfos.rs.trustbased.implicittrustcomputation.ShambourLu_UserBasedImplicitTrustComputation;
@@ -222,7 +222,7 @@ public class CentralityWeightedAggregationGRS extends GroupRecommenderSystemAdap
 
     public Map<Integer, Number> getGroupRatings(DatasetLoader<? extends Rating> datasetLoader, GroupOfUsers groupOfUsers, WeightedGraphCalculation userTrustGenerator) throws UserNotFound, CannotLoadRatingsDataset {
         // Generate group social network.
-        WeightedGraphAdapter<Integer> userTrust = userTrustGenerator.computeTrustValues(datasetLoader, groupOfUsers.getIdMembers());
+        WeightedGraph<Integer> userTrust = userTrustGenerator.computeTrustValues(datasetLoader, groupOfUsers.getIdMembers());
 
         if (Global.isVerboseAnnoying()) {
             DatasetPrinterDeprecated.printWeightedGraph(userTrust);

@@ -19,7 +19,7 @@ package delfos.group.groupsofusers.measuresovergroups;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.rs.trustbased.implicittrustcomputation.ShambourLu_UserBasedImplicitTrustComputation;
-import delfos.rs.trustbased.WeightedGraphAdapter;
+import delfos.rs.trustbased.WeightedGraph;
 import delfos.rs.trustbased.WeightedGraphCalculation;
 import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
 import delfos.common.parameters.Parameter;
@@ -64,7 +64,7 @@ public class MaximumDistanceInGraph extends GroupMeasureAdapter {
     public double getMeasure(DatasetLoader<? extends Rating> datasetLoader, GroupOfUsers group) throws CannotLoadRatingsDataset {
 
 
-        WeightedGraphAdapter<Integer> trustNetwork = getWeightedGraphCalculation().computeTrustValues(datasetLoader, group.getIdMembers());
+        WeightedGraph<Integer> trustNetwork = getWeightedGraphCalculation().computeTrustValues(datasetLoader, group.getIdMembers());
 
         double maxDistance = 0;
 

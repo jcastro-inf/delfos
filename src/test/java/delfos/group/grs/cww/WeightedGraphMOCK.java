@@ -1,14 +1,14 @@
 package delfos.group.grs.cww;
 
+import delfos.rs.trustbased.WeightedGraph;
 import java.util.TreeMap;
-import delfos.rs.trustbased.WeightedGraphAdapter;
 
 /**
  *
  * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  */
-public class WeightedGraphMOCK extends WeightedGraphAdapter<Integer> {
+public class WeightedGraphMOCK extends WeightedGraph<Integer> {
 
     public WeightedGraphMOCK() {
         super();
@@ -24,11 +24,11 @@ public class WeightedGraphMOCK extends WeightedGraphAdapter<Integer> {
     private void addNode(int node1, int node2, double weight) {
 
         if (!connections.containsKey(node1)) {
-            connections.put(node1, new TreeMap<Integer, Number>());
+            connections.put(node1, new TreeMap<>());
             allNodes.add(node1);
         }
         if (!connections.containsKey(node2)) {
-            connections.put(node2, new TreeMap<Integer, Number>());
+            connections.put(node2, new TreeMap<>());
             allNodes.add(node2);
         }
 

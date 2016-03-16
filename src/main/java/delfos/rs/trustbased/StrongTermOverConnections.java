@@ -29,7 +29,7 @@ import delfos.dataset.util.DatasetPrinter;
  * @version 15-ene-2014
  * @param <Node>
  */
-public class StrongTermOverConnections<Node> extends WeightedGraphAdapter<Node> {
+public class StrongTermOverConnections<Node> extends WeightedGraph<Node> {
 
     private static final long serialVersionUID = 1L;
 

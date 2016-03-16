@@ -27,7 +27,7 @@ import delfos.dataset.basic.rating.RatingsDataset;
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.util.DatasetPrinterDeprecated;
 import delfos.ERROR_CODES;
-import delfos.rs.trustbased.WeightedGraphAdapter;
+import delfos.rs.trustbased.WeightedGraph;
 import delfos.rs.trustbased.WeightedGraphCalculation;
 import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
 import delfos.common.exceptions.dataset.users.UserNotFound;
@@ -85,7 +85,7 @@ public class ShambourLu_UserBasedImplicitTrustComputation extends WeightedGraphC
      * @return
      */
     @Override
-    public WeightedGraphAdapter<Integer> computeTrustValues(DatasetLoader<? extends Rating> datasetLoader, Collection<Integer> users) throws CannotLoadRatingsDataset {
+    public WeightedGraph<Integer> computeTrustValues(DatasetLoader<? extends Rating> datasetLoader, Collection<Integer> users) throws CannotLoadRatingsDataset {
         boolean printPartialResults;
 
         final RatingsDataset<? extends Rating> ratingsDataset = datasetLoader.getRatingsDataset();
@@ -251,7 +251,7 @@ public class ShambourLu_UserBasedImplicitTrustComputation extends WeightedGraphC
         }
 
         if (propagate == false) {
-            return new WeightedGraphAdapter<Integer>(usersTrust);
+            return new WeightedGraph<Integer>(usersTrust);
         }
 
         fireProgressChanged("Trust propagation", 0, -1);
@@ -349,6 +349,6 @@ public class ShambourLu_UserBasedImplicitTrustComputation extends WeightedGraphC
         }
 
         fireProgressChanged("Finished trust calculation", 100, -1);
-        return new WeightedGraphAdapter<Integer>(usersTrust);
+        return new WeightedGraph<Integer>(usersTrust);
     }
 }

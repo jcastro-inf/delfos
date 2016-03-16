@@ -26,7 +26,7 @@ import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.util.DatasetPrinterDeprecated;
 import delfos.group.groupsofusers.GroupOfUsers;
-import delfos.rs.trustbased.WeightedGraphAdapter;
+import delfos.rs.trustbased.WeightedGraph;
 import delfos.rs.trustbased.WeightedGraphCalculation;
 import delfos.rs.trustbased.implicittrustcomputation.ShambourLu_UserBasedImplicitTrustComputation;
 
@@ -114,7 +114,7 @@ public class FuzzyCliqueMeasure extends GroupMeasureAdapter {
     public double getMeasure(DatasetLoader<? extends Rating> datasetLoader, GroupOfUsers group) throws CannotLoadRatingsDataset {
         checkRestrictions();
 
-        WeightedGraphAdapter<Integer> trustNetwork = getWeightedGraphCalculation().computeTrustValues(datasetLoader);
+        WeightedGraph<Integer> trustNetwork = getWeightedGraphCalculation().computeTrustValues(datasetLoader);
 
         if (Global.isVerboseAnnoying()) {
             DatasetPrinterDeprecated.printWeightedGraph(trustNetwork);

@@ -18,7 +18,7 @@ package delfos.group.grs.cww.centrality.definitions;
 
 import delfos.common.parameters.ParameterOwnerType;
 import delfos.group.grs.cww.centrality.CentralityConceptDefinition;
-import delfos.rs.trustbased.WeightedGraphAdapter;
+import delfos.rs.trustbased.WeightedGraph;
 
 /**
  *
@@ -32,7 +32,7 @@ public class AritmethicMeanConnectionWeightCentrality extends CentralityConceptD
     }
 
     @Override
-    public double centrality(WeightedGraphAdapter<Integer> weightedGraph, Integer node) {
+    public double centrality(WeightedGraph<Integer> weightedGraph, Integer node) {
 
         double centrality = 0;
         int n = 0;

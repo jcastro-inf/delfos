@@ -45,7 +45,7 @@ public class JaccardGraph extends WeightedGraphCalculation<Integer> {
     }
 
     @Override
-    public WeightedGraphAdapter<Integer> computeTrustValues(DatasetLoader<? extends Rating> datasetLoader, Collection<Integer> users) throws CannotLoadRatingsDataset {
+    public WeightedGraph<Integer> computeTrustValues(DatasetLoader<? extends Rating> datasetLoader, Collection<Integer> users) throws CannotLoadRatingsDataset {
         boolean printPartialResults;
 
         final RatingsDataset<? extends Rating> ratingsDataset = datasetLoader.getRatingsDataset();
@@ -96,7 +96,7 @@ public class JaccardGraph extends WeightedGraphCalculation<Integer> {
                 thisLoop++;
             }
         }
-        WeightedGraphAdapter<Integer> jaccardGraph = new WeightedGraphAdapter<Integer>(UJaccard);
+        WeightedGraph<Integer> jaccardGraph = new WeightedGraph<Integer>(UJaccard);
         if (printPartialResults) {
             DatasetPrinterDeprecated.printWeightedGraph(jaccardGraph);
         }

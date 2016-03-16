@@ -58,7 +58,7 @@ public class FixedGraph<Node> extends WeightedGraphCalculation<Node> {
      * Nombre del fichero en el que se guarda/recupera el grafo calculado.
      */
     public static final Parameter FILE_NAME = new Parameter("fileName", new StringParameter("weightedGraph.graph"));
-    private final Map<DatasetLoader, WeightedGraphAdapter<Node>> models = Collections.synchronizedMap(new TreeMap<DatasetLoader, WeightedGraphAdapter<Node>>());
+    private final Map<DatasetLoader, WeightedGraph<Node>> models = Collections.synchronizedMap(new TreeMap<DatasetLoader, WeightedGraph<Node>>());
 
     public FixedGraph() {
         super();
@@ -92,7 +92,7 @@ public class FixedGraph<Node> extends WeightedGraphCalculation<Node> {
     }
 
     @Override
-    public WeightedGraphAdapter<Node> computeTrustValues(DatasetLoader<? extends Rating> datasetLoader, Collection<Integer> users) throws CannotLoadRatingsDataset {
+    public WeightedGraph<Node> computeTrustValues(DatasetLoader<? extends Rating> datasetLoader, Collection<Integer> users) throws CannotLoadRatingsDataset {
         synchronized (models) {
             if (!models.containsKey(datasetLoader)) {
 
@@ -101,12 +101,12 @@ public class FixedGraph<Node> extends WeightedGraphCalculation<Node> {
                 };
 
                 try {
-                    WeightedGraphAdapter<Node> weightedGraph = loadGraph(getFileName());
+                    WeightedGraph<Node> weightedGraph = loadGraph(getFileName());
                     models.put(datasetLoader, weightedGraph);
                 } catch (FailureInPersistence ex) {
                     Global.showInfoMessage(new Date().toString() + ": Building graph.\n");
                     getWeightedGraphCalculation().addProgressListener(listener);
-                    WeightedGraphAdapter<Node> weightedGraph = getWeightedGraphCalculation().computeTrustValues(datasetLoader);
+                    WeightedGraph<Node> weightedGraph = getWeightedGraphCalculation().computeTrustValues(datasetLoader);
                     getWeightedGraphCalculation().removeProgressListener(listener);
                     models.put(datasetLoader, weightedGraph);
                     Global.showInfoMessage(new Date().toString() + ": Graph built.\n");
@@ -122,7 +122,7 @@ public class FixedGraph<Node> extends WeightedGraphCalculation<Node> {
         return (WeightedGraphCalculation<Node>) getParameterValue(weightedGraphCalculation);
     }
 
-    private void saveGraph(String fileName, WeightedGraphAdapter<Node> model) {
+    private void saveGraph(String fileName, WeightedGraph<Node> model) {
         try {
             ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(fileName));
             oos.writeObject(model);
@@ -134,9 +134,9 @@ public class FixedGraph<Node> extends WeightedGraphCalculation<Node> {
         }
     }
 
-    private WeightedGraphAdapter<Node> loadGraph(String fileName) throws FailureInPersistence {
+    private WeightedGraph<Node> loadGraph(String fileName) throws FailureInPersistence {
         try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(fileName));) {
-            WeightedGraphAdapter<Node> weightedGraph = (WeightedGraphAdapter<Node>) ois.readObject();
+            WeightedGraph<Node> weightedGraph = (WeightedGraph<Node>) ois.readObject();
             return weightedGraph;
         } catch (Throwable ex) {
             Global.showWarning("The persistence for " + this.getClass() + " couldn't load the graph.");
