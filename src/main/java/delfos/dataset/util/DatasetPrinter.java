@@ -164,44 +164,11 @@ public class DatasetPrinter {
     }
 
     public static <Node> String printWeightedGraph(WeightedGraph<Node> weightedGraph) {
-        return printWeightedGraph(weightedGraph, weightedGraph.allNodes());
+        return weightedGraph.toStringTable();
     }
 
-    public static <Node> String printWeightedGraph(WeightedGraph<Node> weightedGraph, Collection<Node> users) {
-        StringBuilder str = new StringBuilder();
-        //Escribo la cabecera
-        {
-            str.append("|\t|");
-            users.stream().forEach((node) -> {
-                str.append("Node_").append(node.toString()).append("\t|");
-            });
-            str.append("\n");
-
-            str.append("+-------+");
-            users.stream().forEach((_item) -> {
-                str.append("-------+");
-            });
-            str.append("\n");
-        }
-
-        //Escribo cada línea
-        for (Node idUser : users) {
-            str.append("|Node_").append(idUser.toString()).append("\t|");
-            for (Node idUser2 : users) {
-
-                Number value = weightedGraph.connection(idUser, idUser2);
-                str.append("").append(NumberRounder.round(value)).append("\t|");
-            }
-            str.append("\n");
-        }
-
-        //Cierro la tabla
-        str.append("+-------+");
-        users.stream().forEach((_item) -> {
-            str.append("-------+");
-        });
-        str.append("\n");
-        return str.toString();
+    public static <Node> String printWeightedGraph(WeightedGraph<Node> weightedGraph, Collection<Node> nodes) {
+        return weightedGraph.toStringTable(nodes.stream().collect(Collectors.toSet()));
     }
 
     private DatasetPrinter() {
