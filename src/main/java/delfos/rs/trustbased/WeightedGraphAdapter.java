@@ -28,6 +28,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 /**
  * Grafo ponderado.
@@ -73,6 +75,45 @@ public class WeightedGraphAdapter<Node> implements Serializable, WeightedGraph<N
         }).forEach((node1) -> {
             connections.get(node1).keySet().stream().map((node2) -> {
                 Number value = connections.get(node1).get(node2);
+                this.connections.get(node1).put(node2, value);
+                return node2;
+            }).forEach((key2) -> {
+                this.allNodes.add(key2);
+            });
+        });
+    }
+
+    /**
+     * Crea la red de confianza con los valores indicados.
+     *
+     *
+     * @param matrix Connections
+     * @param ordering ordering of both columns and rows of the matrix
+     * @throws IllegalArgumentException Si la estructura de valores de confianza
+     * es nula.
+     */
+    public WeightedGraphAdapter(double[][] matrix, List<Node> ordering) {
+        this();
+
+        Map<Node, Map<Node, Number>> _connections = IntStream.range(0, ordering.size()).boxed().collect(Collectors.toMap(
+                rowOrder -> ordering.get(rowOrder),
+                rowOrder -> {
+                    Map<Node, Number> thisNodeConnections = IntStream.range(0, ordering.size()).boxed().collect(Collectors.toMap(
+                    columnOrder -> ordering.get(columnOrder),
+                    columnOrder -> matrix[rowOrder][columnOrder]));
+
+                    return thisNodeConnections;
+                }));
+
+        _connections.keySet().stream().map((node) -> {
+            this.connections.put(node, new TreeMap<>());
+            return node;
+        }).map((node) -> {
+            allNodes.add(node);
+            return node;
+        }).forEach((node1) -> {
+            _connections.get(node1).keySet().stream().map((node2) -> {
+                Number value = _connections.get(node1).get(node2);
                 this.connections.get(node1).put(node2, value);
                 return node2;
             }).forEach((key2) -> {
@@ -262,6 +303,7 @@ public class WeightedGraphAdapter<Node> implements Serializable, WeightedGraph<N
 
     @Override
     public String toString() {
+
         String printWeightedGraph = DatasetPrinter.printWeightedGraph(this);
         return printWeightedGraph;
     }
