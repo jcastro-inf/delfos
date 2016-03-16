@@ -1,10 +1,9 @@
 package delfos.group.grs.cww.centrality.definitions;
 
-import delfos.group.grs.cww.centrality.definitions.GeometricMeanConnectionWeightCentrality;
-import static org.junit.Assert.assertEquals;
-import org.junit.Test;
 import delfos.group.grs.cww.WeightedGraphMOCK;
 import delfos.rs.trustbased.WeightedGraph;
+import static org.junit.Assert.assertEquals;
+import org.junit.Test;
 
 /**
  *

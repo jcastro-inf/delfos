@@ -60,6 +60,10 @@
             <id>d-maven</id>
             <url>http://d-maven.googlecode.com/svn/trunk/repo</url>
         </repository>
+        <repository>
+            <id>jitpack.io</id>
+            <url>https://jitpack.io</url>
+        </repository>
     </repositories>
 
     <dependencies>
@@ -109,6 +113,11 @@
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-collections4</artifactId>
             <version>4.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.github.kevin-wayne</groupId>
+            <artifactId>algs4</artifactId>
+            <version>master</version>
         </dependency>
     </dependencies>
 

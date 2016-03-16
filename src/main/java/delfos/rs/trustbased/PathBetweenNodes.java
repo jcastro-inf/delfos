@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -65,15 +65,14 @@ public class PathBetweenNodes<Node> implements Comparable<PathBetweenNodes> {
         this.length = _length;
     }
 
+    @Override
     public int compareTo(PathBetweenNodes o) {
         if (this.length == o.length) {
             return 0;
+        } else if (this.length > o.length) {
+            return 1;
         } else {
-            if (this.length > o.length) {
-                return 1;
-            } else {
-                return -1;
-            }
+            return -1;
         }
     }
 

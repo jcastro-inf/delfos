@@ -16,10 +16,12 @@
  */
 package delfos.rs.trustbased;
 
+import com.google.common.util.concurrent.AtomicDouble;
 import delfos.dataset.util.DatasetPrinter;
 import dnl.utils.text.table.TextTable;
-import it.unimi.dsi.fastutil.PriorityQueue;
-import it.unimi.dsi.fastutil.objects.ObjectHeapPriorityQueue;
+import edu.princeton.cs.algs4.AdjMatrixEdgeWeightedDigraph;
+import edu.princeton.cs.algs4.DirectedEdge;
+import edu.princeton.cs.algs4.FloydWarshall;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.io.Serializable;
@@ -31,7 +33,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
-import java.util.TreeSet;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import org.apache.commons.io.output.WriterOutputStream;
@@ -45,13 +46,17 @@ import org.apache.commons.io.output.WriterOutputStream;
 public class WeightedGraph<Node> implements Serializable {
 
     private static final long serialVersionUID = 115L;
-    protected final Map<Node, Map<Node, Number>> connections;
-    protected final Set<Node> allNodes;
+
+    protected final AdjMatrixEdgeWeightedDigraph adjMatrixEdgeWeightedDigraph;
+    protected final Map<Node, Integer> nodesIndex;
+    protected final Map<Integer, Node> nodesByIndex;
+
+    private FloydWarshall floydWarshall = null;
 
     public WeightedGraph() {
-
-        this.allNodes = new TreeSet<>();
-        this.connections = new TreeMap<>();
+        this.nodesIndex = new TreeMap<>();
+        this.nodesByIndex = new TreeMap<>();
+        this.adjMatrixEdgeWeightedDigraph = new AdjMatrixEdgeWeightedDigraph(0);
     }
 
     /**
@@ -64,26 +69,14 @@ public class WeightedGraph<Node> implements Serializable {
      */
     public WeightedGraph(Map<Node, Map<Node, Number>> connections) {
 
-        this();
         if (connections == null) {
             throw new IllegalArgumentException("The trust values structure cannot be null");
         }
 
-        connections.keySet().stream().map((node) -> {
-            this.connections.put(node, new TreeMap<>());
-            return node;
-        }).map((node) -> {
-            allNodes.add(node);
-            return node;
-        }).forEach((node1) -> {
-            connections.get(node1).keySet().stream().map((node2) -> {
-                Number value = connections.get(node1).get(node2);
-                this.connections.get(node1).put(node2, value);
-                return node2;
-            }).forEach((key2) -> {
-                this.allNodes.add(key2);
-            });
-        });
+        nodesIndex = makeIndex(connections);
+        nodesByIndex = makeNodesByIndex(nodesIndex);
+
+        adjMatrixEdgeWeightedDigraph = makeWeightedDiGraph(connections);
     }
 
     /**
@@ -96,89 +89,51 @@ public class WeightedGraph<Node> implements Serializable {
      * es nula.
      */
     public WeightedGraph(double[][] matrix, List<Node> ordering) {
-        this();
 
-        Map<Node, Map<Node, Number>> _connections = IntStream.range(0, ordering.size()).boxed().collect(Collectors.toMap(
-                rowOrder -> ordering.get(rowOrder),
-                rowOrder -> {
-                    Map<Node, Number> thisNodeConnections = IntStream.range(0, ordering.size()).boxed().collect(Collectors.toMap(
-                    columnOrder -> ordering.get(columnOrder),
-                    columnOrder -> matrix[rowOrder][columnOrder]));
+        nodesIndex = makeIndex(ordering);
+        nodesByIndex = makeNodesByIndex(nodesIndex);
 
-                    return thisNodeConnections;
-                }));
+        adjMatrixEdgeWeightedDigraph = makeWeightedDiGraph(ordering, matrix);
+    }
 
-        _connections.keySet().stream().map((node) -> {
-            this.connections.put(node, new TreeMap<>());
-            return node;
-        }).map((node) -> {
-            allNodes.add(node);
-            return node;
-        }).forEach((node1) -> {
-            _connections.get(node1).keySet().stream().map((node2) -> {
-                Number value = _connections.get(node1).get(node2);
-                this.connections.get(node1).put(node2, value);
-                return node2;
-            }).forEach((key2) -> {
-                this.allNodes.add(key2);
+    private AdjMatrixEdgeWeightedDigraph makeWeightedDiGraph(List<Node> ordering, double[][] matrix) {
+        AdjMatrixEdgeWeightedDigraph adjMatrixEdgeWeightedDigraph = new AdjMatrixEdgeWeightedDigraph(nodesIndex.size());
+
+        ordering.stream().forEach(node1 -> {
+            int indexNode1 = nodesIndex.get(node1);
+            ordering.stream().forEach(node2 -> {
+                int indexNode2 = nodesIndex.get(node2);
+                double weight = matrix[indexNode1][indexNode2];
+                adjMatrixEdgeWeightedDigraph.addEdge(new DirectedEdge(indexNode1, indexNode2, weight));
             });
         });
+
+        return adjMatrixEdgeWeightedDigraph;
     }
 
     /**
      * Devuelve la intensidad de la conexión directa entre dos nodos.
      *
-     * @param id1
-     * @param id2
+     * @param node1
+     * @param node2
      * @return
      */
-    public Number connection(Node id1, Node id2) {
-        if (connections.containsKey(id1)) {
-            if (connections.get(id1).containsKey(id2)) {
-                return connections.get(id1).get(id2);
-            } else {
-                return 0;
+    public Number connection(Node node1, Node node2) {
+        int indexNode1 = nodesIndex.get(node1);
+        int indexNode2 = nodesIndex.get(node2);
+
+        AtomicDouble weight = new AtomicDouble(-1);
+
+        adjMatrixEdgeWeightedDigraph.adj(indexNode1).forEach(edge -> {
+            if (edge.to() == indexNode2) {
+                weight.set(edge.weight());
             }
-        } else {
+        });
+
+        if (weight.get() == -1) {
             return 0;
-        }
-    }
-
-    /**
-     * Devuelve la intensidad de la conexión compuesta entre dos nodos.
-     *
-     * @param id1
-     * @param id2
-     * @param k Longitud del camino.
-     * @return
-     */
-    public double composition(Node id1, Node id2, int k) {
-        if (k < 0) {
-            throw new IllegalArgumentException("El número de composiciones no puede ser negativo.");
-        }
-
-        if (k > maxK()) {
-            throw new IllegalArgumentException("El número de composiciones no puede ser mayor que " + maxK() + ", el valor fué " + k);
-        }
-
-        if (k == 0) {
-            Number connection = connection(id1, id2);
-            return connection.doubleValue();
         } else {
-            double maxValue = 0;
-            for (Node nodoIntermedio : allNodes) {
-                if (nodoIntermedio == id1 || nodoIntermedio == id2) {
-                    continue;
-                }
-                double v1 = composition(id1, nodoIntermedio, k - 1);
-                double v2 = composition(nodoIntermedio, id2, k - 1);
-
-                double value = compositionOfConnections(v1, v2);
-                if (value > maxValue) {
-                    maxValue = value;
-                }
-            }
-            return maxValue;
+            return weight.get();
         }
     }
 
@@ -188,7 +143,7 @@ public class WeightedGraph<Node> implements Serializable {
      * @return
      */
     public int maxK() {
-        return connections.size() - 1;
+        return nodesIndex.size() - 1;
     }
 
     /**
@@ -197,16 +152,11 @@ public class WeightedGraph<Node> implements Serializable {
      * @return
      */
     public Collection<Node> allNodes() {
-        return new ArrayList<>(allNodes);
+        return new ArrayList<>(nodesIndex.keySet());
     }
 
-    private double compositionOfConnections(double conn1, double conn2) {
-        return conn1 * conn2;
-
-    }
-
-    public double geodesicDistance(Node n1, Node n2) {
-        return composition(n1, n2, maxK());
+    public double geodesicDistance(Node node1, Node node2) {
+        return shortestPath(node1, node2).getLength();
     }
 
     public double distance(Node n1, Node n2) {
@@ -219,87 +169,45 @@ public class WeightedGraph<Node> implements Serializable {
         }
     }
 
-    public PathBetweenNodes shortestPath(Node n1, Node n2) {
+    public PathBetweenNodes<Node> shortestPath(Node node1, Node node2) {
 
-        if (n1 == n2) {
-            ArrayList<Node> oneNodePath = new ArrayList<>();
-            oneNodePath.add(n1);
-            return new PathBetweenNodes(this, oneNodePath);
-        }
+        int indexNode1 = nodesIndex.get(node1);
+        int indexNode2 = nodesIndex.get(node2);
 
-        PriorityQueue<PathBetweenNodes> priorityList = new ObjectHeapPriorityQueue<>();
-
-        {
-            Set<Node> allButFirst = new TreeSet<>(allNodes);
-            allButFirst.remove(n1);
-            allButFirst = Collections.unmodifiableSet(allButFirst);
-
-            for (Node intermediateNode : allButFirst) {
-
-                List<Node> path = new ArrayList<>();
-                path.add(n1);
-                path.add(intermediateNode);
-                PathBetweenNodes pathBetweenNodes = new PathBetweenNodes(this, path);
-                if (!Double.isInfinite(pathBetweenNodes.getLength())) {
-                    priorityList.enqueue(pathBetweenNodes);
-                }
+        synchronized (this) {
+            if (floydWarshall == null) {
+                floydWarshall = new FloydWarshall(adjMatrixEdgeWeightedDigraph);
             }
         }
 
-        while (true) {
-            PathBetweenNodes firsPath = priorityList.dequeue();
-            if (firsPath.isPathBetween(n1, n2)) {
-                return firsPath;
+        ArrayList<Node> pathNodesIncludingStartAndEnd = new ArrayList<>();
+
+        pathNodesIncludingStartAndEnd.add(node1);
+        if (floydWarshall.hasPath(indexNode1, indexNode2)) {
+            List<DirectedEdge> path = new ArrayList<>();
+            final Iterable<DirectedEdge> edgeIterator = floydWarshall.path(indexNode1, indexNode2);
+
+            for (DirectedEdge edge : edgeIterator) {
+                path.add(edge);
             }
 
-            if (Double.isInfinite(firsPath.getLength())) {
-                return null;
-            }
+            Collections.reverse(path);
 
-            if (firsPath.numJumps() > allNodes.size()) {
-                return null;
-            }
-            for (Node intermediateNode : allNodes) {
-                if (!firsPath.getNodes().contains(intermediateNode)) {
+            path.stream().sequential().map(edge -> edge.to()).forEach(indexNodeIntermediate -> {
+                Node nodeIntermediate = nodesByIndex.get(indexNodeIntermediate);
+                pathNodesIncludingStartAndEnd.add(nodeIntermediate);
+            });
 
-                    List<Node> newPath = new ArrayList<>(firsPath.getNodes());
-                    newPath.add(intermediateNode);
+            return new PathBetweenNodes(this, pathNodesIncludingStartAndEnd);
 
-                    PathBetweenNodes pathBetweenNodes = new PathBetweenNodes(this, newPath);
-                    if (!Double.isInfinite(pathBetweenNodes.getLength())) {
-                        priorityList.enqueue(pathBetweenNodes);
-                    }
-                }
-            }
-
-            if (priorityList.isEmpty()) {
-                break;
-            }
+        } else {
+            return null;
         }
 
-        return null;
     }
 
-    /**
-     * Devuelve la centralidad de un nodo en el grafo, utilizando k conexiones.
-     *
-     * @param node Nodo para el que se calcula la centralidad.
-     * @param k Longitud de los caminos que se considera.
-     * @return Valor de centralidad del nodo.
-     */
-    public double centrality(Node node, int k) {
-
-        double centralityValue = 0;
-        centralityValue = allNodes.stream()
-                .filter((node2) -> !(node.equals(node2)))
-                .map((node2) -> composition(node, node2, k))
-                .reduce(centralityValue, (accumulator, _item) -> accumulator + _item);
-
-        return centralityValue;
-    }
-
+    @Override
     public String toString() {
-
         String printWeightedGraph = DatasetPrinter.printWeightedGraph(this);
         return printWeightedGraph;
     }
@@ -433,5 +341,81 @@ public class WeightedGraph<Node> implements Serializable {
         textTable.printTable(recordingStream, 0);
 
         return baos.toString();
+    }
+
+    public AdjMatrixEdgeWeightedDigraph getWeightedDiGraph() {
+        return cloneAdjMatrixEdgeWeightedDigraph(adjMatrixEdgeWeightedDigraph);
+    }
+
+    public static final AdjMatrixEdgeWeightedDigraph cloneAdjMatrixEdgeWeightedDigraph(AdjMatrixEdgeWeightedDigraph adjMatrixEdgeWeightedDigraph) {
+        AdjMatrixEdgeWeightedDigraph copy = new AdjMatrixEdgeWeightedDigraph(adjMatrixEdgeWeightedDigraph.V(), adjMatrixEdgeWeightedDigraph.E());
+
+        IntStream.range(0, adjMatrixEdgeWeightedDigraph.V()).sequential().forEach(vertex -> {
+            for (DirectedEdge directedEdge : adjMatrixEdgeWeightedDigraph.adj(vertex)) {
+                copy.addEdge(directedEdge);
+            }
+
+        });
+
+        return copy;
+    }
+
+    protected final Map<Node, Integer> makeIndex(Map<Node, Map<Node, Number>> connections) {
+        List<Node> sortedUsers = connections.keySet()
+                .stream()
+                .sorted()
+                .collect(Collectors.toList());
+
+        return makeIndex(sortedUsers);
+    }
+
+    protected final Map<Node, Integer> makeIndex(List<Node> nodes) {
+        return IntStream.range(0, nodes.size()).boxed()
+                .collect(Collectors.toMap(
+                        indexUser -> nodes.get(indexUser),
+                        indexUser -> indexUser)
+                );
+    }
+
+    protected final AdjMatrixEdgeWeightedDigraph makeWeightedDiGraph(Map<Node, Map<Node, Number>> connections) {
+
+        long numEdges = connections.values().parallelStream()
+                .flatMap(thisUserConnections -> thisUserConnections.values().stream())
+                .filter(connection -> !Double.isNaN(connection.doubleValue()))
+                .filter(connection -> connection.doubleValue() > 0)
+                .count();
+
+        AdjMatrixEdgeWeightedDigraph weightedDigraph = new AdjMatrixEdgeWeightedDigraph(nodesIndex.size(), (int) numEdges);
+
+        connections.entrySet().parallelStream().forEach(entry -> {
+
+            Node node1 = entry.getKey();
+            int indexNode1 = nodesIndex.get(node1);
+            Map<Node, Number> thisUserConnections = entry.getValue();
+
+            thisUserConnections.entrySet().forEach(entry2 -> {
+                Node node2 = entry2.getKey();
+                int indexNode2 = nodesIndex.get(node2);
+                Number connection = entry2.getValue();
+                weightedDigraph.addEdge(new DirectedEdge(indexNode1, indexNode2, connection.doubleValue()));
+            });
+        });
+
+        return weightedDigraph;
+    }
+
+    protected final Map< Integer, Node> makeNodesByIndex(Map<Node, Integer> nodesIndex) {
+        return nodesIndex.entrySet().parallelStream().collect(Collectors.toMap(
+                entry -> entry.getValue(),
+                entry -> entry.getKey()));
+    }
+
+    public double distanceJumpLimited(Node node1, Node node2, int maxjumps) {
+        PathBetweenNodes<Node> shortestPath = this.shortestPath(node1, node2);
+        if (shortestPath.numJumps() > maxjumps) {
+            return Double.NaN;
+        } else {
+            return shortestPath.getLength();
+        }
     }
 }

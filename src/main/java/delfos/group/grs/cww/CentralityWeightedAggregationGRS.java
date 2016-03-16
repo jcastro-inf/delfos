@@ -229,7 +229,7 @@ public class CentralityWeightedAggregationGRS extends GroupRecommenderSystemAdap
         }
 
         if (isNormaliseSocialNetworkConnections()) {
-            userTrust = new WeightedGraphNormaliser<>(userTrust);
+            userTrust = WeightedGraphNormaliser.normalise(userTrust);
             if (Global.isVerboseAnnoying()) {
                 Global.showInfoMessage("Normalised graph\n");
                 DatasetPrinterDeprecated.printWeightedGraph(userTrust);
@@ -237,7 +237,7 @@ public class CentralityWeightedAggregationGRS extends GroupRecommenderSystemAdap
         }
 
         if (isStrongApply()) {
-            userTrust = new StrongTermOverConnections(userTrust, getSTRONG_MIN(), getSTRONG_MAX());
+            userTrust = StrongTermOverConnections.applyStrongTerm(userTrust, getSTRONG_MIN(), getSTRONG_MAX());
             if (Global.isVerboseAnnoying()) {
                 Global.showInfoMessage("Graph modified by Strong(" + getSTRONG_MIN() + "," + getSTRONG_MAX() + ")\n");
                 DatasetPrinterDeprecated.printWeightedGraph(userTrust);
