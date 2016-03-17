@@ -53,13 +53,8 @@ public class PathBetweenNodes<Node> implements Comparable<PathBetweenNodes> {
             if (previousNode == thisNode) {
                 //Salto sobre el mismo nodo.
             } else {
-                double weight = graph.connectionWeight(previousNode, thisNode);
-
-                if (weight == 0) {
-                    _length = Double.POSITIVE_INFINITY;
-                } else {
-                    _length += 1 / weight;
-                }
+                double distance = graph.distance(previousNode, thisNode);
+                _length += distance;
             }
         }
         this.length = _length;
