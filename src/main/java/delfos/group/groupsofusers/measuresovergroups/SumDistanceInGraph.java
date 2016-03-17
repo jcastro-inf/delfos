@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,15 +16,15 @@
  */
 package delfos.group.groupsofusers.measuresovergroups;
 
-import delfos.dataset.basic.rating.Rating;
-import delfos.dataset.basic.loader.types.DatasetLoader;
-import delfos.rs.trustbased.implicittrustcomputation.ShambourLu_UserBasedImplicitTrustComputation;
-import delfos.rs.trustbased.WeightedGraph;
-import delfos.rs.trustbased.WeightedGraphCalculation;
 import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
 import delfos.common.parameters.Parameter;
 import delfos.common.parameters.restriction.ParameterOwnerRestriction;
+import delfos.dataset.basic.loader.types.DatasetLoader;
+import delfos.dataset.basic.rating.Rating;
 import delfos.group.groupsofusers.GroupOfUsers;
+import delfos.rs.trustbased.WeightedGraph;
+import delfos.rs.trustbased.WeightedGraphCalculation;
+import delfos.rs.trustbased.implicittrustcomputation.ShambourLu_UserBasedImplicitTrustComputation;
 
 /**
  * Clase para la suma de todas las distancias entre todos los pares de usuarios.
@@ -47,7 +47,7 @@ public class SumDistanceInGraph extends GroupMeasureAdapter {
         this();
         setParameterValue(SumDistanceInGraph.weightedGraphCalculation, weightedGraphCalculation);
     }
-    
+
     @Override
     public String getNameWithParameters() {
         return "SumD_" + getWeightedGraphCalculation().getShortName();
@@ -70,7 +70,7 @@ public class SumDistanceInGraph extends GroupMeasureAdapter {
         for (int idMember1 : group.getIdMembers()) {
             for (int idMember2 : group.getIdMembers()) {
                 double distance;
-                distance = trustNetwork.geodesicDistance(idMember1, idMember2);
+                distance = trustNetwork.distance(idMember1, idMember2);
                 sumDistance += distance;
             }
         }
@@ -82,5 +82,4 @@ public class SumDistanceInGraph extends GroupMeasureAdapter {
         return (WeightedGraphCalculation) getParameterValue(weightedGraphCalculation);
     }
 
-    
 }

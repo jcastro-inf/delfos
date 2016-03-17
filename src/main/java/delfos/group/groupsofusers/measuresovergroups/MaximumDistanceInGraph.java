@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,15 +16,15 @@
  */
 package delfos.group.groupsofusers.measuresovergroups;
 
-import delfos.dataset.basic.rating.Rating;
-import delfos.dataset.basic.loader.types.DatasetLoader;
-import delfos.rs.trustbased.implicittrustcomputation.ShambourLu_UserBasedImplicitTrustComputation;
-import delfos.rs.trustbased.WeightedGraph;
-import delfos.rs.trustbased.WeightedGraphCalculation;
 import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
 import delfos.common.parameters.Parameter;
 import delfos.common.parameters.restriction.ParameterOwnerRestriction;
+import delfos.dataset.basic.loader.types.DatasetLoader;
+import delfos.dataset.basic.rating.Rating;
 import delfos.group.groupsofusers.GroupOfUsers;
+import delfos.rs.trustbased.WeightedGraph;
+import delfos.rs.trustbased.WeightedGraphCalculation;
+import delfos.rs.trustbased.implicittrustcomputation.ShambourLu_UserBasedImplicitTrustComputation;
 
 /**
  * Clase para calcular la distancia máxima entre dos miembros del grupo.
@@ -56,13 +56,12 @@ public class MaximumDistanceInGraph extends GroupMeasureAdapter {
     /**
      * Devuelve el grado con el que el grupo indicado es un clique.
      *
-     * @param trustNetwork Red de confianza.
+     * @param datasetLoader
      * @param group Grupo a comprobar.
      * @return Valor difuso con el que un grupo es un clique.
      */
     @Override
     public double getMeasure(DatasetLoader<? extends Rating> datasetLoader, GroupOfUsers group) throws CannotLoadRatingsDataset {
-
 
         WeightedGraph<Integer> trustNetwork = getWeightedGraphCalculation().computeTrustValues(datasetLoader, group.getIdMembers());
 
@@ -71,7 +70,7 @@ public class MaximumDistanceInGraph extends GroupMeasureAdapter {
         for (int idMember1 : group.getIdMembers()) {
             for (int idMember2 : group.getIdMembers()) {
                 double distance;
-                distance = trustNetwork.geodesicDistance(idMember1, idMember2);
+                distance = trustNetwork.distance(idMember1, idMember2);
 
                 if (maxDistance < distance) {
                     maxDistance = distance;

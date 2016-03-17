@@ -155,10 +155,6 @@ public class WeightedGraph<Node> implements Serializable {
         return new ArrayList<>(nodesIndex.keySet());
     }
 
-    public double geodesicDistance(Node node1, Node node2) {
-        return shortestPath(node1, node2).getLength();
-    }
-
     public double distance(Node node1, Node node2) {
         initFloydWarshall();
 
@@ -175,7 +171,7 @@ public class WeightedGraph<Node> implements Serializable {
         }
     }
 
-    public PathBetweenNodes<Node> shortestPath(Node node1, Node node2) {
+    public Optional<PathBetweenNodes<Node>> shortestPath(Node node1, Node node2) {
         initFloydWarshall();
 
         int indexNode1 = nodesIndex.get(node1);
@@ -184,6 +180,7 @@ public class WeightedGraph<Node> implements Serializable {
         ArrayList<Node> pathNodesIncludingStartAndEnd = new ArrayList<>();
 
         pathNodesIncludingStartAndEnd.add(node1);
+
         if (floydWarshall.hasPath(indexNode1, indexNode2)) {
             List<DirectedEdge> path = new ArrayList<>();
 
@@ -199,10 +196,10 @@ public class WeightedGraph<Node> implements Serializable {
                 pathNodesIncludingStartAndEnd.add(nodeIntermediate);
             });
 
-            return new PathBetweenNodes(this, pathNodesIncludingStartAndEnd);
-
+            PathBetweenNodes<Node> pathBetweenNodes = new PathBetweenNodes<>(this, pathNodesIncludingStartAndEnd);
+            return Optional.of(pathBetweenNodes);
         } else {
-            return null;
+            return Optional.empty();
         }
 
     }
@@ -410,12 +407,12 @@ public class WeightedGraph<Node> implements Serializable {
     }
 
     public double distanceJumpLimited(Node node1, Node node2, int maxjumps) {
-        PathBetweenNodes<Node> shortestPath = this.shortestPath(node1, node2);
-        if (shortestPath.numJumps() > maxjumps) {
-            return Double.NaN;
-        } else {
-            return shortestPath.getLength();
-        }
+        final double distance = this.shortestPath(node1, node2)
+                .filter(path -> path.numJumps() > maxjumps)
+                .map(path -> path.getLength())
+                .orElse(Double.NaN);
+        return distance;
+
     }
 
     private void validateWeightMatrix(double[][] weightMatrix) {
@@ -488,7 +485,47 @@ public class WeightedGraph<Node> implements Serializable {
         return weightGraph;
     }
 
-    public void printPairWiseDistancesTable(PrintStream out) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public String toPairwiseDistancesTable() {
+        return toPairwiseDistancesTable(this.nodesIndex.keySet());
+    }
+
+    public String toPairwiseDistancesTable(Set<Node> nodes) {
+        TextTable textTable = getPairwiseDistancesTable(nodes);
+
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        PrintStream recordingStream = new PrintStream(baos);
+        textTable.printTable(recordingStream, 0);
+
+        return baos.toString();
+    }
+
+    public TextTable getPairwiseDistancesTable(Set<Node> nodes) {
+
+        initFloydWarshall();
+        validateParameters(nodes);
+
+        List<String> columnNames = new ArrayList<>();
+        columnNames.add("node\\node");
+        final List<Node> sortedNodes = this.allNodes().stream().sorted().filter(node -> nodes.contains(node)).collect(Collectors.toList());
+        Object[][] data = new Object[sortedNodes.size()][sortedNodes.size() + 1];
+        columnNames.addAll(sortedNodes.stream().map(node -> node.toString()).collect(Collectors.toList()));
+        DecimalFormat format = new DecimalFormat("0.0000");
+        for (int node1index = 0; node1index < sortedNodes.size(); node1index++) {
+            Node node1 = sortedNodes.get(node1index);
+            int row = node1index;
+
+            data[row][0] = node1.toString();
+
+            for (int node2index = 0; node2index < sortedNodes.size(); node2index++) {
+                Node node2 = sortedNodes.get(node2index);
+                int column = node2index + 1;
+
+                double dist = floydWarshall.dist(node1index, node2index);
+                String cellValue = format.format(dist);
+                data[row][column] = cellValue;
+            }
+        }
+        TextTable textTable = new TextTable(columnNames.toArray(new String[0]), data);
+        return textTable;
     }
 }

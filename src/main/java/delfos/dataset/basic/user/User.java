@@ -16,6 +16,7 @@
  */
 package delfos.dataset.basic.user;
 
+import delfos.common.StringsOrderings;
 import delfos.dataset.basic.features.EntityWithFeatures;
 import static delfos.dataset.basic.features.EntityWithFeaturesDefault.checkFeatureAndFeatureValuesArrays;
 import delfos.dataset.basic.features.Feature;
@@ -36,7 +37,7 @@ public class User implements Comparable<Object>, EntityWithFeatures {
     public static User ANONYMOUS_USER = new User(0, "User_Anonymous");
 
     public static Comparator<? super User> BY_ID = (user1, user2) -> user1.getId().compareTo(user2.getId());
-    public static Comparator<? super User> BY_NAME = (user1, user2) -> user1.getName().compareTo(user2.getName());
+    public static Comparator<? super User> BY_NAME = (user1, user2) -> StringsOrderings.getNaturalComparator().compare(user1.getName(), user2.getName());
 
     private final int idUser;
     private final Map<Feature, Object> featuresValues = new TreeMap<>();
@@ -178,7 +179,7 @@ public class User implements Comparable<Object>, EntityWithFeatures {
     public int compareTo(Object o) {
         if (o instanceof User) {
             User otherUser = (User) o;
-            return BY_NAME.compare(this, otherUser);
+            return BY_ID.compare(this, otherUser);
         } else {
             throw new IllegalArgumentException("Cannot compare a user with a " + o.getClass());
         }

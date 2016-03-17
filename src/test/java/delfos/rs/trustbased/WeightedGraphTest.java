@@ -49,5 +49,6 @@ public class WeightedGraphTest {
 
         System.out.println(weightedGraph.shortestPath(0, 4));
         System.out.println(weightedGraph.shortestPath(4, 3));
+
     }
 }
