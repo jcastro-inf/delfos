@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,22 +16,21 @@
  */
 package delfos.rs.trustbased.implicittrustcomputation;
 
+import delfos.ERROR_CODES;
+import delfos.common.Global;
+import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
+import delfos.common.exceptions.dataset.users.UserNotFound;
+import delfos.dataset.basic.loader.types.DatasetLoader;
+import delfos.dataset.basic.rating.Rating;
+import delfos.dataset.basic.rating.RatingsDataset;
+import delfos.rs.trustbased.WeightedGraph;
+import delfos.rs.trustbased.WeightedGraphCalculation;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
-import delfos.dataset.basic.rating.Rating;
-import delfos.dataset.basic.rating.RatingsDataset;
-import delfos.dataset.basic.loader.types.DatasetLoader;
-import delfos.dataset.util.DatasetPrinterDeprecated;
-import delfos.ERROR_CODES;
-import delfos.rs.trustbased.WeightedGraph;
-import delfos.rs.trustbased.WeightedGraphCalculation;
-import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
-import delfos.common.exceptions.dataset.users.UserNotFound;
-import delfos.common.Global;
 
 /**
  * Algoritmo para calcular redes de confianza entre usuarios, utilizando las
@@ -95,20 +94,15 @@ public class ShambourLu_UserBasedImplicitTrustComputation extends WeightedGraphC
             printPartialResults = false;
         }
 
-        if (printPartialResults) {
-            Global.showInfoMessage("Dataset de training \n");
-            DatasetPrinterDeprecated.printCompactRatingTable(ratingsDataset);
-        }
-
         int numTrustValuesThatNeedToBePropagated = 0;
 
-        Map<Integer, Map<Integer, Number>> MSD = new TreeMap<Integer, Map<Integer, Number>>();
-        Map<Integer, Map<Integer, Number>> UJaccard = new TreeMap<Integer, Map<Integer, Number>>();
+        Map<Integer, Map<Integer, Number>> MSD = new TreeMap<>();
+        Map<Integer, Map<Integer, Number>> UJaccard = new TreeMap<>();
         {
             int i = 1;
             for (int idUser : users) {
-                MSD.put(idUser, new TreeMap<Integer, Number>());
-                UJaccard.put(idUser, new TreeMap<Integer, Number>());
+                MSD.put(idUser, new TreeMap<>());
+                UJaccard.put(idUser, new TreeMap<>());
 
                 Map<Integer, ? extends Rating> userRatings;
                 try {
@@ -126,7 +120,7 @@ public class ShambourLu_UserBasedImplicitTrustComputation extends WeightedGraphC
 
                         Map<Integer, ? extends Rating> userNeighbourRatings = ratingsDataset.getUserRatingsRated(idUserNeighbor);
 
-                        Set<Integer> commonItems = new TreeSet<Integer>(userRatings.keySet());
+                        Set<Integer> commonItems = new TreeSet<>(userRatings.keySet());
                         commonItems.retainAll(userNeighbourRatings.keySet());
                         if (commonItems.isEmpty()) {
                             numTrustValuesThatNeedToBePropagated++;
@@ -207,25 +201,10 @@ public class ShambourLu_UserBasedImplicitTrustComputation extends WeightedGraphC
                 i++;
             }
         }
-        if (printPartialResults) {
-            Global.showInfoMessage("MSD table \n");
-            DatasetPrinterDeprecated.printCompactUserUserTable(MSD, users);
 
-            Global.showInfoMessage("============================================================================= \n");
-            Global.showInfoMessage("UT-Step1 0.4: Jaccard\n");
-            Global.showInfoMessage("============================================================================= \n");
-
-            Global.showInfoMessage("Jaccard table \n");
-            DatasetPrinterDeprecated.printCompactUserUserTable(UJaccard, users);
-
-            Global.showInfoMessage("============================================================================= \n");
-            Global.showInfoMessage("UT-Step1 - A: Trust derivation\n");
-            Global.showInfoMessage("============================================================================= \n");
-        }
-
-        TreeMap<Integer, Map<Integer, Number>> usersTrust = new TreeMap<Integer, Map<Integer, Number>>();
+        TreeMap<Integer, Map<Integer, Number>> usersTrust = new TreeMap<>();
         for (int idUser : users) {
-            usersTrust.put(idUser, new TreeMap<Integer, Number>());
+            usersTrust.put(idUser, new TreeMap<>());
 
             for (int idUserNeighbour : users) {
 
@@ -241,17 +220,8 @@ public class ShambourLu_UserBasedImplicitTrustComputation extends WeightedGraphC
         UJaccard.clear();
         MSD.clear();
 
-        if (printPartialResults) {
-            Global.showInfoMessage("Trust derivation matrix.\n");
-            DatasetPrinterDeprecated.printCompactUserUserTable(usersTrust, users);
-
-            Global.showInfoMessage("============================================================================= \n");
-            Global.showInfoMessage("UT-Step1 - B: Trust Propagation\n");
-            Global.showInfoMessage("============================================================================= \n");
-        }
-
         if (propagate == false) {
-            return new WeightedGraph<Integer>(usersTrust);
+            return new WeightedGraph<>(usersTrust);
         }
 
         fireProgressChanged("Trust propagation", 0, -1);
@@ -260,7 +230,7 @@ public class ShambourLu_UserBasedImplicitTrustComputation extends WeightedGraphC
          * Las confianzas propagadas se incluyen aqui para no ser tenidas en
          * cuenta al propagar confianza, sólo cuando ha finalizado el proceso.
          */
-        Map<Integer, Map<Integer, Double>> propagatedTrusts = new TreeMap<Integer, Map<Integer, Double>>();
+        Map<Integer, Map<Integer, Double>> propagatedTrusts = new TreeMap<>();
         {
             int i = 0;
             for (int idSourceUser : users) {
@@ -269,25 +239,15 @@ public class ShambourLu_UserBasedImplicitTrustComputation extends WeightedGraphC
                         //Los usuarios ya son adyacentes, no es necesario propagar.
                     } else {
                         if (!propagatedTrusts.containsKey(idSourceUser)) {
-                            propagatedTrusts.put(idSourceUser, new TreeMap<Integer, Double>());
+                            propagatedTrusts.put(idSourceUser, new TreeMap<>());
                         }
                         //Propagate trust to complete this connection.
                         if (printPartialResults) {
                             Global.showInfoMessage("Propagating trust between user " + idSourceUser + " and user " + idTargetUser + "\n");
                         }
 
-                        Set<Integer> adyacentesAAmbos = new TreeSet<Integer>(usersTrust.get(idSourceUser).keySet());
+                        Set<Integer> adyacentesAAmbos = new TreeSet<>(usersTrust.get(idSourceUser).keySet());
                         adyacentesAAmbos.retainAll(usersTrust.get(idTargetUser).keySet());
-
-//                        //Obtengo todos los usuarios adyacentes al usuario:
-//                        Set<Integer> adyacentesATarget = new TreeSet<Integer>(usersTrust.get(idTargetUser).keySet());
-//                        Set<Integer> adyacentesAAmbos = new TreeSet<Integer>(usersTrust.get(idSourceUser).keySet());
-//                        for (Iterator<Integer> it = adyacentesAAmbos.iterator(); it.hasNext();) {
-//                            int idAdyacente = it.next();
-//                            if (!usersTrust.get(idAdyacente).containsKey(idTargetUser)) {
-//                                it.remove();
-//                            }
-//                        }
                         if (adyacentesAAmbos.isEmpty()) {
                             //No tienen ningún adyacente en común, por lo que no se puede propagar, hay que contar este enlace para el porcentaje de progreso.
                         } else {
@@ -298,7 +258,7 @@ public class ShambourLu_UserBasedImplicitTrustComputation extends WeightedGraphC
                                 double usersTrustBC = usersTrust.get(idIntermediateUser).get(idTargetUser).doubleValue();
                                 int numCommonAB;
                                 try {
-                                    TreeSet<Integer> commonAB = new TreeSet<Integer>(ratingsDataset.getUserRated(idSourceUser));
+                                    TreeSet<Integer> commonAB = new TreeSet<>(ratingsDataset.getUserRated(idSourceUser));
                                     commonAB.retainAll(ratingsDataset.getUserRated(idIntermediateUser));
                                     numCommonAB = commonAB.size();
                                 } catch (UserNotFound ex) {
@@ -308,7 +268,7 @@ public class ShambourLu_UserBasedImplicitTrustComputation extends WeightedGraphC
 
                                 int numCommonBC;
                                 try {
-                                    TreeSet<Integer> commonBC = new TreeSet<Integer>(ratingsDataset.getUserRated(idIntermediateUser));
+                                    TreeSet<Integer> commonBC = new TreeSet<>(ratingsDataset.getUserRated(idIntermediateUser));
                                     commonBC.retainAll(ratingsDataset.getUserRated(idTargetUser));
                                     numCommonBC = commonBC.size();
                                 } catch (UserNotFound ex) {
@@ -343,12 +303,7 @@ public class ShambourLu_UserBasedImplicitTrustComputation extends WeightedGraphC
             }
         }
 
-        if (printPartialResults) {
-            Global.showInfoMessage("Trust propagation matrix.\n");
-            DatasetPrinterDeprecated.printCompactUserUserTable(usersTrust, users);
-        }
-
         fireProgressChanged("Finished trust calculation", 100, -1);
-        return new WeightedGraph<Integer>(usersTrust);
+        return new WeightedGraph<>(usersTrust);
     }
 }

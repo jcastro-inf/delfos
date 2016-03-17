@@ -115,9 +115,9 @@
             <version>4.0</version>
         </dependency>
         <dependency>
-            <groupId>com.github.kevin-wayne</groupId>
+            <groupId>edu.princeton.cs</groupId>
             <artifactId>algs4</artifactId>
-            <version>master</version>
+            <version>1.0.0.0</version>
         </dependency>
     </dependencies>
 

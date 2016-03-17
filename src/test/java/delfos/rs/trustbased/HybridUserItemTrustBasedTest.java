@@ -1,13 +1,10 @@
 package delfos.rs.trustbased;
 
-import delfos.common.Global;
 import delfos.constants.DelfosTest;
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RatingsDataset;
 import delfos.dataset.papertestdatasets.ImplicitTrustDataset;
-import delfos.dataset.storage.memory.BothIndexRatingsDataset;
-import delfos.dataset.util.DatasetPrinterDeprecated;
 import delfos.rs.recommendation.Recommendation;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -32,12 +29,13 @@ public class HybridUserItemTrustBasedTest extends DelfosTest {
     /**
      * Test que implementa la ejecución del ejemplo provisto en el paper en que
      * se describe el algoritmo.
+     *
+     * @throws java.lang.Exception
      */
     @Test
     public void paperTest() throws Exception {
 
         DatasetLoader<? extends Rating> datasetLoader = new ImplicitTrustDataset();
-        DatasetPrinterDeprecated.printCompactRatingTable(datasetLoader.getRatingsDataset());
 
         HybridUserItemTrustBased recommenderSystem = new HybridUserItemTrustBased();
 
@@ -56,16 +54,10 @@ public class HybridUserItemTrustBasedTest extends DelfosTest {
 
             finalPredictions.put(idUser, new TreeMap<>());
 
-            for (Recommendation r : recommendations) {
+            recommendations.stream().forEach((r) -> {
                 finalPredictions.get(idUser).put(r.getIdItem(), r.getPreference());
-            }
+            });
         }
-
-        Global.showInfoMessage("Original Ratings \n");
-        DatasetPrinterDeprecated.printCompactRatingTable(datasetLoader.getRatingsDataset());
-
-        Global.showInfoMessage("Predicted Ratings \n");
-        DatasetPrinterDeprecated.printCompactRatingTable(finalPredictions);
 
         double delta = 0.01;
 
@@ -110,9 +102,6 @@ public class HybridUserItemTrustBasedTest extends DelfosTest {
 
         double predictionUser4Item6 = recommenderSystem.predictRating(datasetLoader, model, 4, 6).doubleValue();
         predictions.add(new Rating(4, 6, predictionUser4Item6));
-
-        //Mostrar las predicciones en forma de tabla.
-        DatasetPrinterDeprecated.printCompactRatingTable(new BothIndexRatingsDataset(predictions));
 
         assertEquals("The data predicted does not match the paper data.", 3.19, predictionUser1Item1, delta);
         assertEquals("The data predicted does not match the paper data.", 2.80, predictionUser1Item4, delta);

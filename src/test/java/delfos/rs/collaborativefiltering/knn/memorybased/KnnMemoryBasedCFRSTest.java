@@ -15,7 +15,6 @@ import delfos.dataset.basic.user.UsersDataset;
 import delfos.dataset.basic.user.UsersDatasetAdapter;
 import delfos.dataset.loaders.given.DatasetLoaderGivenRatingsContent;
 import delfos.dataset.storage.memory.BothIndexRatingsDataset;
-import delfos.dataset.util.DatasetPrinterDeprecated;
 import delfos.rs.collaborativefiltering.knn.KnnCollaborativeRecommender;
 import delfos.rs.collaborativefiltering.knn.RecommendationEntity;
 import delfos.rs.collaborativefiltering.predictiontechniques.WeightedSum;
@@ -68,7 +67,6 @@ public class KnnMemoryBasedCFRSTest extends DelfosTest {
 
         RatingsDataset<? extends Rating> ratingsDataset = new BothIndexRatingsDataset(ratings);
 
-        DatasetPrinterDeprecated.printCompactRatingTable(ratingsDataset);
         ContentDataset _contentDataset = new ContentDatasetDefault();
 
         Map<String, String> item1_features = new TreeMap<>();
@@ -101,7 +99,6 @@ public class KnnMemoryBasedCFRSTest extends DelfosTest {
                 usersDataset
         );
 
-        DatasetPrinterDeprecated.printCompactRatingTable(ratingsDataset);
     }
 
     @Test

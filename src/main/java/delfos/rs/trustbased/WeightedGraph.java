@@ -96,19 +96,31 @@ public class WeightedGraph<Node> implements Serializable {
         adjMatrixEdgeWeightedDigraph = makeWeightedDiGraph(ordering, matrix);
     }
 
-    private AdjMatrixEdgeWeightedDigraph makeWeightedDiGraph(List<Node> ordering, double[][] matrix) {
+    private AdjMatrixEdgeWeightedDigraph makeWeightedDiGraph(List<Node> ordering, double[][] distanceMatrix) {
         AdjMatrixEdgeWeightedDigraph adjMatrixEdgeWeightedDigraph = new AdjMatrixEdgeWeightedDigraph(nodesIndex.size());
 
         ordering.stream().forEach(node1 -> {
             int indexNode1 = nodesIndex.get(node1);
             ordering.stream().forEach(node2 -> {
                 int indexNode2 = nodesIndex.get(node2);
-                double weight = matrix[indexNode1][indexNode2];
-                adjMatrixEdgeWeightedDigraph.addEdge(new DirectedEdge(indexNode1, indexNode2, weight));
+                double distance = distanceMatrix[indexNode1][indexNode2];
+
+                if (distance > 0) {
+                    adjMatrixEdgeWeightedDigraph.addEdge(new DirectedEdge(indexNode1, indexNode2, distance));
+                }
             });
         });
 
         return adjMatrixEdgeWeightedDigraph;
+    }
+
+    public double connectionWeight(Node node1, Node node2) {
+
+        return 1 / connectionDistance(node1, node2);
+    }
+
+    private double connectionDistance(Node node1, Node node2) {
+        return connection(node1, node2);
     }
 
     /**
@@ -118,11 +130,11 @@ public class WeightedGraph<Node> implements Serializable {
      * @param node2
      * @return
      */
-    public Number connection(Node node1, Node node2) {
+    private double connection(Node node1, Node node2) {
         int indexNode1 = nodesIndex.get(node1);
         int indexNode2 = nodesIndex.get(node2);
 
-        AtomicDouble weight = new AtomicDouble(-1);
+        AtomicDouble weight = new AtomicDouble(Double.POSITIVE_INFINITY);
 
         adjMatrixEdgeWeightedDigraph.adj(indexNode1).forEach(edge -> {
             if (edge.to() == indexNode2) {
@@ -185,13 +197,13 @@ public class WeightedGraph<Node> implements Serializable {
         pathNodesIncludingStartAndEnd.add(node1);
         if (floydWarshall.hasPath(indexNode1, indexNode2)) {
             List<DirectedEdge> path = new ArrayList<>();
+
+            double dist = floydWarshall.dist(indexNode1, indexNode2);
             final Iterable<DirectedEdge> edgeIterator = floydWarshall.path(indexNode1, indexNode2);
 
             for (DirectedEdge edge : edgeIterator) {
                 path.add(edge);
             }
-
-            Collections.reverse(path);
 
             path.stream().sequential().map(edge -> edge.to()).forEach(indexNodeIntermediate -> {
                 Node nodeIntermediate = nodesByIndex.get(indexNodeIntermediate);
@@ -223,7 +235,7 @@ public class WeightedGraph<Node> implements Serializable {
 
             for (int indexColumn = 0; indexColumn < nodesSorted.size(); indexColumn++) {
                 Node node2 = nodesSorted.get(indexColumn);
-                double value = connection(node, node2).doubleValue();
+                double value = connectionWeight(node, node2);
                 matrix[indexRow][indexColumn] = value;
             }
         }
@@ -242,7 +254,7 @@ public class WeightedGraph<Node> implements Serializable {
 
             for (int indexColumn = 0; indexColumn < nodesSorted.size(); indexColumn++) {
                 Node node2 = nodesSorted.get(indexColumn);
-                double value = connection(node, node2).doubleValue();
+                double value = connectionWeight(node, node2);
                 matrix[indexRow][indexColumn] = value;
             }
         }
@@ -277,7 +289,7 @@ public class WeightedGraph<Node> implements Serializable {
                 Node node2 = sortedNodes.get(node2index);
                 int column = node2index + 1;
 
-                double connection = this.connection(node1, node2).doubleValue();
+                double connection = connectionDistance(node1, node2);
                 data[row][column] = format.format(connection);
             }
         }
@@ -304,7 +316,7 @@ public class WeightedGraph<Node> implements Serializable {
                 Node node2 = sortedNodes.get(node2index);
                 int column = node2index + 1;
 
-                double connection = this.connection(node1, node2).doubleValue();
+                double connection = connectionDistance(node1, node2);
                 data[row][column] = format.format(connection);
             }
         }

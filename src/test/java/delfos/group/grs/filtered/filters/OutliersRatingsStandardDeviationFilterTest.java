@@ -1,16 +1,12 @@
 package delfos.group.grs.filtered.filters;
 
 import delfos.ERROR_CODES;
-import delfos.common.Global;
 import delfos.common.exceptions.dataset.users.UserNotFound;
 import delfos.configureddatasets.ConfiguredDatasetsFactory;
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RatingsDataset;
 import delfos.dataset.generated.random.RandomDatasetLoader;
-import delfos.dataset.storage.memory.BothIndexRatingsDataset;
-import delfos.dataset.util.DatasetPrinterDeprecated;
-import delfos.dataset.util.DatasetUtilities;
 import delfos.group.groupsofusers.GroupOfUsers;
 import java.util.Map;
 import java.util.TreeMap;
@@ -46,17 +42,9 @@ public class OutliersRatingsStandardDeviationFilterTest {
                 ERROR_CODES.USER_NOT_FOUND.exit(ex);
             }
         }
-        Global.showInfoMessage("Original ratings of group\n");
-        DatasetPrinterDeprecated.printCompactRatingTable(new BothIndexRatingsDataset(groupRatings), group.getIdMembers(), items);
 
         Map<Integer, Map<Integer, Rating>> filteredRatings = instance.getFilteredRatings(ratingsDataset, group);
         assertNotNull(filteredRatings);
-
-        Global.showInfoMessage("Original ratings of group\n");
-        DatasetPrinterDeprecated.printCompactRatingTable(new BothIndexRatingsDataset(groupRatings), group.getIdMembers(), items);
-
-        Global.showInfoMessage("Filtered ratings of group\n");
-        DatasetPrinterDeprecated.printCompactRatingTable(DatasetUtilities.getMapOfMaps_Number(filteredRatings), group.getIdMembers(), items);
     }
 
     @Test
@@ -80,16 +68,8 @@ public class OutliersRatingsStandardDeviationFilterTest {
                 ERROR_CODES.USER_NOT_FOUND.exit(ex);
             }
         }
-        Global.showInfoMessage("Original ratings of group\n");
-        DatasetPrinterDeprecated.printCompactRatingTable(new BothIndexRatingsDataset(groupRatings), group.getIdMembers(), items);
 
         Map<Integer, Map<Integer, Rating>> filteredRatings = instance.getFilteredRatings(ratingsDataset, group);
         assertNotNull(filteredRatings);
-
-        Global.showInfoMessage("Original ratings of group\n");
-        DatasetPrinterDeprecated.printCompactRatingTable(new BothIndexRatingsDataset(groupRatings), group.getIdMembers(), items);
-
-        Global.showInfoMessage("Filtered ratings of group\n");
-        DatasetPrinterDeprecated.printCompactRatingTable(DatasetUtilities.getMapOfMaps_Number(filteredRatings), group.getIdMembers(), items);
     }
 }

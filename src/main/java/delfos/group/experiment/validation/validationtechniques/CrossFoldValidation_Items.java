@@ -28,7 +28,6 @@ import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.storage.validationdatasets.PairOfTrainTestRatingsDataset;
 import delfos.dataset.storage.validationdatasets.ValidationDatasets;
-import delfos.dataset.util.DatasetPrinterDeprecated;
 import delfos.group.groupsofusers.GroupOfUsers;
 import java.util.ArrayList;
 import java.util.List;
@@ -155,28 +154,6 @@ public class CrossFoldValidation_Items extends GroupValidationTechnique {
                         "_" + this.getClass().getSimpleName() + "_seed=" + getSeedValue() + "_partition=" + idPartition
                 );
 
-                if (Global.isVerboseAnnoying()) {
-
-                    Global.showInfoMessage("==================================================== \n");
-
-                    Set<Integer> allUsers = new TreeSet<>();
-                    for (GroupOfUsers g : groupsOfUsers) {
-                        allUsers.addAll(g.getIdMembers());
-                    }
-
-                    Global.showInfoMessage("Dataset de training " + idPartition + ".\n");
-                    DatasetPrinterDeprecated.printCompactRatingTable(
-                            ret[idPartition].train,
-                            allUsers,
-                            allItems);
-
-                    Global.showInfoMessage("Dataset de test " + idPartition + ".\n");
-                    DatasetPrinterDeprecated.printCompactRatingTable(
-                            ret[idPartition].test,
-                            allUsers,
-                            allItems);
-                    Global.showInfoMessage("==================================================== \n");
-                }
             } catch (UserNotFound ex) {
                 ERROR_CODES.USER_NOT_FOUND.exit(ex);
             } catch (ItemNotFound ex) {

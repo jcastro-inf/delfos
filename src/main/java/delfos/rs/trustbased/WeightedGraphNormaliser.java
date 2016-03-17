@@ -44,7 +44,7 @@ public class WeightedGraphNormaliser {
                     //Skip same node connections
                     continue;
                 }
-                double connectionValue = source.connection(nodeSource, nodeDestiny).doubleValue();
+                double connectionValue = source.connectionWeight(nodeSource, nodeDestiny);
                 min = Math.min(min, connectionValue);
                 max = Math.max(max, connectionValue);
             }
@@ -72,7 +72,7 @@ public class WeightedGraphNormaliser {
                     thisNodeConnections.put(nodeDestiny, 1);
                 } else {
                     //Do the normalisation.
-                    final double originalConnection = source.connection(nodeSource, nodeDestiny).doubleValue();
+                    final double originalConnection = source.connectionWeight(nodeSource, nodeDestiny);
                     final double normalisedConnection = (originalConnection - min) / (max - min);
                     thisNodeConnections.put(nodeDestiny, normalisedConnection);
                 }

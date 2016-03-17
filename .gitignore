@@ -19,3 +19,4 @@
 
 *.tar.gz
 hs_err_*
+/nbproject/

@@ -17,7 +17,6 @@
 package delfos.group.experiment.validation.validationtechniques;
 
 import delfos.ERROR_CODES;
-import delfos.common.Global;
 import delfos.common.exceptions.dataset.CannotLoadContentDataset;
 import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
 import delfos.common.exceptions.dataset.items.ItemNotFound;
@@ -28,8 +27,6 @@ import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.storage.validationdatasets.PairOfTrainTestRatingsDataset;
 import delfos.dataset.storage.validationdatasets.ValidationDatasets;
-import delfos.dataset.util.DatasetOperations;
-import delfos.dataset.util.DatasetPrinterDeprecated;
 import delfos.group.groupsofusers.GroupOfUsers;
 import java.util.Map;
 import java.util.Random;
@@ -137,25 +134,6 @@ public class HoldOutGroupRatedItems extends GroupValidationTechnique {
                     ValidationDatasets.getInstance().createTestDataset(datasetLoader.getRatingsDataset(), testSet),
                     "_" + this.getClass().getSimpleName() + "_seed=" + getSeedValue());
 
-            if (Global.isVerboseAnnoying()) {
-
-                Set<Integer> allUsers = new TreeSet<>();
-                for (GroupOfUsers g : groupsOfUsers) {
-                    allUsers.addAll(g.getIdMembers());
-                }
-
-                Global.showInfoMessage("Dataset de training.\n");
-                DatasetPrinterDeprecated.printCompactRatingTable(
-                        ret[0].train,
-                        allUsers,
-                        allRatedItems_this);
-
-                Global.showInfoMessage("Dataset de test.\n");
-                DatasetPrinterDeprecated.printCompactRatingTable(
-                        ret[0].test,
-                        allUsers,
-                        allRatedItems_this);
-            }
         } catch (UserNotFound ex) {
             ERROR_CODES.USER_NOT_FOUND.exit(ex);
         } catch (ItemNotFound ex) {
@@ -175,20 +153,6 @@ public class HoldOutGroupRatedItems extends GroupValidationTechnique {
                 } catch (UserNotFound ex) {
                     throw new IllegalArgumentException("The user '" + idUser + "' in group " + groupOfUsers + " is not in the rating dataset (User doesn't have ratings.");
                 }
-            }
-
-            if (Global.isVerboseAnnoying()) {
-                Map<Integer, Map<Integer, ? extends Rating>> groupRatings = new TreeMap<>();
-                for (int idUser : groupOfUsers) {
-                    try {
-                        groupRatings.put(idUser, datasetLoader.getRatingsDataset().getUserRatingsRated(idUser));
-                    } catch (UserNotFound ex) {
-                        throw new IllegalArgumentException("The user '" + idUser + "' in group " + groupOfUsers + " is not in the rating dataset (User doesn't have ratings.");
-                    }
-                }
-                Global.showInfoMessage("Ratings of group " + groupOfUsers + ".\n");
-
-                DatasetPrinterDeprecated.printCompactRatingTable(DatasetOperations.convertRatingsToNumber(groupRatings), groupOfUsers.getIdMembers(), allRatedItems_thisGroup);
             }
         }
         return allRatedItems_thisGroup;

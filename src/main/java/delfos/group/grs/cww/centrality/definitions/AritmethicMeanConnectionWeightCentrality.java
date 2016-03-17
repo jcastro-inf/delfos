@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -42,7 +42,7 @@ public class AritmethicMeanConnectionWeightCentrality extends CentralityConceptD
             if (node == otherNode) {
                 // No se tiene en cuenta la confianza consigo mismo.
             } else {
-                double connection = weightedGraph.connection(node, otherNode).doubleValue();
+                double connection = weightedGraph.connectionWeight(node, otherNode);
                 sumOfConnections += connection;
                 n++;
             }

@@ -17,7 +17,6 @@
 package delfos.group.experiment.validation.validationtechniques;
 
 import delfos.ERROR_CODES;
-import delfos.common.Global;
 import delfos.common.exceptions.dataset.CannotLoadContentDataset;
 import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
 import delfos.common.exceptions.dataset.items.ItemNotFound;
@@ -29,7 +28,6 @@ import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.user.User;
 import delfos.dataset.storage.validationdatasets.PairOfTrainTestRatingsDataset;
 import delfos.dataset.storage.validationdatasets.ValidationDatasets;
-import delfos.dataset.util.DatasetPrinterDeprecated;
 import delfos.dataset.util.DatasetUtilities;
 import delfos.group.groupsofusers.GroupOfUsers;
 import java.util.ArrayList;
@@ -169,28 +167,6 @@ public class CrossFoldValidation_groupRatedItems extends GroupValidationTechniqu
                                 finalTestSets.get(idPartition)),
                         "_" + this.getClass().getSimpleName() + "_seed=" + getSeedValue() + "_partition=" + idPartition);
 
-                if (Global.isVerboseAnnoying()) {
-
-                    Global.showInfoMessage("==================================================== \n");
-
-                    Set<Integer> allUsers = new TreeSet<>();
-                    for (GroupOfUsers g : groupsOfUsers) {
-                        allUsers.addAll(g.getIdMembers());
-                    }
-
-                    Global.showInfoMessage("Dataset de training " + idPartition + ".\n");
-                    DatasetPrinterDeprecated.printCompactRatingTable(
-                            ret[idPartition].train,
-                            allUsers,
-                            allItems);
-
-                    Global.showInfoMessage("Dataset de test " + idPartition + ".\n");
-                    DatasetPrinterDeprecated.printCompactRatingTable(
-                            ret[idPartition].test,
-                            allUsers,
-                            allItems);
-                    Global.showInfoMessage("==================================================== \n");
-                }
             } catch (UserNotFound ex) {
                 ERROR_CODES.USER_NOT_FOUND.exit(ex);
             } catch (ItemNotFound ex) {
