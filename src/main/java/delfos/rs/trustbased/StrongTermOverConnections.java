@@ -49,7 +49,7 @@ public class StrongTermOverConnections {
                     thisNodeConnections.put(nodeDestiny, 1);
                 } else {
                     //Do the normalisation.
-                    final double originalConnection = source.connectionWeight(nodeSource, nodeDestiny);
+                    final double originalConnection = source.connectionWeight(nodeSource, nodeDestiny).orElse(0.0);
 
                     if (Double.isFinite(originalConnection) && originalConnection > 0) {
                         final double modifiedConnection = strong.alphaCut(originalConnection);

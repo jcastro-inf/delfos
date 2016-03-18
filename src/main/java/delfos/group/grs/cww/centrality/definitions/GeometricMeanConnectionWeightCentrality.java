@@ -41,13 +41,14 @@ public class GeometricMeanConnectionWeightCentrality extends CentralityConceptDe
             if (Objects.equals(node, otherNode)) {
                 // No se tiene en cuenta la confianza consigo mismo.
             } else {
-                double connection = weightedGraph.connectionWeight(node, otherNode);
+                double connection = weightedGraph.connectionWeight(node, otherNode).orElse(0.0);
                 centralityThisMember *= connection;
             }
         }
         return centralityThisMember;
     }
 
+    @Override
     public ParameterOwnerType getParameterOwnerType() {
         return ParameterOwnerType.CENTRALITY_CONCEPT_DEFINITION;
     }

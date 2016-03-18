@@ -91,8 +91,8 @@ public class WeightedGraph<Node> implements Serializable {
         validateWeightsGraph(adjMatrixEdgeWeightedDigraph);
     }
 
-    public double connectionWeight(Node node1, Node node2) {
-        double weight = getEdge(node1, node2).map(edge -> edge.weight()).orElse(Double.NaN);
+    public Optional<Double> connectionWeight(Node node1, Node node2) {
+        Optional<Double> weight = getEdge(node1, node2).map(edge -> edge.weight());
         return weight;
     }
 
@@ -200,10 +200,9 @@ public class WeightedGraph<Node> implements Serializable {
 
         for (int indexRow = 0; indexRow < nodesSorted.size(); indexRow++) {
             Node node = nodesSorted.get(indexRow);
-
             for (int indexColumn = 0; indexColumn < nodesSorted.size(); indexColumn++) {
                 Node node2 = nodesSorted.get(indexColumn);
-                double value = connectionWeight(node, node2);
+                double value = connectionWeight(node, node2).orElse(0.0);
                 matrix[indexRow][indexColumn] = value;
             }
         }
@@ -222,7 +221,7 @@ public class WeightedGraph<Node> implements Serializable {
 
             for (int indexColumn = 0; indexColumn < nodesSorted.size(); indexColumn++) {
                 Node node2 = nodesSorted.get(indexColumn);
-                double value = connectionWeight(node, node2);
+                double value = connectionWeight(node, node2).orElse(0.0);
                 matrix[indexRow][indexColumn] = value;
             }
         }
@@ -538,10 +537,11 @@ public class WeightedGraph<Node> implements Serializable {
     private Map<Node, Map<Node, Number>> getSubGraphEdges(Collection<Node> nodes) {
         Map<Node, Map<Node, Number>> edgesOfSubGraph = nodes.stream().collect(Collectors.toMap(node1 -> node1, node1 -> {
             Map<Node, Number> edgesFromThisVertex = nodes.stream()
+                    .filter(node2 -> this.connectionWeight(node1, node2).isPresent())
                     .collect(Collectors.toMap(
                             node2 -> node2,
                             node2 -> {
-                                return this.connectionWeight(node1, node2);
+                                return this.connectionWeight(node1, node2).get();
                             }));
 
             return edgesFromThisVertex;

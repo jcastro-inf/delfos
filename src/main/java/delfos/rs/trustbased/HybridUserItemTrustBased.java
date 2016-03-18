@@ -182,8 +182,8 @@ public class HybridUserItemTrustBased extends CollaborativeRecommender<HybridUse
                         continue;
                     }
 
-                    if (usersTrust.allNodes().contains(idUser) && usersTrust.connectionWeight(idUser, idUserAdyacente) > 0) {
-                        sumaConfianza += usersTrust.connectionWeight(idUser, idUserAdyacente);
+                    if (usersTrust.allNodes().contains(idUser) && usersTrust.connectionWeight(idUser, idUserAdyacente).orElse(0.0) > 0) {
+                        sumaConfianza += usersTrust.connectionWeight(idUser, idUserAdyacente).orElse(0.0);
                         numAdjacentes++;
                     }
                 }
@@ -214,7 +214,7 @@ public class HybridUserItemTrustBased extends CollaborativeRecommender<HybridUse
                         continue;
                     }
 
-                    double trustBetweenUsers = usersTrust.connectionWeight(idUser, idUserNeighbour);
+                    double trustBetweenUsers = usersTrust.connectionWeight(idUser, idUserNeighbour).orElse(0.0);
                     if (trustBetweenUsers > 0) {
                         neighborsOfUser.add(new Neighbor(RecommendationEntity.USER, idUserNeighbour, trustBetweenUsers));
                     }
@@ -268,7 +268,7 @@ public class HybridUserItemTrustBased extends CollaborativeRecommender<HybridUse
                                 continue;
                             }
 
-                            double connection = itemBasedTrust.connectionWeight(idItemAdjacenteOrigen, idItem);
+                            double connection = itemBasedTrust.connectionWeight(idItemAdjacenteOrigen, idItem).orElse(0.0);
 
                             //Se pasa a calcular la reputación del producto.
                             numerador += connection;
@@ -307,7 +307,7 @@ public class HybridUserItemTrustBased extends CollaborativeRecommender<HybridUse
                         continue;
                     }
 
-                    double trustBetweenItems = itemBasedTrust.connectionWeight(idItem, idItemNeighbour);
+                    double trustBetweenItems = itemBasedTrust.connectionWeight(idItem, idItemNeighbour).orElse(0.0);
                     neighborsOfItem.add(new Neighbor(RecommendationEntity.ITEM, idItemNeighbour, trustBetweenItems));
 
                 }
@@ -345,7 +345,7 @@ public class HybridUserItemTrustBased extends CollaborativeRecommender<HybridUse
                 break;
             }
 
-            double connection = itemBasedTrustModuleModel.getItemsTrust().connectionWeight(idItem, idItemNeighbor);
+            double connection = itemBasedTrustModuleModel.getItemsTrust().connectionWeight(idItem, idItemNeighbor).orElse(0.0);
             if (connection > 0) {
                 //Predecir con la confianza.
 
@@ -356,7 +356,7 @@ public class HybridUserItemTrustBased extends CollaborativeRecommender<HybridUse
                 double rating = userRatings.get(idItemNeighbor).getRatingValue().doubleValue();
                 double mediaItemVecino = ratingsDataset.getMeanRatingItem(idItemNeighbor);
 
-                double connectionItemVecino = itemBasedTrustModuleModel.getItemsTrust().connectionWeight(idItem, idItemNeighbor);
+                double connectionItemVecino = itemBasedTrustModuleModel.getItemsTrust().connectionWeight(idItem, idItemNeighbor).orElse(0.0);
                 numerador += connectionItemVecino * (rating - mediaItemVecino);
                 denominador += connectionItemVecino;
                 numVecinosUsados++;
@@ -422,9 +422,9 @@ public class HybridUserItemTrustBased extends CollaborativeRecommender<HybridUse
                 continue;
             }
 
-            if (usersTrust.connectionWeight(idUser, idUserNeighbour) > 0) {
-                numerador += usersTrust.connectionWeight(idUser, idUserNeighbour) * (neighbourRatings.get(idItem).getRatingValue().doubleValue() - neighbourMeanRating);
-                denominador += usersTrust.connectionWeight(idUser, idUserNeighbour);
+            if (usersTrust.connectionWeight(idUser, idUserNeighbour).orElse(0.0) > 0) {
+                numerador += usersTrust.connectionWeight(idUser, idUserNeighbour).orElse(0.0) * (neighbourRatings.get(idItem).getRatingValue().doubleValue() - neighbourMeanRating);
+                denominador += usersTrust.connectionWeight(idUser, idUserNeighbour).orElse(0.0);
             } else {
                 //No hay definida confianza directa, usando reputación.
                 numerador += usersReputation.get(idUserNeighbour).doubleValue() * (neighbourRatings.get(idItem).getRatingValue().doubleValue() - neighbourMeanRating);

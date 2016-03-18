@@ -19,6 +19,7 @@ package delfos.group.grs.cww.centrality.definitions;
 import delfos.common.parameters.ParameterOwnerType;
 import delfos.group.grs.cww.centrality.CentralityConceptDefinition;
 import delfos.rs.trustbased.WeightedGraph;
+import java.util.Objects;
 
 /**
  *
@@ -39,10 +40,10 @@ public class AritmethicMeanConnectionWeightCentrality extends CentralityConceptD
         double sumOfConnections = 0;
         for (Integer otherNode : weightedGraph.allNodes()) {
 
-            if (node == otherNode) {
+            if (Objects.equals(node, otherNode)) {
                 // No se tiene en cuenta la confianza consigo mismo.
             } else {
-                double connection = weightedGraph.connectionWeight(node, otherNode);
+                double connection = weightedGraph.connectionWeight(node, otherNode).orElse(0.0);
                 sumOfConnections += connection;
                 n++;
             }
@@ -51,6 +52,7 @@ public class AritmethicMeanConnectionWeightCentrality extends CentralityConceptD
         return centrality;
     }
 
+    @Override
     public ParameterOwnerType getParameterOwnerType() {
         return ParameterOwnerType.CENTRALITY_CONCEPT_DEFINITION;
     }
