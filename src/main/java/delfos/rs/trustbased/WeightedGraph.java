@@ -26,6 +26,7 @@ import java.io.PrintStream;
 import java.io.Serializable;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -344,19 +345,19 @@ public class WeightedGraph<Node> implements Serializable {
 
     protected final Map<Node, Integer> makeIndex(Map<Node, Map<Node, Number>> connections) {
         validateConnections(connections);
-        List<Node> sortedUsers = connections.keySet()
+        List<Node> sortedNodes = connections.keySet()
                 .stream()
                 .sorted()
                 .collect(Collectors.toList());
 
-        return makeIndex(sortedUsers);
+        return makeIndex(sortedNodes);
     }
 
     protected final Map<Node, Integer> makeIndex(List<Node> nodes) {
         return IntStream.range(0, nodes.size()).boxed()
                 .collect(Collectors.toMap(
-                        indexUser -> nodes.get(indexUser),
-                        indexUser -> indexUser)
+                        indexNode -> nodes.get(indexNode),
+                        indexNode -> indexNode)
                 );
     }
 
@@ -364,7 +365,7 @@ public class WeightedGraph<Node> implements Serializable {
         validateConnections(connections);
 
         long numEdges = connections.values().parallelStream()
-                .flatMap(thisUserConnections -> thisUserConnections.values().stream())
+                .flatMap(thisNodeConnections -> thisNodeConnections.values().stream())
                 .filter(connection -> !Double.isNaN(connection.doubleValue()))
                 .filter(connection -> connection.doubleValue() > 0)
                 .count();
@@ -375,9 +376,9 @@ public class WeightedGraph<Node> implements Serializable {
 
             Node node1 = entry.getKey();
             int indexNode1 = nodesIndex.get(node1);
-            Map<Node, Number> thisUserConnections = entry.getValue();
+            Map<Node, Number> thisNodeConnections = entry.getValue();
 
-            thisUserConnections.entrySet().forEach(entry2 -> {
+            thisNodeConnections.entrySet().forEach(entry2 -> {
                 Node node2 = entry2.getKey();
                 int indexNode2 = nodesIndex.get(node2);
                 double weight = entry2.getValue().doubleValue();
@@ -427,8 +428,6 @@ public class WeightedGraph<Node> implements Serializable {
     }
 
     private void validateWeightsGraph(AdjMatrixEdgeWeightedDigraph adjMatrixEdgeWeightedDigraph) {
-
-        this.printTable(System.out);
 
         List<DirectedEdge> allEdges = IntStream.range(0, adjMatrixEdgeWeightedDigraph.V()).boxed()
                 .map(vertex -> {
@@ -527,5 +526,24 @@ public class WeightedGraph<Node> implements Serializable {
         }
         TextTable textTable = new TextTable(columnNames.toArray(new String[0]), data);
         return textTable;
+    }
+
+    public WeightedGraph<Node> getSubGraph(Set<Node> nodes) {
+        this.printTable(System.out);
+
+        System.out.println("Selecting nodes: " + Arrays.toString(nodes.stream().sorted().toArray()));
+
+        Map<Node, Map<Node, Number>> edgesOfSubGraph = nodes.stream().collect(Collectors.toMap(node1 -> node1, node1 -> {
+            Map<Node, Number> edgesFromThisVertex = nodes.stream()
+                    .collect(Collectors.toMap(
+                            node2 -> node2,
+                            node2 -> {
+                                return this.connectionWeight(node1, node2);
+                            }));
+
+            return edgesFromThisVertex;
+        }));
+        WeightedGraph<Node> subGraph = new WeightedGraph<>(edgesOfSubGraph);
+        return subGraph;
     }
 }
