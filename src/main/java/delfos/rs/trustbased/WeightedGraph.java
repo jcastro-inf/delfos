@@ -26,6 +26,7 @@ import java.io.PrintStream;
 import java.io.Serializable;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -89,6 +90,37 @@ public class WeightedGraph<Node> implements Serializable {
         adjMatrixEdgeWeightedDigraph = makeWeightedDiGraph(nodesIndex, matrix);
 
         validateWeightsGraph(adjMatrixEdgeWeightedDigraph);
+    }
+
+    public WeightedGraph(Collection<Node> nodes, Set<PathBetweenNodes<Node>> edges) {
+        validateEdges(edges);
+
+        nodesIndex = makeIndex(nodes.stream().sorted().collect(Collectors.toList()));
+        nodesByIndex = makeNodesByIndex(nodesIndex);
+
+        double[][] matrix = makeMatrixFromEdges(edges);
+
+        adjMatrixEdgeWeightedDigraph = makeWeightedDiGraph(nodesIndex, matrix);
+
+        validateWeightsGraph(adjMatrixEdgeWeightedDigraph);
+    }
+
+    private double[][] makeMatrixFromEdges(Set<PathBetweenNodes<Node>> edges) {
+        double[][] matrix = new double[nodesIndex.size()][nodesIndex.size()];
+        edges.parallelStream().forEach(edge -> {
+            Integer fromIndex = nodesIndex.get(edge.from());
+            Integer toIndex = nodesIndex.get(edge.to());
+            double weight = edge.getFirstWeight();
+            matrix[fromIndex][toIndex] = weight;
+        });
+        return matrix;
+    }
+
+    private void validateEdges(Set<PathBetweenNodes<Node>> edges) throws IllegalArgumentException {
+        List<PathBetweenNodes<Node>> nodesWithMoreThanOneJump = edges.parallelStream().filter(edge -> edge.numJumps() > 1).collect(Collectors.toList());
+        if (!nodesWithMoreThanOneJump.isEmpty()) {
+            throw new IllegalArgumentException("The edges specified have more than one jump: " + nodesWithMoreThanOneJump.toString());
+        }
     }
 
     public Optional<Double> connectionWeight(Node node1, Node node2) {
@@ -336,8 +368,8 @@ public class WeightedGraph<Node> implements Serializable {
     protected final Map<Node, Integer> makeIndex(List<Node> nodes) {
         return IntStream.range(0, nodes.size()).boxed()
                 .collect(Collectors.toMap(
-                        indexNode -> nodes.get(indexNode),
-                        indexNode -> indexNode)
+                                indexNode -> nodes.get(indexNode),
+                                indexNode -> indexNode)
                 );
     }
 
@@ -539,13 +571,38 @@ public class WeightedGraph<Node> implements Serializable {
             Map<Node, Number> edgesFromThisVertex = nodes.stream()
                     .filter(node2 -> this.connectionWeight(node1, node2).isPresent())
                     .collect(Collectors.toMap(
-                            node2 -> node2,
-                            node2 -> {
-                                return this.connectionWeight(node1, node2).get();
-                            }));
+                                    node2 -> node2,
+                                    node2 -> {
+                                        return this.connectionWeight(node1, node2).get();
+                                    }));
 
             return edgesFromThisVertex;
         }));
         return edgesOfSubGraph;
+    }
+
+    public Collection<PathBetweenNodes<Node>> getEdgesFromNode(Node node1) {
+        int indexNode1 = nodesIndex.get(node1);
+
+        List<DirectedEdge> edgesFromNode1 = new ArrayList<>();
+        for (DirectedEdge a : adjMatrixEdgeWeightedDigraph.adj(indexNode1)) {
+            edgesFromNode1.add(a);
+        }
+
+        List<PathBetweenNodes<Node>> pathsFromNode1 = edgesFromNode1.stream()
+                .map(edge -> {
+                    Node node2 = nodesByIndex.get(edge.to());
+                    return new PathBetweenNodes<>(this, Arrays.asList(node1, node2));
+                }).collect(Collectors.toList());
+
+        return pathsFromNode1;
+    }
+
+    public Set<PathBetweenNodes<Node>> allEdges() {
+        Set<PathBetweenNodes<Node>> allEdges = this.allNodes().stream()
+                .flatMap(node1 -> this.getEdgesFromNode(node1).stream())
+                .collect(Collectors.toSet());
+
+        return allEdges;
     }
 }

@@ -30,6 +30,7 @@ import java.util.List;
 public class PathBetweenNodes<Node> implements Comparable<PathBetweenNodes> {
 
     private final List<Node> _nodes;
+    private final List<Double> _weights;
     private final double length;
 
     public double getLength() {
@@ -43,6 +44,7 @@ public class PathBetweenNodes<Node> implements Comparable<PathBetweenNodes> {
     public PathBetweenNodes(WeightedGraph<Node> graph, List<Node> nodes) {
 
         _nodes = Collections.unmodifiableList(new ArrayList<Node>(nodes));
+        _weights = new ArrayList<>();
 
         double _length = 0;
         for (int i = 1; i < nodes.size(); i++) {
@@ -55,6 +57,7 @@ public class PathBetweenNodes<Node> implements Comparable<PathBetweenNodes> {
             } else {
                 double distance = graph.distance(previousNode, thisNode);
                 _length += distance;
+                _weights.add(graph.connectionWeight(previousNode, thisNode).get());
             }
         }
         this.length = _length;
@@ -69,6 +72,14 @@ public class PathBetweenNodes<Node> implements Comparable<PathBetweenNodes> {
         } else {
             return -1;
         }
+    }
+
+    public Node from() {
+        return getFirst();
+    }
+
+    public Node to() {
+        return getLast();
     }
 
     public Node getFirst() {
@@ -90,6 +101,10 @@ public class PathBetweenNodes<Node> implements Comparable<PathBetweenNodes> {
     @Override
     public String toString() {
         return _nodes.toString() + " --> " + length;
+    }
+
+    public double getFirstWeight() {
+        return _weights.get(0);
     }
 
 }
