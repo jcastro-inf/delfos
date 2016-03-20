@@ -31,6 +31,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -107,19 +108,26 @@ public class WeightedGraph<Node> implements Serializable {
 
     private double[][] makeMatrixFromEdges(Set<PathBetweenNodes<Node>> edges) {
         double[][] matrix = new double[nodesIndex.size()][nodesIndex.size()];
-        edges.parallelStream().forEach(edge -> {
-            Integer fromIndex = nodesIndex.get(edge.from());
-            Integer toIndex = nodesIndex.get(edge.to());
-            double weight = edge.getFirstWeight();
-            matrix[fromIndex][toIndex] = weight;
-        });
+        edges.parallelStream()
+                .filter(edge -> Double.isFinite(edge.getLength()))
+                .forEach(edge -> {
+                    Integer fromIndex = nodesIndex.get(edge.from());
+                    Integer toIndex = nodesIndex.get(edge.to());
+                    double weight = Objects.equals(fromIndex, toIndex) ? 0 : edge.getFirstWeight();
+                    matrix[fromIndex][toIndex] = weight;
+                });
         return matrix;
     }
 
     private void validateEdges(Set<PathBetweenNodes<Node>> edges) throws IllegalArgumentException {
-        List<PathBetweenNodes<Node>> nodesWithMoreThanOneJump = edges.parallelStream().filter(edge -> edge.numJumps() > 1).collect(Collectors.toList());
-        if (!nodesWithMoreThanOneJump.isEmpty()) {
-            throw new IllegalArgumentException("The edges specified have more than one jump: " + nodesWithMoreThanOneJump.toString());
+        List<PathBetweenNodes<Node>> edgesWithMoreThanOneJump = edges.parallelStream()
+                .filter(edge -> edge.numEdges() != 1)
+                .collect(Collectors.toList());
+
+        if (!edgesWithMoreThanOneJump.isEmpty()) {
+            System.out.println("There are edges that are paths!");
+            edgesWithMoreThanOneJump.forEach(edge -> System.out.println(edge));
+            throw new IllegalArgumentException("The edges specified have more than one jump: " + edgesWithMoreThanOneJump.toString());
         }
     }
 

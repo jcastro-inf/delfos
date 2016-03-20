@@ -43,24 +43,48 @@ public class PathBetweenNodes<Node> implements Comparable<PathBetweenNodes> {
 
     public PathBetweenNodes(WeightedGraph<Node> graph, List<Node> nodes) {
 
-        _nodes = Collections.unmodifiableList(new ArrayList<Node>(nodes));
-        _weights = new ArrayList<>();
+        nodes = removeRepetitions(nodes);
+
+        convertEdgeToPath(nodes);
+
+        List<Double> weights = new ArrayList<>();
 
         double _length = 0;
         for (int i = 1; i < nodes.size(); i++) {
-
             Node previousNode = nodes.get(i - 1);
             Node thisNode = nodes.get(i);
-
             if (previousNode == thisNode) {
-                //Salto sobre el mismo nodo.
+                weights.add(1.0);
+                _length += 0.0;
             } else {
                 double distance = graph.distance(previousNode, thisNode);
                 _length += distance;
-                _weights.add(graph.connectionWeight(previousNode, thisNode).get());
+                weights.add(graph.connectionWeight(previousNode, thisNode).get());
             }
         }
+
+        _nodes = Collections.unmodifiableList(new ArrayList<Node>(nodes));
+        _weights = Collections.unmodifiableList(weights);
         this.length = _length;
+    }
+
+    private void convertEdgeToPath(List<Node> nodes) {
+        if (nodes.size() == 1) {
+            nodes.add(nodes.get(0));
+        }
+    }
+
+    private List<Node> removeRepetitions(List<Node> nodes) {
+        nodes = new ArrayList<>(nodes);
+        for (int i = 1; i < nodes.size(); i++) {
+            Node previous = nodes.get(i - 1);
+            Node thisNode = nodes.get(i);
+
+            if (previous.equals(thisNode)) {
+                nodes.remove(i - 1);
+            }
+        }
+        return nodes;
     }
 
     @Override
@@ -96,6 +120,10 @@ public class PathBetweenNodes<Node> implements Comparable<PathBetweenNodes> {
 
     public int numJumps() {
         return _nodes.size();
+    }
+
+    public int numEdges() {
+        return _nodes.size() - 1;
     }
 
     @Override
