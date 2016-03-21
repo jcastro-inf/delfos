@@ -16,6 +16,7 @@
  */
 package delfos.rs.trustbased;
 
+import delfos.common.StringsOrderings;
 import delfos.dataset.util.DatasetPrinter;
 import dnl.utils.text.table.TextTable;
 import edu.princeton.cs.algs4.AdjMatrixEdgeWeightedDigraph;
@@ -44,7 +45,7 @@ import org.apache.commons.io.output.WriterOutputStream;
  *
  * @param <Node>
  */
-public class WeightedGraph<Node> implements Serializable {
+public class WeightedGraph<Node> implements Serializable, Comparable<WeightedGraph<Node>> {
 
     private static final long serialVersionUID = 115L;
 
@@ -294,7 +295,7 @@ public class WeightedGraph<Node> implements Serializable {
         columnNames.add("node\\node");
         final List<Node> sortedNodes = this.allNodes().stream().sorted().filter(node -> nodes.contains(node)).collect(Collectors.toList());
         Object[][] data = new Object[sortedNodes.size()][sortedNodes.size() + 1];
-        columnNames.addAll(sortedNodes.stream().map(node -> node.toString()).collect(Collectors.toList()));
+        columnNames.addAll(sortedNodes.stream().map(node -> node.toString() + " ").collect(Collectors.toList()));
         DecimalFormat format = new DecimalFormat("0.0000");
         for (int node1index = 0; node1index < sortedNodes.size(); node1index++) {
             Node node1 = sortedNodes.get(node1index);
@@ -311,7 +312,7 @@ public class WeightedGraph<Node> implements Serializable {
                         .filter(weight -> weight > 0)
                         .map(weight -> format.format(weight))
                         .orElse("0");
-                data[row][column] = cellValue;
+                data[row][column] = cellValue + " ";
             }
         }
         TextTable textTable = new TextTable(columnNames.toArray(new String[0]), data);
@@ -615,5 +616,19 @@ public class WeightedGraph<Node> implements Serializable {
                 .collect(Collectors.toSet());
 
         return allEdges;
+    }
+
+    @Override
+    public int compareTo(WeightedGraph<Node> o) {
+        List<Node> allNodes = this.allNodes().stream().sorted().collect(Collectors.toList());
+        List<Node> allNodesOther = o.allNodes().stream().sorted().collect(Collectors.toList());
+
+        int compareNatural = StringsOrderings.compareNatural(allNodes.toString(), allNodesOther.toString());
+
+        if (compareNatural != 0) {
+            return compareNatural;
+        } else {
+            return Integer.compare(this.hashCode(), o.hashCode());
+        }
     }
 }

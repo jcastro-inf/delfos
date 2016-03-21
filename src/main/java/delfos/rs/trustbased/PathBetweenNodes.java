@@ -17,6 +17,7 @@
 package delfos.rs.trustbased;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -39,6 +40,16 @@ public class PathBetweenNodes<Node> implements Comparable<PathBetweenNodes> {
 
     public List<Node> getNodes() {
         return Collections.unmodifiableList(_nodes);
+    }
+
+    public static <Node> PathBetweenNodes<Node> buildEdge(Node from, Node to, double weight) {
+        return new PathBetweenNodes<>(Arrays.asList(from, to), Arrays.asList(1.0), 1);
+    }
+
+    private PathBetweenNodes(List<Node> _nodes, List<Double> _weights, double length) {
+        this._nodes = _nodes;
+        this._weights = _weights;
+        this.length = length;
     }
 
     public PathBetweenNodes(WeightedGraph<Node> graph, List<Node> nodes) {
