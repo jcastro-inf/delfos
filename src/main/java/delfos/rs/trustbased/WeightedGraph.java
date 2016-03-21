@@ -52,7 +52,7 @@ public class WeightedGraph<Node> implements Serializable {
     protected final Map<Node, Integer> nodesIndex;
     protected final Map<Integer, Node> nodesByIndex;
 
-    private FloydWarshall floydWarshall = null;
+    private FloydWarshall floydWarshall;
 
     /**
      * Crea la red de confianza con los valores indicados.
@@ -70,6 +70,7 @@ public class WeightedGraph<Node> implements Serializable {
         nodesByIndex = makeNodesByIndex(nodesIndex);
 
         adjMatrixEdgeWeightedDigraph = makeWeightedDiGraph(weightConnections);
+        floydWarshall = null;
 
         validateWeightsGraph(adjMatrixEdgeWeightedDigraph);
     }
@@ -116,6 +117,8 @@ public class WeightedGraph<Node> implements Serializable {
                     double weight = Objects.equals(fromIndex, toIndex) ? 0 : edge.getFirstWeight();
                     matrix[fromIndex][toIndex] = weight;
                 });
+
+        IntStream.range(0, matrix.length).boxed().parallel().forEach(index -> matrix[index][index] = 1);
         return matrix;
     }
 
@@ -376,8 +379,8 @@ public class WeightedGraph<Node> implements Serializable {
     protected final Map<Node, Integer> makeIndex(List<Node> nodes) {
         return IntStream.range(0, nodes.size()).boxed()
                 .collect(Collectors.toMap(
-                                indexNode -> nodes.get(indexNode),
-                                indexNode -> indexNode)
+                        indexNode -> nodes.get(indexNode),
+                        indexNode -> indexNode)
                 );
     }
 
@@ -468,7 +471,7 @@ public class WeightedGraph<Node> implements Serializable {
 
     private static void validateWeightsGraph(AdjMatrixEdgeWeightedDigraph adjMatrixEdgeWeightedDigraph) {
 
-        List<DirectedEdge> allEdges = IntStream.range(0, adjMatrixEdgeWeightedDigraph.V()).boxed()
+        List<DirectedEdge> allEdges = IntStream.range(0, adjMatrixEdgeWeightedDigraph.V()).boxed().parallel()
                 .map(vertex -> {
                     Iterable<DirectedEdge> iterator = adjMatrixEdgeWeightedDigraph.adj(vertex);
                     ArrayList<DirectedEdge> listOfEdges = new ArrayList<>();
@@ -477,9 +480,9 @@ public class WeightedGraph<Node> implements Serializable {
                     }
                     return listOfEdges;
                 })
-                .flatMap(listOfEdges -> listOfEdges.stream()).collect(Collectors.toList());
+                .flatMap(listOfEdges -> listOfEdges.parallelStream()).collect(Collectors.toList());
 
-        List<DirectedEdge> badEdges = allEdges.stream()
+        List<DirectedEdge> badEdges = allEdges.parallelStream()
                 .filter(edge -> (edge.weight() < 0) || (edge.weight() > 1))
                 .collect(Collectors.toList());
 
@@ -575,14 +578,14 @@ public class WeightedGraph<Node> implements Serializable {
     }
 
     private Map<Node, Map<Node, Number>> getSubGraphEdges(Collection<Node> nodes) {
-        Map<Node, Map<Node, Number>> edgesOfSubGraph = nodes.stream().collect(Collectors.toMap(node1 -> node1, node1 -> {
-            Map<Node, Number> edgesFromThisVertex = nodes.stream()
+        Map<Node, Map<Node, Number>> edgesOfSubGraph = nodes.parallelStream().collect(Collectors.toMap(node1 -> node1, node1 -> {
+            Map<Node, Number> edgesFromThisVertex = nodes.parallelStream()
                     .filter(node2 -> this.connectionWeight(node1, node2).isPresent())
                     .collect(Collectors.toMap(
-                                    node2 -> node2,
-                                    node2 -> {
-                                        return this.connectionWeight(node1, node2).get();
-                                    }));
+                            node2 -> node2,
+                            node2 -> {
+                                return this.connectionWeight(node1, node2).get();
+                            }));
 
             return edgesFromThisVertex;
         }));
@@ -597,7 +600,7 @@ public class WeightedGraph<Node> implements Serializable {
             edgesFromNode1.add(a);
         }
 
-        List<PathBetweenNodes<Node>> pathsFromNode1 = edgesFromNode1.stream()
+        List<PathBetweenNodes<Node>> pathsFromNode1 = edgesFromNode1.parallelStream()
                 .map(edge -> {
                     Node node2 = nodesByIndex.get(edge.to());
                     return new PathBetweenNodes<>(this, Arrays.asList(node1, node2));

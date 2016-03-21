@@ -20,7 +20,7 @@ import delfos.common.Global;
 import delfos.common.fuzzylabels.FuzzyLabel;
 import delfos.dataset.util.DatasetPrinter;
 import java.util.Map;
-import java.util.TreeMap;
+import java.util.stream.Collectors;
 
 /**
  * Normaliza un grafo ponderado dado. Utiliza la normalización
@@ -38,27 +38,32 @@ public class StrongTermOverConnections {
             Global.showInfoMessage(printWeightedGraph);
         }
 
-        Map<Node, Map<Node, Number>> connections = new TreeMap<>();
+        Map<Node, Map<Node, Number>> connections;
         FuzzyLabel strong = FuzzyLabel.createAscendentLabel(aStrong, bStrong);
 
-        for (Node nodeSource : source.allNodes()) {
-            TreeMap<Node, Number> thisNodeConnections = new TreeMap<>();
-            source.allNodes().stream().forEach((nodeDestiny) -> {
+        connections = source.allNodes().parallelStream().collect(Collectors.toMap(nodeSource -> nodeSource, nodeSource -> {
+
+            Map<Node, Number> thisNodeConnections;
+            thisNodeConnections = source.allNodes().parallelStream().collect(Collectors.toMap(nodeDestiny -> nodeDestiny, nodeDestiny -> {
+                Number weight = 0;
                 if (nodeSource.equals(nodeDestiny)) {
                     //Skip same node connections by setting to 1.
-                    thisNodeConnections.put(nodeDestiny, 1);
+                    weight = 1.0;
                 } else {
                     //Do the normalisation.
                     final double originalConnection = source.connectionWeight(nodeSource, nodeDestiny).orElse(0.0);
 
                     if (Double.isFinite(originalConnection) && originalConnection > 0) {
                         final double modifiedConnection = strong.alphaCut(originalConnection);
-                        thisNodeConnections.put(nodeDestiny, modifiedConnection);
+
+                        weight = modifiedConnection;
                     }
+
                 }
-            });
-            connections.put(nodeSource, thisNodeConnections);
-        }
+                return weight;
+            }));
+            return thisNodeConnections;
+        }));
 
         WeightedGraph<Node> ret = new WeightedGraph<>(connections);
 
