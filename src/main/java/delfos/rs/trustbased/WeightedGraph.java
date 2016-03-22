@@ -153,10 +153,12 @@ public class WeightedGraph<Node> implements Serializable, Comparable<WeightedGra
 
         List<DirectedEdge> edgesFromNode1 = new ArrayList<>();
         for (DirectedEdge a : adjMatrixEdgeWeightedDigraph.adj(indexNode1)) {
-            edgesFromNode1.add(a);
+            if (a.weight() > 0) {
+                edgesFromNode1.add(a);
+            }
         }
 
-        Optional<DirectedEdge> edgeNode1ToNode2 = edgesFromNode1.stream()
+        Optional<DirectedEdge> edgeNode1ToNode2 = edgesFromNode1.parallelStream()
                 .filter(edge -> ((edge.from() == indexNode1) && (edge.to() == indexNode2)))
                 .findAny();
 
@@ -242,14 +244,15 @@ public class WeightedGraph<Node> implements Serializable, Comparable<WeightedGra
 
         Double[][] matrix = new Double[nodesSorted.size()][nodesSorted.size()];
 
-        for (int indexRow = 0; indexRow < nodesSorted.size(); indexRow++) {
-            Node node = nodesSorted.get(indexRow);
-            for (int indexColumn = 0; indexColumn < nodesSorted.size(); indexColumn++) {
+        IntStream.range(0, nodesSorted.size()).parallel().boxed().forEach(indexRow -> {
+            Node node1 = nodesSorted.get(indexRow);
+
+            IntStream.range(0, nodesSorted.size()).parallel().boxed().forEach(indexColumn -> {
                 Node node2 = nodesSorted.get(indexColumn);
-                double value = connectionWeight(node, node2).orElse(0.0);
+                double value = connectionWeight(node1, node2).orElse(0.0);
                 matrix[indexRow][indexColumn] = value;
-            }
-        }
+            });
+        });
 
         return matrix;
     }
@@ -260,15 +263,15 @@ public class WeightedGraph<Node> implements Serializable, Comparable<WeightedGra
 
         double[][] matrix = new double[nodesSorted.size()][nodesSorted.size()];
 
-        for (int indexRow = 0; indexRow < nodesSorted.size(); indexRow++) {
-            Node node = nodesSorted.get(indexRow);
+        IntStream.range(0, nodesSorted.size()).parallel().boxed().forEach(indexRow -> {
+            Node node1 = nodesSorted.get(indexRow);
 
-            for (int indexColumn = 0; indexColumn < nodesSorted.size(); indexColumn++) {
+            IntStream.range(0, nodesSorted.size()).parallel().boxed().forEach(indexColumn -> {
                 Node node2 = nodesSorted.get(indexColumn);
-                double value = connectionWeight(node, node2).orElse(0.0);
+                double value = connectionWeight(node1, node2).orElse(0.0);
                 matrix[indexRow][indexColumn] = value;
-            }
-        }
+            });
+        });
 
         validateWeightMatrix(matrix);
         return matrix;
