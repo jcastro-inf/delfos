@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,10 +16,10 @@
  */
 package delfos.factories;
 
-import delfos.rs.trustbased.implicittrustcomputation.ShambourLu_UserBasedImplicitTrustComputation;
 import delfos.rs.trustbased.JaccardGraph;
 import delfos.rs.trustbased.PearsonCorrelationWithPenalty;
 import delfos.rs.trustbased.WeightedGraphCalculation;
+import delfos.rs.trustbased.implicittrustcomputation.ShambourLu_UserBasedImplicitTrustComputation;
 
 /**
  * Factoría que conoce los algoritmos de generación de grafos ponderados que la

@@ -634,4 +634,14 @@ public class WeightedGraph<Node> implements Serializable, Comparable<WeightedGra
             return Integer.compare(this.hashCode(), o.hashCode());
         }
     }
+
+    public String printPairwiseDistancesTable() {
+        TextTable textTable = getPairwiseDistancesTable(this.allNodes());
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        PrintStream recordingStream = new PrintStream(baos);
+        textTable.printTable(recordingStream, 0);
+
+        return baos.toString();
+    }
+
 }
