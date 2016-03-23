@@ -76,11 +76,11 @@ public class CommonRating {
         intersection.addAll(itemsRatedUser1.keySet());
         intersection.retainAll(itemsRatedUser2.keySet());
 
-        Set<Item> itemsIntersection = intersection.stream()
+        Set<Item> itemsIntersection = intersection.parallelStream()
                 .map(idItem -> datasetLoader.getContentDataset().get(idItem))
                 .collect(Collectors.toSet());
 
-        Collection<CommonRating> commonRatings = itemsIntersection.stream().map(item -> {
+        Collection<CommonRating> commonRatings = itemsIntersection.parallelStream().map(item -> {
 
             double ratingUser1 = itemsRatedUser1
                     .get(item.getId())
@@ -115,7 +115,7 @@ public class CommonRating {
                 .filter(user -> ratingsOverItem2.containsKey(user.getId()))
                 .collect(Collectors.toSet());
 
-        Collection<CommonRating> commonRatings = intersection.stream().map(user -> {
+        Collection<CommonRating> commonRatings = intersection.parallelStream().map(user -> {
 
             double ratingUser1 = ratingsOverItem1
                     .get(user.getId())
