@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -53,6 +53,23 @@ public class RatingsUserNeighborJTableModel extends AbstractTableModel {
     @Override
     public int getColumnCount() {
         return COLUMN_COUNT;
+    }
+
+    @Override
+    public Class<?> getColumnClass(int column) {
+        if (column == ID_ITEM_COLUMN) {
+            return Integer.class;
+        }
+        if (column == ITEM_NAME_COLUMN) {
+            return String.class;
+        }
+        if (column == USER_RATING_COLUMN) {
+            return Object.class;
+        }
+        if (column == NEIGHBOR_RATING_COLUMN) {
+            return Object.class;
+        }
+        return null;
     }
 
     @Override
