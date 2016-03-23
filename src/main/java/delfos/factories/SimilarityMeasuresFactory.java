@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -31,6 +31,7 @@ import delfos.similaritymeasures.RefinedHammingDistance;
 import delfos.similaritymeasures.SimilarityMeasure;
 import delfos.similaritymeasures.Tanimoto;
 import delfos.similaritymeasures.WeightedSimilarityMeasure;
+import delfos.similaritymeasures.useruser.ConditionalProbability;
 import delfos.similaritymeasures.useruser.RelevanceFactor;
 import delfos.similaritymeasures.useruser.UserUserMultipleCorrelationCoefficient;
 import delfos.similaritymeasures.useruser.UserUserSimilarity;
@@ -82,6 +83,8 @@ public class SimilarityMeasuresFactory extends Factory<SimilarityMeasure> {
         instance.addClass(UserUserMultipleCorrelationCoefficient.class);
         instance.addClass(UserUserSimilarityWrapper_relevanceFactor.class);
         instance.addClass(RelevanceFactor.class);
+
+        instance.addClass(ConditionalProbability.class);
 
         //Buffered
         instance.addClass(UserUserSimilarity_buffered.class);
