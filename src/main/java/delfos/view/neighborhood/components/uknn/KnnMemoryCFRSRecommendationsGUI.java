@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -40,6 +40,7 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import javax.swing.BorderFactory;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.event.ListSelectionEvent;
 
@@ -63,6 +64,8 @@ public class KnnMemoryCFRSRecommendationsGUI implements RecommendationsGUI {
     private JPanel neighborsPanel;
     private JPanel recommendationsPanel;
     private DatasetLoader datasetLoader;
+    private JLabel targetUserInfo;
+    private JLabel neighborInfo;
 
     public KnnMemoryCFRSRecommendationsGUI(RecommendationsExplainedWindow recommendationsExplainedWindow) {
         this.resultsComponent = panelResults();
@@ -153,11 +156,37 @@ public class KnnMemoryCFRSRecommendationsGUI implements RecommendationsGUI {
         ratingsPanel.setBorder(BorderFactory.createTitledBorder(RATINGS_BORDER_TITLE));
 
         GridBagConstraints constraints = new GridBagConstraints();
+
+        constraints.anchor = GridBagConstraints.WEST;
+        constraints.fill = GridBagConstraints.NONE;
+        constraints.weightx = 0.0;
+        constraints.weighty = 0.0;
+        constraints.gridx = 0;
+        constraints.gridy = 0;
+        constraints.gridwidth = 1;
+        constraints.gridheight = 1;
+        constraints.insets = new Insets(3, 4, 3, 4);
+        this.targetUserInfo = new JLabel("Target user info");
+        ratingsPanel.add(targetUserInfo, constraints);
+
+        constraints.anchor = GridBagConstraints.WEST;
+        constraints.fill = GridBagConstraints.NONE;
+        constraints.weightx = 0.0;
+        constraints.weighty = 0.0;
+        constraints.gridx = 0;
+        constraints.gridy = 1;
+        constraints.gridwidth = 1;
+        constraints.gridheight = 1;
+        constraints.insets = new Insets(3, 4, 3, 4);
+        this.neighborInfo = new JLabel("Neighbor info");
+        ratingsPanel.add(neighborInfo, constraints);
+
+        constraints.anchor = GridBagConstraints.CENTER;
         constraints.fill = GridBagConstraints.BOTH;
         constraints.weightx = 1.0;
         constraints.weighty = 1.0;
         constraints.gridx = 0;
-        constraints.gridy = 0;
+        constraints.gridy = 3;
         constraints.gridwidth = 1;
         constraints.gridheight = 1;
         constraints.insets = new Insets(3, 4, 3, 4);
@@ -185,6 +214,8 @@ public class KnnMemoryCFRSRecommendationsGUI implements RecommendationsGUI {
 
         this.datasetLoader = datasetLoader;
 
+        this.targetUserInfo.setText("Target user has " + datasetLoader.getRatingsDataset().getUserRated(user.getId()).size() + " ratings");
+
         Map<Integer, Number> recommendationsByItem = Recommendation.convertToMapOfNumbers(recommendations.getRecommendations());
         List<Recommendation> recommendationsComplete = candidateItems.stream()
                 .map((item -> {
@@ -202,8 +233,8 @@ public class KnnMemoryCFRSRecommendationsGUI implements RecommendationsGUI {
             RecommendationsWithNeighbors recommendationsWithNeighbors = (RecommendationsWithNeighbors) recommendations;
             Map<Integer, Neighbor> neighbors = recommendationsWithNeighbors.getNeighbors().stream()
                     .collect(Collectors.toMap(
-                                    (neighbor -> neighbor.getIdNeighbor()),
-                                    Function.identity()));
+                            (neighbor -> neighbor.getIdNeighbor()),
+                            Function.identity()));
 
             List<Neighbor> neighborsComplete = ((UsersDatasetLoader) datasetLoader).getUsersDataset().stream()
                     .filter((neighbor) -> !Objects.equals(neighbor.getId(), user.getId()))
@@ -228,6 +259,22 @@ public class KnnMemoryCFRSRecommendationsGUI implements RecommendationsGUI {
     }
 
     private void addNeighborTableListener() {
+
+        neighborsTable.addNeighborSelectorListener(event -> {
+            User user = recommendationsExplainedWindow.userSelected();
+            UsersDataset usersDataset = ((UsersDatasetLoader) datasetLoader).getUsersDataset();
+
+            int indexSelected = event.getFirstIndex();
+            if (indexSelected == -1) {
+                this.neighborInfo.setText("Neighbor info");
+            } else if (neighborsTable.getSelected() == null) {
+                this.neighborInfo.setText("Neighbor info");
+            } else {
+                User neighbor = usersDataset.get(neighborsTable.getSelected().getIdNeighbor());
+                this.neighborInfo.setText("Neighbor has " + datasetLoader.getRatingsDataset().getUserRated(neighbor.getId()).size() + " ratings");
+            }
+
+        });
 
         neighborsTable.addNeighborSelectorListener((ListSelectionEvent e) -> {
 
