@@ -20,14 +20,13 @@ import delfos.common.exceptions.CouldNotComputeSimilarity;
 import java.util.List;
 
 /**
- * Clase que implementa la medida del coseno para realizar una medida de
- * similitud de dos vectores
- *
  * @author jcastro-inf ( https://github.com/jcastro-inf )
  */
-public class CosineCoefficient extends WeightedSimilarityMeasureAdapter {
+public class MSD extends WeightedSimilarityMeasureAdapter {
 
     private static final long serialVersionUID = 1L;
+
+    private static final int L = 16;
 
     @Override
     public double weightedSimilarity(List<Double> v1, List<Double> v2, List<Double> weights) throws CouldNotComputeSimilarity {
@@ -36,16 +35,13 @@ public class CosineCoefficient extends WeightedSimilarityMeasureAdapter {
         }
 
         double numerator = 0;
-        double denominator1 = 0, denominator2 = 0;
         double sumPesos = 0;
         for (int i = 0; i < v1.size(); i++) {
             double r1 = v1.get(i);
             double r2 = v2.get(i);
             double w = weights.get(i);
 
-            numerator = numerator + r1 * r2 * w;
-            denominator1 = denominator1 + r1 * r1 * w;
-            denominator2 = denominator2 + r2 * r2 * w;
+            numerator += Math.pow(r1 - r2, 2) * w;
 
             sumPesos += w;
         }
@@ -57,11 +53,16 @@ public class CosineCoefficient extends WeightedSimilarityMeasureAdapter {
             throw new CouldNotComputeSimilarity("Sum of weights is greater than 1: '" + sumPesos + "'.");
         }
 
-        if (denominator1 == 0 || denominator2 == 0) {
-            return 0;
+        double msd = numerator / sumPesos;
+
+        double sim;
+
+        if (msd > L) {
+            sim = 0;
         } else {
-            double coseno = (double) (numerator / (Math.sqrt(denominator1) * Math.sqrt(denominator2)));
-            return coseno;
+            sim = (L - msd) / L;
         }
+
+        return sim;
     }
 }

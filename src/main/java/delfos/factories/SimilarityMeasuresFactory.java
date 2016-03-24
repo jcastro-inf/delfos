@@ -23,6 +23,7 @@ import delfos.similaritymeasures.CosineCoefficient;
 import delfos.similaritymeasures.Distance3Degree;
 import delfos.similaritymeasures.EuclideanDistance;
 import delfos.similaritymeasures.HammingDistance;
+import delfos.similaritymeasures.MSD;
 import delfos.similaritymeasures.Manhattan;
 import delfos.similaritymeasures.PearsonCorrelationCoefficient;
 import delfos.similaritymeasures.ProximityImpactPopularity;
@@ -32,7 +33,12 @@ import delfos.similaritymeasures.SimilarityMeasure;
 import delfos.similaritymeasures.Tanimoto;
 import delfos.similaritymeasures.WeightedSimilarityMeasure;
 import delfos.similaritymeasures.useruser.ConditionalProbability;
+import delfos.similaritymeasures.useruser.CosineAsymmetric;
+import delfos.similaritymeasures.useruser.Jaccard;
+import delfos.similaritymeasures.useruser.MSDAsymmetric;
 import delfos.similaritymeasures.useruser.RelevanceFactor;
+import delfos.similaritymeasures.useruser.SorensenIndex;
+import delfos.similaritymeasures.useruser.SorensenIndex_improved;
 import delfos.similaritymeasures.useruser.UserUserMultipleCorrelationCoefficient;
 import delfos.similaritymeasures.useruser.UserUserSimilarity;
 import delfos.similaritymeasures.useruser.UserUserSimilarityWrapper;
@@ -83,8 +89,17 @@ public class SimilarityMeasuresFactory extends Factory<SimilarityMeasure> {
         instance.addClass(UserUserMultipleCorrelationCoefficient.class);
         instance.addClass(UserUserSimilarityWrapper_relevanceFactor.class);
         instance.addClass(RelevanceFactor.class);
+        instance.addClass(MSD.class);
 
+        //Asymmetric similarities for users
         instance.addClass(ConditionalProbability.class);
+        instance.addClass(SorensenIndex_improved.class);
+        instance.addClass(CosineAsymmetric.class);
+        instance.addClass(MSDAsymmetric.class);
+
+        //Taking into account only the rated items and disregarding their values.
+        instance.addClass(SorensenIndex.class);
+        instance.addClass(Jaccard.class);
 
         //Buffered
         instance.addClass(UserUserSimilarity_buffered.class);
