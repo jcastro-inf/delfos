@@ -20,6 +20,7 @@ import delfos.ConsoleParameters;
 import delfos.ERROR_CODES;
 import delfos.common.FileUtilities;
 import delfos.common.Global;
+import delfos.common.StringsOrderings;
 import delfos.group.casestudy.defaultcase.GroupCaseStudy;
 import delfos.group.io.excel.casestudy.GroupCaseStudyExcel;
 import delfos.group.io.xml.casestudy.GroupCaseStudyXML;
@@ -35,8 +36,10 @@ import java.util.TreeSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import jxl.Workbook;
 import jxl.WorkbookSettings;
+import jxl.write.WritableSheet;
 import jxl.write.WritableWorkbook;
 import jxl.write.WriteException;
 import org.jdom2.JDOMException;
@@ -252,12 +255,16 @@ public class XMLJoin extends CaseUseMode {
 
             });
         }
+        sortSheets(workbook);
 
         try {
             workbook.write();
             workbook.close();
         } catch (IOException | WriteException ex) {
             ERROR_CODES.CANNOT_WRITE_FILE.exit(ex);
+        } catch (Exception ex) {
+            ex.printStackTrace(System.err);
+            System.out.println("Some strange thing happened now...");
         }
     }
 
@@ -302,5 +309,35 @@ public class XMLJoin extends CaseUseMode {
     public static void joinDirectory(File directory) {
         File outputFile = new File(directory.getPath() + File.separator + "joined-results");
         XMLJoin.mergeResultsIntoOutput(Arrays.asList(directory.getPath()), outputFile);
+    }
+
+    private static void sortSheets(WritableWorkbook workbook) {
+
+        List<String> sheetsNames = IntStream.range(0, workbook.getNumberOfSheets()).parallel().boxed().map(sheetNumber -> workbook.getSheet(sheetNumber).getName()).collect(Collectors.toList());
+
+        sheetsNames.remove("AllCasesAggregateResults");
+        sheetsNames.remove("numExecutions");
+
+        List<String> sortedSheets = sheetsNames.stream().sorted(StringsOrderings.getNaturalComparator()).collect(Collectors.toList());
+
+        sortedSheets.add(0, "AllCasesAggregateResults");
+        sortedSheets.add(1, "numExecutions");
+
+        for (int i = 0; i < sortedSheets.size(); i++) {
+            String sheetName = sortedSheets.get(i);
+
+            int fromIndex = IntStream.range(0, workbook.getNumberOfSheets()).parallel().boxed().filter(sheetNumber -> {
+                WritableSheet sheet = workbook.getSheet(sheetNumber);
+                return sheet.getName().equals(sheetName);
+            }).findAny().orElse(-1);
+
+            int toIndex = i;
+
+            if (fromIndex == -1 || toIndex == -1) {
+                throw new IllegalStateException("The sheets names in the original and sorted vector do not match.");
+            }
+
+            workbook.moveSheet(fromIndex, toIndex);
+        }
     }
 }
