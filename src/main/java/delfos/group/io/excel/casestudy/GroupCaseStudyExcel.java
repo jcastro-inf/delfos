@@ -101,48 +101,61 @@ public class GroupCaseStudyExcel {
 
     public static final String NAN_CELL_STRING = "NaN";
 
-    private static WritableCellFormat titleFormat;
-    private static WritableCellFormat defaultFormat;
+    private static WritableCellFormat titleFormat = null;
+    private static WritableCellFormat defaultFormat = null;
     private static WritableCellFormat decimalFormat;
     private static WritableCellFormat integerFormat;
-    private static int titleCellWidth = 3 - 1;
+    private static final int titleCellWidth = 3 - 1;
 
     static {
-
         try {
-            {
-                // create create a bold font with unterlines
-                WritableFont times14ptBoldUnderline = new WritableFont(WritableFont.TIMES, 14, WritableFont.BOLD, false,
-                        UnderlineStyle.SINGLE);
-
-                titleFormat = new WritableCellFormat(times14ptBoldUnderline);
-                titleFormat.setAlignment(Alignment.CENTRE);
-
-                //Column width control
-                titleFormat.setWrap(false);
-            }
-            {
-                // Lets create a times font
-                WritableFont times10pt = new WritableFont(WritableFont.TIMES, 10);
-                integerFormat = new WritableCellFormat(times10pt, new NumberFormat("0"));
-
-            }
-            {
-                // Lets create a times font
-                WritableFont times10pt = new WritableFont(WritableFont.TIMES, 10);
-                decimalFormat = new WritableCellFormat(times10pt, new NumberFormat("0.00000"));
-            }
-            {// Lets create a times font
-                WritableFont times10pt = new WritableFont(WritableFont.TIMES, 10);
-                // Define the cell format
-                defaultFormat = new WritableCellFormat(times10pt);
-
-                //Column width control
-                defaultFormat.setWrap(false);
-            }
+            initTitleFormat();
+            initIntegerFormat();
+            initDecimalFormat();
+            initDefaultFormat();
         } catch (WriteException ex) {
             Logger.getLogger(GroupCaseStudyExcel.class.getName()).log(Level.SEVERE, null, ex);
         }
+    }
+
+    public static void initTitleFormat() throws WriteException {
+        if (titleFormat == null) {
+            // create create a bold font with unterlines
+            WritableFont times14ptBoldUnderline = new WritableFont(WritableFont.TIMES, 14, WritableFont.BOLD, false,
+                    UnderlineStyle.SINGLE);
+
+            titleFormat = new WritableCellFormat(times14ptBoldUnderline);
+            titleFormat.setAlignment(Alignment.CENTRE);
+
+            //Column width control
+            titleFormat.setWrap(false);
+        }
+    }
+
+    public static void initIntegerFormat() {
+
+        // Lets create a times font
+        WritableFont times10pt = new WritableFont(WritableFont.TIMES, 10);
+        integerFormat = new WritableCellFormat(times10pt, new NumberFormat("0"));
+    }
+
+    public static void initDecimalFormat() {
+
+        // Lets create a times font
+        WritableFont times10pt = new WritableFont(WritableFont.TIMES, 10);
+        decimalFormat = new WritableCellFormat(times10pt, new NumberFormat("0.00000"));
+    }
+
+    public static void initDefaultFormat() throws WriteException {
+
+        // Lets create a times font
+        WritableFont times10pt = new WritableFont(WritableFont.TIMES, 10);
+        // Define the cell format
+        defaultFormat = new WritableCellFormat(times10pt);
+
+        //Column width control
+        defaultFormat.setWrap(false);
+
     }
 
     public static void aggregateExcels(File[] inputFiles, File outputFile) throws WriteException {
@@ -210,6 +223,7 @@ public class GroupCaseStudyExcel {
             }
 
             WritableSheet allExperiments = workbook.createSheet(ALL_EXPERIMENTS_SHEET_NAME, 0);
+            createLabel(allExperiments);
 
             //Seet the content.
             int row = 0;
@@ -315,14 +329,17 @@ public class GroupCaseStudyExcel {
             workbook = Workbook.createWorkbook(file, wbSettings);
 
             WritableSheet caseDefinitionSheet = workbook.createSheet("CaseDefinition", 0);
+            createLabel(caseDefinitionSheet);
             createCaseDefinitionSheet(caseStudyGroup, caseDefinitionSheet);
             autoSizeColumns(caseDefinitionSheet);
 
             WritableSheet executionsSheet = workbook.createSheet("Executions", 1);
+            createLabel(executionsSheet);
             createExecutionsSheet(caseStudyGroup, executionsSheet);
             autoSizeColumns(executionsSheet);
 
             WritableSheet aggregateResultsSheet = workbook.createSheet(AGGREGATE_RESULTS, 2);
+            createLabel(aggregateResultsSheet);
             createAggregateResultsSheet(caseStudyGroup, aggregateResultsSheet);
             autoSizeColumns(aggregateResultsSheet);
 
@@ -606,6 +623,15 @@ public class GroupCaseStudyExcel {
 
     }
 
+    private static void createLabel(WritableSheet sheet)
+            throws WriteException {
+        initDefaultFormat();
+        initDecimalFormat();
+        initIntegerFormat();
+        initTitleFormat();
+
+    }
+
     public static void autoSizeColumns(WritableSheet sheet) {
         for (int x = 0; x < 40; x++) {
             CellView cell = sheet.getColumnView(x);
@@ -730,6 +756,7 @@ public class GroupCaseStudyExcel {
     public static void writeGeneralSheet(List<GroupCaseStudyResult> groupCaseStudyResults, List<String> dataValidationParametersOrder, List<String> techniqueParametersOrder, List<String> evaluationMeasuresOrder, WritableWorkbook workbook) throws WriteException, IOException {
 
         WritableSheet allCasesAggregateResults = workbook.createSheet("AllCasesAggregateResults", 0);
+        createLabel(allCasesAggregateResults);
 
         {
 
@@ -892,6 +919,7 @@ public class GroupCaseStudyExcel {
             String sheetName) throws WriteException {
 
         WritableSheet sheet = workbook.createSheet(sheetName, workbook.getNumberOfSheets());
+        createLabel(sheet);
 
         {
 
