@@ -38,6 +38,16 @@ import delfos.group.results.groupevaluationmeasures.diversity.ils.IntraListSimil
 import delfos.group.results.groupevaluationmeasures.diversity.ils.IntraListSimilarity_09;
 import delfos.group.results.groupevaluationmeasures.diversity.ils.IntraListSimilarity_10;
 import delfos.group.results.groupevaluationmeasures.precisionrecall.PRSpaceGroups;
+import delfos.group.results.groupevaluationmeasures.precisionrecall.Precision_01;
+import delfos.group.results.groupevaluationmeasures.precisionrecall.Precision_02;
+import delfos.group.results.groupevaluationmeasures.precisionrecall.Precision_03;
+import delfos.group.results.groupevaluationmeasures.precisionrecall.Precision_04;
+import delfos.group.results.groupevaluationmeasures.precisionrecall.Precision_05;
+import delfos.group.results.groupevaluationmeasures.precisionrecall.Precision_06;
+import delfos.group.results.groupevaluationmeasures.precisionrecall.Precision_07;
+import delfos.group.results.groupevaluationmeasures.precisionrecall.Precision_08;
+import delfos.group.results.groupevaluationmeasures.precisionrecall.Precision_09;
+import delfos.group.results.groupevaluationmeasures.precisionrecall.Precision_10;
 import delfos.group.results.groupevaluationmeasures.printers.PrintGroupRatingsToPlainText;
 import delfos.group.results.groupevaluationmeasures.printers.PrintGroups;
 import delfos.group.results.groupevaluationmeasures.printers.PrintTestSet;
@@ -98,6 +108,19 @@ public class GroupEvaluationMeasuresFactory extends Factory<GroupEvaluationMeasu
         instance.addClass(IntraListSimilarity_08.class);
         instance.addClass(IntraListSimilarity_09.class);
         instance.addClass(IntraListSimilarity_10.class);
+
+        //Precision
+        instance.addClass(IntraListSimilarity.class);
+        instance.addClass(Precision_01.class);
+        instance.addClass(Precision_02.class);
+        instance.addClass(Precision_03.class);
+        instance.addClass(Precision_04.class);
+        instance.addClass(Precision_05.class);
+        instance.addClass(Precision_06.class);
+        instance.addClass(Precision_07.class);
+        instance.addClass(Precision_08.class);
+        instance.addClass(Precision_09.class);
+        instance.addClass(Precision_10.class);
 
         //Time measures
         instance.addClass(ModelBuildTime.class);
