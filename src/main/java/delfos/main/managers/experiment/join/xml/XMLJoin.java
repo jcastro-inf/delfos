@@ -313,7 +313,10 @@ public class XMLJoin extends CaseUseMode {
 
     private static void sortSheets(WritableWorkbook workbook) {
 
-        List<String> sheetsNames = IntStream.range(0, workbook.getNumberOfSheets()).parallel().boxed().map(sheetNumber -> workbook.getSheet(sheetNumber).getName()).collect(Collectors.toList());
+        List<String> sheetsNames = IntStream.range(0, workbook.getNumberOfSheets()).boxed().map(sheetNumber -> {
+            final WritableSheet sheet = workbook.getSheet(sheetNumber);
+            return sheet.getName();
+        }).collect(Collectors.toList());
 
         sheetsNames.remove("AllCasesAggregateResults");
         sheetsNames.remove("numExecutions");
@@ -326,7 +329,7 @@ public class XMLJoin extends CaseUseMode {
         for (int i = 0; i < sortedSheets.size(); i++) {
             String sheetName = sortedSheets.get(i);
 
-            int fromIndex = IntStream.range(0, workbook.getNumberOfSheets()).parallel().boxed().filter(sheetNumber -> {
+            int fromIndex = IntStream.range(0, workbook.getNumberOfSheets()).boxed().filter(sheetNumber -> {
                 WritableSheet sheet = workbook.getSheet(sheetNumber);
                 return sheet.getName().equals(sheetName);
             }).findAny().orElse(-1);

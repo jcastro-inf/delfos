@@ -26,7 +26,6 @@ import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
 import delfos.group.casestudy.GroupCaseStudyConfiguration;
 import delfos.group.factories.GroupEvaluationMeasuresFactory;
-import delfos.group.io.excel.casestudy.GroupCaseStudyExcel;
 import delfos.group.io.xml.casestudy.GroupCaseStudyXML;
 import delfos.group.results.groupevaluationmeasures.GroupEvaluationMeasure;
 import java.io.File;
@@ -42,7 +41,6 @@ import java.util.List;
 import java.util.TimeZone;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import jxl.write.WriteException;
 import org.jdom2.JDOMException;
 
 /**
@@ -173,15 +171,14 @@ public class GroupXMLexperimentsExecution {
 
         listOfTasks.stream().forEach(new GroupCaseStudyExecutor());
 
-        File aggregateFile = FileUtilities.addSufix(resultsDirectory, File.separator + "aggregateResults.xls");
-        try {
-            GroupCaseStudyExcel.aggregateExcels(
-                    resultsDirectory.listFiles(new FileFilterByExtension(false, "xls")),
-                    aggregateFile);
-        } catch (WriteException ex) {
-            Logger.getLogger(GroupXMLexperimentsExecution.class.getName()).log(Level.SEVERE, null, ex);
-        }
-
+//        File aggregateFile = FileUtilities.addSufix(resultsDirectory, File.separator + "aggregateResults.xls");
+//        try {
+//            GroupCaseStudyExcel.aggregateExcels(
+//                    resultsDirectory.listFiles(new FileFilterByExtension(false, "xls")),
+//                    aggregateFile);
+//        } catch (WriteException ex) {
+//            Logger.getLogger(GroupXMLexperimentsExecution.class.getName()).log(Level.SEVERE, null, ex);
+//        }
         Global.showln("Finished.");
         Global.removeErrorOutputLogger(errLogWriter);
         Global.removeStandardOutputLogger(stdLogWriter);

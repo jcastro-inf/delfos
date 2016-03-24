@@ -118,7 +118,7 @@ public class GroupCaseStudyExcel {
         }
     }
 
-    public static void initTitleFormat() throws WriteException {
+    private static void initTitleFormat() throws WriteException {
         if (titleFormat == null) {
             // create create a bold font with unterlines
             WritableFont times14ptBoldUnderline = new WritableFont(WritableFont.TIMES, 14, WritableFont.BOLD, false,
@@ -132,21 +132,21 @@ public class GroupCaseStudyExcel {
         }
     }
 
-    public static void initIntegerFormat() {
+    private static void initIntegerFormat() {
 
         // Lets create a times font
         WritableFont times10pt = new WritableFont(WritableFont.TIMES, 10);
         integerFormat = new WritableCellFormat(times10pt, new NumberFormat("0"));
     }
 
-    public static void initDecimalFormat() {
+    private static void initDecimalFormat() {
 
         // Lets create a times font
         WritableFont times10pt = new WritableFont(WritableFont.TIMES, 10);
         decimalFormat = new WritableCellFormat(times10pt, new NumberFormat("0.00000"));
     }
 
-    public static void initDefaultFormat() throws WriteException {
+    private static void initDefaultFormat() throws WriteException {
 
         // Lets create a times font
         WritableFont times10pt = new WritableFont(WritableFont.TIMES, 10);
