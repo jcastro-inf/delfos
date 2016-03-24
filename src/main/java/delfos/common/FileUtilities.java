@@ -29,7 +29,12 @@ import java.util.List;
  */
 public class FileUtilities {
 
-    public static File addPrefix(File originalFile, String prefix) {
+    /**
+     * Used to execute the create/delete files methods synchronized.
+     */
+    public static final Object exMut = 1.0;
+
+    public static synchronized File addPrefix(File originalFile, String prefix) {
         String file = originalFile.getAbsolutePath();
         String newFileName = file.substring(0, file.lastIndexOf(File.separator)) + File.separator + prefix + file.substring(file.lastIndexOf(File.separator) + 1, file.length());
         return new File(newFileName);
@@ -65,24 +70,26 @@ public class FileUtilities {
      * @param directory Directorio a borrar.
      */
     public static void deleteDirectoryRecursive(File directory) {
-        if (!directory.exists()) {
-            return;
-        }
-        if (!directory.isDirectory()) {
-            throw new IllegalArgumentException("The passed file is not a directory (" + directory + ").");
-        }
-        if (!directory.exists()) {
-            throw new IllegalArgumentException("The directory must exist (" + directory + ")");
-        }
-        File[] listFiles = directory.listFiles();
-        for (File f : listFiles) {
-            if (f.isDirectory()) {
-                deleteDirectoryRecursive(f);
-            } else {
-                f.delete();
+        synchronized (exMut) {
+            if (!directory.exists()) {
+                return;
             }
+            if (!directory.isDirectory()) {
+                throw new IllegalArgumentException("The passed file is not a directory (" + directory + ").");
+            }
+            if (!directory.exists()) {
+                throw new IllegalArgumentException("The directory must exist (" + directory + ")");
+            }
+            File[] listFiles = directory.listFiles();
+            for (File f : listFiles) {
+                if (f.isDirectory()) {
+                    deleteDirectoryRecursive(f);
+                } else {
+                    f.delete();
+                }
+            }
+            directory.delete();
         }
-        directory.delete();
     }
 
     public static String getFileName(File file) {
@@ -91,28 +98,32 @@ public class FileUtilities {
     }
 
     public static void createDirectoriesForFile(File file) {
-        if (file == null) {
-            throw new IllegalArgumentException("File for path creation is null");
-        }
+        synchronized (exMut) {
+            if (file == null) {
+                throw new IllegalArgumentException("File for path creation is null");
+            }
 
-        File directory = file.getAbsoluteFile().getParentFile();
+            File directory = file.getAbsoluteFile().getParentFile();
 
-        if (directory == null) {
-            throw new IllegalArgumentException("Directory for creation is null");
-        }
+            if (directory == null) {
+                throw new IllegalArgumentException("Directory for creation is null");
+            }
 
-        if (!directory.exists() || !directory.isDirectory()) {
-            createDirectoryPath(directory);
+            if (!directory.exists() || !directory.isDirectory()) {
+                createDirectoryPath(directory);
+            }
         }
     }
 
     public static void createDirectoryPath(File directory) {
-        if (directory == null) {
-            throw new IllegalStateException("Directory for creation is null.");
-        }
+        synchronized (exMut) {
+            if (directory == null) {
+                throw new IllegalStateException("Directory for creation is null.");
+            }
 
-        if (!directory.exists()) {
-            createDirectoryPathIfNotExists(directory);
+            if (!directory.exists()) {
+                createDirectoryPathIfNotExists(directory);
+            }
         }
     }
 
@@ -123,44 +134,50 @@ public class FileUtilities {
      * @return True if one or more directories have been created.
      */
     public static boolean createDirectoriesForFileIfNotExist(File file) {
-        if (file == null) {
-            throw new IllegalArgumentException("File for path creation is null");
+        synchronized (exMut) {
+            if (file == null) {
+                throw new IllegalArgumentException("File for path creation is null");
+            }
+
+            File directory = file.getParentFile();
+
+            if (directory == null) {
+                throw new IllegalArgumentException("Directory for creation is null");
+            }
+
+            return createDirectoryPathIfNotExists(directory);
         }
-
-        File directory = file.getParentFile();
-
-        if (directory == null) {
-            throw new IllegalArgumentException("Directory for creation is null");
-        }
-
-        return createDirectoryPathIfNotExists(directory);
     }
 
     public static boolean createDirectoryPathIfNotExists(File directory) {
-        if (directory == null) {
-            throw new IllegalStateException("Directory for creation is null.");
-        }
-
-        if (!directory.exists()) {
-            boolean mkdirs = directory.mkdirs();
-            if (!mkdirs) {
-                Global.showWarning("Could not create directory '" + directory.getAbsolutePath() + "'");
-                Global.showWarning("Check for permissions.");
-
-                FileNotFoundException ex = new FileNotFoundException("Could not create directory '" + directory.getAbsolutePath() + "'");
-                ERROR_CODES.CANNOT_WRITE_FILE.exit(ex);
+        synchronized (exMut) {
+            if (directory == null) {
+                throw new IllegalStateException("Directory for creation is null.");
             }
-            return true;
-        } else {
-            return false;
+
+            if (!directory.exists()) {
+                boolean mkdirs = directory.mkdirs();
+                if (!mkdirs) {
+                    Global.showWarning("Could not create directory '" + directory.getAbsolutePath() + "'");
+                    Global.showWarning("Check for permissions.");
+
+                    FileNotFoundException ex = new FileNotFoundException("Could not create directory '" + directory.getAbsolutePath() + "'");
+                    ERROR_CODES.CANNOT_WRITE_FILE.exit(ex);
+                }
+                return true;
+            } else {
+                return false;
+            }
         }
     }
 
     public static void cleanDirectory(File directory) {
-        if (directory.exists()) {
-            FileUtilities.deleteDirectoryRecursive(directory);
+        synchronized (exMut) {
+            if (directory.exists()) {
+                FileUtilities.deleteDirectoryRecursive(directory);
+            }
+            directory.mkdirs();
         }
-        directory.mkdirs();
     }
 
     /**
