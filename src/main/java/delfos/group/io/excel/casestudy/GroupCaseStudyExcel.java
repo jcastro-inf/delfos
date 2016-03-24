@@ -223,7 +223,6 @@ public class GroupCaseStudyExcel {
             }
 
             WritableSheet allExperiments = workbook.createSheet(ALL_EXPERIMENTS_SHEET_NAME, 0);
-            createLabel(allExperiments);
 
             //Seet the content.
             int row = 0;
@@ -329,17 +328,14 @@ public class GroupCaseStudyExcel {
             workbook = Workbook.createWorkbook(file, wbSettings);
 
             WritableSheet caseDefinitionSheet = workbook.createSheet("CaseDefinition", 0);
-            createLabel(caseDefinitionSheet);
             createCaseDefinitionSheet(caseStudyGroup, caseDefinitionSheet);
             autoSizeColumns(caseDefinitionSheet);
 
             WritableSheet executionsSheet = workbook.createSheet("Executions", 1);
-            createLabel(executionsSheet);
             createExecutionsSheet(caseStudyGroup, executionsSheet);
             autoSizeColumns(executionsSheet);
 
             WritableSheet aggregateResultsSheet = workbook.createSheet(AGGREGATE_RESULTS, 2);
-            createLabel(aggregateResultsSheet);
             createAggregateResultsSheet(caseStudyGroup, aggregateResultsSheet);
             autoSizeColumns(aggregateResultsSheet);
 
@@ -623,15 +619,6 @@ public class GroupCaseStudyExcel {
 
     }
 
-    private static void createLabel(WritableSheet sheet)
-            throws WriteException {
-        initDefaultFormat();
-        initDecimalFormat();
-        initIntegerFormat();
-        initTitleFormat();
-
-    }
-
     public static void autoSizeColumns(WritableSheet sheet) {
         for (int x = 0; x < 40; x++) {
             CellView cell = sheet.getColumnView(x);
@@ -756,7 +743,6 @@ public class GroupCaseStudyExcel {
     public static void writeGeneralSheet(List<GroupCaseStudyResult> groupCaseStudyResults, List<String> dataValidationParametersOrder, List<String> techniqueParametersOrder, List<String> evaluationMeasuresOrder, WritableWorkbook workbook) throws WriteException, IOException {
 
         WritableSheet allCasesAggregateResults = workbook.createSheet("AllCasesAggregateResults", 0);
-        createLabel(allCasesAggregateResults);
 
         {
 
@@ -919,7 +905,6 @@ public class GroupCaseStudyExcel {
             String sheetName) throws WriteException {
 
         WritableSheet sheet = workbook.createSheet(sheetName, workbook.getNumberOfSheets());
-        createLabel(sheet);
 
         {
 
