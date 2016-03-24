@@ -26,6 +26,12 @@ public class MSD extends WeightedSimilarityMeasureAdapter {
 
     private static final long serialVersionUID = 1L;
 
+    /**
+     * 16 value is used because of this paper: Pirasteh, Parivash, Dosam Hwang,
+     * and Jason J. Jung. "Exploiting matrix factorization to asymmetric user
+     * similarities in recommendation systems." Knowledge-Based Systems 83
+     * (2015): 51-57.
+     */
     private static final int L = 16;
 
     @Override
