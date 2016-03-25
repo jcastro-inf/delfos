@@ -79,8 +79,7 @@ public class CaseStudyAllBaselines {
     public void createCaseStudyExperiments() throws Exception {
         List<GroupCaseStudy> allGroupCaseStudy = getAllGroupCaseStudy();
 
-        new TuringPreparator().prepareGroupExperiment(
-                new File(EXPERIMENT_DIRECTORY),
+        new TuringPreparator().prepareGroupExperiment(new File(EXPERIMENT_DIRECTORY),
                 allGroupCaseStudy,
                 new ConfiguredDatasetLoader("ml-100k"));
     }

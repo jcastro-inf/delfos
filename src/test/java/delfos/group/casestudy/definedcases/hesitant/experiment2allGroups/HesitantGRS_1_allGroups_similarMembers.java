@@ -55,8 +55,7 @@ public class HesitantGRS_1_allGroups_similarMembers extends DelfosTest {
 
         turingPreparator.renameCaseStudyWithTheMinimumDistinctAlias(groupCaseStudys);
 
-        turingPreparator.prepareGroupExperiment(
-                experimentDirectory,
+        turingPreparator.prepareGroupExperiment(experimentDirectory,
                 groupCaseStudys,
                 HesitantGRS_configuration.getDatasetLoader().toArray(new DatasetLoader[0]));
     }

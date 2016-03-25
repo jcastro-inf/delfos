@@ -75,8 +75,7 @@ public class XMLJoinTest {
             }
         }
 
-        new TuringPreparator(true).prepareGroupExperiment(
-                experimentDirectory,
+        new TuringPreparator(true).prepareGroupExperiment(experimentDirectory,
                 groupCaseStudys,
                 Arrays.asList(ml100k).toArray(new DatasetLoader[0]));
     }

@@ -107,9 +107,7 @@ public class TuringPreparator implements ExperimentPreparator {
 
     @Override
     public void prepareGroupExperiment(
-            File experimentBaseDirectory,
-            List<GroupCaseStudy> groupCaseStudies,
-            DatasetLoader<? extends Rating>... datasetLoaders) {
+            File experimentBaseDirectory, List<GroupCaseStudy> groupCaseStudies, DatasetLoader<? extends Rating>... datasetLoaders) {
 
         int i = 0;
 
@@ -133,7 +131,10 @@ public class TuringPreparator implements ExperimentPreparator {
                 File datasetConfiguration = new File(finalDirectoryDataset.getAbsolutePath() + File.separator + datasetLoader.getAlias() + ".xml");
 
                 GroupCaseStudyXML.caseStudyToXMLFile_onlyDescription(groupCaseStudy, experimentConfigurationFile);
-                GroupCaseStudyXML.caseStudyToXMLFile_onlyDescription(new GroupCaseStudy(datasetLoader), datasetConfiguration);
+
+                GroupCaseStudy groupCaseStudyWithDataset = new GroupCaseStudy(datasetLoader);
+                groupCaseStudyWithDataset.setSeedValue(groupCaseStudy.getSeedValue());
+                GroupCaseStudyXML.caseStudyToXMLFile_onlyDescription(groupCaseStudyWithDataset, datasetConfiguration);
 
             }
         }
