@@ -152,7 +152,8 @@ public class WeightedGraph<Node> implements Serializable, Comparable<WeightedGra
         int indexNode2 = nodesIndex.get(node2);
 
         List<DirectedEdge> edgesFromNode1 = new ArrayList<>();
-        for (DirectedEdge a : adjMatrixEdgeWeightedDigraph.adj(indexNode1)) {
+        final Iterable<DirectedEdge> directedEdges = adjMatrixEdgeWeightedDigraph.adj(indexNode1);
+        for (DirectedEdge a : directedEdges) {
             if (a.weight() > 0) {
                 edgesFromNode1.add(a);
             }
@@ -597,25 +598,36 @@ public class WeightedGraph<Node> implements Serializable, Comparable<WeightedGra
     }
 
     public Collection<PathBetweenNodes<Node>> getEdgesFromNode(Node node1) {
-        int indexNode1 = nodesIndex.get(node1);
 
-        List<DirectedEdge> edgesFromNode1 = new ArrayList<>();
-        for (DirectedEdge a : adjMatrixEdgeWeightedDigraph.adj(indexNode1)) {
-            edgesFromNode1.add(a);
-        }
-
-        List<PathBetweenNodes<Node>> pathsFromNode1 = edgesFromNode1.parallelStream()
+        List<PathBetweenNodes<Node>> edgesFromNode = this.allNodes().parallelStream()
+                .map(node2 -> this.getEdge(node1, node2))
+                .filter(edge -> edge.isPresent())
+                .map(edge -> edge.get())
+                .filter(edge -> edge.from() != edge.to())
                 .map(edge -> {
                     Node node2 = nodesByIndex.get(edge.to());
                     return new PathBetweenNodes<>(this, Arrays.asList(node1, node2));
-                }).collect(Collectors.toList());
+                })
+                .collect(Collectors.toList());
 
-        return pathsFromNode1;
+        return edgesFromNode;
     }
 
     public Set<PathBetweenNodes<Node>> allEdges() {
-        Set<PathBetweenNodes<Node>> allEdges = this.allNodes().stream()
-                .flatMap(node1 -> this.getEdgesFromNode(node1).stream())
+
+        Set<PathBetweenNodes<Node>> allEdges = this.allNodes().parallelStream()
+                .flatMap(node1 -> {
+
+                    Collection<PathBetweenNodes<Node>> edgesFromNode = this.getEdgesFromNode(node1);
+
+                    if (edgesFromNode.isEmpty()) {
+                        return new ArrayList<PathBetweenNodes<Node>>().parallelStream();
+                    } else {
+                        return edgesFromNode.parallelStream();
+                    }
+                })
+                .filter(path -> path.isEdge())
+                .filter(path -> !path.isSelf())
                 .collect(Collectors.toSet());
 
         return allEdges;

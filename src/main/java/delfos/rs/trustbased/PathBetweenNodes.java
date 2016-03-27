@@ -146,4 +146,11 @@ public class PathBetweenNodes<Node> implements Comparable<PathBetweenNodes> {
         return _weights.get(0);
     }
 
+    public boolean isSelf() {
+        return this.from().equals(this.to());
+    }
+
+    public boolean isEdge() {
+        return this.numEdges() == 1;
+    }
 }
