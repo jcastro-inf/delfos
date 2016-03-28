@@ -156,7 +156,12 @@ public class TuringPreparator implements ExperimentPreparator {
                 ExecuteGroupXML.XML_DIRECTORY, singleExperimentDirectory.getPath(),
                 Constants.PRINT_FULL_XML,
                 Constants.RAW_DATA};
-            Main.mainWithExceptions(args);
+            try {
+                Main.mainWithExceptions(args);
+            } catch (Exception ex) {
+                Global.showWarning("Experiment failed in directory '" + singleExperimentDirectory.getAbsolutePath());
+                Global.showError(ex);
+            }
         });
     }
 
@@ -179,8 +184,12 @@ public class TuringPreparator implements ExperimentPreparator {
                 Constants.PRINT_FULL_XML,
                 Constants.RAW_DATA
             };
-
-            Main.mainWithExceptions(args);
+            try {
+                Main.mainWithExceptions(args);
+            } catch (Exception ex) {
+                Global.showWarning("Experiment failed in directory '" + singleExperimentDirectory.getAbsolutePath());
+                Global.showError(ex);
+            }
 
             Global.show("==============================\n");
         });
@@ -205,8 +214,12 @@ public class TuringPreparator implements ExperimentPreparator {
                 Constants.PRINT_FULL_XML,
                 Constants.RAW_DATA};
 
-            Main.mainWithExceptions(args);
-
+            try {
+                Main.mainWithExceptions(args);
+            } catch (Exception ex) {
+                Global.showWarning("Experiment failed in directory '" + singleExperimentDirectory.getAbsolutePath());
+                Global.showError(ex);
+            }
             Global.show("==============================\n");
         });
     }
