@@ -25,6 +25,7 @@ import delfos.dataset.storage.validationdatasets.PairOfTrainTestRatingsDataset;
 import delfos.group.casestudy.parallelisation.SingleGroupRecommendationFunction;
 import delfos.group.casestudy.parallelisation.SingleGroupRecommendationTaskInput;
 import delfos.group.casestudy.parallelisation.SingleGroupRecommendationTaskOutput;
+import delfos.group.experiment.validation.groupformation.GroupFormationTechnique;
 import delfos.group.experiment.validation.predictionvalidation.GroupPredictionProtocol;
 import delfos.group.experiment.validation.predictionvalidation.GroupRecommendationRequest;
 import delfos.group.factories.GroupEvaluationMeasuresFactory;
@@ -78,9 +79,11 @@ public class ExecutionExplitConsumer {
         DatasetLoader<? extends Rating> testDatasetLoader = pairsOfTrainTest[split].getTestDatasetLoader();
         testDatasetLoader.setAlias(testDatasetLoader.getAlias() + "_execution=" + execution);
 
-        groupCaseStudy.getGroupFormationTechnique().setSeedValue(loopSeed);
+        final GroupFormationTechnique groupFormationTechnique = groupCaseStudy.getGroupFormationTechnique();
 
-        Collection<GroupOfUsers> groups = groupCaseStudy.getGroupFormationTechnique().generateGroups(trainDatasetLoader);
+        groupFormationTechnique.setSeedValue(loopSeed);
+
+        Collection<GroupOfUsers> groups = groupFormationTechnique.generateGroups(trainDatasetLoader);
         final long recommendationModelBuildTime;
         Object groupRecommendationModel;
         {

@@ -191,7 +191,13 @@ public class GroupCaseStudy extends ExperimentAdapter {
 
                     Map<Integer, Map<GroupEvaluationMeasure, GroupEvaluationMeasureResult>> resultsThisExecution = IntStream.range(0, getNumSplits()).boxed().parallel().collect(Collectors.toMap(Function.identity(),
                     split -> {
-                        Map<GroupEvaluationMeasure, GroupEvaluationMeasureResult> execute = new ExecutionExplitConsumer(execution, split, this, pairsOfTrainTest).execute();
+                        Map<GroupEvaluationMeasure, GroupEvaluationMeasureResult> execute
+                        = new ExecutionExplitConsumer(
+                                execution,
+                                split,
+                                this,
+                                pairsOfTrainTest).execute();
+
                         groupCaseStudyProgressChangedController.setTaskFinished();
                         return execute;
                     }
@@ -220,8 +226,6 @@ public class GroupCaseStudy extends ExperimentAdapter {
 
                     return resultsAggregated;
                 }));
-
-        setExecutionProgress(getAlias(), 100, 0);
     }
 
     protected long getLoopSeed(int execution, int split) {
