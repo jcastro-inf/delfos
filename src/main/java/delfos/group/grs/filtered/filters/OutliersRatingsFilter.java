@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,6 +16,12 @@
  */
 package delfos.group.grs.filtered.filters;
 
+import delfos.common.Global;
+import delfos.common.decimalnumbers.NumberRounder;
+import delfos.common.parameters.Parameter;
+import delfos.common.parameters.restriction.BooleanParameter;
+import delfos.common.parameters.restriction.DoubleParameter;
+import delfos.common.statisticalfuncions.MeanIterative;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -24,13 +30,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
-import delfos.common.Global;
-import delfos.common.decimalnumbers.NumberRounder;
-import delfos.common.parameters.Parameter;
-import delfos.common.parameters.restriction.BooleanParameter;
-import delfos.common.parameters.restriction.DoubleParameter;
-import delfos.common.statisticalfuncions.MeanIterative;
-import delfos.dataset.util.DatasetPrinterDeprecated;
 
 /**
  * Implementa un filtro de ratings que elimina los ratings que son demasiado
@@ -207,24 +206,6 @@ public class OutliersRatingsFilter extends GroupRatingsFilter {
 
         int borrarMax = (int) (ratingsToErase.size() * getPercentageMaxFilteredOut());
         int eliminados = 0;
-
-        if (Global.isVerboseAnnoying()) {
-            //Calculo la matriz de prioridad en la eliminación de ratings.
-
-            Map<Integer, Map<Integer, Number>> deletePriority = new TreeMap<>();
-            originalSet.keySet().stream().forEach((idUser) -> {
-                deletePriority.put(idUser, new TreeMap<>());
-            });
-            for (DifferenceRatings difference : ratingsToErase) {
-
-                int idUser = difference.idUser;
-                int idItem = difference.idItem;
-                deletePriority.get(idUser).put(idItem, difference.diff);
-            }
-
-            Global.showInfoMessage("Rating elimination priority table.\n");
-            DatasetPrinterDeprecated.printCompactRatingTable(deletePriority);
-        }
 
         Map<Integer, Map<Integer, Number>> ratingsToReturn = new TreeMap<>();
         originalSet.keySet().stream().forEach((idUser) -> {

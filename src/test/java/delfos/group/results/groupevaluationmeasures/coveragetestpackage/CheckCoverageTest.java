@@ -8,10 +8,8 @@ import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
 import delfos.common.exceptions.dataset.items.ItemNotFound;
 import delfos.common.exceptions.dataset.users.UserNotFound;
 import delfos.dataset.loaders.csv.CSVfileDatasetLoader;
-import delfos.dataset.util.DatasetPrinterDeprecated;
 import delfos.experiment.ExperimentListerner_default;
 import delfos.experiment.casestudy.ExecutionProgressListener_default;
-import delfos.group.casestudy.defaultcase.GroupCaseStudy;
 import delfos.group.casestudy.defaultcase.GroupCaseStudy;
 import delfos.group.experiment.validation.groupformation.GivenGroups;
 import delfos.group.experiment.validation.groupformation.GroupFormationTechnique;
@@ -66,7 +64,6 @@ public class CheckCoverageTest {
 
         datasetLoader = new CSVfileDatasetLoader("datasets" + File.separator + "SSII - ratings9.csv", "datasets" + File.separator + "SSII - peliculas.csv");
 
-        DatasetPrinterDeprecated.printGeneralInformation(datasetLoader.getRatingsDataset());
         GroupOfUsers[] groups = new GroupOfUsers[1];
         groups[0] = new GroupOfUsers(1774684, 1887988, 2394147);
         groupFormationTechnique = new GivenGroups(groups);

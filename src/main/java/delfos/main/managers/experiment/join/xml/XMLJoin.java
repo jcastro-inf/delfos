@@ -18,9 +18,9 @@ package delfos.main.managers.experiment.join.xml;
 
 import delfos.ConsoleParameters;
 import delfos.ERROR_CODES;
-import delfos.UndefinedParameterException;
 import delfos.common.FileUtilities;
 import delfos.common.Global;
+import delfos.common.StringsOrderings;
 import delfos.group.casestudy.defaultcase.GroupCaseStudy;
 import delfos.group.io.excel.casestudy.GroupCaseStudyExcel;
 import delfos.group.io.xml.casestudy.GroupCaseStudyXML;
@@ -36,8 +36,10 @@ import java.util.TreeSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import jxl.Workbook;
 import jxl.WorkbookSettings;
+import jxl.write.WritableSheet;
 import jxl.write.WritableWorkbook;
 import jxl.write.WriteException;
 import org.jdom2.JDOMException;
@@ -75,32 +77,38 @@ public class XMLJoin extends CaseUseMode {
 
     @Override
     public void manageCaseUse(ConsoleParameters consoleParameters) {
-        try {
-            List<String> resultsPaths = consoleParameters.getValues(RESULTS_PATH_PARAMETER);
 
-            File outputFile;
-            if (consoleParameters.isParameterDefined(OUTPUT_FILE_PARAMETER)) {
-                outputFile = new File(consoleParameters.getValue(OUTPUT_FILE_PARAMETER));
-            } else {
-                String firstPath = resultsPaths.get(0);
+        List<String> resultsPaths = getInputs(consoleParameters);
 
-                if (firstPath.endsWith(File.separator)) {
-                    firstPath = firstPath.substring(0, firstPath.length() - 1);
-                }
+        File outputFile = getOutputFile(consoleParameters, resultsPaths);
 
-                String firstPathCleaned = firstPath
-                        .replace(File.separatorChar, '.');
+        consoleParameters.printUnusedParameters(System.err);
+        mergeResultsIntoOutput(resultsPaths, outputFile);
 
-                outputFile = new File(firstPathCleaned + ".xls");
+    }
+
+    public List<String> getInputs(ConsoleParameters consoleParameters) {
+        List<String> resultsPaths = consoleParameters.getValues(RESULTS_PATH_PARAMETER);
+        return resultsPaths;
+    }
+
+    public File getOutputFile(ConsoleParameters consoleParameters, List<String> resultsPaths) {
+        File outputFile;
+        if (consoleParameters.isParameterDefined(OUTPUT_FILE_PARAMETER)) {
+            outputFile = new File(consoleParameters.getValue(OUTPUT_FILE_PARAMETER));
+        } else {
+            String firstPath = resultsPaths.get(0);
+
+            if (firstPath.endsWith(File.separator)) {
+                firstPath = firstPath.substring(0, firstPath.length() - 1);
             }
 
-            consoleParameters.printUnusedParameters(System.err);
-            mergeResultsIntoOutput(resultsPaths, outputFile);
-        } catch (UndefinedParameterException ex) {
-            ERROR_CODES.COMMAND_LINE_PARAMETER_IS_NOT_DEFINED.exit(ex);
+            String firstPathCleaned = firstPath
+                    .replace(File.separatorChar, '.');
 
-            consoleParameters.printUnusedParameters(System.err);
+            outputFile = new File(firstPathCleaned + ".xls");
         }
+        return outputFile;
     }
 
     public static void mergeResultsIntoOutput(List<String> resultsPaths, File outputFile) {
@@ -217,24 +225,46 @@ public class XMLJoin extends CaseUseMode {
             ERROR_CODES.CANNOT_WRITE_FILE.exit(ex);
         }
 
-        for (String evaluationMeasure : evaluationMeasuresOrder) {
+        evaluationMeasuresOrder.parallelStream().forEach(evaluationMeasure -> {
             try {
-                GroupCaseStudyExcel.writeEvaluationMeasureSpecificFile(
+                GroupCaseStudyExcel.writeEvaluationMeasureSpecificSheet(
                         groupCaseStudyResults,
                         dataValidationParametersOrder,
                         techniqueParametersOrder,
                         evaluationMeasure,
                         workbook);
+
             } catch (WriteException | IOException ex) {
                 ERROR_CODES.CANNOT_WRITE_FILE.exit(ex);
             }
+        });
+
+        if (GroupCaseStudyExcel.isOnlyOneColumn(groupCaseStudyResults)) {
+            evaluationMeasuresOrder.parallelStream().forEach(evaluationMeasure -> {
+
+                try {
+                    GroupCaseStudyExcel.writeEvaluationMeasureParameterCombinationsSheets(
+                            groupCaseStudyResults,
+                            dataValidationParametersOrder,
+                            techniqueParametersOrder,
+                            evaluationMeasure,
+                            workbook);
+                } catch (WriteException ex) {
+                    ERROR_CODES.CANNOT_WRITE_FILE.exit(ex);
+                }
+
+            });
         }
+        sortSheets(workbook);
 
         try {
             workbook.write();
             workbook.close();
         } catch (IOException | WriteException ex) {
             ERROR_CODES.CANNOT_WRITE_FILE.exit(ex);
+        } catch (Exception ex) {
+            ex.printStackTrace(System.err);
+            System.out.println("Some strange thing happened now...");
         }
     }
 
@@ -279,5 +309,38 @@ public class XMLJoin extends CaseUseMode {
     public static void joinDirectory(File directory) {
         File outputFile = new File(directory.getPath() + File.separator + "joined-results");
         XMLJoin.mergeResultsIntoOutput(Arrays.asList(directory.getPath()), outputFile);
+    }
+
+    private static void sortSheets(WritableWorkbook workbook) {
+
+        List<String> sheetsNames = IntStream.range(0, workbook.getNumberOfSheets()).boxed().map(sheetNumber -> {
+            final WritableSheet sheet = workbook.getSheet(sheetNumber);
+            return sheet.getName();
+        }).collect(Collectors.toList());
+
+        sheetsNames.remove("AllCasesAggregateResults");
+        sheetsNames.remove("numExecutions");
+
+        List<String> sortedSheets = sheetsNames.stream().sorted(StringsOrderings.getNaturalComparator()).collect(Collectors.toList());
+
+        sortedSheets.add(0, "AllCasesAggregateResults");
+        sortedSheets.add(1, "numExecutions");
+
+        for (int i = 0; i < sortedSheets.size(); i++) {
+            String sheetName = sortedSheets.get(i);
+
+            int fromIndex = IntStream.range(0, workbook.getNumberOfSheets()).boxed().filter(sheetNumber -> {
+                WritableSheet sheet = workbook.getSheet(sheetNumber);
+                return sheet.getName().equals(sheetName);
+            }).findAny().orElse(-1);
+
+            int toIndex = i;
+
+            if (fromIndex == -1 || toIndex == -1) {
+                throw new IllegalStateException("The sheets names in the original and sorted vector do not match.");
+            }
+
+            workbook.moveSheet(fromIndex, toIndex);
+        }
     }
 }

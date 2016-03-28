@@ -27,7 +27,6 @@ import delfos.common.parameters.restriction.IntegerParameter;
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RatingsDataset;
-import delfos.dataset.util.DatasetPrinterDeprecated;
 import delfos.rs.collaborativefiltering.CollaborativeRecommender;
 import delfos.rs.collaborativefiltering.knn.RecommendationEntity;
 import delfos.rs.collaborativefiltering.profile.Neighbor;
@@ -156,25 +155,9 @@ public class HybridUserItemTrustBased extends CollaborativeRecommender<HybridUse
                     event.getRemainingTime());
         });
 
-        WeightedGraphAdapter<Integer> usersTrust = implicitTrustComputation.computeTrustValues(datasetLoader, datasetLoader.getRatingsDataset().allUsers());
+        WeightedGraph<Integer> usersTrust = implicitTrustComputation.computeTrustValues(datasetLoader, datasetLoader.getRatingsDataset().allUsers());
 
         RatingsDataset<? extends Rating> ratingsDataset = datasetLoader.getRatingsDataset();
-
-        boolean printPartialResults;
-        if (ratingsDataset.allRatedItems().size() > 100 || ratingsDataset.allUsers().size() > 28) {
-            printPartialResults = false;
-        } else {
-            printPartialResults = true;
-        }
-
-        if (!Global.isInfoPrinted()) {
-            printPartialResults = false;
-        }
-
-        if (printPartialResults) {
-            Global.showInfoMessage("Dataset de training \n");
-            DatasetPrinterDeprecated.printCompactRatingTable(ratingsDataset);
-        }
 
         List<Integer> users = new ArrayList<>(ratingsDataset.allUsers());
         List<Integer> items = new ArrayList<>(ratingsDataset.allRatedItems());
@@ -199,8 +182,8 @@ public class HybridUserItemTrustBased extends CollaborativeRecommender<HybridUse
                         continue;
                     }
 
-                    if (usersTrust.allNodes().contains(idUser) && usersTrust.connection(idUser, idUserAdyacente).doubleValue() > 0) {
-                        sumaConfianza += usersTrust.connection(idUser, idUserAdyacente).doubleValue();
+                    if (usersTrust.allNodes().contains(idUser) && usersTrust.connectionWeight(idUser, idUserAdyacente).orElse(0.0) > 0) {
+                        sumaConfianza += usersTrust.connectionWeight(idUser, idUserAdyacente).orElse(0.0);
                         numAdjacentes++;
                     }
                 }
@@ -211,11 +194,6 @@ public class HybridUserItemTrustBased extends CollaborativeRecommender<HybridUse
                 fireBuildingProgressChangedEvent("(2/6) User reputation calculation", (int) ((i * 100f) / users.size()), -1);
                 i++;
             }
-        }
-
-        if (printPartialResults) {
-
-            DatasetPrinterDeprecated.printOneColumnUserTable(usersReputation);
         }
 
         Global.showInfoMessage("============================================================================= \n");
@@ -236,7 +214,7 @@ public class HybridUserItemTrustBased extends CollaborativeRecommender<HybridUse
                         continue;
                     }
 
-                    double trustBetweenUsers = usersTrust.connection(idUser, idUserNeighbour).doubleValue();
+                    double trustBetweenUsers = usersTrust.connectionWeight(idUser, idUserNeighbour).orElse(0.0);
                     if (trustBetweenUsers > 0) {
                         neighborsOfUser.add(new Neighbor(RecommendationEntity.USER, idUserNeighbour, trustBetweenUsers));
                     }
@@ -249,9 +227,6 @@ public class HybridUserItemTrustBased extends CollaborativeRecommender<HybridUse
             }
         }
 
-        if (printPartialResults) {
-            DatasetPrinterDeprecated.printNeighborsUsers(usersNeighbours);
-        }
         return new HybridUserItemTrustBasedModel.UserBasedTrustModuleModel(usersNeighbours, usersReputation, usersTrust);
     }
 
@@ -263,19 +238,8 @@ public class HybridUserItemTrustBased extends CollaborativeRecommender<HybridUse
             HybridUserItemTrustBased.this.fireBuildingProgressChangedEvent(event.getTask(), event.getPercent(), event.getRemainingTime());
         });
 
-        WeightedGraphAdapter<Integer> itemBasedTrust = implicitTrustComputation.computeTrustValues(datasetLoader, datasetLoader.getRatingsDataset().allRatedItems());
+        WeightedGraph<Integer> itemBasedTrust = implicitTrustComputation.computeTrustValues(datasetLoader, datasetLoader.getRatingsDataset().allRatedItems());
         RatingsDataset<? extends Rating> ratingsDataset = datasetLoader.getRatingsDataset();
-
-        boolean printPartialResults;
-        if (ratingsDataset.allRatedItems().size() > 100 || ratingsDataset.allUsers().size() > 28) {
-            printPartialResults = false;
-        } else {
-            printPartialResults = true;
-        }
-
-        if (!Global.isInfoPrinted()) {
-            printPartialResults = false;
-        }
 
         List<Integer> users = new ArrayList<>(ratingsDataset.allUsers());
         List<Integer> items = new ArrayList<>(ratingsDataset.allRatedItems());
@@ -304,7 +268,7 @@ public class HybridUserItemTrustBased extends CollaborativeRecommender<HybridUse
                                 continue;
                             }
 
-                            double connection = itemBasedTrust.connection(idItemAdjacenteOrigen, idItem).doubleValue();
+                            double connection = itemBasedTrust.connectionWeight(idItemAdjacenteOrigen, idItem).orElse(0.0);
 
                             //Se pasa a calcular la reputación del producto.
                             numerador += connection;
@@ -325,11 +289,6 @@ public class HybridUserItemTrustBased extends CollaborativeRecommender<HybridUse
             }
         }
 
-        if (printPartialResults) {
-            Global.showInfoMessage("==================  Item reputation table ==========================  \n");
-            DatasetPrinterDeprecated.printCompactRatingTable(itemReputation);
-        }
-
         Global.showInfoMessage("============================================================================= \n");
         Global.showInfoMessage("IT-Step 3: Item neighbour selection.\n");
         Global.showInfoMessage("============================================================================= \n");
@@ -348,7 +307,7 @@ public class HybridUserItemTrustBased extends CollaborativeRecommender<HybridUse
                         continue;
                     }
 
-                    double trustBetweenItems = itemBasedTrust.connection(idItem, idItemNeighbour).doubleValue();
+                    double trustBetweenItems = itemBasedTrust.connectionWeight(idItem, idItemNeighbour).orElse(0.0);
                     neighborsOfItem.add(new Neighbor(RecommendationEntity.ITEM, idItemNeighbour, trustBetweenItems));
 
                 }
@@ -362,9 +321,6 @@ public class HybridUserItemTrustBased extends CollaborativeRecommender<HybridUse
             }
         }
 
-        if (printPartialResults) {
-            DatasetPrinterDeprecated.printNeighborsItems(itemsNeighbours);
-        }
         return new HybridUserItemTrustBasedModel.ItemBasedTrustModuleModel(itemBasedTrust, itemReputation, itemsNeighbours);
     }
 
@@ -389,7 +345,7 @@ public class HybridUserItemTrustBased extends CollaborativeRecommender<HybridUse
                 break;
             }
 
-            double connection = itemBasedTrustModuleModel.getItemsTrust().connection(idItem, idItemNeighbor).doubleValue();
+            double connection = itemBasedTrustModuleModel.getItemsTrust().connectionWeight(idItem, idItemNeighbor).orElse(0.0);
             if (connection > 0) {
                 //Predecir con la confianza.
 
@@ -400,7 +356,7 @@ public class HybridUserItemTrustBased extends CollaborativeRecommender<HybridUse
                 double rating = userRatings.get(idItemNeighbor).getRatingValue().doubleValue();
                 double mediaItemVecino = ratingsDataset.getMeanRatingItem(idItemNeighbor);
 
-                double connectionItemVecino = itemBasedTrustModuleModel.getItemsTrust().connection(idItem, idItemNeighbor).doubleValue();
+                double connectionItemVecino = itemBasedTrustModuleModel.getItemsTrust().connectionWeight(idItem, idItemNeighbor).orElse(0.0);
                 numerador += connectionItemVecino * (rating - mediaItemVecino);
                 denominador += connectionItemVecino;
                 numVecinosUsados++;
@@ -466,9 +422,9 @@ public class HybridUserItemTrustBased extends CollaborativeRecommender<HybridUse
                 continue;
             }
 
-            if (usersTrust.connection(idUser, idUserNeighbour).doubleValue() > 0) {
-                numerador += usersTrust.connection(idUser, idUserNeighbour).doubleValue() * (neighbourRatings.get(idItem).getRatingValue().doubleValue() - neighbourMeanRating);
-                denominador += usersTrust.connection(idUser, idUserNeighbour).doubleValue();
+            if (usersTrust.connectionWeight(idUser, idUserNeighbour).orElse(0.0) > 0) {
+                numerador += usersTrust.connectionWeight(idUser, idUserNeighbour).orElse(0.0) * (neighbourRatings.get(idItem).getRatingValue().doubleValue() - neighbourMeanRating);
+                denominador += usersTrust.connectionWeight(idUser, idUserNeighbour).orElse(0.0);
             } else {
                 //No hay definida confianza directa, usando reputación.
                 numerador += usersReputation.get(idUserNeighbour).doubleValue() * (neighbourRatings.get(idItem).getRatingValue().doubleValue() - neighbourMeanRating);

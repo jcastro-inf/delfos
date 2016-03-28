@@ -102,8 +102,7 @@ public class HesitantGRS_CaseStudy extends DelfosTest {
             }
         }
 
-        turingPreparator.prepareGroupExperiment(
-                experimentDirectory,
+        turingPreparator.prepareGroupExperiment(experimentDirectory,
                 groupCaseStudys,
                 getDatasetLoader().toArray(new DatasetLoader[0]));
     }

@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -18,7 +18,8 @@ package delfos.group.grs.cww.centrality.definitions;
 
 import delfos.common.parameters.ParameterOwnerType;
 import delfos.group.grs.cww.centrality.CentralityConceptDefinition;
-import delfos.rs.trustbased.WeightedGraphAdapter;
+import delfos.rs.trustbased.WeightedGraph;
+import java.util.Objects;
 
 /**
  *
@@ -32,24 +33,22 @@ public class ClosenessCentrality extends CentralityConceptDefinition<Integer> {
     }
 
     @Override
-    public double centrality(WeightedGraphAdapter<Integer> weightedGraph, Integer node) {
+    public double centrality(WeightedGraph<Integer> weightedGraph, Integer node) {
 
         double centrality, numerator = 0;
         int n = 0;
         for (Integer otherNode : weightedGraph.allNodes()) {
-            if (node == otherNode) {
+            if (Objects.equals(node, otherNode)) {
                 // No se tiene en cuenta la confianza consigo mismo.
             } else {
                 double distance = weightedGraph.distance(node, otherNode);
 
                 if (Double.isInfinite(distance)) {
 
-                } else {
-                    if (distance == 0) {
+                } else if (distance == 0) {
 
-                    } else {
-                        numerator += 1 / distance;
-                    }
+                } else {
+                    numerator += 1 / distance;
                 }
 
                 n++;
@@ -59,6 +58,7 @@ public class ClosenessCentrality extends CentralityConceptDefinition<Integer> {
         return centrality;
     }
 
+    @Override
     public ParameterOwnerType getParameterOwnerType() {
         return ParameterOwnerType.CENTRALITY_CONCEPT_DEFINITION;
     }

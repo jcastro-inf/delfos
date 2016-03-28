@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -130,7 +130,9 @@ public class CaseStudyResultMatrix {
             String parameterName = chain.getLeaf().getParameter().getName();
             str.append(parameterName).append("=").append(value.toString()).append("_");
         }
-        str.delete(str.length() - 1, str.length());
+        if (str.length() > 0) {
+            str.delete(str.length() - 1, str.length());
+        }
 
         final String columnName = str.toString();
         if (!columnNames.contains(columnName)) {

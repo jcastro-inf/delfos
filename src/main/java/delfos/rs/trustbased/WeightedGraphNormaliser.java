@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,24 +16,19 @@
  */
 package delfos.rs.trustbased;
 
-import java.util.TreeMap;
 import delfos.common.Global;
 import delfos.dataset.util.DatasetPrinter;
+import java.util.Map;
+import java.util.TreeMap;
 
 /**
  * Normaliza un grafo ponderado dado. Utiliza la normalización
  *
  * @author jcastro-inf ( https://github.com/jcastro-inf )
- *
- * @version 15-ene-2014
- * @param <Node>
  */
-public class WeightedGraphNormaliser<Node> extends WeightedGraphAdapter<Node> {
+public class WeightedGraphNormaliser {
 
-    private static final long serialVersionUID = 1L;
-
-    public WeightedGraphNormaliser(WeightedGraph<Node> source) {
-        super();
+    public static final <Node> WeightedGraph<Node> normalise(WeightedGraph<Node> source) {
 
         if (Global.isVerboseAnnoying()) {
             String printWeightedGraph = DatasetPrinter.printWeightedGraph(source);
@@ -49,7 +44,7 @@ public class WeightedGraphNormaliser<Node> extends WeightedGraphAdapter<Node> {
                     //Skip same node connections
                     continue;
                 }
-                double connectionValue = source.connection(nodeSource, nodeDestiny).doubleValue();
+                double connectionValue = source.connectionWeight(nodeSource, nodeDestiny).orElse(0.0);
                 min = Math.min(min, connectionValue);
                 max = Math.max(max, connectionValue);
             }
@@ -67,29 +62,24 @@ public class WeightedGraphNormaliser<Node> extends WeightedGraphAdapter<Node> {
             Global.showWarning("Weighted graph normalisation isn't needed (Values were alrealdy normalised).");
         }
 
-        allNodes.addAll(source.allNodes());
+        Map<Node, Map<Node, Number>> connections = new TreeMap<>();
 
         for (Node nodeSource : source.allNodes()) {
-            TreeMap<Node, Number> thisNodeConnections = new TreeMap<Node, Number>();
+            TreeMap<Node, Number> thisNodeConnections = new TreeMap<>();
             for (Node nodeDestiny : source.allNodes()) {
                 if (nodeSource.equals(nodeDestiny)) {
                     //Skip same node connections by setting to 1.
                     thisNodeConnections.put(nodeDestiny, 1);
                 } else {
                     //Do the normalisation.
-                    final double originalConnection = source.connection(nodeSource, nodeDestiny).doubleValue();
+                    final double originalConnection = source.connectionWeight(nodeSource, nodeDestiny).orElse(0.0);
                     final double normalisedConnection = (originalConnection - min) / (max - min);
                     thisNodeConnections.put(nodeDestiny, normalisedConnection);
                 }
             }
-            this.connections.put(nodeSource, thisNodeConnections);
-        }
-        WeightedGraphAdapter<Node> normalisedGraph = new WeightedGraphAdapter<Node>(connections);
-
-        if (Global.isVerboseAnnoying()) {
-            String printNormalisedGraph = DatasetPrinter.printWeightedGraph(normalisedGraph);
-            Global.showInfoMessage(printNormalisedGraph);
+            connections.put(nodeSource, thisNodeConnections);
         }
 
+        return new WeightedGraph<>(connections);
     }
 }

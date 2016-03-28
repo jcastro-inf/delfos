@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,6 +16,7 @@
  */
 package delfos.common.datastructures.histograms;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.io.Writer;
@@ -86,15 +87,13 @@ public class HistogramNumbersSmart {
     public void addValue(double value) {
         if (Double.isNaN(value)) {
             nanValues++;
+        } else if (Double.isInfinite(value)) {
+            infiniteValues++;
         } else {
-            if (Double.isInfinite(value)) {
-                infiniteValues++;
-            } else {
-                min = Math.min(min, value);
-                max = Math.max(max, value);
+            min = Math.min(min, value);
+            max = Math.max(max, value);
 
-                values.add(value);
-            }
+            values.add(value);
         }
 
         numValuesAdded++;
@@ -117,12 +116,25 @@ public class HistogramNumbersSmart {
         return retInt;
     }
 
+    @Override
+    public String toString() {
+
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        PrintStream recordingStream = new PrintStream(baos);
+        printHistogram(recordingStream);
+
+        return baos.toString();
+    }
+
     public void printHistogram(PrintStream stream) {
 
         int numDecimals = lastSignificativeDecimal(binWidth);
 
         final String format;
         switch (numDecimals) {
+            case 0:
+                format = "0.0";
+                break;
             case 1:
                 format = "0.0";
                 break;

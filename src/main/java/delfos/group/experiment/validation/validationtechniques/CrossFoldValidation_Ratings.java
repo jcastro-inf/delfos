@@ -17,19 +17,16 @@
 package delfos.group.experiment.validation.validationtechniques;
 
 import delfos.ERROR_CODES;
-import delfos.common.Global;
 import delfos.common.exceptions.dataset.CannotLoadContentDataset;
 import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
 import delfos.common.exceptions.dataset.items.ItemNotFound;
 import delfos.common.exceptions.dataset.users.UserNotFound;
 import delfos.common.parameters.Parameter;
 import delfos.common.parameters.restriction.IntegerParameter;
-import delfos.dataset.basic.loader.types.ContentDatasetLoader;
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.storage.validationdatasets.PairOfTrainTestRatingsDataset;
 import delfos.dataset.storage.validationdatasets.ValidationDatasets;
-import delfos.dataset.util.DatasetPrinterDeprecated;
 import delfos.group.groupsofusers.GroupOfUsers;
 import java.util.ArrayList;
 import java.util.List;
@@ -173,33 +170,6 @@ public class CrossFoldValidation_Ratings extends GroupValidationTechnique {
                         ValidationDatasets.getInstance().createTestDataset(datasetLoader.getRatingsDataset(), finalTestSets.get(idPartition)),
                         "_" + this.getClass().getSimpleName() + "_seed=" + getSeedValue() + "_partition=" + idPartition);
 
-                if (Global.isVerboseAnnoying()) {
-
-                    Set<Integer> allItems;
-                    if (datasetLoader instanceof ContentDatasetLoader) {
-                        ContentDatasetLoader contentDatasetLoader = (ContentDatasetLoader) datasetLoader;
-                        allItems = new TreeSet<>(contentDatasetLoader.getContentDataset().allIDs());
-                    } else {
-                        allItems = new TreeSet<>(datasetLoader.getRatingsDataset().allRatedItems());
-                    }
-
-                    Global.showInfoMessage("==================================================== \n\n");
-
-                    Set<Integer> allUsers = new TreeSet<>(datasetLoader.getRatingsDataset().allUsers());
-
-                    Global.showInfoMessage("Dataset de training " + idPartition + ".\n");
-                    DatasetPrinterDeprecated.printCompactRatingTable(
-                            ret[idPartition].train,
-                            allUsers,
-                            allItems);
-
-                    Global.showInfoMessage("Dataset de test " + idPartition + ".\n");
-                    DatasetPrinterDeprecated.printCompactRatingTable(
-                            ret[idPartition].test,
-                            allUsers,
-                            allItems);
-                    Global.showInfoMessage("==================================================== \n");
-                }
             } catch (UserNotFound ex) {
                 ERROR_CODES.USER_NOT_FOUND.exit(ex);
             } catch (ItemNotFound ex) {

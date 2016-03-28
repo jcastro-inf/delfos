@@ -24,9 +24,8 @@ import delfos.common.parameters.restriction.IntegerParameter;
 import delfos.common.parameters.restriction.ParameterOwnerRestriction;
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
-import delfos.dataset.util.DatasetPrinterDeprecated;
 import delfos.group.groupsofusers.GroupOfUsers;
-import delfos.rs.trustbased.WeightedGraphAdapter;
+import delfos.rs.trustbased.WeightedGraph;
 import delfos.rs.trustbased.WeightedGraphCalculation;
 import delfos.rs.trustbased.implicittrustcomputation.ShambourLu_UserBasedImplicitTrustComputation;
 
@@ -39,42 +38,42 @@ import delfos.rs.trustbased.implicittrustcomputation.ShambourLu_UserBasedImplici
  */
 public class FuzzyCliqueMeasure extends GroupMeasureAdapter {
 
-    public static final Parameter weightedGraphCalculation = new Parameter(
+    public static final Parameter WEIGHTED_GRAPH_CALCULATION = new Parameter(
             "weightedGraphCalculation",
             new ParameterOwnerRestriction(WeightedGraphCalculation.class, new ShambourLu_UserBasedImplicitTrustComputation()));
-    public static final Parameter N1_forShort = new Parameter(
+    public static final Parameter N1_FOR_SHORT = new Parameter(
             "N1_forShort",
             new DoubleParameter(0, 1, 0.25f));
-    public static final Parameter N2_forShort = new Parameter(
+    public static final Parameter N2_FOR_SHORT = new Parameter(
             "N2_forShort",
             new DoubleParameter(0, 1, 0.5f));
-    public static final Parameter N4_forStrong = new Parameter(
+    public static final Parameter N4_FOR_STRONG = new Parameter(
             "N4_forStrong",
             new DoubleParameter(0, 1, 0.3f));
-    public static final Parameter N5_forStrong = new Parameter(
+    public static final Parameter N5_FOR_STRONG = new Parameter(
             "N5_forStrong",
             new DoubleParameter(0, 1, 0.8f));
-    public static final Parameter N6_forLong = new Parameter(
+    public static final Parameter N6_FOR_LONG = new Parameter(
             "N6_forLong",
             new IntegerParameter(1, Integer.MAX_VALUE, 2));
-    public static final Parameter N7_forLong = new Parameter(
+    public static final Parameter N7_FOR_LONG = new Parameter(
             "N7_forLong",
             new IntegerParameter(1, Integer.MAX_VALUE, 4));
 
     public FuzzyCliqueMeasure() {
         super();
-        addParameter(weightedGraphCalculation);
-        addParameter(N1_forShort);
-        addParameter(N2_forShort);
-        addParameter(N4_forStrong);
-        addParameter(N5_forStrong);
-        addParameter(N6_forLong);
-        addParameter(N7_forLong);
+        addParameter(WEIGHTED_GRAPH_CALCULATION);
+        addParameter(N1_FOR_SHORT);
+        addParameter(N2_FOR_SHORT);
+        addParameter(N4_FOR_STRONG);
+        addParameter(N5_FOR_STRONG);
+        addParameter(N6_FOR_LONG);
+        addParameter(N7_FOR_LONG);
     }
 
     public FuzzyCliqueMeasure(WeightedGraphCalculation weightedGraphCalculation) {
         this();
-        setParameterValue(FuzzyCliqueMeasure.weightedGraphCalculation, weightedGraphCalculation);
+        setParameterValue(FuzzyCliqueMeasure.WEIGHTED_GRAPH_CALCULATION, weightedGraphCalculation);
     }
 
     public FuzzyCliqueMeasure(
@@ -88,10 +87,10 @@ public class FuzzyCliqueMeasure extends GroupMeasureAdapter {
 
         checkRestrictions(n1_for_short, n2_for_short, n4_for_strong, n5_for_strong);
 
-        setParameterValue(FuzzyCliqueMeasure.N1_forShort, n1_for_short);
-        setParameterValue(FuzzyCliqueMeasure.N2_forShort, n2_for_short);
-        setParameterValue(FuzzyCliqueMeasure.N4_forStrong, n4_for_strong);
-        setParameterValue(FuzzyCliqueMeasure.N5_forStrong, n5_for_strong);
+        setParameterValue(FuzzyCliqueMeasure.N1_FOR_SHORT, n1_for_short);
+        setParameterValue(FuzzyCliqueMeasure.N2_FOR_SHORT, n2_for_short);
+        setParameterValue(FuzzyCliqueMeasure.N4_FOR_STRONG, n4_for_strong);
+        setParameterValue(FuzzyCliqueMeasure.N5_FOR_STRONG, n5_for_strong);
 
         checkRestrictions();
     }
@@ -99,8 +98,8 @@ public class FuzzyCliqueMeasure extends GroupMeasureAdapter {
     @Override
     public String getNameWithParameters() {
         return "FClq_" + getWeightedGraphCalculation().getShortName()
-                + "_SH(" + getN1_forShort() + "," + getN2_forShort() + ")"
-                + "_ST(" + getN4_forStrong() + "," + getN5_forStrong() + ")";
+                + "_SH(" + getN1_FOR_SHORT() + "," + getN2_FOR_SHORT() + ")"
+                + "_ST(" + getN4_FOR_STRONG() + "," + getN5_FOR_STRONG() + ")";
     }
 
     /**
@@ -114,10 +113,10 @@ public class FuzzyCliqueMeasure extends GroupMeasureAdapter {
     public double getMeasure(DatasetLoader<? extends Rating> datasetLoader, GroupOfUsers group) throws CannotLoadRatingsDataset {
         checkRestrictions();
 
-        WeightedGraphAdapter<Integer> trustNetwork = getWeightedGraphCalculation().computeTrustValues(datasetLoader);
+        WeightedGraph<Integer> trustNetwork = getWeightedGraphCalculation().computeTrustValues(datasetLoader);
 
         if (Global.isVerboseAnnoying()) {
-            DatasetPrinterDeprecated.printWeightedGraph(trustNetwork);
+            trustNetwork.printTable(System.out);
         }
 
         double valueOfC1 = 1;
@@ -132,8 +131,8 @@ public class FuzzyCliqueMeasure extends GroupMeasureAdapter {
 
                 //Calculo cuánto satisface la clausula 1.
                 double maximoValorEstePar = 0;
-                for (int k = 0; k < trustNetwork.maxK(); k++) {
-                    double valor = conjunctionOperator(wordShort_relative(k / numNodos), wordStrong(trustNetwork.composition(x_i, x_j, k)));
+                for (int k = 1; k < trustNetwork.maxK(); k++) {
+                    double valor = conjunctionOperator(wordShort_relative(k / numNodos), wordStrong(trustNetwork.distanceJumpLimited(x_i, x_j, k)));
 
                     if (maximoValorEstePar < valor) {
                         maximoValorEstePar = valor;
@@ -158,7 +157,7 @@ public class FuzzyCliqueMeasure extends GroupMeasureAdapter {
 
                 for (int k = 1; k < trustNetwork.maxK(); k++) {
 
-                    double valueOfThisK = conjunctionOperator(wordNotLong(k), wordStrong(trustNetwork.composition(x, z, k)));
+                    double valueOfThisK = conjunctionOperator(wordNotLong(k), wordStrong(trustNetwork.distanceJumpLimited(x, z, k)));
 
                     if (maxOfAllK < valueOfThisK) {
                         maxOfAllK = valueOfThisK;
@@ -197,14 +196,12 @@ public class FuzzyCliqueMeasure extends GroupMeasureAdapter {
      */
     private double wordShort_relative(double relativeLength) {
         double ret;
-        if (relativeLength <= getN1_forShort()) {
+        if (relativeLength <= getN1_FOR_SHORT()) {
             ret = 1;
+        } else if (relativeLength >= getN2_FOR_SHORT()) {
+            ret = 0;
         } else {
-            if (relativeLength >= getN2_forShort()) {
-                ret = 0;
-            } else {
-                ret = 1 - (relativeLength - getN1_forShort()) / (getN2_forShort() - getN1_forShort());
-            }
+            ret = 1 - (relativeLength - getN1_FOR_SHORT()) / (getN2_FOR_SHORT() - getN1_FOR_SHORT());
         }
 
         // Global.showInfoMessage("Distancia " + relativeLength + " --> " + ret);
@@ -219,38 +216,36 @@ public class FuzzyCliqueMeasure extends GroupMeasureAdapter {
      * @return
      */
     private double wordStrong(double connection) {
-        final double n4 = getN4_forStrong();
-        final double n5 = getN5_forStrong();
+        final double n4 = getN4_FOR_STRONG();
+        final double n5 = getN5_FOR_STRONG();
 
         if (connection <= n4) {
             return 0;
+        } else if (connection >= n5) {
+            return 1;
         } else {
-            if (connection >= n5) {
-                return 1;
-            } else {
-                return (connection - n4) / (n5 - n4);
-            }
+            return (connection - n4) / (n5 - n4);
         }
     }
 
-    public double getN1_forShort() {
-        return (Double) getParameterValue(N1_forShort);
+    public double getN1_FOR_SHORT() {
+        return (Double) getParameterValue(N1_FOR_SHORT);
     }
 
-    public double getN2_forShort() {
-        return (Double) getParameterValue(N2_forShort);
+    public double getN2_FOR_SHORT() {
+        return (Double) getParameterValue(N2_FOR_SHORT);
     }
 
-    public double getN4_forStrong() {
-        return (Double) getParameterValue(N4_forStrong);
+    public double getN4_FOR_STRONG() {
+        return (Double) getParameterValue(N4_FOR_STRONG);
     }
 
-    public double getN5_forStrong() {
-        return (Double) getParameterValue(N5_forStrong);
+    public double getN5_FOR_STRONG() {
+        return (Double) getParameterValue(N5_FOR_STRONG);
     }
 
     public WeightedGraphCalculation getWeightedGraphCalculation() {
-        return (WeightedGraphCalculation) getParameterValue(weightedGraphCalculation);
+        return (WeightedGraphCalculation) getParameterValue(WEIGHTED_GRAPH_CALCULATION);
     }
 
     private void checkRestrictions(double n1_for_short, double n2_for_short, double n4_for_strong, double n5_for_strong) {
@@ -263,30 +258,28 @@ public class FuzzyCliqueMeasure extends GroupMeasureAdapter {
     }
 
     private void checkRestrictions() throws IllegalArgumentException {
-        if (getN1_forShort() >= getN2_forShort()) {
+        if (getN1_FOR_SHORT() >= getN2_FOR_SHORT()) {
             throw new IllegalArgumentException("The short label definition is not valid (n1 must be less than n2).");
         }
-        if (getN4_forStrong() >= getN5_forStrong()) {
+        if (getN4_FOR_STRONG() >= getN5_FOR_STRONG()) {
             throw new IllegalArgumentException("The strong label definition is not valid (n4 must be less than n5).");
         }
 
-        if (getN6_forLong() >= getN7_forLong()) {
+        if (getN6_FOR_LONG() >= getN7_FOR_LONG()) {
             throw new IllegalArgumentException("The long label definition is not valid (n6 must be less than n7).");
         }
     }
 
     private double wordLong(int numConnections) {
-        final int n6 = getN6_forLong();
-        final int n7 = getN7_forLong();
+        final int n6 = getN6_FOR_LONG();
+        final int n7 = getN7_FOR_LONG();
 
         if (numConnections <= n6) {
             return 0;
+        } else if (numConnections >= n7) {
+            return 1;
         } else {
-            if (numConnections >= n7) {
-                return 1;
-            } else {
-                return (numConnections - n6) / (n7 - n6);
-            }
+            return (numConnections - n6) / (n7 - n6);
         }
     }
 
@@ -294,11 +287,11 @@ public class FuzzyCliqueMeasure extends GroupMeasureAdapter {
         return 1 - wordLong(numConnections);
     }
 
-    private int getN6_forLong() {
-        return (Integer) getParameterValue(N6_forLong);
+    private int getN6_FOR_LONG() {
+        return (Integer) getParameterValue(N6_FOR_LONG);
     }
 
-    private int getN7_forLong() {
-        return (Integer) getParameterValue(N7_forLong);
+    private int getN7_FOR_LONG() {
+        return (Integer) getParameterValue(N7_FOR_LONG);
     }
 }

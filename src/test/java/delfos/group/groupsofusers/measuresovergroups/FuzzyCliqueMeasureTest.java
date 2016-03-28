@@ -7,7 +7,7 @@ import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RatingsDataset;
 import delfos.dataset.generated.random.RandomDatasetLoader;
 import delfos.group.groupsofusers.GroupOfUsers;
-import delfos.rs.trustbased.WeightedGraphAdapter;
+import delfos.rs.trustbased.WeightedGraph;
 import delfos.rs.trustbased.implicittrustcomputation.ShambourLu_UserBasedImplicitTrustComputation;
 import org.junit.Test;
 
@@ -33,7 +33,7 @@ public class FuzzyCliqueMeasureTest {
         RatingsDataset<? extends Rating> ratingsDataset = datasetLoader.getRatingsDataset();
 
         ShambourLu_UserBasedImplicitTrustComputation implicitTrustComputation = new ShambourLu_UserBasedImplicitTrustComputation();
-        WeightedGraphAdapter trustNetwork = implicitTrustComputation.computeTrustValues(datasetLoader, ratingsDataset.allUsers());
+        WeightedGraph trustNetwork = implicitTrustComputation.computeTrustValues(datasetLoader, ratingsDataset.allUsers());
         FuzzyCliqueMeasure fuzzyClique = new FuzzyCliqueMeasure();
 
         for (int user1 : ratingsDataset.allUsers()) {

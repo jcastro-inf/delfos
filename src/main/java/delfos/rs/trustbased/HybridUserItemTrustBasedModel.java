@@ -47,10 +47,10 @@ public class HybridUserItemTrustBasedModel implements Serializable {
         public UserBasedTrustModuleModel(TreeMap<Integer, Set<Neighbor>> usersNeighbours, TreeMap<Integer, Number> usersReputation, TreeMap<Integer, Map<Integer, Number>> usersTrust) {
             this.usersNeighbours = usersNeighbours;
             this.usersReputation = usersReputation;
-            this.usersTrust = new WeightedGraphAdapter<Integer>(usersTrust);
+            this.usersTrust = new WeightedGraph<Integer>(usersTrust);
         }
 
-        UserBasedTrustModuleModel(TreeMap<Integer, Set<Neighbor>> usersNeighbours, TreeMap<Integer, Number> usersReputation, WeightedGraphAdapter<Integer> usersTrust) {
+        UserBasedTrustModuleModel(TreeMap<Integer, Set<Neighbor>> usersNeighbours, TreeMap<Integer, Number> usersReputation, WeightedGraph<Integer> usersTrust) {
             this.usersNeighbours = usersNeighbours;
             this.usersReputation = usersReputation;
             this.usersTrust = usersTrust;
@@ -79,7 +79,7 @@ public class HybridUserItemTrustBasedModel implements Serializable {
         public ItemBasedTrustModuleModel(TreeMap<Integer, Map<Integer, Number>> itemsTrust, TreeMap<Integer, Map<Integer, Number>> itemsReputation, TreeMap<Integer, Collection<Neighbor>> itemsNeighbours) {
             this.itemsReputation = itemsReputation;
             this.itemsNeighbours = itemsNeighbours;
-            this.itemsTrust = new WeightedGraphAdapter<Integer>(itemsTrust);
+            this.itemsTrust = new WeightedGraph<Integer>(itemsTrust);
         }
 
         public ItemBasedTrustModuleModel(WeightedGraph<Integer> itemBasedTrust, Map<Integer, Map<Integer, Number>> itemsReputation, TreeMap<Integer, Collection<Neighbor>> itemsNeighbours) {

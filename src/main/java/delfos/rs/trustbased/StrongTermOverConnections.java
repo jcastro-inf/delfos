@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,52 +16,63 @@
  */
 package delfos.rs.trustbased;
 
-import java.util.TreeMap;
-import delfos.common.fuzzylabels.FuzzyLabel;
 import delfos.common.Global;
+import delfos.common.fuzzylabels.FuzzyLabel;
 import delfos.dataset.util.DatasetPrinter;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Normaliza un grafo ponderado dado. Utiliza la normalización
  *
  * @author jcastro-inf ( https://github.com/jcastro-inf )
- *
- * @version 15-ene-2014
- * @param <Node>
  */
-public class StrongTermOverConnections<Node> extends WeightedGraphAdapter<Node> {
+public class StrongTermOverConnections {
 
     private static final long serialVersionUID = 1L;
 
-    public StrongTermOverConnections(WeightedGraph<Node> source, double aStrong, double bStrong) {
-        super();
+    public static final <Node> WeightedGraph<Node> applyStrongTerm(WeightedGraph<Node> source, double aStrong, double bStrong) {
 
         if (Global.isVerboseAnnoying()) {
             String printWeightedGraph = DatasetPrinter.printWeightedGraph(source);
             Global.showInfoMessage(printWeightedGraph);
         }
+
+        Map<Node, Map<Node, Number>> connections;
         FuzzyLabel strong = FuzzyLabel.createAscendentLabel(aStrong, bStrong);
-        allNodes.addAll(source.allNodes());
-        for (Node nodeSource : source.allNodes()) {
-            TreeMap<Node, Number> thisNodeConnections = new TreeMap<Node, Number>();
-            for (Node nodeDestiny : source.allNodes()) {
+
+        connections = source.allNodes().parallelStream().collect(Collectors.toMap(nodeSource -> nodeSource, nodeSource -> {
+
+            Map<Node, Number> thisNodeConnections;
+            thisNodeConnections = source.allNodes().parallelStream().collect(Collectors.toMap(nodeDestiny -> nodeDestiny, nodeDestiny -> {
+                Number weight = 0;
                 if (nodeSource.equals(nodeDestiny)) {
                     //Skip same node connections by setting to 1.
-                    thisNodeConnections.put(nodeDestiny, 1);
+                    weight = 1.0;
                 } else {
                     //Do the normalisation.
-                    final double originalConnection = source.connection(nodeSource, nodeDestiny).doubleValue();
-                    final double modifiedConnection = strong.alphaCut(originalConnection);
-                    thisNodeConnections.put(nodeDestiny, modifiedConnection);
+                    final double originalConnection = source.connectionWeight(nodeSource, nodeDestiny).orElse(0.0);
+
+                    if (Double.isFinite(originalConnection) && originalConnection > 0) {
+                        final double modifiedConnection = strong.alphaCut(originalConnection);
+
+                        weight = modifiedConnection;
+                    }
+
                 }
-            }
-            this.connections.put(nodeSource, thisNodeConnections);
-        }
+                return weight;
+            }));
+            return thisNodeConnections;
+        }));
+
+        WeightedGraph<Node> ret = new WeightedGraph<>(connections);
 
         if (Global.isVerboseAnnoying()) {
-            String printNormalisedGraph = DatasetPrinter.printWeightedGraph(this);
+            String printNormalisedGraph = ret.toStringTable();
             Global.showInfoMessage(printNormalisedGraph);
         }
+
+        return ret;
 
     }
 }

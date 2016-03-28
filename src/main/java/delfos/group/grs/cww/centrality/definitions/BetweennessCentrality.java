@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,12 +16,13 @@
  */
 package delfos.group.grs.cww.centrality.definitions;
 
-import java.util.ArrayList;
-import java.util.List;
 import delfos.common.parameters.ParameterOwnerType;
 import delfos.group.grs.cww.centrality.CentralityConceptDefinition;
 import delfos.rs.trustbased.PathBetweenNodes;
-import delfos.rs.trustbased.WeightedGraphAdapter;
+import delfos.rs.trustbased.WeightedGraph;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  *
@@ -35,32 +36,30 @@ public class BetweennessCentrality extends CentralityConceptDefinition<Integer> 
     }
 
     @Override
-    public double centrality(WeightedGraphAdapter<Integer> weightedGraph, Integer node) {
-        List<PathBetweenNodes<Integer>> allShortestPaths = new ArrayList<PathBetweenNodes<Integer>>();
-        ArrayList<Integer> allNodesButThis = new ArrayList<Integer>(weightedGraph.allNodes());
+    public double centrality(WeightedGraph<Integer> weightedGraph, Integer node) {
+
+        ArrayList<Integer> allNodesButThis = new ArrayList<>(weightedGraph.allNodes());
         allNodesButThis.remove(node);
 
-        for (Integer n1 : allNodesButThis) {
-            for (Integer n2 : allNodesButThis) {
-                if (n1 != n2) {
-                    PathBetweenNodes shortestPath = weightedGraph.shortestPath(n1, n2);
-                    allShortestPaths.add(shortestPath);
-                }
-            }
-        }
+        List<PathBetweenNodes<Integer>> allShortestPaths = weightedGraph.allNodes().stream()
+                .flatMap(n1 -> weightedGraph
+                        .allNodes().stream()
+                        .filter(n2 -> n1 != n2)
+                        .map(n2 -> weightedGraph.shortestPath(n1, n2))
+                )
+                .filter(path -> path.isPresent())
+                .map(path -> path.get())
+                .collect(Collectors.toList());
 
-        double pathsWithNode = 0;
-
-        for (PathBetweenNodes<Integer> path : allShortestPaths) {
-            if (path.getNodes().contains(node)) {
-                pathsWithNode++;
-            }
-        }
+        double pathsWithNode = allShortestPaths.stream()
+                .filter((path) -> (path.getNodes().contains(node)))
+                .count();
 
         double centrality = pathsWithNode / allShortestPaths.size();
         return centrality;
     }
 
+    @Override
     public ParameterOwnerType getParameterOwnerType() {
         return ParameterOwnerType.CENTRALITY_CONCEPT_DEFINITION;
     }

@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -327,60 +327,58 @@ public final class StringsOrderings {
                         return 1;
                     }
                 } while (true);
-            } else {
-                // Compare words
-                if (collator != null) {
-                    // To use the collator the whole subwords have to be compared - character-by-character comparision
-                    // is not possible. So find the two subwords first
-                    int aw = sIndex;
-                    int bw = tIndex;
-                    do {
-                        ++sIndex;
-                    } while (sIndex < sLength && !Character.isDigit(s.charAt(sIndex)));
-                    do {
-                        ++tIndex;
-                    } while (tIndex < tLength && !Character.isDigit(t.charAt(tIndex)));
+            } else // Compare words
+            if (collator != null) {
+                // To use the collator the whole subwords have to be compared - character-by-character comparision
+                // is not possible. So find the two subwords first
+                int aw = sIndex;
+                int bw = tIndex;
+                do {
+                    ++sIndex;
+                } while (sIndex < sLength && !Character.isDigit(s.charAt(sIndex)));
+                do {
+                    ++tIndex;
+                } while (tIndex < tLength && !Character.isDigit(t.charAt(tIndex)));
 
-                    String as = s.substring(aw, sIndex);
-                    String bs = t.substring(bw, tIndex);
-                    int subwordResult = collator.compare(as, bs);
-                    if (subwordResult != 0) {
-                        return subwordResult;
-                    }
-                } else {
-                    // No collator specified. All characters should be ascii only. Compare character-by-character.
-                    do {
+                String as = s.substring(aw, sIndex);
+                String bs = t.substring(bw, tIndex);
+                int subwordResult = collator.compare(as, bs);
+                if (subwordResult != 0) {
+                    return subwordResult;
+                }
+            } else {
+                // No collator specified. All characters should be ascii only. Compare character-by-character.
+                do {
+                    if (sChar != tChar) {
+                        if (caseSensitive) {
+                            return sChar - tChar;
+                        }
+                        sChar = Character.toUpperCase(sChar);
+                        tChar = Character.toUpperCase(tChar);
                         if (sChar != tChar) {
-                            if (caseSensitive) {
+                            sChar = Character.toLowerCase(sChar);
+                            tChar = Character.toLowerCase(tChar);
+                            if (sChar != tChar) {
                                 return sChar - tChar;
                             }
-                            sChar = Character.toUpperCase(sChar);
-                            tChar = Character.toUpperCase(tChar);
-                            if (sChar != tChar) {
-                                sChar = Character.toLowerCase(sChar);
-                                tChar = Character.toLowerCase(tChar);
-                                if (sChar != tChar) {
-                                    return sChar - tChar;
-                                }
-                            }
                         }
-                        ++sIndex;
-                        ++tIndex;
-                        if (sIndex == sLength && tIndex == tLength) {
-                            return 0;
-                        }
-                        if (sIndex == sLength) {
-                            return -1;
-                        }
-                        if (tIndex == tLength) {
-                            return 1;
-                        }
-                        sChar = s.charAt(sIndex);
-                        tChar = t.charAt(tIndex);
-                        sCharIsDigit = Character.isDigit(sChar);
-                        tCharIsDigit = Character.isDigit(tChar);
-                    } while (!sCharIsDigit && !tCharIsDigit);
-                }
+                    }
+                    ++sIndex;
+                    ++tIndex;
+                    if (sIndex == sLength && tIndex == tLength) {
+                        return 0;
+                    }
+                    if (sIndex == sLength) {
+                        return -1;
+                    }
+                    if (tIndex == tLength) {
+                        return 1;
+                    }
+                    sChar = s.charAt(sIndex);
+                    tChar = t.charAt(tIndex);
+                    sCharIsDigit = Character.isDigit(sChar);
+                    tCharIsDigit = Character.isDigit(tChar);
+                } while (!sCharIsDigit && !tCharIsDigit);
             }
         }
     }

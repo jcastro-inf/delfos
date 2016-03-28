@@ -16,7 +16,6 @@
  */
 package delfos.group.grs.filtered;
 
-import delfos.common.Global;
 import delfos.common.aggregationoperators.AggregationOperator;
 import delfos.common.aggregationoperators.Mean;
 import delfos.common.exceptions.dataset.CannotLoadContentDataset;
@@ -31,7 +30,6 @@ import delfos.common.parameters.restriction.RecommenderSystemParameterRestrictio
 import delfos.dataset.basic.item.Item;
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
-import delfos.dataset.util.DatasetPrinterDeprecated;
 import delfos.experiment.casestudy.parallel.SingleUserRecommendationTask;
 import delfos.experiment.casestudy.parallel.SingleUserRecommendationTaskExecutor;
 import delfos.factories.AggregationOperatorFactory;
@@ -157,14 +155,14 @@ public class GroupRecommenderSystemWithPostFilter extends GroupRecommenderSystem
                 .map(member -> new SingleUserRecommendationTask(getRecommenderSystem(), datasetLoader, RecommendationModel, member.getId(), candidateItems))
                 .map(new SingleUserRecommendationTaskExecutor())
                 .collect(Collectors.toMap(
-                                recommendationsToMember -> recommendationsToMember.getUser().getId(),
-                                recommendationsToMember -> {
-                                    return recommendationsToMember.getRecommendations().parallelStream()
-                                    .collect(Collectors.toMap(
-                                                    recommendation -> recommendation.getItem().getId(),
-                                                    recommendation -> recommendation.getPreference()));
+                        recommendationsToMember -> recommendationsToMember.getUser().getId(),
+                        recommendationsToMember -> {
+                            return recommendationsToMember.getRecommendations().parallelStream()
+                            .collect(Collectors.toMap(
+                                    recommendation -> recommendation.getItem().getId(),
+                                    recommendation -> recommendation.getPreference()));
 
-                                }));
+                        }));
 
         Map<Integer, Map<Integer, Number>> filteredLists = filterLists(getFilter(), listsWithoutFilter);
 
@@ -187,12 +185,6 @@ public class GroupRecommenderSystemWithPostFilter extends GroupRecommenderSystem
                 aggregateListFiltered.put(r.getIdItem(), r.getPreference());
             });
             all.put(99999999, aggregateListFiltered);
-
-            if (Global.isVerboseAnnoying()) {
-                Global.showInfoMessage("=============== DEBUG of post filter =========");
-                DatasetPrinterDeprecated.printCompactRatingTable(all);
-                Global.showInfoMessage("==============================================");
-            }
         }
 
         return new GroupRecommendations(groupOfUsers, ret);

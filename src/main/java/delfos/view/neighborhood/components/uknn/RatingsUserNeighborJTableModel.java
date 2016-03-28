@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -38,12 +38,16 @@ public class RatingsUserNeighborJTableModel extends AbstractTableModel {
     Collection<Rating> lista = new LinkedList<>();
     private Object[][] datos = new Object[3][0];
 
-    private static final int ID_ITEM_COLUMN = 0;
-    private static final int ITEM_NAME_COLUMN = 1;
-    private static final int USER_RATING_COLUMN = 2;
-    private static final int NEIGHBOR_RATING_COLUMN = 3;
+    public static final int ID_ITEM_COLUMN = 0;
+    public static final int ITEM_NAME_COLUMN = 1;
+    public static final int USER_RATING_COLUMN = 2;
+    public static final int NEIGHBOR_RATING_COLUMN = 3;
 
     private static final int COLUMN_COUNT = 4;
+
+    public RatingsUserNeighborJTableModel() {
+        super();
+    }
 
     @Override
     public int getRowCount() {
@@ -53,6 +57,23 @@ public class RatingsUserNeighborJTableModel extends AbstractTableModel {
     @Override
     public int getColumnCount() {
         return COLUMN_COUNT;
+    }
+
+    @Override
+    public Class<?> getColumnClass(int column) {
+        if (column == ID_ITEM_COLUMN) {
+            return Integer.class;
+        }
+        if (column == ITEM_NAME_COLUMN) {
+            return String.class;
+        }
+        if (column == USER_RATING_COLUMN) {
+            return Object.class;
+        }
+        if (column == NEIGHBOR_RATING_COLUMN) {
+            return Object.class;
+        }
+        return null;
     }
 
     @Override

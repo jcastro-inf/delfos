@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -18,7 +18,8 @@ package delfos.group.grs.cww.centrality.definitions;
 
 import delfos.common.parameters.ParameterOwnerType;
 import delfos.group.grs.cww.centrality.CentralityConceptDefinition;
-import delfos.rs.trustbased.WeightedGraphAdapter;
+import delfos.rs.trustbased.WeightedGraph;
+import java.util.Objects;
 
 /**
  *
@@ -32,17 +33,17 @@ public class AritmethicMeanConnectionWeightCentrality extends CentralityConceptD
     }
 
     @Override
-    public double centrality(WeightedGraphAdapter<Integer> weightedGraph, Integer node) {
+    public double centrality(WeightedGraph<Integer> weightedGraph, Integer node) {
 
         double centrality = 0;
         int n = 0;
         double sumOfConnections = 0;
         for (Integer otherNode : weightedGraph.allNodes()) {
 
-            if (node == otherNode) {
+            if (Objects.equals(node, otherNode)) {
                 // No se tiene en cuenta la confianza consigo mismo.
             } else {
-                double connection = weightedGraph.connection(node, otherNode).doubleValue();
+                double connection = weightedGraph.connectionWeight(node, otherNode).orElse(0.0);
                 sumOfConnections += connection;
                 n++;
             }
@@ -51,6 +52,7 @@ public class AritmethicMeanConnectionWeightCentrality extends CentralityConceptD
         return centrality;
     }
 
+    @Override
     public ParameterOwnerType getParameterOwnerType() {
         return ParameterOwnerType.CENTRALITY_CONCEPT_DEFINITION;
     }

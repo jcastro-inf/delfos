@@ -1,18 +1,21 @@
 package delfos.group.grs.cww;
 
+import delfos.rs.trustbased.WeightedGraph;
+import java.util.Map;
 import java.util.TreeMap;
-import delfos.rs.trustbased.WeightedGraphAdapter;
 
 /**
  *
  * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  */
-public class WeightedGraphMOCK extends WeightedGraphAdapter<Integer> {
+public class WeightedGraphMOCK extends WeightedGraph<Integer> {
 
-    public WeightedGraphMOCK() {
-        super();
+    private static final Map<Integer, Map<Integer, Number>> CONNECTIONS;
 
+    static {
+
+        CONNECTIONS = new TreeMap<>();
         addNode(1, 2, 1.0);
         addNode(1, 4, 0.3);
         addNode(2, 3, 1.0);
@@ -21,19 +24,21 @@ public class WeightedGraphMOCK extends WeightedGraphAdapter<Integer> {
         addNode(4, 5, 0.8);
     }
 
-    private void addNode(int node1, int node2, double weight) {
+    public WeightedGraphMOCK() {
+        super(CONNECTIONS);
+    }
 
-        if (!connections.containsKey(node1)) {
-            connections.put(node1, new TreeMap<Integer, Number>());
-            allNodes.add(node1);
+    private static void addNode(int node1, int node2, double weight) {
+
+        if (!CONNECTIONS.containsKey(node1)) {
+            CONNECTIONS.put(node1, new TreeMap<>());
         }
-        if (!connections.containsKey(node2)) {
-            connections.put(node2, new TreeMap<Integer, Number>());
-            allNodes.add(node2);
+        if (!CONNECTIONS.containsKey(node2)) {
+            CONNECTIONS.put(node2, new TreeMap<>());
         }
 
-        connections.get(node1).put(node2, weight);
-        connections.get(node2).put(node1, weight);
+        CONNECTIONS.get(node1).put(node2, weight);
+        CONNECTIONS.get(node2).put(node1, weight);
 
     }
 

@@ -22,7 +22,6 @@ import delfos.common.exceptions.CouldNotComputeSimilarity;
 import delfos.common.exceptions.dataset.users.UserNotFound;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RatingsDataset;
-import delfos.dataset.util.DatasetPrinterDeprecated;
 import delfos.similaritymeasures.PearsonCorrelationCoefficient;
 import java.util.Collection;
 import java.util.LinkedList;
@@ -53,7 +52,7 @@ public class ImplicitTrustComputation_pearson {
      * @param users Usuarios para los que se calcula la red de confianza.
      * @return
      */
-    public WeightedGraphAdapter<Integer> computeTrustValues(RatingsDataset<? extends Rating> ratingsDataset, Collection<Integer> users) {
+    public WeightedGraph<Integer> computeTrustValues(RatingsDataset<? extends Rating> ratingsDataset, Collection<Integer> users) {
         boolean printPartialResults;
 
         printPartialResults = ratingsDataset.allRatedItems().size() <= 100 && ratingsDataset.allUsers().size() <= 28;
@@ -62,18 +61,13 @@ public class ImplicitTrustComputation_pearson {
             printPartialResults = false;
         }
 
-        if (printPartialResults) {
-            Global.showInfoMessage("Dataset de training \n");
-            DatasetPrinterDeprecated.printCompactRatingTable(ratingsDataset);
-        }
-
-        Map<Integer, Map<Integer, Number>> pearson = new TreeMap<Integer, Map<Integer, Number>>();
+        Map<Integer, Map<Integer, Number>> pearson = new TreeMap<>();
 
         PearsonCorrelationCoefficient pearsonCorrelationCoefficient = new PearsonCorrelationCoefficient();
 
         for (int idUser : users) {
 
-            pearson.put(idUser, new TreeMap<Integer, Number>());
+            pearson.put(idUser, new TreeMap<>());
 
             Map<Integer, ? extends Rating> userRatings = null;
             try {
@@ -90,8 +84,8 @@ public class ImplicitTrustComputation_pearson {
                 try {
                     neighborRatings = ratingsDataset.getUserRatingsRated(idUserNeighbor);
 
-                    List<Double> userList = new LinkedList<Double>();
-                    List<Double> neighborList = new LinkedList<Double>();
+                    List<Double> userList = new LinkedList<>();
+                    List<Double> neighborList = new LinkedList<>();
                     for (int idItem : userRatings.keySet()) {
                         if (neighborRatings.containsKey(idItem)) {
                             userList.add(userRatings.get(idItem).getRatingValue().doubleValue());
@@ -113,11 +107,6 @@ public class ImplicitTrustComputation_pearson {
             }
         }
 
-        if (printPartialResults) {
-            Global.showInfoMessage("Pearson to [0,1] table \n");
-            DatasetPrinterDeprecated.printCompactUserUserTable(pearson, users);
-        }
-
-        return new WeightedGraphAdapter<Integer>(pearson);
+        return new WeightedGraph<>(pearson);
     }
 }

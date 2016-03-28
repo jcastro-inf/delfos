@@ -1,10 +1,9 @@
 package delfos.group.grs.cww.centrality.definitions;
 
-import delfos.group.grs.cww.centrality.definitions.BetweennessCentrality;
+import delfos.group.grs.cww.WeightedGraphMOCK;
+import delfos.rs.trustbased.WeightedGraph;
 import static org.junit.Assert.assertEquals;
 import org.junit.Test;
-import delfos.group.grs.cww.WeightedGraphMOCK;
-import delfos.rs.trustbased.WeightedGraphAdapter;
 
 /**
  *
@@ -18,7 +17,7 @@ public class BetweennessCentralityTest {
     @Test
     public void testCentralityOfUser() {
 
-        WeightedGraphAdapter<Integer> weightedGraph = new WeightedGraphMOCK();
+        WeightedGraph<Integer> weightedGraph = new WeightedGraphMOCK();
 
         BetweennessCentrality instance = new BetweennessCentrality();
 

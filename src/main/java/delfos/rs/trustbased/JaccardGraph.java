@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,19 +16,19 @@
  */
 package delfos.rs.trustbased;
 
+import delfos.common.Chronometer;
+import delfos.common.Global;
+import delfos.common.exceptions.CouldNotComputeSimilarity;
+import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
+import delfos.common.statisticalfuncions.MeanIterative;
+import delfos.dataset.basic.loader.types.DatasetLoader;
+import delfos.dataset.basic.rating.Rating;
+import delfos.dataset.basic.rating.RatingsDataset;
+import delfos.similaritymeasures.JaccardForUsers;
 import java.util.Collection;
 import java.util.Map;
 import java.util.TreeMap;
-import delfos.dataset.basic.rating.Rating;
-import delfos.dataset.basic.rating.RatingsDataset;
-import delfos.dataset.basic.loader.types.DatasetLoader;
-import delfos.dataset.util.DatasetPrinterDeprecated;
-import delfos.similaritymeasures.JaccardForUsers;
-import delfos.common.Chronometer;
-import delfos.common.exceptions.CouldNotComputeSimilarity;
-import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
-import delfos.common.Global;
-import delfos.common.statisticalfuncions.MeanIterative;
+import java.util.stream.Collectors;
 
 /**
  * Calcula el grafo entre usuarios utilizando la medida Jaccard, con el número
@@ -45,7 +45,7 @@ public class JaccardGraph extends WeightedGraphCalculation<Integer> {
     }
 
     @Override
-    public WeightedGraphAdapter<Integer> computeTrustValues(DatasetLoader<? extends Rating> datasetLoader, Collection<Integer> users) throws CannotLoadRatingsDataset {
+    public WeightedGraph<Integer> computeTrustValues(DatasetLoader<? extends Rating> datasetLoader, Collection<Integer> users) throws CannotLoadRatingsDataset {
         boolean printPartialResults;
 
         final RatingsDataset<? extends Rating> ratingsDataset = datasetLoader.getRatingsDataset();
@@ -55,17 +55,7 @@ public class JaccardGraph extends WeightedGraphCalculation<Integer> {
             printPartialResults = false;
         }
 
-        if (printPartialResults) {
-            Global.showInfoMessage("Dataset de training \n");
-            DatasetPrinterDeprecated.printCompactRatingTable(ratingsDataset);
-        }
-
-        Map<Integer, Map<Integer, Number>> UJaccard = new TreeMap<Integer, Map<Integer, Number>>();
-
-        int i = 1;
-        for (Integer idUser : users) {
-            UJaccard.put(idUser, new TreeMap<Integer, Number>());
-        }
+        Map<Integer, Map<Integer, Number>> UJaccard = users.parallelStream().collect(Collectors.toMap(user -> user, user -> new TreeMap<>()));
 
         JaccardForUsers jaccardForUsers = new JaccardForUsers();
 
@@ -96,10 +86,8 @@ public class JaccardGraph extends WeightedGraphCalculation<Integer> {
                 thisLoop++;
             }
         }
-        WeightedGraphAdapter<Integer> jaccardGraph = new WeightedGraphAdapter<Integer>(UJaccard);
-        if (printPartialResults) {
-            DatasetPrinterDeprecated.printWeightedGraph(jaccardGraph);
-        }
+        WeightedGraph<Integer> jaccardGraph = new WeightedGraph<>(UJaccard);
+
         return jaccardGraph;
     }
 }

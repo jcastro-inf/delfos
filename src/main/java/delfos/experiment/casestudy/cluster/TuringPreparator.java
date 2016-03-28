@@ -60,9 +60,11 @@ public class TuringPreparator implements ExperimentPreparator {
 
     public Random getRandomToShuffleExperiments() {
 
-        String name = ManagementFactory.getRuntimeMXBean().getName();
+        String runtimeXMLBeanName = ManagementFactory.getRuntimeMXBean().getName();
 
-        int seed = name.hashCode();
+        String hostName = runtimeXMLBeanName.split("@")[1];
+
+        int seed = hostName.hashCode();
 
         Random random = new Random(seed);
 
@@ -105,9 +107,7 @@ public class TuringPreparator implements ExperimentPreparator {
 
     @Override
     public void prepareGroupExperiment(
-            File experimentBaseDirectory,
-            List<GroupCaseStudy> groupCaseStudies,
-            DatasetLoader<? extends Rating>... datasetLoaders) {
+            File experimentBaseDirectory, List<GroupCaseStudy> groupCaseStudies, DatasetLoader<? extends Rating>... datasetLoaders) {
 
         int i = 0;
 
@@ -131,7 +131,10 @@ public class TuringPreparator implements ExperimentPreparator {
                 File datasetConfiguration = new File(finalDirectoryDataset.getAbsolutePath() + File.separator + datasetLoader.getAlias() + ".xml");
 
                 GroupCaseStudyXML.caseStudyToXMLFile_onlyDescription(groupCaseStudy, experimentConfigurationFile);
-                GroupCaseStudyXML.caseStudyToXMLFile_onlyDescription(new GroupCaseStudy(datasetLoader), datasetConfiguration);
+
+                GroupCaseStudy groupCaseStudyWithDataset = new GroupCaseStudy(datasetLoader);
+                groupCaseStudyWithDataset.setSeedValue(groupCaseStudy.getSeedValue());
+                GroupCaseStudyXML.caseStudyToXMLFile_onlyDescription(groupCaseStudyWithDataset, datasetConfiguration);
 
             }
         }
@@ -153,7 +156,12 @@ public class TuringPreparator implements ExperimentPreparator {
                 ExecuteGroupXML.XML_DIRECTORY, singleExperimentDirectory.getPath(),
                 Constants.PRINT_FULL_XML,
                 Constants.RAW_DATA};
-            Main.mainWithExceptions(args);
+            try {
+                Main.mainWithExceptions(args);
+            } catch (Exception ex) {
+                Global.showWarning("Experiment failed in directory '" + singleExperimentDirectory.getAbsolutePath());
+                Global.showError(ex);
+            }
         });
     }
 
@@ -176,8 +184,12 @@ public class TuringPreparator implements ExperimentPreparator {
                 Constants.PRINT_FULL_XML,
                 Constants.RAW_DATA
             };
-
-            Main.mainWithExceptions(args);
+            try {
+                Main.mainWithExceptions(args);
+            } catch (Exception ex) {
+                Global.showWarning("Experiment failed in directory '" + singleExperimentDirectory.getAbsolutePath());
+                Global.showError(ex);
+            }
 
             Global.show("==============================\n");
         });
@@ -202,8 +214,12 @@ public class TuringPreparator implements ExperimentPreparator {
                 Constants.PRINT_FULL_XML,
                 Constants.RAW_DATA};
 
-            Main.mainWithExceptions(args);
-
+            try {
+                Main.mainWithExceptions(args);
+            } catch (Exception ex) {
+                Global.showWarning("Experiment failed in directory '" + singleExperimentDirectory.getAbsolutePath());
+                Global.showError(ex);
+            }
             Global.show("==============================\n");
         });
     }

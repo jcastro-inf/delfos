@@ -17,7 +17,6 @@
 package delfos.similaritymeasures;
 
 import delfos.common.exceptions.CouldNotComputeSimilarity;
-import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -25,9 +24,6 @@ import java.util.List;
  * similitud de dos vectores
  *
  * @author jcastro-inf ( https://github.com/jcastro-inf )
- *
- * @version 1.0 Unknown date
- * @version 1.1 20-Mar-2013
  */
 public class CosineCoefficient extends WeightedSimilarityMeasureAdapter {
 
@@ -42,13 +38,10 @@ public class CosineCoefficient extends WeightedSimilarityMeasureAdapter {
         double numerator = 0;
         double denominator1 = 0, denominator2 = 0;
         double sumPesos = 0;
-        Iterator<Double> i1 = v1.listIterator();
-        Iterator<Double> i2 = v2.listIterator();
-        Iterator<Double> iw = weights.listIterator();
         for (int i = 0; i < v1.size(); i++) {
-            double r1 = i1.next();
-            double r2 = i2.next();
-            double w = iw.next();
+            double r1 = v1.get(i);
+            double r2 = v2.get(i);
+            double w = weights.get(i);
 
             numerator = numerator + r1 * r2 * w;
             denominator1 = denominator1 + r1 * r1 * w;

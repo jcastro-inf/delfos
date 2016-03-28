@@ -4,7 +4,6 @@ import delfos.constants.TestConstants;
 import delfos.dataset.basic.rating.RelevanceCriteria;
 import delfos.dataset.generated.random.RandomDatasetLoader;
 import delfos.group.casestudy.defaultcase.GroupCaseStudy;
-import delfos.group.casestudy.defaultcase.GroupCaseStudy;
 import delfos.group.experiment.validation.groupformation.FixedGroupSize_OnlyNGroups;
 import delfos.group.experiment.validation.predictionvalidation.HoldOutPrediction;
 import delfos.group.experiment.validation.validationtechniques.CrossFoldValidation_Ratings;
@@ -47,5 +46,10 @@ public class GroupCaseStudyExcelTest {
         caseStudyGroup.setAlias("GroupCaseStudyExcelTest_testCase");
 
         GroupCaseStudyExcel.saveCaseResults(caseStudyGroup, TEST_DIRECTORY);
+    }
+
+    @Test
+    public void testCombinations() {
+
     }
 }

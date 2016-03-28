@@ -56,11 +56,11 @@ public class AlgorithmExecutionProgressListenerDefault implements AlgorithmExecu
      * información de progreso y se limita el número de escrituras por tiempo.
      *
      * @param out Stream de salida en el que se escriben los mensajes.
-     * @param verbosePeriod Tiempo mínimo entre escrituras.
+     * @param verbosePeriodInMiliseconds Tiempo mínimo entre escrituras.
      */
-    public AlgorithmExecutionProgressListenerDefault(PrintStream out, long verbosePeriod) {
+    public AlgorithmExecutionProgressListenerDefault(PrintStream out, long verbosePeriodInMiliseconds) {
         this.out = out;
-        this.verbosePeriod = verbosePeriod;
+        this.verbosePeriod = verbosePeriodInMiliseconds;
         chronometer = new Chronometer();
     }
 

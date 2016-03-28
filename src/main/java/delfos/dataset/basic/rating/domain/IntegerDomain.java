@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -159,6 +159,10 @@ public class IntegerDomain extends Domain {
 
         return ret;
 
+    }
+
+    public boolean isInside(int value) {
+        return minValue <= value && value <= maxValue;
     }
 
 }

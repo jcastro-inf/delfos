@@ -17,7 +17,7 @@
 package delfos.group.grs.cww.centrality;
 
 import delfos.common.parameters.ParameterOwnerAdapter;
-import delfos.rs.trustbased.WeightedGraphAdapter;
+import delfos.rs.trustbased.WeightedGraph;
 
 /**
  * Interfaz que define los metodos del calculo de la centralidad de un usuario
@@ -43,9 +43,9 @@ public abstract class CentralityConceptDefinition<Node> extends ParameterOwnerAd
     /**
      * Devuelve la centralidad en la red del nodo indicado.
      *
-     * @param weightedGraphAdapter
+     * @param WeightedGraph
      * @param node
      * @return
      */
-    public abstract double centrality(WeightedGraphAdapter<Node> weightedGraphAdapter, Node node);
+    public abstract double centrality(WeightedGraph<Node> WeightedGraph, Node node);
 }

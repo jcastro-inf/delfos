@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,22 +16,21 @@
  */
 package delfos.rs.trustbased.implicittrustcomputation;
 
+import delfos.ERROR_CODES;
+import delfos.common.Global;
+import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
+import delfos.common.exceptions.dataset.items.ItemNotFound;
+import delfos.dataset.basic.loader.types.DatasetLoader;
+import delfos.dataset.basic.rating.Rating;
+import delfos.dataset.basic.rating.RatingsDataset;
+import delfos.rs.trustbased.WeightedGraph;
+import delfos.rs.trustbased.WeightedGraphCalculation;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
-import delfos.dataset.basic.rating.Rating;
-import delfos.dataset.basic.rating.RatingsDataset;
-import delfos.dataset.basic.loader.types.DatasetLoader;
-import delfos.dataset.util.DatasetPrinterDeprecated;
-import delfos.ERROR_CODES;
-import delfos.rs.trustbased.WeightedGraphAdapter;
-import delfos.rs.trustbased.WeightedGraphCalculation;
-import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
-import delfos.common.exceptions.dataset.items.ItemNotFound;
-import delfos.common.Global;
 
 /**
  * Algoritmo para calcular redes de confianza entre productos, utilizando las
@@ -60,7 +59,7 @@ public class ShambourLu_ItemBasedImplicitTrustComputation extends WeightedGraphC
      * @return
      */
     @Override
-    public WeightedGraphAdapter<Integer> computeTrustValues(DatasetLoader<? extends Rating> datasetLoader, Collection<Integer> items) throws CannotLoadRatingsDataset {
+    public WeightedGraph<Integer> computeTrustValues(DatasetLoader<? extends Rating> datasetLoader, Collection<Integer> items) throws CannotLoadRatingsDataset {
         boolean printPartialResults;
 
         final RatingsDataset<? extends Rating> ratingsDataset = datasetLoader.getRatingsDataset();
@@ -71,18 +70,13 @@ public class ShambourLu_ItemBasedImplicitTrustComputation extends WeightedGraphC
             printPartialResults = false;
         }
 
-        if (printPartialResults) {
-            Global.showInfoMessage("Dataset utilizado.\n");
-            DatasetPrinterDeprecated.printCompactRatingTable(ratingsDataset);
-        }
-
-        Map<Integer, Map<Integer, Number>> MSD = new TreeMap<Integer, Map<Integer, Number>>();
-        Map<Integer, Map<Integer, Number>> UJaccard = new TreeMap<Integer, Map<Integer, Number>>();
+        Map<Integer, Map<Integer, Number>> MSD = new TreeMap<>();
+        Map<Integer, Map<Integer, Number>> UJaccard = new TreeMap<>();
 
         int i = 1;
         for (int idItem : items) {
-            MSD.put(idItem, new TreeMap<Integer, Number>());
-            UJaccard.put(idItem, new TreeMap<Integer, Number>());
+            MSD.put(idItem, new TreeMap<>());
+            UJaccard.put(idItem, new TreeMap<>());
 
             Map<Integer, ? extends Rating> itemRatings;
             try {
@@ -100,7 +94,7 @@ public class ShambourLu_ItemBasedImplicitTrustComputation extends WeightedGraphC
 
                     Map<Integer, ? extends Rating> itemNeighbourRatings = ratingsDataset.getItemRatingsRated(idItemNeighbor);
 
-                    Set<Integer> commonUsers = new TreeSet<Integer>(itemRatings.keySet());
+                    Set<Integer> commonUsers = new TreeSet<>(itemRatings.keySet());
                     commonUsers.retainAll(itemNeighbourRatings.keySet());
                     if (commonUsers.isEmpty()) {
                         continue;
@@ -179,25 +173,10 @@ public class ShambourLu_ItemBasedImplicitTrustComputation extends WeightedGraphC
             fireProgressChanged("Item-Based trust", (int) ((i * 100f) / items.size()), -1);
             i++;
         }
-        if (printPartialResults) {
-            Global.showInfoMessage("MSD table \n");
-            DatasetPrinterDeprecated.printCompactUserUserTable(MSD, items);
 
-            Global.showInfoMessage("============================================================================= \n");
-            Global.showInfoMessage("IT-Step1 0.4: Jaccard\n");
-            Global.showInfoMessage("============================================================================= \n");
-
-            Global.showInfoMessage("Jaccard table \n");
-            DatasetPrinterDeprecated.printCompactUserUserTable(UJaccard, items);
-
-            Global.showInfoMessage("============================================================================= \n");
-            Global.showInfoMessage("IT-Step1 - A: Trust derivation\n");
-            Global.showInfoMessage("============================================================================= \n");
-        }
-
-        TreeMap<Integer, Map<Integer, Number>> itemBasedTrust = new TreeMap<Integer, Map<Integer, Number>>();
+        TreeMap<Integer, Map<Integer, Number>> itemBasedTrust = new TreeMap<>();
         for (int idItem : items) {
-            itemBasedTrust.put(idItem, new TreeMap<Integer, Number>());
+            itemBasedTrust.put(idItem, new TreeMap<>());
 
             for (int idItemNeighbour : items) {
 
@@ -212,11 +191,6 @@ public class ShambourLu_ItemBasedImplicitTrustComputation extends WeightedGraphC
         UJaccard.clear();
         MSD.clear();
 
-        if (printPartialResults) {
-            Global.showInfoMessage("Trust derivation matrix.\n");
-            DatasetPrinterDeprecated.printCompactUserUserTable(itemBasedTrust, items);
-        }
-
-        return new WeightedGraphAdapter<Integer>(itemBasedTrust);
+        return new WeightedGraph<>(itemBasedTrust);
     }
 }
