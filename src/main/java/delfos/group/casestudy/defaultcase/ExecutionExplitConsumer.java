@@ -36,7 +36,6 @@ import delfos.group.results.groupevaluationmeasures.GroupEvaluationMeasureResult
 import delfos.group.results.grouprecomendationresults.GroupRecommenderSystemResult;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -53,23 +52,20 @@ public class ExecutionExplitConsumer {
     private final int execution;
     private final int split;
     private final PairOfTrainTestRatingsDataset[] pairsOfTrainTest;
-    private final Collection<GroupOfUsers> groups;
 
     public ExecutionExplitConsumer(
             int execution,
             int split,
-            GroupCaseStudy groupCaseStudy, PairOfTrainTestRatingsDataset[] pairsOfTrainTest,
-            Collection<GroupOfUsers> groups
+            GroupCaseStudy groupCaseStudy, PairOfTrainTestRatingsDataset[] pairsOfTrainTest
     ) {
         this.split = split;
         this.groupCaseStudy = (GroupCaseStudy) groupCaseStudy.clone();
         this.execution = execution;
         this.pairsOfTrainTest = pairsOfTrainTest;
-        this.groups = Collections.unmodifiableCollection(groups);
     }
 
     public Map<GroupEvaluationMeasure, GroupEvaluationMeasureResult> execute() {
-        groupCaseStudy.getLoopSeed(execution, split);
+        long loopSeed = groupCaseStudy.getLoopSeed(execution, split);
 
         final GroupRecommenderSystem groupRecommenderSystem = groupCaseStudy.getGroupRecommenderSystem();
         final RelevanceCriteria relevanceCriteria = groupCaseStudy.getRelevanceCriteria();
@@ -82,6 +78,9 @@ public class ExecutionExplitConsumer {
         DatasetLoader<? extends Rating> testDatasetLoader = pairsOfTrainTest[split].getTestDatasetLoader();
         testDatasetLoader.setAlias(testDatasetLoader.getAlias() + "_execution=" + execution);
 
+        groupCaseStudy.getGroupFormationTechnique().setSeedValue(loopSeed);
+
+        Collection<GroupOfUsers> groups = groupCaseStudy.getGroupFormationTechnique().generateGroups(trainDatasetLoader);
         final long recommendationModelBuildTime;
         Object groupRecommendationModel;
         {

@@ -33,7 +33,7 @@ public class SimilarMembers_exceptTest extends DelfosTest {
     }
 
     /**
-     * Test of shuffle method, of class SimilarMembers_except.
+     * Test of generateGroups method, of class SimilarMembers_except.
      */
     @Test
     public void testShuffle() {
@@ -49,7 +49,7 @@ public class SimilarMembers_exceptTest extends DelfosTest {
             Global.showln(progress + "% " + message + " remainingTime: " + DateCollapse.collapse(remainingTimeInMS));
         });
         instance.setSeedValue(seed);
-        Collection<GroupOfUsers> result = instance.shuffle(datasetLoader);
+        Collection<GroupOfUsers> result = instance.generateGroups(datasetLoader);
 
         Collection<GroupOfUsers> expResult = new ArrayList<>();
         expResult.add(new GroupOfUsers(5, 12, 16, 260, 886));
@@ -57,7 +57,7 @@ public class SimilarMembers_exceptTest extends DelfosTest {
     }
 
     /**
-     * Test of shuffle method, of class SimilarMembers_except.
+     * Test of generateGroups method, of class SimilarMembers_except.
      */
     @Test
     public void testSharingUsers() {
@@ -76,7 +76,7 @@ public class SimilarMembers_exceptTest extends DelfosTest {
 
         List<GroupOfUsers> groups;
         {
-            Collection<GroupOfUsers> result = instance.shuffle(datasetLoader);
+            Collection<GroupOfUsers> result = instance.generateGroups(datasetLoader);
             groups = new ArrayList<>(result);
         }
 
@@ -99,7 +99,7 @@ public class SimilarMembers_exceptTest extends DelfosTest {
     }
 
     /**
-     * Test of shuffle method, of class SimilarMembers_except.
+     * Test of generateGroups method, of class SimilarMembers_except.
      */
     @Test(expected = IllegalArgumentException.class)
     public void testTooManyGroupsAsked() {
@@ -112,6 +112,6 @@ public class SimilarMembers_exceptTest extends DelfosTest {
 
         SimilarMembers_except instance = new SimilarMembers_except(numGroupsValue, groupSizeValue, numMembersCandidate);
 
-        Collection<GroupOfUsers> result = instance.shuffle(datasetLoader);
+        Collection<GroupOfUsers> result = instance.generateGroups(datasetLoader);
     }
 }

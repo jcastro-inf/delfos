@@ -8,15 +8,14 @@ import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RelevanceCriteria;
 import delfos.dataset.generated.random.RandomDatasetLoader;
 import delfos.dataset.loaders.movilens.ml100k.MovieLens100k;
-import delfos.group.casestudy.defaultcase.GroupCaseStudy;
+import delfos.experiment.validation.validationtechnique.HoldOut_Ratings;
+import delfos.experiment.validation.validationtechnique.NoPartitions;
+import delfos.experiment.validation.validationtechnique.ValidationTechnique;
 import delfos.group.casestudy.defaultcase.GroupCaseStudy;
 import delfos.group.experiment.validation.groupformation.FixedGroupSize_OnlyNGroups;
 import delfos.group.experiment.validation.groupformation.GroupFormationTechnique;
 import delfos.group.experiment.validation.predictionvalidation.GroupPredictionProtocol;
 import delfos.group.experiment.validation.predictionvalidation.NoPredictionProtocol;
-import delfos.group.experiment.validation.validationtechniques.GroupValidationTechnique;
-import delfos.group.experiment.validation.validationtechniques.HoldOutGroupRatedItems;
-import delfos.group.experiment.validation.validationtechniques.NoValidation;
 import delfos.group.factories.GroupEvaluationMeasuresFactory;
 import delfos.group.grs.GroupRecommenderSystem;
 import delfos.group.grs.RandomGroupRecommender;
@@ -73,7 +72,7 @@ public class ExperimentsJRS2014 {
         final Collection<GroupEvaluationMeasure> evaluationMeasures = GroupEvaluationMeasuresFactory.getInstance().getAllClasses();
         final RelevanceCriteria criteria = new RelevanceCriteria(4);
         final GroupPredictionProtocol groupPredictionProtocol = new NoPredictionProtocol();
-        final GroupValidationTechnique groupValidationTechniqueValue = new HoldOutGroupRatedItems();
+        final ValidationTechnique validationTechniqueValue = new HoldOut_Ratings();
 
         for (int groupSize : groupSizeArray) {
 
@@ -89,7 +88,7 @@ public class ExperimentsJRS2014 {
                             datasetLoader,
                             groupRecommenderSystem,
                             groupFormationTechnique,
-                            groupValidationTechniqueValue, groupPredictionProtocol,
+                            validationTechniqueValue, groupPredictionProtocol,
                             evaluationMeasures,
                             criteria,
                             numEjecuciones);
@@ -107,7 +106,7 @@ public class ExperimentsJRS2014 {
             GroupCaseStudy groupCaseStudy = new GroupCaseStudy(
                     new MovieLens100k(new File("C:\\Dropbox\\Datasets\\MovieLens\\0 - MovieLens-100k ratings\\ml-100k")),
                     new RandomGroupRecommender(),
-                    new FixedGroupSize_OnlyNGroups(1, 1), new NoValidation(), new NoPredictionProtocol(),
+                    new FixedGroupSize_OnlyNGroups(1, 1), new NoPartitions(), new NoPredictionProtocol(),
                     GroupEvaluationMeasuresFactory.getInstance().getAllClasses(),
                     new RelevanceCriteria(), 1);
 

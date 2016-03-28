@@ -38,14 +38,13 @@ import delfos.experiment.ExperimentAdapter;
 import delfos.experiment.SeedHolder;
 import static delfos.experiment.SeedHolder.SEED;
 import delfos.experiment.casestudy.CaseStudyParameterChangedListener;
+import delfos.experiment.validation.validationtechnique.CrossFoldValidation_Ratings;
+import delfos.experiment.validation.validationtechnique.ValidationTechnique;
 import delfos.group.experiment.validation.groupformation.FixedGroupSize_OnlyNGroups;
 import delfos.group.experiment.validation.groupformation.GroupFormationTechnique;
 import delfos.group.experiment.validation.predictionvalidation.GroupPredictionProtocol;
 import delfos.group.experiment.validation.predictionvalidation.NoPredictionProtocol;
-import delfos.group.experiment.validation.validationtechniques.GroupValidationTechnique;
-import delfos.group.experiment.validation.validationtechniques.HoldOutGroupRatedItems;
 import delfos.group.factories.GroupEvaluationMeasuresFactory;
-import delfos.group.groupsofusers.GroupOfUsers;
 import delfos.group.grs.GroupRecommenderSystem;
 import delfos.group.grs.RandomGroupRecommender;
 import delfos.group.io.excel.casestudy.GroupCaseStudyExcel;
@@ -85,9 +84,9 @@ public class GroupCaseStudy extends ExperimentAdapter {
             GroupFormationTechnique.class.getSimpleName(),
             new ParameterOwnerRestriction(GroupFormationTechnique.class, new FixedGroupSize_OnlyNGroups(2, 2)));
 
-    public static final Parameter GROUP_VALIDATION_TECHNIQUE = new Parameter(
-            GroupValidationTechnique.class.getSimpleName(),
-            new ParameterOwnerRestriction(GroupValidationTechnique.class, new HoldOutGroupRatedItems()));
+    public static final Parameter VALIDATION_TECHNIQUE = new Parameter(
+            ValidationTechnique.class.getSimpleName(),
+            new ParameterOwnerRestriction(ValidationTechnique.class, new CrossFoldValidation_Ratings()));
 
     public static final Parameter GROUP_PREDICTION_PROTOCOL = new Parameter(
             GroupPredictionProtocol.class.getSimpleName(),
@@ -118,7 +117,7 @@ public class GroupCaseStudy extends ExperimentAdapter {
         addParameter(NUM_EXECUTIONS);
         addParameter(DATASET_LOADER);
         addParameter(GROUP_FORMATION_TECHNIQUE);
-        addParameter(GROUP_VALIDATION_TECHNIQUE);
+        addParameter(VALIDATION_TECHNIQUE);
         addParameter(GROUP_PREDICTION_PROTOCOL);
         addParameter(GROUP_RECOMMENDER_SYSTEM);
     }
@@ -133,18 +132,18 @@ public class GroupCaseStudy extends ExperimentAdapter {
     public GroupCaseStudy(DatasetLoader<? extends Rating> datasetLoader,
             GroupRecommenderSystem<? extends Object, ? extends Object> groupRecommenderSystem,
             GroupFormationTechnique groupFormationTechnique,
-            GroupValidationTechnique groupValidationTechnique, GroupPredictionProtocol groupPredictionProtocol,
+            ValidationTechnique validationTechnique, GroupPredictionProtocol groupPredictionProtocol,
             Collection<GroupEvaluationMeasure> groupEvaluationMeasures,
             RelevanceCriteria relevanceCriteria,
             int numExecutions, long seed) {
-        this(datasetLoader, groupRecommenderSystem, groupFormationTechnique, groupValidationTechnique, groupPredictionProtocol, groupEvaluationMeasures, relevanceCriteria, numExecutions);
+        this(datasetLoader, groupRecommenderSystem, groupFormationTechnique, validationTechnique, groupPredictionProtocol, groupEvaluationMeasures, relevanceCriteria, numExecutions);
         setSeedValue(seed);
     }
 
     public GroupCaseStudy(DatasetLoader<? extends Rating> datasetLoader,
             GroupRecommenderSystem<? extends Object, ? extends Object> groupRecommenderSystem,
             GroupFormationTechnique groupFormationTechnique,
-            GroupValidationTechnique groupValidationTechnique,
+            ValidationTechnique validationTechnique,
             GroupPredictionProtocol groupPredictionProtocol,
             Collection<GroupEvaluationMeasure> groupEvaluationMeasures,
             RelevanceCriteria relevanceCriteria,
@@ -156,7 +155,7 @@ public class GroupCaseStudy extends ExperimentAdapter {
         setParameterValue(NUM_EXECUTIONS, numExecutions);
 
         setParameterValue(GROUP_FORMATION_TECHNIQUE, groupFormationTechnique);
-        setParameterValue(GROUP_VALIDATION_TECHNIQUE, groupValidationTechnique);
+        setParameterValue(VALIDATION_TECHNIQUE, validationTechnique);
         setParameterValue(GROUP_PREDICTION_PROTOCOL, groupPredictionProtocol);
         setParameterValue(GROUP_RECOMMENDER_SYSTEM, groupRecommenderSystem);
 
@@ -185,23 +184,19 @@ public class GroupCaseStudy extends ExperimentAdapter {
                 execution -> {
                     long loopSeedForValidation = getLoopSeed(execution, 0);
 
-                    GroupFormationTechnique groupFormationTechnique = (GroupFormationTechnique) getGroupFormationTechnique().clone();
-                    GroupValidationTechnique groupValidationTechnique = (GroupValidationTechnique) getGroupValidationTechnique().clone();
+                    ValidationTechnique validationTechnique = (ValidationTechnique) getValidationTechnique().clone();
+                    validationTechnique.setSeedValue(loopSeedForValidation);
 
-                    groupFormationTechnique.setSeedValue(loopSeedForValidation);
-                    groupValidationTechnique.setSeedValue(loopSeedForValidation);
-
-                    Collection<GroupOfUsers> groups = groupFormationTechnique.shuffle(originalDatasetLoader);
-                    PairOfTrainTestRatingsDataset[] pairsOfTrainTest = groupValidationTechnique.shuffle(originalDatasetLoader, groups);
+                    PairOfTrainTestRatingsDataset[] pairsOfTrainTest = validationTechnique.shuffle(originalDatasetLoader);
 
                     Map<Integer, Map<GroupEvaluationMeasure, GroupEvaluationMeasureResult>> resultsThisExecution = IntStream.range(0, getNumSplits()).boxed().parallel().collect(Collectors.toMap(Function.identity(),
-                                    split -> {
-                                        Map<GroupEvaluationMeasure, GroupEvaluationMeasureResult> execute = new ExecutionExplitConsumer(execution, split, this, pairsOfTrainTest, groups).execute();
-                                        groupCaseStudyProgressChangedController.setTaskFinished();
-                                        return execute;
-                                    }
-                            )
-                    );
+                    split -> {
+                        Map<GroupEvaluationMeasure, GroupEvaluationMeasureResult> execute = new ExecutionExplitConsumer(execution, split, this, pairsOfTrainTest).execute();
+                        groupCaseStudyProgressChangedController.setTaskFinished();
+                        return execute;
+                    }
+            )
+            );
 
                     setResultsThisExecution(execution, resultsThisExecution);
 
@@ -239,10 +234,10 @@ public class GroupCaseStudy extends ExperimentAdapter {
     protected void setSeedToSeedHolders(long seed) {
         final GroupFormationTechnique groupFormationTechnique = getGroupFormationTechnique();
         final GroupPredictionProtocol groupPredictionProtocol = getGroupPredictionProtocol();
-        final GroupValidationTechnique groupValidationTechnique = getGroupValidationTechnique();
+        final ValidationTechnique validationTechnique = getValidationTechnique();
 
         groupFormationTechnique.setSeedValue(seed);
-        groupValidationTechnique.setSeedValue(seed);
+        validationTechnique.setSeedValue(seed);
         groupPredictionProtocol.setSeedValue(seed);
     }
 
@@ -263,7 +258,7 @@ public class GroupCaseStudy extends ExperimentAdapter {
      * @return
      */
     public int getNumSplits() {
-        return getGroupValidationTechnique()
+        return getValidationTechnique()
                 .getNumberOfSplits();
     }
 
@@ -316,7 +311,7 @@ public class GroupCaseStudy extends ExperimentAdapter {
         final GroupRecommenderSystem groupRecommenderSystem = getGroupRecommenderSystem();
         final GroupFormationTechnique groupFormationTechnique = getGroupFormationTechnique();
         final GroupPredictionProtocol groupPredictionProtocol = getGroupPredictionProtocol();
-        final GroupValidationTechnique groupValidationTechnique = getGroupValidationTechnique();
+        final ValidationTechnique validationTechnique = getValidationTechnique();
         final DatasetLoader<? extends Rating> datasetLoader = getDatasetLoader();
 
         if (datasetLoader instanceof SeedHolder) {
@@ -330,7 +325,7 @@ public class GroupCaseStudy extends ExperimentAdapter {
         }
 
         groupFormationTechnique.setSeedValue(getSeedValue());
-        groupValidationTechnique.setSeedValue(getSeedValue());
+        validationTechnique.setSeedValue(getSeedValue());
         groupPredictionProtocol.setSeedValue(getSeedValue());
     }
 
@@ -403,8 +398,8 @@ public class GroupCaseStudy extends ExperimentAdapter {
         return this;
     }
 
-    public GroupCaseStudy setGroupValidationTechnique(GroupValidationTechnique groupValidationTechnique) {
-        setParameterValue(GROUP_VALIDATION_TECHNIQUE, groupValidationTechnique);
+    public GroupCaseStudy setValidationTechnique(ValidationTechnique validationTechnique) {
+        setParameterValue(VALIDATION_TECHNIQUE, validationTechnique);
         return this;
 
     }
@@ -435,8 +430,8 @@ public class GroupCaseStudy extends ExperimentAdapter {
      *
      * @return
      */
-    public GroupValidationTechnique getGroupValidationTechnique() {
-        return (GroupValidationTechnique) getParameterValue(GROUP_VALIDATION_TECHNIQUE);
+    public ValidationTechnique getValidationTechnique() {
+        return (ValidationTechnique) getParameterValue(VALIDATION_TECHNIQUE);
     }
 
     @Override
@@ -455,7 +450,7 @@ public class GroupCaseStudy extends ExperimentAdapter {
         hash = 97 * hash + Objects.hashCode(this.getGroupFormationTechnique());
         hash = 97 * hash + Objects.hashCode(this.getRelevanceCriteria());
         hash = 97 * hash + Objects.hashCode(this.getGroupPredictionProtocol());
-        hash = 97 * hash + Objects.hashCode(this.getGroupValidationTechnique());
+        hash = 97 * hash + Objects.hashCode(this.getValidationTechnique());
         return hash;
     }
 
@@ -507,9 +502,9 @@ public class GroupCaseStudy extends ExperimentAdapter {
                     = resultsAsTheyFinish.entrySet().stream()
                     .filter(entry -> entry.getKey() <= execution)
                     .collect(Collectors.toMap(
-                                    entry -> entry.getKey(),
-                                    entry -> entry.getValue()
-                            )
+                            entry -> entry.getKey(),
+                            entry -> entry.getValue()
+                    )
                     );
 
             Set<GroupEvaluationMeasure> groupEvaluationMeasures = groupCaseStudyCloned.allLoopsResults.get(0).get(0).keySet();
@@ -535,4 +530,5 @@ public class GroupCaseStudy extends ExperimentAdapter {
         });
 
     }
+
 }

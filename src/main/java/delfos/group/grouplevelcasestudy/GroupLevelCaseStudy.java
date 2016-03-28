@@ -29,12 +29,12 @@ import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RelevanceCriteria;
 import delfos.dataset.storage.validationdatasets.PairOfTrainTestRatingsDataset;
+import delfos.experiment.validation.validationtechnique.ValidationTechnique;
 import delfos.group.casestudy.parallelisation.SingleGroupRecommendationTaskInput;
 import delfos.group.casestudy.parallelisation.SingleGroupRecommendationTaskOutput;
 import delfos.group.experiment.validation.groupformation.GroupFormationTechnique;
 import delfos.group.experiment.validation.predictionvalidation.GroupPredictionProtocol;
 import delfos.group.experiment.validation.predictionvalidation.GroupRecommendationRequest;
-import delfos.group.experiment.validation.validationtechniques.GroupValidationTechnique;
 import delfos.group.groupsofusers.GroupOfUsers;
 import delfos.group.groupsofusers.measuresovergroups.GroupMeasure;
 import delfos.group.grs.GroupRecommenderSystem;
@@ -68,14 +68,14 @@ public class GroupLevelCaseStudy {
             DatasetLoader<? extends Rating> originalDatasetLoader,
             GroupFormationTechnique groupFormation,
             GroupRecommenderSystem[] groupRecommenderSystems,
-            GroupValidationTechnique validationTechnique,
+            ValidationTechnique validationTechnique,
             GroupPredictionProtocol predictionProtocol,
             GroupMeasure[] grouMeasures,
             Collection<GroupEvaluationMeasure> evaluationMeasures)
             throws CannotLoadRatingsDataset, CannotLoadContentDataset, UserNotFound, ItemNotFound, NotEnoughtUserInformation {
 
-        groupFormation.shuffle(originalDatasetLoader);
-        Collection<GroupOfUsers> groups = groupFormation.shuffle(originalDatasetLoader);
+        groupFormation.generateGroups(originalDatasetLoader);
+        Collection<GroupOfUsers> groups = groupFormation.generateGroups(originalDatasetLoader);
 
         final RelevanceCriteria relevanceCriteria = originalDatasetLoader.getDefaultRelevanceCriteria();
 
@@ -108,7 +108,7 @@ public class GroupLevelCaseStudy {
         for (GroupOfUsers group : groups) {
             Chronometer c = new Chronometer();
 
-            PairOfTrainTestRatingsDataset[] pairs = validationTechnique.shuffle(originalDatasetLoader, groups);
+            PairOfTrainTestRatingsDataset[] pairs = validationTechnique.shuffle(originalDatasetLoader);
 
             allResultsCaseStudy.put(group, new TreeMap<>());
 

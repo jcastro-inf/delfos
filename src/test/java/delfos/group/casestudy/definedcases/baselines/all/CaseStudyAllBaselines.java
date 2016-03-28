@@ -16,12 +16,11 @@ import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RelevanceCriteria;
 import delfos.experiment.casestudy.cluster.TuringPreparator;
+import delfos.experiment.validation.validationtechnique.HoldOut_Ratings;
 import delfos.group.casestudy.defaultcase.GroupCaseStudy;
 import delfos.group.experiment.validation.groupformation.FixedGroupSize_OnlyNGroups;
 import delfos.group.experiment.validation.groupformation.GroupFormationTechnique;
 import delfos.group.experiment.validation.predictionvalidation.NoPredictionProtocol;
-import delfos.group.experiment.validation.validationtechniques.HoldOutGroupMemberRatings;
-import delfos.group.experiment.validation.validationtechniques.HoldOutGroupRatedItems;
 import delfos.group.factories.GroupEvaluationMeasuresFactory;
 import delfos.group.grs.GroupRecommenderSystem;
 import delfos.group.grs.aggregation.AggregationOfIndividualRatings;
@@ -91,7 +90,7 @@ public class CaseStudyAllBaselines {
             for (RecommenderSystem coreRS : getCoreRecommenderSystems()) {
                 for (GroupRecommenderSystem groupRecommenderSystem : getGroupRecommenderSystems(coreRS)) {
                     groupCaseStudys.add(
-                            getGroupCaseStudy_HoldOutGroupRatedItems(groupRecommenderSystem, groupFormationTechnique)
+                            getGroupCaseStudy_HoldOut_Ratings(groupRecommenderSystem, groupFormationTechnique)
                     );
 
                     groupCaseStudys.add(
@@ -104,17 +103,17 @@ public class CaseStudyAllBaselines {
         return groupCaseStudys;
     }
 
-    private GroupCaseStudy getGroupCaseStudy_HoldOutGroupRatedItems(GroupRecommenderSystem groupRecommenderSystem, GroupFormationTechnique groupFormationTechnique) {
+    private GroupCaseStudy getGroupCaseStudy_HoldOut_Ratings(GroupRecommenderSystem groupRecommenderSystem, GroupFormationTechnique groupFormationTechnique) {
         GroupCaseStudy groupCaseStudy = new GroupCaseStudy(
                 getDatasetLoader(),
                 groupRecommenderSystem,
                 groupFormationTechnique,
-                new HoldOutGroupRatedItems(SEED_VALUE),
+                new HoldOut_Ratings(),
                 new NoPredictionProtocol(),
                 GroupEvaluationMeasuresFactory.getInstance().getAllClasses(),
                 new RelevanceCriteria(4),
                 1);
-        groupCaseStudy.setAlias(HoldOutGroupRatedItems.class.getSimpleName() + "_" + groupFormationTechnique.getAlias() + "_" + groupRecommenderSystem.getAlias());
+        groupCaseStudy.setAlias(HoldOut_Ratings.class.getSimpleName() + "_" + groupFormationTechnique.getAlias() + "_" + groupRecommenderSystem.getAlias());
         groupCaseStudy.setSeedValue(SEED_VALUE);
         return groupCaseStudy;
     }
@@ -124,12 +123,12 @@ public class CaseStudyAllBaselines {
                 getDatasetLoader(),
                 groupRecommenderSystem,
                 groupFormationTechnique,
-                new HoldOutGroupMemberRatings(SEED_VALUE),
+                new HoldOut_Ratings(),
                 new NoPredictionProtocol(),
                 GroupEvaluationMeasuresFactory.getInstance().getAllClasses(),
                 new RelevanceCriteria(4),
                 1);
-        groupCaseStudy.setAlias(HoldOutGroupMemberRatings.class.getSimpleName() + "_" + groupFormationTechnique.getAlias() + "_" + groupRecommenderSystem.getAlias());
+        groupCaseStudy.setAlias(HoldOut_Ratings.class.getSimpleName() + "_" + groupFormationTechnique.getAlias() + "_" + groupRecommenderSystem.getAlias());
         groupCaseStudy.setSeedValue(SEED_VALUE);
         return groupCaseStudy;
     }

@@ -67,7 +67,7 @@ public class GivenGroups extends GroupFormationTechnique {
     }
 
     @Override
-    public Collection<GroupOfUsers> shuffle(DatasetLoader<? extends Rating> datasetLoader) {
+    public Collection<GroupOfUsers> generateGroups(DatasetLoader<? extends Rating> datasetLoader) {
 
         String groupsString = (String) getParameterValue(GROUPS);
 

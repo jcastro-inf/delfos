@@ -10,11 +10,11 @@ import delfos.common.exceptions.dataset.users.UserNotFound;
 import delfos.dataset.loaders.csv.CSVfileDatasetLoader;
 import delfos.experiment.ExperimentListerner_default;
 import delfos.experiment.casestudy.ExecutionProgressListener_default;
+import delfos.experiment.validation.validationtechnique.HoldOut_Ratings;
 import delfos.group.casestudy.defaultcase.GroupCaseStudy;
 import delfos.group.experiment.validation.groupformation.GivenGroups;
 import delfos.group.experiment.validation.groupformation.GroupFormationTechnique;
 import delfos.group.experiment.validation.predictionvalidation.NoPredictionProtocol;
-import delfos.group.experiment.validation.validationtechniques.HoldOutGroupRatedItems;
 import delfos.group.factories.GroupEvaluationMeasuresFactory;
 import delfos.group.groupsofusers.GroupOfUsers;
 import delfos.group.grs.aggregation.AggregationOfIndividualRatings;
@@ -71,7 +71,7 @@ public class CheckCoverageTest {
                 new AggregationOfIndividualRatings(
                         new KnnModelBasedCFRS()), filePersistence);
 
-        groupFormationTechnique.shuffle(datasetLoader);
+        groupFormationTechnique.generateGroups(datasetLoader);
 
         try {
             Object grsModel = grs.loadRecommendationModel(filePersistence, datasetLoader.getRatingsDataset().allUsers(), datasetLoader.getContentDataset().allIDs());
@@ -96,7 +96,7 @@ public class CheckCoverageTest {
         GroupCaseStudy caseStudy = new GroupCaseStudy(
                 datasetLoader,
                 rs,
-                groupFormationTechnique, new HoldOutGroupRatedItems(SEED), new NoPredictionProtocol(),
+                groupFormationTechnique, new HoldOut_Ratings(), new NoPredictionProtocol(),
                 evaluationMeasures,
                 datasetLoader.getDefaultRelevanceCriteria(), NUM_EJECUCIONES);
         caseStudy.addExperimentListener(new ExperimentListerner_default(System.out, 10000));
@@ -124,7 +124,7 @@ public class CheckCoverageTest {
         GroupCaseStudy caseStudy = new GroupCaseStudy(
                 datasetLoader,
                 rs,
-                groupFormationTechnique, new HoldOutGroupRatedItems(SEED), new NoPredictionProtocol(),
+                groupFormationTechnique, new HoldOut_Ratings(), new NoPredictionProtocol(),
                 evaluationMeasures,
                 datasetLoader.getDefaultRelevanceCriteria(), NUM_EJECUCIONES);
         caseStudy.addExperimentListener(new ExperimentListerner_default(System.out, 10000));

@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -25,9 +25,9 @@ import delfos.common.parallelwork.MultiThreadExecutionManager;
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RelevanceCriteria;
+import delfos.experiment.validation.validationtechnique.ValidationTechnique;
 import delfos.group.experiment.validation.groupformation.GroupFormationTechnique;
 import delfos.group.experiment.validation.predictionvalidation.GroupPredictionProtocol;
-import delfos.group.experiment.validation.validationtechniques.GroupValidationTechnique;
 import delfos.group.groupsofusers.GroupOfUsers;
 import delfos.group.groupsofusers.measuresovergroups.GroupMeasure;
 import delfos.group.grs.GroupRecommenderSystem;
@@ -53,14 +53,14 @@ public class GroupLevelCaseStudy_parallel {
             DatasetLoader<? extends Rating> datasetLoader,
             GroupFormationTechnique groupFormation,
             final GroupRecommenderSystem[] groupRecommenderSystems,
-            GroupValidationTechnique validationTechnique,
+            ValidationTechnique validationTechnique,
             GroupPredictionProtocol predictionProtocol,
             final GroupMeasure[] grouMeasures,
             final Collection<GroupEvaluationMeasure> evaluationMeasures)
             throws CannotLoadRatingsDataset, CannotLoadContentDataset, UserNotFound, ItemNotFound {
 
         groupFormation.setSeedValue(seed);
-        Collection<GroupOfUsers> groups = groupFormation.shuffle(datasetLoader);
+        Collection<GroupOfUsers> groups = groupFormation.generateGroups(datasetLoader);
 
         final RelevanceCriteria relevanceCriteria = datasetLoader.getDefaultRelevanceCriteria();
 

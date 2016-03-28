@@ -77,7 +77,7 @@ public abstract class GroupFormationTechnique extends ParameterOwnerAdapter impl
      * @return
      * @see GroupFormationTechnique#iterator()
      */
-    public abstract Collection<GroupOfUsers> shuffle(DatasetLoader<? extends Rating> datasetLoader) throws CannotLoadRatingsDataset;
+    public abstract Collection<GroupOfUsers> generateGroups(DatasetLoader<? extends Rating> datasetLoader) throws CannotLoadRatingsDataset;
 
     private final LinkedList<GroupFormationTechniqueProgressListener> listeners = new LinkedList<>();
 

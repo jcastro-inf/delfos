@@ -9,10 +9,10 @@ import delfos.dataset.basic.rating.RatingsDataset;
 import delfos.dataset.basic.rating.RelevanceCriteria;
 import delfos.dataset.basic.user.User;
 import delfos.dataset.storage.validationdatasets.PairOfTrainTestRatingsDataset;
+import delfos.experiment.validation.validationtechnique.CrossFoldValidation_Ratings;
 import delfos.group.casestudy.parallelisation.SingleGroupRecommendationFunction;
 import delfos.group.casestudy.parallelisation.SingleGroupRecommendationTaskInput;
 import delfos.group.casestudy.parallelisation.SingleGroupRecommendationTaskOutput;
-import delfos.group.experiment.validation.validationtechniques.CrossFoldValidation_groupRatedItems;
 import delfos.group.groupsofusers.GroupOfUsers;
 import delfos.group.grs.GroupRecommenderSystem;
 import delfos.group.grs.aggregation.AggregationOfIndividualRatings;
@@ -68,11 +68,11 @@ public class IntraListSimilarityTest {
         Set<User> groupMembers = Arrays.asList(1, 2, 3, 4, 5).stream().map(idUser -> originalDatasetLoader.getUsersDataset().getUser(idUser)).collect(Collectors.toSet());
         GroupOfUsers groupOfUsers = new GroupOfUsers(groupMembers);
 
-        CrossFoldValidation_groupRatedItems crossFoldValidation = new CrossFoldValidation_groupRatedItems();
+        CrossFoldValidation_Ratings crossFoldValidation = new CrossFoldValidation_Ratings();
         crossFoldValidation.setSeedValue(123456);
 
         PairOfTrainTestRatingsDataset[] shuffle = crossFoldValidation
-                .shuffle(originalDatasetLoader, groupOfUsers);
+                .shuffle(originalDatasetLoader);
 
         DatasetLoader<? extends Rating> trainingDatasetLoader = shuffle[0].getTrainingDatasetLoader();
         DatasetLoader<? extends Rating> testDatasetLoader = shuffle[0].getTestDatasetLoader();

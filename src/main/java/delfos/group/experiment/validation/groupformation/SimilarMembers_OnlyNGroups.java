@@ -86,7 +86,7 @@ public class SimilarMembers_OnlyNGroups extends GroupFormationTechnique {
     }
 
     @Override
-    public synchronized Collection<GroupOfUsers> shuffle(DatasetLoader<? extends Rating> datasetLoader) throws CannotLoadRatingsDataset {
+    public synchronized Collection<GroupOfUsers> generateGroups(DatasetLoader<? extends Rating> datasetLoader) throws CannotLoadRatingsDataset {
         if (datasetLoader == null) {
             throw new IllegalStateException("The datasetLoader is null.");
         }

@@ -33,7 +33,6 @@ import delfos.group.factories.GroupPredictionProtocolsFactory;
 import delfos.group.factories.GroupRatingsFilterFactory;
 import delfos.group.factories.GroupRecommendationsSelectorFactory;
 import delfos.group.factories.GroupRecommenderSystemsFactory;
-import delfos.group.factories.GroupValidationTechniquesFactory;
 import delfos.group.grs.cww.centrality.CentralityConceptDefinitionFactory;
 import delfos.rs.trustbased.belieffunctions.BeliefFunctionsFactory;
 
@@ -66,7 +65,6 @@ public enum ParameterOwnerType {
     GROUP_MEASURE,
     PATH,
     GROUP_ITEM_WEIGHT,
-    GROUP_VALIDATION_TECHNIQUE,
     GROUP_PREDICTION_PROTOCOL,
     GROUP_FORMATION_TECHNIQUE,
     GROUP_EVALUATION_MEASURE,
@@ -106,8 +104,6 @@ public enum ParameterOwnerType {
                 return GroupRecommenderSystemsFactory.getInstance().getClassByName(className);
             case GROUP_RECOMMENDATION_SELECTION_MODE:
                 return GroupRecommendationsSelectorFactory.getInstance().getClassByName(className);
-            case GROUP_VALIDATION_TECHNIQUE:
-                return GroupValidationTechniquesFactory.getInstance().getClassByName(className);
             case NON_PERSONALISED_RECOMMENDER_SYSTEM:
                 return RecommenderSystemsFactory.getInstance().getClassByName(className);
             case PREDICTION_PROTOCOL_TECHNIQUE:

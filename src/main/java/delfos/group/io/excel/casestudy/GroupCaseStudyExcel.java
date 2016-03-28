@@ -26,10 +26,10 @@ import delfos.common.parameters.chain.ParameterChain;
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RelevanceCriteria;
+import delfos.experiment.validation.validationtechnique.ValidationTechnique;
 import delfos.group.casestudy.defaultcase.GroupCaseStudy;
 import delfos.group.experiment.validation.groupformation.GroupFormationTechnique;
 import delfos.group.experiment.validation.predictionvalidation.GroupPredictionProtocol;
-import delfos.group.experiment.validation.validationtechniques.GroupValidationTechnique;
 import delfos.group.grs.GroupRecommenderSystem;
 import delfos.group.io.xml.casestudy.GroupCaseStudyXML;
 import delfos.group.results.groupevaluationmeasures.GroupEvaluationMeasure;
@@ -403,16 +403,16 @@ public class GroupCaseStudyExcel {
         }
         row += 2;
 
-        //Create table for GroupValidationTechnique
+        //Create table for ValidationTechnique
         {
-            GroupValidationTechnique groupValidationTechnique = caseStudyGroup.getGroupValidationTechnique();
+            ValidationTechnique validationTechnique = caseStudyGroup.getValidationTechnique();
             sheet.mergeCells(column + 0, row, column + titleCellWidth, row);
             addTitleText(sheet, column, row, "Group Validation Technique");
             row++;
-            setCellText(sheet, column, row, groupValidationTechnique.getName());
+            setCellText(sheet, column, row, validationTechnique.getName());
             row++;
-            for (Parameter parameter : groupValidationTechnique.getParameters()) {
-                Object parameterValue = groupValidationTechnique.getParameterValue(parameter);
+            for (Parameter parameter : validationTechnique.getParameters()) {
+                Object parameterValue = validationTechnique.getParameterValue(parameter);
                 row = writeParameterAndValue(parameter, parameterValue, sheet, column, row);
                 row++;
             }
@@ -445,9 +445,9 @@ public class GroupCaseStudyExcel {
     }
     public static final String DATASET_LOADER_CELL_CONTENT = "Dataset Loader";
 
-    final static int parameterNameOffset = 1;
-    final static int parameterTypeOffset = 2;
-    final static int parameterValueOffset = 3;
+    final static int PARAMETER_NAME_OFFSET = 1;
+    final static int PARAMETER_TYPE_OFFSET = 2;
+    final static int PARAMETER_VALUE_OFFSET = 3;
 
     /**
      *
@@ -463,23 +463,23 @@ public class GroupCaseStudyExcel {
 
         //First write the parameter line
         setCellText(sheet, column, row, "Parameter");
-        setCellText(sheet, column + parameterNameOffset, row, parameter.getName());
-        setCellText(sheet, column + parameterTypeOffset, row, parameter.getRestriction().getName());
+        setCellText(sheet, column + PARAMETER_NAME_OFFSET, row, parameter.getName());
+        setCellText(sheet, column + PARAMETER_TYPE_OFFSET, row, parameter.getRestriction().getName());
 
         if (parameterValue instanceof ParameterOwner) {
             ParameterOwner parameterOwner = (ParameterOwner) parameterValue;
-            setCellText(sheet, column + parameterValueOffset, row, parameterOwner.getName());
+            setCellText(sheet, column + PARAMETER_VALUE_OFFSET, row, parameterOwner.getName());
         } else if (parameterValue instanceof java.lang.Number) {
 
             if ((parameterValue instanceof java.lang.Integer) || (parameterValue instanceof java.lang.Long)) {
                 java.lang.Long number = ((java.lang.Number) parameterValue).longValue();
-                setCellIntegerNumber(sheet, column + parameterValueOffset, row, number);
+                setCellIntegerNumber(sheet, column + PARAMETER_VALUE_OFFSET, row, number);
             } else {
                 java.lang.Number number = (java.lang.Number) parameterValue;
-                setCellDoubleNumber(sheet, column + parameterValueOffset, row, number.doubleValue());
+                setCellDoubleNumber(sheet, column + PARAMETER_VALUE_OFFSET, row, number.doubleValue());
             }
         } else {
-            setCellText(sheet, column + parameterValueOffset, row, parameterValue.toString());
+            setCellText(sheet, column + PARAMETER_VALUE_OFFSET, row, parameterValue.toString());
         }
 
         //Then, if it is a parameter owner, write its children parameters.
@@ -497,14 +497,14 @@ public class GroupCaseStudyExcel {
         return row;
     }
 
-    final static int maxListSize = 20;
+    final static int MAX_LIST_SIZE = 20;
 
     private static void createExecutionsSheet(GroupCaseStudy caseStudyGroup, WritableSheet sheet) throws WriteException {
 
         int row = 0;
 
         final int numExecutions = caseStudyGroup.getNumExecutions();
-        final int numSplits = caseStudyGroup.getGroupValidationTechnique().getNumberOfSplits();
+        final int numSplits = caseStudyGroup.getValidationTechnique().getNumberOfSplits();
 
         final int vueltaColumn = 0;
         final int executionColumn = 1;
@@ -690,9 +690,9 @@ public class GroupCaseStudyExcel {
                 .extractParameterValues(groupCaseStudy.getGroupFormationTechnique());
         caseStudyParameters.putAll(groupFormationTechniqueParameters);
 
-        Map<String, Object> groupValidationTechniqueParameters = ParameterOwnerExcel
-                .extractParameterValues(groupCaseStudy.getGroupValidationTechnique());
-        caseStudyParameters.putAll(groupValidationTechniqueParameters);
+        Map<String, Object> validationTechniqueParameters = ParameterOwnerExcel
+                .extractParameterValues(groupCaseStudy.getValidationTechnique());
+        caseStudyParameters.putAll(validationTechniqueParameters);
 
         Map<String, Object> groupPredictionProtocolParameters = ParameterOwnerExcel
                 .extractParameterValues(groupCaseStudy.getGroupPredictionProtocol());

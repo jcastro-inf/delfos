@@ -71,7 +71,7 @@ public class DissimilarMembers extends GroupFormationTechnique {
     }
 
     @Override
-    public Collection<GroupOfUsers> shuffle(DatasetLoader<? extends Rating> datasetLoader) throws CannotLoadRatingsDataset {
+    public Collection<GroupOfUsers> generateGroups(DatasetLoader<? extends Rating> datasetLoader) throws CannotLoadRatingsDataset {
         if (datasetLoader == null) {
             throw new IllegalStateException("The datasetLoader is null.");
         }
@@ -86,7 +86,7 @@ public class DissimilarMembers extends GroupFormationTechnique {
 
         dissimilarMembers_OnlyNGroups.addListener(this::progressChanged);
 
-        Collection<GroupOfUsers> result = dissimilarMembers_OnlyNGroups.shuffle(datasetLoader);
+        Collection<GroupOfUsers> result = dissimilarMembers_OnlyNGroups.generateGroups(datasetLoader);
 
         return result;
     }

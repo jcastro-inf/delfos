@@ -37,9 +37,9 @@ public class GroupCaseStudyResult {
             return groupFormationCompare;
         }
 
-        int groupValidationTechniqueCompare = o1.groupCaseStudy.getGroupValidationTechnique().compareTo(o2.groupCaseStudy.getGroupValidationTechnique());
-        if (groupValidationTechniqueCompare != 0) {
-            return groupValidationTechniqueCompare;
+        int validationTechniqueCompare = o1.groupCaseStudy.getValidationTechnique().compareTo(o2.groupCaseStudy.getValidationTechnique());
+        if (validationTechniqueCompare != 0) {
+            return validationTechniqueCompare;
         }
 
         int groupPredictionProtocolCompare = o1.groupCaseStudy.getGroupPredictionProtocol().compareTo(o2.groupCaseStudy.getGroupPredictionProtocol());

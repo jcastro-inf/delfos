@@ -25,23 +25,23 @@ import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RelevanceCriteria;
 import delfos.experiment.SeedHolder;
+import delfos.experiment.validation.validationtechnique.ValidationTechnique;
 import delfos.group.casestudy.GroupCaseStudyConfiguration;
 import delfos.group.casestudy.defaultcase.GroupCaseStudy;
 import delfos.group.experiment.validation.groupformation.GroupFormationTechnique;
 import delfos.group.experiment.validation.predictionvalidation.GroupPredictionProtocol;
-import delfos.group.experiment.validation.validationtechniques.GroupValidationTechnique;
 import delfos.group.factories.GroupEvaluationMeasuresFactory;
 import delfos.group.grs.GroupRecommenderSystem;
 import delfos.group.io.xml.groupformationtechnique.GroupFormationTechniqueXML;
 import delfos.group.io.xml.grs.GroupRecommenderSystemXML;
 import delfos.group.io.xml.predictionprotocol.GroupPredictionProtocolXML;
-import delfos.group.io.xml.validationtechnique.GroupValidationTechniqueXML;
 import delfos.group.results.groupevaluationmeasures.GroupEvaluationMeasure;
 import delfos.group.results.groupevaluationmeasures.GroupEvaluationMeasureResult;
 import delfos.io.xml.casestudy.CaseStudyXML;
 import static delfos.io.xml.casestudy.CaseStudyXML.CASE_ROOT_ELEMENT_NAME;
 import delfos.io.xml.dataset.DatasetLoaderXML;
 import delfos.io.xml.dataset.RelevanceCriteriaXML;
+import delfos.io.xml.validationtechnique.ValidationTechniqueXML;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -85,7 +85,7 @@ public class GroupCaseStudyXML {
         Element ejecuciones = new Element("Executions");
         Element ejecucion;
         int numExecutions = c.getNumExecutions();
-        int numSplits = c.getGroupValidationTechnique().getNumberOfSplits();
+        int numSplits = c.getValidationTechnique().getNumberOfSplits();
         for (int nexecution = 0; nexecution < numExecutions; nexecution++) {
             ejecucion = new Element("Execution");
             ejecucion.setAttribute("execution", Integer.toString(numSplits));
@@ -130,7 +130,7 @@ public class GroupCaseStudyXML {
         casoDeUso.addContent(DatasetLoaderXML.getElement(caseStudyGroup.getDatasetLoader()));
 
         casoDeUso.addContent(GroupFormationTechniqueXML.getElement(caseStudyGroup.getGroupFormationTechnique()));
-        casoDeUso.addContent(GroupValidationTechniqueXML.getElement(caseStudyGroup.getGroupValidationTechnique()));
+        casoDeUso.addContent(ValidationTechniqueXML.getElement(caseStudyGroup.getValidationTechnique()));
         casoDeUso.addContent(GroupPredictionProtocolXML.getElement(caseStudyGroup.getGroupPredictionProtocol()));
 
         casoDeUso.addContent(RelevanceCriteriaXML.getElement(caseStudyGroup.getRelevanceCriteria()));
@@ -228,7 +228,7 @@ public class GroupCaseStudyXML {
         casoDeUso.addContent(DatasetLoaderXML.getElement(caseStudyGroup.getDatasetLoader()));
 
         casoDeUso.addContent(GroupFormationTechniqueXML.getElement(caseStudyGroup.getGroupFormationTechnique()));
-        casoDeUso.addContent(GroupValidationTechniqueXML.getElement(caseStudyGroup.getGroupValidationTechnique()));
+        casoDeUso.addContent(ValidationTechniqueXML.getElement(caseStudyGroup.getValidationTechnique()));
         casoDeUso.addContent(GroupPredictionProtocolXML.getElement(caseStudyGroup.getGroupPredictionProtocol()));
         casoDeUso.addContent(RelevanceCriteriaXML.getElement(caseStudyGroup.getRelevanceCriteria()));
         doc.addContent(casoDeUso);
@@ -264,7 +264,7 @@ public class GroupCaseStudyXML {
         casoDeUso.addContent(DatasetLoaderXML.getElement(caseStudyGroup.getDatasetLoader()));
 
         casoDeUso.addContent(GroupFormationTechniqueXML.getElement(caseStudyGroup.getGroupFormationTechnique()));
-        casoDeUso.addContent(GroupValidationTechniqueXML.getElement(caseStudyGroup.getGroupValidationTechnique()));
+        casoDeUso.addContent(ValidationTechniqueXML.getElement(caseStudyGroup.getValidationTechnique()));
         casoDeUso.addContent(GroupPredictionProtocolXML.getElement(caseStudyGroup.getGroupPredictionProtocol()));
 
         casoDeUso.addContent(RelevanceCriteriaXML.getElement(caseStudyGroup.getRelevanceCriteria()));
@@ -305,7 +305,7 @@ public class GroupCaseStudyXML {
         GroupRecommenderSystem<Object, Object> groupRecommenderSystem = GroupRecommenderSystemXML.getGroupRecommenderSystem(caseStudy.getChild(GroupRecommenderSystemXML.ELEMENT_NAME));
 
         GroupFormationTechnique groupFormationTechnique = GroupFormationTechniqueXML.getGroupFormationTechnique(caseStudy.getChild(GroupFormationTechniqueXML.ELEMENT_NAME));
-        GroupValidationTechnique groupValidationTechnique = GroupValidationTechniqueXML.getGroupValidationTechnique(caseStudy.getChild(GroupValidationTechniqueXML.ELEMENT_NAME));
+        ValidationTechnique validationTechnique = ValidationTechniqueXML.getValidationTechnique(caseStudy.getChild(ValidationTechniqueXML.ELEMENT_NAME));
         GroupPredictionProtocol groupPredictionProtocol = GroupPredictionProtocolXML.getGroupPredictionProtocol(caseStudy.getChild(GroupPredictionProtocolXML.ELEMENT_NAME));
         RelevanceCriteria relevanceCriteria = RelevanceCriteriaXML.getRelevanceCriteria(caseStudy.getChild(RelevanceCriteriaXML.ELEMENT_NAME));
 
@@ -318,7 +318,7 @@ public class GroupCaseStudyXML {
         return new GroupCaseStudyConfiguration(
                 groupRecommenderSystem, datasetLoader,
                 groupFormationTechnique,
-                groupValidationTechnique,
+                validationTechnique,
                 groupPredictionProtocol,
                 relevanceCriteria,
                 caseStudyAlias,
@@ -349,7 +349,7 @@ public class GroupCaseStudyXML {
         GroupRecommenderSystem<Object, Object> groupRecommenderSystem = GroupRecommenderSystemXML.getGroupRecommenderSystem(caseStudy.getChild(GroupRecommenderSystemXML.ELEMENT_NAME));
 
         GroupFormationTechnique groupFormationTechnique = GroupFormationTechniqueXML.getGroupFormationTechnique(caseStudy.getChild(GroupFormationTechniqueXML.ELEMENT_NAME));
-        GroupValidationTechnique groupValidationTechnique = GroupValidationTechniqueXML.getGroupValidationTechnique(caseStudy.getChild(GroupValidationTechniqueXML.ELEMENT_NAME));
+        ValidationTechnique validationTechnique = ValidationTechniqueXML.getValidationTechnique(caseStudy.getChild(ValidationTechniqueXML.ELEMENT_NAME));
         GroupPredictionProtocol groupPredictionProtocol = GroupPredictionProtocolXML.getGroupPredictionProtocol(caseStudy.getChild(GroupPredictionProtocolXML.ELEMENT_NAME));
         RelevanceCriteria relevanceCriteria = RelevanceCriteriaXML.getRelevanceCriteria(caseStudy.getChild(RelevanceCriteriaXML.ELEMENT_NAME));
 
@@ -364,7 +364,7 @@ public class GroupCaseStudyXML {
         return new GroupCaseStudyConfiguration(
                 groupRecommenderSystem, datasetLoader,
                 groupFormationTechnique,
-                groupValidationTechnique,
+                validationTechnique,
                 groupPredictionProtocol,
                 relevanceCriteria,
                 caseStudyAlias,

@@ -22,9 +22,9 @@ import delfos.configureddatasets.ConfiguredDatasetLoader;
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
 import delfos.experiment.casestudy.cluster.TuringPreparator;
+import delfos.experiment.validation.validationtechnique.CrossFoldValidation_Ratings;
 import delfos.group.experiment.validation.groupformation.FixedGroupSize_OnlyNGroups;
 import delfos.group.experiment.validation.predictionvalidation.NoPredictionProtocol;
-import delfos.group.experiment.validation.validationtechniques.CrossFoldValidation_groupRatedItems;
 import delfos.group.grs.RandomGroupRecommender;
 import java.io.File;
 import java.util.Arrays;
@@ -69,7 +69,7 @@ public class GroupCaseStudyTest {
         groupCaseStudy.setDatasetLoader(datasetLoader)
                 .setGroupRecommenderSystem(grs)
                 .setGroupFormationTechnique(new FixedGroupSize_OnlyNGroups(NUM_GROUPS, GROUPS_SIZE))
-                .setGroupValidationTechnique(new CrossFoldValidation_groupRatedItems())
+                .setValidationTechnique(new CrossFoldValidation_Ratings())
                 .setGroupPredictionProtocol(new NoPredictionProtocol());
 
         groupCaseStudy.setNumExecutions(NUM_EXECUTIONS);

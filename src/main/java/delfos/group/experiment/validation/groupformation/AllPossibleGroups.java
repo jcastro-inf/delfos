@@ -37,7 +37,7 @@ import delfos.group.groupsofusers.GroupOfUsers;
 public class AllPossibleGroups extends GroupFormationTechnique {
 
     @Override
-    public Collection<GroupOfUsers> shuffle(DatasetLoader<? extends Rating> datasetLoader) throws CannotLoadRatingsDataset {
+    public Collection<GroupOfUsers> generateGroups(DatasetLoader<? extends Rating> datasetLoader) throws CannotLoadRatingsDataset {
 
         Collection<Integer> allUsers = datasetLoader.getRatingsDataset().allUsers();
         if (allUsers.size() > 20) {

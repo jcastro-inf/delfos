@@ -7,12 +7,12 @@ import delfos.common.aggregationoperators.Mean;
 import delfos.configureddatasets.ConfiguredDatasetLoader;
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.experiment.casestudy.cluster.TuringPreparator;
+import delfos.experiment.validation.validationtechnique.HoldOut_Ratings;
 import delfos.group.casestudy.defaultcase.GroupCaseStudy;
 import static delfos.group.casestudy.definedcases.hesitant.experiment0.HesitantGRS_CaseStudy.SEED_VALUE;
 import delfos.group.experiment.validation.groupformation.FixedGroupSize_OnlyNGroups;
 import delfos.group.experiment.validation.groupformation.GroupFormationTechnique;
 import delfos.group.experiment.validation.predictionvalidation.NoPredictionProtocol;
-import delfos.group.experiment.validation.validationtechniques.HoldOutGroupRatedItems;
 import delfos.group.grs.GroupRecommenderSystem;
 import delfos.group.grs.aggregation.AggregationOfIndividualRatings;
 import delfos.group.grs.aggregation.AggregationOfIndividualRecommendations;
@@ -60,7 +60,7 @@ public class XMLJoinTest {
                         .setGroupRecommenderSystem(groupRecommenderSystem)
                         .setGroupFormationTechnique(groupFormationTechnique)
                         .setGroupPredictionProtocol(new NoPredictionProtocol())
-                        .setGroupValidationTechnique(new HoldOutGroupRatedItems())
+                        .setValidationTechnique(new HoldOut_Ratings())
                         .setNumExecutions(1);
 
                 groupCaseStudy.setSeedValue(SEED_VALUE);

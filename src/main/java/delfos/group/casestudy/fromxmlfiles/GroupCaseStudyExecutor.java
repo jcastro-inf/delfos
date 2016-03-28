@@ -27,11 +27,11 @@ import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RelevanceCriteria;
 import delfos.experiment.ExperimentListerner_default;
 import delfos.experiment.casestudy.ExecutionProgressListener_default;
+import delfos.experiment.validation.validationtechnique.ValidationTechnique;
 import delfos.group.casestudy.GroupCaseStudyConfiguration;
 import delfos.group.casestudy.defaultcase.GroupCaseStudy;
 import delfos.group.experiment.validation.groupformation.GroupFormationTechnique;
 import delfos.group.experiment.validation.predictionvalidation.GroupPredictionProtocol;
-import delfos.group.experiment.validation.validationtechniques.GroupValidationTechnique;
 import delfos.group.grs.GroupRecommenderSystem;
 import delfos.group.io.excel.casestudy.GroupCaseStudyExcel;
 import delfos.group.io.xml.casestudy.GroupCaseStudyXML;
@@ -64,7 +64,7 @@ public class GroupCaseStudyExecutor implements Consumer<ExecuteGroupCaseStudy_Ta
 
         GroupFormationTechnique groupFormationTechnique = caseStudyConfiguration.getGroupFormationTechnique();
         GroupPredictionProtocol groupPredictionProtocol = caseStudyConfiguration.getGroupPredictionProtocol();
-        GroupValidationTechnique groupValidationTechnique = caseStudyConfiguration.getGroupValidationTechnique();
+        ValidationTechnique validationTechnique = caseStudyConfiguration.getValidationTechnique();
 
         RelevanceCriteria relevanceCriteria = caseStudyConfiguration.getRelevanceCriteria();
 
@@ -72,7 +72,7 @@ public class GroupCaseStudyExecutor implements Consumer<ExecuteGroupCaseStudy_Ta
                 datasetLoader,
                 groupRecommenderSystem,
                 groupFormationTechnique,
-                groupValidationTechnique, groupPredictionProtocol,
+                validationTechnique, groupPredictionProtocol,
                 groupEvaluationMeasures,
                 relevanceCriteria,
                 numExecutions);

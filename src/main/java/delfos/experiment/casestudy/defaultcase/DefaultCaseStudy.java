@@ -658,7 +658,7 @@ public class DefaultCaseStudy extends CaseStudy implements ParameterListener {
         }
 
         validationTechnique.setSeedValue(seedValue);
-        Global.showInfoMessage("Reset groupValidationTechnique seed to " + validationTechnique.getSeedValue() + "\n");
+        Global.showInfoMessage("Reset validationTechnique seed to " + validationTechnique.getSeedValue() + "\n");
 
         predictionProtocolTechnique.setSeedValue(seedValue);
         Global.showInfoMessage("Reset groupPredictionProtocol seed to " + predictionProtocolTechnique.getSeedValue() + "\n");

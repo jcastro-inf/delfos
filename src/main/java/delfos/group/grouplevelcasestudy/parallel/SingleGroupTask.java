@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,17 +16,17 @@
  */
 package delfos.group.grouplevelcasestudy.parallel;
 
-import java.util.Collection;
 import delfos.common.parallelwork.Task;
-import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.loader.types.DatasetLoader;
+import delfos.dataset.basic.rating.Rating;
+import delfos.experiment.validation.validationtechnique.ValidationTechnique;
+import delfos.group.experiment.validation.predictionvalidation.GroupPredictionProtocol;
 import delfos.group.grouplevelcasestudy.GroupLevelResults;
 import delfos.group.groupsofusers.GroupOfUsers;
 import delfos.group.groupsofusers.measuresovergroups.GroupMeasure;
 import delfos.group.grs.GroupRecommenderSystem;
 import delfos.group.results.groupevaluationmeasures.GroupEvaluationMeasure;
-import delfos.group.experiment.validation.validationtechniques.GroupValidationTechnique;
-import delfos.group.experiment.validation.predictionvalidation.GroupPredictionProtocol;
+import java.util.Collection;
 
 /**
  *
@@ -37,7 +37,7 @@ import delfos.group.experiment.validation.predictionvalidation.GroupPredictionPr
 public class SingleGroupTask extends Task {
 
     private final long seed;
-    private final GroupValidationTechnique validationTechnique;
+    private final ValidationTechnique validationTechnique;
     private final DatasetLoader<? extends Rating> datasetLoader;
     private final Collection<GroupOfUsers> groups;
     private final GroupOfUsers group;
@@ -49,7 +49,7 @@ public class SingleGroupTask extends Task {
 
     public SingleGroupTask(
             long seed,
-            GroupValidationTechnique validationTechnique,
+            ValidationTechnique validationTechnique,
             DatasetLoader<? extends Rating> datasetLoader,
             Collection<GroupOfUsers> groups,
             GroupOfUsers group,
@@ -102,7 +102,7 @@ public class SingleGroupTask extends Task {
         return predictionProtocol;
     }
 
-    public GroupValidationTechnique getValidationTechnique() {
+    public ValidationTechnique getValidationTechnique() {
         return validationTechnique;
     }
 

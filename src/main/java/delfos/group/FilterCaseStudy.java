@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -29,11 +29,10 @@ import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
 import delfos.experiment.ExperimentListerner_default;
 import delfos.experiment.casestudy.ExecutionProgressListener_onlyChanges;
-import delfos.group.casestudy.defaultcase.GroupCaseStudy;
+import delfos.experiment.validation.validationtechnique.CrossFoldValidation_Ratings;
 import delfos.group.casestudy.defaultcase.GroupCaseStudy;
 import delfos.group.experiment.validation.groupformation.FixedGroupSize_OnlyNGroups;
 import delfos.group.experiment.validation.predictionvalidation.NoPredictionProtocol;
-import delfos.group.experiment.validation.validationtechniques.CrossFoldValidation_Items;
 import delfos.group.factories.GroupEvaluationMeasuresFactory;
 import delfos.group.grs.GroupRecommenderSystem;
 import delfos.group.grs.filtered.GroupRecommenderSystemWithPostFilter;
@@ -110,7 +109,7 @@ public class FilterCaseStudy implements Runnable {
                 GroupCaseStudy caseStudy = new GroupCaseStudy(
                         datasetLoader,
                         groupRecommenderSystem,
-                        new FixedGroupSize_OnlyNGroups(NUM_GROUPS, SIZE_OF_GROUPS), new CrossFoldValidation_Items(), new NoPredictionProtocol(),
+                        new FixedGroupSize_OnlyNGroups(NUM_GROUPS, SIZE_OF_GROUPS), new CrossFoldValidation_Ratings(), new NoPredictionProtocol(),
                         evaluationMeasures,
                         datasetLoader.getDefaultRelevanceCriteria(), NUM_EJECUCIONES);
 

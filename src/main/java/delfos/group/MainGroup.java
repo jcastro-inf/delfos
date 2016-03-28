@@ -26,10 +26,10 @@ import delfos.common.exceptions.dataset.items.ItemNotFound;
 import delfos.common.exceptions.dataset.users.UserNotFound;
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
+import delfos.experiment.validation.validationtechnique.NoPartitions;
 import delfos.group.casestudy.fromxmlfiles.GroupXMLexperimentsExecution;
 import delfos.group.experiment.validation.groupformation.FixedGroupSize_OnlyNGroups;
 import delfos.group.experiment.validation.predictionvalidation.CrossFoldPredictionProtocol;
-import delfos.group.experiment.validation.validationtechniques.NoValidation;
 import delfos.group.factories.GroupRatingsFilterFactory;
 import delfos.group.factories.GroupRecommenderSystemsFactory;
 import delfos.group.grouplevelcasestudy.parallel.GroupLevelCaseStudy_parallel;
@@ -303,7 +303,7 @@ public class MainGroup {
                     datasetLoader,
                     new FixedGroupSize_OnlyNGroups(numGroups, sizeOfGroups),
                     recommenders.toArray(new GroupRecommenderSystem[0]),
-                    new NoValidation(),
+                    new NoPartitions(),
                     new CrossFoldPredictionProtocol(10),
                     groupMeasures.toArray(new GroupMeasure[0]),
                     evaluationMeasures);
