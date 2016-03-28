@@ -21,6 +21,7 @@ import delfos.similaritymeasures.BasicSimilarityMeasure;
 import delfos.similaritymeasures.CollaborativeSimilarityMeasure;
 import delfos.similaritymeasures.CosineCoefficient;
 import delfos.similaritymeasures.Distance3Degree;
+import delfos.similaritymeasures.EntropyOfDifferences;
 import delfos.similaritymeasures.EuclideanDistance;
 import delfos.similaritymeasures.HammingDistance;
 import delfos.similaritymeasures.MSD;
@@ -88,7 +89,6 @@ public class SimilarityMeasuresFactory extends Factory<SimilarityMeasure> {
         instance.addClass(UserUserSimilarityWrapper.class);
         instance.addClass(UserUserMultipleCorrelationCoefficient.class);
         instance.addClass(UserUserSimilarityWrapper_relevanceFactor.class);
-        instance.addClass(RelevanceFactor.class);
         instance.addClass(MSD.class);
 
         //Asymmetric similarities for users
@@ -100,6 +100,10 @@ public class SimilarityMeasuresFactory extends Factory<SimilarityMeasure> {
         //Taking into account only the rated items and disregarding their values.
         instance.addClass(SorensenIndex.class);
         instance.addClass(Jaccard.class);
+
+        //Similarity penalties
+        instance.addClass(RelevanceFactor.class);
+        instance.addClass(EntropyOfDifferences.class);
 
         //Buffered
         instance.addClass(UserUserSimilarity_buffered.class);
