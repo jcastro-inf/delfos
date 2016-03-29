@@ -567,7 +567,7 @@ public class WeightedGraph<Node> implements Serializable, Comparable<WeightedGra
                 int column = node2index + 1;
 
                 double dist = floydWarshall.dist(node1index, node2index);
-                String cellValue = format.format(dist);
+                String cellValue = format.format(dist) + " ";
                 data[row][column] = cellValue;
             }
         }
