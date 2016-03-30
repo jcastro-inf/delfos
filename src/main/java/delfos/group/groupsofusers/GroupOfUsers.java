@@ -231,4 +231,8 @@ public class GroupOfUsers implements Comparable<GroupOfUsers>, Iterable<Integer>
             sb.append(',').append(' ');
         }
     }
+
+    public boolean isEmpty() {
+        return size() == 0;
+    }
 }
