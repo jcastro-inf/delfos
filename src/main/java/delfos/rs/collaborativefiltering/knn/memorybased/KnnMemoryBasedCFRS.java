@@ -38,7 +38,8 @@ import delfos.rs.persistence.DatabasePersistence;
 import delfos.rs.persistence.FailureInPersistence;
 import delfos.rs.recommendation.Recommendation;
 import delfos.rs.recommendation.Recommendations;
-import delfos.rs.recommendation.RecommendationsWithNeighbors;
+import delfos.rs.recommendation.RecommendationsToUser;
+import delfos.rs.recommendation.RecommendationsToUserWithNeighbors;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
@@ -93,12 +94,12 @@ public class KnnMemoryBasedCFRS extends KnnCollaborativeRecommender<KnnMemoryMod
     }
 
     @Override
-    public Recommendations recommendToUser(DatasetLoader<? extends Rating> datasetLoader, KnnMemoryModel model, User user, Set<Item> candidateItems) throws UserNotFound {
+    public RecommendationsToUser recommendToUser(DatasetLoader<? extends Rating> datasetLoader, KnnMemoryModel model, User user, Set<Item> candidateItems) throws UserNotFound {
         try {
             List<Neighbor> neighbors;
             neighbors = getNeighbors(datasetLoader, user);
             Collection<Recommendation> ret = recommendWithNeighbors(datasetLoader.getRatingsDataset(), user.getId(), neighbors, candidateItems);
-            return new RecommendationsWithNeighbors(user.getTargetId(), ret, neighbors);
+            return new RecommendationsToUserWithNeighbors(user, ret, neighbors);
         } catch (CannotLoadRatingsDataset ex) {
             throw new IllegalArgumentException(ex);
         }
@@ -182,8 +183,8 @@ public class KnnMemoryBasedCFRS extends KnnCollaborativeRecommender<KnnMemoryMod
         Map<Integer, Map<Integer, ? extends Rating>> ratingsVecinos = neighborsWithPositiveSimilarityAndSelected
                 .parallelStream()
                 .collect(Collectors.toMap(
-                                (neighbor -> neighbor.getIdNeighbor()),
-                                (neighbor -> ratingsDataset.getUserRatingsRated(neighbor.getIdNeighbor()))));
+                        (neighbor -> neighbor.getIdNeighbor()),
+                        (neighbor -> ratingsDataset.getUserRatingsRated(neighbor.getIdNeighbor()))));
 
         for (Item item : candidateItems) {
             Collection<MatchRating> match = new LinkedList<>();

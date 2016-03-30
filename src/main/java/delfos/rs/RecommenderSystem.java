@@ -28,6 +28,7 @@ import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.user.User;
 import delfos.rs.recommendation.Recommendation;
 import delfos.rs.recommendation.Recommendations;
+import delfos.rs.recommendation.RecommendationsToUser;
 import java.util.Collection;
 import java.util.Set;
 
@@ -101,9 +102,6 @@ public interface RecommenderSystem<RecommendationModel>
      * usuario.
      * @return Objeto con los resultados de la recomendación.
      */
-    public Recommendations recommendToUser(
-            DatasetLoader<? extends Rating> dataset,
-            RecommendationModel model,
-            User user,
-            Set<Item> candidateItems);
+    public RecommendationsToUser recommendToUser(
+            DatasetLoader<? extends Rating> dataset, RecommendationModel model, User user, Set<Item> candidateItems);
 }

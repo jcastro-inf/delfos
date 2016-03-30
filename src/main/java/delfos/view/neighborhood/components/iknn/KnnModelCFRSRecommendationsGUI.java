@@ -28,7 +28,7 @@ import delfos.rs.collaborativefiltering.knn.modelbased.KnnModelBasedCFRSModel;
 import delfos.rs.collaborativefiltering.profile.Neighbor;
 import delfos.rs.recommendation.Recommendation;
 import delfos.rs.recommendation.Recommendations;
-import delfos.rs.recommendation.RecommendationsWithNeighbors;
+import delfos.rs.recommendation.RecommendationsToUserWithNeighbors;
 import delfos.view.neighborhood.RecommendationsExplainedWindow;
 import delfos.view.neighborhood.components.recommendations.RecommendationsTable;
 import delfos.view.neighborhood.results.RecommendationsGUI;
@@ -178,7 +178,7 @@ public class KnnModelCFRSRecommendationsGUI implements RecommendationsGUI {
 
     @Override
     public void clearData() {
-        recommendationsTable.setRecomendaciones(RecommendationsWithNeighbors.EMPTY_LIST);
+        recommendationsTable.setRecomendaciones(RecommendationsToUserWithNeighbors.EMPTY_LIST);
         neighborsTable.setNeighbors(null, Collections.EMPTY_LIST, null);
         ratingsTable.setRatings(datasetLoader, null, null);
 
