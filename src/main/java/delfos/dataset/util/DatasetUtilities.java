@@ -219,11 +219,30 @@ public class DatasetUtilities {
                 memberRecommendations -> memberRecommendations
                 .getRecommendations().stream()
                 .collect(Collectors.toMap(
-                                recommendation -> recommendation.getItem(),
-                                recommendation -> recommendation)
+                        recommendation -> recommendation.getItem(),
+                        recommendation -> recommendation)
                 )
         )
         );
+    }
+
+    public static <RatingType extends Rating> Map<User, Map<Item, RatingType>> getRatingsByUserAndItem(
+            DatasetLoader<RatingType> datasetLoader,
+            Collection<User> users) {
+
+        Map<User, Map<Item, RatingType>> ret = users.parallelStream().collect(Collectors.toMap(user -> user, user -> {
+            Map<Integer, RatingType> userRatingsRated = datasetLoader.getRatingsDataset().getUserRatingsRated(user.getId());
+
+            userRatingsRated.values().parallelStream().collect(Collectors.toMap(
+                    rating -> rating.getItem(),
+                    rating -> rating));
+
+            return null;
+        }
+        )
+        );
+
+        return ret;
     }
 
 }
