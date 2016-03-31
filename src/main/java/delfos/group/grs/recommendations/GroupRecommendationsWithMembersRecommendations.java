@@ -38,7 +38,7 @@ public class GroupRecommendationsWithMembersRecommendations extends GroupRecomme
     private static final long serialVersionUID = 34235l;
 
     private final GroupOfUsers targetGroupOfUsers;
-    private Map<User, Recommendations> membersRecommendations;
+    private Map<User, RecommendationsToUser> membersRecommendations;
 
     protected GroupRecommendationsWithMembersRecommendations() {
         super();
@@ -66,7 +66,7 @@ public class GroupRecommendationsWithMembersRecommendations extends GroupRecomme
         this.targetGroupOfUsers = groupRecommendations.getGroupOfUsers();
 
         this.membersRecommendations = new TreeMap<>();
-        for (Recommendations memberRecommendations : membersRecommendations) {
+        for (RecommendationsToUser memberRecommendations : membersRecommendations) {
             User member = (User) memberRecommendations.getTarget();
             this.membersRecommendations.put(member, memberRecommendations);
         }
@@ -87,7 +87,7 @@ public class GroupRecommendationsWithMembersRecommendations extends GroupRecomme
         return targetGroupOfUsers;
     }
 
-    public Recommendations getMemberRecommendations(User memberOfGroup) {
+    public RecommendationsToUser getMemberRecommendations(User memberOfGroup) {
         if (!getTargetGroupOfUsers().contains(memberOfGroup.getId())) {
             throw new IllegalArgumentException("User '" + memberOfGroup.toString() + "' not a member of group '" + getTargetGroupOfUsers() + "'");
         } else if (!membersRecommendations.containsKey(memberOfGroup)) {
