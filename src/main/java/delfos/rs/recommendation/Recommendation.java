@@ -41,7 +41,7 @@ public class Recommendation implements Comparable<Recommendation>, Serializable 
 
     public static final Comparator<Recommendation> BY_ID = (Recommendation o1, Recommendation o2) -> {
         validateComparatorParameters(o1, o2);
-        return Integer.compare(o1.getIdItem(), o2.getIdItem());
+        return Item.BY_ID.compare(o1.item, o2.item);
     };
 
     public static final Comparator<Recommendation> BY_PREFERENCE_ASC = (Recommendation o1, Recommendation o2) -> {
