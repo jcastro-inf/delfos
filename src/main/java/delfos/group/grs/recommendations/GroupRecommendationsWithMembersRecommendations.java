@@ -27,6 +27,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
+import java.util.stream.Collectors;
 
 /**
  * Encapsula las recomendaciones hechas a un grupo.
@@ -117,6 +118,10 @@ public class GroupRecommendationsWithMembersRecommendations extends GroupRecomme
                     + membersRecommendationsGroupMembers
                     + "'");
         }
+    }
+
+    public Collection<RecommendationsToUser> getMembersRecommendations() {
+        return membersRecommendations.values().stream().collect(Collectors.toList());
     }
 
 }
