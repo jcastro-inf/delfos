@@ -20,6 +20,7 @@ import delfos.common.parameters.Parameter;
 import delfos.common.parameters.restriction.ParameterOwnerRestriction;
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
+import delfos.dataset.basic.user.User;
 import delfos.similaritymeasures.BasicSimilarityMeasure;
 import delfos.similaritymeasures.PearsonCorrelationCoefficient;
 import delfos.similaritymeasures.SimilarityMeasure;
@@ -80,5 +81,10 @@ public class UserUserSimilarityWrapper extends SimilarityMeasureAdapter implemen
         double similarity = basicSimilarityMeasure.similarity(v1, v2);
 
         return similarity;
+    }
+
+    @Override
+    public double similarity(DatasetLoader<? extends Rating> datasetLoader, User user1, User user2) {
+        return similarity(datasetLoader, user1.getId(), user2.getId());
     }
 }

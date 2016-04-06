@@ -175,12 +175,14 @@ public class AggregationOfIndividualRecommendations extends GroupRecommenderSyst
 
     public static Set<Map.Entry<Item, Double>> intersectionOfRecommendationsWithFrequency(Set<Item> items, Collection<RecommendationsToUser> membersRecommendations) {
         validateAllRecommendedItemsAreInSpecifiedSet(membersRecommendations, items);
+
         Map<Item, Double> ret = items.parallelStream().collect(Collectors.toMap((Item item) -> item, (Item item) -> {
             double itemFrequencyAmongMembers = 0;
             itemFrequencyAmongMembers = membersRecommendations.parallelStream().map((RecommendationsToUser memberRecommendations) -> memberRecommendations.getRecommendations()).filter((Collection<Recommendation> recommendations) -> recommendations.stream().filter((Recommendation recommendation) -> !Double.isNaN(recommendation.getPreference().doubleValue())).anyMatch((Recommendation recommendation) -> recommendation.getItem().equals(item))).count();
             itemFrequencyAmongMembers /= membersRecommendations.size();
             return itemFrequencyAmongMembers;
         }));
+
         return ret.entrySet();
     }
     private AggregationOperator oldAggregationOperator = new Mean();

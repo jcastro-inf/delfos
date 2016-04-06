@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,8 +16,9 @@
  */
 package delfos.similaritymeasures.useruser;
 
-import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.loader.types.DatasetLoader;
+import delfos.dataset.basic.rating.Rating;
+import delfos.dataset.basic.user.User;
 import delfos.similaritymeasures.SimilarityMeasure;
 
 /**
@@ -35,5 +36,8 @@ public interface UserUserSimilarity extends SimilarityMeasure {
      * @param idUser2
      * @return
      */
+    @Deprecated
     public double similarity(DatasetLoader<? extends Rating> datasetLoader, int idUser1, int idUser2);
+
+    public double similarity(DatasetLoader<? extends Rating> datasetLoader, User user1, User user2);
 }

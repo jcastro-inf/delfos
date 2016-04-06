@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,6 +16,15 @@
  */
 package delfos.similaritymeasures.useruser;
 
+import delfos.ERROR_CODES;
+import delfos.common.Global;
+import delfos.common.parameters.Parameter;
+import delfos.common.parameters.restriction.DirectoryParameter;
+import delfos.common.parameters.restriction.ParameterOwnerRestriction;
+import delfos.dataset.basic.loader.types.DatasetLoader;
+import delfos.dataset.basic.rating.Rating;
+import delfos.dataset.basic.user.User;
+import delfos.similaritymeasures.SimilarityMeasureAdapter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -24,14 +33,6 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.Map;
-import delfos.ERROR_CODES;
-import delfos.common.Global;
-import delfos.common.parameters.Parameter;
-import delfos.common.parameters.restriction.DirectoryParameter;
-import delfos.common.parameters.restriction.ParameterOwnerRestriction;
-import delfos.dataset.basic.rating.Rating;
-import delfos.dataset.basic.loader.types.DatasetLoader;
-import delfos.similaritymeasures.SimilarityMeasureAdapter;
 
 /**
  *
@@ -168,5 +169,10 @@ public class UserUserSimilarity_buffered extends SimilarityMeasureAdapter implem
 
     public File getPersistenceDirectory() {
         return (File) getParameterValue(BUFFER_DIRECTORY);
+    }
+
+    @Override
+    public double similarity(DatasetLoader<? extends Rating> datasetLoader, User user1, User user2) {
+        return similarity(datasetLoader, user1.getId(), user2.getId());
     }
 }

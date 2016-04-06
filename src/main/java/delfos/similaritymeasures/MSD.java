@@ -17,12 +17,18 @@
 package delfos.similaritymeasures;
 
 import delfos.common.exceptions.CouldNotComputeSimilarity;
+import delfos.dataset.basic.loader.types.DatasetLoader;
+import delfos.dataset.basic.rating.Rating;
+import delfos.dataset.basic.user.User;
+import delfos.rs.collaborativefiltering.knn.CommonRating;
+import delfos.similaritymeasures.useruser.UserUserSimilarity;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author jcastro-inf ( https://github.com/jcastro-inf )
  */
-public class MSD extends WeightedSimilarityMeasureAdapter {
+public class MSD extends WeightedSimilarityMeasureAdapter implements UserUserSimilarity {
 
     private static final long serialVersionUID = 1L;
 
@@ -70,5 +76,25 @@ public class MSD extends WeightedSimilarityMeasureAdapter {
         }
 
         return sim;
+    }
+
+    @Override
+    public double similarity(DatasetLoader<? extends Rating> datasetLoader, int idUser1, int idUser2) {
+        User user1 = datasetLoader.getUsersDataset().get(idUser1);
+        User user2 = datasetLoader.getUsersDataset().get(idUser2);
+
+        return similarity(datasetLoader, user1, user2);
+    }
+
+    @Override
+    public double similarity(DatasetLoader<? extends Rating> datasetLoader, User user1, User user2) {
+
+        List<CommonRating> intersection = CommonRating.intersection(datasetLoader, user1, user2).stream().collect(Collectors.toList());
+
+        List<Double> l1 = intersection.stream().map(commonRating -> commonRating.getRating1()).collect(Collectors.toList());
+        List<Double> l2 = intersection.stream().map(commonRating -> commonRating.getRating2()).collect(Collectors.toList());
+
+        return similarity(l1, l2);
+
     }
 }

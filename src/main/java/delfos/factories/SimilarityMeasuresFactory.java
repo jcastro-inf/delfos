@@ -35,6 +35,7 @@ import delfos.similaritymeasures.Tanimoto;
 import delfos.similaritymeasures.WeightedSimilarityMeasure;
 import delfos.similaritymeasures.useruser.ConditionalProbability;
 import delfos.similaritymeasures.useruser.CosineAsymmetric;
+import delfos.similaritymeasures.useruser.demographic.DemographicSimilarity;
 import delfos.similaritymeasures.useruser.Jaccard;
 import delfos.similaritymeasures.useruser.MSDAsymmetric;
 import delfos.similaritymeasures.useruser.RelevanceFactor;
@@ -107,6 +108,9 @@ public class SimilarityMeasuresFactory extends Factory<SimilarityMeasure> {
 
         //Buffered
         instance.addClass(UserUserSimilarity_buffered.class);
+
+        //Demographic similarities
+        instance.addClass(DemographicSimilarity.class);
 
     }
 

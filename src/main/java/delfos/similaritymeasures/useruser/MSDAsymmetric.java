@@ -35,8 +35,9 @@ import java.util.Collection;
  *
  * @author jcastro
  */
-public class MSDAsymmetric extends SimilarityMeasureAdapter implements CollaborativeSimilarityMeasure {
+public class MSDAsymmetric extends SimilarityMeasureAdapter implements CollaborativeSimilarityMeasure, UserUserSimilarity {
 
+    @Override
     public double similarity(DatasetLoader<? extends Rating> datasetLoader, User user1, User user2) throws UserNotFound, CannotLoadRatingsDataset {
         return similarity(CommonRating.intersection(datasetLoader, user1, user2), datasetLoader.getRatingsDataset());
     }
@@ -75,6 +76,14 @@ public class MSDAsymmetric extends SimilarityMeasureAdapter implements Collabora
         }
 
         return ret;
+    }
+
+    @Override
+    public double similarity(DatasetLoader<? extends Rating> datasetLoader, int idUser1, int idUser2) {
+        User user1 = datasetLoader.getUsersDataset().get(idUser1);
+        User user2 = datasetLoader.getUsersDataset().get(idUser2);
+
+        return similarity(datasetLoader, user1, user2);
     }
 
     @Override

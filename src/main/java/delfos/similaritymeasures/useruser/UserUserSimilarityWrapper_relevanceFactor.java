@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,15 +16,16 @@
  */
 package delfos.similaritymeasures.useruser;
 
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
 import delfos.common.parameters.Parameter;
 import delfos.common.parameters.restriction.IntegerParameter;
 import delfos.common.parameters.restriction.ParameterOwnerRestriction;
-import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.loader.types.DatasetLoader;
+import delfos.dataset.basic.rating.Rating;
+import delfos.dataset.basic.user.User;
 import delfos.similaritymeasures.SimilarityMeasureAdapter;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 
 /**
  *
@@ -94,5 +95,10 @@ public class UserUserSimilarityWrapper_relevanceFactor extends SimilarityMeasure
         }
         return similarity;
 
+    }
+
+    @Override
+    public double similarity(DatasetLoader<? extends Rating> datasetLoader, User user1, User user2) {
+        return similarity(datasetLoader, user1.getId(), user2.getId());
     }
 }
