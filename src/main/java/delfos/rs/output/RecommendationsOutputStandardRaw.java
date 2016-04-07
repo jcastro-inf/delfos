@@ -26,6 +26,7 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Escribe las recomendaciones en la salida estándar.
@@ -65,16 +66,16 @@ public class RecommendationsOutputStandardRaw extends RecommendationsOutputMetho
     public void writeRecommendations(Recommendations recommendations) {
         String idTarget = recommendations.getTargetIdentifier();
 
-        List<Recommendation> topNrecommendations = new ArrayList<>(recommendations.getRecommendations());
+        List<Recommendation> recommendationsSorted = new ArrayList<>(recommendations.getRecommendations());
 
         SortBy sortBy = (SortBy) getParameterValue(SORT_BY);
 
         switch (sortBy) {
             case SORT_BY_PREFERENCE:
-                Collections.sort(topNrecommendations, Recommendation.BY_PREFERENCE_DESC);
+                Collections.sort(recommendationsSorted, Recommendation.BY_PREFERENCE_DESC);
                 break;
             case SORT_BY_ID_ITEM:
-                Collections.sort(topNrecommendations, Recommendation.BY_ID);
+                Collections.sort(recommendationsSorted, Recommendation.BY_ID);
                 break;
             case SORT_BY_NO_SORT:
                 break;
@@ -82,12 +83,12 @@ public class RecommendationsOutputStandardRaw extends RecommendationsOutputMetho
                 throw new IllegalStateException("Not implemented yet: " + sortBy);
         }
 
-        if (getNumberOfRecommendations() > 0) {
-            topNrecommendations = topNrecommendations.subList(0, Math.min(topNrecommendations.size(), getNumberOfRecommendations()));
-        }
+        List<Recommendation> topRecommendations = getNumberOfRecommendations() == 0
+                ? recommendationsSorted
+                : recommendationsSorted.stream().limit(getNumberOfRecommendations()).collect(Collectors.toList());
 
         Global.showln("Target '" + idTarget + "' recommendations:");
-        for (Recommendation r : topNrecommendations) {
+        for (Recommendation r : topRecommendations) {
             String prediction;
 
             if (Double.isFinite(r.getPreference().doubleValue())) {
