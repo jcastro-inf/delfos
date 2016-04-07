@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -19,7 +19,6 @@ package delfos.common.aggregationoperators;
 import delfos.ERROR_CODES;
 import delfos.common.exceptions.ParammeterIncompatibleValues;
 import delfos.common.parameters.Parameter;
-import delfos.common.parameters.ParameterListener;
 import delfos.common.parameters.restriction.DoubleParameter;
 
 /**
@@ -54,15 +53,19 @@ public class MultiplicativeAggregation extends AggregationOperator {
         addParameter(MIN_VALUE);
         addParameter(MAX_VALUE);
 
-        addParammeterListener(new ParameterListener() {
-            @Override
-            public void parameterChanged() {
-                if (getMinValue() >= getMaxValue()) {
-                    ERROR_CODES.PARAMETER_VIOLATION.exit(new ParammeterIncompatibleValues(MultiplicativeAggregation.this, MIN_VALUE, MAX_VALUE));
-                }
+        addParammeterListener(() -> {
+            if (getMinValue() >= getMaxValue()) {
+                ERROR_CODES.PARAMETER_VIOLATION.exit(new ParammeterIncompatibleValues(MultiplicativeAggregation.this, MIN_VALUE, MAX_VALUE));
             }
         });
 
+    }
+
+    public MultiplicativeAggregation setRange(double min, double max) {
+        setParameterValue(MIN_VALUE, min);
+        setParameterValue(MAX_VALUE, max);
+
+        return this;
     }
 
     @Override
