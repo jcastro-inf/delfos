@@ -19,6 +19,7 @@ package delfos.group.results.groupevaluationmeasures;
 import delfos.ERROR_CODES;
 import delfos.common.exceptions.dataset.users.UserNotFound;
 import delfos.common.statisticalfuncions.MeanIterative;
+import delfos.dataset.basic.item.Item;
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RatingsDataset;
@@ -89,9 +90,11 @@ public class NDCG extends GroupEvaluationMeasure {
                 }
 
                 for (Recommendation recommendation : groupRecommendations) {
-                    int idItem = recommendation.getIdItem();
+                    Item item = recommendation.getItem();
+                    final Integer idItem = item.getId();
+
                     if (userRatings.containsKey(idItem)) {
-                        idealRecommendations.add(new Recommendation(idItem, userRatings.get(idItem).getRatingValue()));
+                        idealRecommendations.add(new Recommendation(item, userRatings.get(idItem).getRatingValue()));
                         recommendationsIntersectUserRatings.add(recommendation);
                     }
                 }
