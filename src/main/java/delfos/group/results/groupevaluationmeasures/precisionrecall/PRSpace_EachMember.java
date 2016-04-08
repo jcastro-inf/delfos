@@ -20,7 +20,6 @@ import delfos.ERROR_CODES;
 import delfos.common.exceptions.dataset.users.UserNotFound;
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
-import delfos.dataset.basic.rating.RatingsDataset;
 import delfos.dataset.basic.rating.RelevanceCriteria;
 import delfos.group.groupsofusers.GroupOfUsers;
 import delfos.group.results.groupevaluationmeasures.GroupEvaluationMeasure;
@@ -40,8 +39,8 @@ import java.util.TreeSet;
 import org.jdom2.Element;
 
 /**
- * Medida de evaluación para sistemas de recomendación a grupos que calcula la
- * precisión y recall a lo largo de todos los tamaño de recomendación al grupo.
+ * Medida de evaluación para sistemas de recomendación a grupos que calcula la precisión y recall a lo largo de todos
+ * los tamaño de recomendación al grupo.
  *
  * @author jcastro-inf ( https://github.com/jcastro-inf )
  */
@@ -63,12 +62,7 @@ public class PRSpace_EachMember extends GroupEvaluationMeasure {
 
     @Override
     public GroupEvaluationMeasureResult getMeasureResult(
-            GroupRecommenderSystemResult groupRecommenderSystemResult,
-            DatasetLoader<? extends Rating> originalDatasetLoader,
-            RatingsDataset<? extends Rating> testDataset,
-            RelevanceCriteria relevanceCriteria,
-            DatasetLoader<? extends Rating> trainingDatasetLoader,
-            DatasetLoader<? extends Rating> testDatasetLoader) {
+            GroupRecommenderSystemResult groupRecommenderSystemResult, DatasetLoader<? extends Rating> originalDatasetLoader, RelevanceCriteria relevanceCriteria, DatasetLoader<? extends Rating> trainingDatasetLoader, DatasetLoader<? extends Rating> testDatasetLoader) {
 
         Map<GroupOfUsers, ConfusionMatricesCurve> groupsCurves = new TreeMap<>();
 
@@ -89,9 +83,8 @@ public class PRSpace_EachMember extends GroupEvaluationMeasure {
             List<ConfusionMatrix> matrices = new ArrayList<>();
 
             /**
-             * Estas variables se utilizan en la generación de la curva para el
-             * grupo, pero se pueden inicializar en el cálculo de la curva de
-             * cada usuario
+             * Estas variables se utilizan en la generación de la curva para el grupo, pero se pueden inicializar en el
+             * cálculo de la curva de cada usuario
              */
             int truePositive_group = 0;
             int falseNegative_group = 0;
@@ -99,9 +92,8 @@ public class PRSpace_EachMember extends GroupEvaluationMeasure {
             int trueNegative_group = 0;
 
             /**
-             * Almacena una lista de conjuntos. Cada elemento de la lista
-             * representa cada un conjunto con un booleano si al usuario está
-             * satisfecho con esa recomendación.
+             * Almacena una lista de conjuntos. Cada elemento de la lista representa cada un conjunto con un booleano si
+             * al usuario está satisfecho con esa recomendación.
              */
             List<Set<Boolean>> relevanteParaUser = new ArrayList<>(group.size());
             for (int i = 0; i < groupRecommendations.size(); i++) {
@@ -121,7 +113,7 @@ public class PRSpace_EachMember extends GroupEvaluationMeasure {
 
                 Map<Integer, ? extends Rating> userRatings = null;
                 try {
-                    userRatings = testDataset.getUserRatingsRated(idUser);
+                    userRatings = testDatasetLoader.getRatingsDataset().getUserRatingsRated(idUser);
                 } catch (UserNotFound ex) {
                     ERROR_CODES.USER_NOT_FOUND.exit(ex);
                     throw new IllegalArgumentException(ex);

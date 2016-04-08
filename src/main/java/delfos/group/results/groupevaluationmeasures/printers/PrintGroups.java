@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -21,7 +21,6 @@ import delfos.ERROR_CODES;
 import delfos.common.FileUtilities;
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
-import delfos.dataset.basic.rating.RatingsDataset;
 import delfos.dataset.basic.rating.RelevanceCriteria;
 import delfos.group.groupsofusers.GroupOfUsers;
 import delfos.group.results.groupevaluationmeasures.GroupEvaluationMeasureResult;
@@ -33,9 +32,8 @@ import org.jdom2.Element;
 import org.jdom2.output.XMLOutputter;
 
 /**
- * Medida de evaluación que muestra los grupos que se evaluaron y los usuarios
- * que hay en cada uno de los grupos evaluados. Asimismo añade algunas
- * estadísticas generales sobre los mismos.
+ * Medida de evaluación que muestra los grupos que se evaluaron y los usuarios que hay en cada uno de los grupos
+ * evaluados. Asimismo añade algunas estadísticas generales sobre los mismos.
  *
  * @author jcastro-inf ( https://github.com/jcastro-inf )
  */
@@ -45,7 +43,6 @@ public class PrintGroups extends GroupEvaluationMeasureInformationPrinter {
     public GroupEvaluationMeasureResult getMeasureResult(
             GroupRecommenderSystemResult groupRecommenderSystemResult,
             DatasetLoader<? extends Rating> originalDatasetLoader,
-            RatingsDataset<? extends Rating> testDataset,
             RelevanceCriteria relevanceCriteria,
             DatasetLoader<? extends Rating> trainingDatasetLoader,
             DatasetLoader<? extends Rating> testDatasetLoader) {

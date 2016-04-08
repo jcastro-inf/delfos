@@ -21,7 +21,6 @@ import delfos.common.exceptions.dataset.users.UserNotFound;
 import delfos.common.statisticalfuncions.MeanIterative;
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
-import delfos.dataset.basic.rating.RatingsDataset;
 import delfos.dataset.basic.rating.RelevanceCriteria;
 import delfos.group.groupsofusers.GroupOfUsers;
 import delfos.group.results.grouprecomendationresults.GroupRecommenderSystemResult;
@@ -34,19 +33,15 @@ import java.util.Map;
 
 //TODO: revisar si las características e interpretación de la medida son correctas
 /**
- * Esta medida de evaluación calcula la diferencia entre la predicción realizada
- * por el sistema de recomendación a grupos y la predicción realizada para cada
- * miembro por un sistema de recomendación a individuos. El sistema de
- * recomendación de base que se utiliza debe ser del mismo tipo que el sistema
- * de recomendacion que se usa.
+ * Esta medida de evaluación calcula la diferencia entre la predicción realizada por el sistema de recomendación a
+ * grupos y la predicción realizada para cada miembro por un sistema de recomendación a individuos. El sistema de
+ * recomendación de base que se utiliza debe ser del mismo tipo que el sistema de recomendacion que se usa.
  *
- * Características que destaca: satisfacción de cada miembro respecto de la
- * recomendación al grupo Interpretación: Si es menor, los individuos están más
- * satisfechos con la recomendación.
+ * Características que destaca: satisfacción de cada miembro respecto de la recomendación al grupo Interpretación: Si es
+ * menor, los individuos están más satisfechos con la recomendación.
  *
- * Esta medida de evaluación se utiliza en el siguiente paper: - García et al. /
- * Information Sciences 189 (2012) p155-175 [Citation: Inma Garcia , Sergio
- * Pajares, Laura Sebastia, Eva Onaindia: Preference elicitation techniques for
+ * Esta medida de evaluación se utiliza en el siguiente paper: - García et al. / Information Sciences 189 (2012)
+ * p155-175 [Citation: Inma Garcia , Sergio Pajares, Laura Sebastia, Eva Onaindia: Preference elicitation techniques for
  * group recommender systems]
  *
  * @author jcastro-inf ( https://github.com/jcastro-inf )
@@ -62,12 +57,7 @@ public class GroupSatisfaction_StdDev extends GroupEvaluationMeasure {
 
     @Override
     public GroupEvaluationMeasureResult getMeasureResult(
-            GroupRecommenderSystemResult groupRecommenderSystemResult,
-            DatasetLoader<? extends Rating> originalDatasetLoader,
-            RatingsDataset<? extends Rating> testDataset,
-            RelevanceCriteria relevanceCriteria,
-            DatasetLoader<? extends Rating> trainingDatasetLoader,
-            DatasetLoader<? extends Rating> testDatasetLoader) {
+            GroupRecommenderSystemResult groupRecommenderSystemResult, DatasetLoader<? extends Rating> originalDatasetLoader, RelevanceCriteria relevanceCriteria, DatasetLoader<? extends Rating> trainingDatasetLoader, DatasetLoader<? extends Rating> testDatasetLoader) {
 
         MeanIterative mediaTodasDesviacionesTipicas = new MeanIterative();
 
@@ -90,7 +80,7 @@ public class GroupSatisfaction_StdDev extends GroupEvaluationMeasure {
             for (int idUser : groupOfUsers.getIdMembers()) {
                 try {
                     MeanIterative maeActual = new MeanIterative();
-                    Map<Integer, ? extends Rating> userRated = testDataset.getUserRatingsRated(idUser);
+                    Map<Integer, ? extends Rating> userRated = testDatasetLoader.getRatingsDataset().getUserRatingsRated(idUser);
                     for (int idItem : userRated.keySet()) {
                         if (recomendacionesAlGrupoReordenadas.containsKey(idItem)) {
                             double prediccionGrupo = recomendacionesAlGrupoReordenadas.get(idItem).getPreference().doubleValue();

@@ -21,7 +21,6 @@ import delfos.common.exceptions.dataset.users.UserNotFound;
 import delfos.common.statisticalfuncions.MeanIterative;
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
-import delfos.dataset.basic.rating.RatingsDataset;
 import delfos.dataset.basic.rating.RelevanceCriteria;
 import delfos.group.groupsofusers.GroupOfUsers;
 import delfos.group.results.groupevaluationmeasures.GroupEvaluationMeasure;
@@ -36,9 +35,8 @@ import java.util.Map;
 import java.util.TreeMap;
 
 /**
- * Medida de evaluación para sistemas de recomendación a grupos que calcula la
- * precisión y recall a lo largo de todos los tamaños de recomendación al grupo.
- * Usa como test la media de valoraciones de test de los usuarios sobre el
+ * Medida de evaluación para sistemas de recomendación a grupos que calcula la precisión y recall a lo largo de todos
+ * los tamaños de recomendación al grupo. Usa como test la media de valoraciones de test de los usuarios sobre el
  * producto que se predice.
  *
  * @author jcastro-inf ( https://github.com/jcastro-inf )
@@ -54,17 +52,11 @@ public class PRSpaceGroups extends GroupEvaluationMeasure {
 
     @Override
     public GroupEvaluationMeasureResult getMeasureResult(
-            GroupRecommenderSystemResult groupRecommenderSystemResult,
-            DatasetLoader<? extends Rating> originalDatasetLoader,
-            RatingsDataset<? extends Rating> testDataset,
-            RelevanceCriteria relevanceCriteria,
-            DatasetLoader<? extends Rating> trainingDatasetLoader,
-            DatasetLoader<? extends Rating> testDatasetLoader) {
+            GroupRecommenderSystemResult groupRecommenderSystemResult, DatasetLoader<? extends Rating> originalDatasetLoader, RelevanceCriteria relevanceCriteria, DatasetLoader<? extends Rating> trainingDatasetLoader, DatasetLoader<? extends Rating> testDatasetLoader) {
 
         ConfusionMatricesCurve agregada = getDetailedResult(
                 groupRecommenderSystemResult,
                 originalDatasetLoader,
-                testDataset,
                 relevanceCriteria,
                 trainingDatasetLoader,
                 testDatasetLoader);
@@ -88,7 +80,6 @@ public class PRSpaceGroups extends GroupEvaluationMeasure {
     public ConfusionMatricesCurve getDetailedResult(
             GroupRecommenderSystemResult groupRecommenderSystemResult,
             DatasetLoader<? extends Rating> originalDatasetLoader,
-            RatingsDataset<? extends Rating> testDataset,
             RelevanceCriteria relevanceCriteria,
             DatasetLoader<? extends Rating> trainingDatasetLoader,
             DatasetLoader<? extends Rating> testDatasetLoader) {
@@ -109,9 +100,9 @@ public class PRSpaceGroups extends GroupEvaluationMeasure {
                 MeanIterative mean = new MeanIterative();
                 for (int idUser : group.getIdMembers()) {
                     try {
-                        Map<Integer, ? extends Rating> userRatings = testDataset.getUserRatingsRated(idUser);
+                        Map<Integer, ? extends Rating> userRatings = testDatasetLoader.getRatingsDataset().getUserRatingsRated(idUser);
                         if (userRatings.containsKey(idItem)) {
-                            mean.addValue(testDataset.getUserRatingsRated(idUser).get(idItem).getRatingValue().doubleValue());
+                            mean.addValue(testDatasetLoader.getRatingsDataset().getUserRatingsRated(idUser).get(idItem).getRatingValue().doubleValue());
                         }
                     } catch (UserNotFound ex) {
                         ERROR_CODES.USER_NOT_FOUND.exit(ex);

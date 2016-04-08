@@ -22,7 +22,6 @@ import delfos.common.statisticalfuncions.MeanIterative;
 import delfos.dataset.basic.item.Item;
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
-import delfos.dataset.basic.rating.RatingsDataset;
 import delfos.dataset.basic.rating.RelevanceCriteria;
 import delfos.group.groupsofusers.GroupOfUsers;
 import delfos.group.results.grouprecomendationresults.GroupRecommenderSystemResult;
@@ -35,14 +34,12 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Evalúa las recomendaciones de un sistema aplicando nDCG, usando logaritmo en
- * base 2. Se calcula el nDCG por usuarios y luego se hace la media. Se aplica
- * la consideración sobre el nDGC hecha por Baltrunas en el paper:
+ * Evalúa las recomendaciones de un sistema aplicando nDCG, usando logaritmo en base 2. Se calcula el nDCG por usuarios
+ * y luego se hace la media. Se aplica la consideración sobre el nDGC hecha por Baltrunas en el paper:
  * <p>
  * <p>
- * Baltrunas L, Makcinskas T, Ricci F (2010) Group recommendations with rank
- * aggregation and collaborative ﬁltering. In: Proceedings of the 4th ACM
- * conference on Recommender Systems, RecSys ’10. ACM, New York, pp 119–126
+ * Baltrunas L, Makcinskas T, Ricci F (2010) Group recommendations with rank aggregation and collaborative ﬁltering. In:
+ * Proceedings of the 4th ACM conference on Recommender Systems, RecSys ’10. ACM, New York, pp 119–126
  *
  * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
@@ -61,12 +58,7 @@ public class NDCG extends GroupEvaluationMeasure {
 
     @Override
     public GroupEvaluationMeasureResult getMeasureResult(
-            GroupRecommenderSystemResult groupRecommenderSystemResult,
-            DatasetLoader<? extends Rating> originalDatasetLoader,
-            RatingsDataset<? extends Rating> testDataset,
-            RelevanceCriteria relevanceCriteria,
-            DatasetLoader<? extends Rating> trainingDatasetLoader,
-            DatasetLoader<? extends Rating> testDatasetLoader) {
+            GroupRecommenderSystemResult groupRecommenderSystemResult, DatasetLoader<? extends Rating> originalDatasetLoader, RelevanceCriteria relevanceCriteria, DatasetLoader<? extends Rating> trainingDatasetLoader, DatasetLoader<? extends Rating> testDatasetLoader) {
 
         List<Double> ndcgByMember = new ArrayList<>();
 
@@ -83,7 +75,7 @@ public class NDCG extends GroupEvaluationMeasure {
                 List<Recommendation> recommendationsIntersectUserRatings = new ArrayList<>();
                 Map<Integer, ? extends Rating> userRatings;
                 try {
-                    userRatings = testDataset.getUserRatingsRated(idUser);
+                    userRatings = testDatasetLoader.getRatingsDataset().getUserRatingsRated(idUser);
                 } catch (UserNotFound ex) {
                     ERROR_CODES.USER_NOT_FOUND.exit(ex);
                     throw new IllegalArgumentException(ex);

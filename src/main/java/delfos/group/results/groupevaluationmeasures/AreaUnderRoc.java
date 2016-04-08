@@ -22,7 +22,6 @@ import delfos.common.exceptions.dataset.users.UserNotFound;
 import delfos.common.statisticalfuncions.MeanIterative;
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
-import delfos.dataset.basic.rating.RatingsDataset;
 import delfos.dataset.basic.rating.RelevanceCriteria;
 import delfos.group.groupsofusers.GroupOfUsers;
 import delfos.group.results.grouprecomendationresults.GroupRecommenderSystemResult;
@@ -36,11 +35,9 @@ import java.util.Map;
 import java.util.TreeMap;
 
 /**
- * Medida de evaluación para sistemas de recomendación a grupos que calcula la
- * curva ROC (Receiver Operator Characteristic) y a partir de ella calcula el
- * area bajo la misma. A mayor área mejor es el sistema, siendo 1 el valor
- * máximo si el sistema de recomendación es perfecto y 0.5 si realiza
- * recomendaciones de manera totalmente aleatoria.
+ * Medida de evaluación para sistemas de recomendación a grupos que calcula la curva ROC (Receiver Operator
+ * Characteristic) y a partir de ella calcula el area bajo la misma. A mayor área mejor es el sistema, siendo 1 el valor
+ * máximo si el sistema de recomendación es perfecto y 0.5 si realiza recomendaciones de manera totalmente aleatoria.
  *
  * <p>
  * Esta medida de evaluación es una generalización del
@@ -58,12 +55,7 @@ public class AreaUnderRoc extends GroupEvaluationMeasure {
 
     @Override
     public GroupEvaluationMeasureResult getMeasureResult(
-            GroupRecommenderSystemResult groupRecommenderSystemResult,
-            DatasetLoader<? extends Rating> originalDatasetLoader,
-            RatingsDataset<? extends Rating> testDataset,
-            RelevanceCriteria relevanceCriteria,
-            DatasetLoader<? extends Rating> trainingDatasetLoader,
-            DatasetLoader<? extends Rating> testDatasetLoader) {
+            GroupRecommenderSystemResult groupRecommenderSystemResult, DatasetLoader<? extends Rating> originalDatasetLoader, RelevanceCriteria relevanceCriteria, DatasetLoader<? extends Rating> trainingDatasetLoader, DatasetLoader<? extends Rating> testDatasetLoader) {
 
         Map<GroupOfUsers, ConfusionMatricesCurve> prCurves = new TreeMap<>();
 
@@ -79,9 +71,9 @@ public class AreaUnderRoc extends GroupEvaluationMeasure {
                 MeanIterative mean = new MeanIterative();
                 for (int idUser : group.getIdMembers()) {
                     try {
-                        Map<Integer, ? extends Rating> userRatings = testDataset.getUserRatingsRated(idUser);
+                        Map<Integer, ? extends Rating> userRatings = testDatasetLoader.getRatingsDataset().getUserRatingsRated(idUser);
                         if (userRatings.containsKey(idItem)) {
-                            mean.addValue(testDataset.getUserRatingsRated(idUser).get(idItem).getRatingValue().doubleValue());
+                            mean.addValue(testDatasetLoader.getRatingsDataset().getUserRatingsRated(idUser).get(idItem).getRatingValue().doubleValue());
                         }
                     } catch (UserNotFound ex) {
                         ERROR_CODES.USER_NOT_FOUND.exit(ex);

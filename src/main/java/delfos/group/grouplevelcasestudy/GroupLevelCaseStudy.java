@@ -169,10 +169,8 @@ public class GroupLevelCaseStudy {
                                 singleGroupRecommendationOutputs,
                                 GroupLevelCaseStudy.class.getSimpleName(), 0, 0, -1);
 
-                        GroupEvaluationMeasureResult measureResult = evaluationMeasure.getMeasureResult(
-                                groupRecommendationResult,
+                        GroupEvaluationMeasureResult measureResult = evaluationMeasure.getMeasureResult(groupRecommendationResult,
                                 originalDatasetLoader,
-                                testDatasetLoader.getRatingsDataset(),
                                 relevanceCriteria,
                                 trainingDatasetLoader,
                                 testDatasetLoader);

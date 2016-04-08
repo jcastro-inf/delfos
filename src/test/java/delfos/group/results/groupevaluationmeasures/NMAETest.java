@@ -75,7 +75,11 @@ public class NMAETest {
         NMAE instance = new NMAE();
 
         //Phase 2: Execution
-        GroupEvaluationMeasureResult groupMaeResult = instance.getMeasureResult(groupRecommenderSystemResult, datasetLoader, testDataset, relevanceCriteria, datasetLoader, datasetLoader);
+        GroupEvaluationMeasureResult groupMaeResult = instance.getMeasureResult(groupRecommenderSystemResult,
+                datasetLoader,
+                relevanceCriteria,
+                datasetLoader,
+                datasetLoader);
 
         //Phase 3: Result checking
         double expResult = Double.NaN;

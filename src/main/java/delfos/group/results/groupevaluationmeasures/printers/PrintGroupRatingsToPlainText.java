@@ -21,7 +21,6 @@ import delfos.common.FileUtilities;
 import delfos.common.exceptions.dataset.users.UserNotFound;
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
-import delfos.dataset.basic.rating.RatingsDataset;
 import delfos.dataset.basic.rating.RelevanceCriteria;
 import delfos.dataset.util.DatasetPrinter;
 import delfos.group.groupsofusers.GroupOfUsers;
@@ -43,8 +42,7 @@ import java.util.TreeMap;
 import java.util.stream.Collectors;
 
 /**
- * Evaluation measure that prints the ratings used to produce the
- * recommendations.
+ * Evaluation measure that prints the ratings used to produce the recommendations.
  *
  * @author jcastro-inf ( https://github.com/jcastro-inf )
  */
@@ -54,7 +52,6 @@ public class PrintGroupRatingsToPlainText extends GroupEvaluationMeasureInformat
     public GroupEvaluationMeasureResult getMeasureResult(
             GroupRecommenderSystemResult groupRecommenderSystemResult,
             DatasetLoader<? extends Rating> originalDatasetLoader,
-            RatingsDataset<? extends Rating> testDataset,
             RelevanceCriteria relevanceCriteria,
             DatasetLoader<? extends Rating> trainingDatasetLoader,
             DatasetLoader<? extends Rating> testDatasetLoader) {
@@ -90,13 +87,13 @@ public class PrintGroupRatingsToPlainText extends GroupEvaluationMeasureInformat
                             Map<Integer, Number> thisMemberRatings = new TreeMap<>();
 
                             try {
-                                Map<Integer, ? extends Rating> memberRatings = testDataset.getUserRatingsRated(idMember);
+                                Map<Integer, ? extends Rating> memberRatings = testDatasetLoader.getRatingsDataset().getUserRatingsRated(idMember);
 
                                 memberRatings.values().stream()
-                                .filter((rating) -> (items.contains(rating.getIdItem())))
-                                .forEach((rating) -> {
-                                    thisMemberRatings.put(rating.getIdItem(), rating.getRatingValue());
-                                });
+                                        .filter((rating) -> (items.contains(rating.getIdItem())))
+                                        .forEach((rating) -> {
+                                            thisMemberRatings.put(rating.getIdItem(), rating.getRatingValue());
+                                        });
                             } catch (UserNotFound ex) {
                                 ERROR_CODES.USER_NOT_FOUND.exit(ex);
                             }

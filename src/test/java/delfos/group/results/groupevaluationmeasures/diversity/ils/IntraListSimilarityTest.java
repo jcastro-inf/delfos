@@ -5,7 +5,6 @@ import delfos.configureddatasets.ConfiguredDatasetsFactory;
 import delfos.dataset.basic.item.Item;
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
-import delfos.dataset.basic.rating.RatingsDataset;
 import delfos.dataset.basic.rating.RelevanceCriteria;
 import delfos.dataset.basic.user.User;
 import delfos.dataset.storage.validationdatasets.PairOfTrainTestRatingsDataset;
@@ -16,15 +15,11 @@ import delfos.group.casestudy.parallelisation.SingleGroupRecommendationTaskOutpu
 import delfos.group.groupsofusers.GroupOfUsers;
 import delfos.group.grs.GroupRecommenderSystem;
 import delfos.group.grs.aggregation.AggregationOfIndividualRatings;
-import delfos.group.results.groupevaluationmeasures.GroupEvaluationMeasureResult;
-import delfos.group.results.grouprecomendationresults.GroupRecommenderSystemResult;
 import delfos.recommendationcandidates.OnlyNewItems;
 import delfos.rs.collaborativefiltering.knn.memorybased.nwr.KnnMemoryBasedNWR;
 import java.util.Arrays;
 import java.util.Set;
 import java.util.stream.Collectors;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
 import org.junit.Test;
 
 /**
@@ -37,27 +32,7 @@ public class IntraListSimilarityTest {
     }
 
     /**
-     * Test of getMeasureResult method, of class IntraListSimilarity.
-     */
-    public void testGetMeasureResult() {
-        System.out.println("getMeasureResult");
-        GroupRecommenderSystemResult groupRecommenderSystemResult = null;
-        DatasetLoader<? extends Rating> originalDatasetLoader = null;
-        RatingsDataset<? extends Rating> testDataset = null;
-        RelevanceCriteria relevanceCriteria = null;
-        DatasetLoader<? extends Rating> trainingDatasetLoader = null;
-        DatasetLoader<? extends Rating> testDatasetLoader = null;
-        IntraListSimilarity instance = new IntraListSimilarity();
-        GroupEvaluationMeasureResult expResult = null;
-        GroupEvaluationMeasureResult result = instance.getMeasureResult(groupRecommenderSystemResult, originalDatasetLoader, testDataset, relevanceCriteria, trainingDatasetLoader, testDatasetLoader);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
-
-    /**
-     * Test of getMeasureResultForSingleGroup method, of class
-     * IntraListSimilarity.
+     * Test of getMeasureResultForSingleGroup method, of class IntraListSimilarity.
      */
     @Test
     public void testGetMeasureResultForSingleGroup() {
@@ -101,7 +76,6 @@ public class IntraListSimilarityTest {
                 singleGroupRecommendationTaskInput,
                 singleGroupRecommendationTaskOutput,
                 originalDatasetLoader,
-                testDatasetLoader.getRatingsDataset(),
                 relevanceCriteria,
                 trainingDatasetLoader,
                 testDatasetLoader);

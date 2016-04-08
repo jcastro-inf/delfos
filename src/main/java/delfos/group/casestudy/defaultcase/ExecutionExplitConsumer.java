@@ -159,10 +159,8 @@ public class ExecutionExplitConsumer {
 
         Map<GroupEvaluationMeasure, GroupEvaluationMeasureResult> resultsThisExecutionSplit = GroupEvaluationMeasuresFactory.getInstance().getAllClasses().parallelStream().collect(Collectors.toMap(Function.identity(),
                 groupEvaluationMeasure -> {
-                    return groupEvaluationMeasure.getMeasureResult(
-                            groupRecommendationResult,
+                    return groupEvaluationMeasure.getMeasureResult(groupRecommendationResult,
                             originalDatasetLoader,
-                            testDatasetLoader.getRatingsDataset(),
                             relevanceCriteria, trainDatasetLoader, testDatasetLoader);
 
                 }));

@@ -22,7 +22,6 @@ import delfos.common.statisticalfuncions.MeanIterative;
 import delfos.dataset.basic.item.Item;
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
-import delfos.dataset.basic.rating.RatingsDataset;
 import delfos.dataset.basic.rating.RelevanceCriteria;
 import delfos.group.casestudy.parallelisation.SingleGroupRecommendationTaskInput;
 import delfos.group.casestudy.parallelisation.SingleGroupRecommendationTaskOutput;
@@ -45,9 +44,8 @@ import java.util.stream.Collectors;
 import org.jdom2.Element;
 
 /**
- * Evaluation metric that computes the similarity of the items recommended. This
- * measure is intended to capture the diversity of the recommender. A lower
- * value means that the recommender generates more diverse recommendations.
+ * Evaluation metric that computes the similarity of the items recommended. This measure is intended to capture the
+ * diversity of the recommender. A lower value means that the recommender generates more diverse recommendations.
  *
  * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
@@ -154,12 +152,7 @@ public class IntraListSimilarity extends GroupEvaluationMeasure {
 
     @Override
     public GroupEvaluationMeasureResult getMeasureResult(
-            GroupRecommenderSystemResult groupRecommenderSystemResult,
-            DatasetLoader<? extends Rating> originalDatasetLoader,
-            RatingsDataset<? extends Rating> testDataset,
-            RelevanceCriteria relevanceCriteria,
-            DatasetLoader<? extends Rating> trainingDatasetLoader,
-            DatasetLoader<? extends Rating> testDatasetLoader) {
+            GroupRecommenderSystemResult groupRecommenderSystemResult, DatasetLoader<? extends Rating> originalDatasetLoader, RelevanceCriteria relevanceCriteria, DatasetLoader<? extends Rating> trainingDatasetLoader, DatasetLoader<? extends Rating> testDatasetLoader) {
 
         IntraListSimilarityByRecommendationLenght ilsAllGroups = groupRecommenderSystemResult
                 .getGroupsOfUsers().parallelStream()
@@ -169,15 +162,14 @@ public class IntraListSimilarity extends GroupEvaluationMeasure {
                     SingleGroupRecommendationTaskOutput singleGroupRecommendationTaskOutput = groupRecommenderSystemResult.getGroupOutput(groupOfUsers);
 
                     IntraListSimilarityByRecommendationLenght intraListSimilarityByRecommendationLenght
-                    = getMeasureResultForSingleGroup(
-                            groupOfUsers,
-                            singleGroupRecommendationTaskInput,
-                            singleGroupRecommendationTaskOutput,
-                            originalDatasetLoader,
-                            testDataset,
-                            relevanceCriteria,
-                            trainingDatasetLoader,
-                            testDatasetLoader);
+                            = getMeasureResultForSingleGroup(
+                                    groupOfUsers,
+                                    singleGroupRecommendationTaskInput,
+                                    singleGroupRecommendationTaskOutput,
+                                    originalDatasetLoader,
+                                    relevanceCriteria,
+                                    trainingDatasetLoader,
+                                    testDatasetLoader);
 
                     return intraListSimilarityByRecommendationLenght;
                 })
@@ -200,7 +192,6 @@ public class IntraListSimilarity extends GroupEvaluationMeasure {
             SingleGroupRecommendationTaskInput singleGroupRecommendationTaskInput,
             SingleGroupRecommendationTaskOutput singleGroupRecommendationTaskOutput,
             DatasetLoader<? extends Rating> originalDatasetLoader,
-            RatingsDataset<? extends Rating> testDataset,
             RelevanceCriteria relevanceCriteria,
             DatasetLoader<? extends Rating> trainingDatasetLoader,
             DatasetLoader<? extends Rating> testDatasetLoader) {

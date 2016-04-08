@@ -16,49 +16,16 @@
  */
 package delfos.group.results.groupevaluationmeasures.precisionrecall;
 
-import delfos.dataset.basic.loader.types.DatasetLoader;
-import delfos.dataset.basic.rating.Rating;
-import delfos.dataset.basic.rating.RatingsDataset;
-import delfos.dataset.basic.rating.RelevanceCriteria;
-import delfos.group.results.groupevaluationmeasures.GroupEvaluationMeasureResult;
-import delfos.group.results.grouprecomendationresults.GroupRecommenderSystemResult;
-import delfos.results.evaluationmeasures.confusionmatrix.ConfusionMatricesCurve;
-import java.util.Map;
-import java.util.TreeMap;
-
 /**
  *
  * @author jcastro
  */
-public class Precision_10 extends PRSpaceGroups {
+public class Precision_10 extends Precision {
 
     public static final int LIST_SIZE = 10;
 
-    @Override
-    public GroupEvaluationMeasureResult getMeasureResult(GroupRecommenderSystemResult groupRecommenderSystemResult, DatasetLoader<? extends Rating> originalDatasetLoader, RatingsDataset<? extends Rating> testDataset, RelevanceCriteria relevanceCriteria, DatasetLoader<? extends Rating> trainingDatasetLoader, DatasetLoader<? extends Rating> testDatasetLoader) {
-
-        ConfusionMatricesCurve agregada = getDetailedResult(
-                groupRecommenderSystemResult,
-                originalDatasetLoader,
-                testDataset,
-                relevanceCriteria,
-                trainingDatasetLoader,
-                testDatasetLoader);
-
-        Map<String, Double> detailedResult = new TreeMap<>();
-        for (int i = 0; i < agregada.size(); i++) {
-            double precisionAt = agregada.getPrecisionAt(i);
-            detailedResult.put("Precision@" + i, precisionAt);
-        }
-
-        double value;
-        if (detailedResult.containsKey("Precision@" + LIST_SIZE)) {
-            value = agregada.getPrecisionAt(LIST_SIZE);
-        } else {
-            value = Double.NaN;
-        }
-
-        return new GroupEvaluationMeasureResult(this, value);
+    public Precision_10() {
+        super(LIST_SIZE);
     }
 
 }
