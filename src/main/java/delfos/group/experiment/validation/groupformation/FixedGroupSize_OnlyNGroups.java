@@ -32,61 +32,31 @@ import java.util.Set;
 import java.util.TreeSet;
 
 /**
- * Validación de grupos que genera grupos de usuarios, utilizando miembros
- * elegidos aleatoriamente, de un tamaño fijo.
+ * Validación de grupos que genera grupos de usuarios, utilizando miembros elegidos aleatoriamente, de un tamaño fijo.
  *
  * @author jcastro-inf ( https://github.com/jcastro-inf )
  */
 public class FixedGroupSize_OnlyNGroups extends GroupFormationTechnique {
 
     /**
-     * Parámetro para establecer el número de usuarios que tendrán los grupos
-     * generados con esta validación de grupos
+     * Parámetro para establecer el número de usuarios que tendrán los grupos generados con esta validación de grupos
      */
     public static final Parameter GROUP_SIZE_PARAMETER = new Parameter("groupSize", new IntegerParameter(1, 10000, 5));
     public static final Parameter NUM_GROUPS_PARAMETER = new Parameter("numGroups", new IntegerParameter(1, 1000000, 5));
 
-    private int oldNumGroupsValue = 0;
-    private int oldGroupSizeValue = 0;
-
     /**
-     * Genera una validación de usuarios que genera grupos de tamaño fijo. Por
-     * defecto, el tamaño de los grupos es de cuatro miembros.
+     * Genera una validación de usuarios que genera grupos de tamaño fijo. Por defecto, el tamaño de los grupos es de
+     * cuatro miembros.
      */
     public FixedGroupSize_OnlyNGroups() {
         super();
         addParameter(GROUP_SIZE_PARAMETER);
         addParameter(NUM_GROUPS_PARAMETER);
-
-        addParammeterListener(
-                () -> {
-                    int newNumGroupsValue = (Integer) getParameterValue(NUM_GROUPS_PARAMETER);
-                    int newGroupSizeValue = (Integer) getParameterValue(GROUP_SIZE_PARAMETER);
-
-                    String newAlias = getAlias();
-
-                    String oldAliasOldParameters
-                    = this.getClass().getSimpleName()
-                    + "(num=" + oldNumGroupsValue
-                    + " size=" + oldGroupSizeValue + ")";
-
-                    String newAliasNewParameters
-                    = this.getClass().getSimpleName()
-                    + "(num=" + newNumGroupsValue
-                    + " size=" + newGroupSizeValue + ")";
-
-                    if (!oldAliasOldParameters.equals(newAliasNewParameters)) {
-                        oldGroupSizeValue = newGroupSizeValue;
-                        oldNumGroupsValue = newNumGroupsValue;
-                        setAlias(newAliasNewParameters);
-                    }
-                }
-        );
     }
 
     /**
-     * Genera una validación de usuarios que genera grupos de tamaño fijo. Por
-     * defecto, el tamaño de los grupos es de cuatro miembros.
+     * Genera una validación de usuarios que genera grupos de tamaño fijo. Por defecto, el tamaño de los grupos es de
+     * cuatro miembros.
      *
      * @param groupSizeValue Tamaño de los grupos generados
      * @param numGroupsValue Número de grupos considerados
