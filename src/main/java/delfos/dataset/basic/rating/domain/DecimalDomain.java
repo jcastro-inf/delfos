@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -36,8 +36,7 @@ public class DecimalDomain extends Domain {
      * @param minValue Valor de valoración mínimo.
      * @param maxValue Valor de valoración máximo.
      *
-     * @throws IllegalArgumentException Si el valor mínimo es mayor que el
-     * máximo.
+     * @throws IllegalArgumentException Si el valor mínimo es mayor que el máximo.
      */
     public DecimalDomain(Number minValue, Number maxValue) {
         this.minValue = minValue.doubleValue();
@@ -123,6 +122,7 @@ public class DecimalDomain extends Domain {
 
     }
 
+    @Override
     public boolean isValueInDomain(Number value) {
         if (value.doubleValue() < minValue) {
             return false;
