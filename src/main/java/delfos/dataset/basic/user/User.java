@@ -68,8 +68,7 @@ public class User implements Comparable<Object>, EntityWithFeatures {
      *
      * @param idUser
      * @param name
-     * @param featureValues Mapa de (característica,valor). El tipo de la
-     * característica se infiere según si el valor
+     * @param featureValues Mapa de (característica,valor). El tipo de la característica se infiere según si el valor
      */
     public User(int idUser, String name, Map<Feature, Object> featureValues) {
         this(idUser, name);
@@ -99,8 +98,7 @@ public class User implements Comparable<Object>, EntityWithFeatures {
      * @param idUser identificador del usuario que se almacena.
      * @param name Nombre del usuario-
      * @param features características relevantes del usuario
-     * @param values vector de valores correspondientes a las características en
-     * el vector <code>features</code>
+     * @param values vector de valores correspondientes a las características en el vector <code>features</code>
      */
     public User(int idUser, String name, Feature[] features, Object[] values) {
         this(idUser, name);
@@ -125,9 +123,8 @@ public class User implements Comparable<Object>, EntityWithFeatures {
      * Devuelve el valor que el usuario tiene para una característica dado
      *
      * @param feature característica que se desea consultar
-     * @return devuelve un objeto con el valor de la característica. Si la
-     * característica es nominal, es de tipo <code>{@link String}</code>; si es
-     * numérico, devuelve un <code>{@link Double}</code>
+     * @return devuelve un objeto con el valor de la característica. Si la característica es nominal, es de tipo
+     * <code>{@link String}</code>; si es numérico, devuelve un <code>{@link Double}</code>
      */
     @Override
     public Object getFeatureValue(Feature feature) {
@@ -150,8 +147,7 @@ public class User implements Comparable<Object>, EntityWithFeatures {
     }
 
     /**
-     * Devuelve el identificador del usuario al que pertenece el contenido
-     * almacenado en este objeto.
+     * Devuelve el identificador del usuario al que pertenece el contenido almacenado en este objeto.
      *
      * @return identificador del usuario
      */
@@ -172,7 +168,7 @@ public class User implements Comparable<Object>, EntityWithFeatures {
 
     @Override
     public String toString() {
-        return getName();
+        return getId().toString();
     }
 
     @Override
