@@ -54,9 +54,8 @@ public class HoldOut_Ratings extends ValidationTechnique {
             "Porcentaje de valoraciones que contiene el conjunto de entrenamiento.");
 
     /**
-     * Constructor de la clase que genera los conjuntos de validación cruzada.
-     * Por defecto tiene cinco particiones y la semilla utilizada será la fecha
-     * actual {@link System#currentTimeMillis()}
+     * Constructor de la clase que genera los conjuntos de validación cruzada. Por defecto tiene cinco particiones y la
+     * semilla utilizada será la fecha actual {@link System#currentTimeMillis()}
      */
     public HoldOut_Ratings() {
         super();
@@ -64,7 +63,7 @@ public class HoldOut_Ratings extends ValidationTechnique {
     }
 
     @Override
-    public PairOfTrainTestRatingsDataset[] shuffle(DatasetLoader<? extends Rating> datasetLoader) throws CannotLoadRatingsDataset, CannotLoadContentDataset {
+    public <RatingType extends Rating> PairOfTrainTestRatingsDataset[] shuffle(DatasetLoader<RatingType> datasetLoader) throws CannotLoadRatingsDataset, CannotLoadContentDataset {
         Random random = new Random(getSeedValue());
         PairOfTrainTestRatingsDataset[] ret = new PairOfTrainTestRatingsDataset[1];
 

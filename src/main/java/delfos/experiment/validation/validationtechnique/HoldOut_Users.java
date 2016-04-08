@@ -32,19 +32,17 @@ import java.util.Set;
 import java.util.TreeSet;
 
 /**
- * Clase que implementa el método de partición en datasets de
- * entrenamiento-evaluación, de manera que se divide por usuarios, es decir, la
- * partición de training tendra un determinado porcentaje de usuarios y la de
- * test tendrá el resto de usuarios, sin importar el número de valoraciones que
- * tengan. Por lo tanto, esta validación toma como dato de entrada el usuario.
+ * Clase que implementa el método de partición en datasets de entrenamiento-evaluación, de manera que se divide por
+ * usuarios, es decir, la partición de training tendra un determinado porcentaje de usuarios y la de test tendrá el
+ * resto de usuarios, sin importar el número de valoraciones que tengan. Por lo tanto, esta validación toma como dato de
+ * entrada el usuario.
  *
  * <p>
- * Esta validación se suele aplicar a sistemas de recomendación colaborativos
- * Item-Item.
+ * Esta validación se suele aplicar a sistemas de recomendación colaborativos Item-Item.
  *
  * <p>
- * Versión 1.1 Optimizado el código para igualdad de velocidad con distintos
- * valores de training_percent (mejora del muestreo aleatorio).
+ * Versión 1.1 Optimizado el código para igualdad de velocidad con distintos valores de training_percent (mejora del
+ * muestreo aleatorio).
  *
  *
  *
@@ -62,9 +60,8 @@ public class HoldOut_Users extends ValidationTechnique {
     public static final Parameter TRAIN_PERCENT = new Parameter("Training_percent", new IntegerParameter(0, 100, 80), "Porcentaje de usuarios que contiene el conjunto de entrenamiento.");
 
     /**
-     * Constructor de la clase que genera los conjuntos de entrenamiento y test
-     * con un esquema hold-out. Por defecto, el conjunto de entrenamiento es el
-     * 80% de valores de entrada y el de test el 20% restante.
+     * Constructor de la clase que genera los conjuntos de entrenamiento y test con un esquema hold-out. Por defecto, el
+     * conjunto de entrenamiento es el 80% de valores de entrada y el de test el 20% restante.
      */
     public HoldOut_Users() {
         super();
@@ -73,7 +70,7 @@ public class HoldOut_Users extends ValidationTechnique {
     }
 
     @Override
-    public PairOfTrainTestRatingsDataset[] shuffle(DatasetLoader<? extends Rating> datasetLoader) throws CannotLoadRatingsDataset, CannotLoadContentDataset {
+    public <RatingType extends Rating> PairOfTrainTestRatingsDataset[] shuffle(DatasetLoader<RatingType> datasetLoader) throws CannotLoadRatingsDataset, CannotLoadContentDataset {
         Random random = new Random(getSeedValue());
         PairOfTrainTestRatingsDataset[] ret = new PairOfTrainTestRatingsDataset[1];
 

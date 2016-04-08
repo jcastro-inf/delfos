@@ -29,32 +29,29 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 
 /**
- * Clase que implementa el método de partición de datasets Leave-One-Out, que
- * genera un dataset de entrenamiento por cada valoración. No se aconseja
- * utilizar, ya que el cálculo es muy extensivo.
+ * Clase que implementa el método de partición de datasets Leave-One-Out, que genera un dataset de entrenamiento por
+ * cada valoración. No se aconseja utilizar, ya que el cálculo es muy extensivo.
  *
  * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 1.0 (19 Octubre 2011)
  * @version 1.1 21-02-2013 Adecuación a la implementación de {@link SeedHolder}
- * @version 1.1 19-04-2013 Corrección del código para que implemente el
- * algoritmo All-but-one.
+ * @version 1.1 19-04-2013 Corrección del código para que implemente el algoritmo All-but-one.
  */
 public class LeaveOneOut extends ValidationTechnique {
 
     private static final long serialVersionUID = 1L;
 
     /**
-     * Constructor de la clase que genera los conjuntos de validación cruzada.
-     * Por defecto tiene cinco particiones y la semilla utilizada será la fecha
-     * actual {@link System#currentTimeMillis()}
+     * Constructor de la clase que genera los conjuntos de validación cruzada. Por defecto tiene cinco particiones y la
+     * semilla utilizada será la fecha actual {@link System#currentTimeMillis()}
      */
     protected LeaveOneOut() {
         super();
     }
 
     @Override
-    public PairOfTrainTestRatingsDataset[] shuffle(DatasetLoader<? extends Rating> datasetLoader) throws CannotLoadRatingsDataset, CannotLoadContentDataset {
+    public <RatingType extends Rating> PairOfTrainTestRatingsDataset[] shuffle(DatasetLoader<RatingType> datasetLoader) throws CannotLoadRatingsDataset, CannotLoadContentDataset {
 
         int numRatings = datasetLoader.getRatingsDataset().getNumRatings();
 

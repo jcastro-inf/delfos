@@ -24,8 +24,8 @@ import delfos.dataset.storage.validationdatasets.PairOfTrainTestRatingsDataset;
 import delfos.rs.collaborativefiltering.knn.memorybased.KnnMemoryBasedCFRS;
 
 /**
- * Clase que implementa el método validación todos menos 1. Solo tiene sentido
- * aplicar este método de validación en el sistema {@link KnnMemoryBasedCFRS}
+ * Clase que implementa el método validación todos menos 1. Solo tiene sentido aplicar este método de validación en el
+ * sistema {@link KnnMemoryBasedCFRS}
  *
  * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
@@ -36,14 +36,13 @@ public class NoPartitions extends ValidationTechnique {
     private static final long serialVersionUID = 1L;
 
     /**
-     * Constructor de la clase que genera los conjuntos de validación. actual
-     * {@link System#currentTimeMillis()}
+     * Constructor de la clase que genera los conjuntos de validación. actual {@link System#currentTimeMillis()}
      */
     public NoPartitions() {
     }
 
     @Override
-    public PairOfTrainTestRatingsDataset[] shuffle(DatasetLoader<? extends Rating> datasetLoader) throws CannotLoadContentDataset, CannotLoadRatingsDataset {
+    public <RatingType extends Rating> PairOfTrainTestRatingsDataset[] shuffle(DatasetLoader<RatingType> datasetLoader) throws CannotLoadContentDataset, CannotLoadRatingsDataset {
         PairOfTrainTestRatingsDataset[] ret = new PairOfTrainTestRatingsDataset[1];
         ret[0] = new PairOfTrainTestRatingsDataset(datasetLoader, datasetLoader.getRatingsDataset(), datasetLoader.getRatingsDataset(),
                 "_" + this.getClass().getSimpleName() + "_seed=" + getSeedValue());

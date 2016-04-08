@@ -35,9 +35,8 @@ import java.util.Set;
 import java.util.TreeSet;
 
 /**
- * Clase que implementa el método validación cross fold validation que se aplica
- * en usuarios (las particiones las hace por usuarios, no por ratings o por
- * items) con la predicción todos menos 1 rating. {@link KnnMemoryBasedCFRS}
+ * Clase que implementa el método validación cross fold validation que se aplica en usuarios (las particiones las hace
+ * por usuarios, no por ratings o por items) con la predicción todos menos 1 rating. {@link KnnMemoryBasedCFRS}
  *
  * @author jcastro-inf ( https://github.com/jcastro-inf )
  * @version 1.0 (19 Octubre 2011)
@@ -47,22 +46,20 @@ public class CrossFoldValidation_Users extends ValidationTechnique {
     private static final long serialVersionUID = 1L;
 
     /**
-     * Parámetro para almacenar el número de particiones que se realizan sobre
-     * el dataset original.
+     * Parámetro para almacenar el número de particiones que se realizan sobre el dataset original.
      */
     public static final Parameter NUM_PARTITIONS = new Parameter("NUM_PARTITIONS", new IntegerParameter(2, Integer.MAX_VALUE, 5), "Número de particiones que se realizan sobre el dataset original.");
 
     /**
-     * Constructor de la clase que genera los conjuntos de validación cruzada.
-     * Por defecto tiene cinco particiones y la semilla utilizada será la fecha
-     * actual {@link System#currentTimeMillis()}
+     * Constructor de la clase que genera los conjuntos de validación cruzada. Por defecto tiene cinco particiones y la
+     * semilla utilizada será la fecha actual {@link System#currentTimeMillis()}
      */
     public CrossFoldValidation_Users() {
         addParameter(NUM_PARTITIONS);
     }
 
     @Override
-    public PairOfTrainTestRatingsDataset[] shuffle(DatasetLoader<? extends Rating> datasetLoader) throws CannotLoadRatingsDataset, CannotLoadContentDataset {
+    public <RatingType extends Rating> PairOfTrainTestRatingsDataset[] shuffle(DatasetLoader<RatingType> datasetLoader) throws CannotLoadRatingsDataset, CannotLoadContentDataset {
 
         Random randomGenerator = new Random(getSeedValue());
 

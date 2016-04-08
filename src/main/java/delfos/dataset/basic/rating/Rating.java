@@ -22,11 +22,11 @@ import delfos.dataset.basic.rating.domain.IntegerDomain;
 import delfos.dataset.basic.user.User;
 import java.io.Serializable;
 import java.text.DecimalFormat;
+import java.util.Comparator;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 /**
- * Clase que encapsula el almacenamiento en memoria de una valoración que un
- * usuario ha hecho sobre un producto.
+ * Clase que encapsula el almacenamiento en memoria de una valoración que un usuario ha hecho sobre un producto.
  *
  * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
@@ -38,6 +38,8 @@ public class Rating implements Comparable<Rating>, Serializable, Cloneable {
     private static final long serialVersionUID = 4352436234L;
     public static IntegerDomain DEFAULT_INTEGER_DOMAIN = new IntegerDomain(1, 5);
     public static DecimalDomain DEFAULT_DECIMAL_DOMAIN = new DecimalDomain(1, 5);
+
+    public static final Comparator<? extends Rating> SORT_BY_ID_ITEM = (r1, r2) -> Item.BY_ID.compare(r1.item, r2.item);
 
     private final User user;
 
@@ -85,12 +87,10 @@ public class Rating implements Comparable<Rating>, Serializable, Cloneable {
                 return -1;
             }
 
+        } else if (o.getIdUser() < getIdUser()) {
+            return 1;
         } else {
-            if (o.getIdUser() < getIdUser()) {
-                return 1;
-            } else {
-                return -1;
-            }
+            return -1;
         }
     }
 
