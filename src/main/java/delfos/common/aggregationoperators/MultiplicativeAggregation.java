@@ -77,7 +77,11 @@ public class MultiplicativeAggregation extends AggregationOperator {
 
         for (Number value : values) {
 
-            if (value.doubleValue() > getMaxValue() + 1e04) {
+            if (1 < value.doubleValue() && value.doubleValue() < 1 + 1e04) {
+                value = 1;
+            }
+
+            if (value.doubleValue() > 1) {
                 throw new IllegalArgumentException("El valor " + value + " excede el máximo.");
             }
 
