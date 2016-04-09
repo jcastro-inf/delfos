@@ -16,7 +16,6 @@
  */
 package delfos.similaritymeasures;
 
-import delfos.common.exceptions.CouldNotComputeSimilarity;
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.user.User;
@@ -26,8 +25,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * Clase que implementa la medida del coseno para realizar una medida de
- * similitud de dos vectores
+ * Clase que implementa la medida del coseno para realizar una medida de similitud de dos vectores
  *
  * @author jcastro-inf ( https://github.com/jcastro-inf )
  */
@@ -36,7 +34,7 @@ public class CosineCoefficient extends WeightedSimilarityMeasureAdapter implemen
     private static final long serialVersionUID = 1L;
 
     @Override
-    public double weightedSimilarity(List<Double> v1, List<Double> v2, List<Double> weights) throws CouldNotComputeSimilarity {
+    public double weightedSimilarity(List<Double> v1, List<Double> v2, List<Double> weights) {
         if (v1.size() != v2.size() || v1.size() != weights.size()) {
             throw new IllegalArgumentException("The vector lengths are different");
         }
@@ -57,10 +55,11 @@ public class CosineCoefficient extends WeightedSimilarityMeasureAdapter implemen
         }
 
         if (sumPesos == 0) {
-            throw new CouldNotComputeSimilarity("Sum of weights is zero");
+            return Double.NaN;
         }
-        if (sumPesos > 1.01) {
-            throw new CouldNotComputeSimilarity("Sum of weights is greater than 1: '" + sumPesos + "'.");
+
+        if (sumPesos > 1 + 1e08) {
+            throw new IllegalArgumentException("Sum of weights is greater than one: " + sumPesos);
         }
 
         if (denominator1 == 0 || denominator2 == 0) {
