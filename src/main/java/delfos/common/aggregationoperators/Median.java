@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -17,11 +17,11 @@
 package delfos.common.aggregationoperators;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 
 /**
- * Operador de agregación que devuelve el valor mediano de los valores de
- * entrada
+ * Operador de agregación que devuelve el valor mediano de los valores de entrada
  *
  * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
@@ -33,7 +33,7 @@ public class Median extends AggregationOperator {
     private final static long serialVersionUID = 1L;
 
     @Override
-    public double aggregateValues(Iterable<Number> values) {
+    public double aggregateValues(Collection<Number> values) {
         ArrayList<Number> list = new ArrayList<>();
         for (Number value : values) {
             list.add(value);

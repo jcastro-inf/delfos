@@ -20,6 +20,8 @@ import delfos.ERROR_CODES;
 import delfos.common.exceptions.ParammeterIncompatibleValues;
 import delfos.common.parameters.Parameter;
 import delfos.common.parameters.restriction.DoubleParameter;
+import delfos.dataset.basic.rating.domain.DecimalDomain;
+import java.util.Collection;
 
 /**
  * Operador de agregación que ensure some degree of fairness for the aggregation.
@@ -68,12 +70,14 @@ public class MultiplicativeAggregation extends AggregationOperator {
     }
 
     @Override
-    public double aggregateValues(Iterable<Number> values) {
+    public double aggregateValues(Collection<Number> values) {
         if (values == null) {
         }
 
         double retValue = 1;
         int n = 0;
+
+        DecimalDomain originalDomain = new DecimalDomain(getMinValue(), getMaxValue());
 
         for (Number value : values) {
 
@@ -89,7 +93,7 @@ public class MultiplicativeAggregation extends AggregationOperator {
                 throw new IllegalArgumentException("El valor " + value + " excede el mínimo.");
             }
 
-            double normalisedValue = (value.doubleValue() - getMinValue()) / (getMaxValue() - getMinValue());
+            double normalisedValue = originalDomain.convertToDecimalDomain(value, DecimalDomain.ZERO_TO_ONE);
 
             retValue *= normalisedValue;
             n++;
@@ -100,7 +104,7 @@ public class MultiplicativeAggregation extends AggregationOperator {
         }
 
         //deshago la normalización
-        retValue = retValue * (getMaxValue() + getMinValue()) + getMinValue();
+        retValue = DecimalDomain.ZERO_TO_ONE.convertToDecimalDomain(retValue, originalDomain);
 
         return retValue;
     }

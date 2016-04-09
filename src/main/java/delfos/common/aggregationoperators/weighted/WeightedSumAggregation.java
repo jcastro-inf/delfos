@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,8 +16,8 @@
  */
 package delfos.common.aggregationoperators.weighted;
 
-import java.util.List;
 import delfos.rs.collaborativefiltering.predictiontechniques.WeightedSum;
+import java.util.List;
 
 /**
  * Implementa la técnica de agregación con ponderación de valores.

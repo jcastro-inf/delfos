@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -20,10 +20,10 @@ import delfos.common.parameters.Parameter;
 import delfos.common.parameters.restriction.DoubleParameter;
 import delfos.common.statisticalfuncions.MeanIterative;
 import delfos.common.statisticalfuncions.StandardDeviation;
+import java.util.Collection;
 
 /**
- * Operador de agregación que ensure some degree of fairness for the
- * aggregation.
+ * Operador de agregación que ensure some degree of fairness for the aggregation.
  *
  * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
@@ -52,7 +52,7 @@ public class EnsureDegreeOfFairness extends AggregationOperator {
     }
 
     @Override
-    public double aggregateValues(Iterable<Number> values) {
+    public double aggregateValues(Collection<Number> values) {
 
         MeanIterative mean = new MeanIterative();
         StandardDeviation stdDev = new StandardDeviation();

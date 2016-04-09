@@ -18,6 +18,7 @@ package delfos.common.aggregationoperators;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 
 /**
  * Clase abstracta que encapsula el funcionamiento de un método de agregación
@@ -35,10 +36,9 @@ public abstract class AggregationOperator extends TwoValuesAggregator {
      * @param values Conjunto de valores a agregar
      * @return valor agregado de los valores especificados
      *
-     * @throws IllegalArgumentException Si no contiene ningún valor para agregar
-     * o si es nulo.
+     * @throws IllegalArgumentException Si no contiene ningún valor para agregar o si es nulo.
      */
-    public abstract double aggregateValues(Iterable<Number> values);
+    public abstract double aggregateValues(Collection<Number> values);
 
     /**
      * Método que agrega los valores especificados en un único valor.
@@ -46,8 +46,7 @@ public abstract class AggregationOperator extends TwoValuesAggregator {
      * @param values Conjunto de valores a agregar
      * @return valor agregado de los valores especificados
      *
-     * @throws IllegalArgumentException Si no contiene ningún valor para agregar
-     * o si es nulo.
+     * @throws IllegalArgumentException Si no contiene ningún valor para agregar o si es nulo.
      */
     public final double aggregateValues(Number... values) {
         return aggregateValues(Arrays.asList(values));

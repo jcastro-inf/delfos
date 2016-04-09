@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -17,11 +17,12 @@
 package delfos.common.aggregationoperators.dummy;
 
 import delfos.common.aggregationoperators.AggregationOperator;
+import java.util.Collection;
 
 public class AnyAggregation extends AggregationOperator {
 
     @Override
-    public double aggregateValues(Iterable<Number> values) {
+    public double aggregateValues(Collection<Number> values) {
         if (isTrivialCase(values)) {
             return values.iterator().next().doubleValue();
         } else {

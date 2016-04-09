@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,6 +16,8 @@
  */
 package delfos.common.aggregationoperators;
 
+import java.util.Collection;
+
 /**
  * Operador de agregación de la media geométrica de los valores de entrada
  *
@@ -28,7 +30,7 @@ public class GeometricMean extends AggregationOperator {
     private final static long serialVersionUID = 1L;
 
     @Override
-    public double aggregateValues(Iterable<Number> values) {
+    public double aggregateValues(Collection<Number> values) {
 
         double multiplication = 1;
         int n = 0;

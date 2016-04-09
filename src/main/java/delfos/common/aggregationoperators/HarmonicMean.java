@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -20,6 +20,7 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.math.MathContext;
 import java.math.RoundingMode;
+import java.util.Collection;
 
 /**
  * Operador de agregación de la media geométrica de los valores de entrada
@@ -33,7 +34,7 @@ public class HarmonicMean extends AggregationOperator {
     private final static long serialVersionUID = 1L;
 
     @Override
-    public double aggregateValues(Iterable<Number> values) {
+    public double aggregateValues(Collection<Number> values) {
 
         MathContext mathContext = new MathContext(32, RoundingMode.HALF_UP);
         BigDecimal sum = new BigDecimal(BigInteger.ZERO);
