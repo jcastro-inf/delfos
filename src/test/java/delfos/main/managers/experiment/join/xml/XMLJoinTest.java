@@ -20,7 +20,9 @@ import delfos.rs.collaborativefiltering.knn.memorybased.nwr.KnnMemoryBasedNWR;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 import org.junit.Assert;
 import org.junit.Test;
@@ -90,9 +92,11 @@ public class XMLJoinTest {
             new TuringPreparator(true).executeAllExperimentsInDirectory(experimentDirectory, 1);
         }
 
+        Set<String> filterMeasures = Collections.EMPTY_SET;
+
         //Execution of the joiner
         File outputFile = new File(experimentDirectory.getPath() + File.separator + "xml-join-test.xls");
-        XMLJoin.mergeResultsIntoOutput(Arrays.asList(experimentDirectory.getPath()), outputFile);
+        XMLJoin.mergeResultsIntoOutput(Arrays.asList(experimentDirectory.getPath()), outputFile, filterMeasures);
 
         //Check the results correctness
         Assert.assertTrue("The output file does not exists", outputFile.exists());

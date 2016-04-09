@@ -29,6 +29,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
@@ -58,9 +59,29 @@ public class XMLJoin extends CaseUseMode {
 
     public static final String OUTPUT_FILE_PARAMETER = "-o";
 
+    public static final String MEASURES_PARAMETER = "-measures";
+
+    private static void checkEvaluationMeasuresFilterArePresent(List<String> evaluationMeasuresOrder, Set<String> filterMeasures) {
+        Set<String> measuresPresent = evaluationMeasuresOrder.stream().collect(Collectors.toSet());
+
+        filterMeasures.stream()
+                .filter(filteredMeasure -> !measuresPresent.contains(filteredMeasure))
+                .forEach(filteredMeasureNotPresent -> {
+                    Global.showWarning("Evaluation measure " + filteredMeasureNotPresent + " is not present in the case studies.");
+                });
+    }
+
     @Override
     public String getModeParameter() {
         return MODE_PARAMETER;
+    }
+
+    private Set<String> getFilterMeasures(ConsoleParameters consoleParameters) {
+        if (consoleParameters.isParameterDefined(MEASURES_PARAMETER)) {
+            return consoleParameters.getValues(MEASURES_PARAMETER).stream().collect(Collectors.toSet());
+        } else {
+            return Collections.EMPTY_SET;
+        }
     }
 
     private static class Holder {
@@ -82,8 +103,11 @@ public class XMLJoin extends CaseUseMode {
 
         File outputFile = getOutputFile(consoleParameters, resultsPaths);
 
+        Set<String> filterMeasures = getFilterMeasures(consoleParameters);
+
         consoleParameters.printUnusedParameters(System.err);
-        mergeResultsIntoOutput(resultsPaths, outputFile);
+
+        mergeResultsIntoOutput(resultsPaths, outputFile, filterMeasures);
 
     }
 
@@ -111,7 +135,7 @@ public class XMLJoin extends CaseUseMode {
         return outputFile;
     }
 
-    public static void mergeResultsIntoOutput(List<String> resultsPaths, File outputFile) {
+    public static void mergeResultsIntoOutput(List<String> resultsPaths, File outputFile, Set<String> filterMeasures) {
 
         validateResultsPaths(resultsPaths);
 
@@ -147,7 +171,7 @@ public class XMLJoin extends CaseUseMode {
 
         }
 
-        writeJoinIntoSpreadsheet(relevantFiles, outputFile);
+        writeJoinIntoSpreadsheet(relevantFiles, outputFile, filterMeasures);
 
         Global.showMessage("Finished parsing " + relevantFiles.size() + " results files.\n");
 
@@ -166,7 +190,7 @@ public class XMLJoin extends CaseUseMode {
         }
     }
 
-    public static void writeJoinIntoSpreadsheet(List<File> relevantFiles, File outputSpreadsheetFile) {
+    public static void writeJoinIntoSpreadsheet(List<File> relevantFiles, File outputSpreadsheetFile, Set<String> filterMeasures) {
         List<GroupCaseStudy> groupCaseStudies = relevantFiles.parallelStream()
                 .map(file -> {
                     try {
@@ -187,6 +211,12 @@ public class XMLJoin extends CaseUseMode {
         List<String> dataValidationParametersOrder = obtainDataValidationParametersOrder(groupCaseStudyResults);
         List<String> techniqueParametersOrder = obtainTechniqueParametersOrder(groupCaseStudyResults);
         List<String> evaluationMeasuresOrder = obtainEvaluationMeasuresOrder(groupCaseStudyResults);
+
+        checkEvaluationMeasuresFilterArePresent(evaluationMeasuresOrder, filterMeasures);
+
+        evaluationMeasuresOrder = filterMeasures.isEmpty()
+                ? evaluationMeasuresOrder
+                : evaluationMeasuresOrder.stream().filter(measure -> filterMeasures.contains(measure)).collect(Collectors.toList());
 
         WorkbookSettings wbSettings = new WorkbookSettings();
         wbSettings.setLocale(new Locale("en", "EN"));
@@ -306,9 +336,9 @@ public class XMLJoin extends CaseUseMode {
         return evaluationMeasuresOrder;
     }
 
-    public static void joinDirectory(File directory) {
+    public static void joinDirectory(File directory, Set<String> filterMeasures) {
         File outputFile = new File(directory.getPath() + File.separator + "joined-results");
-        XMLJoin.mergeResultsIntoOutput(Arrays.asList(directory.getPath()), outputFile);
+        XMLJoin.mergeResultsIntoOutput(Arrays.asList(directory.getPath()), outputFile, filterMeasures);
     }
 
     private static void sortSheets(WritableWorkbook workbook) {
