@@ -28,23 +28,19 @@ import delfos.rs.persistence.FilePersistence;
 import java.util.Collection;
 
 /**
- * Interfaz que implementa cualquier sistema de recomendación, ya sea de
- * recomendación a individuos, a grupos, etc.
+ * Interfaz que implementa cualquier sistema de recomendación, ya sea de recomendación a individuos, a grupos, etc.
  *
- * @param <RecommendationModel> Clase que almacena el modelo de recomendación
- * del sistema.
+ * @param <RecommendationModel> Clase que almacena el modelo de recomendación del sistema.
  *
  * @author jcastro-inf ( https://github.com/jcastro-inf )
  * @version 1.0 08-Mar-2013
- * @version 2.0 26-Mayo-2013 Ahora los datasets se pasan por parámetro en cada
- * método.
+ * @version 2.0 26-Mayo-2013 Ahora los datasets se pasan por parámetro en cada método.
  */
 public interface GenericRecommenderSystem<RecommendationModel>
         extends ParameterOwner {
 
     /**
-     * Añade un listener para que sea notificado del progreso de la construcción
-     * del modelo del sistema de recomendación
+     * Añade un listener para que sea notificado del progreso de la construcción del modelo del sistema de recomendación
      *
      * @param listener Objeto que desea ser notificado de los cambios
      */
@@ -52,8 +48,8 @@ public interface GenericRecommenderSystem<RecommendationModel>
             RecommendationModelBuildingProgressListener listener);
 
     /**
-     * Elimina un listener para que no sea notificado más del progreso de la
-     * construcción del modelo del sistema de recomendación
+     * Elimina un listener para que no sea notificado más del progreso de la construcción del modelo del sistema de
+     * recomendación
      *
      * @param listener Objeto que desea dejar de ser notificado de los cambios
      */
@@ -61,23 +57,19 @@ public interface GenericRecommenderSystem<RecommendationModel>
             RecommendationModelBuildingProgressListener listener);
 
     /**
-     * Esta función debe devolver true si el sistema de recomendación basa su
-     * funcionamiento en la predicción de la valoración que el usuario daría al
-     * item. Debe devolver false si se basa en la similitud del perfil con el
-     * item.
+     * Esta función debe devolver true si el sistema de recomendación basa su funcionamiento en la predicción de la
+     * valoración que el usuario daría al item. Debe devolver false si se basa en la similitud del perfil con el item.
      *
      * @return true si el sistema funciona mediante la predicción de ratings
      */
     public boolean isRatingPredictorRS();
 
     /**
-     * Construcción del sistema de recomendación. En este método se debe
-     * implementar la construcción del sistema de recomendación,
+     * Construcción del sistema de recomendación. En este método se debe implementar la construcción del sistema de
+     * recomendación,
      *
-     * @param datasetLoader Dataset que se utiliza para la construcción del
-     * modelo devuelto.
-     * @return Modelo de recomendación calculado a partir del dataset
-     * especificado.
+     * @param datasetLoader Dataset que se utiliza para la construcción del modelo devuelto.
+     * @return Modelo de recomendación calculado a partir del dataset especificado.
      */
     public RecommendationModel buildRecommendationModel(
             DatasetLoader<? extends Rating> datasetLoader)

@@ -33,10 +33,9 @@ public class MSD extends WeightedSimilarityMeasureAdapter implements UserUserSim
     private static final long serialVersionUID = 1L;
 
     /**
-     * 16 value is used because of this paper: Pirasteh, Parivash, Dosam Hwang,
-     * and Jason J. Jung. "Exploiting matrix factorization to asymmetric user
-     * similarities in recommendation systems." Knowledge-Based Systems 83
-     * (2015): 51-57.
+     * 16 value is used because of this paper: Pirasteh, Parivash, Dosam Hwang, and Jason J. Jung. "Exploiting matrix
+     * factorization to asymmetric user similarities in recommendation systems." Knowledge-Based Systems 83 (2015):
+     * 51-57.
      */
     private static final int L = 16;
 
@@ -59,10 +58,11 @@ public class MSD extends WeightedSimilarityMeasureAdapter implements UserUserSim
         }
 
         if (sumPesos == 0) {
-            throw new CouldNotComputeSimilarity("Sum of weights is zero");
+            return Double.NaN;
         }
-        if (sumPesos > 1.01) {
-            throw new CouldNotComputeSimilarity("Sum of weights is greater than 1: '" + sumPesos + "'.");
+
+        if (sumPesos > 1 + 1e08) {
+            throw new IllegalArgumentException("Sum of weights is greater than one: " + sumPesos);
         }
 
         double msd = numerator / sumPesos;
