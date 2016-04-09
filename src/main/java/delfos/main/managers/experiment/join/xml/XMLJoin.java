@@ -33,7 +33,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
-import java.util.TreeSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -61,27 +60,9 @@ public class XMLJoin extends CaseUseMode {
 
     public static final String MEASURES_PARAMETER = "-measures";
 
-    private static void checkEvaluationMeasuresFilterArePresent(List<String> evaluationMeasuresOrder, Set<String> filterMeasures) {
-        Set<String> measuresPresent = evaluationMeasuresOrder.stream().collect(Collectors.toSet());
-
-        filterMeasures.stream()
-                .filter(filteredMeasure -> !measuresPresent.contains(filteredMeasure))
-                .forEach(filteredMeasureNotPresent -> {
-                    Global.showWarning("Evaluation measure " + filteredMeasureNotPresent + " is not present in the case studies.");
-                });
-    }
-
     @Override
     public String getModeParameter() {
         return MODE_PARAMETER;
-    }
-
-    private Set<String> getFilterMeasures(ConsoleParameters consoleParameters) {
-        if (consoleParameters.isParameterDefined(MEASURES_PARAMETER)) {
-            return consoleParameters.getValues(MEASURES_PARAMETER).stream().collect(Collectors.toSet());
-        } else {
-            return Collections.EMPTY_SET;
-        }
     }
 
     private static class Holder {
@@ -271,7 +252,6 @@ public class XMLJoin extends CaseUseMode {
 
         if (GroupCaseStudyExcel.isOnlyOneColumn(groupCaseStudyResults)) {
             evaluationMeasuresOrder.parallelStream().forEach(evaluationMeasure -> {
-
                 try {
                     GroupCaseStudyExcel.writeEvaluationMeasureParameterCombinationsSheets(
                             groupCaseStudyResults,
@@ -326,11 +306,9 @@ public class XMLJoin extends CaseUseMode {
     }
 
     private static List<String> obtainEvaluationMeasuresOrder(List<GroupCaseStudyResult> groupCaseStudyResults) {
-        Set<String> commonEvaluationMeasures = new TreeSet<>();
-
-        for (GroupCaseStudyResult groupCaseStudyResult : groupCaseStudyResults) {
-            commonEvaluationMeasures.addAll(groupCaseStudyResult.getDefinedEvaluationMeasures());
-        }
+        Set<String> commonEvaluationMeasures = groupCaseStudyResults.parallelStream()
+                .flatMap(groupCaseStudyResult -> groupCaseStudyResult.getDefinedEvaluationMeasures().parallelStream())
+                .collect(Collectors.toSet());
 
         List<String> evaluationMeasuresOrder = commonEvaluationMeasures.stream().sorted().collect(Collectors.toList());
         return evaluationMeasuresOrder;
@@ -372,5 +350,23 @@ public class XMLJoin extends CaseUseMode {
 
             workbook.moveSheet(fromIndex, toIndex);
         }
+    }
+
+    private Set<String> getFilterMeasures(ConsoleParameters consoleParameters) {
+        if (consoleParameters.isParameterDefined(MEASURES_PARAMETER)) {
+            return consoleParameters.getValues(MEASURES_PARAMETER).stream().collect(Collectors.toSet());
+        } else {
+            return Collections.EMPTY_SET;
+        }
+    }
+
+    private static void checkEvaluationMeasuresFilterArePresent(List<String> evaluationMeasuresOrder, Set<String> filterMeasures) {
+        Set<String> measuresPresent = evaluationMeasuresOrder.stream().collect(Collectors.toSet());
+
+        filterMeasures.stream()
+                .filter(filteredMeasure -> !measuresPresent.contains(filteredMeasure))
+                .forEach(filteredMeasureNotPresent -> {
+                    Global.showWarning("Evaluation measure " + filteredMeasureNotPresent + " is not present in the case studies.");
+                });
     }
 }

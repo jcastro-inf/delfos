@@ -76,8 +76,7 @@ import jxl.write.WriteException;
 import jxl.write.biff.RowsExceededException;
 
 /**
- * Clase encargada de hacer la entrada/salida de los resultados de la ejeución
- * de un caso de uso concreto.
+ * Clase encargada de hacer la entrada/salida de los resultados de la ejeución de un caso de uso concreto.
  *
  * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
@@ -672,8 +671,8 @@ public class GroupCaseStudyExcel {
     }
 
     /**
-     * Converts the parameter structure of the case study definition
-     * (dataset,groupFormation and validations) into a plain key-> value map.
+     * Converts the parameter structure of the case study definition (dataset,groupFormation and validations) into a
+     * plain key-> value map.
      *
      * @param groupCaseStudy
      * @return
@@ -702,8 +701,8 @@ public class GroupCaseStudyExcel {
     }
 
     /**
-     * Converts the parameter structure of the case study technique
-     * (groupRecommenderSystem) into a plain key-> value map.
+     * Converts the parameter structure of the case study technique (groupRecommenderSystem) into a plain key-> value
+     * map.
      *
      * @param groupCaseStudy
      * @return
@@ -987,7 +986,7 @@ public class GroupCaseStudyExcel {
 
     public static void writeNumExecutionsSheet(List<GroupCaseStudyResult> groupCaseStudyResults, List<String> dataValidationParametersOrder, List<String> techniqueParametersOrder, List<String> evaluationMeasuresOrder, WritableWorkbook workbook) throws WriteException {
 
-        List<GroupCaseStudy> groupCaseStudys = groupCaseStudyResults.stream().map(groupCaseStudyResult -> groupCaseStudyResult.getGroupCaseStudy()).collect(Collectors.toList());
+        List<GroupCaseStudy> allGroupCaseStudys = groupCaseStudyResults.stream().map(groupCaseStudyResult -> groupCaseStudyResult.getGroupCaseStudy()).collect(Collectors.toList());
 
         Set<GroupCaseStudyResult> dataValidationAliases = new TreeSet<>(
                 GroupCaseStudyResult.dataValidationComparator);
@@ -997,16 +996,38 @@ public class GroupCaseStudyExcel {
         dataValidationAliases.addAll(groupCaseStudyResults);
         techniqueAliases.addAll(groupCaseStudyResults);
 
+        Map<String, List<GroupCaseStudy>> byCaseStudy = allGroupCaseStudys.stream().collect(Collectors
+                .groupingBy(groupCaseStudy -> groupCaseStudy.getAlias()));
+
+        List<GroupCaseStudy> groupCaseStudys = byCaseStudy.values().parallelStream().map(sameCaseStudyWithDifferentNumExecutions -> {
+            Map<Integer, List<GroupCaseStudy>> byNumExecutions = sameCaseStudyWithDifferentNumExecutions
+                    .parallelStream()
+                    .collect(Collectors.groupingBy(groupCaseStudy -> groupCaseStudy.getNumExecutions()));
+
+            int maxExec = byNumExecutions.keySet().stream().mapToInt(numExec -> numExec)
+                    .max().orElse(-1);
+
+            if (byNumExecutions.get(maxExec).size() > 1) {
+                throw new IllegalStateException("More than one execution with the maximum!");
+            }
+
+            return byNumExecutions.get(maxExec).get(0);
+        }).collect(Collectors.toList());
+
+        Global.showMessage("Parsing " + groupCaseStudys.size() + " different results files.\n");
+
         List<ParameterChain> differentChainsWithAliases = ParameterChain.obtainDifferentChains(groupCaseStudys);
 
-        List<ParameterChain> differentChains = differentChainsWithAliases.stream().filter(chain -> !chain.isAlias()).collect(Collectors.toList());
+        List<ParameterChain> differentChains = differentChainsWithAliases.stream().filter(chain -> !chain.isAlias())
+                .collect(Collectors.toList());
 
         List<ParameterChain> dataValidationDifferentChains = differentChains.stream()
                 .filter(chain -> chain.isDataValidationParameter())
                 .filter(chain -> !chain.isNumExecutions())
                 .collect(Collectors.toList());
 
-        List<ParameterChain> techniqueDifferentChains = differentChains.stream().filter(chain -> chain.isTechniqueParameter()).collect(Collectors.toList());
+        List<ParameterChain> techniqueDifferentChains = differentChains.stream()
+                .filter(chain -> chain.isTechniqueParameter()).collect(Collectors.toList());
 
         if (techniqueDifferentChains.isEmpty()) {
             ParameterChain grsAliasChain = new ParameterChain(groupCaseStudys.get(0))
