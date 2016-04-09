@@ -21,6 +21,7 @@ import delfos.common.exceptions.ParammeterIncompatibleValues;
 import delfos.common.parameters.Parameter;
 import delfos.common.parameters.restriction.DoubleParameter;
 import delfos.dataset.basic.rating.domain.DecimalDomain;
+import delfos.dataset.basic.rating.domain.Domain;
 import java.util.Collection;
 
 /**
@@ -62,9 +63,9 @@ public class MultiplicativeAggregation extends AggregationOperator {
 
     }
 
-    public MultiplicativeAggregation setRange(double min, double max) {
-        setParameterValue(MIN_VALUE, min);
-        setParameterValue(MAX_VALUE, max);
+    public MultiplicativeAggregation setDomain(Domain domain) {
+        setParameterValue(MIN_VALUE, domain.min().doubleValue());
+        setParameterValue(MAX_VALUE, domain.max().doubleValue());
 
         return this;
     }
