@@ -22,8 +22,7 @@ import delfos.common.parameters.Parameter;
 import delfos.common.parameters.restriction.DoubleParameter;
 
 /**
- * Operador de agregación que ensure some degree of fairness for the
- * aggregation.
+ * Operador de agregación que ensure some degree of fairness for the aggregation.
  *
  * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
@@ -78,7 +77,7 @@ public class MultiplicativeAggregation extends AggregationOperator {
 
         for (Number value : values) {
 
-            if (value.doubleValue() > getMaxValue()) {
+            if (value.doubleValue() > getMaxValue() + 1e04) {
                 throw new IllegalArgumentException("El valor " + value + " excede el máximo.");
             }
 
