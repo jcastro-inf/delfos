@@ -729,11 +729,11 @@ public class GroupCaseStudyExcel {
 
             Map<String, java.lang.Number> extendedPerformances = evaluationMeasure.agregateResultsExtendedPerformance(measureResult);
 
-            for (String extendedPerformance : extendedPerformances.keySet()) {
+            extendedPerformances.keySet().stream().forEach((extendedPerformance) -> {
                 java.lang.Number extendedPerformanceValue = extendedPerformances.get(extendedPerformance);
 
                 evaluationMeasuresValues.put(evaluationMeasure.getName() + "." + extendedPerformance, extendedPerformanceValue);
-            }
+            });
         }
 
         return evaluationMeasuresValues;
@@ -865,11 +865,7 @@ public class GroupCaseStudyExcel {
                 .filter(chain -> chain.isDataValidationParameter())
                 .filter(chain -> !chain.isNumExecutions())
                 .collect(Collectors.toList());
-        if (dataValidationDifferentChains.isEmpty() || dataValidationDifferentChains.size() == 1) {
-            return true;
-        } else {
-            return false;
-        }
+        return dataValidationDifferentChains.isEmpty() || dataValidationDifferentChains.size() == 1;
     }
 
     public static void writeEvaluationMeasureSpecificFileParameter(List<GroupCaseStudyResult> groupCaseStudyResults, List<String> dataValidationParametersOrder, List<String> techniqueParametersOrder, String evaluationMeasure, WritableWorkbook workbook) throws WriteException, IOException {
@@ -968,9 +964,9 @@ public class GroupCaseStudyExcel {
                         String row = matrix.getRow(thisCellGroupCaseStudys.get(0).getGroupCaseStudy());
                         String column = matrix.getColumn(thisCellGroupCaseStudys.get(0).getGroupCaseStudy());
                         Global.show("Executions for cell (" + row + "," + column + ")\n");
-                        for (GroupCaseStudyResult groupCaseStudyResultsMaxNumExecution : thisCellGroupCaseStudys) {
+                        thisCellGroupCaseStudys.stream().forEach((groupCaseStudyResultsMaxNumExecution) -> {
                             Global.show(groupCaseStudyResultsMaxNumExecution.getNumExecutions() + "\n");
-                        }
+                        });
                     }
 
                     groupCaseStudyResultsMaxNumExecutions.add(thisCellGroupCaseStudys.get(0));
@@ -986,7 +982,7 @@ public class GroupCaseStudyExcel {
 
     public static void writeNumExecutionsSheet(List<GroupCaseStudyResult> groupCaseStudyResults, List<String> dataValidationParametersOrder, List<String> techniqueParametersOrder, List<String> evaluationMeasuresOrder, WritableWorkbook workbook) throws WriteException {
 
-        List<GroupCaseStudy> allGroupCaseStudys = groupCaseStudyResults.stream().map(groupCaseStudyResult -> groupCaseStudyResult.getGroupCaseStudy()).collect(Collectors.toList());
+        List<GroupCaseStudy> groupCaseStudys = groupCaseStudyResults.stream().map(groupCaseStudyResult -> groupCaseStudyResult.getGroupCaseStudy()).collect(Collectors.toList());
 
         Set<GroupCaseStudyResult> dataValidationAliases = new TreeSet<>(
                 GroupCaseStudyResult.dataValidationComparator);
@@ -996,10 +992,10 @@ public class GroupCaseStudyExcel {
         dataValidationAliases.addAll(groupCaseStudyResults);
         techniqueAliases.addAll(groupCaseStudyResults);
 
-        Map<String, List<GroupCaseStudy>> byCaseStudy = allGroupCaseStudys.stream().collect(Collectors
+        Map<String, List<GroupCaseStudy>> byCaseStudy = groupCaseStudys.stream().collect(Collectors
                 .groupingBy(groupCaseStudy -> groupCaseStudy.getAlias()));
 
-        List<GroupCaseStudy> groupCaseStudys = byCaseStudy.values().parallelStream().map(sameCaseStudyWithDifferentNumExecutions -> {
+        groupCaseStudys = byCaseStudy.values().parallelStream().map(sameCaseStudyWithDifferentNumExecutions -> {
             Map<Integer, List<GroupCaseStudy>> byNumExecutions = sameCaseStudyWithDifferentNumExecutions
                     .parallelStream()
                     .collect(Collectors.groupingBy(groupCaseStudy -> groupCaseStudy.getNumExecutions()));
@@ -1014,7 +1010,7 @@ public class GroupCaseStudyExcel {
             return byNumExecutions.get(maxExec).get(0);
         }).collect(Collectors.toList());
 
-        Global.showMessage("Parsing " + groupCaseStudys.size() + " different results files.\n");
+        Global.showMessage("Processing " + groupCaseStudys.size() + " different results files.\n");
 
         List<ParameterChain> differentChainsWithAliases = ParameterChain.obtainDifferentChains(groupCaseStudys);
 
