@@ -38,9 +38,8 @@ import java.util.stream.Collectors;
 public class ParameterChain implements Comparable<ParameterChain> {
 
     /**
-     * Returns the parameter chains that are common to at least two
-     * groupCaseStudyResults and also have at least two case study with
-     * different value for the terminal value.
+     * Returns the parameter chains that are common to at least two groupCaseStudyResults and also have at least two
+     * case study with different value for the terminal value.
      *
      * @param <ParameterOwnerType>
      * @param groupCaseStudys
@@ -63,7 +62,7 @@ public class ParameterChain implements Comparable<ParameterChain> {
 
             for (ParameterChain parameterChain : thisCaseStudyParameterChains) {
 
-                List<ParameterChain> matchesWith = allParameterChains.stream()
+                List<ParameterChain> matchesWith = allParameterChains.parallelStream()
                         .filter(parameterChain2 -> parameterChain.isCompatible(parameterChain2))
                         .collect(Collectors.toList());
 
@@ -81,22 +80,22 @@ public class ParameterChain implements Comparable<ParameterChain> {
         List<ParameterChain> chainsApplicableToMoreThanOne = allParameterChains.stream()
                 .filter(parameterChain -> {
                     List< ? extends ParameterOwner> applicableTo = groupCaseStudys.stream()
-                    .filter(groupCaseStudy -> parameterChain.isApplicableTo(groupCaseStudy))
-                    .collect(Collectors.toList());
+                            .filter(groupCaseStudy -> parameterChain.isApplicableTo(groupCaseStudy))
+                            .collect(Collectors.toList());
                     boolean applicableToMoreThanOne = applicableTo.size() > 1;
                     return applicableToMoreThanOne;
                 })
                 .collect(Collectors.toList());
 
         //Delete chains with only one value across case studies
-        List<ParameterChain> chainsWithMoreThanOneDifferentValue = chainsApplicableToMoreThanOne.stream()
+        List<ParameterChain> chainsWithMoreThanOneDifferentValue = chainsApplicableToMoreThanOne.parallelStream()
                 .filter(parameterChain -> {
 
                     Supplier<TreeSet<Object>> supplier = () -> new TreeSet<>(ParameterOwner.SAME_CLASS_COMPARATOR_OBJECT);
 
-                    Set<Object> differentValues = groupCaseStudys.stream()
-                    .filter(groupCaseStudy -> parameterChain.isApplicableTo(groupCaseStudy))
-                    .map(groupCaseStudy -> parameterChain.getValueOn(groupCaseStudy)).collect(Collectors.toCollection(supplier));
+                    Set<Object> differentValues = groupCaseStudys.parallelStream()
+                            .filter(groupCaseStudy -> parameterChain.isApplicableTo(groupCaseStudy))
+                            .map(groupCaseStudy -> parameterChain.getValueOn(groupCaseStudy)).collect(Collectors.toCollection(supplier));
 
                     if (differentValues.isEmpty()) {
                         throw new IllegalStateException("There must be at least one different value.");
@@ -291,8 +290,8 @@ public class ParameterChain implements Comparable<ParameterChain> {
     }
 
     /**
-     * Adds the specified chain to the current chain nodes. It moves the root
-     * element of the parameter chain to this chain nodes as the first node.
+     * Adds the specified chain to the current chain nodes. It moves the root element of the parameter chain to this
+     * chain nodes as the first node.
      *
      * @param chain
      * @return
