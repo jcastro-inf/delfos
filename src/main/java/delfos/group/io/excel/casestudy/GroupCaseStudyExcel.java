@@ -55,7 +55,6 @@ import java.util.TreeSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 import jxl.Cell;
 import jxl.CellType;
 import jxl.CellView;
@@ -832,9 +831,7 @@ public class GroupCaseStudyExcel {
 
     public static void writeEvaluationMeasureSpecificSheet(List<GroupCaseStudyResult> groupCaseStudyResults, List<String> dataValidationParametersOrder, List<String> techniqueParametersOrder, String evaluationMeasure, WritableWorkbook workbook) throws WriteException, IOException {
 
-        List<GroupCaseStudy> groupCaseStudys = groupCaseStudyResults.parallelStream()
-                .map(groupCaseStudyResult -> groupCaseStudyResult.getGroupCaseStudy())
-                .collect(Collectors.toList());
+        List<GroupCaseStudy> groupCaseStudys = groupCaseStudyResults.stream().map(groupCaseStudyResult -> groupCaseStudyResult.getGroupCaseStudy()).collect(Collectors.toList());
 
         Set<GroupCaseStudyResult> dataValidationAliases = new TreeSet<>(
                 GroupCaseStudyResult.dataValidationComparator);
@@ -846,13 +843,13 @@ public class GroupCaseStudyExcel {
 
         List<ParameterChain> differentChainsWithAliases = ParameterChain.obtainDifferentChains(groupCaseStudys);
 
-        List<ParameterChain> differentChains = differentChainsWithAliases.parallelStream().filter(chain -> !chain.isAlias()).collect(Collectors.toList());
+        List<ParameterChain> differentChains = differentChainsWithAliases.stream().filter(chain -> !chain.isAlias()).collect(Collectors.toList());
 
-        List<ParameterChain> dataValidationDifferentChains = differentChains.parallelStream()
+        List<ParameterChain> dataValidationDifferentChains = differentChains.stream()
                 .filter(chain -> chain.isDataValidationParameter())
                 .filter(chain -> !chain.isNumExecutions())
                 .collect(Collectors.toList());
-        List<ParameterChain> techniqueDifferentChains = differentChains.parallelStream().filter(chain -> chain.isTechniqueParameter()).collect(Collectors.toList());
+        List<ParameterChain> techniqueDifferentChains = differentChains.stream().filter(chain -> chain.isTechniqueParameter()).collect(Collectors.toList());
 
         writeRowAndColumnCombination(techniqueDifferentChains, groupCaseStudys, dataValidationDifferentChains, evaluationMeasure, groupCaseStudyResults, workbook);
     }
@@ -902,54 +899,40 @@ public class GroupCaseStudyExcel {
             CaseStudyResultMatrix matrix,
             String sheetName) throws WriteException {
 
-        final WritableSheet sheet = workbook.createSheet(sheetName, workbook.getNumberOfSheets());
+        WritableSheet sheet = workbook.createSheet(sheetName, workbook.getNumberOfSheets());
 
         {
 
+            int column = 0;
+            int row = 0;
+
             //Titles ROW
-            Global.showMessage("Writing " + evaluationMeasure + " sheet\n");
-            addTitleText(sheet, 0, 0, evaluationMeasure);
+            addTitleText(sheet, column, row, evaluationMeasure);
+            column++;
 
-            List<String> columnNamesSorted = matrix.getColumnNames().stream().collect(Collectors.toList());
-            IntStream.range(0, matrix.getColumnNames().size()).parallel().boxed().forEach(index -> {
+            for (String columnName : matrix.getColumnNames()) {
+                setCellContent(sheet, column, row, columnName);
+                column++;
+            }
 
-                final int column = index + 1;
-                String columnName = columnNamesSorted.get(index);
-                try {
-                    setCellContent(sheet, column, 0, columnName);
-                } catch (WriteException ex) {
-                    Logger.getLogger(GroupCaseStudyExcel.class.getName()).log(Level.SEVERE, null, ex);
-                }
-
-            });
-
-            final List<String> rowNamesSorted = matrix.getRowNames().stream().collect(Collectors.toList());
+            row++;
 
             //Titles row
-            IntStream.range(0, rowNamesSorted.size()).boxed().parallel().forEach(indexRow -> {
-                String rowName = rowNamesSorted.get(indexRow);
-                int row = indexRow + 1;
+            for (String rowName : matrix.getRowNames()) {
 
-                try {
-                    setCellContent(sheet, 0, row, rowName);
-                } catch (WriteException ex) {
-                    Logger.getLogger(GroupCaseStudyExcel.class.getName()).log(Level.SEVERE, null, ex);
-                }
+                column = 0;
+                setCellContent(sheet, column, row, rowName);
+                column++;
+                for (String columnName : matrix.getColumnNames()) {
 
-                IntStream.range(0, columnNamesSorted.size()).boxed().parallel().forEach(indexColumn -> {
-                    String columnName = columnNamesSorted.get(indexColumn);
-                    int column = indexColumn + 1;
                     if (matrix.containsValue(rowName, columnName)) {
                         Object value = matrix.getValue(rowName, columnName);
-                        try {
-                            setCellContent(sheet, column, row, value);
-                        } catch (WriteException ex) {
-                            Logger.getLogger(GroupCaseStudyExcel.class.getName()).log(Level.SEVERE, null, ex);
-                        }
+                        setCellContent(sheet, column, row, value);
                     }
-
-                });
-            });
+                    column++;
+                }
+                row++;
+            }
         }
 
         autoSizeColumns(sheet);
@@ -958,8 +941,39 @@ public class GroupCaseStudyExcel {
     public static CaseStudyResultMatrix prepareExcelMatrix(List<ParameterChain> rowChains, List<ParameterChain> columnChains, String evaluationMeasure, List<GroupCaseStudyResult> groupCaseStudyResults) {
         CaseStudyResultMatrix matrix = new CaseStudyResultMatrix(rowChains, columnChains, evaluationMeasure);
         matrix.prepareColumnAndRowNames(groupCaseStudyResults);
+        List<GroupCaseStudyResult> groupCaseStudyResultsMaxNumExecutions = new ArrayList<>();
+        for (String rowName : matrix.getRowNames()) {
+            for (String columnName : matrix.getColumnNames()) {
 
-        groupCaseStudyResults.stream().forEach(groupCaseStudyResult -> {
+                List<GroupCaseStudyResult> thisCellGroupCaseStudys = groupCaseStudyResults.stream()
+                        .filter(groupCaseStudyResult -> matrix.getRow((ParameterOwner) groupCaseStudyResult.getGroupCaseStudy()).equals(rowName))
+                        .filter(groupCaseStudyResult -> matrix.getColumn((ParameterOwner) groupCaseStudyResult.getGroupCaseStudy()).equals(columnName))
+                        .sorted(((groupCaseStudyResult1, groupCaseStudyResult2) -> Integer.compare(groupCaseStudyResult1.getNumExecutions(), groupCaseStudyResult2.getNumExecutions())))
+                        .collect(Collectors.toList());
+                Collections.reverse(thisCellGroupCaseStudys);
+
+                if (thisCellGroupCaseStudys.isEmpty()) {
+                    continue;
+                }
+
+                if (thisCellGroupCaseStudys.size() == 1) {
+                    groupCaseStudyResultsMaxNumExecutions.addAll(thisCellGroupCaseStudys);
+                } else {
+
+                    if (Global.isVerboseAnnoying()) {
+                        String row = matrix.getRow(thisCellGroupCaseStudys.get(0).getGroupCaseStudy());
+                        String column = matrix.getColumn(thisCellGroupCaseStudys.get(0).getGroupCaseStudy());
+                        Global.show("Executions for cell (" + row + "," + column + ")\n");
+                        thisCellGroupCaseStudys.stream().forEach((groupCaseStudyResultsMaxNumExecution) -> {
+                            Global.show(groupCaseStudyResultsMaxNumExecution.getNumExecutions() + "\n");
+                        });
+                    }
+
+                    groupCaseStudyResultsMaxNumExecutions.add(thisCellGroupCaseStudys.get(0));
+                }
+            }
+        }
+        groupCaseStudyResultsMaxNumExecutions.stream().forEach(groupCaseStudyResult -> {
             java.lang.Number evaluationMeasureValue = groupCaseStudyResult.getEvaluationMeasureValue(evaluationMeasure);
             matrix.addValue(groupCaseStudyResult.getGroupCaseStudy(), evaluationMeasureValue);
         });
@@ -1000,15 +1014,15 @@ public class GroupCaseStudyExcel {
 
         List<ParameterChain> differentChainsWithAliases = ParameterChain.obtainDifferentChains(groupCaseStudys);
 
-        List<ParameterChain> differentChains = differentChainsWithAliases.parallelStream().filter(chain -> !chain.isAlias())
+        List<ParameterChain> differentChains = differentChainsWithAliases.stream().filter(chain -> !chain.isAlias())
                 .collect(Collectors.toList());
 
-        List<ParameterChain> dataValidationDifferentChains = differentChains.parallelStream()
+        List<ParameterChain> dataValidationDifferentChains = differentChains.stream()
                 .filter(chain -> chain.isDataValidationParameter())
                 .filter(chain -> !chain.isNumExecutions())
                 .collect(Collectors.toList());
 
-        List<ParameterChain> techniqueDifferentChains = differentChains.parallelStream()
+        List<ParameterChain> techniqueDifferentChains = differentChains.stream()
                 .filter(chain -> chain.isTechniqueParameter()).collect(Collectors.toList());
 
         if (techniqueDifferentChains.isEmpty()) {
@@ -1051,9 +1065,7 @@ public class GroupCaseStudyExcel {
     }
 
     public static void writeEvaluationMeasureParameterCombinationsSheets(List<GroupCaseStudyResult> groupCaseStudyResults, List<String> dataValidationParametersOrder, List<String> techniqueParametersOrder, String evaluationMeasure, WritableWorkbook workbook) throws WriteException {
-        List<GroupCaseStudy> groupCaseStudys = groupCaseStudyResults.parallelStream()
-                .map(groupCaseStudyResult -> groupCaseStudyResult.getGroupCaseStudy())
-                .collect(Collectors.toList());
+        List<GroupCaseStudy> groupCaseStudys = groupCaseStudyResults.stream().map(groupCaseStudyResult -> groupCaseStudyResult.getGroupCaseStudy()).collect(Collectors.toList());
 
         Set<GroupCaseStudyResult> dataValidationAliases = new TreeSet<>(
                 GroupCaseStudyResult.dataValidationComparator);
@@ -1067,7 +1079,7 @@ public class GroupCaseStudyExcel {
                 .obtainDifferentChains(groupCaseStudys);
 
         List<ParameterChain> differentChains = differentChainsWithAliases
-                .parallelStream()
+                .stream()
                 .filter(chain -> !chain.isAlias())
                 .filter(chain -> !chain.isNumExecutions())
                 .collect(Collectors.toList());
