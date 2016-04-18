@@ -45,6 +45,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -1084,13 +1085,16 @@ public class GroupCaseStudyExcel {
                 .filter(chain -> !chain.isNumExecutions())
                 .collect(Collectors.toList());
 
-        List<Combination> obtainCombinations = obtainAllTwoPartitions(differentChains);
+        Set<Combination> obtainCombinations = obtainAllTwoPartitions(differentChains);
+
+        Global.showMessage("obtainAllTwoPartitions(differentChains).size() == " + obtainCombinations.size());
 
         Set<Combination> distinctCominations = obtainCombinations
                 .stream()
                 .filter(combination -> combination.row.size() + combination.column.size() == differentChains.size())
                 .collect(Collectors.toCollection(TreeSet::new));
 
+        Global.showMessage("obtainAllTwoPartitions(differentChains).distinct().size() == " + distinctCominations.size());
         distinctCominations.parallelStream().forEach(combination -> {
             try {
 
@@ -1186,11 +1190,11 @@ public class GroupCaseStudyExcel {
         return Integer.compare(l1.size(), l2.size());
     };
 
-    public static List<Combination> obtainAllTwoPartitions(List<ParameterChain> chains) {
+    public static Set<Combination> obtainAllTwoPartitions(List<ParameterChain> chains) {
         List<ParameterChain> sortedChains = chains.parallelStream().sorted().collect(Collectors.toList());
 
         if (sortedChains.isEmpty() || sortedChains.size() == 1) {
-            return Collections.EMPTY_LIST;
+            return Collections.EMPTY_SET;
         } else if (sortedChains.size() == 2) {
 
             ParameterChain element1 = chains.get(0);
@@ -1200,33 +1204,36 @@ public class GroupCaseStudyExcel {
                     Arrays.asList(element1),
                     Arrays.asList(element2));
 
-            return Arrays.asList(combination);
+            return Arrays.asList(combination).stream().collect(Collectors.toSet());
         } else {
-
-            List<Combination> allCombinations = new ArrayList<>();
-
-            for (ParameterChain chain : chains) {
+            Set<Combination> allCombinations = chains.parallelStream().flatMap(chain -> {
                 List<ParameterChain> chainsWithoutMe = new ArrayList<>(chains);
                 chainsWithoutMe.remove(chain);
 
-                List<Combination> obtainCombinationsWithoutMe = obtainAllTwoPartitions(chainsWithoutMe);
+                Set<Combination> obtainCombinationsWithoutMe = obtainAllTwoPartitions(chainsWithoutMe);
+                Set<Combination> combinationsThisChain = obtainCombinationsWithoutMe.parallelStream()
+                        .flatMap(combinationWithoutMe -> {
+                            Set<Combination> combinationsThisCombination = new HashSet<>();
 
-                for (Combination combinationWithoutMe : obtainCombinationsWithoutMe) {
+                            Set<ParameterChain> rowWithMe = combinationWithoutMe.row.stream()
+                                    .collect(Collectors.toCollection(TreeSet::new));
+                            rowWithMe.add(chain);
 
-                    Set<ParameterChain> rowWithMe = combinationWithoutMe.row.stream().collect(Collectors.toSet());
-                    rowWithMe.add(chain);
+                            Set<ParameterChain> columnWithMe = combinationWithoutMe.column.stream()
+                                    .collect(Collectors.toCollection(TreeSet::new));
+                            columnWithMe.add(chain);
 
-                    Set<ParameterChain> columnWithMe = combinationWithoutMe.column.stream().collect(Collectors.toSet());
-                    columnWithMe.add(chain);
+                            combinationsThisCombination.add(new Combination(combinationWithoutMe.row, columnWithMe));
+                            combinationsThisCombination.add(new Combination(rowWithMe, combinationWithoutMe.column));
 
-                    allCombinations.add(new Combination(combinationWithoutMe.row, columnWithMe));
-                    allCombinations.add(new Combination(rowWithMe, combinationWithoutMe.column));
-                }
+                            return combinationsThisCombination.parallelStream();
+                        })
+                        .collect(Collectors.toCollection(TreeSet::new));
 
-                allCombinations.add(new Combination(chainsWithoutMe, Arrays.asList(chain)));
-
-            }
-
+                combinationsThisChain.add(new Combination(chainsWithoutMe, Arrays.asList(chain)));
+                return combinationsThisChain.parallelStream();
+            })
+                    .collect(Collectors.toCollection(TreeSet::new));
             return allCombinations;
         }
     }
