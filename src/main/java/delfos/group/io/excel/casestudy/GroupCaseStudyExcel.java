@@ -105,7 +105,7 @@ public class GroupCaseStudyExcel {
     private static WritableCellFormat defaultFormat = null;
     private static WritableCellFormat decimalFormat;
     private static WritableCellFormat integerFormat;
-    private static final int titleCellWidth = 3 - 1;
+    private static final int TITLE_CELL_WIDTH = 3 - 1;
 
     static {
         try {
@@ -269,7 +269,7 @@ public class GroupCaseStudyExcel {
     }
 
     private static String getConfiguredDatasetLoaderName(Sheet sheet) {
-        String datasetLoaderAlias = null;
+        String datasetLoaderAlias;
 
         Cell datasetLoaderCell = sheet.findCell(DATASET_LOADER_CELL_CONTENT);
         if (datasetLoaderCell == null) {
@@ -319,7 +319,7 @@ public class GroupCaseStudyExcel {
 
             wbSettings.setLocale(new Locale("en", "EN"));
 
-            WritableWorkbook workbook = null;
+            WritableWorkbook workbook;
 
             if (file.exists()) {
                 file.delete();
@@ -358,7 +358,7 @@ public class GroupCaseStudyExcel {
         //Create table for GRS
         {
             GroupRecommenderSystem<Object, Object> groupRecommenderSystem = caseStudyGroup.getGroupRecommenderSystem();
-            sheet.mergeCells(column + 0, row, column + titleCellWidth, row);
+            sheet.mergeCells(column + 0, row, column + TITLE_CELL_WIDTH, row);
             addTitleText(sheet, column, row, "Group Recommender System");
             row++;
             setCellText(sheet, column, row, groupRecommenderSystem.getName());
@@ -374,7 +374,7 @@ public class GroupCaseStudyExcel {
         //Create table for DatasetLoader
         {
             DatasetLoader<? extends Rating> datasetLoader = caseStudyGroup.getDatasetLoader();
-            sheet.mergeCells(column + 0, row, column + titleCellWidth, row);
+            sheet.mergeCells(column + 0, row, column + TITLE_CELL_WIDTH, row);
             addTitleText(sheet, column, row, DATASET_LOADER_CELL_CONTENT);
             row++;
             setCellText(sheet, column, row, datasetLoader.getName());
@@ -390,7 +390,7 @@ public class GroupCaseStudyExcel {
         //Create table for GroupFormationTechnique
         {
             GroupFormationTechnique groupFormationTechnique = caseStudyGroup.getGroupFormationTechnique();
-            sheet.mergeCells(column + 0, row, column + titleCellWidth, row);
+            sheet.mergeCells(column + 0, row, column + TITLE_CELL_WIDTH, row);
             addTitleText(sheet, column, row, "Group Formation Technique");
             row++;
             setCellText(sheet, column, row, groupFormationTechnique.getName());
@@ -406,7 +406,7 @@ public class GroupCaseStudyExcel {
         //Create table for ValidationTechnique
         {
             ValidationTechnique validationTechnique = caseStudyGroup.getValidationTechnique();
-            sheet.mergeCells(column + 0, row, column + titleCellWidth, row);
+            sheet.mergeCells(column + 0, row, column + TITLE_CELL_WIDTH, row);
             addTitleText(sheet, column, row, "Group Validation Technique");
             row++;
             setCellText(sheet, column, row, validationTechnique.getName());
@@ -422,7 +422,7 @@ public class GroupCaseStudyExcel {
         //Create table for GroupPredictionProtocol
         {
             GroupPredictionProtocol groupPredictionProtocol = caseStudyGroup.getGroupPredictionProtocol();
-            sheet.mergeCells(column + 0, row, column + titleCellWidth, row);
+            sheet.mergeCells(column + 0, row, column + TITLE_CELL_WIDTH, row);
             addTitleText(sheet, column, row, "Group Prediction Protocol");
             row++;
             setCellText(sheet, column, row, groupPredictionProtocol.getName());
@@ -438,7 +438,7 @@ public class GroupCaseStudyExcel {
         //Create table for RelevanceCriteria
         {
             RelevanceCriteria relevanceCriteria = caseStudyGroup.getRelevanceCriteria();
-            sheet.mergeCells(column + 0, row, column + titleCellWidth, row);
+            sheet.mergeCells(column + 0, row, column + TITLE_CELL_WIDTH, row);
             addTitleText(sheet, column, row, "Relevance Criteria threshold >= " + relevanceCriteria.getThreshold().doubleValue());
             row++;
         }
@@ -1085,19 +1085,23 @@ public class GroupCaseStudyExcel {
                 .filter(chain -> !chain.isNumExecutions())
                 .collect(Collectors.toList());
 
-        Global.showMessage("Calling heavy method obtainAllTwoPartitions(differentChains)\n");
-
-        Set<Combination> obtainCombinations = obtainDifferentParameterInCollumn(differentChains);
-
-        Global.showMessage("obtainAllTwoPartitions(differentChains).size() == " + obtainCombinations.size() + "\n");
-
-        Set<Combination> distinctCominations = obtainCombinations
+        Set<Combination> combinationsOfColumnRowParameters = obtainDifferentParameterInCollumn(differentChains)
                 .stream()
                 .filter(combination -> combination.row.size() + combination.column.size() == differentChains.size())
                 .collect(Collectors.toCollection(TreeSet::new));
 
-        Global.showMessage("obtainAllTwoPartitions(differentChains).distinct().size() == " + distinctCominations.size() + "\n");
-        distinctCominations.parallelStream().forEach(combination -> {
+        List<ParameterChain> columnChains = differentChains.stream()
+                .filter(chain -> chain.isDataValidationParameter())
+                .filter(chain -> !chain.isNumExecutions())
+                .collect(Collectors.toList());
+
+        List<ParameterChain> rowChains = differentChains.stream()
+                .filter(chain -> chain.isTechniqueParameter())
+                .collect(Collectors.toList());
+        combinationsOfColumnRowParameters.add(new Combination(rowChains, columnChains));
+
+        Global.showMessage("combinationsOfColumnRowParameters.size() == " + combinationsOfColumnRowParameters.size() + "\n");
+        combinationsOfColumnRowParameters.parallelStream().forEach(combination -> {
             try {
 
                 String sheetName = evaluationMeasure;
@@ -1121,16 +1125,6 @@ public class GroupCaseStudyExcel {
             }
         });
 
-        List<ParameterChain> columnChains = differentChains.stream()
-                .filter(chain -> chain.isDataValidationParameter())
-                .filter(chain -> !chain.isNumExecutions())
-                .collect(Collectors.toList());
-
-        List<ParameterChain> rowChains = differentChains.stream()
-                .filter(chain -> chain.isTechniqueParameter())
-                .collect(Collectors.toList());
-
-        writeRowAndColumnCombination(rowChains, groupCaseStudys, columnChains, evaluationMeasure, groupCaseStudyResults, workbook);
     }
 
     public static void writeRowAndColumnCombination(List<ParameterChain> rowChains, List<GroupCaseStudy> groupCaseStudys, List<ParameterChain> columnChains, String evaluationMeasure, List<GroupCaseStudyResult> groupCaseStudyResults, WritableWorkbook workbook) throws WriteException {
@@ -1173,7 +1167,7 @@ public class GroupCaseStudyExcel {
         writeMatrixInSheet(workbook, evaluationMeasure, matrix, sheetName);
     }
 
-    public static final Comparator<Set<ParameterChain>> ComparatorOfListsOfChains = (s1, s2) -> {
+    public static final Comparator<Set<ParameterChain>> COMPARATOR_OF_SET_OF_CHAINS = (s1, s2) -> {
 
         List<ParameterChain> l1 = new ArrayList<>(s1);
         List<ParameterChain> l2 = new ArrayList<>(s2);
@@ -1205,7 +1199,7 @@ public class GroupCaseStudyExcel {
 
     }
 
-    public static Set<Combination> obtainAllTwoPartitions(List<ParameterChain> chains) {
+    private static Set<Combination> obtainAllTwoPartitions(List<ParameterChain> chains) {
         List<ParameterChain> sortedChains = chains.parallelStream().sorted().collect(Collectors.toList());
 
         if (sortedChains.isEmpty() || sortedChains.size() == 1) {
@@ -1297,11 +1291,11 @@ public class GroupCaseStudyExcel {
             if (obj instanceof Combination) {
                 Combination combination = (Combination) obj;
 
-                if (ComparatorOfListsOfChains.compare(this.row, combination.row) == 0) {
+                if (COMPARATOR_OF_SET_OF_CHAINS.compare(this.row, combination.row) == 0) {
                     return true;
-                } else if (ComparatorOfListsOfChains.compare(this.row, combination.column) == 0) {
+                } else if (COMPARATOR_OF_SET_OF_CHAINS.compare(this.row, combination.column) == 0) {
                     return true;
-                } else if (ComparatorOfListsOfChains.compare(this.column, combination.row) == 0) {
+                } else if (COMPARATOR_OF_SET_OF_CHAINS.compare(this.column, combination.row) == 0) {
                     return true;
                 } else {
                     return false;
@@ -1321,8 +1315,8 @@ public class GroupCaseStudyExcel {
 
         @Override
         public int compareTo(Combination o) {
-            int compareRow = ComparatorOfListsOfChains.compare(this.row, o.row);
-            int compareColumn = ComparatorOfListsOfChains.compare(this.column, o.column);
+            int compareRow = COMPARATOR_OF_SET_OF_CHAINS.compare(this.row, o.row);
+            int compareColumn = COMPARATOR_OF_SET_OF_CHAINS.compare(this.column, o.column);
 
             if (compareRow == 0 && compareColumn == 0) {
                 return 0;
