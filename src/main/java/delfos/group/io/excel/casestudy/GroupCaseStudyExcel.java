@@ -1085,16 +1085,18 @@ public class GroupCaseStudyExcel {
                 .filter(chain -> !chain.isNumExecutions())
                 .collect(Collectors.toList());
 
-        Set<Combination> obtainCombinations = obtainAllTwoPartitions(differentChains);
+        Global.showMessage("Calling heavy method obtainAllTwoPartitions(differentChains)\n");
 
-        Global.showMessage("obtainAllTwoPartitions(differentChains).size() == " + obtainCombinations.size());
+        Set<Combination> obtainCombinations = obtainDifferentParameterInCollumn(differentChains);
+
+        Global.showMessage("obtainAllTwoPartitions(differentChains).size() == " + obtainCombinations.size() + "\n");
 
         Set<Combination> distinctCominations = obtainCombinations
                 .stream()
                 .filter(combination -> combination.row.size() + combination.column.size() == differentChains.size())
                 .collect(Collectors.toCollection(TreeSet::new));
 
-        Global.showMessage("obtainAllTwoPartitions(differentChains).distinct().size() == " + distinctCominations.size());
+        Global.showMessage("obtainAllTwoPartitions(differentChains).distinct().size() == " + distinctCominations.size() + "\n");
         distinctCominations.parallelStream().forEach(combination -> {
             try {
 
@@ -1189,6 +1191,19 @@ public class GroupCaseStudyExcel {
         }
         return Integer.compare(l1.size(), l2.size());
     };
+
+    public static Set<Combination> obtainDifferentParameterInCollumn(List<ParameterChain> chains) {
+
+        Set<Combination> allCombinations = chains.parallelStream().map(chain -> {
+            List<ParameterChain> chainsWithoutMe = new ArrayList<>(chains);
+            chainsWithoutMe.remove(chain);
+
+            return new Combination(chainsWithoutMe, Arrays.asList(chain));
+        }).collect(Collectors.toSet());
+
+        return allCombinations;
+
+    }
 
     public static Set<Combination> obtainAllTwoPartitions(List<ParameterChain> chains) {
         List<ParameterChain> sortedChains = chains.parallelStream().sorted().collect(Collectors.toList());
