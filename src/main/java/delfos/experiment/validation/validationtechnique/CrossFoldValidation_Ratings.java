@@ -166,4 +166,9 @@ public class CrossFoldValidation_Ratings extends ValidationTechnique {
     public int getNumberOfSplits() {
         return getNumberOfPartitions();
     }
+
+    public CrossFoldValidation_Ratings setNumberOfPartitions(int numPartitions) {
+        setParameterValue(CrossFoldValidation_Ratings.NUM_PARTITIONS, numPartitions);
+        return this;
+    }
 }
