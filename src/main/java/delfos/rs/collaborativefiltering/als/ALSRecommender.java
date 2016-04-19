@@ -26,17 +26,27 @@ import delfos.dataset.basic.user.User;
 import delfos.experiment.SeedHolder;
 import delfos.rs.collaborativefiltering.CollaborativeRecommender;
 import delfos.rs.collaborativefiltering.svd.TryThisAtHomeSVDModel;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-import org.apache.commons.math3.linear.Array2DRowRealMatrix;
-import org.apache.commons.math3.linear.ArrayRealVector;
-import org.apache.commons.math3.linear.DecompositionSolver;
-import org.apache.commons.math3.linear.QRDecomposition;
-import org.apache.commons.math3.linear.RealMatrix;
-import org.apache.commons.math3.linear.RealVector;
+import org.apache.commons.math4.linear.Array2DRowRealMatrix;
+import org.apache.commons.math4.linear.ArrayRealVector;
+import org.apache.commons.math4.linear.DecompositionSolver;
+import org.apache.commons.math4.linear.QRDecomposition;
+import org.apache.commons.math4.linear.RealMatrix;
+import org.apache.commons.math4.linear.RealVector;
+import org.apache.commons.math4.optim.ConvergenceChecker;
+import org.apache.commons.math4.optim.InitialGuess;
+import org.apache.commons.math4.optim.MaxEval;
+import org.apache.commons.math4.optim.MaxIter;
+import org.apache.commons.math4.optim.PointValuePair;
+import org.apache.commons.math4.optim.nonlinear.scalar.GoalType;
+import org.apache.commons.math4.optim.nonlinear.scalar.ObjectiveFunction;
+import org.apache.commons.math4.optim.nonlinear.scalar.noderiv.MultiDirectionalSimplex;
+import org.apache.commons.math4.optim.nonlinear.scalar.noderiv.SimplexOptimizer;
 
 /**
  *
@@ -57,6 +67,8 @@ public class ALSRecommender extends CollaborativeRecommender<TryThisAtHomeSVDMod
         int dimension = 20;
         long seed = getSeedValue();
 
+        final double lambda = 1;
+
         Map<User, List<Double>> randomUserVectors = datasetLoader.getUsersDataset().parallelStream().collect(Collectors.toMap(user -> user, user -> {
             Random random = new Random(seed + user.getId());
             List<Double> vector = random.doubles(-10, 10).limit(dimension).boxed().collect(Collectors.toList());
@@ -71,16 +83,17 @@ public class ALSRecommender extends CollaborativeRecommender<TryThisAtHomeSVDMod
 
         TryThisAtHomeSVDModel model = new TryThisAtHomeSVDModel(randomUserVectors, randomItemVectors);
 
-        for (int i = 0; i < numIter; i++) {
+        for (int iterationIndex = 0; iterationIndex < numIter; iterationIndex++) {
 
+            final int iteration = iterationIndex;
             final TryThisAtHomeSVDModel initialModel = model;
 
             double error = getModelError(datasetLoader, initialModel);
 
-            System.out.println("Error in iteration " + i + " is " + error);
+            System.out.println("Error in iteration " + iterationIndex + " is " + error);
 
             Map<User, List<Double>> trainedUserVectors = datasetLoader.getUsersDataset().parallelStream().collect(Collectors.toMap(user -> user,
-                    user -> {
+                    (User user) -> {
                         Map<Integer, ? extends Rating> userRatings = datasetLoader.getRatingsDataset().getUserRatingsRated(user.getId());
 
                         List<Integer> itemsSorted = userRatings.keySet().stream().sorted().collect(Collectors.toList());
@@ -94,23 +107,46 @@ public class ALSRecommender extends CollaborativeRecommender<TryThisAtHomeSVDMod
                             coefficients.setRow(index, vector);
                         });
 
-                        DecompositionSolver solver = new QRDecomposition(coefficients).getSolver();
+                        ObjectiveFunction objectiveFunction = new ObjectiveFunction((double[] pu) -> {
+                            List<Double> userVector = Arrays.stream(pu).boxed().collect(Collectors.toList());
+                            double error1 = userRatings.values().parallelStream()
+                                    .map(rating -> {
+                                        List<Double> itemVector = initialModel.getItemFeatures(rating.getIdItem());
 
-                        RealVector realVector = new ArrayRealVector(itemsSorted.size());
-                        IntStream.range(0, itemsSorted.size()).parallel().boxed()
-                        .forEach(index -> {
+                                        double prediction = IntStream.range(0, userVector.size())
+                                                .mapToDouble(index -> userVector.get(index) * itemVector.get(index))
+                                                .sum();
 
-                            Integer idItem = itemsSorted.get(index);
-                            double ratingValue = userRatings.get(idItem).getRatingValue().doubleValue();
-                            realVector.setEntry(index, ratingValue);
+                                        double value = rating.getRatingValue().doubleValue();
+
+                                        return prediction - value;
+                                    })
+                                    .map(value -> Math.pow(value, 2))
+                                    .mapToDouble(value -> value).sum();
+                            double penalty = Arrays.stream(pu)
+                                    .map(value -> Math.pow(value, 2))
+                                    .sum();
+                            double objectiveFunctionValue = error1 + lambda * penalty;
+                            return objectiveFunctionValue;
                         });
+                        ConvergenceChecker<PointValuePair> checker = (int iteration1, PointValuePair previous, PointValuePair current) -> {
+                            double oldValue = objectiveFunction.getObjectiveFunction().value(previous.getPoint());
+                            double newValue = objectiveFunction.getObjectiveFunction().value(current.getPoint());
+                            return oldValue > newValue;
+                        };
 
-                        RealVector solution = solver.solve(realVector);
+                        SimplexOptimizer simplexOptimizer = new SimplexOptimizer(checker);
 
-                        List<Double> solutionList = IntStream.range(0, solution.getDimension()).boxed()
-                        .map(index -> solution.getEntry(index))
-                        .collect(Collectors.toList());
-                        return solutionList;
+                        PointValuePair optimize = simplexOptimizer.optimize(new MultiDirectionalSimplex(dimension),
+                                new InitialGuess(new Random(seed + user.getId()).doubles(-10, 10).limit(dimension).toArray()),
+                                objectiveFunction,
+                                GoalType.MINIMIZE,
+                                MaxEval.unlimited(),
+                                MaxIter.unlimited()
+                        );
+
+                        List<Double> solution = Arrays.stream(optimize.getPoint()).boxed().collect(Collectors.toList());
+                        return solution;
                     }));
 
             Map<Item, List<Double>> trainedItemVectors = datasetLoader.getContentDataset().parallelStream().collect(Collectors.toMap(item -> item,
