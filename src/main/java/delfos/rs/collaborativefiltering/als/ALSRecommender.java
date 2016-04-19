@@ -26,6 +26,7 @@ import delfos.dataset.basic.user.User;
 import delfos.experiment.SeedHolder;
 import delfos.rs.collaborativefiltering.CollaborativeRecommender;
 import delfos.rs.collaborativefiltering.svd.TryThisAtHomeSVDModel;
+import delfos.utils.algorithm.progress.ProgressChangedController;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -38,7 +39,6 @@ import org.apache.commons.math4.linear.DecompositionSolver;
 import org.apache.commons.math4.linear.QRDecomposition;
 import org.apache.commons.math4.linear.RealMatrix;
 import org.apache.commons.math4.linear.RealVector;
-import org.apache.commons.math4.optim.ConvergenceChecker;
 import org.apache.commons.math4.optim.InitialGuess;
 import org.apache.commons.math4.optim.MaxEval;
 import org.apache.commons.math4.optim.MaxIter;
@@ -63,11 +63,13 @@ public class ALSRecommender extends CollaborativeRecommender<TryThisAtHomeSVDMod
     @Override
     public TryThisAtHomeSVDModel buildRecommendationModel(DatasetLoader<? extends Rating> datasetLoader) throws CannotLoadRatingsDataset, CannotLoadContentDataset, CannotLoadUsersDataset {
 
-        int numIter = 20;
-        int dimension = 20;
+        int numIter = 2;
+        int dimension = 5;
         long seed = getSeedValue();
 
-        final double lambda = 1;
+        final double lambda = 0.1;
+
+        Bias bias = new Bias(datasetLoader);
 
         Map<User, List<Double>> randomUserVectors = datasetLoader.getUsersDataset().parallelStream().collect(Collectors.toMap(user -> user, user -> {
             Random random = new Random(seed + user.getId());
@@ -88,65 +90,67 @@ public class ALSRecommender extends CollaborativeRecommender<TryThisAtHomeSVDMod
             final int iteration = iterationIndex;
             final TryThisAtHomeSVDModel initialModel = model;
 
-            double error = getModelError(datasetLoader, initialModel);
+            double error = getModelError(bias, datasetLoader, initialModel);
 
             System.out.println("Error in iteration " + iterationIndex + " is " + error);
+
+            ProgressChangedController userProgress = new ProgressChangedController(
+                    getAlias() + " for dataset " + datasetLoader.getAlias() + " userOptimization iteration " + iteration,
+                    datasetLoader.getUsersDataset().size(),
+                    this::fireBuildingProgressChangedEvent
+            );
 
             Map<User, List<Double>> trainedUserVectors = datasetLoader.getUsersDataset().parallelStream().collect(Collectors.toMap(user -> user,
                     (User user) -> {
                         Map<Integer, ? extends Rating> userRatings = datasetLoader.getRatingsDataset().getUserRatingsRated(user.getId());
 
-                        List<Integer> itemsSorted = userRatings.keySet().stream().sorted().collect(Collectors.toList());
-
-                        RealMatrix coefficients = new Array2DRowRealMatrix(itemsSorted.size(), dimension);
-                        IntStream.range(0, itemsSorted.size()).parallel().boxed()
-                        .forEach(index
-                                -> {
-                            double[] vector = initialModel.getItemFeatures(itemsSorted.get(index))
-                                    .stream().mapToDouble(value -> value).toArray();
-                            coefficients.setRow(index, vector);
-                        });
-
                         ObjectiveFunction objectiveFunction = new ObjectiveFunction((double[] pu) -> {
                             List<Double> userVector = Arrays.stream(pu).boxed().collect(Collectors.toList());
-                            double error1 = userRatings.values().parallelStream()
+                            double predictionError = userRatings.values().parallelStream()
+                                    .map(bias.getBiasApplier())
                                     .map(rating -> {
                                         List<Double> itemVector = initialModel.getItemFeatures(rating.getIdItem());
-
                                         double prediction = IntStream.range(0, userVector.size())
                                                 .mapToDouble(index -> userVector.get(index) * itemVector.get(index))
                                                 .sum();
 
                                         double value = rating.getRatingValue().doubleValue();
 
-                                        return prediction - value;
+                                        double errorThisRating = prediction - value;
+
+                                        return errorThisRating;
                                     })
                                     .map(value -> Math.pow(value, 2))
-                                    .mapToDouble(value -> value).sum();
+                                    .mapToDouble(value -> value)
+                                    .sum();
+
                             double penalty = Arrays.stream(pu)
                                     .map(value -> Math.pow(value, 2))
                                     .sum();
-                            double objectiveFunctionValue = error1 + lambda * penalty;
+                            double objectiveFunctionValue = predictionError + lambda * penalty;
                             return objectiveFunctionValue;
                         });
-                        ConvergenceChecker<PointValuePair> checker = (int iteration1, PointValuePair previous, PointValuePair current) -> {
-                            double oldValue = objectiveFunction.getObjectiveFunction().value(previous.getPoint());
-                            double newValue = objectiveFunction.getObjectiveFunction().value(current.getPoint());
-                            return oldValue > newValue;
-                        };
 
-                        SimplexOptimizer simplexOptimizer = new SimplexOptimizer(checker);
+                        SimplexOptimizer simplexOptimizer = new SimplexOptimizer(0, 0);
+
+                        double[] initialGuess = new Random(seed + user.getId()).doubles(-10, 10).limit(dimension).toArray();
+
+                        List<Double> initialGuessList = Arrays.stream(initialGuess).boxed().collect(Collectors.toList());
+
+                        double initialGuessPenalty = objectiveFunction.getObjectiveFunction().value(initialGuess);
 
                         PointValuePair optimize = simplexOptimizer.optimize(new MultiDirectionalSimplex(dimension),
-                                new InitialGuess(new Random(seed + user.getId()).doubles(-10, 10).limit(dimension).toArray()),
+                                new InitialGuess(initialGuess),
                                 objectiveFunction,
                                 GoalType.MINIMIZE,
                                 MaxEval.unlimited(),
                                 MaxIter.unlimited()
                         );
+                        double optimizedPenalty = optimize.getValue();
+                        userProgress.setTaskFinished();
 
-                        List<Double> solution = Arrays.stream(optimize.getPoint()).boxed().collect(Collectors.toList());
-                        return solution;
+                        List<Double> optimizedUserVector = Arrays.stream(optimize.getPoint()).boxed().collect(Collectors.toList());
+                        return optimizedUserVector;
                     }));
 
             Map<Item, List<Double>> trainedItemVectors = datasetLoader.getContentDataset().parallelStream().collect(Collectors.toMap(item -> item,
@@ -200,10 +204,13 @@ public class ALSRecommender extends CollaborativeRecommender<TryThisAtHomeSVDMod
         return (Long) getParameterValue(SEED);
     }
 
-    private double getModelError(DatasetLoader<? extends Rating> datasetLoader, TryThisAtHomeSVDModel initialModel) {
+    private double getModelError(Bias bias, DatasetLoader<? extends Rating> datasetLoader, TryThisAtHomeSVDModel initialModel) {
         return datasetLoader.getUsersDataset().parallelStream().flatMap(user -> {
             return datasetLoader.getRatingsDataset().getUserRatingsRated(user.getId())
-                    .values().parallelStream().map(rating -> {
+                    .values()
+                    .parallelStream()
+                    .map(bias.getBiasApplier())
+                    .map(rating -> {
                         int idItem = rating.getIdItem();
                         int idUser = rating.getIdUser();
                         double ratingValue = rating.getRatingValue().doubleValue();
