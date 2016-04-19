@@ -30,27 +30,27 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * Objeto para almacenar y recuperar en una base de datos mysql el modelo de
- * recomendación del sistema{@link TryThisAtHomeSVD}.
+ * Objeto para almacenar y recuperar en una base de datos mysql el modelo de recomendación del
+ * sistema{@link TryThisAtHomeSVD}.
  *
  * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 1.0 Unknown date
  * @version 1.1 1 de Marzo de 2013
- * @version 2.0 28-Mayo-2013 Adecuación a la refactorización de los sistemas de
- * recomendación.
+ * @version 2.0 28-Mayo-2013 Adecuación a la refactorización de los sistemas de recomendación.
  */
 public class DAOTryThisAtHomeDatabaseModel implements RecommendationModelDatabasePersistence<TryThisAtHomeSVDModel> {
 
     /**
-     * Prefijo que se añade a las tablas creadas con este objeto, para denotar
-     * que pertenecen al modelo generado por el sistema de recomendación basado
-     * en descomposición en valores singulares
+     * Prefijo que se añade a las tablas creadas con este objeto, para denotar que pertenecen al modelo generado por el
+     * sistema de recomendación basado en descomposición en valores singulares
      */
     private final String RECOMMENDER_PREFIX = "try_this_";
     /**
@@ -63,8 +63,8 @@ public class DAOTryThisAtHomeDatabaseModel implements RecommendationModelDatabas
     private final String ITEM_PROFILES = "item_profiles";
 
     /**
-     * Devuelve el nombre final de la tabla que se usa para almacenar/recuperar
-     * los perfiles de usuario generados por el sistema de recomendación
+     * Devuelve el nombre final de la tabla que se usa para almacenar/recuperar los perfiles de usuario generados por el
+     * sistema de recomendación
      *
      * @return Nombre de la tabla en la base de datos
      */
@@ -73,8 +73,8 @@ public class DAOTryThisAtHomeDatabaseModel implements RecommendationModelDatabas
     }
 
     /**
-     * Devuelve el nombre final de la tabla que se usa para almacenar/recuperar
-     * los perfiles de productos generados por el sistema de recomendación
+     * Devuelve el nombre final de la tabla que se usa para almacenar/recuperar los perfiles de productos generados por
+     * el sistema de recomendación
      *
      * @return Nombre de la tabla en la base de datos
      */
@@ -154,13 +154,13 @@ public class DAOTryThisAtHomeDatabaseModel implements RecommendationModelDatabas
         try (Statement st = databasePersistence.getConection().doConnection().createStatement()) {
             {
                 //Guardo los usuarios
-                ArrayList<ArrayList<Double>> userProfiles = model.getAllUserFeatures();
-                TreeMap<Integer, Integer> usersIndex = model.getUsersIndex();
+                List<List<Double>> userProfiles = model.getAllUserFeatures();
+                Map<Integer, Integer> usersIndex = model.getUsersIndex();
 
                 for (int idUser : usersIndex.keySet()) {
                     int userIndex = usersIndex.get(idUser);
 
-                    ArrayList<Double> features = userProfiles.get(userIndex);
+                    List<Double> features = userProfiles.get(userIndex);
 
                     StringBuilder sentence = new StringBuilder();
                     sentence.append("insert into ");
@@ -186,12 +186,12 @@ public class DAOTryThisAtHomeDatabaseModel implements RecommendationModelDatabas
 
             {
                 //Guardo los productos
-                ArrayList<ArrayList<Double>> itemProfiles = model.getAllItemFeatures();
-                TreeMap<Integer, Integer> itemsIndex = model.getItemsIndex();
+                List<List<Double>> itemProfiles = model.getAllItemFeatures();
+                Map<Integer, Integer> itemsIndex = model.getItemsIndex();
 
                 for (int idItem : itemsIndex.keySet()) {
                     int itemIndex = itemsIndex.get(idItem);
-                    ArrayList<Double> features = itemProfiles.get(itemIndex);
+                    List<Double> features = itemProfiles.get(itemIndex);
                     StringBuilder sentence = new StringBuilder();
                     sentence.append("insert into ");
                     sentence.append(getTemporalItemProfilesTable(prefix));
@@ -276,7 +276,7 @@ public class DAOTryThisAtHomeDatabaseModel implements RecommendationModelDatabas
                 throw new FailureInPersistence(ex);
             }
 
-            ArrayList<ArrayList<Double>> usersFeatures = new ArrayList<>(numUsers);
+            List<List<Double>> usersFeatures = new ArrayList<>(numUsers);
             TreeMap<Integer, Integer> usersIndex = new TreeMap<>();
 
             {
@@ -297,7 +297,7 @@ public class DAOTryThisAtHomeDatabaseModel implements RecommendationModelDatabas
 
                         if (!usersIndex.containsKey(idUser)) {
                             usersIndex.put(idUser, usersIndex.size());
-                            ArrayList<Double> arrayList = new ArrayList<>(numFeatures);
+                            List<Double> arrayList = new ArrayList<>(numFeatures);
                             for (int i = 0; i < numFeatures; i++) {
                                 arrayList.add(null);
                             }
@@ -311,7 +311,7 @@ public class DAOTryThisAtHomeDatabaseModel implements RecommendationModelDatabas
                 }
             }
 
-            ArrayList<ArrayList<Double>> itemsFeatures = new ArrayList<>(numItems);
+            List<List<Double>> itemsFeatures = new ArrayList<>(numItems);
             TreeMap<Integer, Integer> itemsIndex = new TreeMap<>();
 
             {
@@ -331,7 +331,7 @@ public class DAOTryThisAtHomeDatabaseModel implements RecommendationModelDatabas
 
                         if (!itemsIndex.containsKey(idItem)) {
                             itemsIndex.put(idItem, itemsIndex.size());
-                            ArrayList<Double> arrayList = new ArrayList<>(numFeatures);
+                            List<Double> arrayList = new ArrayList<>(numFeatures);
                             for (int i = 0; i < numFeatures; i++) {
                                 arrayList.add(null);
                             }

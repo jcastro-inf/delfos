@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,18 +16,23 @@
  */
 package delfos.rs.collaborativefiltering.svd;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Set;
-import java.util.TreeMap;
-import java.util.TreeSet;
 import delfos.common.Global;
 import delfos.common.exceptions.ratings.NotEnoughtItemInformation;
 import delfos.common.exceptions.ratings.NotEnoughtUserInformation;
+import delfos.dataset.basic.item.Item;
+import delfos.dataset.basic.user.User;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
+import java.util.TreeSet;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 /**
- * Almacena el modelo de un sistema de recomendación basado en Descomposición en
- * valores singulares.
+ * Almacena el modelo de un sistema de recomendación basado en Descomposición en valores singulares.
  *
  * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
@@ -38,41 +43,37 @@ public class TryThisAtHomeSVDModel implements Serializable {
 
     private static final long serialVersionUID = 108L;
     /**
-     * Matriz para guardar los valores que describen a cada usuario. Es una
-     * matriz de vectores, cada vector indica el perfil del usuario i
+     * Matriz para guardar los valores que describen a cada usuario. Es una matriz de vectores, cada vector indica el
+     * perfil del usuario i
      */
-    private ArrayList<ArrayList<Double>> _userFeatures;
+    private List<List<Double>> _userFeatures;
     /**
-     * Matriz para guardar los valores que describen a cada producto. Es una
-     * matriz de vectores en la que cada vector indica el perfil del producto i
+     * Matriz para guardar los valores que describen a cada producto. Es una matriz de vectores en la que cada vector
+     * indica el perfil del producto i
      */
-    private ArrayList<ArrayList<Double>> _itemFeatures;
+    private List<List<Double>> _itemFeatures;
     /**
-     * Mapa que almacena para cada id de usuario (clave en el mapa) el indice
-     * que le corresponde en la matriz {@link TryThisAtHomeSVD#_userFeatures}
-     * (valor en el mapa)
+     * Mapa que almacena para cada id de usuario (clave en el mapa) el indice que le corresponde en la matriz
+     * {@link TryThisAtHomeSVD#_userFeatures} (valor en el mapa)
      */
-    private TreeMap<Integer, Integer> _itemsIndex;
+    private Map<Integer, Integer> _itemsIndex;
     /**
-     * Mapa que almacena para cada id de producto (clave en el mapa) el indice
-     * que le corresponde en la matriz {@link TryThisAtHomeSVD#_itemFeatures}
-     * (valor en el mapa)
+     * Mapa que almacena para cada id de producto (clave en el mapa) el indice que le corresponde en la matriz
+     * {@link TryThisAtHomeSVD#_itemFeatures} (valor en el mapa)
      */
-    private TreeMap<Integer, Integer> _usersIndex;
+    private Map<Integer, Integer> _usersIndex;
 
     /**
-     * Crea el modelo a partir de las matrices de características para los
-     * usuarios y productos.
+     * Crea el modelo a partir de las matrices de características para los usuarios y productos.
      *
      * @param userFeatures Matriz de características de los usuarios.
-     * @param usersIndex Índice que indica en qué fila de la matriz de
-     * características de los usuarios están las características de un usuario.
+     * @param usersIndex Índice que indica en qué fila de la matriz de características de los usuarios están las
+     * características de un usuario.
      * @param itemFeatures Matriz de características de los productos.
-     * @param itemsIndex Índice que indica en qué fila de la matriz de
-     * características de los productos están las características de un
-     * producto.
+     * @param itemsIndex Índice que indica en qué fila de la matriz de características de los productos están las
+     * características de un producto.
      */
-    public TryThisAtHomeSVDModel(ArrayList<ArrayList<Double>> userFeatures, TreeMap<Integer, Integer> usersIndex, ArrayList<ArrayList<Double>> itemFeatures, TreeMap<Integer, Integer> itemsIndex) {
+    public TryThisAtHomeSVDModel(List<List<Double>> userFeatures, TreeMap<Integer, Integer> usersIndex, List<List<Double>> itemFeatures, TreeMap<Integer, Integer> itemsIndex) {
 
         if (userFeatures.size() != usersIndex.size()) {
             throw new IllegalArgumentException("The feature matrix and the user index do not have the same size.");
@@ -92,23 +93,73 @@ public class TryThisAtHomeSVDModel implements Serializable {
         this._itemsIndex = itemsIndex;
     }
 
+    public TryThisAtHomeSVDModel(Map<User, List<Double>> userFeatures, Map<Item, List<Double>> itemFeatures) {
+
+        List<User> usersSorted = userFeatures.keySet().stream().sorted().collect(Collectors.toList());
+        List<Item> itemsSorted = itemFeatures.keySet().stream().sorted().collect(Collectors.toList());
+
+        Map<Integer, Integer> usersIndex = IntStream.range(0, usersSorted.size()).boxed().collect(Collectors.toMap(
+                i -> usersSorted.get(i).getId(),
+                i -> i));
+
+        Map<Integer, Integer> itemsIndex = IntStream.range(0, itemsSorted.size()).boxed().collect(Collectors.toMap(
+                index -> itemsSorted.get(index).getId(),
+                index -> index));
+
+        List<List<Double>> _userFeatures = IntStream.range(0, usersIndex.size()).boxed()
+                .map(index -> new ArrayList<Double>())
+                .collect(Collectors.toCollection(ArrayList::new));
+
+        userFeatures.entrySet().parallelStream().forEach(entry -> {
+            User user = entry.getKey();
+            List<Double> featureVector = entry.getValue();
+            Integer userIndex = usersIndex.get(user.getId());
+            _userFeatures.set(userIndex, featureVector);
+        });
+
+        List<List<Double>> _itemFeatures = IntStream.range(0, itemsIndex.size()).boxed()
+                .map(index -> new ArrayList<Double>())
+                .collect(Collectors.toCollection(ArrayList::new));
+
+        itemFeatures.entrySet().parallelStream().forEach(entry -> {
+            Item item = entry.getKey();
+            List<Double> featureVector = entry.getValue();
+            Integer index = itemsIndex.get(item.getId());
+            _itemFeatures.set(index, featureVector);
+        });
+
+        if (userFeatures.size() != usersIndex.size()) {
+            throw new IllegalArgumentException("The feature matrix and the user index do not have the same size.");
+        }
+        if (itemFeatures.size() != itemsIndex.size()) {
+            throw new IllegalArgumentException("The feature matrix and the item index do not have the same size.");
+        }
+
+        this._userFeatures = _userFeatures;
+        this._usersIndex = usersIndex;
+
+        this._itemFeatures = _itemFeatures;
+        this._itemsIndex = itemsIndex;
+
+    }
+
     /**
-     * Índice que indica en qué fila de la matriz de características de los
-     * usuarios están las características de un usuario.
+     * Índice que indica en qué fila de la matriz de características de los usuarios están las características de un
+     * usuario.
      *
      * @return
      */
-    public TreeMap<Integer, Integer> getUsersIndex() {
+    public Map<Integer, Integer> getUsersIndex() {
         return _usersIndex;
     }
 
     /**
-     * Índice que indica en qué fila de la matriz de características de los
-     * productos están las características de un producto.
+     * Índice que indica en qué fila de la matriz de características de los productos están las características de un
+     * producto.
      *
      * @return
      */
-    public TreeMap<Integer, Integer> getItemsIndex() {
+    public Map<Integer, Integer> getItemsIndex() {
         return _itemsIndex;
     }
 
@@ -117,7 +168,7 @@ public class TryThisAtHomeSVDModel implements Serializable {
      *
      * @return
      */
-    public ArrayList<ArrayList<Double>> getAllItemFeatures() {
+    public List<List<Double>> getAllItemFeatures() {
         return _itemFeatures;
     }
 
@@ -126,20 +177,19 @@ public class TryThisAtHomeSVDModel implements Serializable {
      *
      * @return
      */
-    public ArrayList<ArrayList<Double>> getAllUserFeatures() {
+    public List<List<Double>> getAllUserFeatures() {
         return _userFeatures;
     }
 
     /**
-     * Crea un modelo ampliando un modelo existente con el vector de
-     * características de un usuario dado.
+     * Crea un modelo ampliando un modelo existente con el vector de características de un usuario dado.
      *
      * @param model Modelo a ampliar.
      * @param idUser Id del usuario que se desea agregar al modelo.
      * @param newUserFeatures Vector de características del usuario a agregar.
      * @return Modelo ampliado.
      */
-    public static TryThisAtHomeSVDModel addUser(TryThisAtHomeSVDModel model, int idUser, ArrayList<Double> newUserFeatures) {
+    public static TryThisAtHomeSVDModel addUser(TryThisAtHomeSVDModel model, int idUser, List<Double> newUserFeatures) {
         if (model == null) {
             throw new IllegalArgumentException("The model cannot be null.");
         }
@@ -156,22 +206,22 @@ public class TryThisAtHomeSVDModel implements Serializable {
             throw new IllegalArgumentException("The number of features is different for the new user ( " + model._userFeatures.get(0).size() + " != " + newUserFeatures.size() + " )");
         }
 
-        ArrayList<ArrayList<Double>> userFeatures = new ArrayList<>(model._userFeatures);
+        List<List<Double>> userFeatures = new ArrayList<>(model._userFeatures);
         TreeMap<Integer, Integer> usersIndex = new TreeMap<>(model._usersIndex);
         int idUserIndex = userFeatures.size();
         usersIndex.put(idUser, idUserIndex);
         userFeatures.add(newUserFeatures);
-        ArrayList<ArrayList<Double>> itemFeatures = new ArrayList<>(model._itemFeatures);
+        List<List<Double>> itemFeatures = new ArrayList<>(model._itemFeatures);
         TreeMap<Integer, Integer> itemsIndex = new TreeMap<>(model._itemsIndex);
 
         return new TryThisAtHomeSVDModel(userFeatures, usersIndex, itemFeatures, itemsIndex);
     }
 
-    public ArrayList<Double> getUserFeatures(int idUser) {
+    public List<Double> getUserFeatures(int idUser) {
         return _userFeatures.get(_usersIndex.get(idUser));
     }
 
-    public ArrayList<Double> getItemFeatures(int idItem) {
+    public List<Double> getItemFeatures(int idItem) {
         return _itemFeatures.get(_itemsIndex.get(idItem));
     }
 
@@ -191,5 +241,14 @@ public class TryThisAtHomeSVDModel implements Serializable {
             Global.showWarning(message);
             usersWarned.add(idUser);
         }
+    }
+
+    public double predict(int idUser, int idItem) {
+        List<Double> userVector = getUserFeatures(idUser);
+        List<Double> itemVector = getItemFeatures(idItem);
+
+        return IntStream.range(0, userVector.size())
+                .mapToDouble(index -> userVector.get(index) * itemVector.get(index))
+                .sum();
     }
 }

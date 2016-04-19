@@ -48,18 +48,16 @@ import java.util.TreeMap;
 import java.util.stream.Collectors;
 
 /**
- * Sistema de recomendación descrito en
- * http://sifter.org/~simon/journal/20061211.html que utiliza la descomposición
- * en valores singulares de las valoraciones.
+ * Sistema de recomendación descrito en http://sifter.org/~simon/journal/20061211.html que utiliza la descomposición en
+ * valores singulares de las valoraciones.
  *
- * Calcula los valores singulares mediante el descenso de gradiente (aprendizaje
- * reduciendo el error en múltiples iteraciones.
+ * Calcula los valores singulares mediante el descenso de gradiente (aprendizaje reduciendo el error en múltiples
+ * iteraciones.
  *
  * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 1.0 Unknown date
- * @version 1.1 (Unknown date) Añadido parámetro para controlar la
- * inicialización inteligente.
+ * @version 1.1 (Unknown date) Añadido parámetro para controlar la inicialización inteligente.
  * @version 1.2 (28 de Febrero de 2013)
  */
 public class TryThisAtHomeSVD
@@ -68,14 +66,13 @@ public class TryThisAtHomeSVD
 
     private static final long serialVersionUID = 1L;
     /**
-     * Parámetro para mejorar la inicializadion de los valores. True para usar
-     * la inicialización inteligente (a veces falla).
+     * Parámetro para mejorar la inicializadion de los valores. True para usar la inicialización inteligente (a veces
+     * falla).
      */
     public static final Parameter SMART_INITIALISATION = new Parameter("smartInit", new BooleanParameter(Boolean.FALSE));
     /**
-     * Parámetro que indica el número de características que el sistema de
-     * recomendación utiliza para la construcción del modelo, es decir, el
-     * número de valores singulares que se calculan.
+     * Parámetro que indica el número de características que el sistema de recomendación utiliza para la construcción
+     * del modelo, es decir, el número de valores singulares que se calculan.
      */
     public static final Parameter NUM_FEATURES = new Parameter("features", new IntegerParameter(1, 9000, 10));
     /**
@@ -83,19 +80,17 @@ public class TryThisAtHomeSVD
      */
     public static final Parameter NUM_ITER_PER_FEATURE = new Parameter("iterPerFeature", new IntegerParameter(1, 9000000, 10));
     /**
-     * Parámetro que controla el learning rate, es decir, la velocidad con la
-     * que se modifican los valores para minimizar el error de predicción.
+     * Parámetro que controla el learning rate, es decir, la velocidad con la que se modifican los valores para
+     * minimizar el error de predicción.
      */
     public static final Parameter LEARNING_RATE = new Parameter("lRate", new DoubleParameter(0.001f, 500f, 0.01f));
     /**
-     * Parámetro para indicar si se realiza una normalización de las
-     * valoraciones utilizando la valoración media del usuario. Por defecto esta
-     * mejora está activa.
+     * Parámetro para indicar si se realiza una normalización de las valoraciones utilizando la valoración media del
+     * usuario. Por defecto esta mejora está activa.
      */
     public static final Parameter NORMALIZE_WITH_USER_MEAN = new Parameter("Normalize_with_mean", new BooleanParameter(Boolean.FALSE));
     /**
-     * Parámetro para indicar si las valoraciones predichas se truncan para
-     * estar dentro del rango de valoraciones.
+     * Parámetro para indicar si las valoraciones predichas se truncan para estar dentro del rango de valoraciones.
      */
     public static final Parameter PREDICT_IN_RATING_RANGE = new Parameter("Predict_in_range", new BooleanParameter(Boolean.FALSE));
     /**
@@ -104,8 +99,7 @@ public class TryThisAtHomeSVD
     public static final Parameter K = new Parameter("K", new DoubleParameter(0.0001f, 1f, 0.02f), "Parámetro para penalizar valores grandes de las características.");
 
     /**
-     * Constructor por defecto, que añade los parámetros del sistema de
-     * recomendación.
+     * Constructor por defecto, que añade los parámetros del sistema de recomendación.
      */
     public TryThisAtHomeSVD() {
         super();
@@ -120,8 +114,7 @@ public class TryThisAtHomeSVD
     }
 
     /**
-     * Constructor que asigna los valores indicados como número de
-     * características y número de iteraciones del sistema.
+     * Constructor que asigna los valores indicados como número de características y número de iteraciones del sistema.
      *
      * @param featuresValue Número de características que se calculan
      * @param iterationsValue Número de iteraciones para cada característica
@@ -133,22 +126,17 @@ public class TryThisAtHomeSVD
     }
 
     /**
-     * Devuelve un valor aleatorio (diferente en cada llamada y distinto de
-     * cero) que se utiliza para la inicialización de las matrices.
+     * Devuelve un valor aleatorio (diferente en cada llamada y distinto de cero) que se utiliza para la inicialización
+     * de las matrices.
      * <p>
-     * NOTA: Se utiliza este método para devolver una inicialización lo más
-     * variada posible, teniendo en cuenta la configuración establecida para que
-     * los valores no se vayan a infinito durante las iteraciones.
+     * NOTA: Se utiliza este método para devolver una inicialización lo más variada posible, teniendo en cuenta la
+     * configuración establecida para que los valores no se vayan a infinito durante las iteraciones.
      *
-     * @param maxInitialisation Para que la inicialización tenga la máxima
-     * variedad de valores posible, sin que en el proceso de aprendizaje los
-     * valores excedan un rango considerado como seguro. Amacena el valor
-     * máximo.
+     * @param maxInitialisation Para que la inicialización tenga la máxima variedad de valores posible, sin que en el
+     * proceso de aprendizaje los valores excedan un rango considerado como seguro. Amacena el valor máximo.
      *
-     * @param minInitialisation Para que la inicialización tenga la máxima
-     * variedad de valores posible, sin que en el proceso de aprendizaje los
-     * valores excedan un rango considerado como seguro. Amacena el valor
-     * mínimo.
+     * @param minInitialisation Para que la inicialización tenga la máxima variedad de valores posible, sin que en el
+     * proceso de aprendizaje los valores excedan un rango considerado como seguro. Amacena el valor mínimo.
      *
      * @return Valor aleatorio de inicialización.
      */
@@ -194,8 +182,8 @@ public class TryThisAtHomeSVD
         final int users = usersIndex.size();
         final int items = itemsIndex.size();
 
-        ArrayList<ArrayList<Double>> usersFeatures = new ArrayList<>(users);
-        ArrayList<ArrayList<Double>> itemsFeatures = new ArrayList<>(items);
+        List<List<Double>> usersFeatures = new ArrayList<>(users);
+        List<List<Double>> itemsFeatures = new ArrayList<>(items);
 
         for (int i = 0; i < users; i++) {
             usersFeatures.add(new ArrayList<>(numFeatures));
@@ -331,19 +319,15 @@ public class TryThisAtHomeSVD
     }
 
     /**
-     * Predice la valoración que el usuario daría sobre el producto utilizando
-     * el modelo indicado.
+     * Predice la valoración que el usuario daría sobre el producto utilizando el modelo indicado.
      *
      * @param datasetLoadder Dataset.
      * @param model Modelo de recomendación.
      * @param idUser Usuario para el que se predice la valoración
      * @param idItem Producto para el que se predice la valoración
-     * @return Valoración predicha del usuario indicado sobre el producto
-     * indicado
-     * @throws NotEnoughtUserInformation Si el usuario no se encuentra en el
-     * dataset de ratings.
-     * @throws NotEnoughtItemInformation Si el producto no se encuentra en el
-     * dataset de ratings.
+     * @return Valoración predicha del usuario indicado sobre el producto indicado
+     * @throws NotEnoughtUserInformation Si el usuario no se encuentra en el dataset de ratings.
+     * @throws NotEnoughtItemInformation Si el producto no se encuentra en el dataset de ratings.
      * @throws delfos.common.exceptions.dataset.users.UserNotFound
      * @throws delfos.common.exceptions.dataset.items.ItemNotFound
      */
@@ -363,8 +347,8 @@ public class TryThisAtHomeSVD
 
         int numFeatures = getNumFeatures();
 
-        ArrayList<Double> user = model.getAllUserFeatures().get(model.getUsersIndex().get(idUser));
-        ArrayList<Double> item = model.getAllItemFeatures().get(model.getItemsIndex().get(idItem));
+        List<Double> user = model.getAllUserFeatures().get(model.getUsersIndex().get(idUser));
+        List<Double> item = model.getAllItemFeatures().get(model.getItemsIndex().get(idItem));
 
         if (user.size() != item.size()) {
             throw new IllegalArgumentException("Users and item models does not have the same number of features!");
@@ -466,8 +450,7 @@ public class TryThisAtHomeSVD
     }
 
     /**
-     * Devuelve el valor de penalización de valores grandes para las
-     * características.
+     * Devuelve el valor de penalización de valores grandes para las características.
      *
      * @return
      */

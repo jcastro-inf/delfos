@@ -36,6 +36,7 @@ import delfos.dataset.basic.rating.RatingsDataset;
 import delfos.rs.recommendation.Recommendation;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Random;
@@ -53,21 +54,19 @@ public class SVDFoldingIn
 
     private static final long serialVersionUID = 1L;
     /**
-     * Parámetro que controla el learning rate, es decir, la velocidad con la
-     * que se modifican los valores para minimizar el error de predicción. Este
-     * valor se aplica cuando se incrementa el modelo.
+     * Parámetro que controla el learning rate, es decir, la velocidad con la que se modifican los valores para
+     * minimizar el error de predicción. Este valor se aplica cuando se incrementa el modelo.
      */
     public static final Parameter INCREMENTED_MODEL_LEARNING_RATE = new Parameter("increment_lRate", new DoubleParameter(0.001f, 500f, 0.01f));
     /**
-     * Número de iteraciones que se hacen por cada característica para minimizar
-     * el error. Este valor se aplica cuando se incrementa el modelo.
+     * Número de iteraciones que se hacen por cada característica para minimizar el error. Este valor se aplica cuando
+     * se incrementa el modelo.
      *
      */
     public static final Parameter INCREMENTED_MODEL_NUM_ITER_PER_FEATURE = new Parameter("increment_iterPerFeature", new IntegerParameter(1, 9000000, 10));
 
     /**
-     * Cojnstructor por defecto, que añade los parámetros del sistema de
-     * recomendación.
+     * Cojnstructor por defecto, que añade los parámetros del sistema de recomendación.
      */
     public SVDFoldingIn() {
         super();
@@ -77,8 +76,7 @@ public class SVDFoldingIn
     }
 
     /**
-     * Constructor que asigna los valores indicados como número de
-     * características y número de iteraciones del sistema.
+     * Constructor que asigna los valores indicados como número de características y número de iteraciones del sistema.
      *
      * @param featuresValue Número de características que se calculan
      * @param iterationsValue Número de iteraciones para cada característica
@@ -127,7 +125,7 @@ public class SVDFoldingIn
         final int numIterationsPerFeature = (Integer) getParameterValue(INCREMENTED_MODEL_NUM_ITER_PER_FEATURE);
         final RatingsDataset<? extends Rating> ratingsDataset = datasetLoader.getRatingsDataset();
 
-        ArrayList<Double> thisUserFeatures = new ArrayList<>(numFeatures);
+        List<Double> thisUserFeatures = new ArrayList<>(numFeatures);
         int thisUserIndex = -1;
         for (int userIndex : oldModel.getUsersIndex().values()) {
             if (thisUserIndex < userIndex) {
@@ -163,7 +161,7 @@ public class SVDFoldingIn
             /*
              * Copio las características de los productos, tal cual.
              */
-            final ArrayList<ArrayList<Double>> newItemsFeatures = oldModel.getAllItemFeatures();
+            final List<List<Double>> newItemsFeatures = oldModel.getAllItemFeatures();
             for (Entry<Integer, Integer> entry : newItemsIndex.entrySet()) {
 
                 int _idItem = entry.getKey();
@@ -172,14 +170,14 @@ public class SVDFoldingIn
                 while (newItemsFeatures.size() <= _idItemIndex) {
                     newItemsFeatures.add(null);
                 }
-                ArrayList<Double> loopItemFeatures = oldModel.getAllItemFeatures().get(_idItemIndex);
+                List<Double> loopItemFeatures = oldModel.getAllItemFeatures().get(_idItemIndex);
                 newItemsFeatures.set(_idItemIndex, new ArrayList<>(loopItemFeatures));
             }
 
             /**
              * Copio las características de los usuarios y luego añado el nuevo.
              */
-            final ArrayList<ArrayList<Double>> newUsersFeatures = new ArrayList<>();
+            final List<List<Double>> newUsersFeatures = new ArrayList<>();
 
             for (Entry<Integer, Integer> entry : oldModel.getUsersIndex().entrySet()) {
                 int _idUser = entry.getKey();
@@ -189,7 +187,7 @@ public class SVDFoldingIn
                 while (newUsersFeatures.size() <= _idUserIndex) {
                     newUsersFeatures.add(null);
                 }
-                ArrayList<Double> loopUserFeatures = oldModel.getAllUserFeatures().get(_idUserIndex);
+                List<Double> loopUserFeatures = oldModel.getAllUserFeatures().get(_idUserIndex);
                 newUsersFeatures.set(_idUserIndex, new ArrayList<>(loopUserFeatures));
             }
             newUsersFeatures.add(thisUserFeatures);
@@ -227,11 +225,9 @@ public class SVDFoldingIn
 
                         if (Double.isInfinite(newUserValue)) {
                             throw new IllegalStateException("Los valores nuevos son erroneos");
-                        } else {
-                            //compruebo que los valores convergen a un valor bajo
-                            if (!(newUserValue > 10E20 || newUserValue < -10E20)) {
-                                thisUserFeatures.set(indexFeature, newUserValue);
-                            }
+                        } else //compruebo que los valores convergen a un valor bajo
+                        if (!(newUserValue > 10E20 || newUserValue < -10E20)) {
+                            thisUserFeatures.set(indexFeature, newUserValue);
                         }
                     } catch (ItemNotFound ex) {
                         ERROR_CODES.ITEM_NOT_FOUND.exit(ex);

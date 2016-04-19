@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,9 +16,10 @@
  */
 package delfos.group.grs.svd;
 
+import delfos.group.groupsofusers.GroupOfUsers;
 import java.io.Serializable;
 import java.util.ArrayList;
-import delfos.group.groupsofusers.GroupOfUsers;
+import java.util.List;
 
 /**
  *
@@ -30,18 +31,18 @@ public class GroupSVDModel implements Serializable {
 
     private static final long serialVersionUID = 1;
     private final GroupOfUsers group;
-    private final ArrayList<Double> groupFeatures;
+    private final List<Double> groupFeatures;
 
-    public GroupSVDModel(GroupOfUsers group, ArrayList<Double> groupFeatures) {
+    public GroupSVDModel(GroupOfUsers group, List<Double> groupFeatures) {
         this.group = group;
-        this.groupFeatures = new ArrayList<Double>(groupFeatures);
+        this.groupFeatures = new ArrayList<>(groupFeatures);
     }
 
     public GroupOfUsers getGroup() {
         return group;
     }
 
-    public ArrayList<Double> getGroupFeatures() {
+    public List<Double> getGroupFeatures() {
         return groupFeatures;
     }
 }
