@@ -20,6 +20,7 @@ import delfos.common.StringsOrderings;
 import delfos.dataset.basic.features.EntityWithFeatures;
 import static delfos.dataset.basic.features.EntityWithFeaturesDefault.checkFeatureAndFeatureValuesArrays;
 import delfos.dataset.basic.features.Feature;
+import java.io.Serializable;
 import java.util.Comparator;
 import java.util.Map;
 import java.util.Set;
@@ -32,7 +33,7 @@ import java.util.TreeMap;
  *
  * @version 24-jul-2013
  */
-public class User implements Comparable<Object>, EntityWithFeatures {
+public class User implements Comparable<Object>, EntityWithFeatures, Serializable {
 
     public static User ANONYMOUS_USER = new User(0, "User_Anonymous");
 

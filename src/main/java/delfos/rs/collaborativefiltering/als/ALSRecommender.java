@@ -151,7 +151,7 @@ public class ALSRecommender extends CollaborativeRecommender<MatrixFactorization
                             return optimizedUserVector;
                         } catch (Exception ex) {
                             System.out.println("Vector cannot be optimized for user " + user + " (numRatings=" + userRatings.size() + ")");
-                            return initialGuessList;
+                            return initialModel.getUserFeatures(user);
                         }
                     }));
 
@@ -215,7 +215,7 @@ public class ALSRecommender extends CollaborativeRecommender<MatrixFactorization
                             return optimizedVector;
                         } catch (Exception ex) {
                             System.out.println("Vector cannot be optimized " + item + " cannot be optimized (numRatings=" + itemRatings.size() + ")");
-                            return initialGuessList;
+                            return initialModel.getItemFeatures(item);
                         }
                     }));
 

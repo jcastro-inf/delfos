@@ -74,4 +74,8 @@ public class MatrixFactorizationModel implements Serializable {
         }
     }
 
+    public Bias getBias() {
+        return bias;
+    }
+
 }

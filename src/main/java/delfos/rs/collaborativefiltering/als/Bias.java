@@ -34,23 +34,23 @@ public class Bias implements Serializable {
     private static final long serialVersionUID = 108L;
 
     private final double generalBias;
-    private final Map<User, Double> usersBias;
-    private final Map<Item, Double> itemsBias;
+    private final Map<Integer, Double> usersBias;
+    private final Map<Integer, Double> itemsBias;
 
     public Bias(double generalBias,
             Map<User, Double> usersBias,
             Map<Item, Double> itemsBias) {
 
         this.generalBias = generalBias;
-        this.usersBias = usersBias.entrySet().parallelStream().collect(Collectors.toMap(entry -> entry.getKey(), entry -> entry.getValue()));
-        this.itemsBias = itemsBias.entrySet().parallelStream().collect(Collectors.toMap(entry -> entry.getKey(), entry -> entry.getValue()));
+        this.usersBias = usersBias.entrySet().parallelStream().collect(Collectors.toMap(entry -> entry.getKey().getId(), entry -> entry.getValue()));
+        this.itemsBias = itemsBias.entrySet().parallelStream().collect(Collectors.toMap(entry -> entry.getKey().getId(), entry -> entry.getValue()));
     }
 
     public Function<Rating, Rating> getBiasApplier() {
         return (rating
                 -> {
-            double userBias = usersBias.get(rating.getUser());
-            double itemBias = itemsBias.get(rating.getItem());
+            double userBias = usersBias.get(rating.getUser().getId());
+            double itemBias = itemsBias.get(rating.getItem().getId());
             double unbiasedValue = rating.getRatingValue().doubleValue()
                     - this.generalBias
                     - userBias
@@ -63,8 +63,8 @@ public class Bias implements Serializable {
     public Function<Rating, Rating> getBiasRestorer() {
         return (rating
                 -> {
-            double userBias = usersBias.get(rating.getUser());
-            double itemBias = itemsBias.get(rating.getItem());
+            double userBias = usersBias.get(rating.getUser().getId());
+            double itemBias = itemsBias.get(rating.getItem().getId());
             double unbiasedValue = rating.getRatingValue().doubleValue()
                     + this.generalBias
                     + userBias
@@ -78,7 +78,7 @@ public class Bias implements Serializable {
 
         generalBias = datasetLoader.getRatingsDataset().getMeanRating();
 
-        usersBias = datasetLoader.getUsersDataset().parallelStream().collect(Collectors.toMap(user -> user, user -> {
+        usersBias = datasetLoader.getUsersDataset().parallelStream().collect(Collectors.toMap(user -> user.getId(), user -> {
             double userBias = datasetLoader.getRatingsDataset()
                     .getUserRatingsRated(user.getId()).values()
                     .parallelStream()
@@ -88,11 +88,11 @@ public class Bias implements Serializable {
             return userBias;
         }));
 
-        itemsBias = datasetLoader.getContentDataset().parallelStream().collect(Collectors.toMap(item -> item, item -> {
+        itemsBias = datasetLoader.getContentDataset().parallelStream().collect(Collectors.toMap(item -> item.getId(), item -> {
             double itemBias = datasetLoader.getRatingsDataset()
                     .getItemRatingsRated(item.getId()).values()
                     .parallelStream()
-                    .mapToDouble(rating -> rating.getRatingValue().doubleValue() - generalBias - usersBias.get(rating.getUser()))
+                    .mapToDouble(rating -> rating.getRatingValue().doubleValue() - generalBias - usersBias.get(rating.getUser().getId()))
                     .average()
                     .orElse(0);
             return itemBias;
@@ -100,8 +100,8 @@ public class Bias implements Serializable {
     }
 
     public double restoreBias(User user, Item item, double value) {
-        double userBias = usersBias.get(user);
-        double itemBias = itemsBias.get(item);
+        double userBias = usersBias.get(user.getId());
+        double itemBias = itemsBias.get(item.getId());
 
         double originalRating = value + generalBias + userBias + itemBias;
 
