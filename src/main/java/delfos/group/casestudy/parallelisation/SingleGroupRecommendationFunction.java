@@ -41,6 +41,10 @@ public class SingleGroupRecommendationFunction implements Function<SingleGroupRe
         this.recommendationProgress = null;
     }
 
+    public SingleGroupRecommendationFunction(ProgressChangedController recommendationProgress) {
+        this.recommendationProgress = recommendationProgress;
+    }
+
     @Override
     public SingleGroupRecommendationTaskOutput apply(SingleGroupRecommendationTaskInput task) {
 
