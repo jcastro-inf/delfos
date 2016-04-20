@@ -25,7 +25,7 @@ import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.user.User;
 import delfos.experiment.SeedHolder;
 import delfos.rs.collaborativefiltering.CollaborativeRecommender;
-import delfos.rs.collaborativefiltering.svd.TryThisAtHomeSVDModel;
+import delfos.rs.collaborativefiltering.factorization.MatrixFactorizationModel;
 import delfos.rs.recommendation.Recommendation;
 import delfos.rs.recommendation.RecommendationsToUser;
 import delfos.utils.algorithm.progress.ProgressChangedController;
@@ -49,7 +49,7 @@ import org.apache.commons.math4.optim.nonlinear.scalar.noderiv.SimplexOptimizer;
  *
  * @author jcastro
  */
-public class ALSRecommender extends CollaborativeRecommender<TryThisAtHomeSVDModel>
+public class ALSRecommender extends CollaborativeRecommender<MatrixFactorizationModel>
         implements SeedHolder {
 
     public ALSRecommender() {
@@ -58,7 +58,7 @@ public class ALSRecommender extends CollaborativeRecommender<TryThisAtHomeSVDMod
     }
 
     @Override
-    public TryThisAtHomeSVDModel buildRecommendationModel(DatasetLoader<? extends Rating> datasetLoader) throws CannotLoadRatingsDataset, CannotLoadContentDataset, CannotLoadUsersDataset {
+    public MatrixFactorizationModel buildRecommendationModel(DatasetLoader<? extends Rating> datasetLoader) throws CannotLoadRatingsDataset, CannotLoadContentDataset, CannotLoadUsersDataset {
 
         int numIter = 1;
         int dimension = 5;
@@ -80,12 +80,12 @@ public class ALSRecommender extends CollaborativeRecommender<TryThisAtHomeSVDMod
             return vector;
         }));
 
-        TryThisAtHomeSVDModel model = new TryThisAtHomeSVDModel(randomUserVectors, randomItemVectors, bias);
+        MatrixFactorizationModel model = new MatrixFactorizationModel(randomUserVectors, randomItemVectors, bias);
 
         for (int iterationIndex = 0; iterationIndex < numIter; iterationIndex++) {
 
             final int iteration = iterationIndex;
-            final TryThisAtHomeSVDModel initialModel = model;
+            final MatrixFactorizationModel initialModel = model;
 
             double error = getModelError(bias, datasetLoader, initialModel);
 
@@ -106,7 +106,7 @@ public class ALSRecommender extends CollaborativeRecommender<TryThisAtHomeSVDMod
                             double predictionError = userRatings.values().parallelStream()
                                     .map(bias.getBiasApplier())
                                     .map(rating -> {
-                                        List<Double> itemVector = initialModel.getItemFeatures(rating.getIdItem());
+                                        List<Double> itemVector = initialModel.getItemFeatures(rating.getItem());
                                         double prediction = IntStream.range(0, userVector.size())
                                                 .mapToDouble(index -> userVector.get(index) * itemVector.get(index))
                                                 .sum();
@@ -170,7 +170,7 @@ public class ALSRecommender extends CollaborativeRecommender<TryThisAtHomeSVDMod
                             double predictionError = itemRatings.values().parallelStream()
                                     .map(bias.getBiasApplier())
                                     .map(rating -> {
-                                        List<Double> userVector = initialModel.getUserFeatures(rating.getIdUser());
+                                        List<Double> userVector = initialModel.getUserFeatures(rating.getUser());
                                         double prediction = IntStream.range(0, userVector.size())
                                                 .mapToDouble(index -> userVector.get(index) * itemVector.get(index))
                                                 .sum();
@@ -219,7 +219,7 @@ public class ALSRecommender extends CollaborativeRecommender<TryThisAtHomeSVDMod
                         }
                     }));
 
-            model = new TryThisAtHomeSVDModel(trainedUserVectors, trainedItemVectors, bias);
+            model = new MatrixFactorizationModel(trainedUserVectors, trainedItemVectors, bias);
 
         }
         return model;
@@ -238,17 +238,16 @@ public class ALSRecommender extends CollaborativeRecommender<TryThisAtHomeSVDMod
         return (Long) getParameterValue(SEED);
     }
 
-    private double getModelError(Bias bias, DatasetLoader<? extends Rating> datasetLoader, TryThisAtHomeSVDModel initialModel) {
+    private double getModelError(Bias bias, DatasetLoader<? extends Rating> datasetLoader, MatrixFactorizationModel initialModel) {
         return datasetLoader.getUsersDataset().parallelStream().flatMap(user -> {
             return datasetLoader.getRatingsDataset().getUserRatingsRated(user.getId())
                     .values()
                     .parallelStream()
                     .map(bias.getBiasApplier())
                     .map(rating -> {
-                        int idItem = rating.getIdItem();
-                        int idUser = rating.getIdUser();
+                        Item item = rating.getItem();
                         double ratingValue = rating.getRatingValue().doubleValue();
-                        double predictedValue = initialModel.predict(idUser, idItem);
+                        double predictedValue = initialModel.predict(user, item);
                         return Math.abs(ratingValue - predictedValue);
                     });
         }).mapToDouble(value -> value).average().orElse(Double.NaN);
@@ -256,10 +255,10 @@ public class ALSRecommender extends CollaborativeRecommender<TryThisAtHomeSVDMod
     }
 
     @Override
-    public RecommendationsToUser recommendToUser(DatasetLoader<? extends Rating> dataset, TryThisAtHomeSVDModel recommendationModel, User user, Set<Item> candidateItems) {
+    public RecommendationsToUser recommendToUser(DatasetLoader<? extends Rating> dataset, MatrixFactorizationModel recommendationModel, User user, Set<Item> candidateItems) {
 
         List<Recommendation> recommendations = candidateItems.parallelStream().map(item -> {
-            double predictRating = recommendationModel.predictRating(user.getId(), item.getId());
+            double predictRating = recommendationModel.predictRating(user, item);
             return new Recommendation(item, predictRating);
         }).collect(Collectors.toList());
 

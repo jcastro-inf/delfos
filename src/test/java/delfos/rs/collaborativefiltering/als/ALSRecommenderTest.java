@@ -22,7 +22,7 @@ import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.user.User;
 import delfos.recommendationcandidates.OnlyNewItems;
-import delfos.rs.collaborativefiltering.svd.TryThisAtHomeSVDModel;
+import delfos.rs.collaborativefiltering.factorization.MatrixFactorizationModel;
 import delfos.rs.output.RecommendationsOutputStandardRaw;
 import delfos.rs.recommendation.RecommendationsToUser;
 import java.util.Set;
@@ -49,7 +49,7 @@ public class ALSRecommenderTest {
         // aLSRecommender.addRecommendationModelBuildingProgressListener(new RecommenderSystemBuildingProgressListener_default(System.out, 10000));
         DatasetLoader<? extends Rating> datasetLoader = ConfiguredDatasetsFactory.getInstance().getDatasetLoader("ml-100k");
 
-        TryThisAtHomeSVDModel buildRecommendationModel = aLSRecommender.buildRecommendationModel(datasetLoader);
+        MatrixFactorizationModel buildRecommendationModel = aLSRecommender.buildRecommendationModel(datasetLoader);
 
         User user = datasetLoader.getUsersDataset().get(542);
         Set<Item> candidateItems = new OnlyNewItems().candidateItems(datasetLoader, user);

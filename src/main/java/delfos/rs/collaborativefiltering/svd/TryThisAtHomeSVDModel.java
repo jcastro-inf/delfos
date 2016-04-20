@@ -246,23 +246,23 @@ public class TryThisAtHomeSVDModel implements Serializable {
         }
     }
 
-    public double predict(int idUser, int idItem) {
-        List<Double> userVector = getUserFeatures(idUser);
-        List<Double> itemVector = getItemFeatures(idItem);
+    public double predict(User user, Item item) {
+        List<Double> userVector = getUserFeatures(user.getId());
+        List<Double> itemVector = getItemFeatures(item.getId());
 
         return IntStream.range(0, userVector.size())
                 .mapToDouble(index -> userVector.get(index) * itemVector.get(index))
                 .sum();
     }
 
-    public double predictRating(int idUser, int idItem) {
+    public double predictRating(User user, Item item) {
 
-        double predict = predict(idUser, idItem);
+        double predict = predict(user, item);
 
         if (bias == null) {
             return predict;
         } else {
-            return bias.restoreBias(idUser, idItem, predict);
+            return bias.restoreBias(user, item, predict);
         }
     }
 

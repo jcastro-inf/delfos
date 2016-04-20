@@ -20,6 +20,7 @@ import delfos.dataset.basic.item.Item;
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.user.User;
+import java.io.Serializable;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -28,13 +29,13 @@ import java.util.stream.Collectors;
  *
  * @author jcastro
  */
-public class Bias {
+public class Bias implements Serializable {
+
+    private static final long serialVersionUID = 108L;
 
     private final double generalBias;
     private final Map<User, Double> usersBias;
     private final Map<Item, Double> itemsBias;
-
-    public Function<Rating, Double> ELIMINATE_BIAS;
 
     public Bias(double generalBias,
             Map<User, Double> usersBias,
@@ -43,9 +44,6 @@ public class Bias {
         this.generalBias = generalBias;
         this.usersBias = usersBias.entrySet().parallelStream().collect(Collectors.toMap(entry -> entry.getKey(), entry -> entry.getValue()));
         this.itemsBias = itemsBias.entrySet().parallelStream().collect(Collectors.toMap(entry -> entry.getKey(), entry -> entry.getValue()));
-
-        this.ELIMINATE_BIAS = (rating
-                -> rating.getRatingValue().doubleValue() - this.generalBias - this.usersBias.get(rating.getUser()) - this.itemsBias.get(rating.getItem()));
     }
 
     public Function<Rating, Rating> getBiasApplier() {
@@ -99,9 +97,6 @@ public class Bias {
                     .orElse(0);
             return itemBias;
         }));
-
-        this.ELIMINATE_BIAS = (rating
-                -> rating.getRatingValue().doubleValue() - this.generalBias - this.usersBias.get(rating.getUser()) - this.itemsBias.get(rating.getItem()));
     }
 
     public double restoreBias(User user, Item item, double value) {
@@ -111,14 +106,6 @@ public class Bias {
         double originalRating = value + generalBias + userBias + itemBias;
 
         return originalRating;
-    }
-
-    public double restoreBias(int idUser, int idItem, double value) {
-
-        User user = usersBias.keySet().parallelStream().filter(userInner -> userInner.getId() == idUser).findFirst().orElse(null);
-        Item item = itemsBias.keySet().parallelStream().filter(itemInner -> itemInner.getId() == idItem).findFirst().orElse(null);
-
-        return restoreBias(user, item, value);
     }
 
 }
