@@ -22,6 +22,7 @@ import delfos.rs.collaborativefiltering.als.Bias;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 /**
@@ -33,25 +34,25 @@ public class MatrixFactorizationModel implements Serializable {
 
     private static final long serialVersionUID = 108L;
 
-    private final Map<User, List<Double>> userFeatures;
-    private final Map<Item, List<Double>> itemFeatures;
+    private final Map<Integer, List<Double>> userFeatures;
+    private final Map<Integer, List<Double>> itemFeatures;
     private final Bias bias;
 
     public MatrixFactorizationModel(Map<User, List<Double>> userFeatures, Map<Item, List<Double>> itemFeatures, Bias bias) {
 
-        this.userFeatures = userFeatures;
+        this.userFeatures = userFeatures.entrySet().parallelStream().collect(Collectors.toMap(entry -> entry.getKey().getId(), entry -> entry.getValue()));
 
-        this.itemFeatures = itemFeatures;
+        this.itemFeatures = itemFeatures.entrySet().parallelStream().collect(Collectors.toMap(entry -> entry.getKey().getId(), entry -> entry.getValue()));
         this.bias = bias;
 
     }
 
     public List<Double> getUserFeatures(User user) {
-        return userFeatures.get(user);
+        return userFeatures.get(user.getId());
     }
 
     public List<Double> getItemFeatures(Item item) {
-        return itemFeatures.get(item);
+        return itemFeatures.get(item.getId());
     }
 
     public double predict(User user, Item item) {
