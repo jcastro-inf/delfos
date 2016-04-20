@@ -26,19 +26,16 @@ import delfos.dataset.basic.user.User;
 import delfos.experiment.SeedHolder;
 import delfos.rs.collaborativefiltering.CollaborativeRecommender;
 import delfos.rs.collaborativefiltering.svd.TryThisAtHomeSVDModel;
+import delfos.rs.recommendation.Recommendation;
+import delfos.rs.recommendation.RecommendationsToUser;
 import delfos.utils.algorithm.progress.ProgressChangedController;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-import org.apache.commons.math4.linear.Array2DRowRealMatrix;
-import org.apache.commons.math4.linear.ArrayRealVector;
-import org.apache.commons.math4.linear.DecompositionSolver;
-import org.apache.commons.math4.linear.QRDecomposition;
-import org.apache.commons.math4.linear.RealMatrix;
-import org.apache.commons.math4.linear.RealVector;
 import org.apache.commons.math4.optim.InitialGuess;
 import org.apache.commons.math4.optim.MaxEval;
 import org.apache.commons.math4.optim.MaxIter;
@@ -63,7 +60,7 @@ public class ALSRecommender extends CollaborativeRecommender<TryThisAtHomeSVDMod
     @Override
     public TryThisAtHomeSVDModel buildRecommendationModel(DatasetLoader<? extends Rating> datasetLoader) throws CannotLoadRatingsDataset, CannotLoadContentDataset, CannotLoadUsersDataset {
 
-        int numIter = 2;
+        int numIter = 1;
         int dimension = 5;
         long seed = getSeedValue();
 
@@ -83,7 +80,7 @@ public class ALSRecommender extends CollaborativeRecommender<TryThisAtHomeSVDMod
             return vector;
         }));
 
-        TryThisAtHomeSVDModel model = new TryThisAtHomeSVDModel(randomUserVectors, randomItemVectors);
+        TryThisAtHomeSVDModel model = new TryThisAtHomeSVDModel(randomUserVectors, randomItemVectors, bias);
 
         for (int iterationIndex = 0; iterationIndex < numIter; iterationIndex++) {
 
@@ -139,60 +136,97 @@ public class ALSRecommender extends CollaborativeRecommender<TryThisAtHomeSVDMod
 
                         double initialGuessPenalty = objectiveFunction.getObjectiveFunction().value(initialGuess);
 
-                        PointValuePair optimize = simplexOptimizer.optimize(new MultiDirectionalSimplex(dimension),
-                                new InitialGuess(initialGuess),
-                                objectiveFunction,
-                                GoalType.MINIMIZE,
-                                MaxEval.unlimited(),
-                                MaxIter.unlimited()
-                        );
-                        double optimizedPenalty = optimize.getValue();
-                        userProgress.setTaskFinished();
+                        try {
+                            PointValuePair optimize = simplexOptimizer.optimize(new MultiDirectionalSimplex(dimension),
+                                    new InitialGuess(initialGuess),
+                                    objectiveFunction,
+                                    GoalType.MINIMIZE,
+                                    MAX_EVAL,
+                                    MAX_ITER
+                            );
+                            double optimizedPenalty = optimize.getValue();
+                            userProgress.setTaskFinished();
 
-                        List<Double> optimizedUserVector = Arrays.stream(optimize.getPoint()).boxed().collect(Collectors.toList());
-                        return optimizedUserVector;
+                            List<Double> optimizedUserVector = Arrays.stream(optimize.getPoint()).boxed().collect(Collectors.toList());
+                            return optimizedUserVector;
+                        } catch (Exception ex) {
+                            System.out.println("Vector cannot be optimized for user " + user + " (numRatings=" + userRatings.size() + ")");
+                            return initialGuessList;
+                        }
                     }));
+
+            ProgressChangedController itemProgress = new ProgressChangedController(
+                    getAlias() + " for dataset " + datasetLoader.getAlias() + " item optimization iteration " + iteration,
+                    datasetLoader.getContentDataset().size(),
+                    this::fireBuildingProgressChangedEvent
+            );
 
             Map<Item, List<Double>> trainedItemVectors = datasetLoader.getContentDataset().parallelStream().collect(Collectors.toMap(item -> item,
                     item -> {
                         Map<Integer, ? extends Rating> itemRatings = datasetLoader.getRatingsDataset().getItemRatingsRated(item.getId());
 
-                        List<Integer> usersSorted = itemRatings.keySet().stream().sorted().collect(Collectors.toList());
+                        ObjectiveFunction objectiveFunction = new ObjectiveFunction((double[] pu) -> {
+                            List<Double> itemVector = Arrays.stream(pu).boxed().collect(Collectors.toList());
+                            double predictionError = itemRatings.values().parallelStream()
+                                    .map(bias.getBiasApplier())
+                                    .map(rating -> {
+                                        List<Double> userVector = initialModel.getUserFeatures(rating.getIdUser());
+                                        double prediction = IntStream.range(0, userVector.size())
+                                                .mapToDouble(index -> userVector.get(index) * itemVector.get(index))
+                                                .sum();
 
-                        RealMatrix coefficients = new Array2DRowRealMatrix(usersSorted.size(), dimension);
-                        IntStream.range(0, usersSorted.size()).parallel().boxed()
-                        .forEach(index
-                                -> {
-                            final Integer idUser = usersSorted.get(index);
-                            double[] vector = initialModel.getUserFeatures(idUser)
-                                    .stream().mapToDouble(value -> value).toArray();
-                            coefficients.setRow(index, vector);
+                                        double value = rating.getRatingValue().doubleValue();
+
+                                        double errorThisRating = prediction - value;
+
+                                        return errorThisRating;
+                                    })
+                                    .map(value -> Math.pow(value, 2))
+                                    .mapToDouble(value -> value)
+                                    .sum();
+
+                            double penalty = Arrays.stream(pu)
+                                    .map(value -> Math.pow(value, 2))
+                                    .sum();
+                            double objectiveFunctionValue = predictionError + lambda * penalty;
+                            return objectiveFunctionValue;
                         });
 
-                        DecompositionSolver solver = new QRDecomposition(coefficients).getSolver();
+                        SimplexOptimizer simplexOptimizer = new SimplexOptimizer(0, 0);
 
-                        RealVector realVector = new ArrayRealVector(usersSorted.size());
-                        IntStream.range(0, usersSorted.size()).parallel().boxed()
-                        .forEach(index -> {
-                            Integer idUser = usersSorted.get(index);
-                            double ratingValue = itemRatings.get(idUser).getRatingValue().doubleValue();
-                            realVector.setEntry(index, ratingValue);
-                        });
+                        double[] initialGuess = new Random(seed + item.getId()).doubles(-10, 10).limit(dimension).toArray();
 
-                        RealVector solution = solver.solve(realVector);
+                        List<Double> initialGuessList = Arrays.stream(initialGuess).boxed().collect(Collectors.toList());
 
-                        List<Double> solutionList = IntStream.range(0, solution.getDimension()).boxed()
-                        .map(index -> solution.getEntry(index))
-                        .collect(Collectors.toList());
-                        return solutionList;
+                        double initialGuessPenalty = objectiveFunction.getObjectiveFunction().value(initialGuess);
+
+                        try {
+                            PointValuePair optimize = simplexOptimizer.optimize(new MultiDirectionalSimplex(dimension),
+                                    new InitialGuess(initialGuess),
+                                    objectiveFunction,
+                                    GoalType.MINIMIZE,
+                                    MAX_EVAL,
+                                    MAX_ITER);
+                            double optimizedPenalty = optimize.getValue();
+                            itemProgress.setTaskFinished();
+
+                            List<Double> optimizedVector = Arrays.stream(optimize.getPoint()).boxed().collect(Collectors.toList());
+
+                            return optimizedVector;
+                        } catch (Exception ex) {
+                            System.out.println("Vector cannot be optimized " + item + " cannot be optimized (numRatings=" + itemRatings.size() + ")");
+                            return initialGuessList;
+                        }
                     }));
 
-            model = new TryThisAtHomeSVDModel(trainedUserVectors, trainedItemVectors);
+            model = new TryThisAtHomeSVDModel(trainedUserVectors, trainedItemVectors, bias);
 
         }
         return model;
 
     }
+    private final MaxIter MAX_ITER = new MaxIter(1000000);
+    private final MaxEval MAX_EVAL = new MaxEval(1000000);
 
     @Override
     public void setSeedValue(long seedValue) {
@@ -219,6 +253,17 @@ public class ALSRecommender extends CollaborativeRecommender<TryThisAtHomeSVDMod
                     });
         }).mapToDouble(value -> value).average().orElse(Double.NaN);
 
+    }
+
+    @Override
+    public RecommendationsToUser recommendToUser(DatasetLoader<? extends Rating> dataset, TryThisAtHomeSVDModel recommendationModel, User user, Set<Item> candidateItems) {
+
+        List<Recommendation> recommendations = candidateItems.parallelStream().map(item -> {
+            double predictRating = recommendationModel.predictRating(user.getId(), item.getId());
+            return new Recommendation(item, predictRating);
+        }).collect(Collectors.toList());
+
+        return new RecommendationsToUser(user, recommendations);
     }
 
 }

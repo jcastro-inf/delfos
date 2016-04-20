@@ -113,4 +113,12 @@ public class Bias {
         return originalRating;
     }
 
+    public double restoreBias(int idUser, int idItem, double value) {
+
+        User user = usersBias.keySet().parallelStream().filter(userInner -> userInner.getId() == idUser).findFirst().orElse(null);
+        Item item = itemsBias.keySet().parallelStream().filter(itemInner -> itemInner.getId() == idItem).findFirst().orElse(null);
+
+        return restoreBias(user, item, value);
+    }
+
 }

@@ -21,6 +21,7 @@ import delfos.common.exceptions.ratings.NotEnoughtItemInformation;
 import delfos.common.exceptions.ratings.NotEnoughtUserInformation;
 import delfos.dataset.basic.item.Item;
 import delfos.dataset.basic.user.User;
+import delfos.rs.collaborativefiltering.als.Bias;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -62,6 +63,7 @@ public class TryThisAtHomeSVDModel implements Serializable {
      * {@link TryThisAtHomeSVD#_itemFeatures} (valor en el mapa)
      */
     private Map<Integer, Integer> _usersIndex;
+    private Bias bias;
 
     /**
      * Crea el modelo a partir de las matrices de características para los usuarios y productos.
@@ -93,7 +95,7 @@ public class TryThisAtHomeSVDModel implements Serializable {
         this._itemsIndex = itemsIndex;
     }
 
-    public TryThisAtHomeSVDModel(Map<User, List<Double>> userFeatures, Map<Item, List<Double>> itemFeatures) {
+    public TryThisAtHomeSVDModel(Map<User, List<Double>> userFeatures, Map<Item, List<Double>> itemFeatures, Bias bias) {
 
         List<User> usersSorted = userFeatures.keySet().stream().sorted().collect(Collectors.toList());
         List<Item> itemsSorted = itemFeatures.keySet().stream().sorted().collect(Collectors.toList());
@@ -140,6 +142,7 @@ public class TryThisAtHomeSVDModel implements Serializable {
 
         this._itemFeatures = _itemFeatures;
         this._itemsIndex = itemsIndex;
+        this.bias = bias;
 
     }
 
@@ -251,4 +254,16 @@ public class TryThisAtHomeSVDModel implements Serializable {
                 .mapToDouble(index -> userVector.get(index) * itemVector.get(index))
                 .sum();
     }
+
+    public double predictRating(int idUser, int idItem) {
+
+        double predict = predict(idUser, idItem);
+
+        if (bias == null) {
+            return predict;
+        } else {
+            return bias.restoreBias(idUser, idItem, predict);
+        }
+    }
+
 }
