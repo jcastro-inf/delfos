@@ -108,4 +108,16 @@ public class Bias implements Serializable {
         return originalRating;
     }
 
+    public double getUserBias(User user) {
+        return usersBias.get(user.getId());
+    }
+
+    public double getItemBias(Item item) {
+        return itemsBias.get(item.getId());
+    }
+
+    public double getGeneralBias() {
+        return generalBias;
+    }
+
 }
