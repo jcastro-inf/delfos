@@ -21,6 +21,8 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -64,8 +66,7 @@ public class FileUtilities {
     }
 
     /**
-     * Borra el directorio indicado y todos los archivos y directorios que
-     * cuelgan de él.
+     * Borra el directorio indicado y todos los archivos y directorios que cuelgan de él.
      *
      * @param directory Directorio a borrar.
      */
@@ -160,6 +161,15 @@ public class FileUtilities {
                 if (!mkdirs) {
                     Global.showWarning("Could not create directory '" + directory.getAbsolutePath() + "'");
                     Global.showWarning("Check for permissions.");
+
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException ex) {
+                        Logger.getLogger(FileUtilities.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                    if (directory.exists()) {
+                        return true;
+                    }
 
                     FileNotFoundException ex = new FileNotFoundException("Could not create directory '" + directory.getAbsolutePath() + "'");
                     ERROR_CODES.CANNOT_WRITE_FILE.exit(ex);
