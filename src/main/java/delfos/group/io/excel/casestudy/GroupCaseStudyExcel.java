@@ -1005,7 +1005,8 @@ public class GroupCaseStudyExcel {
                     .max().orElse(-1);
 
             if (byNumExecutions.get(maxExec).size() > 1) {
-                throw new IllegalStateException("More than one execution with the maximum!");
+                byNumExecutions.get(maxExec).forEach(groupCaseStudy -> Global.showWarning(groupCaseStudy.getAlias() + "\""));
+                throw new IllegalStateException("More than one execution with the maximum! (" + byNumExecutions.get(maxExec).size() + ")");
             }
 
             return byNumExecutions.get(maxExec).get(0);
