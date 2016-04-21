@@ -53,7 +53,7 @@ public class RecommenderSystem_cacheRecommendationModel<RecommendationModel> ext
     private static final long serialVersionUID = 1L;
 
     public static final File DEFAULT_DIRECTORY = new File(
-            Constants.getTempDirectory().getAbsolutePath() + File.separator
+            Constants.getTempDirectory() + File.separator
             + "buffered-recommendation-models" + File.separator);
 
     public static final String extension = "model";

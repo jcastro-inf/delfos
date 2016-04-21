@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,15 +16,15 @@
  */
 package delfos.io.xml.parameterowner.parameter;
 
-import org.jdom2.Element;
 import delfos.common.Global;
 import delfos.common.parameters.Parameter;
 import delfos.common.parameters.ParameterOwner;
 import delfos.common.parameters.restriction.DirectoryParameter;
+import java.io.File;
+import org.jdom2.Element;
 
 /**
- * Clase para realizar la entrada/salida a XML para parámetros de directorio de
- * {@link ParameterOwner}
+ * Clase para realizar la entrada/salida a XML para parámetros de directorio de {@link ParameterOwner}
  *
  * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
@@ -35,30 +35,25 @@ public class DirectoryParameterXML {
     /**
      * Genera el elemento XML que describe el parámetro y el valor que tiene.
      *
-     * @param parameterOwner Parameter owner al que pertenece al parámetro. Se
-     * debe consultar a este objeto para conocer el valor actual del mismo
+     * @param parameterOwner Parameter owner al que pertenece al parámetro. Se debe consultar a este objeto para conocer
+     * el valor actual del mismo
      * @param p Parámetro a almacenar
+     * @return
      */
     public static Element getDirectoryParameterElement(ParameterOwner parameterOwner, Parameter p) {
         Element parameterElement = new Element(ParameterXML.PARAMETER_ELEMENT_NAME);
         parameterElement.setAttribute(ParameterXML.PARAMETER_NAME, p.getName());
 
         DirectoryParameter fp = (DirectoryParameter) p.getRestriction();
+        File parameterValueFile = (File) parameterOwner.getParameterValue(p);
 
         parameterElement.setAttribute(ParameterXML.PARAMETER_TYPE, fp.getName());
-        parameterElement.setAttribute(ParameterXML.PARAMETER_VALUE, parameterOwner.getParameterValue(p).toString());
-
-//        for (String extension : fp.getAllowedExtensions()) {
-//            Element allowedExtension = new Element(EXTENSIONS_ELEMENTS);
-//            allowedExtension.setAttribute(ParameterXML.PARAMETER_VALUE, extension);
-//            doubleParameter.addContent(allowedExtension);
-//        }
+        parameterElement.setAttribute(ParameterXML.PARAMETER_VALUE, parameterValueFile.toString());
         return parameterElement;
     }
 
     /**
-     * Asigna el valor del parámetro especificado en el objeto XML al
-     * {@link ParameterOwner} especificado
+     * Asigna el valor del parámetro especificado en el objeto XML al {@link ParameterOwner} especificado
      *
      * @param parameterOwner Objeto al que asignar el parámetro
      * @param parameterElement Elemento que describe el parámetro y su valor
