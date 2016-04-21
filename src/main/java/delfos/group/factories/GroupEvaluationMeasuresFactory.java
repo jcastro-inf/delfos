@@ -21,6 +21,7 @@ import delfos.group.results.groupevaluationmeasures.AreaUnderRoc;
 import delfos.group.results.groupevaluationmeasures.Coverage;
 import delfos.group.results.groupevaluationmeasures.GroupEvaluationMeasure;
 import delfos.group.results.groupevaluationmeasures.MAE;
+import delfos.group.results.groupevaluationmeasures.MAE_unpopularItems;
 import delfos.group.results.groupevaluationmeasures.NDCG;
 import delfos.group.results.groupevaluationmeasures.NMAE;
 import delfos.group.results.groupevaluationmeasures.NRMSE;
@@ -57,8 +58,7 @@ import delfos.group.results.groupevaluationmeasures.time.GroupRecommendationTime
 import delfos.group.results.groupevaluationmeasures.time.ModelBuildTime;
 
 /**
- * Clase que conoce todas las medidas de evaluación a grupos y permite
- * recuperarlas para su uso en los casos de estudio.
+ * Clase que conoce todas las medidas de evaluación a grupos y permite recuperarlas para su uso en los casos de estudio.
  *
  * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
@@ -90,6 +90,8 @@ public class GroupEvaluationMeasuresFactory extends Factory<GroupEvaluationMeasu
         instance.addClass(RMSE.class);
         instance.addClass(NMAE.class);
         instance.addClass(NRMSE.class);
+
+        instance.addClass(MAE_unpopularItems.class);
 
         //TODO: Rank measures
         instance.addClass(NDCG.class);
