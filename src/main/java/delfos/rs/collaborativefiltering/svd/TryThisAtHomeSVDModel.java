@@ -16,7 +16,6 @@
  */
 package delfos.rs.collaborativefiltering.svd;
 
-import delfos.common.Global;
 import delfos.common.exceptions.ratings.NotEnoughtItemInformation;
 import delfos.common.exceptions.ratings.NotEnoughtUserInformation;
 import delfos.dataset.basic.item.Item;
@@ -232,7 +231,7 @@ public class TryThisAtHomeSVDModel implements Serializable {
 
     public void warningItemNotInModel(int idItem, String message, NotEnoughtItemInformation ex) {
         if (!itemsWarned.contains(idItem)) {
-            Global.showWarning(message);
+            //Global.showWarning(message);
             itemsWarned.add(idItem);
         }
     }
@@ -241,7 +240,7 @@ public class TryThisAtHomeSVDModel implements Serializable {
 
     public void warningUserNotInModel(int idUser, String message, NotEnoughtUserInformation ex) {
         if (!usersWarned.contains(idUser)) {
-            Global.showWarning(message);
+            //Global.showWarning(message);
             usersWarned.add(idUser);
         }
     }
