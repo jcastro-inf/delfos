@@ -1101,7 +1101,6 @@ public class GroupCaseStudyExcel {
                 .collect(Collectors.toList());
         combinationsOfColumnRowParameters.add(new Combination(rowChains, columnChains));
 
-        Global.showMessage("combinationsOfColumnRowParameters.size() == " + combinationsOfColumnRowParameters.size() + "\n");
         combinationsOfColumnRowParameters.parallelStream().forEach(combination -> {
             try {
 
