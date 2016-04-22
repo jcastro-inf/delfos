@@ -844,13 +844,18 @@ public class GroupCaseStudyExcel {
 
         List<ParameterChain> differentChainsWithAliases = ParameterChain.obtainDifferentChains(groupCaseStudys);
 
-        List<ParameterChain> differentChains = differentChainsWithAliases.stream().filter(chain -> !chain.isAlias()).collect(Collectors.toList());
+        List<ParameterChain> differentChains = differentChainsWithAliases.stream()
+                .filter(chain -> !chain.isAlias())
+                .filter(chain -> !chain.isSeed())
+                .collect(Collectors.toList());
 
         List<ParameterChain> dataValidationDifferentChains = differentChains.stream()
                 .filter(chain -> chain.isDataValidationParameter())
                 .filter(chain -> !chain.isNumExecutions())
                 .collect(Collectors.toList());
-        List<ParameterChain> techniqueDifferentChains = differentChains.stream().filter(chain -> chain.isTechniqueParameter()).collect(Collectors.toList());
+        List<ParameterChain> techniqueDifferentChains = differentChains.stream()
+                .filter(chain -> chain.isTechniqueParameter())
+                .collect(Collectors.toList());
 
         writeRowAndColumnCombination(techniqueDifferentChains, groupCaseStudys, dataValidationDifferentChains, evaluationMeasure, groupCaseStudyResults, workbook);
     }
@@ -860,12 +865,16 @@ public class GroupCaseStudyExcel {
 
         List<ParameterChain> differentChainsWithAliases = ParameterChain.obtainDifferentChains(groupCaseStudys);
 
-        List<ParameterChain> differentChains = differentChainsWithAliases.stream().filter(chain -> !chain.isAlias()).collect(Collectors.toList());
+        List<ParameterChain> differentChains = differentChainsWithAliases.stream()
+                .filter(chain -> !chain.isAlias())
+                .filter(chain -> !chain.isSeed())
+                .collect(Collectors.toList());
 
         List<ParameterChain> dataValidationDifferentChains = differentChains.stream()
                 .filter(chain -> chain.isDataValidationParameter())
                 .filter(chain -> !chain.isNumExecutions())
                 .collect(Collectors.toList());
+
         return dataValidationDifferentChains.isEmpty() || dataValidationDifferentChains.size() == 1;
     }
 
@@ -1017,21 +1026,19 @@ public class GroupCaseStudyExcel {
 
         Global.showMessage("Processing " + groupCaseStudys.size() + " different results files.\n");
 
-        List<ParameterChain> differentChainsWithAliases = ParameterChain.obtainDifferentChains(groupCaseStudys);
+        List<ParameterChain> differentChainsWithAliasesAndSeed = ParameterChain.obtainDifferentChains(groupCaseStudys);
 
-        List<ParameterChain> differentChains = differentChainsWithAliases.stream()
+        List<ParameterChain> differentChains = differentChainsWithAliasesAndSeed.stream()
                 .filter(chain -> !chain.isAlias())
                 .filter(chain -> !chain.isSeed())
                 .collect(Collectors.toList());
 
         List<ParameterChain> dataValidationDifferentChains = differentChains.stream()
                 .filter(chain -> chain.isDataValidationParameter())
-                .filter(chain -> !chain.isSeed())
                 .filter(chain -> !chain.isNumExecutions())
                 .collect(Collectors.toList());
 
         List<ParameterChain> techniqueDifferentChains = differentChains.stream()
-                .filter(chain -> !chain.isSeed())
                 .filter(chain -> chain.isTechniqueParameter()).collect(Collectors.toList());
 
         if (techniqueDifferentChains.isEmpty()) {
