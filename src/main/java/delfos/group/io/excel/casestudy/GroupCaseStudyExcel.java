@@ -883,7 +883,10 @@ public class GroupCaseStudyExcel {
 
         List<ParameterChain> differentChainsWithAliases = ParameterChain.obtainDifferentChains(groupCaseStudys);
 
-        List<ParameterChain> differentChains = differentChainsWithAliases.stream().filter(chain -> !chain.isAlias()).collect(Collectors.toList());
+        List<ParameterChain> differentChains = differentChainsWithAliases.stream()
+                .filter(chain -> !chain.isAlias())
+                .filter(chain -> !chain.isSeed())
+                .collect(Collectors.toList());
 
         List<ParameterChain> dataValidationDifferentChains = differentChains.stream()
                 .filter(chain -> chain.isDataValidationParameter())
@@ -1016,15 +1019,19 @@ public class GroupCaseStudyExcel {
 
         List<ParameterChain> differentChainsWithAliases = ParameterChain.obtainDifferentChains(groupCaseStudys);
 
-        List<ParameterChain> differentChains = differentChainsWithAliases.stream().filter(chain -> !chain.isAlias())
+        List<ParameterChain> differentChains = differentChainsWithAliases.stream()
+                .filter(chain -> !chain.isAlias())
+                .filter(chain -> !chain.isSeed())
                 .collect(Collectors.toList());
 
         List<ParameterChain> dataValidationDifferentChains = differentChains.stream()
                 .filter(chain -> chain.isDataValidationParameter())
+                .filter(chain -> !chain.isSeed())
                 .filter(chain -> !chain.isNumExecutions())
                 .collect(Collectors.toList());
 
         List<ParameterChain> techniqueDifferentChains = differentChains.stream()
+                .filter(chain -> !chain.isSeed())
                 .filter(chain -> chain.isTechniqueParameter()).collect(Collectors.toList());
 
         if (techniqueDifferentChains.isEmpty()) {
@@ -1084,6 +1091,7 @@ public class GroupCaseStudyExcel {
                 .stream()
                 .filter(chain -> !chain.isAlias())
                 .filter(chain -> !chain.isNumExecutions())
+                .filter(chain -> !chain.isSeed())
                 .collect(Collectors.toList());
 
         Set<Combination> combinationsOfColumnRowParameters = obtainDifferentParameterInCollumn(differentChains)
