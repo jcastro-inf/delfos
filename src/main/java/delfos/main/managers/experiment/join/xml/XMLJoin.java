@@ -88,7 +88,10 @@ public class XMLJoin extends CaseUseMode {
 
         consoleParameters.printUnusedParameters(System.err);
 
+        Global.showMessage("Writing file:  " + outputFile.getAbsolutePath() + "\n");
         mergeResultsIntoOutput(resultsPaths, outputFile, filterMeasures);
+
+        Global.showMessage("Finished file: " + outputFile.getAbsolutePath() + "\n");
 
     }
 
@@ -138,7 +141,7 @@ public class XMLJoin extends CaseUseMode {
 
         List<File> relevantFiles = aggregateResultsXML.filterResultsFiles(allFiles);
 
-        Global.showMessage("Parsing " + relevantFiles.size() + " results files.\n");
+        Global.showInfoMessage("Parsing " + relevantFiles.size() + " results files.\n");
 
         if (relevantFiles.isEmpty()) {
             return;
@@ -154,7 +157,7 @@ public class XMLJoin extends CaseUseMode {
 
         writeJoinIntoSpreadsheet(relevantFiles, outputFile, filterMeasures);
 
-        Global.showMessage("Finished parsing " + relevantFiles.size() + " results files.\n");
+        Global.showInfoMessage("Finished parsing " + relevantFiles.size() + " results files.\n");
 
     }
 

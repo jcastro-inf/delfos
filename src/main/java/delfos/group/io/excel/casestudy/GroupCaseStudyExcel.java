@@ -911,6 +911,14 @@ public class GroupCaseStudyExcel {
             String evaluationMeasure,
             CaseStudyResultMatrix matrix,
             String sheetName) throws WriteException {
+        final int sheetNameMaxLenght = 30;
+
+        if (sheetName.length() > sheetNameMaxLenght) {
+
+            String shortenName = sheetName.substring(0, Math.min(sheetNameMaxLenght, sheetName.length()));
+            Global.showInfoMessage("Sheet name too long! " + sheetName + " --> " + shortenName);
+            sheetName = shortenName;
+        }
 
         WritableSheet sheet = workbook.createSheet(sheetName, workbook.getNumberOfSheets());
 
@@ -1024,7 +1032,7 @@ public class GroupCaseStudyExcel {
             return byNumExecutions.get(maxExec).get(0);
         }).collect(Collectors.toList());
 
-        Global.showMessage("Processing " + groupCaseStudys.size() + " different results files.\n");
+        Global.showInfoMessage("Processing " + groupCaseStudys.size() + " different results files.\n");
 
         List<ParameterChain> differentChainsWithAliasesAndSeed = ParameterChain.obtainDifferentChains(groupCaseStudys);
 
