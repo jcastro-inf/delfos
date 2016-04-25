@@ -25,7 +25,7 @@ import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RelevanceCriteria;
 import delfos.dataset.basic.user.User;
 import delfos.group.groupsofusers.GroupOfUsers;
-import static delfos.group.results.groupevaluationmeasures.MAE_unpopularItems.POPULARITY_THRESHOLD;
+import static delfos.group.results.groupevaluationmeasures.MAE_unpopular.POPULARITY_THRESHOLD;
 import delfos.group.results.grouprecomendationresults.GroupRecommenderSystemResult;
 import delfos.rs.recommendation.Recommendation;
 import java.util.Collection;

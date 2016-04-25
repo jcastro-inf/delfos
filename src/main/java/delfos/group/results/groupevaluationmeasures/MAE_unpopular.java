@@ -37,7 +37,7 @@ import java.util.stream.Collectors;
  * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  */
-public class MAE_unpopularItems extends GroupEvaluationMeasure {
+public class MAE_unpopular extends GroupEvaluationMeasure {
 
     public static final double POPULARITY_THRESHOLD = 0.2;
 

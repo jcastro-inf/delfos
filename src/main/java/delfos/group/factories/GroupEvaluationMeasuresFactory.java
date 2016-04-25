@@ -21,7 +21,8 @@ import delfos.group.results.groupevaluationmeasures.AreaUnderRoc;
 import delfos.group.results.groupevaluationmeasures.Coverage;
 import delfos.group.results.groupevaluationmeasures.GroupEvaluationMeasure;
 import delfos.group.results.groupevaluationmeasures.MAE;
-import delfos.group.results.groupevaluationmeasures.MAE_unpopularItems;
+import delfos.group.results.groupevaluationmeasures.MAE_popular;
+import delfos.group.results.groupevaluationmeasures.MAE_unpopular;
 import delfos.group.results.groupevaluationmeasures.NDCG;
 import delfos.group.results.groupevaluationmeasures.NMAE;
 import delfos.group.results.groupevaluationmeasures.NRMSE;
@@ -91,7 +92,8 @@ public class GroupEvaluationMeasuresFactory extends Factory<GroupEvaluationMeasu
         instance.addClass(NMAE.class);
         instance.addClass(NRMSE.class);
 
-        instance.addClass(MAE_unpopularItems.class);
+        instance.addClass(MAE_unpopular.class);
+        instance.addClass(MAE_popular.class);
 
         //TODO: Rank measures
         instance.addClass(NDCG.class);
