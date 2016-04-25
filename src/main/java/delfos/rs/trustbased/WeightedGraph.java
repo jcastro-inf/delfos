@@ -47,7 +47,7 @@ import org.apache.commons.io.output.WriterOutputStream;
  */
 public class WeightedGraph<Node> implements Serializable, Comparable<WeightedGraph<Node>> {
 
-    private static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat("#0.00");
+    public static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat("#0.00");
 
     private static final long serialVersionUID = 115L;
 

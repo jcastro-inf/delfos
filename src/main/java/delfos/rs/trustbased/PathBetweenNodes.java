@@ -139,7 +139,7 @@ public class PathBetweenNodes<Node> implements Comparable<PathBetweenNodes> {
 
     @Override
     public String toString() {
-        return _nodes.toString() + " --> " + length;
+        return _nodes.toString() + " --> " + WeightedGraph.DECIMAL_FORMAT.format(length);
     }
 
     public double getFirstWeight() {
