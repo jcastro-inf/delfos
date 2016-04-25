@@ -35,27 +35,27 @@ import delfos.similaritymeasures.Tanimoto;
 import delfos.similaritymeasures.WeightedSimilarityMeasure;
 import delfos.similaritymeasures.useruser.ConditionalProbability;
 import delfos.similaritymeasures.useruser.CosineAsymmetric;
-import delfos.similaritymeasures.useruser.demographic.DemographicSimilarity;
+import delfos.similaritymeasures.useruser.EntropyOfDifferences_asymmetric;
 import delfos.similaritymeasures.useruser.Jaccard;
 import delfos.similaritymeasures.useruser.MSDAsymmetric;
+import delfos.similaritymeasures.useruser.PearsonAsymmetric;
 import delfos.similaritymeasures.useruser.RelevanceFactor;
 import delfos.similaritymeasures.useruser.SorensenIndex;
-import delfos.similaritymeasures.useruser.SorensenIndex_improved;
+import delfos.similaritymeasures.useruser.SorensenIndex_asymmetric;
 import delfos.similaritymeasures.useruser.UserUserMultipleCorrelationCoefficient;
 import delfos.similaritymeasures.useruser.UserUserSimilarity;
 import delfos.similaritymeasures.useruser.UserUserSimilarityWrapper;
 import delfos.similaritymeasures.useruser.UserUserSimilarityWrapper_relevanceFactor;
 import delfos.similaritymeasures.useruser.UserUserSimilarity_buffered;
+import delfos.similaritymeasures.useruser.demographic.DemographicSimilarity;
 import java.util.ArrayList;
 import java.util.Collection;
 
 /**
- * Factoría que conoce todas las medidas de similitud que la biblioteca de
- * recomendación incorppora implementadas. Permite obtenerlas según qué tipo de
- * medida se necesite en cada momento, por ejemplo medidas que soporten la
- * ponderación de valores ({@link WeightedSimilarityMeasure}) o que estén
- * diseñadas para funcionar en sistemas de recomendación colaborativos
- * ({@link CollaborativeSimilarityMeasure}).
+ * Factoría que conoce todas las medidas de similitud que la biblioteca de recomendación incorppora implementadas.
+ * Permite obtenerlas según qué tipo de medida se necesite en cada momento, por ejemplo medidas que soporten la
+ * ponderación de valores ({@link WeightedSimilarityMeasure}) o que estén diseñadas para funcionar en sistemas de
+ * recomendación colaborativos ({@link CollaborativeSimilarityMeasure}).
  *
  * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
@@ -94,9 +94,11 @@ public class SimilarityMeasuresFactory extends Factory<SimilarityMeasure> {
 
         //Asymmetric similarities for users
         instance.addClass(ConditionalProbability.class);
-        instance.addClass(SorensenIndex_improved.class);
+        instance.addClass(SorensenIndex_asymmetric.class);
         instance.addClass(CosineAsymmetric.class);
         instance.addClass(MSDAsymmetric.class);
+        instance.addClass(PearsonAsymmetric.class);
+        instance.addClass(EntropyOfDifferences_asymmetric.class);
 
         //Taking into account only the rated items and disregarding their values.
         instance.addClass(SorensenIndex.class);
@@ -118,8 +120,7 @@ public class SimilarityMeasuresFactory extends Factory<SimilarityMeasure> {
      * Devuelve todas las medidas de similitud colaborativas.
      *
      * @param rs Sistema de recomendación para el que se utilizará la medida.
-     * @return Lista de medidas de similitud colaborativas que cumplen la
-     * condición.
+     * @return Lista de medidas de similitud colaborativas que cumplen la condición.
      */
     @SuppressWarnings({"rawtypes", "unchecked"})
     public Collection<CollaborativeSimilarityMeasure> getCollaborativeSimilarityMeasures(Class<? extends RecommenderSystemAdapter> rs) {
