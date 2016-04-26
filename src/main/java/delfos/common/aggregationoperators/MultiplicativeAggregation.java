@@ -71,7 +71,7 @@ public class MultiplicativeAggregation extends AggregationOperator {
     }
 
     @Override
-    public double aggregateValues(Collection<Number> values) {
+    public double aggregateValues(Collection<? extends Number> values) {
         if (values == null) {
         }
 

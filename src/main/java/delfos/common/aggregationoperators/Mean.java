@@ -32,7 +32,7 @@ public class Mean extends AggregationOperator {
     private final static long serialVersionUID = 1L;
 
     @Override
-    public double aggregateValues(Collection<Number> values) {
+    public double aggregateValues(Collection<? extends Number> values) {
         MeanIterative meanIterative = new MeanIterative();
 
         for (Number value : values) {

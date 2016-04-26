@@ -60,7 +60,7 @@ public abstract class WeightedAggregationOperator extends AggregationOperator {
     }
 
     @Override
-    public final double aggregateValues(Collection<Number> values) {
+    public final double aggregateValues(Collection<? extends Number> values) {
         double equalWeight = 1.0 / values.size();
 
         List<Number> valuesList = values.stream().collect(Collectors.toList());

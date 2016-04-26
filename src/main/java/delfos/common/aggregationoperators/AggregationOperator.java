@@ -38,7 +38,7 @@ public abstract class AggregationOperator extends TwoValuesAggregator {
      *
      * @throws IllegalArgumentException Si no contiene ningún valor para agregar o si es nulo.
      */
-    public abstract double aggregateValues(Collection<Number> values);
+    public abstract double aggregateValues(Collection<? extends Number> values);
 
     /**
      * Método que agrega los valores especificados en un único valor.

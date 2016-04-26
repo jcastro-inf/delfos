@@ -52,7 +52,7 @@ public class EnsureDegreeOfFairness extends AggregationOperator {
     }
 
     @Override
-    public double aggregateValues(Collection<Number> values) {
+    public double aggregateValues(Collection<? extends Number> values) {
 
         MeanIterative mean = new MeanIterative();
         StandardDeviation stdDev = new StandardDeviation();

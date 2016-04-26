@@ -34,7 +34,7 @@ public class HarmonicMean extends AggregationOperator {
     private final static long serialVersionUID = 1L;
 
     @Override
-    public double aggregateValues(Collection<Number> values) {
+    public double aggregateValues(Collection<? extends Number> values) {
 
         MathContext mathContext = new MathContext(32, RoundingMode.HALF_UP);
         BigDecimal sum = new BigDecimal(BigInteger.ZERO);

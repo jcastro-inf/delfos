@@ -32,7 +32,7 @@ public class Mode extends AggregationOperator {
     private final static long serialVersionUID = 1L;
 
     @Override
-    public double aggregateValues(Collection<Number> values) {
+    public double aggregateValues(Collection<? extends Number> values) {
         MultiSet<Double> ms = new MultiSet();
         for (Number value : values) {
             Double d = value.doubleValue();

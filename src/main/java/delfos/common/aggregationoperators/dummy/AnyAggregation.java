@@ -22,7 +22,7 @@ import java.util.Collection;
 public class AnyAggregation extends AggregationOperator {
 
     @Override
-    public double aggregateValues(Collection<Number> values) {
+    public double aggregateValues(Collection<? extends Number> values) {
         if (isTrivialCase(values)) {
             return values.iterator().next().doubleValue();
         } else {
@@ -30,7 +30,7 @@ public class AnyAggregation extends AggregationOperator {
         }
     }
 
-    public static boolean isTrivialCase(Iterable<Number> values) {
+    public static boolean isTrivialCase(Iterable<? extends Number> values) {
         int count = count(values);
         if (count == 1) {
             return true;
@@ -38,7 +38,7 @@ public class AnyAggregation extends AggregationOperator {
         return allRatingsEqual(values);
     }
 
-    private static int count(Iterable<Number> values) {
+    private static int count(Iterable<? extends Number> values) {
         int count = 0;
         for (Number value : values) {
             count++;
@@ -46,7 +46,7 @@ public class AnyAggregation extends AggregationOperator {
         return count;
     }
 
-    private static boolean allRatingsEqual(Iterable<Number> values) {
+    private static boolean allRatingsEqual(Iterable<? extends Number> values) {
         for (Number value1 : values) {
             for (Number value2 : values) {
                 if (!value1.equals(value2)) {

@@ -33,7 +33,7 @@ public class Median extends AggregationOperator {
     private final static long serialVersionUID = 1L;
 
     @Override
-    public double aggregateValues(Collection<Number> values) {
+    public double aggregateValues(Collection<? extends Number> values) {
         ArrayList<Number> list = new ArrayList<>();
         for (Number value : values) {
             list.add(value);

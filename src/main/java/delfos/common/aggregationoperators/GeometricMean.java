@@ -30,7 +30,7 @@ public class GeometricMean extends AggregationOperator {
     private final static long serialVersionUID = 1L;
 
     @Override
-    public double aggregateValues(Collection<Number> values) {
+    public double aggregateValues(Collection<? extends Number> values) {
 
         double multiplication = 1;
         int n = 0;

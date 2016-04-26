@@ -32,7 +32,7 @@ public class MaximumValue extends AggregationOperator {
     private final static long serialVersionUID = 1L;
 
     @Override
-    public double aggregateValues(Collection<Number> values) {
+    public double aggregateValues(Collection<? extends Number> values) {
         Iterator<? extends Number> it = values.iterator();
         if (!it.hasNext()) {
             throw new IllegalArgumentException("No values given");
