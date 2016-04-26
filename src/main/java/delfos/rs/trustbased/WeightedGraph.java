@@ -655,4 +655,31 @@ public class WeightedGraph<Node> implements Serializable, Comparable<WeightedGra
         return baos.toString();
     }
 
+    public boolean hasAnyEdge() {
+        Optional<PathBetweenNodes<Node>> longestPath = allNodes().parallelStream()
+                .flatMap(user1 -> allNodes()
+                        .parallelStream()
+                        .map(user2 -> shortestPath(user1, user2)))
+                .filter(optionalPath -> optionalPath.isPresent())
+                .map(optionalPath -> optionalPath.get())
+                .filter(path -> !path.isSelf())
+                .collect(Collectors.maxBy(PathBetweenNodes.FURTHEST_PATH()));
+
+        return longestPath.isPresent();
+    }
+
+    public boolean hasAnyEdgeMissing() {
+
+        long count = allEdges().parallelStream().filter(edge -> !edge.isSelf()).count();
+
+        Optional<Optional<PathBetweenNodes<Node>>> missingEdge = allNodes().parallelStream()
+                .flatMap(user1 -> allNodes()
+                        .parallelStream()
+                        .map(user2 -> shortestPath(user1, user2)))
+                .filter(optionalPath -> !optionalPath.isPresent())
+                .findAny();
+
+        return !missingEdge.isPresent();
+    }
+
 }
