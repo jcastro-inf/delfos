@@ -19,6 +19,7 @@ package delfos.rs.trustbased;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -29,6 +30,34 @@ import java.util.List;
  * @param <Node>
  */
 public class PathBetweenNodes<Node> implements Comparable<PathBetweenNodes> {
+
+    public static <Node> Comparator<PathBetweenNodes<Node>> CLOSEST_PATH(Class<Node> classOfNode) {
+        return (path1, path2) -> {
+            double diff = path1.getLength() - path2.getLength();
+            return diff < 0 ? 1 : -1;
+        };
+    }
+
+    public static <Node> Comparator<PathBetweenNodes<Node>> FURTHEST_PATH(Class<Node> classOfNode) {
+        return (path1, path2) -> {
+            double diff = path1.getLength() - path2.getLength();
+            return diff > 0 ? 1 : -1;
+        };
+    }
+
+    public static Comparator<PathBetweenNodes<?>> CLOSEST_PATH() {
+        return (path1, path2) -> {
+            double diff = path1.getLength() - path2.getLength();
+            return diff < 0 ? 1 : -1;
+        };
+    }
+
+    public static Comparator<PathBetweenNodes<?>> FURTHEST_PATH() {
+        return (path1, path2) -> {
+            double diff = path1.getLength() - path2.getLength();
+            return diff > 0 ? 1 : -1;
+        };
+    }
 
     private final List<Node> _nodes;
     private final List<Double> _weights;
@@ -42,8 +71,8 @@ public class PathBetweenNodes<Node> implements Comparable<PathBetweenNodes> {
         return Collections.unmodifiableList(_nodes);
     }
 
-    public static <Node> PathBetweenNodes<Node> buildEdge(Node from, Node to, double weight) {
-        return new PathBetweenNodes<>(Arrays.asList(from, to), Arrays.asList(1.0), 1);
+    public static <Node> PathBetweenNodes<Node> buildEdge(Node from, Node to, double length) {
+        return new PathBetweenNodes<>(Arrays.asList(from, to), Arrays.asList(1.0), length);
     }
 
     private PathBetweenNodes(List<Node> _nodes, List<Double> _weights, double length) {
