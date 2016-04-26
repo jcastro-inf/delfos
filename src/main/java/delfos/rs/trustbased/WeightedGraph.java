@@ -682,4 +682,18 @@ public class WeightedGraph<Node> implements Serializable, Comparable<WeightedGra
         return !missingEdge.isPresent();
     }
 
+    public Map<Node, Map<Node, Double>> getCompleteMapOfConnections() {
+        Map<Node, Map<Node, Double>> edgesOfSubGraph = allNodes().parallelStream().collect(Collectors.toMap(node1 -> node1, node1 -> {
+            Map<Node, Double> edgesFromThisVertex = allNodes().parallelStream()
+                    .collect(Collectors.toMap(
+                            node2 -> node2,
+                            node2 -> {
+                                return this.connectionWeight(node1, node2).orElse(0.0);
+                            }));
+
+            return edgesFromThisVertex;
+        }));
+        return edgesOfSubGraph;
+    }
+
 }
