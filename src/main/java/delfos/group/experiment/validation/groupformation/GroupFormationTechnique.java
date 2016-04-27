@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -28,22 +28,19 @@ import java.util.Collection;
 import java.util.LinkedList;
 
 /**
- * Clase abstracta que define los métodos que se utilizan para generar los
- * grupos de usuarios que se utilizarán para evaluar los sistemas de
- * recomendación a grupos
+ * Clase abstracta que define los métodos que se utilizan para generar los grupos de usuarios que se utilizarán para
+ * evaluar los sistemas de recomendación a grupos
  *
- * NOTA: Cuando se implementa una clase que herede de
- * {@link GroupFormationTechnique}, se debe llamar en todos los constructores
- * que se implementen al método super(), para realizar las inicializaciones
- * pertinentes.
+ * NOTA: Cuando se implementa una clase que herede de {@link GroupFormationTechnique}, se debe llamar en todos los
+ * constructores que se implementen al método super(), para realizar las inicializaciones pertinentes.
  *
  * @author jcastro-inf ( https://github.com/jcastro-inf )
  */
 public abstract class GroupFormationTechnique extends ParameterOwnerAdapter implements SeedHolder {
 
     /**
-     * Añade los parámetros de la técnica de formación de grupos y realiza la
-     * inicialización de los valores aleatorios que usa en la misma.
+     * Añade los parámetros de la técnica de formación de grupos y realiza la inicialización de los valores aleatorios
+     * que usa en la misma.
      */
     public GroupFormationTechnique() {
         addParameter(SEED);
@@ -70,8 +67,7 @@ public abstract class GroupFormationTechnique extends ParameterOwnerAdapter impl
     }
 
     /**
-     * Método para generar los grupos de usuarios que se deben evaluar. Los
-     * grupos de usuarios
+     * Método para generar los grupos de usuarios que se deben evaluar. Los grupos de usuarios
      *
      * @param datasetLoader
      * @return
@@ -83,7 +79,6 @@ public abstract class GroupFormationTechnique extends ParameterOwnerAdapter impl
 
     public void addListener(GroupFormationTechniqueProgressListener listener) {
         listeners.add(listener);
-        listener.progressChanged("", 0, -1);
     }
 
     public void removeListener(GroupFormationTechniqueProgressListener listener) {

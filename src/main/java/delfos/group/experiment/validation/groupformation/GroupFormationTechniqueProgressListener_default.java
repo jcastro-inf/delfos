@@ -22,9 +22,8 @@ import java.io.PrintStream;
 import java.util.Date;
 
 /**
- * Listener por defecto que imprime los eventos de cambio en un Stream de
- * salida. Permite limitar la salida para que se haga una vez cada X
- * milisegundos, como muy rápido.
+ * Listener por defecto que imprime los eventos de cambio en un Stream de salida. Permite limitar la salida para que se
+ * haga una vez cada X milisegundos, como muy rápido.
  *
  * @author jcastro-inf ( https://github.com/jcastro-inf )
  * @version 1.0 23-Jan-2013
@@ -55,8 +54,8 @@ public class GroupFormationTechniqueProgressListener_default implements GroupFor
     private boolean endPrinted;
 
     /**
-     * Constructor por defecto, que establece el stream donde se escribe la
-     * información de progreso y se limita el número de escrituras por tiempo.
+     * Constructor por defecto, que establece el stream donde se escribe la información de progreso y se limita el
+     * número de escrituras por tiempo.
      *
      * @param out Stream de salida en el que se escriben los mensajes.
      * @param verbosePeriodInMS Tiempo mínimo entre escrituras.
@@ -83,20 +82,14 @@ public class GroupFormationTechniqueProgressListener_default implements GroupFor
         if (progressPercent == 0 && !beginPrinted) {
             printInfo(message, progressPercent, remainingTimeInMS);
             beginPrinted = true;
-        } else {
-            beginPrinted = false;
-            if (progressPercent == 100) {
-                printInfo(message, progressPercent, remainingTimeInMS);
-                endPrinted = true;
-            } else {
-                endPrinted = false;
-            }
-        }
-
-        boolean repeated = progressPercent == lastProgressPercent && message.equals(lastProgressJob);
-        boolean timeTrigger = chronometer.getTotalElapsed() >= verbosePeriod;
-        if (!repeated || timeTrigger) {
+        } else if (progressPercent == 100 && !endPrinted) {
             printInfo(message, progressPercent, remainingTimeInMS);
+            endPrinted = true;
+        } else {
+            boolean timeTrigger = chronometer.getTotalElapsed() >= verbosePeriod;
+            if (timeTrigger) {
+                printInfo(message, progressPercent, remainingTimeInMS);
+            }
         }
     }
 
