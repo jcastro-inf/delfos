@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,14 +16,14 @@
  */
 package delfos.experiment;
 
-import java.util.LinkedList;
 import delfos.common.Global;
 import delfos.common.parameters.ParameterOwnerAdapter;
 import delfos.experiment.casestudy.ExecutionProgressListener;
+import java.util.LinkedList;
 
 /**
- * Interfaz que establece los métodos mínimos que un objeto que realize una
- * experimentación con algoritmos debe implementar.
+ * Interfaz que establece los métodos mínimos que un objeto que realize una experimentación con algoritmos debe
+ * implementar.
  *
  * @version 1.0 (métodos para notificación del progreso de ejecución)
  * @author jcastro-inf ( https://github.com/jcastro-inf )
@@ -31,8 +31,7 @@ import delfos.experiment.casestudy.ExecutionProgressListener;
 public abstract class ExperimentAdapter extends ParameterOwnerAdapter implements ExperimentProgress {
 
     /**
-     * Objetos que desean ser notificados de cambios en la ejecución del
-     * experimento
+     * Objetos que desean ser notificados de cambios en la ejecución del experimento
      */
     private final LinkedList<ExperimentListener> algorithmExperimentListerners = new LinkedList<>();
     private final LinkedList<ExecutionProgressListener> executionProgressListeners = new LinkedList<>();
@@ -62,8 +61,8 @@ public abstract class ExperimentAdapter extends ParameterOwnerAdapter implements
     private long experimentProgressRemainingTime = -1;
 
     /**
-     * Establece los valores actuales del progreso de la ejecución actual y
-     * notifica a los {@link ExperimentListener} registrados.
+     * Establece los valores actuales del progreso de la ejecución actual y notifica a los {@link ExperimentListener}
+     * registrados.
      *
      * @param task Nombre de la tarea actual de la ejecución.
      * @param percent Porcentaje completado de la ejecución.
@@ -90,13 +89,12 @@ public abstract class ExperimentAdapter extends ParameterOwnerAdapter implements
     }
 
     /**
-     * Establece los valores actuales del progreso del experimento y notifica a
-     * los {@link ExperimentListener} registrados.
+     * Establece los valores actuales del progreso del experimento y notifica a los {@link ExperimentListener}
+     * registrados.
      *
      * @param task Nombre de la tarea actual.
      * @param percent Porcentaje completado del experimento.
-     * @param remainingTime Predicción del tiempo restante del experimetno en
-     * milisegundos
+     * @param remainingTime Predicción del tiempo restante del experimetno en milisegundos
      */
     protected void setExperimentProgress(String task, int percent, long remainingTime) {
 
@@ -141,8 +139,8 @@ public abstract class ExperimentAdapter extends ParameterOwnerAdapter implements
     }
 
     /**
-     * Dispara el evento de cambio en el progreso de ejecución del experimento,
-     * notificando a todos los listener registrados
+     * Dispara el evento de cambio en el progreso de ejecución del experimento, notificando a todos los listener
+     * registrados
      */
     private void fireAlgorithmExperimentProgressChanged() {
         for (ExperimentListener listener : algorithmExperimentListerners) {
@@ -151,8 +149,8 @@ public abstract class ExperimentAdapter extends ParameterOwnerAdapter implements
     }
 
     /**
-     * Dispara el evento de cambio en el progreso de ejecución del experimento,
-     * notificando a todos los listener registrados
+     * Dispara el evento de cambio en el progreso de ejecución del experimento, notificando a todos los listener
+     * registrados
      */
     private void fireExecutionProgressChanged() {
         for (ExecutionProgressListener listener : executionProgressListeners) {
@@ -163,7 +161,6 @@ public abstract class ExperimentAdapter extends ParameterOwnerAdapter implements
     @Override
     public void addExperimentListener(ExperimentListener listener) {
         algorithmExperimentListerners.add(listener);
-        listener.progressChanged(this);
     }
 
     @Override
@@ -173,7 +170,6 @@ public abstract class ExperimentAdapter extends ParameterOwnerAdapter implements
 
     public void addExecutionProgressListener(ExecutionProgressListener listener) {
         executionProgressListeners.add(listener);
-        listener.executionProgressChanged(RUNNING, 0, -1);
     }
 
     public void removeExecutionProgressListener(ExecutionProgressListener listener) {
@@ -202,8 +198,8 @@ public abstract class ExperimentAdapter extends ParameterOwnerAdapter implements
      */
     private int vueltaActual;
     /**
-     * Número de vueltas que el experimento ejecuta. El número de vueltas es el
-     * número de particiones multiplicado por el número de ejecuciones.
+     * Número de vueltas que el experimento ejecuta. El número de vueltas es el número de particiones multiplicado por
+     * el número de ejecuciones.
      */
     private int numVueltas;
 

@@ -68,8 +68,11 @@ public class GroupFormationTechniqueProgressListener_default implements GroupFor
 
     private void printInfo(String actualJob, int percent, long remainingTimeInMS) {
         String message = new Date().toString() + ": " + actualJob + " --> "
-                + percent + "% --> "
-                + DateCollapse.collapse(remainingTimeInMS);
+                + percent + "%";
+
+        if (remainingTimeInMS > 0) {
+            message = message + " --> " + DateCollapse.collapse(remainingTimeInMS);
+        }
         out.println(message);
         chronometer.reset();
         lastProgressJob = actualJob;
