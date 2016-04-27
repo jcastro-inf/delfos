@@ -65,25 +65,17 @@ public class ProgressChangedListenerDefault implements ProgressChangedListener {
 
     @Override
     public void progressChanged(String actualJob, int percent, long remainingTime) {
-        if (percent == 0) {
+        if (percent == 0 && !beginPrinted) {
             printInfo(actualJob, percent, remainingTime);
             beginPrinted = true;
-        } else {
-            beginPrinted = false;
-            if (percent == 100) {
-                printInfo(actualJob, percent, remainingTime);
-                endPrinted = true;
-            } else {
-                endPrinted = false;
-            }
-        }
-
-        boolean repeated = percent == lastProgressPercent && actualJob.equals(lastProgressJob);
-        boolean timeTrigger = chronometer.getTotalElapsed() >= verbosePeriod;
-        if (!repeated || timeTrigger) {
-
+        } else if (percent == 100 && !endPrinted) {
             printInfo(actualJob, percent, remainingTime);
-
+            endPrinted = true;
+        } else {
+            boolean timeTrigger = chronometer.getTotalElapsed() >= verbosePeriod;
+            if (timeTrigger) {
+                printInfo(actualJob, percent, remainingTime);
+            }
         }
     }
 }

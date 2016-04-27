@@ -35,10 +35,8 @@ import java.util.TreeSet;
 public class UserUserSimilarityWrapper_relevanceFactor extends SimilarityMeasureAdapter implements UserUserSimilarity {
 
     /**
-     * Almacena el valor del factor de relevancia aplicado si el parámetro
-     * {@link KnnModelBasedCFRS#relevanceFactor} indica que se debe usar factor
-     * de relevancia (true). El valor por defecto del factor de relevancia es
-     * 50.
+     * Almacena el valor del factor de relevancia aplicado si el parámetro {@link KnnModelBasedCFRS#relevanceFactor}
+     * indica que se debe usar factor de relevancia (true). El valor por defecto del factor de relevancia es 50.
      *
      * @see KnnModelBasedCFRS#relevanceFactor
      */
@@ -80,6 +78,10 @@ public class UserUserSimilarityWrapper_relevanceFactor extends SimilarityMeasure
 
     @Override
     public double similarity(DatasetLoader<? extends Rating> datasetLoader, int idUser1, int idUser2) {
+
+        if (idUser1 == idUser2) {
+            return 1;
+        }
 
         Map<Integer, ? extends Rating> user1Ratings = datasetLoader.getRatingsDataset().getUserRatingsRated(idUser1);
         Map<Integer, ? extends Rating> user2Ratings = datasetLoader.getRatingsDataset().getUserRatingsRated(idUser2);
