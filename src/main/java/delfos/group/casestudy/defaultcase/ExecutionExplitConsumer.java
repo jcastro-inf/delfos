@@ -80,7 +80,7 @@ public class ExecutionExplitConsumer {
         DatasetLoader<? extends Rating> testDatasetLoader = pairsOfTrainTest[split].getTestDatasetLoader();
         testDatasetLoader.setAlias(testDatasetLoader.getAlias() + "_execution=" + execution);
 
-        final GroupFormationTechnique groupFormationTechnique = groupCaseStudy.getGroupFormationTechnique();
+        final GroupFormationTechnique groupFormationTechnique = (GroupFormationTechnique) groupCaseStudy.getGroupFormationTechnique().clone();
 
         groupFormationTechnique.setSeedValue(loopSeed);
 

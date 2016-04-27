@@ -25,7 +25,9 @@ import delfos.dataset.basic.rating.Rating;
 import delfos.experiment.SeedHolder;
 import delfos.group.groupsofusers.GroupOfUsers;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Clase abstracta que define los métodos que se utilizan para generar los grupos de usuarios que se utilizarán para
@@ -75,7 +77,7 @@ public abstract class GroupFormationTechnique extends ParameterOwnerAdapter impl
      */
     public abstract Collection<GroupOfUsers> generateGroups(DatasetLoader<? extends Rating> datasetLoader) throws CannotLoadRatingsDataset;
 
-    private final LinkedList<GroupFormationTechniqueProgressListener> listeners = new LinkedList<>();
+    private final List<GroupFormationTechniqueProgressListener> listeners = Collections.synchronizedList(new LinkedList<>());
 
     public void addListener(GroupFormationTechniqueProgressListener listener) {
         listeners.add(listener);
@@ -90,9 +92,11 @@ public abstract class GroupFormationTechnique extends ParameterOwnerAdapter impl
     }
 
     protected void progressChanged(String message, int progressPercent, long remainingTimeInMS) {
-        listeners.stream().forEach((listener) -> {
-            listener.progressChanged(message, progressPercent, remainingTimeInMS);
-        });
+        synchronized (listeners) {
+            listeners.stream().forEach((listener) -> {
+                listener.progressChanged(message, progressPercent, remainingTimeInMS);
+            });
+        }
     }
 
     @Override

@@ -36,45 +36,40 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Clase abstracta que define los métodos más generales de un sistema de
- * recomendación, como el comportamiento que soporta los listener de progreso de
- * ejecución o los métodos set y get de los datasets
+ * Clase abstracta que define los métodos más generales de un sistema de recomendación, como el comportamiento que
+ * soporta los listener de progreso de ejecución o los métodos set y get de los datasets
  *
- * @param <RecommendationModel> Clase que almacena el modelo de recomendación
- * del sistema.
+ * @param <RecommendationModel> Clase que almacena el modelo de recomendación del sistema.
  *
  * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 1.0 Unkown date
  * @version 1.1 22-Jan-2013
- * @version 2.0 26-Mayo-2013 Ahora los datasets se pasan por parámetro en cada
- * método.
+ * @version 2.0 26-Mayo-2013 Ahora los datasets se pasan por parámetro en cada método.
  */
 public abstract class GenericRecommenderSystemAdapter<RecommendationModel>
         extends ParameterOwnerAdapter
         implements GenericRecommenderSystem<RecommendationModel> {
 
     /**
-     * Lista de objetos que desean ser notificados del cambio en el progreso de
-     * construcción del modelo de este sistema de recomendación.
+     * Lista de objetos que desean ser notificados del cambio en el progreso de construcción del modelo de este sistema
+     * de recomendación.
      */
     private final List<RecommendationModelBuildingProgressListener> progressListeners = Collections.synchronizedList(new LinkedList<RecommendationModelBuildingProgressListener>());
 
     /**
-     * Añade un listener para que sea notificado del progreso de la construcción
-     * del modelo del sistema de recomendación
+     * Añade un listener para que sea notificado del progreso de la construcción del modelo del sistema de recomendación
      *
      * @param listener Objeto que desea ser notificado de los cambios
      */
     @Override
     public void addRecommendationModelBuildingProgressListener(RecommendationModelBuildingProgressListener listener) {
         this.progressListeners.add(listener);
-        listener.buildingProgressChanged("", 0, -1);
     }
 
     /**
-     * Elimina un listener para que no sea notificado más del progreso de la
-     * construcción del modelo del sistema de recomendación
+     * Elimina un listener para que no sea notificado más del progreso de la construcción del modelo del sistema de
+     * recomendación
      *
      * @param rl Objeto que desea dejar de ser notificado de los cambios
      */
@@ -85,8 +80,7 @@ public abstract class GenericRecommenderSystemAdapter<RecommendationModel>
 
     /**
      * Notifica a todos los observadores del progreso de construcción del modelo
-     * {@link RecommendationModelBuildingProgressListener} de un cambio en el
-     * progreso de construcción del mismo.
+     * {@link RecommendationModelBuildingProgressListener} de un cambio en el progreso de construcción del mismo.
      *
      * @param actualJob Nombre de la tarea actual
      * @param percent Procentaje completado de la tarea actual

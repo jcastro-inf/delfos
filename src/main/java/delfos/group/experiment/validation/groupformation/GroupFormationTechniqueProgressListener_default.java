@@ -81,7 +81,7 @@ public class GroupFormationTechniqueProgressListener_default implements GroupFor
     }
 
     @Override
-    public void progressChanged(String message, int progressPercent, long remainingTimeInMS) {
+    public synchronized void progressChanged(String message, int progressPercent, long remainingTimeInMS) {
         if (progressPercent == 0 && !beginPrinted) {
             printInfo(message, progressPercent, remainingTimeInMS);
             beginPrinted = true;
