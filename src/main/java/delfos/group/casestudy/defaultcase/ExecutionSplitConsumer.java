@@ -17,6 +17,7 @@
 package delfos.group.casestudy.defaultcase;
 
 import delfos.common.Chronometer;
+import delfos.common.Global;
 import delfos.dataset.basic.item.Item;
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
@@ -48,14 +49,14 @@ import java.util.stream.Collectors;
  *
  * @author jcastro-inf ( https://github.com/jcastro-inf )
  */
-public class ExecutionExplitConsumer {
+public class ExecutionSplitConsumer {
 
     private final GroupCaseStudy groupCaseStudy;
     private final int execution;
     private final int split;
     private final PairOfTrainTestRatingsDataset[] pairsOfTrainTest;
 
-    public ExecutionExplitConsumer(
+    public ExecutionSplitConsumer(
             int execution,
             int split,
             GroupCaseStudy groupCaseStudy, PairOfTrainTestRatingsDataset[] pairsOfTrainTest
@@ -84,7 +85,9 @@ public class ExecutionExplitConsumer {
 
         groupFormationTechnique.setSeedValue(loopSeed);
 
-        groupFormationTechnique.addListener(new GroupFormationTechniqueProgressListener_default(System.out, 10000));
+        if (Global.isInfoPrinted()) {
+            groupFormationTechnique.addListener(new GroupFormationTechniqueProgressListener_default(System.out, 10000));
+        }
 
         Collection<GroupOfUsers> groups = groupFormationTechnique.generateGroups(trainDatasetLoader);
         final long recommendationModelBuildTime;

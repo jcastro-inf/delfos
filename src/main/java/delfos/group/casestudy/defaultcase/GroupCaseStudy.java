@@ -192,7 +192,7 @@ public class GroupCaseStudy extends ExperimentAdapter {
                     Map<Integer, Map<GroupEvaluationMeasure, GroupEvaluationMeasureResult>> resultsThisExecution = IntStream.range(0, getNumSplits()).boxed().parallel().collect(Collectors.toMap(Function.identity(),
                     split -> {
                         Map<GroupEvaluationMeasure, GroupEvaluationMeasureResult> execute
-                        = new ExecutionExplitConsumer(
+                        = new ExecutionSplitConsumer(
                                 execution,
                                 split,
                                 this,
