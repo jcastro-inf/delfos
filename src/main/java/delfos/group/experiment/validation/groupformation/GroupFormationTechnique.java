@@ -18,12 +18,14 @@ package delfos.group.experiment.validation.groupformation;
 
 import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
 import delfos.common.parameters.ParameterListener;
+import delfos.common.parameters.ParameterOwner;
 import delfos.common.parameters.ParameterOwnerAdapter;
 import delfos.common.parameters.ParameterOwnerType;
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
 import delfos.experiment.SeedHolder;
 import delfos.group.groupsofusers.GroupOfUsers;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
@@ -38,7 +40,7 @@ import java.util.List;
  *
  * @author jcastro-inf ( https://github.com/jcastro-inf )
  */
-public abstract class GroupFormationTechnique extends ParameterOwnerAdapter implements SeedHolder {
+public abstract class GroupFormationTechnique extends ParameterOwnerAdapter implements SeedHolder, Cloneable {
 
     /**
      * Añade los parámetros de la técnica de formación de grupos y realiza la inicialización de los valores aleatorios
@@ -77,7 +79,7 @@ public abstract class GroupFormationTechnique extends ParameterOwnerAdapter impl
      */
     public abstract Collection<GroupOfUsers> generateGroups(DatasetLoader<? extends Rating> datasetLoader) throws CannotLoadRatingsDataset;
 
-    private final List<GroupFormationTechniqueProgressListener> listeners = Collections.synchronizedList(new LinkedList<>());
+    private List<GroupFormationTechniqueProgressListener> listeners = Collections.synchronizedList(new LinkedList<>());
 
     public void addListener(GroupFormationTechniqueProgressListener listener) {
         listeners.add(listener);
@@ -97,6 +99,13 @@ public abstract class GroupFormationTechnique extends ParameterOwnerAdapter impl
                 listener.progressChanged(message, progressPercent, remainingTimeInMS);
             });
         }
+    }
+
+    @Override
+    public ParameterOwner clone() {
+        GroupFormationTechnique clone = (GroupFormationTechnique) super.clone();
+        clone.listeners = Collections.synchronizedList(new ArrayList<>());
+        return clone;
     }
 
     @Override

@@ -25,6 +25,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Map;
@@ -84,7 +85,7 @@ public abstract class ParameterOwnerAdapter implements ParameterOwner {
     /**
      * Almacena los objetos que desean ser notificados de cambios en los parámetros de este objeto.
      */
-    private final Collection<ParameterListener> parammeterListeners = new LinkedList<>();
+    private Collection<ParameterListener> parammeterListeners = new LinkedList<>();
 
     /**
      * Añade un nuevo parámetro a la lista de parametros del {@link ParameterOwner}
@@ -442,7 +443,7 @@ public abstract class ParameterOwnerAdapter implements ParameterOwner {
         ParameterOwnerAdapter clone = (ParameterOwnerAdapter) super.clone();
 
         /* The clone should not have listeners */
-        clone.parammeterListeners.clear();
+        clone.parammeterListeners = new ArrayList<>();
         clone.parameterValues = new TreeMap<>();
 
         parameterValues.forEach((parameter, value) -> {
