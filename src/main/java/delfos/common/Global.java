@@ -29,8 +29,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * Clase que encapsula los métodos para mostrar información en la consola (o en
- * la salida por defecto) de la aplicación
+ * Clase que encapsula los métodos para mostrar información en la consola (o en la salida por defecto) de la aplicación
  *
  * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
@@ -70,12 +69,10 @@ public class Global {
     }
 
     /**
-     * Hace una pregunta cerrarda al usuario por linea de comandos cuya
-     * respuesta es sí o no. Si el usuario da una respuesta distinta, vuelve a
-     * formularle la pregunta indicando que solo puede responder sí o no.
+     * Hace una pregunta cerrarda al usuario por linea de comandos cuya respuesta es sí o no. Si el usuario da una
+     * respuesta distinta, vuelve a formularle la pregunta indicando que solo puede responder sí o no.
      *
-     * @param textOfQuestion Texto informativo que se muestra al usuario para
-     * informar de la decisión que debe tomar.
+     * @param textOfQuestion Texto informativo que se muestra al usuario para informar de la decisión que debe tomar.
      * @return true si el usuario responde sí, false si responde no.
      */
     public static boolean askUser(String textOfQuestion) {
@@ -258,13 +255,13 @@ public class Global {
             } else if (ERROR.isFlagPresent(consoleParameters)) {
                 return ERROR;
             } else {
-                return MESSAGE;
+                return messageLevelPrinted;
             }
         }
     }
     /**
-     * Indica si se deben mostrar mensajes o no. Los algoritmos indican en qué
-     * punto están en cada momento. Por defecto no se muestran.
+     * Indica si se deben mostrar mensajes o no. Los algoritmos indican en qué punto están en cada momento. Por defecto
+     * no se muestran.
      */
     private static MessageLevel messageLevelPrinted = MessageLevel.MESSAGE;
 
@@ -291,8 +288,7 @@ public class Global {
     }
 
     /**
-     * Muestra el estado de la pila en el momento en que se creó la excepción
-     * indicada por parámetro.
+     * Muestra el estado de la pila en el momento en que se creó la excepción indicada por parámetro.
      *
      * @param ex Excepción con la información del error.
      */
@@ -314,8 +310,7 @@ public class Global {
     }
 
     /**
-     * Muestra el estado de la pila en el momento en que se creó la excepción
-     * indicada por parámetro.
+     * Muestra el estado de la pila en el momento en que se creó la excepción indicada por parámetro.
      *
      * @param ex Excepción con la información de la advertencia.
      */
