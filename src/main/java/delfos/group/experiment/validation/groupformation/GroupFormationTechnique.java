@@ -123,4 +123,7 @@ public abstract class GroupFormationTechnique extends ParameterOwnerAdapter impl
         return ParameterOwnerType.GROUP_FORMATION_TECHNIQUE;
     }
 
+    public int getGroupSize() {
+        return (Integer) getParameterValue(FixedGroupSize_OnlyNGroups.GROUP_SIZE_PARAMETER);
+    }
 }

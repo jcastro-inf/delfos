@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -24,14 +24,15 @@ import delfos.group.experiment.validation.groupformation.FixedGroupSize;
 import delfos.group.experiment.validation.groupformation.FixedGroupSize_OnlyNGroups;
 import delfos.group.experiment.validation.groupformation.GivenGroups;
 import delfos.group.experiment.validation.groupformation.GroupFormationTechnique;
+import delfos.group.experiment.validation.groupformation.GroupFormationTechnique_cache;
 import delfos.group.experiment.validation.groupformation.ProbabilityDistributionOfSizes;
 import delfos.group.experiment.validation.groupformation.SimilarMembers;
 import delfos.group.experiment.validation.groupformation.SimilarMembers_OnlyNGroups;
 import delfos.group.experiment.validation.groupformation.SimilarMembers_except;
 
 /**
- * Conoce las técnicas de generación de grupos que se utilizarán en los casos de
- * estudio para evaluar sistemas de recomendación a grupos.
+ * Conoce las técnicas de generación de grupos que se utilizarán en los casos de estudio para evaluar sistemas de
+ * recomendación a grupos.
  *
  * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
@@ -62,6 +63,8 @@ public class GroupFormationTechniquesFactory extends Factory<GroupFormationTechn
 
         instance.addClass(DissimilarMembers.class);
         instance.addClass(DissimilarMembers_OnlyNGroups.class);
+
+        instance.addClass(GroupFormationTechnique_cache.class);
     }
 
     protected GroupFormationTechniquesFactory() {
