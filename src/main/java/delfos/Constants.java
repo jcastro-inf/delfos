@@ -27,11 +27,11 @@ import java.util.Locale;
 import org.jdom2.output.Format;
 
 /**
- * Proporciona los métodos para lanzar distintas interfaces, según el uso que se
- * quiera dar a la biblioteca de recomendación
+ * Proporciona los métodos para lanzar distintas interfaces, según el uso que se quiera dar a la biblioteca de
+ * recomendación
  *
- * 15/11/2012 Añadida la funcionalidad para controlar si se muestran los
- * resultados en bruto de las medidas basadas en curvas
+ * 15/11/2012 Añadida la funcionalidad para controlar si se muestran los resultados en bruto de las medidas basadas en
+ * curvas
  *
  * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
@@ -42,19 +42,21 @@ public class Constants {
     private static File tempDirectory = new File("." + File.separator + "temp");
     public static int COMPARE_NUM_DECIMALS = 4;
 
+    public static void getLibraryGeneralParameters(ConsoleParameters consoleParameters) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
     public static class EnvironmentVariables {
 
         public static final String HOME = "HOME";
     }
 
     /**
-     * Parameter to specify the location of the directory that contains the
-     * configurations xml files.
+     * Parameter to specify the location of the directory that contains the configurations xml files.
      */
     public static final String LIBRARY_CONFIGURATION_DIRECTORY = "-config";
     /**
-     * Flag para indicar que se escriban los datos en bruto en el fichero de
-     * resultados de las ejecuciones.
+     * Flag para indicar que se escriban los datos en bruto en el fichero de resultados de las ejecuciones.
      */
     public static final String RAW_DATA = "--raw-data";
 
@@ -75,8 +77,8 @@ public class Constants {
     public static final String LIBRARY_NAME = "delfos";
 
     /**
-     * Lanza la interfaz de recomendación, que permite ver qué recomendaciones
-     * da un algoritmo a un usuario de un dataset.
+     * Lanza la interfaz de recomendación, que permite ver qué recomendaciones da un algoritmo a un usuario de un
+     * dataset.
      */
     public static void initRecommendationGUI() {
         RecommendationWindow frame = new RecommendationWindow();
@@ -84,34 +86,31 @@ public class Constants {
     }
 
     /**
-     * Lanza la interfaz de evaluación, que permite realizar experimentaciones
-     * sobre un algoritmo de recomendación con un dataset.
+     * Lanza la interfaz de evaluación, que permite realizar experimentaciones sobre un algoritmo de recomendación con
+     * un dataset.
      */
     public static void initEvaluationGUI() {
         InitialFrame frame = new InitialFrame();
         frame.setVisible(true);
     }
     /**
-     * Característica que almacena si se debe escribir en la salida el resultado
-     * en bruto de las medidas que generan curvas (como PRSpace y AUROC). Este
-     * resultado en bruto representa los puntos de la curva.
+     * Característica que almacena si se debe escribir en la salida el resultado en bruto de las medidas que generan
+     * curvas (como PRSpace y AUROC). Este resultado en bruto representa los puntos de la curva.
      */
     private static boolean rawResult = false;
 
     /**
-     * Devuelve true si se deben escribir resultados en bruto en los XML de
-     * resultados
+     * Devuelve true si se deben escribir resultados en bruto en los XML de resultados
      *
-     * @return true si se deben escribir resultados en bruto en los XML de
-     * resultados. false si no se deben incluir
+     * @return true si se deben escribir resultados en bruto en los XML de resultados. false si no se deben incluir
      */
     public static boolean isRawResultDefined() {
         return rawResult;
     }
 
     /**
-     * Establece si se deben escribir en la salida XML los resultados en bruto
-     * de las medidas de precisión y recall y auroc
+     * Establece si se deben escribir en la salida XML los resultados en bruto de las medidas de precisión y recall y
+     * auroc
      *
      * @param rawResult true para escribir los resultados, false para omitirlos
      *
@@ -121,29 +120,24 @@ public class Constants {
     }
 
     /**
-     * Returns the current time in milliseconds. Note that while the unit of
-     * time of the return value is a millisecond, the granularity of the value
-     * depends on the underlying operating system and may be larger. For
-     * example, many operating systems measure time in units of tens of
-     * milliseconds. See the description of the class Date for a discussion of
-     * slight discrepancies that may arise between "computer time" and
-     * coordinated universal time (UTC).
+     * Returns the current time in milliseconds. Note that while the unit of time of the return value is a millisecond,
+     * the granularity of the value depends on the underlying operating system and may be larger. For example, many
+     * operating systems measure time in units of tens of milliseconds. See the description of the class Date for a
+     * discussion of slight discrepancies that may arise between "computer time" and coordinated universal time (UTC).
      *
-     * @return The difference, measured in milliseconds, between the current
-     * time and midnight, January 1, 1970 UTC.
+     * @return The difference, measured in milliseconds, between the current time and midnight, January 1, 1970 UTC.
      */
     public static long getCurrentTimeMillis() {
         return System.currentTimeMillis();
     }
 
     /**
-     * Inicializa los parámetros básicos de la interacción con la biblioteca,
-     * comprobando los argumentos de la linea de comandos.
+     * Inicializa los parámetros básicos de la interacción con la biblioteca, comprobando los argumentos de la linea de
+     * comandos.
      *
      * <p>
      * <p>
-     * Actualmente comprueba si existen los flags para mostrar mensajes u
-     * ocultar warnings o errores.
+     * Actualmente comprueba si existen los flags para mostrar mensajes u ocultar warnings o errores.
      *
      * @param consoleParameters
      */
@@ -195,8 +189,8 @@ public class Constants {
     }
 
     /**
-     * Establece si se debe terminar la ejecución del programa al más mínimo
-     * error que se detecte o se debe continuar y lanzar excepción.
+     * Establece si se debe terminar la ejecución del programa al más mínimo error que se detecte o se debe continuar y
+     * lanzar excepción.
      *
      * @param b
      */
@@ -205,8 +199,8 @@ public class Constants {
     }
 
     /**
-     * Realiza la configuración para que la biblioteca funcione en modo
-     * depuración. Se debe activar antes de los test Junit.
+     * Realiza la configuración para que la biblioteca funcione en modo depuración. Se debe activar antes de los test
+     * Junit.
      */
     public static void setJUnitTestMode() {
         setExitOnFail(false);
