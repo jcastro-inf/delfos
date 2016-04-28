@@ -86,7 +86,7 @@ public class ExecutionSplitConsumer {
         groupFormationTechnique.setSeedValue(loopSeed);
 
         if (Global.isInfoPrinted()) {
-            groupFormationTechnique.addListener(new GroupFormationTechniqueProgressListener_default(System.out, 10000));
+            groupFormationTechnique.addListener(new GroupFormationTechniqueProgressListener_default(System.out, 300000));
         }
 
         Collection<GroupOfUsers> groups = groupFormationTechnique.generateGroups(trainDatasetLoader);
