@@ -37,6 +37,7 @@ import delfos.group.grs.recommendations.GroupRecommendations;
 import delfos.group.results.groupevaluationmeasures.GroupEvaluationMeasure;
 import delfos.group.results.groupevaluationmeasures.GroupEvaluationMeasureResult;
 import delfos.group.results.grouprecomendationresults.GroupRecommenderSystemResult;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -76,10 +77,13 @@ public class ExecutionSplitConsumer {
         final DatasetLoader<? extends Rating> originalDatasetLoader = groupCaseStudy.getDatasetLoader();
 
         DatasetLoader<? extends Rating> trainDatasetLoader = pairsOfTrainTest[split].getTrainingDatasetLoader();
-        trainDatasetLoader.setAlias(trainDatasetLoader.getAlias() + "_execution=" + execution);
+
+        String executionString = new DecimalFormat("00").format(execution);
+
+        trainDatasetLoader.setAlias(trainDatasetLoader.getAlias() + "_execution=" + executionString);
 
         DatasetLoader<? extends Rating> testDatasetLoader = pairsOfTrainTest[split].getTestDatasetLoader();
-        testDatasetLoader.setAlias(testDatasetLoader.getAlias() + "_execution=" + execution);
+        testDatasetLoader.setAlias(testDatasetLoader.getAlias() + "_execution=" + executionString);
 
         final GroupFormationTechnique groupFormationTechnique = (GroupFormationTechnique) groupCaseStudy.getGroupFormationTechnique().clone();
 
