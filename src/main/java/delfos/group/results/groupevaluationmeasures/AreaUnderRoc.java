@@ -99,7 +99,9 @@ public class AreaUnderRoc extends GroupEvaluationMeasure {
         }
 
         if (gruposSinMatriz != 0) {
-            Global.showWarning("Grupos sin Matriz en " + AreaUnderRoc.class + " --> " + gruposSinMatriz + " \n");
+            if (Global.isInfoPrinted()) {
+                Global.showWarning("Grupos sin Matriz en " + AreaUnderRoc.class + " --> " + gruposSinMatriz);
+            }
         }
 
         return new GroupEvaluationMeasureResult(this, areaUnderRoc);
