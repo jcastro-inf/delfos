@@ -51,6 +51,10 @@ public abstract class SimilarityCombination extends SimilarityMeasureAdapter imp
 
     @Override
     public double similarity(DatasetLoader<? extends Rating> datasetLoader, int idUser1, int idUser2) {
+        if (idUser1 == idUser2) {
+            return 1;
+        }
+
         UserUserSimilarity similarityA = getSIMILARITY_A();
         UserUserSimilarity similarityB = getSIMILARITY_B();
 
@@ -62,6 +66,10 @@ public abstract class SimilarityCombination extends SimilarityMeasureAdapter imp
 
     @Override
     public double similarity(DatasetLoader<? extends Rating> datasetLoader, User user1, User user2) {
+        if (user1.equals(user2)) {
+            return 1;
+        }
+
         UserUserSimilarity similarityA = getSIMILARITY_A();
         UserUserSimilarity similarityB = getSIMILARITY_B();
 

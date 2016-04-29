@@ -36,9 +36,8 @@ import java.util.stream.IntStream;
  * User user similarity defined in the paper:
  * <p>
  * <p>
- * Vozalis, Manolis, and Konstantinos G. Margaritis. "Collaborative filtering
- * enhanced by demographic correlation." In AIAI symposium on professional
- * practice in AI, of the 18th world computer congress. 2004.
+ * Vozalis, Manolis, and Konstantinos G. Margaritis. "Collaborative filtering enhanced by demographic correlation." In
+ * AIAI symposium on professional practice in AI, of the 18th world computer congress. 2004.
  *
  * @author jcastro
  */
@@ -51,6 +50,10 @@ public class DemographicSimilarity extends SimilarityMeasureAdapter implements U
 
         if (user1.getFeatures().isEmpty() && user2.getFeatures().isEmpty()) {
             return Double.NaN;
+        }
+
+        if (user1.equals(user2)) {
+            return 1;
         }
 
         List<Double> user1Features = new ArrayList<>();
