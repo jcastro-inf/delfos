@@ -242,7 +242,9 @@ public abstract class ParameterOwnerAdapter implements ParameterOwner {
                 return p;
             }
         }
-        throw new IllegalArgumentException(this.getName() + " hasn't the parammeter " + parameterName);
+
+        Global.showWarning(this.getName() + " does not have the parammeter " + parameterName + ", the ParameterOwner schema changed!");
+        return null;
     }
 
     /**

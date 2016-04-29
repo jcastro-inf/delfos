@@ -25,7 +25,6 @@ import delfos.common.parameters.restriction.DirectoryParameter;
 import delfos.common.parameters.restriction.ParameterOwnerRestriction;
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
-import static delfos.group.experiment.validation.groupformation.FixedGroupSize_OnlyNGroups.GROUP_SIZE_PARAMETER;
 import delfos.group.groupsofusers.GroupOfUsers;
 import java.io.File;
 import java.io.FileInputStream;
@@ -43,8 +42,6 @@ public class GroupFormationTechnique_cache extends GroupFormationTechnique {
         super();
         addParameter(GROUP_FORMATION_TECHNIQUE);
         addParameter(CACHE_DIRECTORY_PARAMETER);
-        addParameter(GROUP_SIZE_PARAMETER);
-
     }
 
     private static final long serialVersionUID = 1L;

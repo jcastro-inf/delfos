@@ -23,8 +23,7 @@ import delfos.io.xml.parameterowner.parameter.ParameterXML;
 import org.jdom2.Element;
 
 /**
- * Clase para convertir objetos de tipo {@link ParameterOwner} a elementos de
- * XML.
+ * Clase para convertir objetos de tipo {@link ParameterOwner} a elementos de XML.
  *
  * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
@@ -37,14 +36,12 @@ public class ParameterOwnerXML {
     public static final String PARAMETER_OWNER_ATTRIBUTE_TYPE = "type";
 
     /**
-     * Construye el objeto en memoria que representa al sistema de recomendación
-     * descrito en el elemento que se pasa por parámetro.
+     * Construye el objeto en memoria que representa al sistema de recomendación descrito en el elemento que se pasa por
+     * parámetro.
      *
-     * @param parameterOwnerElement Objeto XML con la información para recuperar
-     * el objeto.
+     * @param parameterOwnerElement Objeto XML con la información para recuperar el objeto.
      *
-     * @return Sistema de recomendación generado a partir de la descripción
-     * pasada por parámetro
+     * @return Sistema de recomendación generado a partir de la descripción pasada por parámetro
      */
     public static ParameterOwner getParameterOwner(Element parameterOwnerElement) {
 
@@ -55,22 +52,25 @@ public class ParameterOwnerXML {
         ParameterOwner parameterOwner = parameterOwnerType.createObjectFromClassName(className);
 
         for (Element parameterElement : parameterOwnerElement.getChildren(ParameterXML.PARAMETER_ELEMENT_NAME)) {
+            final String parameterName = parameterElement.getAttributeValue(ParameterXML.PARAMETER_NAME);
 
-            Parameter parameter = parameterOwner.getParameterByName(parameterElement.getAttributeValue(ParameterXML.PARAMETER_NAME));
-            Object parameterValue = ParameterXML.getParameterValue(parameterOwner, parameterElement);
-            if (parameterValue == null) {
-                parameterValue = ParameterXML.getParameterValue(parameterOwner, parameterElement);
+            Parameter parameter = parameterOwner.getParameterByName(parameterName);
+            if (parameter != null) {
+                Object parameterValue = ParameterXML.getParameterValue(parameterOwner, parameterElement);
+                if (parameterValue == null) {
+                    parameterValue = ParameterXML.getParameterValue(parameterOwner, parameterElement);
+                }
+
+                parameterOwner.setParameterValue(parameter, parameterValue);
             }
-
-            parameterOwner.setParameterValue(parameter, parameterValue);
         }
         return parameterOwner;
 
     }
 
     /**
-     * Devuelve el elemento que describe totalmente el sistema de recomendación,
-     * almacenando también los parámetros que posee y su valor
+     * Devuelve el elemento que describe totalmente el sistema de recomendación, almacenando también los parámetros que
+     * posee y su valor
      *
      * @param parameterOwner Sistema de recomendación a almacenar
      * @return Objeto XML que lo describe
