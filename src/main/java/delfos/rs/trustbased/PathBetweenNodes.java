@@ -72,7 +72,18 @@ public class PathBetweenNodes<Node> implements Comparable<PathBetweenNodes> {
     }
 
     public static <Node> PathBetweenNodes<Node> buildEdge(Node from, Node to, double length) {
-        return new PathBetweenNodes<>(Arrays.asList(from, to), Arrays.asList(1.0), length);
+
+        if (length < 1 && !from.equals(to)) {
+            throw new IllegalStateException("arg");
+        }
+
+        if (Double.isNaN(length)) {
+            throw new IllegalStateException("arg");
+        }
+        if (length == 0) {
+            throw new IllegalStateException("arg");
+        }
+        return new PathBetweenNodes<>(Arrays.asList(from, to), Arrays.asList(1 / length), length);
     }
 
     private PathBetweenNodes(List<Node> _nodes, List<Double> _weights, double length) {
