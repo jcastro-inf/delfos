@@ -38,6 +38,7 @@ import delfos.similaritymeasures.useruser.CosineAsymmetric;
 import delfos.similaritymeasures.useruser.EntropyOfDifferences_asymmetric;
 import delfos.similaritymeasures.useruser.Jaccard;
 import delfos.similaritymeasures.useruser.MSDAsymmetric;
+import delfos.similaritymeasures.useruser.MultiplicationOfSimilarities;
 import delfos.similaritymeasures.useruser.PearsonAsymmetric;
 import delfos.similaritymeasures.useruser.RelevanceFactor;
 import delfos.similaritymeasures.useruser.SorensenIndex;
@@ -113,6 +114,8 @@ public class SimilarityMeasuresFactory extends Factory<SimilarityMeasure> {
 
         //Demographic similarities
         instance.addClass(DemographicSimilarity.class);
+
+        instance.addClass(MultiplicationOfSimilarities.class);
 
     }
 
