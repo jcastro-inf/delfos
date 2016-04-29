@@ -30,12 +30,13 @@ public abstract class SimilarityCombination extends SimilarityMeasureAdapter imp
     private static final Parameter SIMILARITY_B = new Parameter("SimilarityB", new ParameterOwnerRestriction(UserUserSimilarity.class, new PearsonCorrelationCoefficient()));
 
     public SimilarityCombination() {
+        super();
         addParameter(SIMILARITY_A);
         addParameter(SIMILARITY_B);
     }
 
     public SimilarityCombination(UserUserSimilarity similarityA, UserUserSimilarity similarityB) {
-        super();
+        this();
         setParameterValue(SIMILARITY_A, similarityA);
         setParameterValue(SIMILARITY_B, similarityB);
     }
