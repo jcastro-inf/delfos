@@ -91,7 +91,7 @@ public class XMLJoin extends CaseUseMode {
         Global.showMessage("Writing file:  " + outputFile.getAbsolutePath() + "\n");
         mergeResultsIntoOutput(resultsPaths, outputFile, filterMeasures);
 
-        Global.showMessage("Finished file: " + outputFile.getAbsolutePath() + "\n");
+        Global.showMessage("\t\tFinished file: " + outputFile.getAbsolutePath() + "\n");
 
     }
 
