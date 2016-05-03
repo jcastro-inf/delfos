@@ -109,7 +109,8 @@ public class ExecutionSplitConsumer {
 
         List<SingleGroupRecommendationTaskInput> taskGroupRecommendationInput = new ArrayList<>(groups.size());
         for (GroupOfUsers groupOfUsers : groups) {
-            for (GroupRecommendationRequest groupRecommendationRequest : groupPredictionProtocol.getGroupRecommendationRequests(trainDatasetLoader, testDatasetLoader, groupOfUsers)) {
+            final Collection<GroupRecommendationRequest> groupRecommendationRequests = groupPredictionProtocol.getGroupRecommendationRequests(trainDatasetLoader, testDatasetLoader, groupOfUsers);
+            for (GroupRecommendationRequest groupRecommendationRequest : groupRecommendationRequests) {
 
                 taskGroupRecommendationInput.add(new SingleGroupRecommendationTaskInput(
                         groupRecommenderSystem,
