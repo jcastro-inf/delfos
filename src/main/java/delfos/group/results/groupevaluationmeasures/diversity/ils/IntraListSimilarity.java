@@ -156,6 +156,10 @@ public class IntraListSimilarity extends GroupEvaluationMeasure {
 
         IntraListSimilarityByRecommendationLenght ilsAllGroups = groupRecommenderSystemResult
                 .getGroupsOfUsers().parallelStream()
+                .filter(groupOfUsers -> {
+                    SingleGroupRecommendationTaskOutput singleGroupRecommendationTaskOutput = groupRecommenderSystemResult.getGroupOutput(groupOfUsers);
+                    return !singleGroupRecommendationTaskOutput.getRecommendations().getRecommendations().isEmpty();
+                })
                 .map(groupOfUsers -> {
 
                     SingleGroupRecommendationTaskInput singleGroupRecommendationTaskInput = groupRecommenderSystemResult.getGroupInput(groupOfUsers);

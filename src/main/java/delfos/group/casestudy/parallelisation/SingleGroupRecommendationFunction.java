@@ -56,6 +56,10 @@ public class SingleGroupRecommendationFunction implements Function<SingleGroupRe
         final Object recommendationModel = task.getRecommendationModel();
         final Set<Item> itemsRequested = task.getItemsRequested();
 
+        if (itemsRequested.isEmpty()) {
+            System.out.println(" stop");
+        }
+
         GroupRecommendations recommendations = null;
         long buildTime = -1;
         long recommendationTime = -1;

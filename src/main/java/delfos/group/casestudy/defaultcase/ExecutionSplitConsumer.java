@@ -131,7 +131,7 @@ public class ExecutionSplitConsumer {
                 throw new IllegalArgumentException("Group request for group '" + groupOfUsers.toString() + "' are null.");
             }
             if (groupRequests.isEmpty()) {
-                throw new IllegalArgumentException("Group request for group '" + groupOfUsers.toString() + "' are empty.");
+                Global.showWarning("Group " + groupOfUsers.toString() + " has no requests in dataset " + task.getDatasetLoader().getAlias());
             }
         });
 
@@ -155,7 +155,7 @@ public class ExecutionSplitConsumer {
             }
 
             if (groupRecommendations.getRecommendations().isEmpty()) {
-                throw new IllegalStateException("Group recommendations for group '" + groupOfUsers.toString() + "'" + groupCaseStudy.getAlias() + " --> Cannot have empty recommendations.");
+                Global.showWarning("Group recommendations for group '" + groupOfUsers.toString() + "'" + groupCaseStudy.getAlias() + " --> Cannot have empty recommendations.");
             }
         });
 
