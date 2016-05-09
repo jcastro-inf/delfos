@@ -33,7 +33,7 @@ import java.util.TreeMap;
  *
  * @version 24-jul-2013
  */
-public class User implements Comparable<Object>, EntityWithFeatures, Serializable {
+public class User implements Comparable<User>, EntityWithFeatures, Serializable {
 
     public static User ANONYMOUS_USER = new User(0, "User_Anonymous");
 
@@ -173,13 +173,8 @@ public class User implements Comparable<Object>, EntityWithFeatures, Serializabl
     }
 
     @Override
-    public int compareTo(Object o) {
-        if (o instanceof User) {
-            User otherUser = (User) o;
-            return BY_ID.compare(this, otherUser);
-        } else {
-            throw new IllegalArgumentException("Cannot compare a user with a " + o.getClass());
-        }
+    public int compareTo(User otherUser) {
+        return BY_ID.compare(this, otherUser);
     }
 
     public String getTargetId() {
