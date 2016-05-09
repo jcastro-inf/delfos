@@ -19,6 +19,7 @@ package delfos.experiment.validation.validationtechnique;
 import delfos.ERROR_CODES;
 import delfos.common.exceptions.dataset.CannotLoadContentDataset;
 import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
+import delfos.common.exceptions.dataset.CannotLoadUsersDataset;
 import delfos.common.exceptions.dataset.items.ItemNotFound;
 import delfos.common.exceptions.dataset.users.UserNotFound;
 import delfos.common.parameters.Parameter;
@@ -38,6 +39,7 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 /**
  * Clase que implementa el método de partición de datasets Cross Fold Validation tomando como entrada usuario-producto.
@@ -76,7 +78,7 @@ public class CrossFoldValidation_Ratings extends ValidationTechnique {
         //cross validationDatasets initialization
         Map<Integer, Map<Integer, Set<Integer>>> todosConjuntosTest = IntStream.range(0, numSplit).boxed().collect(Collectors.toMap(Function.identity(), i -> new HashMap<>()));
 
-        Map<Integer, List<RatingType>> ratingsPartition = datasetLoader.getUsersDataset().parallelStream()
+        Map<Integer, List<RatingType>> ratingsPartition = getUsersInTestSet(datasetLoader)
                 .map(user -> {
                     final long seedThisUser = generalSeed + user.getId();
                     Random randomThisUser = new Random(seedThisUser);
@@ -156,6 +158,10 @@ public class CrossFoldValidation_Ratings extends ValidationTechnique {
             progressChanged("Copying partitions", (int) idPartition * 100 / getNumberOfPartitions());
         }
         return ret;
+    }
+
+    public <RatingType extends Rating> Stream<User> getUsersInTestSet(DatasetLoader<RatingType> datasetLoader) throws CannotLoadUsersDataset {
+        return datasetLoader.getUsersDataset().parallelStream();
     }
 
     public int getNumberOfPartitions() {
