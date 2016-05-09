@@ -26,6 +26,7 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 /**
  *
@@ -71,7 +72,11 @@ public class GivenGroups extends GroupFormationTechnique {
 
         String groupsString = (String) getParameterValue(GROUPS);
 
-        Collection<GroupOfUsers> groups = parseGroupsString(groupsString);
+        Collection<GroupOfUsers> groups = parseGroupsString(groupsString)
+                .stream().map(group -> new GroupOfUsers(
+                        group.getIdMembers().stream().map(user -> datasetLoader.getUsersDataset().getUser(user)).collect(Collectors.toList()))
+                )
+                .collect(Collectors.toList());
 
         return groups;
     }
