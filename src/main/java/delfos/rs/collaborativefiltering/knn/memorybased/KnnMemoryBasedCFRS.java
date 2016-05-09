@@ -48,17 +48,13 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
- * Sistema de recomendación basado en el filtrado colaborativo basado en
- * usuarios, también denominado User-User o filtrado colaborativo basado en
- * memoria. Este sistema de recomendación no realiza un cálculo de perfil de
- * usuarios o productos, sino que en el momento de la predicción, calcula los k
- * vecinos más cercanos al usuario activo, es decir, los k
- * ({@link KnnMemoryBasedCFRS#neighborhoodSize}) usuarios más similares
- * ({@link KnnMemoryBasedCFRS#similarityMeasure}). La predicción de la
- * valoración de un producto i para un usuario u se realiza agregando las
- * valoraciones de los vecinos del usuario u sobre el producto i, utilizando
- * para ello una técnica de predicción
- * ({@link KnnMemoryBasedCFRS#predictionTechnique})
+ * Sistema de recomendación basado en el filtrado colaborativo basado en usuarios, también denominado User-User o
+ * filtrado colaborativo basado en memoria. Este sistema de recomendación no realiza un cálculo de perfil de usuarios o
+ * productos, sino que en el momento de la predicción, calcula los k vecinos más cercanos al usuario activo, es decir,
+ * los k ({@link KnnMemoryBasedCFRS#neighborhoodSize}) usuarios más similares
+ * ({@link KnnMemoryBasedCFRS#similarityMeasure}). La predicción de la valoración de un producto i para un usuario u se
+ * realiza agregando las valoraciones de los vecinos del usuario u sobre el producto i, utilizando para ello una técnica
+ * de predicción ({@link KnnMemoryBasedCFRS#predictionTechnique})
  *
  * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
@@ -70,9 +66,8 @@ public class KnnMemoryBasedCFRS extends KnnCollaborativeRecommender<KnnMemoryMod
     private static final long serialVersionUID = 1L;
 
     /**
-     * Constructor que añade los parámetros al sistema de recomendación y asigna
-     * la medida del coseno y la suma ponderada como medida de similitud y
-     * técnica de predicción respectivamente.
+     * Constructor que añade los parámetros al sistema de recomendación y asigna la medida del coseno y la suma
+     * ponderada como medida de similitud y técnica de predicción respectivamente.
      */
     public KnnMemoryBasedCFRS() {
         super();
@@ -97,7 +92,7 @@ public class KnnMemoryBasedCFRS extends KnnCollaborativeRecommender<KnnMemoryMod
     public RecommendationsToUser recommendToUser(DatasetLoader<? extends Rating> datasetLoader, KnnMemoryModel model, User user, Set<Item> candidateItems) throws UserNotFound {
         try {
             List<Neighbor> neighbors;
-            neighbors = getNeighbors(datasetLoader, user);
+            neighbors = getNeighbors(datasetLoader, user, this);
             Collection<Recommendation> ret = recommendWithNeighbors(datasetLoader.getRatingsDataset(), user.getId(), neighbors, candidateItems);
             return new RecommendationsToUserWithNeighbors(user, ret, neighbors);
         } catch (CannotLoadRatingsDataset ex) {
@@ -106,22 +101,21 @@ public class KnnMemoryBasedCFRS extends KnnCollaborativeRecommender<KnnMemoryMod
     }
 
     /**
-     * Calcula los vecinos mas cercanos del usuario indicado por parámetro. Para
-     * ello, utiliza los valores especificados en los parámetros del algoritmo y
-     * los datasets de valoraciones y productos que se indicaron al sistema
+     * Calcula los vecinos mas cercanos del usuario indicado por parámetro. Para ello, utiliza los valores especificados
+     * en los parámetros del algoritmo y los datasets de valoraciones y productos que se indicaron al sistema
      *
+     * @param <RatingType>
      * @param datasetLoader Dataset de valoraciones.
      * @param user usuario para el que se calculan sus vecinos
-     * @return Devuelve una lista ordenada por similitud de los vecinos más
-     * cercanos al usuario indicado
-     * @throws UserNotFound Si el usuario indicado no existe en el conjunto de
-     * datos
+     * @param rs
+     * @return Devuelve una lista ordenada por similitud de los vecinos más cercanos al usuario indicado
+     * @throws UserNotFound Si el usuario indicado no existe en el conjunto de datos
      */
-    public List<Neighbor> getNeighbors(DatasetLoader<? extends Rating> datasetLoader, User user) throws UserNotFound {
+    public static <RatingType extends Rating> List<Neighbor> getNeighbors(DatasetLoader<RatingType> datasetLoader, User user, KnnCollaborativeRecommender rs) throws UserNotFound {
 
         List<Neighbor> allNeighbors = datasetLoader.getUsersDataset().parallelStream()
                 .filter(user2 -> !user.equals(user2))
-                .map((userNeighbor) -> new KnnMemoryNeighborTask(datasetLoader, user, userNeighbor, this))
+                .map((userNeighbor) -> new KnnMemoryNeighborTask(datasetLoader, user, userNeighbor, rs))
                 .map(new KnnMemoryNeighborCalculator())
                 .map(neighbor -> {
                     if (neighbor == null) {
@@ -142,19 +136,16 @@ public class KnnMemoryBasedCFRS extends KnnCollaborativeRecommender<KnnMemoryMod
     }
 
     /**
-     * Devuelva las recomendaciones, teniendo en cuenta sólo los productos
-     * indicados por parámetro, para el usuario activo a partir de los vecinos
-     * indicados por parámetro
+     * Devuelva las recomendaciones, teniendo en cuenta sólo los productos indicados por parámetro, para el usuario
+     * activo a partir de los vecinos indicados por parámetro
      *
      * @param ratingsDataset Conjunto de valoraciones.
      * @param idUser Id del usuario activo
      * @param neighbors Vecinos del usuario activo
-     * @param candidateItems Lista de productos que se consideran recomendables,
-     * es decir, que podrían ser recomendados si la predicción es alta
-     * @return Lista de recomendaciones para el usuario, ordenadas por
-     * valoracion predicha.
-     * @throws UserNotFound Si el usuario activo o alguno de los vecinos
-     * indicados no se encuentra en el dataset.
+     * @param candidateItems Lista de productos que se consideran recomendables, es decir, que podrían ser recomendados
+     * si la predicción es alta
+     * @return Lista de recomendaciones para el usuario, ordenadas por valoracion predicha.
+     * @throws UserNotFound Si el usuario activo o alguno de los vecinos indicados no se encuentra en el dataset.
      */
     public Collection<Recommendation> recommendWithNeighbors(
             RatingsDataset<? extends Rating> ratingsDataset,
@@ -219,7 +210,7 @@ public class KnnMemoryBasedCFRS extends KnnCollaborativeRecommender<KnnMemoryMod
         //No hay modelo que guardar.
     }
 
-    private void printNeighborhood(int idUser, List<Neighbor> ret) {
+    private static void printNeighborhood(int idUser, List<Neighbor> ret) {
         StringBuilder message = new StringBuilder();
 
         message.append("=========================================================\n");

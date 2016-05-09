@@ -21,13 +21,12 @@ import delfos.common.exceptions.CouldNotPredictRating;
 import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
 import delfos.common.exceptions.dataset.items.ItemNotFound;
 import delfos.common.exceptions.dataset.users.UserNotFound;
-import delfos.common.parallelwork.MultiThreadExecutionManager;
 import delfos.common.parameters.Parameter;
 import delfos.common.parameters.restriction.ParameterOwnerRestriction;
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RatingsDataset;
-import delfos.rs.collaborativefiltering.CollaborativeRecommender;
+import delfos.rs.collaborativefiltering.knn.KnnCollaborativeRecommender;
 import static delfos.rs.collaborativefiltering.knn.KnnCollaborativeRecommender.CASE_AMPLIFICATION;
 import static delfos.rs.collaborativefiltering.knn.KnnCollaborativeRecommender.DEFAULT_RATING;
 import static delfos.rs.collaborativefiltering.knn.KnnCollaborativeRecommender.DEFAULT_RATING_VALUE;
@@ -39,6 +38,7 @@ import static delfos.rs.collaborativefiltering.knn.KnnCollaborativeRecommender.R
 import static delfos.rs.collaborativefiltering.knn.KnnCollaborativeRecommender.SIMILARITY_MEASURE;
 import delfos.rs.collaborativefiltering.knn.MatchRating;
 import delfos.rs.collaborativefiltering.knn.RecommendationEntity;
+import delfos.rs.collaborativefiltering.knn.memorybased.KnnMemoryBasedCFRS;
 import delfos.rs.collaborativefiltering.predictiontechniques.PredictionTechnique;
 import delfos.rs.collaborativefiltering.profile.Neighbor;
 import delfos.rs.persistence.DatabasePersistence;
@@ -49,28 +49,23 @@ import delfos.rs.trustbased.belieffunctions.LinearBelief;
 import delfos.similaritymeasures.CollaborativeSimilarityMeasure;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Sistema de recomendación basado en el filtrado colaborativo basado en
- * usuarios, también denominado User-User o filtrado colaborativo basado en
- * memoria. Este sistema de recomendación no realiza un cálculo de perfil de
- * usuarios o productos, sino que en el momento de la predicción, calcula los k
- * vecinos más cercanos al usuario activo, es decir, los k
- * ({@link KnnMemoryBasedCFRS#neighborhoodSize}) usuarios más similares
- * ({@link KnnMemoryBasedCFRS#similarityMeasure}). La predicción de la
- * valoración de un producto i para un usuario u se realiza agregando las
- * valoraciones de los vecinos del usuario u sobre el producto i, utilizando
- * para ello una técnica de predicción
- * ({@link KnnMemoryBasedCFRS#predictionTechnique})
+ * Sistema de recomendación basado en el filtrado colaborativo basado en usuarios, también denominado User-User o
+ * filtrado colaborativo basado en memoria. Este sistema de recomendación no realiza un cálculo de perfil de usuarios o
+ * productos, sino que en el momento de la predicción, calcula los k vecinos más cercanos al usuario activo, es decir,
+ * los k ({@link KnnMemoryBasedCFRS#neighborhoodSize}) usuarios más similares
+ * ({@link KnnMemoryBasedCFRS#similarityMeasure}). La predicción de la valoración de un producto i para un usuario u se
+ * realiza agregando las valoraciones de los vecinos del usuario u sobre el producto i, utilizando para ello una técnica
+ * de predicción ({@link KnnMemoryBasedCFRS#predictionTechnique})
  *
  * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 14-abril-2014
  */
-public class TrustModificationKnnMemory extends CollaborativeRecommender<Object> {
+public class TrustModificationKnnMemory extends KnnCollaborativeRecommender<Object> {
 
     private static final long serialVersionUID = 1L;
 
@@ -79,21 +74,11 @@ public class TrustModificationKnnMemory extends CollaborativeRecommender<Object>
             new ParameterOwnerRestriction(BeliefFunction.class, new LinearBelief()));
 
     /**
-     * Constructor que añade los parámetros al sistema de recomendación y asigna
-     * la medida del coseno y la suma ponderada como medida de similitud y
-     * técnica de predicción respectivamente.
+     * Constructor que añade los parámetros al sistema de recomendación y asigna la medida del coseno y la suma
+     * ponderada como medida de similitud y técnica de predicción respectivamente.
      */
     public TrustModificationKnnMemory() {
         super();
-        addParameter(NEIGHBORHOOD_SIZE);
-        addParameter(SIMILARITY_MEASURE);
-        addParameter(PREDICTION_TECHNIQUE);
-        addParameter(INVERSE_FREQUENCY);
-        addParameter(CASE_AMPLIFICATION);
-        addParameter(DEFAULT_RATING);
-        addParameter(DEFAULT_RATING_VALUE);
-        addParameter(RELEVANCE_FACTOR);
-        addParameter(RELEVANCE_FACTOR_VALUE);
         addParameter(BELIEF_DERIVATION);
     }
 
@@ -139,7 +124,7 @@ public class TrustModificationKnnMemory extends CollaborativeRecommender<Object>
 
         try {
             List<Neighbor> neighbors;
-            neighbors = getNeighbors(datasetLoader.getRatingsDataset(), idUser);
+            neighbors = KnnMemoryBasedCFRS.getNeighbors(datasetLoader, datasetLoader.getUsersDataset().get(idUser), this);
 
             Collection<Recommendation> ret = recommendWithNeighbors(datasetLoader.getRatingsDataset(), idUser, neighbors, candidateItems);
 
@@ -150,62 +135,16 @@ public class TrustModificationKnnMemory extends CollaborativeRecommender<Object>
     }
 
     /**
-     * Calcula los vecinos mas cercanos del usuario indicado por parámetro. Para
-     * ello, utiliza los valores especificados en los parámetros del algoritmo y
-     * los datasets de valoraciones y productos que se indicaron al sistema
-     *
-     * @param ratingsDataset Dataset de valoraciones.
-     * @param idUser id del usuario para el que se calculan sus vecinos
-     * @return Devuelve una lista ordenada por similitud de los vecinos más
-     * cercanos al usuario indicado
-     * @throws UserNotFound Si el usuario indicado no existe en el conjunto de
-     * datos
-     */
-    public List<Neighbor> getNeighbors(RatingsDataset<? extends Rating> ratingsDataset, int idUser) throws UserNotFound {
-
-        ratingsDataset.getUserRated(idUser);
-
-        List<NeighborCalculationTask> tasks = new ArrayList<>();
-        for (int idNeighbor : ratingsDataset.allUsers()) {
-
-            tasks.add(new NeighborCalculationTask(ratingsDataset, idUser, idNeighbor, this));
-
-        }
-
-        MultiThreadExecutionManager<NeighborCalculationTask> multiThreadExecutionManager = new MultiThreadExecutionManager<>(
-                "Compute neighbors of " + idUser,
-                tasks,
-                NeighborCalculationCalculator.class);
-
-        multiThreadExecutionManager.run();
-
-        List<Neighbor> ret = new ArrayList<>();
-        //Recompongo los resultados.
-        for (NeighborCalculationTask task : multiThreadExecutionManager.getAllFinishedTasks()) {
-            Neighbor neighbor = task.getNeighbor();
-            if (neighbor != null) {
-                ret.add(neighbor);
-            }
-        }
-        Collections.sort(ret);
-
-        return ret;
-    }
-
-    /**
-     * Devuelva las recomendaciones, teniendo en cuenta sólo los productos
-     * indicados por parámetro, para el usuario activo a partir de los vecinos
-     * indicados por parámetro
+     * Devuelva las recomendaciones, teniendo en cuenta sólo los productos indicados por parámetro, para el usuario
+     * activo a partir de los vecinos indicados por parámetro
      *
      * @param ratingsDataset Conjunto de valoraciones.
      * @param idUser Id del usuario activo
      * @param vecinos Vecinos del usuario activo
-     * @param candidateItems Lista de productos que se consideran recomendables,
-     * es decir, que podrían ser recomendados si la predicción es alta
-     * @return Lista de recomendaciones para el usuario, ordenadas por
-     * valoracion predicha.
-     * @throws UserNotFound Si el usuario activo o alguno de los vecinos
-     * indicados no se encuentra en el dataset.
+     * @param candidateItems Lista de productos que se consideran recomendables, es decir, que podrían ser recomendados
+     * si la predicción es alta
+     * @return Lista de recomendaciones para el usuario, ordenadas por valoracion predicha.
+     * @throws UserNotFound Si el usuario activo o alguno de los vecinos indicados no se encuentra en el dataset.
      */
     public Collection<Recommendation> recommendWithNeighbors(
             RatingsDataset<? extends Rating> ratingsDataset,
@@ -272,4 +211,5 @@ public class TrustModificationKnnMemory extends CollaborativeRecommender<Object>
     public void saveRecommendationModel(DatabasePersistence databasePersistence, Object model) throws FailureInPersistence {
         //No hay modelo que guardar.
     }
+
 }

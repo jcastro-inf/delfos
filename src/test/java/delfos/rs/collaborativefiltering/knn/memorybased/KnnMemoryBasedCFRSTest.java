@@ -119,7 +119,7 @@ public class KnnMemoryBasedCFRSTest extends DelfosTest {
         User user = usersDataset.getUser(1);
         User neighborUser = usersDataset.getUser(2);
 
-        List<Neighbor> neighbors = knnMemoryBasedCFRS.getNeighbors(datasetLoader, user);
+        List<Neighbor> neighbors = KnnMemoryBasedCFRS.getNeighbors(datasetLoader, user, knnMemoryBasedCFRS);
         assertArrayEquals(
                 "The neighbor list is wrong",
                 Arrays.asList(
@@ -147,7 +147,7 @@ public class KnnMemoryBasedCFRSTest extends DelfosTest {
         User neighborUser2 = usersDataset.getUser(2);
         User neighborUser3 = usersDataset.getUser(3);
 
-        List<Neighbor> neighbors = knnMemoryBasedCFRS.getNeighbors(datasetLoader, user);
+        List<Neighbor> neighbors = KnnMemoryBasedCFRS.getNeighbors(datasetLoader, user, knnMemoryBasedCFRS);
 
         assertArrayEquals(
                 "The neighbor list is wrong",
@@ -166,7 +166,7 @@ public class KnnMemoryBasedCFRSTest extends DelfosTest {
 
         boolean requirementViolated = usersDataset.stream().anyMatch(user -> {
 
-            List<Neighbor> neighbors = knnMemoryBasedCFRS.getNeighbors(datasetLoader, user);
+            List<Neighbor> neighbors = KnnMemoryBasedCFRS.getNeighbors(datasetLoader, user, knnMemoryBasedCFRS);
 
             Set<Integer> allUsers = usersDataset.parallelStream()
                     .map(itemInner -> itemInner.getId())
