@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -72,7 +72,28 @@ public class AddItemFeatures extends DatabaseCaseUseSubManager {
             throw new IllegalArgumentException(ex);
         }
 
-        //Obtener las caracteristicas que se desean añadir al producto.
+        Map<String, String> featuresToAdd = extractFeaturesFromConsole(consoleParameters);
+        String newName = extractNameFromConsole(consoleParameters);
+
+        //Obtener las caracteristicas que se desean añadir al usuario.
+        addItemFeatures(featuresToAdd, newName, changeableDatasetLoader, item);
+
+    }
+
+    private String extractNameFromConsole(ConsoleParameters consoleParameters) {
+
+        String newName = consoleParameters.getValues(MANAGE_RATING_DATABASE_FEATURES)
+                .stream()
+                .filter(parameterString -> parameterString.contains(":"))
+                .filter(parameterString -> parameterString.split(":")[0].equals(ENTITY_NAME))
+                .findFirst()
+                .map(newNameParameter -> newNameParameter.split(":")[1])
+                .orElse(null);
+
+        return newName;
+    }
+
+    public Map<String, String> extractFeaturesFromConsole(ConsoleParameters consoleParameters) {
         Map<String, String> featuresToAdd = new TreeMap<>();
         try {
             List<String> featuresList = consoleParameters.getValues(MANAGE_RATING_DATABASE_FEATURES);
@@ -99,30 +120,30 @@ public class AddItemFeatures extends DatabaseCaseUseSubManager {
             throw new IllegalArgumentException(ex);
         }
 
-        //Extraigo el nombre de los parámetros, ya que tiene un tratamiento especial.
-        String newName = null;
         if (featuresToAdd.containsKey(ENTITY_NAME)) {
-            newName = featuresToAdd.remove(ENTITY_NAME);
+            featuresToAdd.remove(ENTITY_NAME);
         }
+
+        return featuresToAdd;
+    }
+
+    public void addItemFeatures(Map<String, String> featuresToAdd, String newName, ChangeableDatasetLoader changeableDatasetLoader, Item item) throws RuntimeException {
 
         //Añado las características.
         try {
-
-            Map<Feature, Object> newEntityFeatures = changeableDatasetLoader.getChangeableContentDataset().parseEntityFeaturesAndAddToExisting(idItem, featuresToAdd);
+            Map<Feature, Object> newEntityFeatures = changeableDatasetLoader.getChangeableContentDataset()
+                    .parseEntityFeaturesAndAddToExisting(item.getId(), featuresToAdd);
 
             if (newName == null) {
                 newName = item.getName();
             } else {
-                Global.showInfoMessage("Item id=" + idItem + " oldName='" + item.getName() + "'  newName='" + newName + "'.\n");
+                Global.showInfoMessage("Item id=" + item.getId() + " oldName='" + item.getName() + "'  newName='" + newName + "'.\n");
             }
 
             changeableDatasetLoader.getChangeableContentDataset().addItem(new Item(item.getId(), newName, newEntityFeatures));
         } catch (CannotLoadContentDataset ex) {
             ERROR_CODES.CANNOT_LOAD_CONTENT_DATASET.exit(ex);
             throw new IllegalArgumentException(ex);
-        } catch (ItemNotFound ex) {
-            ERROR_CODES.ITEM_NOT_FOUND.exit(ex);
-            throw new IllegalStateException(ex);
         } catch (EntityNotFound ex) {
             ERROR_CODES.ITEM_NOT_FOUND.exit(ex);
             throw new IllegalStateException(ex);
