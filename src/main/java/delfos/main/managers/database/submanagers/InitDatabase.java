@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -19,7 +19,6 @@ package delfos.main.managers.database.submanagers;
 import delfos.ConsoleParameters;
 import delfos.common.Global;
 import delfos.dataset.changeable.ChangeableDatasetLoader;
-import delfos.main.managers.database.submanagers.DatabaseCaseUseSubManager;
 import static delfos.main.managers.database.DatabaseManager.MANAGE_RATING_DATABASE_INIT_DATABASE;
 
 /**

@@ -11,9 +11,9 @@ import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RatingsDataset;
 import delfos.dataset.mockdatasets.MockContentDataset;
 import delfos.dataset.mockdatasets.MockRatingsDataset;
+import delfos.rs.contentbased.vsm.booleanvsm.SparseVector;
 import delfos.rs.recommendation.Recommendation;
 import java.util.Collection;
-import org.grouplens.lenskit.vectors.SparseVector;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 import org.junit.Test;
@@ -74,7 +74,7 @@ public class BasicBooleanCBRSTest extends DelfosTest {
 
         DatasetLoader<? extends Rating> datasetLoader = null;
         BasicBooleanCBRSModel model = null;
-        SparseVector userProfile = null;
+        SparseVector<Long> userProfile = null;
         Collection<Integer> candidateItems = null;
         BasicBooleanCBRS instance = new BasicBooleanCBRS();
         Collection<Recommendation> expResult = null;

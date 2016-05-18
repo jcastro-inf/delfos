@@ -39,6 +39,8 @@ import delfos.group.grs.recommendations.GroupRecommendationsWithMembersRecommend
 import delfos.rs.RecommendationModelBuildingProgressListener;
 import delfos.rs.RecommenderSystem;
 import delfos.rs.collaborativefiltering.knn.memorybased.KnnMemoryBasedCFRS;
+import delfos.rs.persistence.DatabasePersistence;
+import delfos.rs.persistence.FailureInPersistence;
 import delfos.rs.recommendation.Recommendation;
 import delfos.rs.recommendation.RecommendationsToUser;
 import java.util.ArrayList;
@@ -52,9 +54,8 @@ import java.util.TreeSet;
 import java.util.stream.Collectors;
 
 /**
- * Implementa un sistema de recomendación a grupos que agrega las
- * recomendaciones de cada individuo para componer una lista de recomendaciones
- * para el grupo.
+ * Implementa un sistema de recomendación a grupos que agrega las recomendaciones de cada individuo para componer una
+ * lista de recomendaciones para el grupo.
  *
  * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
@@ -65,8 +66,7 @@ public class AggregationOfIndividualRecommendations extends GroupRecommenderSyst
 
     private static final long serialVersionUID = 1L;
     /**
-     * Especifica el sistema de recomendación single user que se extiende para
-     * ser usado en recomendación a grupos.
+     * Especifica el sistema de recomendación single user que se extiende para ser usado en recomendación a grupos.
      */
     public static final Parameter SINGLE_USER_RECOMMENDER = new Parameter(
             "SINGLE_USER_RECOMMENDER",
@@ -74,8 +74,7 @@ public class AggregationOfIndividualRecommendations extends GroupRecommenderSyst
             "Especifica el sistema de recomendación single user que se extiende "
             + "para ser usaso en recomendación a grupos.");
     /**
-     * Especifica la técnica de agregación para agregar los ratings de los
-     * usuarios y formar el perfil del grupo.
+     * Especifica la técnica de agregación para agregar los ratings de los usuarios y formar el perfil del grupo.
      */
     public static final Parameter AGGREGATION_OPERATOR = new Parameter(
             "AGGREGATION_OPERATOR",
@@ -329,5 +328,23 @@ public class AggregationOfIndividualRecommendations extends GroupRecommenderSyst
                         recommendationsToUser -> recommendationsToUser.getUser(),
                         recommendationsToUser -> recommendationsToUser.getRecommendations()
                 ));
+    }
+
+    @Override
+    public void saveRecommendationModel(DatabasePersistence databasePersistence, SingleRecommendationModel model) throws FailureInPersistence {
+        RecommenderSystem singleUserRecommender = getSingleUserRecommender();
+        singleUserRecommender.saveRecommendationModel(databasePersistence, model.getRecommendationModel());
+    }
+
+    @Override
+    public SingleRecommendationModel loadRecommendationModel(DatabasePersistence databasePersistence, Collection<Integer> users, Collection<Integer> items, DatasetLoader<? extends Rating> datasetLoader) throws FailureInPersistence {
+        RecommenderSystem singleUserRecommender = getSingleUserRecommender();
+        Object loadRecommendationModel = singleUserRecommender.loadRecommendationModel(
+                databasePersistence,
+                datasetLoader.getUsersDataset().allIDs(),
+                datasetLoader.getContentDataset().allIDs(),
+                datasetLoader);
+
+        return new SingleRecommendationModel(loadRecommendationModel);
     }
 }

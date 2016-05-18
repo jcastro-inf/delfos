@@ -95,11 +95,6 @@
             <version>2.0</version>
         </dependency>
         <dependency>
-            <groupId>org.grouplens.lenskit</groupId>
-            <artifactId>lenskit-data-structures</artifactId>
-            <version>2.0.5</version>
-        </dependency>
-        <dependency>
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
             <version>2.4</version>
@@ -123,6 +118,11 @@
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-math4</artifactId>
             <version>4.0-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+            <version>3.0</version>
         </dependency>
     </dependencies>
 

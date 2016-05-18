@@ -28,13 +28,10 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
-import org.grouplens.lenskit.vectors.MutableSparseVector;
-import org.grouplens.lenskit.vectors.SparseVector;
-import org.grouplens.lenskit.vectors.VectorEntry;
+import org.apache.commons.math4.util.Pair;
 
 /**
- * Objeto que almacena una transformación de características y valores a un
- * vector de ocurrencias.
+ * Objeto que almacena una transformación de características y valores a un vector de ocurrencias.
  *
  * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
@@ -44,8 +41,7 @@ public class BooleanFeaturesTransformation implements Serializable, Iterable<Fea
 
     private static final long serialVersionUID = 1L;
     /**
-     * Guarda la correspondencia entre el valor de cada característica y su
-     * posición en el perfil booleano.
+     * Guarda la correspondencia entre el valor de cada característica y su posición en el perfil booleano.
      */
     private final Map<Feature, Map<Object, Long>> featureValuesIndexes = new TreeMap<>();
     private final int numFeatures;
@@ -76,13 +72,13 @@ public class BooleanFeaturesTransformation implements Serializable, Iterable<Fea
     }
 
     /**
-     * Crea un vector para representar el perfil, que sólo permite valores
-     * dentro de los definidos en esta transformación booleana.
+     * Crea un vector para representar el perfil, que sólo permite valores dentro de los definidos en esta
+     * transformación booleana.
      *
      * @return
      */
-    public MutableSparseVector newProfile() {
-        return MutableSparseVector.create(getDomain());
+    public SparseVector<Long> newProfile() {
+        return SparseVector.create(getDomain());
     }
 
     public Collection<Long> getDomain() {
@@ -97,8 +93,8 @@ public class BooleanFeaturesTransformation implements Serializable, Iterable<Fea
      * Devuelve todos los valores que toma la característica indicada.
      *
      * @param feature Característica para la que se buscan sus posibles valores.
-     * @return Valores que toman los productos. Tienen la peculiaridad de que
-     * algun ítem tiene para la característica indicada el valor devuelto.
+     * @return Valores que toman los productos. Tienen la peculiaridad de que algun ítem tiene para la característica
+     * indicada el valor devuelto.
      */
     public Iterable<Object> getAllFeatureValues(Feature feature) {
         ArrayList<Object> ret = new ArrayList<>(featureValuesIndexes.get(feature).keySet());
@@ -106,8 +102,7 @@ public class BooleanFeaturesTransformation implements Serializable, Iterable<Fea
     }
 
     /**
-     * Número de pares (característica, valor) distintos que se dan en el
-     * dataset de contenido.
+     * Número de pares (característica, valor) distintos que se dan en el dataset de contenido.
      *
      * @return Número de pares distintos.
      */
@@ -120,17 +115,15 @@ public class BooleanFeaturesTransformation implements Serializable, Iterable<Fea
     }
 
     /**
-     * Transforma el vector disperso en un mapa con los valores de las
-     * características.
+     * Transforma el vector disperso en un mapa con los valores de las características.
      *
-     * @param sparseVector Vector de valores dados en el dominio de esta
-     * transformación booleana.
+     * @param sparseVector Vector de valores dados en el dominio de esta transformación booleana.
      * @return
      */
-    public Map<Feature, Map<Object, Double>> getFeatureValueMap(MutableSparseVector sparseVector) {
+    public Map<Feature, Map<Object, Double>> getFeatureValueMap(SparseVector<Long> sparseVector) {
         Map<Feature, Map<Object, Double>> ret = new TreeMap<>();
 
-        for (VectorEntry entry : sparseVector.fast()) {
+        for (Pair<Long, Double> entry : sparseVector.entrySet()) {
             long idFeatureValue = entry.getKey();
             double value = entry.getValue();
 
@@ -180,14 +173,14 @@ public class BooleanFeaturesTransformation implements Serializable, Iterable<Fea
 
     }
 
-    public List<Double> getDoubleVector(SparseVector sparseVector) {
+    public List<Double> getDoubleVector(SparseVector<Long> sparseVector) {
 
         List<Double> ret = new ArrayList<>(numFeatures);
         for (int i = 0; i < numFeatures; i++) {
             ret.add(0.0);
         }
-        for (VectorEntry entry : sparseVector.fast()) {
-            ret.set((int) entry.getKey(), (double) entry.getValue());
+        for (Pair<Long, Double> entry : sparseVector.entrySet()) {
+            ret.set(entry.getKey().intValue(), (double) entry.getValue());
         }
         return ret;
     }
@@ -210,8 +203,8 @@ public class BooleanFeaturesTransformation implements Serializable, Iterable<Fea
         return ret;
     }
 
-    public SparseVector getDoubleValuesSparseVector(BooleanUserProfile booleanUserProfile) {
-        MutableSparseVector userProfile = newProfile();
+    public SparseVector<Long> getDoubleValuesSparseVector(BooleanUserProfile booleanUserProfile) {
+        SparseVector<Long> userProfile = newProfile();
 
         for (Feature feature : booleanUserProfile.getFeatures()) {
             for (Object featureValue : booleanUserProfile.getValuedFeatureValues(feature)) {
@@ -225,8 +218,8 @@ public class BooleanFeaturesTransformation implements Serializable, Iterable<Fea
         return userProfile;
     }
 
-    public SparseVector getDoubleWeightsSparseVector(BooleanUserProfile booleanUserProfile) {
-        MutableSparseVector userProfile = newProfile();
+    public SparseVector<Long> getDoubleWeightsSparseVector(BooleanUserProfile booleanUserProfile) {
+        SparseVector<Long> userProfile = newProfile();
 
         for (Feature feature : booleanUserProfile.getFeatures()) {
             for (Object featureValue : booleanUserProfile.getValuedFeatureValues(feature)) {

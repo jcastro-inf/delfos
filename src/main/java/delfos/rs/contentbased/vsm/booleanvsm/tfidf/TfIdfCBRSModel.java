@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,14 +16,13 @@
  */
 package delfos.rs.contentbased.vsm.booleanvsm.tfidf;
 
-import java.util.TreeMap;
-import org.grouplens.lenskit.vectors.MutableSparseVector;
-import org.grouplens.lenskit.vectors.SparseVector;
 import delfos.rs.contentbased.vsm.booleanvsm.BooleanFeaturesTransformation;
+import delfos.rs.contentbased.vsm.booleanvsm.SparseVector;
+import java.util.TreeMap;
 
 /**
- * Almacena el modelo del sistema {@link TfIdfCBRS}. En su implementación de
- * {@link TreeMap} almacena los perfiles de los productos.
+ * Almacena el modelo del sistema {@link TfIdfCBRS}. En su implementación de {@link TreeMap} almacena los perfiles de
+ * los productos.
  *
  * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
@@ -34,7 +33,7 @@ public class TfIdfCBRSModel extends TreeMap<Integer, SparseVector> {
     private static final long serialVersionUID = -3387516993124229948L;
 
     private final BooleanFeaturesTransformation booleanFeaturesTransformation;
-    private SparseVector allIUF;
+    private SparseVector<Long> allIUF;
 
     public TfIdfCBRSModel(BooleanFeaturesTransformation booleanFeaturesTransformation) {
         this.booleanFeaturesTransformation = booleanFeaturesTransformation;
@@ -44,14 +43,12 @@ public class TfIdfCBRSModel extends TreeMap<Integer, SparseVector> {
         return booleanFeaturesTransformation;
     }
 
-    public void setAllIuf(SparseVector allIuf) {
-        MutableSparseVector aux = booleanFeaturesTransformation.newProfile();
-        aux.fill(0);
-        aux.add(allIuf);
-        this.allIUF = aux;
+    public void setAllIuf(SparseVector<Long> allIuf) {
+        this.allIUF = allIUF.clone();
     }
 
-    public SparseVector getAllIUF() {
+    public SparseVector<Long> getAllIUF() {
         return allIUF;
     }
+
 }

@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,17 +16,15 @@
  */
 package delfos.rs.contentbased.vsm.booleanvsm.symeonidis2007;
 
+import delfos.rs.contentbased.vsm.booleanvsm.BooleanFeaturesTransformation;
+import delfos.rs.contentbased.vsm.booleanvsm.SparseVector;
+import delfos.rs.contentbased.vsm.booleanvsm.profile.BooleanUserProfile;
 import java.io.Serializable;
 import java.util.TreeMap;
-import org.grouplens.lenskit.vectors.MutableSparseVector;
-import org.grouplens.lenskit.vectors.SparseVector;
-import delfos.rs.contentbased.vsm.booleanvsm.BooleanFeaturesTransformation;
-import delfos.rs.contentbased.vsm.booleanvsm.profile.BooleanUserProfile;
 
 /**
- * Almacena el modelo del sistema {@link Symeonidis2007FeatureWeighted}, que se
- * compone de los perfiles de producto, los perfiles de usuario y de las
- * ponderaciones IUF.
+ * Almacena el modelo del sistema {@link Symeonidis2007FeatureWeighted}, que se compone de los perfiles de producto, los
+ * perfiles de usuario y de las ponderaciones IUF.
  *
  * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
@@ -35,14 +33,14 @@ import delfos.rs.contentbased.vsm.booleanvsm.profile.BooleanUserProfile;
 public class Symeonidis2007Model implements Serializable {
 
     private static final long serialVersionUID = -3387516993124229948L;
-    private SparseVector allIUF;
-    private BooleanFeaturesTransformation booleanFeaturesTransformation;
+    private SparseVector<Long> allIUF;
+    private final BooleanFeaturesTransformation booleanFeaturesTransformation;
     private final TreeMap<Integer, Symeonidis2007UserProfile> userProfiles;
-    private final TreeMap<Integer, SparseVector> itemProfiles;
+    private final TreeMap<Integer, SparseVector<Long>> itemProfiles;
 
     public Symeonidis2007Model(BooleanFeaturesTransformation booleanFeaturesTransformation) {
-        this.userProfiles = new TreeMap<Integer, Symeonidis2007UserProfile>();
-        this.itemProfiles = new TreeMap<Integer, SparseVector>();
+        this.userProfiles = new TreeMap<>();
+        this.itemProfiles = new TreeMap<>();
         this.booleanFeaturesTransformation = booleanFeaturesTransformation;
     }
 
@@ -50,15 +48,15 @@ public class Symeonidis2007Model implements Serializable {
         return booleanFeaturesTransformation;
     }
 
-    public void setAllIuf(SparseVector allIuf) {
-        this.allIUF = allIuf.mutableCopy().immutable();
+    public void setAllIuf(SparseVector<Long> allIuf) {
+        this.allIUF = allIuf.clone();
     }
 
-    public SparseVector getAllIUF() {
-        return allIUF.immutable();
+    public SparseVector<Long> getAllIUF() {
+        return allIUF.clone();
     }
 
-    void putItemProfile(int idItem, SparseVector itemProfile) {
+    void putItemProfile(int idItem, SparseVector<Long> itemProfile) {
         if (itemProfiles.containsKey(idItem)) {
             throw new IllegalArgumentException("The item " + idItem + " profile had already been assigned the model.");
         } else {
@@ -66,9 +64,9 @@ public class Symeonidis2007Model implements Serializable {
         }
     }
 
-    SparseVector getItemProfile(int idItem) {
+    SparseVector<Long> getItemProfile(int idItem) {
         if (itemProfiles.containsKey(idItem)) {
-            return itemProfiles.get(idItem).immutable();
+            return itemProfiles.get(idItem).clone();
         } else {
             throw new IllegalArgumentException("The item " + idItem + " profile not exists");
         }
