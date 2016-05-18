@@ -76,7 +76,7 @@ public class AddItemFeatures extends DatabaseCaseUseSubManager {
         String newName = extractNameFromConsole(consoleParameters);
 
         //Obtener las caracteristicas que se desean añadir al usuario.
-        addItemFeatures(featuresToAdd, newName, changeableDatasetLoader, item);
+        addItemFeatures(changeableDatasetLoader, item, newName, featuresToAdd);
 
     }
 
@@ -127,7 +127,7 @@ public class AddItemFeatures extends DatabaseCaseUseSubManager {
         return featuresToAdd;
     }
 
-    public void addItemFeatures(Map<String, String> featuresToAdd, String newName, ChangeableDatasetLoader changeableDatasetLoader, Item item) throws RuntimeException {
+    public void addItemFeatures(ChangeableDatasetLoader changeableDatasetLoader, Item item, String newName, Map<String, String> featuresToAdd) throws RuntimeException {
 
         //Añado las características.
         try {

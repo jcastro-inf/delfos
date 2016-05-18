@@ -76,7 +76,7 @@ public class AddUserFeatures extends DatabaseCaseUseSubManager {
         String newName = extractNameFromConsole(consoleParameters);
 
         //Obtener las caracteristicas que se desean añadir al usuario.
-        addUserFeatures(featuresToAdd, newName, changeableDatasetLoader, user);
+        addUserFeatures(changeableDatasetLoader, user, newName, featuresToAdd);
     }
 
     public Map<String, String> extractFeaturesFromConsole(ConsoleParameters consoleParameters) {
@@ -126,7 +126,7 @@ public class AddUserFeatures extends DatabaseCaseUseSubManager {
         return newName;
     }
 
-    public void addUserFeatures(Map<String, String> featuresToAdd, String newName, ChangeableDatasetLoader changeableDatasetLoader, User user) throws RuntimeException {
+    public void addUserFeatures(ChangeableDatasetLoader changeableDatasetLoader, User user, String newName, Map<String, String> featuresToAdd) throws RuntimeException {
 
         //Añado las características.
         try {
