@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -22,24 +22,28 @@ import delfos.common.exceptions.dataset.CannotLoadContentDataset;
 import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
 import delfos.common.exceptions.dataset.CannotLoadUsersDataset;
 import delfos.common.exceptions.dataset.items.ItemNotFound;
+import delfos.dataset.basic.item.Item;
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RatingsDataset;
 import delfos.dataset.basic.rating.RelevanceCriteria;
 import delfos.dataset.basic.user.User;
 import delfos.rs.nonpersonalised.NonPersonalisedRecommender;
+import delfos.rs.nonpersonalised.meanrating.arithmeticmean.MeanRating;
+import delfos.rs.nonpersonalised.meanrating.arithmeticmean.MeanRatingRSModel;
 import delfos.rs.output.RecommendationsOutputFileXML;
+import delfos.rs.persistence.DatabasePersistence;
 import delfos.rs.persistence.FailureInPersistence;
 import delfos.rs.persistence.FilePersistence;
+import delfos.rs.persistence.database.DAOMeanRatingProfile;
 import delfos.rs.recommendation.Recommendation;
-import delfos.rs.recommendation.RecommendationComputationDetails;
-import delfos.rs.recommendation.SingleUserRecommendations;
 import delfos.stats.distributions.NormalDistribution;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 import org.jdom2.JDOMException;
 
 /**
@@ -49,7 +53,7 @@ import org.jdom2.JDOMException;
  *
  * @version 07-ene-2014
  */
-public class WilsonScoreLowerBound extends NonPersonalisedRecommender<Collection<Recommendation>> {
+public class WilsonScoreLowerBound extends NonPersonalisedRecommender<MeanRatingRSModel> {
 
     public WilsonScoreLowerBound() {
         super();
@@ -61,7 +65,7 @@ public class WilsonScoreLowerBound extends NonPersonalisedRecommender<Collection
     }
 
     @Override
-    public Collection<Recommendation> buildRecommendationModel(DatasetLoader<? extends Rating> datasetLoader) throws CannotLoadRatingsDataset, CannotLoadContentDataset, CannotLoadUsersDataset {
+    public MeanRatingRSModel buildRecommendationModel(DatasetLoader<? extends Rating> datasetLoader) throws CannotLoadRatingsDataset, CannotLoadContentDataset, CannotLoadUsersDataset {
         final RatingsDataset<? extends Rating> ratingsDataset = datasetLoader.getRatingsDataset();
 
         final double confidence = 0.95;
@@ -72,9 +76,9 @@ public class WilsonScoreLowerBound extends NonPersonalisedRecommender<Collection
 
         Collection<Recommendation> recommendationModel1 = new ArrayList<>(ratingsDataset.allRatedItems().size());
 
-        for (int idItem : ratingsDataset.allRatedItems()) {
+        for (Item item : datasetLoader.getContentDataset()) {
             try {
-                Map<Integer, ? extends Rating> itemRatings = ratingsDataset.getItemRatingsRated(idItem);
+                Map<Integer, ? extends Rating> itemRatings = ratingsDataset.getItemRatingsRated(item.getId());
 
                 double numRatings = 0;
                 double positiveRatings = 0;
@@ -100,9 +104,9 @@ public class WilsonScoreLowerBound extends NonPersonalisedRecommender<Collection
                     Global.showln("n=" + n + " pos=" + pRounded + "\t --> \t" + preferenceRounded);
                 }
 
-                recommendationModel1.add(new Recommendation(idItem, preference));
+                recommendationModel1.add(new Recommendation(item, preference));
             } catch (ItemNotFound ex) {
-                Global.showInfoMessage("No information about item " + idItem + ", cannot build its model.");
+                Global.showInfoMessage("No information about item " + item + ", cannot build its model.");
             }
 
         }
@@ -113,25 +117,22 @@ public class WilsonScoreLowerBound extends NonPersonalisedRecommender<Collection
             Global.showln("=================");
 
         }
-        return recommendationModel1;
+
+        return MeanRatingRSModel.create(recommendationModel1);
     }
 
     @Override
-    public Collection<Recommendation> recommendOnly(DatasetLoader<? extends Rating> datasetLoader, Collection<Recommendation> recommendationModel, Collection<Integer> candidateItems) throws ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset {
-        Collection<Recommendation> recommendations = new ArrayList<>();
+    public Collection<Recommendation> recommendOnly(DatasetLoader<? extends Rating> datasetLoader, MeanRatingRSModel model, Collection<Integer> candidateItems) throws ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset {
 
-        Set<Integer> unpredicted = new TreeSet<>(candidateItems);
-        recommendationModel.stream()
-                .filter((recommendation) -> (candidateItems.contains(recommendation.getIdItem()))).map((recommendation) -> {
-                    recommendations.add(new Recommendation(recommendation.getIdItem(), recommendation.getPreference()));
-                    return recommendation;
-                }).forEach((recommendation) -> {
-                    unpredicted.remove(recommendation.getIdItem());
-                });
+        Map<Item, MeanRating> meanRatingsByItem = model
+                .getSortedMeanRatings().parallelStream()
+                .collect(Collectors.toMap(meanRating -> meanRating.getItem(), Function.identity()));
 
-        unpredicted.stream().forEach((idItem) -> {
-            recommendations.add(new Recommendation(idItem, 0));
-        });
+        List<Recommendation> recommendations = candidateItems.parallelStream()
+                .map(idItem -> datasetLoader.getContentDataset().getItem(idItem))
+                .map(item -> meanRatingsByItem.containsKey(item) ? meanRatingsByItem.get(item) : new MeanRating(item, Double.NaN))
+                .map(meanRating -> new Recommendation(meanRating.getItem(), meanRating.getPreference()))
+                .collect(Collectors.toList());
 
         return recommendations;
     }
@@ -149,14 +150,14 @@ public class WilsonScoreLowerBound extends NonPersonalisedRecommender<Collection
     }
 
     @Override
-    @SuppressWarnings("unchecked")
-    public Collection<Recommendation> loadRecommendationModel(FilePersistence filePersistence, Collection<Integer> users, Collection<Integer> items) throws FailureInPersistence {
-        return loadModel(filePersistence);
+    public MeanRatingRSModel loadRecommendationModel(DatabasePersistence databasePersistence, Collection<Integer> users, Collection<Integer> items, DatasetLoader<? extends Rating> datasetLoader) throws FailureInPersistence {
+        DAOMeanRatingProfile dAOMeanRatingProfile = new DAOMeanRatingProfile();
+        return dAOMeanRatingProfile.loadModel(databasePersistence, users, items, datasetLoader);
     }
 
     @Override
-    public void saveRecommendationModel(FilePersistence filePersistence, Collection<Recommendation> model) throws FailureInPersistence {
-        RecommendationsOutputFileXML recommendationsOutputMethod = new RecommendationsOutputFileXML(filePersistence.getCompleteFileName());
-        recommendationsOutputMethod.writeRecommendations(new SingleUserRecommendations(User.ANONYMOUS_USER, model, RecommendationComputationDetails.EMPTY_DETAILS));
+    public void saveRecommendationModel(DatabasePersistence databasePersistence, MeanRatingRSModel model) throws FailureInPersistence {
+        DAOMeanRatingProfile dAOMeanRatingProfile = new DAOMeanRatingProfile();
+        dAOMeanRatingProfile.saveModel(databasePersistence, model);
     }
 }

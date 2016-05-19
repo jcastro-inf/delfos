@@ -36,12 +36,10 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
- * Sistema de recomendación que realiza la recomendación basándose en el rating
- * medio de los productos. No se recomienda utilizar este sistema de
- * recomendación en un sistema real como sistema de recomendación principal. Se
- * puede usar para tareas complementarias, como calcular recomendaciones en caso
- * de que el usuario no obtenga recomendaciones con otros sistemas o para
- * deshacer empates entre productos.
+ * Sistema de recomendación que realiza la recomendación basándose en el rating medio de los productos. No se recomienda
+ * utilizar este sistema de recomendación en un sistema real como sistema de recomendación principal. Se puede usar para
+ * tareas complementarias, como calcular recomendaciones en caso de que el usuario no obtenga recomendaciones con otros
+ * sistemas o para deshacer empates entre productos.
  *
  * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
@@ -69,11 +67,11 @@ public class MeanRatingRS extends CollaborativeRecommender<MeanRatingRSModel> {
                 .map(item -> {
 
                     double meanRating = datasetLoader.getRatingsDataset()
-                    .getItemRatingsRated(item.getId())
-                    .values().parallelStream()
-                    .mapToDouble(rating -> rating.getRatingValue().doubleValue())
-                    .average()
-                    .orElse(Double.NaN);
+                            .getItemRatingsRated(item.getId())
+                            .values().parallelStream()
+                            .mapToDouble(rating -> rating.getRatingValue().doubleValue())
+                            .average()
+                            .orElse(Double.NaN);
 
                     return new MeanRating(item, meanRating);
                 })
@@ -83,7 +81,6 @@ public class MeanRatingRS extends CollaborativeRecommender<MeanRatingRSModel> {
     }
 
     @Override
-
     public Collection<Recommendation> recommendToUser(
             DatasetLoader<? extends Rating> datasetLoader,
             MeanRatingRSModel model,

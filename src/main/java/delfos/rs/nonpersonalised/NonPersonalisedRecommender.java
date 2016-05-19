@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,21 +16,19 @@
  */
 package delfos.rs.nonpersonalised;
 
-import java.util.Collection;
-import java.util.List;
 import delfos.common.exceptions.dataset.CannotLoadContentDataset;
 import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
 import delfos.common.exceptions.dataset.items.ItemNotFound;
 import delfos.common.parameters.ParameterOwnerType;
-import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.loader.types.DatasetLoader;
+import delfos.dataset.basic.rating.Rating;
 import delfos.rs.GenericRecommenderSystemAdapter;
 import delfos.rs.recommendation.Recommendation;
+import java.util.Collection;
 
 /**
- * Interfaz para introducir la semántica de un sistema de recomendación no
- * personalizado, es decir, que recomienda siempre los mismos productos
- * independientemente del usuario al que se recomienden.
+ * Interfaz para introducir la semántica de un sistema de recomendación no personalizado, es decir, que recomienda
+ * siempre los mismos productos independientemente del usuario al que se recomienden.
  *
  * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
