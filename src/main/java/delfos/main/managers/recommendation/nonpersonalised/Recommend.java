@@ -18,7 +18,6 @@ package delfos.main.managers.recommendation.nonpersonalised;
 
 import delfos.ConsoleParameters;
 import delfos.ERROR_CODES;
-import delfos.common.Chronometer;
 import delfos.common.exceptions.dataset.CannotLoadContentDataset;
 import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
 import delfos.common.exceptions.dataset.items.ItemNotFound;
@@ -34,8 +33,7 @@ import delfos.rs.nonpersonalised.NonPersonalisedRecommender;
 import delfos.rs.persistence.FailureInPersistence;
 import delfos.rs.persistence.PersistenceMethodStrategy;
 import delfos.rs.recommendation.Recommendation;
-import delfos.rs.recommendation.RecommendationComputationDetails;
-import delfos.rs.recommendation.SingleUserRecommendations;
+import delfos.rs.recommendation.RecommendationsToUser;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Collection;
@@ -46,7 +44,7 @@ import java.util.stream.Collectors;
  * @version 22-oct-2014
  * @author jcastro-inf ( https://github.com/jcastro-inf )
  */
-class Recommend extends CaseUseSubManager {
+public class Recommend extends CaseUseSubManager {
 
     public static Recommend getInstance() {
         return Holder.INSTANCE;
@@ -84,44 +82,38 @@ class Recommend extends CaseUseSubManager {
 
         RecommenderSystemConfiguration rsc = RecommenderSystemConfigurationFileParser.loadConfigFile(configurationFile);
 
-        if (rsc.recommenderSystem instanceof NonPersonalisedRecommender) {
-            Chronometer chronometer = new Chronometer();
-            NonPersonalisedRecommender nonPersonalisedRecommender = (NonPersonalisedRecommender) rsc.recommenderSystem;
-            Object recommendationModel;
-            try {
-                recommendationModel = PersistenceMethodStrategy.loadModel(rsc);
-            } catch (FailureInPersistence ex) {
-                ERROR_CODES.FAILURE_IN_PERSISTENCE.exit(ex);
-                throw new IllegalStateException(ex);
-            }
+        RecommendationsToUser recommendations = computeRecommendations(rsc, user);
 
-            Collection<Integer> candidateItems;
-            try {
-                candidateItems = rsc.recommendationCandidatesSelector.candidateItems(rsc.datasetLoader, user).stream().map(item -> item.getId()).collect(Collectors.toSet());
-            } catch (UserNotFound ex) {
-                if (rsc.datasetLoader instanceof ContentDatasetLoader) {
-                    ContentDatasetLoader contentDatasetLoader = (ContentDatasetLoader) rsc.datasetLoader;
-                    candidateItems = contentDatasetLoader.getContentDataset().allIDs();
-                } else {
-                    candidateItems = rsc.datasetLoader.getRatingsDataset().allRatedItems();
-                }
-            }
+        rsc.recommdendationsOutputMethod.writeRecommendations(recommendations);
 
-            try {
-                Collection<Recommendation> recommendOnly = nonPersonalisedRecommender.recommendOnly(rsc.datasetLoader, recommendationModel, candidateItems);
+    }
 
-                long timeTaken = chronometer.getTotalElapsed();
-                rsc.recommdendationsOutputMethod.writeRecommendations(new SingleUserRecommendations(user, recommendOnly, new RecommendationComputationDetails().addDetail(RecommendationComputationDetails.DetailField.TimeTaken, timeTaken)));
-            } catch (ItemNotFound ex) {
-                ERROR_CODES.ITEM_NOT_FOUND.exit(ex);
-            } catch (CannotLoadRatingsDataset ex) {
-                ERROR_CODES.CANNOT_LOAD_RATINGS_DATASET.exit(ex);
-            } catch (CannotLoadContentDataset ex) {
-                ERROR_CODES.CANNOT_LOAD_CONTENT_DATASET.exit(ex);
-            }
-        } else {
+    public static RecommendationsToUser computeRecommendations(RecommenderSystemConfiguration rsc, User user) throws ItemNotFound, CannotLoadContentDataset, RuntimeException, CannotLoadRatingsDataset {
+        if (!(rsc.recommenderSystem instanceof NonPersonalisedRecommender)) {
             IllegalStateException ise = new IllegalStateException(rsc.recommenderSystem.getAlias() + " is not a non-personalised recommender system (Must implement " + NonPersonalisedRecommender.class);
             ERROR_CODES.NOT_A_RECOMMENDER_SYSTEM.exit(ise);
+            throw ise;
         }
+        NonPersonalisedRecommender nonPersonalisedRecommender = (NonPersonalisedRecommender) rsc.recommenderSystem;
+        Object recommendationModel;
+        try {
+            recommendationModel = PersistenceMethodStrategy.loadModel(rsc);
+        } catch (FailureInPersistence ex) {
+            ERROR_CODES.FAILURE_IN_PERSISTENCE.exit(ex);
+            throw new IllegalStateException(ex);
+        }
+        Collection<Integer> candidateItems;
+        try {
+            candidateItems = rsc.recommendationCandidatesSelector.candidateItems(rsc.datasetLoader, user).stream().map(item -> item.getId()).collect(Collectors.toSet());
+        } catch (UserNotFound ex) {
+            if (rsc.datasetLoader instanceof ContentDatasetLoader) {
+                ContentDatasetLoader contentDatasetLoader = (ContentDatasetLoader) rsc.datasetLoader;
+                candidateItems = contentDatasetLoader.getContentDataset().allIDs();
+            } else {
+                candidateItems = rsc.datasetLoader.getRatingsDataset().allRatedItems();
+            }
+        }
+        Collection<Recommendation> recommendOnly = nonPersonalisedRecommender.recommendOnly(rsc.datasetLoader, recommendationModel, candidateItems);
+        return new RecommendationsToUser(User.ANONYMOUS_USER, recommendOnly);
     }
 }
