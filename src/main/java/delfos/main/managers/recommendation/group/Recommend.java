@@ -94,17 +94,19 @@ public class Recommend extends CaseUseSubManager {
 
         GroupOfUsers targetGroup = extractTargetGroup(consoleParameters, datasetLoader);
 
-        GroupRecommendations recommendToGroup = recommendToGroup(groupRecommenderSystem, persistenceMethod, targetGroup, datasetLoader, candidatesSelector);
+        GroupRecommendations recommendToGroup = recommendToGroup(rsc, targetGroup);
 
         rsc.recommdendationsOutputMethod.writeRecommendations(recommendToGroup);
     }
 
     public static GroupRecommendations recommendToGroup(
-            GroupRecommenderSystem<Object, Object> groupRecommenderSystem,
-            PersistenceMethod persistenceMethod,
-            GroupOfUsers targetGroup,
-            DatasetLoader<? extends Rating> datasetLoader,
-            RecommendationCandidatesSelector candidatesSelector) {
+            RecommenderSystemConfiguration rsc,
+            GroupOfUsers targetGroup) {
+
+        GroupRecommenderSystem<Object, Object> groupRecommenderSystem = getGroupRecommenderSystem(rsc);
+        DatasetLoader<? extends Rating> datasetLoader = rsc.datasetLoader;
+        RecommendationCandidatesSelector candidatesSelector = rsc.recommendationCandidatesSelector;
+        PersistenceMethod persistenceMethod = rsc.persistenceMethod;
 
         GroupRecommendations recommendations = null;
 
