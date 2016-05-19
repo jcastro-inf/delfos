@@ -17,6 +17,7 @@
 package delfos.rs.output;
 
 import delfos.ERROR_CODES;
+import delfos.common.Global;
 import delfos.common.parameters.Parameter;
 import delfos.common.parameters.restriction.IntegerParameter;
 import delfos.common.parameters.restriction.PasswordParameter;
@@ -30,6 +31,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Escribe las recomendaciones en una tabla de base de datos MySQL.
@@ -178,13 +180,18 @@ public class RecommendationsOutputDatabase extends RecommendationsOutputMethod {
             topNrecommendations = topNrecommendations.subList(0, Math.min(topNrecommendations.size(), getNumberOfRecommendations()));
         }
 
-        //Escribo las recomendaciones.
-        try (
-                Statement statement = getConection().doConnection().createStatement()) {
+        topNrecommendations = topNrecommendations.stream().filter(Recommendation.NON_COVERAGE_FAILURES).collect(Collectors.toList());
 
-            for (Recommendation r : topNrecommendations) {
+        if (topNrecommendations.isEmpty()) {
+            Global.showWarning("No recommendations for '" + recommendationsToUser.getTargetIdentifier() + "', Returning empty list.");
+        }
+
+        //Escribo las recomendaciones.
+        try (Statement statement = getConection().doConnection().createStatement()) {
+
+            for (Recommendation recommendation : topNrecommendations) {
                 String insert = "INSERT INTO " + getTableName() + "(" + getIdTargetField() + "," + getIdItemField() + "," + getPreferenceField() + "," + getRecommenderField() + ") VALUES \n"
-                        + "('" + targetIDString + "'," + r.getIdItem() + "," + r.getPreference().doubleValue() + ",'" + getRecommenderFieldValue() + "');";
+                        + "('" + targetIDString + "'," + recommendation.getIdItem() + "," + recommendation.getPreference().doubleValue() + ",'" + getRecommenderFieldValue() + "');";
                 statement.executeUpdate(insert);
             }
             statement.close();
