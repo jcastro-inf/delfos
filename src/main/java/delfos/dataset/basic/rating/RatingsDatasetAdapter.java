@@ -329,7 +329,7 @@ public abstract class RatingsDatasetAdapter<RatingType extends Rating> implement
     private Integer hashCodeBuffer = null;
 
     @Override
-    public int hashCode() {
+    public synchronized int hashCode() {
         if (hashCodeBuffer == null) {
             hashCodeBuffer = hashCode(this);
         }
