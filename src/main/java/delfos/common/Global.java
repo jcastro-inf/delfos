@@ -37,31 +37,31 @@ import java.util.logging.Logger;
  */
 public class Global {
 
-    private static final List<PrintStream> standardOutputWriters = new ArrayList<>();
-    private static final List<PrintStream> errorOutputWriters = new ArrayList<>();
+    private static final List<PrintStream> STANDARD_OUTPUT_WRITERS = new ArrayList<>();
+    private static final List<PrintStream> ERROR_OUTPUT_WRITERS = new ArrayList<>();
 
-    private static final List<FileWriter> standardOutputLoggers = new ArrayList<>();
-    private static final List<FileWriter> errorOutputLoggers = new ArrayList<>();
+    private static final List<FileWriter> STANDARD_OUTPUT_LOGGERS = new ArrayList<>();
+    private static final List<FileWriter> ERROR_OUTPUT_LOGGERS = new ArrayList<>();
 
     static {
-        standardOutputWriters.add(System.out);
-        errorOutputWriters.add(System.err);
+        STANDARD_OUTPUT_WRITERS.add(System.out);
+        ERROR_OUTPUT_WRITERS.add(System.err);
     }
 
     public static void addStandardOutputLogger(FileWriter fileWriter) {
-        standardOutputLoggers.add(fileWriter);
+        STANDARD_OUTPUT_LOGGERS.add(fileWriter);
     }
 
     public static void addErrorOutputLogger(FileWriter fileWriter) {
-        errorOutputLoggers.add(fileWriter);
+        ERROR_OUTPUT_LOGGERS.add(fileWriter);
     }
 
     public static void removeStandardOutputLogger(FileWriter fileWriter) {
-        standardOutputLoggers.remove(fileWriter);
+        STANDARD_OUTPUT_LOGGERS.remove(fileWriter);
     }
 
     public static void removeErrorOutputLogger(FileWriter fileWriter) {
-        errorOutputLoggers.remove(fileWriter);
+        ERROR_OUTPUT_LOGGERS.remove(fileWriter);
     }
 
     public static boolean isPrintDatasets() {
@@ -276,6 +276,10 @@ public class Global {
         }
     }
 
+    public static void showInfoMessageTimestamped(String message) {
+        Global.showInfoMessage(addTimestampToMessage(message));
+    }
+
     /**
      * Muestra la cadena indicada como parámetro en la salida por defecto.
      *
@@ -342,7 +346,7 @@ public class Global {
     }
 
     public static void printStandard(String message) {
-        standardOutputLoggers.stream().forEach(logger -> {
+        STANDARD_OUTPUT_LOGGERS.stream().forEach(logger -> {
             try {
                 logger.append(message);
             } catch (IOException ex) {
@@ -350,13 +354,13 @@ public class Global {
             }
         });
 
-        standardOutputWriters.stream().forEach(logger -> {
+        STANDARD_OUTPUT_WRITERS.stream().forEach(logger -> {
             logger.append(message);
         });
     }
 
     public static void printError(String message) {
-        errorOutputLoggers.stream().forEach(logger -> {
+        ERROR_OUTPUT_LOGGERS.stream().forEach(logger -> {
             try {
                 logger.append(message);
             } catch (IOException ex) {
@@ -364,7 +368,7 @@ public class Global {
             }
         });
 
-        errorOutputWriters.stream().forEach(logger -> {
+        ERROR_OUTPUT_WRITERS.stream().forEach(logger -> {
             logger.append(message);
         });
     }
