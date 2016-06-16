@@ -180,8 +180,8 @@ public class WeightedGraph<Node> implements Serializable, Comparable<WeightedGra
      *
      * @return
      */
-    public Collection<Node> allNodes() {
-        return new ArrayList<>(nodesIndex.keySet());
+    public Set<Node> allNodes() {
+        return nodesIndex.keySet().stream().collect(Collectors.toSet());
     }
 
     public double distance(Node node1, Node node2) {
