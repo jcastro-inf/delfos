@@ -113,7 +113,6 @@ public class RecommenderSystem_cacheRecommendationModel<RecommendationModel> ext
 
                 }
             }
-
         }
 
         if (buildModel) {
@@ -149,7 +148,8 @@ public class RecommenderSystem_cacheRecommendationModel<RecommendationModel> ext
             model = loadedModel;
         } catch (FailureInPersistence ex) {
             RecommendationModelBuildingProgressListener listener = this::fireBuildingProgressChangedEvent;
-            Global.showMessageTimestamped("Building recommendation model: " + filePersistenceWithHashSuffix.getCompleteFileName() + "\n");
+
+            Global.showInfoMessageTimestamped("Building recommendation model: " + filePersistenceWithHashSuffix.getCompleteFileName() + "\n");
             getRecommenderSystem().addRecommendationModelBuildingProgressListener(listener);
             try {
                 RecommendationModel computedModel = (RecommendationModel) getRecommenderSystem().buildRecommendationModel(datasetLoader);
