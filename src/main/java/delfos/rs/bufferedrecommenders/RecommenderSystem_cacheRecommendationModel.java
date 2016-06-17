@@ -145,11 +145,13 @@ public class RecommenderSystem_cacheRecommendationModel<RecommendationModel> ext
                     filePersistenceWithHashSuffix,
                     datasetLoader.getUsersDataset().allIDs(),
                     datasetLoader.getContentDataset().allIDs());
+
+            Global.showMessageTimestamped("\t\t\tLoaded recommendation model: " + filePersistenceWithHashSuffix.getCompleteFileName() + "\n");
             model = loadedModel;
         } catch (FailureInPersistence ex) {
             RecommendationModelBuildingProgressListener listener = this::fireBuildingProgressChangedEvent;
 
-            Global.showMessageTimestamped("Building recommendation model: " + filePersistenceWithHashSuffix.getCompleteFileName() + "\n");
+            Global.showMessageTimestamped("Building recommendation model: " + filePersistenceWithHashSuffix.getCompleteFileName() + " (" + ex.getMessage() + ")\n");
             getRecommenderSystem().addRecommendationModelBuildingProgressListener(listener);
             try {
                 RecommendationModel computedModel = (RecommendationModel) getRecommenderSystem().buildRecommendationModel(datasetLoader);
