@@ -180,8 +180,6 @@ public class PseudoUserRatingsDataset<RatingType extends Rating> extends Ratings
         for (RatingType rating : ratingsSorted) {
             String ratingToString = rating.toString();
             pseudoRatingsHashCodeBuilder.append(ratingToString);
-
-            System.out.println(ratingToString);
         }
 
         ratingsSorted.stream().forEachOrdered(rating -> pseudoRatingsHashCodeBuilder.append(rating.toString()));
