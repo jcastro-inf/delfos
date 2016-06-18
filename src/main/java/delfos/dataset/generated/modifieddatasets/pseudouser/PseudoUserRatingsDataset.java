@@ -170,20 +170,27 @@ public class PseudoUserRatingsDataset<RatingType extends Rating> extends Ratings
 
         int originalDatasetHash = originalDatasetLoader.getRatingsDataset().hashCode();
 
-        HashCodeBuilder hashCodeBuilder = new HashCodeBuilder(37, 11);
+        HashCodeBuilder pseudoRatingsHashCodeBuilder = new HashCodeBuilder(37, 11);
 
         List<RatingType> ratingsSorted = pseudoUsersRatings.values().stream()
                 .flatMap(userRatings -> userRatings.values().stream())
                 .sorted((rating, rating2) -> StringsOrderings.compareNatural(rating.toString(), rating2.toString()))
                 .collect(Collectors.toList());
 
-        ratingsSorted.forEach(rating -> hashCodeBuilder.append(rating.toString().hashCode()));
+        for (RatingType rating : ratingsSorted) {
+            String ratingToString = rating.toString();
+            pseudoRatingsHashCodeBuilder.append(ratingToString);
 
-        Integer pseudoRatingsHash = hashCodeBuilder.build();
+            System.out.println(ratingToString);
+        }
+
+        ratingsSorted.stream().forEachOrdered(rating -> pseudoRatingsHashCodeBuilder.append(rating.toString()));
+
+        Integer pseudoRatingsHashCode = pseudoRatingsHashCodeBuilder.build();
 
         HashCodeBuilder finalHash = new HashCodeBuilder(37, 11);
 
-        Integer finalHashValue = finalHash.append(originalDatasetHash).append(pseudoRatingsHash).build();
+        Integer finalHashValue = finalHash.append(originalDatasetHash).append(pseudoRatingsHashCode).build();
 
         return finalHashValue;
 

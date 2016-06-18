@@ -23,6 +23,7 @@ import delfos.dataset.basic.features.CollectionOfEntitiesWithFeaturesDefault;
 import delfos.dataset.basic.features.Feature;
 import delfos.dataset.basic.features.FeatureGenerator;
 import delfos.dataset.basic.rating.Rating;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -37,17 +38,13 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
  * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 1.0.0 Unknown date
- * @version 1.0.1 07-Mar-2013 Eliminación de la especificación de las
- * características del dataset, un dataset de contenido tiene las
- * características que tienen sus productos.
- * @version 1.0.2 25-Julio-2013 Renombrado de DefatultContentDataset a
- * ContentDatasetAdapter y movido de paquete
- * @version 1.1.0 15-Mar-2013 Incorporación del {@link FeatureGenerator} dentro
- * del objeto, para que cada dataset de contenido tenga unas características
- * distintas.
- * @version 1.2.0 16-Septiembre-2013 Reorganización de los datasets de
- * contenido, elmiminando la duplicidad de los mismos con la incorporación de
- * disponibilidad de los productos.
+ * @version 1.0.1 07-Mar-2013 Eliminación de la especificación de las características del dataset, un dataset de
+ * contenido tiene las características que tienen sus productos.
+ * @version 1.0.2 25-Julio-2013 Renombrado de DefatultContentDataset a ContentDatasetAdapter y movido de paquete
+ * @version 1.1.0 15-Mar-2013 Incorporación del {@link FeatureGenerator} dentro del objeto, para que cada dataset de
+ * contenido tenga unas características distintas.
+ * @version 1.2.0 16-Septiembre-2013 Reorganización de los datasets de contenido, elmiminando la duplicidad de los
+ * mismos con la incorporación de disponibilidad de los productos.
  */
 public class ContentDatasetDefault extends CollectionOfEntitiesWithFeaturesDefault<Item> implements ContentDataset {
 
@@ -73,11 +70,9 @@ public class ContentDatasetDefault extends CollectionOfEntitiesWithFeaturesDefau
     }
 
     /**
-     * Devuelve el conjunto de productos que pueden ser recomendados en el
-     * dataset. Los productos que no se encuentran disponibles pueden ser por
-     * diversas causas, descatalogados, fuera de stock, entre otras. En
-     * cualquier caso son productos que no se recomienda recomendar, valga la
-     * redundancia.
+     * Devuelve el conjunto de productos que pueden ser recomendados en el dataset. Los productos que no se encuentran
+     * disponibles pueden ser por diversas causas, descatalogados, fuera de stock, entre otras. En cualquier caso son
+     * productos que no se recomienda recomendar, valga la redundancia.
      *
      * @return
      */
@@ -110,18 +105,16 @@ public class ContentDatasetDefault extends CollectionOfEntitiesWithFeaturesDefau
                     Global.showWarning("The product " + idItem + " is now available.");
                 }
             }
-        } else {
-            if (availableProducts.contains(idItem)) {
-                //Hay que quitar el producto de la lista de disponibles.
-                availableProducts.remove(idItem);
-                if (Global.isVerboseAnnoying()) {
-                    Global.showWarning("The product " + idItem + " has been removed from available items");
-                }
-            } else {
-                //El producto estaba como no disponible, no se hace nada.
-                if (Global.isVerboseAnnoying()) {
-                    Global.showWarning("The product " + idItem + " has been removed from available items");
-                }
+        } else if (availableProducts.contains(idItem)) {
+            //Hay que quitar el producto de la lista de disponibles.
+            availableProducts.remove(idItem);
+            if (Global.isVerboseAnnoying()) {
+                Global.showWarning("The product " + idItem + " has been removed from available items");
+            }
+        } else //El producto estaba como no disponible, no se hace nada.
+        {
+            if (Global.isVerboseAnnoying()) {
+                Global.showWarning("The product " + idItem + " has been removed from available items");
             }
         }
     }
@@ -173,10 +166,13 @@ public class ContentDatasetDefault extends CollectionOfEntitiesWithFeaturesDefau
     public static <RatingType extends Rating> int hashCode(ContentDataset contentDataset) {
         HashCodeBuilder hashCodeBuilder = new HashCodeBuilder(37, 11);
 
-        List<Integer> itemsSorted = contentDataset.allIDs().stream().collect(Collectors.toList());
-        itemsSorted.sort((i1, i2) -> Integer.compare(i1, i2));
+        List<Integer> itemsSorted = contentDataset.allIDs().stream()
+                .sorted()
+                .collect(Collectors.toList());
 
-        Feature[] features = contentDataset.getFeatures();
+        List<Feature> features = Arrays.asList(contentDataset.getFeatures()).stream()
+                .sorted(Feature.BY_ID)
+                .collect(Collectors.toList());
 
         for (int idItem : itemsSorted) {
             Item item = contentDataset.get(idItem);
@@ -187,13 +183,14 @@ public class ContentDatasetDefault extends CollectionOfEntitiesWithFeaturesDefau
                 if (item.getFeatures().contains(feature)) {
                     Object featureValue = item.getFeatureValue(feature);
                     hashCodeBuilder.append(feature.getName());
-                    hashCodeBuilder.append(feature.getType());
+                    hashCodeBuilder.append(feature.getType().name());
                     hashCodeBuilder.append(featureValue);
                 }
             }
         }
+        final int finalHashValue = hashCodeBuilder.hashCode();
 
-        return hashCodeBuilder.hashCode();
+        return finalHashValue;
     }
 
 }

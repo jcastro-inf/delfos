@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -17,25 +17,27 @@
 package delfos.dataset.basic.features;
 
 import java.io.Serializable;
+import java.util.Comparator;
 
 /**
- * Objeto que almacena la información referente a una característica del
- * contenido de una entidad cualquiera dentro de un sistema de recomendación.
+ * Objeto que almacena la información referente a una característica del contenido de una entidad cualquiera dentro de
+ * un sistema de recomendación.
  *
  * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
- * @version 2.0 18-Septiembre-2013 Generalizado para que las características
- * sean aplicables a los usuarios también. Previamente, esta clase se denominaba
- * ItemFeature.
+ * @version 2.0 18-Septiembre-2013 Generalizado para que las características sean aplicables a los usuarios también.
+ * Previamente, esta clase se denominaba ItemFeature.
  */
 public class Feature implements Comparable<Feature>, Serializable {
 
     /**
-     * Valor que se utiliza para denotar valores perdidos de las
-     * características.
+     * Valor que se utiliza para denotar valores perdidos de las características.
      */
     public static final String NULL_VALUE = "";
     private static final long serialVersionUID = 101L;
+    public static Comparator<? super Feature> BY_ID = (feature1, feature2) -> {
+        return feature1.name.compareTo(feature2.name);
+    };
 
     /**
      * Comprueba si la cadena es identificativa de valor nulo.
@@ -67,8 +69,7 @@ public class Feature implements Comparable<Feature>, Serializable {
      */
     private final FeatureType type;
     /**
-     * Indice de la característica en {@link ItemFeatureFactory}, que indica en
-     * qué orden fue creado.
+     * Indice de la característica en {@link ItemFeatureFactory}, que indica en qué orden fue creado.
      */
     private final int index;
 
@@ -91,8 +92,7 @@ public class Feature implements Comparable<Feature>, Serializable {
     }
 
     /**
-     * Devuelve el nombre extendido de la característica, que añade el sufijo
-     * que denota su tipo.
+     * Devuelve el nombre extendido de la característica, que añade el sufijo que denota su tipo.
      *
      * @return Nombre extendido de la característica.
      */
@@ -101,8 +101,7 @@ public class Feature implements Comparable<Feature>, Serializable {
     }
 
     /**
-     * Se implementa el constructor por defecto para que el objeto sea
-     * serializable.
+     * Se implementa el constructor por defecto para que el objeto sea serializable.
      */
     protected Feature() {
         this.name = null;
@@ -134,8 +133,8 @@ public class Feature implements Comparable<Feature>, Serializable {
     }
 
     /**
-     * Comprueba si el objeto comparado es de la misma clase y tiene los mismos
-     * atributos. Si es así, considera que los objetos son iguales.
+     * Comprueba si el objeto comparado es de la misma clase y tiene los mismos atributos. Si es así, considera que los
+     * objetos son iguales.
      *
      * {@inheritDoc }
      */
@@ -156,8 +155,7 @@ public class Feature implements Comparable<Feature>, Serializable {
     }
 
     /**
-     * Genera el código hash a partir del orden de creación de la
-     * característica.
+     * Genera el código hash a partir del orden de creación de la característica.
      *
      * {@inheritDoc }
      */
