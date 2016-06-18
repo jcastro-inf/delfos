@@ -89,7 +89,7 @@ public class RecommenderSystem_cacheRecommendationModel<RecommendationModel> ext
     public RecommendationModel buildRecommendationModel(DatasetLoader<? extends Rating> datasetLoader) throws CannotLoadRatingsDataset, CannotLoadContentDataset, CannotLoadUsersDataset {
 
         final RecommenderSystem<Object> recommenderSystem = getRecommenderSystem();
-        final int datasetHashCode = datasetLoader.hashCode();
+        final int datasetHashCode = datasetLoader.getRatingsDataset().hashCode();
         final int recommenderSystemHashCode = recommenderSystem.hashCode();
         String recommendationModelKey = "dl=" + datasetHashCode + "_rs=" + recommenderSystemHashCode;
 
