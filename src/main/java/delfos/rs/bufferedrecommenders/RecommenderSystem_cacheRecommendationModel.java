@@ -146,7 +146,7 @@ public class RecommenderSystem_cacheRecommendationModel<RecommendationModel> ext
                     datasetLoader.getUsersDataset().allIDs(),
                     datasetLoader.getContentDataset().allIDs());
 
-            Global.showMessageTimestamped("\t\t\tLoaded recommendation model: " + filePersistenceWithHashSuffix.getCompleteFileName() + "\n");
+            Global.showInfoMessageTimestamped("\t\t\tLoaded recommendation model: " + filePersistenceWithHashSuffix.getCompleteFileName() + "\n");
             model = loadedModel;
         } catch (FailureInPersistence ex) {
             RecommendationModelBuildingProgressListener listener = this::fireBuildingProgressChangedEvent;
