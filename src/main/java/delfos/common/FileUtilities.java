@@ -34,7 +34,7 @@ public class FileUtilities {
     /**
      * Used to execute the create/delete files methods synchronized.
      */
-    public static final Object exMut = 1.0;
+    public static final Object EXMUT = 1.0;
 
     public static synchronized File addPrefix(File originalFile, String prefix) {
         String file = originalFile.getAbsolutePath();
@@ -71,7 +71,7 @@ public class FileUtilities {
      * @param directory Directorio a borrar.
      */
     public static void deleteDirectoryRecursive(File directory) {
-        synchronized (exMut) {
+        synchronized (EXMUT) {
             if (!directory.exists()) {
                 return;
             }
@@ -99,7 +99,7 @@ public class FileUtilities {
     }
 
     public static void createDirectoriesForFile(File file) {
-        synchronized (exMut) {
+        synchronized (EXMUT) {
             if (file == null) {
                 throw new IllegalArgumentException("File for path creation is null");
             }
@@ -117,7 +117,7 @@ public class FileUtilities {
     }
 
     public static void createDirectoryPath(File directory) {
-        synchronized (exMut) {
+        synchronized (EXMUT) {
             if (directory == null) {
                 throw new IllegalStateException("Directory for creation is null.");
             }
@@ -135,7 +135,7 @@ public class FileUtilities {
      * @return True if one or more directories have been created.
      */
     public static boolean createDirectoriesForFileIfNotExist(File file) {
-        synchronized (exMut) {
+        synchronized (EXMUT) {
             if (file == null) {
                 throw new IllegalArgumentException("File for path creation is null");
             }
@@ -151,7 +151,7 @@ public class FileUtilities {
     }
 
     public static boolean createDirectoryPathIfNotExists(File directory) {
-        synchronized (exMut) {
+        synchronized (EXMUT) {
             if (directory == null) {
                 throw new IllegalStateException("Directory for creation is null.");
             }
@@ -182,7 +182,7 @@ public class FileUtilities {
     }
 
     public static void cleanDirectory(File directory) {
-        synchronized (exMut) {
+        synchronized (EXMUT) {
             if (directory.exists()) {
                 FileUtilities.deleteDirectoryRecursive(directory);
             }
