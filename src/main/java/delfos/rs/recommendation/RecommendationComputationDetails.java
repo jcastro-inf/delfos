@@ -31,30 +31,6 @@ public class RecommendationComputationDetails implements Serializable {
 
     private final Map<DetailField, Object> details;
 
-    public static enum DetailField implements Serializable {
-
-        TimeTaken;
-
-        public static DetailField valueOfNoCase(String name) {
-            for (DetailField detailField : values()) {
-                if (detailField.name().equalsIgnoreCase(name)) {
-                    return detailField;
-                }
-            }
-
-            throw new IllegalStateException("No DetailField with identifier '" + name + "'");
-        }
-
-        public Object parseValue(String detailFieldValueString) {
-            switch (this) {
-                case TimeTaken:
-                    return Long.parseLong(detailFieldValueString);
-                default:
-                    throw new IllegalStateException("Unknown DetaildField '" + this + "'");
-            }
-        }
-    }
-
     public static final RecommendationComputationDetails EMPTY_DETAILS = new RecommendationComputationDetails();
 
     public RecommendationComputationDetails() {

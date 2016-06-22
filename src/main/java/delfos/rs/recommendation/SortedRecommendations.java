@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -58,7 +58,7 @@ public class SortedRecommendations implements Serializable {
         this.recommendationComputationDetails = recommendationComputationDetails;
     }
 
-    public Object getDetails(RecommendationComputationDetails.DetailField detailField) {
+    public Object getDetails(DetailField detailField) {
         return recommendationComputationDetails.getDetailFieldValue(detailField);
     }
 
@@ -78,7 +78,7 @@ public class SortedRecommendations implements Serializable {
         return recommendationComputationDetails;
     }
 
-    public Set<RecommendationComputationDetails.DetailField> detailFieldSet() {
+    public Set<DetailField> detailFieldSet() {
         return recommendationComputationDetails.detailFieldSet();
     }
 

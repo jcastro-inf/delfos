@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -78,7 +78,7 @@ public abstract class RecommendationsFactory implements Serializable {
     }
 
     public static Recommendations createRecommendations(String idTarget, Collection<Recommendation> recommendations, long timeTaken) {
-        return createRecommendations(idTarget, recommendations, new RecommendationComputationDetails().addDetail(RecommendationComputationDetails.DetailField.TimeTaken, timeTaken));
+        return createRecommendations(idTarget, recommendations, new RecommendationComputationDetails().addDetail(DetailField.TimeTaken, timeTaken));
     }
 
     public static Recommendations createRecommendations(String idTarget, Collection<Recommendation> recommendations) {
