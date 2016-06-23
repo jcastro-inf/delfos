@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,23 +16,24 @@
  */
 package delfos.common.statisticalfuncions;
 
+import java.io.Serializable;
 import java.util.Collection;
 
 /**
- * Versión thread-safe de la clase {@link MeanIterative}, implementado como un
- * wrapper.
+ * Versión thread-safe de la clase {@link MeanIterative}, implementado como un wrapper.
  *
  * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 19-Junio-2014
  */
-public class MeanIterative_Synchronized extends MeanIterative {
+public class MeanIterative_Synchronized extends MeanIterative implements Serializable {
+
+    static final long serialVersionUID = 4251919182L;
 
     private final MeanIterative meanIterative;
 
     /**
-     * Devuelve una media que indica la media de los últimos
-     * <code>maxValues</code> almacenados
+     * Devuelve una media que indica la media de los últimos <code>maxValues</code> almacenados
      *
      * @param maxValues
      */
@@ -41,8 +42,7 @@ public class MeanIterative_Synchronized extends MeanIterative {
     }
 
     /**
-     * Constructor de una media sin valores. No se aplica número máximo de
-     * valores.
+     * Constructor de una media sin valores. No se aplica número máximo de valores.
      */
     public MeanIterative_Synchronized() {
         meanIterative = new MeanIterative();

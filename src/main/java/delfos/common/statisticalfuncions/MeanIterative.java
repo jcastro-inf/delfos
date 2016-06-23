@@ -17,18 +17,21 @@
 package delfos.common.statisticalfuncions;
 
 import delfos.common.Global;
+import java.io.Serializable;
 import java.util.Collection;
 
 /**
- * Media calculada sin almacenar los valores previos. Se pueden ir añadiendo
- * valores a la media y se reajusta automáticamente.
+ * Media calculada sin almacenar los valores previos. Se pueden ir añadiendo valores a la media y se reajusta
+ * automáticamente.
  *
  * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 1.1 21-01-2013
  * @version 1.0 03/04/2012
  */
-public class MeanIterative {
+public class MeanIterative implements Serializable {
+
+    static final long serialVersionUID = 41665512L;
 
     /**
      * Valor actual de la media.
@@ -39,23 +42,20 @@ public class MeanIterative {
      */
     private long numValues = 0;
     /**
-     * Numero de valores máximos que la media retiene, es decir, valor máximo de
-     * la variable numValues. De esta manera es una media en la que tienen mayor
-     * peso los n últimos valores.
+     * Numero de valores máximos que la media retiene, es decir, valor máximo de la variable numValues. De esta manera
+     * es una media en la que tienen mayor peso los n últimos valores.
      */
     private final Integer maxValues;
 
     /**
-     * Constructor de una media sin valores. No se aplica número máximo de
-     * valores.
+     * Constructor de una media sin valores. No se aplica número máximo de valores.
      */
     public MeanIterative() {
         maxValues = null;
     }
 
     /**
-     * Devuelve una media que indica la media de los últimos
-     * <code>maxValues</code> almacenados
+     * Devuelve una media que indica la media de los últimos <code>maxValues</code> almacenados
      *
      * @param maxValues
      */
@@ -83,19 +83,17 @@ public class MeanIterative {
      *
      * @return Devuelve la media actual de los valores añadidos a la misma
      * @see MeanIterative#addValue(double)
-     * @see
-     * MeanIterative#addMean(delfos.common.StatisticalFuncions.MeanIterative)
+     * @see MeanIterative#addMean(delfos.common.StatisticalFuncions.MeanIterative)
      */
     public double getMean() {
         return mean;
     }
 
     /**
-     * añade un valor a la media ya calculada, actualizando el valor de la media
-     * según el número de valores que haya recibido previamente.
+     * añade un valor a la media ya calculada, actualizando el valor de la media según el número de valores que haya
+     * recibido previamente.
      *
-     * @param value valor que se añade a la serie de valores que conforman la
-     * media
+     * @param value valor que se añade a la serie de valores que conforman la media
      */
     public void addValue(double value) {
         if (numValues == 0) {
@@ -147,10 +145,8 @@ public class MeanIterative {
     }
 
     /**
-     * Combina dos medias, de manera que se preserva la media como si se hubiera
-     * utilizado una sola en principio, es decir, considera cada individuo, no
-     * el valor en el momento actual de la media a agregar como un único
-     * individuo
+     * Combina dos medias, de manera que se preserva la media como si se hubiera utilizado una sola en principio, es
+     * decir, considera cada individuo, no el valor en el momento actual de la media a agregar como un único individuo
      *
      * @param newMean Media que se añade
      * @return Media que combina la media anterior (this) y la nueva media.
@@ -165,20 +161,18 @@ public class MeanIterative {
     }
 
     /**
-     * Devuelve el número de valores que se añadieron a la media. Sirve para
-     * combinar varias medias, de manera que queden ponderadas correctamente
+     * Devuelve el número de valores que se añadieron a la media. Sirve para combinar varias medias, de manera que
+     * queden ponderadas correctamente
      *
-     * @return Número de valores que se tienen en cuenta para el cálculo de la
-     * media
+     * @return Número de valores que se tienen en cuenta para el cálculo de la media
      */
     public long getNumValues() {
         return numValues;
     }
 
     /**
-     * Método toString que representa este objeto como el valor medio de los
-     * valores que tiene y entre paréntesis muestra el número de valores que
-     * generan dicho valor medio.
+     * Método toString que representa este objeto como el valor medio de los valores que tiene y entre paréntesis
+     * muestra el número de valores que generan dicho valor medio.
      *
      * @return Representación amigable del contenido del objeto.
      */
