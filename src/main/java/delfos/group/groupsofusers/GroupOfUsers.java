@@ -18,6 +18,7 @@ package delfos.group.groupsofusers;
 
 import delfos.common.Global;
 import delfos.dataset.basic.user.User;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -30,15 +31,15 @@ import java.util.TreeSet;
 import java.util.stream.Collectors;
 
 /**
- * Clase abstracta que define los métodos que un objeto que representa a un
- * grupo de usuarios tiene. Se define esta "interfaz" para dar la posibilidad de
- * que en un futuro los grupos de usuarios puedan ser más sofisticados o más
+ * Clase abstracta que define los métodos que un objeto que representa a un grupo de usuarios tiene. Se define esta
+ * "interfaz" para dar la posibilidad de que en un futuro los grupos de usuarios puedan ser más sofisticados o más
  * simples
  *
  * @author jcastro-inf ( https://github.com/jcastro-inf )
  */
-public class GroupOfUsers implements Comparable<GroupOfUsers>, Iterable<Integer> {
+public class GroupOfUsers implements Comparable<GroupOfUsers>, Iterable<Integer>, Serializable {
 
+    private static final long serialVersionUID = 24352466L;
     public static Comparator<GroupOfUsers> BY_MEMBERS_ID = (GroupOfUsers o1, GroupOfUsers o2) -> {
 
         if (o1.size() == o2.size()) {
