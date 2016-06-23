@@ -184,6 +184,7 @@ public class RecommenderSystem_bufferedRecommendations extends RecommenderSystem
         try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(recommendationsFile))) {
             oos.writeObject(userRatings);
             oos.writeObject(recommendations);
+            oos.flush();
         } catch (IOException ex) {
             Global.showWarning("The serialization of ratings and recommendations had a problem.");
             throw new UnsupportedOperationException(ex);
