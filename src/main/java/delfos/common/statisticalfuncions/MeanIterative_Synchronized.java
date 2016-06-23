@@ -78,7 +78,7 @@ public class MeanIterative_Synchronized extends MeanIterative implements Seriali
 
     @Override
     public synchronized void addMean(MeanIterative newMean) {
-        meanIterative.addMean(meanIterative);
+        meanIterative.addMean(newMean);
     }
 
     @Override
@@ -100,5 +100,11 @@ public class MeanIterative_Synchronized extends MeanIterative implements Seriali
     @Override
     public synchronized boolean isEmpty() {
         return meanIterative.isEmpty();
+    }
+
+    @Override
+    protected synchronized Long getMaxValues() {
+        return meanIterative.getMaxValues();
+
     }
 }

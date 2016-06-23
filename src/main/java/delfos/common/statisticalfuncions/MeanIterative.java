@@ -45,7 +45,7 @@ public class MeanIterative implements Serializable {
      * Numero de valores máximos que la media retiene, es decir, valor máximo de la variable numValues. De esta manera
      * es una media en la que tienen mayor peso los n últimos valores.
      */
-    private final Integer maxValues;
+    private final Long maxValues;
 
     /**
      * Constructor de una media sin valores. No se aplica número máximo de valores.
@@ -59,7 +59,7 @@ public class MeanIterative implements Serializable {
      *
      * @param maxValues
      */
-    public MeanIterative(int maxValues) {
+    public MeanIterative(long maxValues) {
         this.maxValues = maxValues;
     }
 
@@ -69,7 +69,7 @@ public class MeanIterative implements Serializable {
      * @param values Valores para los que se calcula la media.
      */
     public MeanIterative(Collection<? extends Number> values) {
-        if (!values.isEmpty() && numValues == 0) {
+        if (!values.isEmpty() && getNumValues() == 0) {
             mean = 0;
         }
         for (Number n : values) {
@@ -96,7 +96,7 @@ public class MeanIterative implements Serializable {
      * @param value valor que se añade a la serie de valores que conforman la media
      */
     public void addValue(double value) {
-        if (numValues == 0) {
+        if (getNumValues() == 0) {
             mean = 0;
         }
 
@@ -109,35 +109,36 @@ public class MeanIterative implements Serializable {
             Global.showWarning(ex.getMessage());
             Global.showError(ex);
         } else {
-            double newMean = mean * (((double) numValues) / (numValues + 1.0)) + value / (numValues + 1);
-            //double newMean = ( mean * numValues + value) / (numValues+1);
+            double newMean = getMean() * (((double) getNumValues()) / (getNumValues() + 1.0)) + value / (getNumValues() + 1);
+            //double newMean = ( mean * getNumValues() + value) / (getNumValues()+1);
             if (Double.isNaN(newMean) || Double.isInfinite(newMean)) {
                 IllegalStateException ex = new IllegalStateException("Mean overflowed.");
                 Global.showWarning(ex.getMessage());
                 Global.showError(ex);
             } else {
-                numValues++;
+                numValues = getNumValues() + 1;
                 mean = newMean;
             }
-            if (maxValues != null && numValues > maxValues) {
-                numValues = maxValues;
+            if (getMaxValues() != null && getNumValues() > getMaxValues()) {
+                numValues = getMaxValues();
             }
 
         }
     }
 
     public void addMean(MeanIterative newMean) {
-        if (newMean.numValues == 0) {
-        } else if (this.numValues == 0) {
-            this.numValues = newMean.numValues;
-            this.mean = newMean.mean;
+        if (newMean.getNumValues() == 0) {
+
+        } else if (this.getNumValues() == 0) {
+            this.numValues = newMean.getNumValues();
+            this.mean = newMean.getMean();
         } else {
 
-            long incrementedNumValues = this.numValues + newMean.numValues;
+            long incrementedNumValues = this.getNumValues() + newMean.getNumValues();
 
-            double weightThis = (double) (this.numValues) / incrementedNumValues;
-            double weightNew = (double) (newMean.numValues) / incrementedNumValues;
-            double newMeanValue = this.mean * weightThis + newMean.mean * weightNew;
+            double weightThis = (double) (this.getNumValues()) / incrementedNumValues;
+            double weightNew = (double) (newMean.getNumValues()) / incrementedNumValues;
+            double newMeanValue = this.getMean() * weightThis + newMean.getMean() * weightNew;
 
             this.mean = newMeanValue;
             this.numValues = incrementedNumValues;
@@ -194,5 +195,9 @@ public class MeanIterative implements Serializable {
 
     public boolean isEmpty() {
         return getNumValues() == 0;
+    }
+
+    protected Long getMaxValues() {
+        return maxValues;
     }
 }
