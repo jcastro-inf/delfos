@@ -166,11 +166,11 @@ public class RecommenderSystem_bufferedRecommendations extends RecommenderSystem
                 ERROR_CODES.UNDEFINED_ERROR.exit(ex);
                 throw new IllegalArgumentException(ex);
             } catch (EOFException ex) {
-                Global.showWarning("Cannot read file: " + recommendationsFile.getAbsolutePath());
+                Global.showWarning("Unexpected end of file: " + recommendationsFile.getAbsolutePath() + " building again");
                 Global.showWarning(ex);
                 recommendations = actuallyComputeTheRecommendaitonsAndSaveThem(datasetLoader, recommendationModel, user, candidateItems, recommendationsFile, userRatings);
             } catch (IOException ex) {
-                Global.showWarning("Cannot read file: " + recommendationsFile.getAbsolutePath());
+                Global.showWarning("Cannot read file: " + recommendationsFile.getAbsolutePath() + " building again");
                 Global.showWarning(ex);
                 recommendations = actuallyComputeTheRecommendaitonsAndSaveThem(datasetLoader, recommendationModel, user, candidateItems, recommendationsFile, userRatings);
             }
