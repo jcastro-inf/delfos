@@ -39,6 +39,7 @@ import delfos.rs.RecommenderSystemAdapter;
 import delfos.rs.collaborativefiltering.svd.TryThisAtHomeSVD;
 import delfos.rs.recommendation.Recommendation;
 import delfos.rs.recommendation.RecommendationsToUser;
+import java.io.EOFException;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -164,7 +165,11 @@ public class RecommenderSystem_bufferedRecommendations extends RecommenderSystem
                 //Esta excepción no puede ocurrir nunca, ya que se ha comprobado en el if.
                 ERROR_CODES.UNDEFINED_ERROR.exit(ex);
                 throw new IllegalArgumentException(ex);
-            } catch (Throwable ex) {
+            } catch (EOFException ex) {
+                Global.showWarning("Cannot read file: " + recommendationsFile.getAbsolutePath());
+                Global.showWarning(ex);
+                recommendations = actuallyComputeTheRecommendaitonsAndSaveThem(datasetLoader, recommendationModel, user, candidateItems, recommendationsFile, userRatings);
+            } catch (IOException ex) {
                 Global.showWarning("Cannot read file: " + recommendationsFile.getAbsolutePath());
                 Global.showWarning(ex);
                 recommendations = actuallyComputeTheRecommendaitonsAndSaveThem(datasetLoader, recommendationModel, user, candidateItems, recommendationsFile, userRatings);
