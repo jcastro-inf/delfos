@@ -132,14 +132,7 @@ public class RecommenderSystem_bufferedRecommendations extends RecommenderSystem
         RecommendationsToUser recommendations;
 
         if (!recommendationsFile.exists()) {
-            recommendations = getRecommenderSystem().recommendToUser(datasetLoader, recommendationModel, user, candidateItems);
-            try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(recommendationsFile))) {
-                oos.writeObject(userRatings);
-                oos.writeObject(recommendations);
-            } catch (IOException ex) {
-                Global.showWarning("The serialization of ratings and recommendations had a problem.");
-                throw new UnsupportedOperationException(ex);
-            }
+            recommendations = actuallyComputeTheRecommendaitonsAndSaveThem(datasetLoader, recommendationModel, user, candidateItems, recommendationsFile, userRatings);
         } else {
 
             try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(recommendationsFile))) {
@@ -171,13 +164,25 @@ public class RecommenderSystem_bufferedRecommendations extends RecommenderSystem
                 //Esta excepción no puede ocurrir nunca, ya que se ha comprobado en el if.
                 ERROR_CODES.UNDEFINED_ERROR.exit(ex);
                 throw new IllegalArgumentException(ex);
-            } catch (IOException ex) {
+            } catch (Throwable ex) {
                 Global.showWarning("Cannot read file: " + recommendationsFile.getAbsolutePath());
-                ERROR_CODES.CANNOT_READ_RECOMMENDATIONS.exit(ex);
-                throw new IllegalArgumentException(ex);
+                Global.showWarning(ex);
+                recommendations = actuallyComputeTheRecommendaitonsAndSaveThem(datasetLoader, recommendationModel, user, candidateItems, recommendationsFile, userRatings);
             }
         }
 
+        return recommendations;
+    }
+
+    public RecommendationsToUser actuallyComputeTheRecommendaitonsAndSaveThem(DatasetLoader<? extends Rating> datasetLoader, Object recommendationModel, User user, Set<Item> candidateItems, File recommendationsFile, Map<Integer, ? extends Rating> userRatings) throws UnsupportedOperationException {
+        RecommendationsToUser recommendations = getRecommenderSystem().recommendToUser(datasetLoader, recommendationModel, user, candidateItems);
+        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(recommendationsFile))) {
+            oos.writeObject(userRatings);
+            oos.writeObject(recommendations);
+        } catch (IOException ex) {
+            Global.showWarning("The serialization of ratings and recommendations had a problem.");
+            throw new UnsupportedOperationException(ex);
+        }
         return recommendations;
     }
 
