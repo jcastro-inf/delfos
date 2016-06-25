@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -31,10 +31,11 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
+import java.util.stream.Collectors;
 
 /**
- * Clase que se comporta como una envoltura de un dataset, haciendo visibles
- * solo los productos y los usuarios que se le pasan por parámetros.
+ * Clase que se comporta como una envoltura de un dataset, haciendo visibles solo los productos y los usuarios que se le
+ * pasan por parámetros.
  *
  *
  * @author jcastro-inf ( https://github.com/jcastro-inf )
@@ -96,31 +97,19 @@ public class SelectionDataset<RatingType extends Rating> extends RatingsDatasetA
 
     @Override
     public Set<Integer> allUsers() {
-        Set<Integer> ratedUsers = new TreeSet<>();
-        usuariosPermitidos.stream().forEach((idUser) -> {
-            try {
-                if (!getUserRated(idUser).isEmpty()) {
-                    ratedUsers.add(idUser);
-                }
-            } catch (UserNotFound ex) {
-                ERROR_CODES.USER_NOT_FOUND.exit(ex);
-            }
-        });
+        Set<Integer> ratedUsers = usuariosPermitidos
+                .parallelStream()
+                .filter((idUser) -> !getUserRated(idUser).isEmpty()).
+                collect(Collectors.toSet());
         return ratedUsers;
     }
 
     @Override
     public Set<Integer> allRatedItems() {
-        Set<Integer> ratedItems = new TreeSet<>();
-        for (int idItem : productosPermitidos) {
-            try {
-                if (isRatedItem(idItem)) {
-                    ratedItems.add(idItem);
-                }
-            } catch (ItemNotFound ex) {
-                ERROR_CODES.ITEM_NOT_FOUND.exit(ex);
-            }
-        }
+        Set<Integer> ratedItems = productosPermitidos
+                .parallelStream()
+                .filter(idItem -> isRatedItem(idItem))
+                .collect(Collectors.toSet());
         return ratedItems;
     }
 
