@@ -41,6 +41,8 @@ public class Rating implements Comparable<Rating>, Serializable, Cloneable {
 
     public static final Comparator<? extends Rating> SORT_BY_ID_ITEM = (r1, r2) -> Item.BY_ID.compare(r1.item, r2.item);
 
+    public static final Comparator<Rating> SORT_BY_RATING_DESC = (r1, r2) -> -Double.compare(r1.getRatingValue().doubleValue(), r2.getRatingValue().doubleValue());
+
     private final User user;
 
     private final Item item;
