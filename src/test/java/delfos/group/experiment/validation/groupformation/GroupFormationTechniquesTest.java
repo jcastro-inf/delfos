@@ -14,15 +14,12 @@ import delfos.dataset.basic.user.UsersDatasetAdapter;
 import delfos.dataset.generated.random.RandomContentDataset;
 import delfos.dataset.generated.random.RandomRatingsDatasetFactory;
 import delfos.dataset.loaders.given.DatasetLoaderGivenRatingsContent;
+import delfos.experiment.validation.validationtechnique.HoldOut_Ratings;
+import delfos.experiment.validation.validationtechnique.NoPartitions;
+import delfos.experiment.validation.validationtechnique.ValidationTechnique;
 import delfos.group.casestudy.defaultcase.GroupCaseStudy;
-import delfos.group.casestudy.defaultcase.GroupCaseStudy;
-import delfos.group.experiment.validation.groupformation.FixedGroupSize_OnlyNGroups;
-import delfos.group.experiment.validation.groupformation.GroupFormationTechnique;
 import delfos.group.experiment.validation.predictionvalidation.GroupPredictionProtocol;
 import delfos.group.experiment.validation.predictionvalidation.HoldOutPrediction;
-import delfos.group.experiment.validation.validationtechniques.GroupValidationTechnique;
-import delfos.group.experiment.validation.validationtechniques.HoldOutGroupRatedItems;
-import delfos.group.experiment.validation.validationtechniques.NoValidation;
 import delfos.group.factories.GroupEvaluationMeasuresFactory;
 import delfos.group.grs.GroupRecommenderSystemAdapter;
 import delfos.group.grs.RandomGroupRecommender;
@@ -99,7 +96,7 @@ public class GroupFormationTechniquesTest {
         int numEjecuciones = 1;
         RelevanceCriteria criteria = datasetLoader.getDefaultRelevanceCriteria();
 
-        for (GroupValidationTechnique groupValidationTechnique : getGroupValidationTechniques()) {
+        for (ValidationTechnique validationTechnique : getValidationTechniques()) {
             for (GroupPredictionProtocol groupPredictionProtocol : getGroupPredictionProtocols()) {
                 for (GroupRecommenderSystemAdapter groupRecommenderSystem : getGroupRecommenderSystems()) {
                     for (long seed : getSeeds(numEjecuciones)) {
@@ -109,7 +106,7 @@ public class GroupFormationTechniquesTest {
                                 datasetLoader,
                                 groupRecommenderSystem,
                                 groupFormationTechnique,
-                                groupValidationTechnique, groupPredictionProtocol,
+                                validationTechnique, groupPredictionProtocol,
                                 groupEvaluationMeasures,
                                 criteria,
                                 numEjecuciones);
@@ -154,10 +151,10 @@ public class GroupFormationTechniquesTest {
         return ret;
     }
 
-    private Iterable<GroupValidationTechnique> getGroupValidationTechniques() {
-        List<GroupValidationTechnique> ret = new LinkedList<>();
-        ret.add(new HoldOutGroupRatedItems());
-        ret.add(new NoValidation());
+    private Iterable<ValidationTechnique> getValidationTechniques() {
+        List<ValidationTechnique> ret = new LinkedList<>();
+        ret.add(new HoldOut_Ratings());
+        ret.add(new NoPartitions());
         return ret;
     }
 }

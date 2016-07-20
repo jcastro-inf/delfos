@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,6 +16,20 @@
  */
 package delfos.dataset.loaders.movilens.ml1m;
 
+import delfos.common.Chronometer;
+import delfos.common.Global;
+import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
+import delfos.dataset.basic.item.ContentDataset;
+import delfos.dataset.basic.item.Item;
+import delfos.dataset.basic.rating.RatingWithTimestamp;
+import delfos.dataset.basic.rating.RatingsDataset;
+import delfos.dataset.basic.user.User;
+import delfos.dataset.basic.user.UsersDataset;
+import delfos.io.csv.dataset.rating.CSVReader;
+import static delfos.io.csv.dataset.rating.RatingsDatasetToCSV.CSV_EXTENSION;
+import static delfos.io.csv.dataset.rating.RatingsDatasetToCSV.ID_ITEM_COLUMN_NAME;
+import static delfos.io.csv.dataset.rating.RatingsDatasetToCSV.ID_USER_COLUMN_NAME;
+import static delfos.io.csv.dataset.rating.RatingsDatasetToCSV.RATING_COLUMN_NAME;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -23,16 +37,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
-import delfos.common.Chronometer;
-import delfos.common.Global;
-import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
-import delfos.dataset.basic.rating.RatingWithTimestamp;
-import delfos.dataset.basic.rating.RatingsDataset;
-import delfos.io.csv.dataset.rating.CSVReader;
-import static delfos.io.csv.dataset.rating.RatingsDatasetToCSV.CSV_EXTENSION;
-import static delfos.io.csv.dataset.rating.RatingsDatasetToCSV.ID_ITEM_COLUMN_NAME;
-import static delfos.io.csv.dataset.rating.RatingsDatasetToCSV.ID_USER_COLUMN_NAME;
-import static delfos.io.csv.dataset.rating.RatingsDatasetToCSV.RATING_COLUMN_NAME;
 
 /**
  * Clase para escribir un dataset de valoraciones a fichero csv.
@@ -91,13 +95,14 @@ public class MovieLens1MillionRatingsDatasetToCSV {
         bw.close();
     }
 
-    public Collection<RatingWithTimestamp> readRatingsDataset(File ratingsFile) throws CannotLoadRatingsDataset, FileNotFoundException {
+    public Collection<RatingWithTimestamp> readRatingsDataset(UsersDataset usersDataset, ContentDataset contentDataset, File ratingsFile)
+            throws CannotLoadRatingsDataset, FileNotFoundException {
 
         Global.showInfoMessage(
                 this.getClass().getSimpleName() + ": "
                 + "Loading ratings dataset from " + ratingsFile.getAbsolutePath() + " (no header)\n");
 
-        Collection<RatingWithTimestamp> ratings = new ArrayList<RatingWithTimestamp>();
+        Collection<RatingWithTimestamp> ratings = new ArrayList<>();
 
         try {
             CSVReader reader = new CSVReader(ratingsFile, "\"", "::");
@@ -111,7 +116,10 @@ public class MovieLens1MillionRatingsDatasetToCSV {
                     int idItem = Integer.parseInt(reader.get(1));
                     Number rating = Double.parseDouble(reader.get(2));
                     long timestamp = Long.parseLong(reader.get(3));
-                    ratings.add(new RatingWithTimestamp(idUser, idItem, rating, timestamp));
+
+                    User user = usersDataset.get(idUser);
+                    Item item = contentDataset.get(idItem);
+                    ratings.add(new RatingWithTimestamp(user, item, rating, timestamp));
 
                     if (i % 1000000 == 0 && i != 0) {
                         Global.showInfoMessage("Loading  --> " + i / 1000000 + " millions ratings " + c.printPartialElapsed() + " / " + c.printTotalElapsed() + "\n");
@@ -131,4 +139,5 @@ public class MovieLens1MillionRatingsDatasetToCSV {
 
         return ratings;
     }
+
 }

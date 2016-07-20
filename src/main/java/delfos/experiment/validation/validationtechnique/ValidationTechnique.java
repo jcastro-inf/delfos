@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,23 +16,22 @@
  */
 package delfos.experiment.validation.validationtechnique;
 
-import java.util.LinkedList;
 import delfos.common.Global;
 import delfos.common.exceptions.dataset.CannotLoadContentDataset;
 import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
 import delfos.common.parameters.ParameterListener;
 import delfos.common.parameters.ParameterOwnerAdapter;
 import delfos.common.parameters.ParameterOwnerType;
-import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.loader.types.DatasetLoader;
+import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.storage.validationdatasets.PairOfTrainTestRatingsDataset;
 import delfos.experiment.SeedHolder;
+import java.util.LinkedList;
 
 /**
- * Clase abstracta que especifica los métodos que deberá tener una técnica de
- * validación. Todas las técnicas de validación deben usar la variable random en
- * sus consultas para obtener valores aleatorios. De esta manera se garantiza
- * que distintos algoritmos utilicen la misma muestra aleatoria.
+ * Clase abstracta que especifica los métodos que deberá tener una técnica de validación. Todas las técnicas de
+ * validación deben usar la variable random en sus consultas para obtener valores aleatorios. De esta manera se
+ * garantiza que distintos algoritmos utilicen la misma muestra aleatoria.
  *
  * @author jcastro-inf ( https://github.com/jcastro-inf )
  * @version 1.0 (19 Octubre 2011)
@@ -41,9 +40,8 @@ public abstract class ValidationTechnique extends ParameterOwnerAdapter implemen
 
     //--------------- Métodos para garantizar los valores aleatorios -----------
     /**
-     * Constructor por defecto que agrega el parámetro para la semilla e
-     * inicializa la variable random. Además, añade el listener para mantener el
-     * valor de {@link ValidationTechnique#random} actualizado.
+     * Constructor por defecto que agrega el parámetro para la semilla e inicializa la variable random. Además, añade el
+     * listener para mantener el valor de {@link ValidationTechnique#random} actualizado.
      */
     public ValidationTechnique() {
         super();
@@ -62,8 +60,7 @@ public abstract class ValidationTechnique extends ParameterOwnerAdapter implemen
         return (Long) getParameterValue(SEED);
     }
     /**
-     * Lista de objetos que han solicitado que se notifique del progreso de
-     * ejecución de esta técnica de evaluación
+     * Lista de objetos que han solicitado que se notifique del progreso de ejecución de esta técnica de evaluación
      */
     private final LinkedList<ValidationTechniqueProgressListener> listeners;
 
@@ -87,8 +84,7 @@ public abstract class ValidationTechnique extends ParameterOwnerAdapter implemen
     }
 
     /**
-     * Lanza el evento de progreso cambiado, para indicar a todos los
-     * observadores registrados del cambio.
+     * Lanza el evento de progreso cambiado, para indicar a todos los observadores registrados del cambio.
      *
      * @param message Mensaje que indica la tarea actual.
      * @param percent Porcentaje completado.
@@ -100,14 +96,14 @@ public abstract class ValidationTechnique extends ParameterOwnerAdapter implemen
     }
 
     /**
-     * Esta función se debe implementar la generación de los conjuntos de
-     * validación y será invocada cada vez que se realice una ejecución, para
-     * probar conjuntos de validación diferentes
+     * Esta función se debe implementar la generación de los conjuntos de validación y será invocada cada vez que se
+     * realice una ejecución, para probar conjuntos de validación diferentes
      *
+     * @param <RatingType>
      * @param datasetLoader Conjunto de datos iniciales.
      * @return Vector en el que cada elemento contiene un par training/test.
      */
-    public abstract PairOfTrainTestRatingsDataset[] shuffle(DatasetLoader<? extends Rating> datasetLoader)
+    public abstract <RatingType extends Rating> PairOfTrainTestRatingsDataset[] shuffle(DatasetLoader<RatingType> datasetLoader)
             throws CannotLoadRatingsDataset, CannotLoadContentDataset;
 
     /**
@@ -139,8 +135,7 @@ public abstract class ValidationTechnique extends ParameterOwnerAdapter implemen
     }
 
     /**
-     * Numero de particiones que realiza. Será la longitud del vector devuelto
-     * por el método {@link ValidationTechnique#shuffle(delfos.Dataset.Persistence.DatasetLoader)
+     * Numero de particiones que realiza. Será la longitud del vector devuelto por el método {@link ValidationTechnique#shuffle(delfos.Dataset.Persistence.DatasetLoader)
      * }.
      *
      * @return

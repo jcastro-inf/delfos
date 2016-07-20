@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,6 +16,7 @@
  */
 package delfos.common.aggregationoperators;
 
+import java.util.Collection;
 import java.util.Iterator;
 
 /**
@@ -31,7 +32,7 @@ public class MinimumValue extends AggregationOperator {
     private final static long serialVersionUID = 1L;
 
     @Override
-    public double aggregateValues(Iterable<Number> values) {
+    public double aggregateValues(Collection<? extends Number> values) {
         Iterator<? extends Number> it = values.iterator();
         if (!it.hasNext()) {
             throw new IllegalArgumentException("No values given");

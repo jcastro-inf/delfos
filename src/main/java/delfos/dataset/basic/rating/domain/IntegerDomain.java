@@ -17,8 +17,7 @@
 package delfos.dataset.basic.rating.domain;
 
 /**
- * Clase que se utiliza para describir en qué dominio de valores enteros se da
- * una variable
+ * Clase que se utiliza para describir en qué dominio de valores enteros se da una variable
  *
  * @author jcastro-inf ( https://github.com/jcastro-inf )
  */
@@ -39,8 +38,7 @@ public class IntegerDomain extends Domain {
      * @param minValue Valor de valoración mínimo.
      * @param maxValue Valor de valoración máximo.
      *
-     * @throws IllegalArgumentException Si el valor mínimo es mayor que el
-     * máximo.
+     * @throws IllegalArgumentException Si el valor mínimo es mayor que el máximo.
      */
     public IntegerDomain(Long minValue, Long maxValue) {
         if (minValue > maxValue) {
@@ -57,8 +55,7 @@ public class IntegerDomain extends Domain {
      * @param minValue Valor de valoración mínimo.
      * @param maxValue Valor de valoración máximo.
      *
-     * @throws IllegalArgumentException Si el valor mínimo es mayor que el
-     * máximo.
+     * @throws IllegalArgumentException Si el valor mínimo es mayor que el máximo.
      */
     public IntegerDomain(Integer minValue, Integer maxValue) {
         if (minValue > maxValue) {
@@ -163,6 +160,11 @@ public class IntegerDomain extends Domain {
 
     public boolean isInside(int value) {
         return minValue <= value && value <= maxValue;
+    }
+
+    @Override
+    public boolean isValueInDomain(Number value) {
+        return minValue <= value.doubleValue() && value.doubleValue() <= maxValue;
     }
 
 }

@@ -26,6 +26,7 @@ import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RatingsDataset;
 import delfos.dataset.basic.user.User;
 import delfos.dataset.storage.memory.BothIndexRatingsDataset;
+import delfos.group.groupsofusers.GroupOfUsers;
 import delfos.rs.collaborativefiltering.profile.Neighbor;
 import delfos.rs.trustbased.WeightedGraph;
 import dnl.utils.text.table.TextTable;
@@ -41,10 +42,10 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import org.apache.commons.math4.util.Pair;
 
 /**
- * Clase para transformar datasets a cadenas con formato amigable para el
- * usuario.
+ * Clase para transformar datasets a cadenas con formato amigable para el usuario.
  *
  * @author jcastro-inf ( https://github.com/jcastro-inf )
  * @version 1.0 15-Enero-2014
@@ -318,19 +319,39 @@ public class DatasetPrinter {
     public static String printCompactRatingTable(DatasetLoader<? extends Rating> datasetLoader, Collection<User> _users) {
 
         final List<User> users = _users.stream().sorted(User.BY_ID).collect(Collectors.toList());
-        final List<Item> itemsAllUsersRated = users.stream()
-                .map(user -> datasetLoader.getRatingsDataset().getUserRated(user.getId()))
-                .map(userRated
-                        -> userRated.stream()
-                        .map(idItem -> datasetLoader.getContentDataset().get(idItem))
-                        .collect(Collectors.toSet())
-                )
-                .flatMap(set -> set.stream())
-                .collect(Collectors.toSet())
+        final List<Item> itemsAllUsersRated = datasetLoader.getContentDataset()
+                .stream().sorted(Item.BY_ID).collect(Collectors.toList());
+
+        return actuallyDoTheTable(itemsAllUsersRated, users, datasetLoader);
+    }
+
+    public static String printCompactRatingTableSortedByNumRatings(DatasetLoader<? extends Rating> datasetLoader, Collection<User> _users) {
+
+        final List<User> users = _users.stream().sorted(User.BY_ID).collect(Collectors.toList());
+        final List<Item> itemsAllUsersRated = datasetLoader.getContentDataset()
                 .stream()
                 .sorted(Item.BY_ID)
+                .map(item -> {
+                    List<User> listOfUsersThatRated = datasetLoader.getRatingsDataset().getItemRatingsRated(item.getId())
+                            .values()
+                            .stream()
+                            .filter(rating -> {
+                                return _users.contains(rating.getUser());
+                            })
+                            .map(rating -> rating.getUser())
+                            .collect(Collectors.toList());
+                    GroupOfUsers groupOfUsersThatRated = new GroupOfUsers(listOfUsersThatRated);
+                    return new Pair<GroupOfUsers, Item>(groupOfUsersThatRated, item);
+                })
+                .filter(pair -> !pair.getKey().isEmpty())
+                .sorted((pair1, pair2) -> -pair1.getKey().compareTo(pair2.getKey()))
+                .map(pair -> pair.getValue())
                 .collect(Collectors.toList());
 
+        return actuallyDoTheTable(itemsAllUsersRated, users, datasetLoader);
+    }
+
+    private static String actuallyDoTheTable(final List<Item> itemsAllUsersRated, final List<User> users, DatasetLoader<? extends Rating> datasetLoader) {
         List<String> columnNames = new ArrayList<>();
         columnNames.add("user\\items");
         columnNames.addAll(itemsAllUsersRated.stream()

@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -26,14 +26,13 @@ import delfos.results.MeasureResult;
 import delfos.results.RecommendationResults;
 import delfos.rs.recommendation.Recommendation;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 /**
- * Evalúa las recomendaciones de un sistema aplicando NDCG, usando logaritmo en
- * base 2. Se calcula el nDCG por usuarios y luego se hace la media.
+ * Evalúa las recomendaciones de un sistema aplicando NDCG, usando logaritmo en base 2. Se calcula el nDCG por usuarios
+ * y luego se hace la media.
  *
  * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
@@ -51,12 +50,12 @@ public class NDCG extends EvaluationMeasure {
         for (int idUser : testDataset.allUsers()) {
             try {
 
-                Collection<Recommendation> recommendations = recommendationResults.getRecommendationsForUser(idUser);
+                List<Recommendation> recommendations = recommendationResults.getRecommendationsForUser(idUser);
                 if (recommendations.isEmpty()) {
                     continue;
                 }
 
-                Collection<Recommendation> idealRecommendations = new ArrayList<>(recommendations.size());
+                List<Recommendation> idealRecommendations = new ArrayList<>(recommendations.size());
                 Map<Integer, Rating> userRatings = (Map<Integer, Rating>) testDataset.getUserRatingsRated(idUser);
 
                 for (Recommendation recommendation : recommendations) {
@@ -89,22 +88,30 @@ public class NDCG extends EvaluationMeasure {
      * @param values
      * @return
      */
-    public static double computeDCG(Collection<Recommendation> items, Map<Integer, ? extends Rating> values) {
-        final double lg2 = Math.log(2);
+    public static double computeDCG(List<Recommendation> items, Map<Integer, ? extends Rating> values) {
+        final double base = 2;
+        final double logBaseChange = Math.log(base);
 
         double gain = 0;
         int rank = 0;
 
         Iterator<Recommendation> iit = items.iterator();
         while (iit.hasNext()) {
-            final int idItem = iit.next().getIdItem();
+            final int idItem = iit.next().getItem().getId();
             final double rating = values.get(idItem).getRatingValue().doubleValue();
             rank++;
-            if (rank < 2) {
-                gain += rating;
+
+            double discount;
+
+            if (rank < base) {
+                discount = 1;
             } else {
-                gain += rating * lg2 / Math.log(rank);
+                discount = logBaseChange / Math.log(rank);
             }
+
+            double increment = rating * discount;
+
+            gain += increment;
         }
 
         return gain;

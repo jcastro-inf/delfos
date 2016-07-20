@@ -40,12 +40,7 @@ public class NumberOfRequests extends GroupEvaluationMeasure {
 
     @Override
     public GroupEvaluationMeasureResult getMeasureResult(
-            GroupRecommenderSystemResult groupRecommenderSystemResult,
-            DatasetLoader<? extends Rating> originalDatasetLoader,
-            RatingsDataset<? extends Rating> testDataset,
-            RelevanceCriteria relevanceCriteria,
-            DatasetLoader<? extends Rating> trainingDatasetLoader,
-            DatasetLoader<? extends Rating> testDatasetLoader) {
+            GroupRecommenderSystemResult groupRecommenderSystemResult, DatasetLoader<? extends Rating> originalDatasetLoader, RelevanceCriteria relevanceCriteria, DatasetLoader<? extends Rating> trainingDatasetLoader, DatasetLoader<? extends Rating> testDatasetLoader) {
 
         MeanIterative mean = new MeanIterative();
         for (GroupOfUsers group : groupRecommenderSystemResult.getGroupsOfUsers()) {

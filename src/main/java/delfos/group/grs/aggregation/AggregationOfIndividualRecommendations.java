@@ -35,15 +35,18 @@ import delfos.group.groupsofusers.GroupOfUsers;
 import delfos.group.grs.GroupRecommenderSystemAdapter;
 import delfos.group.grs.SingleRecommendationModel;
 import delfos.group.grs.recommendations.GroupRecommendations;
+import delfos.group.grs.recommendations.GroupRecommendationsWithMembersRecommendations;
 import delfos.rs.RecommendationModelBuildingProgressListener;
 import delfos.rs.RecommenderSystem;
 import delfos.rs.collaborativefiltering.knn.memorybased.KnnMemoryBasedCFRS;
+import delfos.rs.persistence.DatabasePersistence;
+import delfos.rs.persistence.FailureInPersistence;
 import delfos.rs.recommendation.Recommendation;
 import delfos.rs.recommendation.RecommendationsToUser;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
@@ -51,9 +54,8 @@ import java.util.TreeSet;
 import java.util.stream.Collectors;
 
 /**
- * Implementa un sistema de recomendación a grupos que agrega las
- * recomendaciones de cada individuo para componer una lista de recomendaciones
- * para el grupo.
+ * Implementa un sistema de recomendación a grupos que agrega las recomendaciones de cada individuo para componer una
+ * lista de recomendaciones para el grupo.
  *
  * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
@@ -64,8 +66,7 @@ public class AggregationOfIndividualRecommendations extends GroupRecommenderSyst
 
     private static final long serialVersionUID = 1L;
     /**
-     * Especifica el sistema de recomendación single user que se extiende para
-     * ser usado en recomendación a grupos.
+     * Especifica el sistema de recomendación single user que se extiende para ser usado en recomendación a grupos.
      */
     public static final Parameter SINGLE_USER_RECOMMENDER = new Parameter(
             "SINGLE_USER_RECOMMENDER",
@@ -73,8 +74,7 @@ public class AggregationOfIndividualRecommendations extends GroupRecommenderSyst
             "Especifica el sistema de recomendación single user que se extiende "
             + "para ser usaso en recomendación a grupos.");
     /**
-     * Especifica la técnica de agregación para agregar los ratings de los
-     * usuarios y formar el perfil del grupo.
+     * Especifica la técnica de agregación para agregar los ratings de los usuarios y formar el perfil del grupo.
      */
     public static final Parameter AGGREGATION_OPERATOR = new Parameter(
             "AGGREGATION_OPERATOR",
@@ -87,23 +87,33 @@ public class AggregationOfIndividualRecommendations extends GroupRecommenderSyst
             Collection<RecommendationsToUser> membersRecommendations) {
         return intersectionOfRecommendations(groupRecommendations.getRecommendations(),
                 membersRecommendations.stream().collect(Collectors.toMap(
-                                recommendationsToMember -> recommendationsToMember.getUser(),
-                                recommendationsToMember -> recommendationsToMember.getRecommendations())));
+                        recommendationsToMember -> recommendationsToMember.getUser(),
+                        recommendationsToMember -> recommendationsToMember.getRecommendations())));
 
     }
 
-    public static Set<Item> intersectionOfRecommendations(Collection<Recommendation> groupRecommendations, Map<User, Collection<Recommendation>> membersRecommendations) {
-        Set<Item> itemsIntersection = new TreeSet<>();
-        for (Recommendation r : groupRecommendations) {
-            itemsIntersection.add(r.getItem());
-        }
-        for (User idMember : membersRecommendations.keySet()) {
-            Set<Item> thisUserIdItem_recommended = new TreeSet<>();
-            membersRecommendations.get(idMember).stream().forEach((Recommendation r) -> {
-                thisUserIdItem_recommended.add(r.getItem());
-            });
-            itemsIntersection.retainAll(thisUserIdItem_recommended);
-        }
+    public static Set<Item> intersectionOfRecommendations(
+            Collection<Recommendation> groupRecommendations,
+            Map<User, Collection<Recommendation>> membersRecommendations) {
+
+        List<Set<Item>> membersItemSets = membersRecommendations.values().stream()
+                .map(memberRecommendations -> {
+                    return memberRecommendations.stream()
+                            .map(r -> r.getItem())
+                            .collect(Collectors.toSet());
+                })
+                .collect(Collectors.toList());
+
+        Set<Item> groupItems = groupRecommendations.parallelStream()
+                .map(r -> r.getItem())
+                .collect(Collectors.toSet());
+
+        Set<Item> itemsIntersection = groupItems.parallelStream()
+                .filter(item -> {
+                    return membersItemSets.parallelStream()
+                            .allMatch(memberItemSet -> memberItemSet.contains(item));
+                }).collect(Collectors.toSet());
+
         itemsIntersection = Collections.unmodifiableSet(itemsIntersection);
         return itemsIntersection;
     }
@@ -164,12 +174,14 @@ public class AggregationOfIndividualRecommendations extends GroupRecommenderSyst
 
     public static Set<Map.Entry<Item, Double>> intersectionOfRecommendationsWithFrequency(Set<Item> items, Collection<RecommendationsToUser> membersRecommendations) {
         validateAllRecommendedItemsAreInSpecifiedSet(membersRecommendations, items);
+
         Map<Item, Double> ret = items.parallelStream().collect(Collectors.toMap((Item item) -> item, (Item item) -> {
             double itemFrequencyAmongMembers = 0;
             itemFrequencyAmongMembers = membersRecommendations.parallelStream().map((RecommendationsToUser memberRecommendations) -> memberRecommendations.getRecommendations()).filter((Collection<Recommendation> recommendations) -> recommendations.stream().filter((Recommendation recommendation) -> !Double.isNaN(recommendation.getPreference().doubleValue())).anyMatch((Recommendation recommendation) -> recommendation.getItem().equals(item))).count();
             itemFrequencyAmongMembers /= membersRecommendations.size();
             return itemFrequencyAmongMembers;
         }));
+
         return ret.entrySet();
     }
     private AggregationOperator oldAggregationOperator = new Mean();
@@ -239,15 +251,25 @@ public class AggregationOfIndividualRecommendations extends GroupRecommenderSyst
     }
 
     @Override
-    public <RatingType extends Rating> GroupRecommendations recommendOnly(
+    public <RatingType extends Rating> GroupRecommendationsWithMembersRecommendations recommendOnly(
             DatasetLoader<RatingType> datasetLoader, SingleRecommendationModel RecommendationModel, GroupOfUsers groupModel, GroupOfUsers groupOfUsers, Set<Item> candidateItems)
             throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset {
 
         RecommenderSystem singleUserRecommender = getSingleUserRecommender();
         Map<User, Collection<Recommendation>> recommendationsLists_byMember = performSingleUserRecommendationsOld(groupOfUsers.getIdMembers(), singleUserRecommender, datasetLoader, RecommendationModel, candidateItems);
 
-        Collection<Recommendation> groupRecommendations = aggregateLists(getAggregationOperator(), recommendationsLists_byMember);
-        return new GroupRecommendations(groupOfUsers, groupRecommendations);
+        GroupRecommendations groupRecommendations = new GroupRecommendations(groupOfUsers, aggregateLists(getAggregationOperator(), recommendationsLists_byMember));
+
+        List<RecommendationsToUser> membersRecommendations = recommendationsLists_byMember.entrySet().parallelStream()
+                .map(entry -> {
+                    User user = entry.getKey();
+                    Collection<Recommendation> recommendationsToUser = entry.getValue();
+
+                    return new RecommendationsToUser(user, recommendationsToUser);
+                })
+                .collect(Collectors.toList());
+
+        return new GroupRecommendationsWithMembersRecommendations(groupRecommendations, membersRecommendations);
     }
 
     public static Collection<Recommendation> aggregateLists(AggregationOperator aggregationOperator,
@@ -255,42 +277,26 @@ public class AggregationOfIndividualRecommendations extends GroupRecommenderSyst
 
         return aggregateLists(aggregationOperator,
                 groupUtilityList.stream().collect(Collectors.toMap(
-                                recommendationToUser -> recommendationToUser.getUser(),
-                                recommendationToUser -> recommendationToUser.getRecommendations()
-                        ))
+                        recommendationToUser -> recommendationToUser.getUser(),
+                        recommendationToUser -> recommendationToUser.getRecommendations()
+                ))
         );
     }
 
     public static Collection<Recommendation> aggregateLists(AggregationOperator aggregationOperator,
             Map<User, Collection<Recommendation>> groupUtilityList) {
 
-        //Reordeno las predicciones.
-        Map<Integer, Collection<Number>> prediction_byItem = new TreeMap<>();
-        for (User idUser : groupUtilityList.keySet()) {
-            for (Recommendation r : groupUtilityList.get(idUser)) {
-                int idItem = r.getIdItem();
-                Number preference = r.getPreference();
+        Map<Item, List<Recommendation>> memberRecommendationsByItem = groupUtilityList.values().parallelStream().flatMap(memberUtility -> memberUtility.parallelStream())
+                .collect(Collectors.groupingBy(recommendation -> recommendation.getItem()));
 
-                if (!prediction_byItem.containsKey(idItem)) {
-                    prediction_byItem.put(idItem, new LinkedList<>());
-                }
+        List<Recommendation> recommendations = memberRecommendationsByItem.entrySet().parallelStream()
+                .map(entry -> {
+                    Item item = entry.getKey();
+                    Collection<Number> predictionsThisItem = entry.getValue().parallelStream().map(r -> r.getPreference()).collect(Collectors.toList());
+                    double aggregateValues = aggregationOperator.aggregateValues(predictionsThisItem);
 
-                prediction_byItem.get(idItem).add(preference);
-            }
-        }
-
-        //agrego las predicciones de cada item.
-        Collection<Recommendation> recommendations = new ArrayList<>();
-        for (int idItem : prediction_byItem.keySet()) {
-            Collection<Number> predictionsThisItem = prediction_byItem.get(idItem);
-
-            if (prediction_byItem.isEmpty()) {
-                continue;
-            }
-
-            double aggregateValue = aggregationOperator.aggregateValues(predictionsThisItem);
-            recommendations.add(new Recommendation(idItem, aggregateValue));
-        }
+                    return new Recommendation(item, aggregateValues);
+                }).collect(Collectors.toList());
 
         return recommendations;
     }
@@ -312,15 +318,33 @@ public class AggregationOfIndividualRecommendations extends GroupRecommenderSyst
 
         return users.parallelStream()
                 .map(idUser -> new SingleUserRecommendationTask(
-                                singleUserRecommender,
-                                datasetLoader,
-                                recommendationModel.getRecommendationModel(),
-                                idUser,
-                                candidateItems))
+                        singleUserRecommender,
+                        datasetLoader,
+                        recommendationModel.getRecommendationModel(),
+                        idUser,
+                        candidateItems))
                 .map(new SingleUserRecommendationTaskExecutor())
                 .collect(Collectors.toMap(
-                                recommendationsToUser -> recommendationsToUser.getUser(),
-                                recommendationsToUser -> recommendationsToUser.getRecommendations()
-                        ));
+                        recommendationsToUser -> recommendationsToUser.getUser(),
+                        recommendationsToUser -> recommendationsToUser.getRecommendations()
+                ));
+    }
+
+    @Override
+    public void saveRecommendationModel(DatabasePersistence databasePersistence, SingleRecommendationModel model) throws FailureInPersistence {
+        RecommenderSystem singleUserRecommender = getSingleUserRecommender();
+        singleUserRecommender.saveRecommendationModel(databasePersistence, model.getRecommendationModel());
+    }
+
+    @Override
+    public SingleRecommendationModel loadRecommendationModel(DatabasePersistence databasePersistence, Collection<Integer> users, Collection<Integer> items, DatasetLoader<? extends Rating> datasetLoader) throws FailureInPersistence {
+        RecommenderSystem singleUserRecommender = getSingleUserRecommender();
+        Object loadRecommendationModel = singleUserRecommender.loadRecommendationModel(
+                databasePersistence,
+                datasetLoader.getUsersDataset().allIDs(),
+                datasetLoader.getContentDataset().allIDs(),
+                datasetLoader);
+
+        return new SingleRecommendationModel(loadRecommendationModel);
     }
 }

@@ -6,7 +6,8 @@ import delfos.constants.DelfosTest;
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.RelevanceCriteria;
 import delfos.experiment.casestudy.cluster.TuringPreparator;
-import delfos.group.casestudy.defaultcase.GroupCaseStudy;
+import delfos.experiment.validation.validationtechnique.CrossFoldValidation_Ratings;
+import delfos.experiment.validation.validationtechnique.ValidationTechnique;
 import delfos.group.casestudy.defaultcase.GroupCaseStudy;
 import delfos.group.experiment.validation.groupformation.FixedGroupSize_OnlyNGroups;
 import delfos.group.experiment.validation.groupformation.GroupFormationTechnique;
@@ -14,8 +15,6 @@ import delfos.group.experiment.validation.groupformation.SimilarMembers_OnlyNGro
 import delfos.group.experiment.validation.groupformation.SimilarMembers_except;
 import delfos.group.experiment.validation.predictionvalidation.GroupPredictionProtocol;
 import delfos.group.experiment.validation.predictionvalidation.NoPredictionProtocol;
-import delfos.group.experiment.validation.validationtechniques.CrossFoldValidation_Ratings;
-import delfos.group.experiment.validation.validationtechniques.GroupValidationTechnique;
 import delfos.group.factories.GroupEvaluationMeasuresFactory;
 import delfos.group.grs.GroupRecommenderSystem;
 import delfos.group.grs.svd.SVDforGroup_ratingsAggregation;
@@ -55,16 +54,6 @@ public class GRS_CWW_GroupFormationTecnniques extends DelfosTest {
 
         TuringPreparator turingPreparator = new TuringPreparator();
         turingPreparator.prepareGroupExperiment(experimentBaseDirectory, groupCaseStudies, datasetLoader);
-//        for (GroupCaseStudy groupCaseStudy : groupCaseStudies) {
-//            try {
-//                groupCaseStudy.execute();
-//                String defaultFileName = groupCaseStudy.getAlias();
-//                GroupCaseStudyXML.saveCaseResults(groupCaseStudy, groupCaseStudy.getGroupRecommenderSystem().getAlias(), defaultFileName);
-//            } catch (CannotLoadContentDataset | CannotLoadRatingsDataset | UserNotFound | ItemNotFound ex) {
-//                Logger.getLogger(GRS_CWW_GroupFormationTecnniques.class.getName()).log(Level.SEVERE, null, ex);
-//            }
-//
-//        }
     }
 
     private List<GroupCaseStudy> getGroupCaseStudies(DatasetLoader datasetLoader, GroupRecommenderSystem... groupRecommenderSystems) {
@@ -76,7 +65,7 @@ public class GRS_CWW_GroupFormationTecnniques extends DelfosTest {
         final Collection<GroupEvaluationMeasure> evaluationMeasures = GroupEvaluationMeasuresFactory.getInstance().getAllClasses();
         final RelevanceCriteria criteria = new RelevanceCriteria(4);
         final GroupPredictionProtocol groupPredictionProtocol = new NoPredictionProtocol();
-        final GroupValidationTechnique groupValidationTechniqueValue = new CrossFoldValidation_Ratings();
+        final ValidationTechnique validationTechniqueValue = new CrossFoldValidation_Ratings();
 
         final GroupFormationTechnique[] groupFormationTechniques = {
             new SimilarMembers_OnlyNGroups(numGroups, groupSize),
@@ -88,7 +77,7 @@ public class GRS_CWW_GroupFormationTecnniques extends DelfosTest {
 
         for (GroupFormationTechnique groupFormationTechnique : groupFormationTechniques) {
             for (GroupRecommenderSystem groupRecommenderSystem : groupRecommenderSystems) {
-                GroupCaseStudy groupCaseStudy = new GroupCaseStudy(datasetLoader, groupRecommenderSystem, groupFormationTechnique, groupValidationTechniqueValue, groupPredictionProtocol, evaluationMeasures, criteria, numEjecuciones);
+                GroupCaseStudy groupCaseStudy = new GroupCaseStudy(datasetLoader, groupRecommenderSystem, groupFormationTechnique, validationTechniqueValue, groupPredictionProtocol, evaluationMeasures, criteria, numEjecuciones);
                 groupCaseStudy.setAlias(groupFormationTechnique.getAlias() + "->" + groupRecommenderSystem.getAlias());
                 ret.add(groupCaseStudy);
             }

@@ -33,7 +33,7 @@ public class DissimilarMembers_OnlyNGroupsTest extends DelfosTest {
     }
 
     /**
-     * Test of shuffle method, of class DissimilarMembers_OnlyNGroups.
+     * Test of generateGroups method, of class DissimilarMembers_OnlyNGroups.
      */
     @Test
     public void testShuffle() {
@@ -48,7 +48,7 @@ public class DissimilarMembers_OnlyNGroupsTest extends DelfosTest {
             Global.showln(progress + "% " + message + " remainingTime: " + DateCollapse.collapse(remainingTimeInMS));
         });
         instance.setSeedValue(seed);
-        Collection<GroupOfUsers> result = instance.shuffle(datasetLoader);
+        Collection<GroupOfUsers> result = instance.generateGroups(datasetLoader);
 
         Collection<GroupOfUsers> expResult = new ArrayList<>();
         expResult.add(new GroupOfUsers(265, 388, 539, 837, 886));
@@ -56,7 +56,7 @@ public class DissimilarMembers_OnlyNGroupsTest extends DelfosTest {
     }
 
     /**
-     * Test of shuffle method, of class DissimilarMembers_OnlyNGroups.
+     * Test of generateGroups method, of class DissimilarMembers_OnlyNGroups.
      */
     @Test
     public void testSharingUsers() {
@@ -74,7 +74,7 @@ public class DissimilarMembers_OnlyNGroupsTest extends DelfosTest {
 
         List<GroupOfUsers> groups;
         {
-            Collection<GroupOfUsers> result = instance.shuffle(datasetLoader);
+            Collection<GroupOfUsers> result = instance.generateGroups(datasetLoader);
             groups = new ArrayList<>(result);
         }
 
@@ -96,7 +96,7 @@ public class DissimilarMembers_OnlyNGroupsTest extends DelfosTest {
     }
 
     /**
-     * Test of shuffle method, of class DissimilarMembers_OnlyNGroups.
+     * Test of generateGroups method, of class DissimilarMembers_OnlyNGroups.
      */
     @Test(expected = IllegalArgumentException.class)
     public void testTooManyGroupsAsked() {
@@ -108,11 +108,11 @@ public class DissimilarMembers_OnlyNGroupsTest extends DelfosTest {
 
         DissimilarMembers_OnlyNGroups instance = new DissimilarMembers_OnlyNGroups(numGroupsValue, groupSizeValue);
 
-        Collection<GroupOfUsers> result = instance.shuffle(datasetLoader);
+        Collection<GroupOfUsers> result = instance.generateGroups(datasetLoader);
     }
 
     /**
-     * Test of shuffle method, of class DissimilarMembers_OnlyNGroups.
+     * Test of generateGroups method, of class DissimilarMembers_OnlyNGroups.
      */
     @Test
     public void testExactUserPartitionInGroupsAsked() {
@@ -124,7 +124,7 @@ public class DissimilarMembers_OnlyNGroupsTest extends DelfosTest {
 
         DissimilarMembers_OnlyNGroups instance = new DissimilarMembers_OnlyNGroups(numGroupsValue, groupSizeValue);
 
-        Collection<GroupOfUsers> result = instance.shuffle(datasetLoader);
+        Collection<GroupOfUsers> result = instance.generateGroups(datasetLoader);
 
         assertTrue(result.size() == numGroupsValue);
 
@@ -134,7 +134,7 @@ public class DissimilarMembers_OnlyNGroupsTest extends DelfosTest {
     }
 
     /**
-     * Test of shuffle method, of class DissimilarMembers_OnlyNGroups.
+     * Test of generateGroups method, of class DissimilarMembers_OnlyNGroups.
      */
     @Test
     public void testExactUserPartitionInGroupsAsked_changed() {
@@ -146,7 +146,7 @@ public class DissimilarMembers_OnlyNGroupsTest extends DelfosTest {
 
         DissimilarMembers_OnlyNGroups instance = new DissimilarMembers_OnlyNGroups(numGroupsValue, groupSizeValue);
 
-        Collection<GroupOfUsers> result = instance.shuffle(datasetLoader);
+        Collection<GroupOfUsers> result = instance.generateGroups(datasetLoader);
 
         assertTrue(result.size() == numGroupsValue);
 
@@ -156,7 +156,7 @@ public class DissimilarMembers_OnlyNGroupsTest extends DelfosTest {
     }
 
     /**
-     * Test of shuffle method, of class SimilarMembers_OnlyNGroups.
+     * Test of generateGroups method, of class SimilarMembers_OnlyNGroups.
      */
     @Test
     public void testAGroupForEachUser() {
@@ -168,7 +168,7 @@ public class DissimilarMembers_OnlyNGroupsTest extends DelfosTest {
 
         DissimilarMembers_OnlyNGroups instance = new DissimilarMembers_OnlyNGroups(numGroupsValue, groupSizeValue);
 
-        Collection<GroupOfUsers> result = instance.shuffle(datasetLoader);
+        Collection<GroupOfUsers> result = instance.generateGroups(datasetLoader);
 
         assertTrue(result.size() == numGroupsValue);
 

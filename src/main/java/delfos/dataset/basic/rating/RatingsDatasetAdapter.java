@@ -55,8 +55,7 @@ public abstract class RatingsDatasetAdapter<RatingType extends Rating> implement
      *
      * @param idUser id del usuario para el que se desea conocer la valoración
      * @param idItem id del item para el que se desea conocer la valoración
-     * @return valoración que el usuario ha hecho sobre el item. Si no ha
-     * valorado el item, devuelve null
+     * @return valoración que el usuario ha hecho sobre el item. Si no ha valorado el item, devuelve null
      * @throws delfos.common.exceptions.dataset.users.UserNotFound
      * @throws delfos.common.exceptions.dataset.items.ItemNotFound
      */
@@ -64,8 +63,7 @@ public abstract class RatingsDatasetAdapter<RatingType extends Rating> implement
     public abstract RatingType getRating(int idUser, int idItem) throws UserNotFound, ItemNotFound;
 
     /**
-     * Obtiene el conjunto de los id de todos los usuarios que tienen
-     * valoraciones en el dataset
+     * Obtiene el conjunto de los id de todos los usuarios que tienen valoraciones en el dataset
      *
      * @return Conjunto de id de usuarios
      */
@@ -73,11 +71,9 @@ public abstract class RatingsDatasetAdapter<RatingType extends Rating> implement
     public abstract Set<Integer> allUsers();
 
     /**
-     * Implementación por defecto del método que devuelve todos los items del
-     * dataset. En datasets con un gran número de usuarios debería ser
-     * implementada más eficientemente, ya que el orden de eficiencia de este
-     * método es O(n . m) donde n=numero de usuarios y m = numero medio de items
-     * valorados por el usuario.
+     * Implementación por defecto del método que devuelve todos los items del dataset. En datasets con un gran número de
+     * usuarios debería ser implementada más eficientemente, ya que el orden de eficiencia de este método es O(n . m)
+     * donde n=numero de usuarios y m = numero medio de items valorados por el usuario.
      *
      * @return Conjunto con los id de los items que han sido valorados
      */
@@ -97,8 +93,7 @@ public abstract class RatingsDatasetAdapter<RatingType extends Rating> implement
     /**
      * Devuelve los usuarios que han valorado el item
      *
-     * @param idItem id del item para el que se quiere consultar los usuarios
-     * que lo han valorado
+     * @param idItem id del item para el que se quiere consultar los usuarios que lo han valorado
      * @return colección de id de los usuarios que han valorado el item
      * @throws delfos.common.exceptions.dataset.items.ItemNotFound
      */
@@ -128,8 +123,7 @@ public abstract class RatingsDatasetAdapter<RatingType extends Rating> implement
     /**
      * Devuelve el ratingValue medio del producto cuyo id se especifica
      *
-     * @param idItem producto para el que se desea obtener su valoración de
-     * preferencia media
+     * @param idItem producto para el que se desea obtener su valoración de preferencia media
      * @return valoración media del producto
      * @throws delfos.common.exceptions.dataset.items.ItemNotFound
      */
@@ -156,8 +150,7 @@ public abstract class RatingsDatasetAdapter<RatingType extends Rating> implement
     /**
      * Devuelve el la valoración media que un usuario ha dado a los productos.
      *
-     * @param idUser usuario para el que se desea obtener la media de las
-     * valoraciones que ha proporcionado
+     * @param idUser usuario para el que se desea obtener la media de las valoraciones que ha proporcionado
      * @return valoración media del usuario
      *
      * @throws UserNotFound Si el usuario no existe.
@@ -183,13 +176,11 @@ public abstract class RatingsDatasetAdapter<RatingType extends Rating> implement
     public abstract Domain getRatingsDomain();
 
     /**
-     * Devuelve el número de valoraciones totales que tiene almacenado el
-     * dataset <br> NOTA: Por defecto se calcula sumando el método
-     * {@link RatingsDataset#sizeOfUserRatings(int)} por lo que puede ser
-     * necesario sobreescribir el método para una implementación más eficiente.
+     * Devuelve el número de valoraciones totales que tiene almacenado el dataset <br> NOTA: Por defecto se calcula
+     * sumando el método {@link RatingsDataset#sizeOfUserRatings(int)} por lo que puede ser necesario sobreescribir el
+     * método para una implementación más eficiente.
      *
-     * @return Número de valoraciones que todos los usuarios han hecho sobre los
-     * productos.
+     * @return Número de valoraciones que todos los usuarios han hecho sobre los productos.
      */
     @Override
     public int getNumRatings() {
@@ -338,7 +329,7 @@ public abstract class RatingsDatasetAdapter<RatingType extends Rating> implement
     private Integer hashCodeBuffer = null;
 
     @Override
-    public int hashCode() {
+    public synchronized int hashCode() {
         if (hashCodeBuffer == null) {
             hashCodeBuffer = hashCode(this);
         }

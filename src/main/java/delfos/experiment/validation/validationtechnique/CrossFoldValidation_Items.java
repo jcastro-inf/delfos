@@ -34,9 +34,8 @@ import java.util.Set;
 import java.util.TreeSet;
 
 /**
- * Clase que implementa el método validación cross fold validation que se aplica
- * en productos (las particiones las hace por productos, no por ratings o por
- * usuarios)
+ * Clase que implementa el método validación cross fold validation que se aplica en productos (las particiones las hace
+ * por productos, no por ratings o por usuarios)
  *
  * @author jcastro-inf ( https://github.com/jcastro-inf )
  * @version 1.0 (19 Octubre 2011)
@@ -50,15 +49,14 @@ public class CrossFoldValidation_Items extends ValidationTechnique {
     public static final Parameter numFolds = new Parameter("numFolds", new IntegerParameter(2, Integer.MAX_VALUE, 5));
 
     /**
-     * Constructor de la clase que genera los conjuntos de validación cruzada.
-     * Por defecto tiene cinco particiones.
+     * Constructor de la clase que genera los conjuntos de validación cruzada. Por defecto tiene cinco particiones.
      */
     public CrossFoldValidation_Items() {
         addParameter(numFolds);
     }
 
     @Override
-    public PairOfTrainTestRatingsDataset[] shuffle(DatasetLoader<? extends Rating> datasetLoader) throws CannotLoadContentDataset, CannotLoadRatingsDataset {
+    public <RatingType extends Rating> PairOfTrainTestRatingsDataset[] shuffle(DatasetLoader<RatingType> datasetLoader) throws CannotLoadContentDataset, CannotLoadRatingsDataset {
         Random random = new Random(getSeedValue());
 
         int numSplits = getNumberOfFolds();

@@ -55,7 +55,7 @@ public class RecommendationsToUser extends Recommendations {
     }
 
     @Override
-    public Object getDetails(RecommendationComputationDetails.DetailField detailField) {
+    public Object getDetails(DetailField detailField) {
         return recommendationComputationDetails.getDetailFieldValue(detailField);
     }
 
@@ -84,7 +84,7 @@ public class RecommendationsToUser extends Recommendations {
     }
 
     @Override
-    public Set<RecommendationComputationDetails.DetailField> detailFieldSet() {
+    public Set<DetailField> detailFieldSet() {
         return recommendationComputationDetails.detailFieldSet();
     }
 

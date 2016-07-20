@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -17,6 +17,7 @@
 package delfos.rs.output;
 
 import delfos.ERROR_CODES;
+import delfos.common.Global;
 import delfos.common.parameters.Parameter;
 import delfos.common.parameters.restriction.IntegerParameter;
 import delfos.common.parameters.restriction.PasswordParameter;
@@ -30,6 +31,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Escribe las recomendaciones en una tabla de base de datos MySQL.
@@ -51,8 +53,7 @@ public class RecommendationsOutputDatabase extends RecommendationsOutputMethod {
      */
     public static final Parameter CONNECTION_PASSWORD = new Parameter("Connection_Password", new PasswordParameter("jcastro"));
     /**
-     * Nombre de la base de datos para la conexión que escribe las
-     * recomendaciones.
+     * Nombre de la base de datos para la conexión que escribe las recomendaciones.
      */
     public static final Parameter CONNECTION_DATABASE_NAME = new Parameter("Connection_DatabaseName", new StringParameter("castro"));
     /**
@@ -68,23 +69,20 @@ public class RecommendationsOutputDatabase extends RecommendationsOutputMethod {
      */
     public static final Parameter TABLE_NAME = new Parameter("Table_Name", new StringParameter("recommendations_table"));
     /**
-     * Nombre del campo de la tabla de recomendaciones en que se amacena el id
-     * de usuario.
+     * Nombre del campo de la tabla de recomendaciones en que se amacena el id de usuario.
      */
     public static final Parameter TABLE_FIELD_TARGET_ID = new Parameter("Table_ColumnIdUser", new StringParameter("idUser"));
     /**
-     * Nombre del campo de la tabla de recomendaciones en que se amacena el id
-     * de producto.
+     * Nombre del campo de la tabla de recomendaciones en que se amacena el id de producto.
      */
     public static final Parameter TABLE_FIELD_ITEM_ID = new Parameter("Table_ColumnIdItem", new StringParameter("idItem"));
     /**
-     * Nombre del campo de la tabla de recomendaciones en que se amacena el
-     * valor de preferencia de la recomendación.
+     * Nombre del campo de la tabla de recomendaciones en que se amacena el valor de preferencia de la recomendación.
      */
     public static final Parameter TABLE_FIELD_PREFERENCE = new Parameter("Table_ColumnPreference", new StringParameter("preference"));
     /**
-     * Nombre del campo de la tabla de recomendaciones en que se amacena el
-     * nombre del sistema de recomendación que genera las recomendaciones.
+     * Nombre del campo de la tabla de recomendaciones en que se amacena el nombre del sistema de recomendación que
+     * genera las recomendaciones.
      */
     public static final Parameter TABLE_FIELD_RECOMMENDER = new Parameter("Table_ColumnRecommender", new StringParameter("system"));
     /**
@@ -93,8 +91,7 @@ public class RecommendationsOutputDatabase extends RecommendationsOutputMethod {
     public static final Parameter TABLE_FIELD_RECOMMENDER_VALUE = new Parameter("Table_RecommenderValue", new StringParameter("recommender"));
 
     /**
-     * Constructor por defecto, que añade los parámetros de este método de
-     * salida de recomendaciones.
+     * Constructor por defecto, que añade los parámetros de este método de salida de recomendaciones.
      */
     public RecommendationsOutputDatabase() {
         super();
@@ -113,18 +110,15 @@ public class RecommendationsOutputDatabase extends RecommendationsOutputMethod {
     }
 
     /**
-     * Crea la salida de recomendaciones a partir de una conexión de base de
-     * datos y los parámetros que definen nombre y campos de la tabla de
-     * recomendaciones.
+     * Crea la salida de recomendaciones a partir de una conexión de base de datos y los parámetros que definen nombre y
+     * campos de la tabla de recomendaciones.
      *
-     * @param databaseConection Conexión cuyos parámetros se utilizan para
-     * escribir las recomendaciones.
+     * @param databaseConection Conexión cuyos parámetros se utilizan para escribir las recomendaciones.
      * @param tableName Nombre de la tabla de recomendaciones.
      * @param field_idUser Nombre del campo del identificador de usuario.
      * @param field_idItem Nombre del campo del identificador de producto.
      * @param field_preference Nombre del campo del valor de preferencia.
-     * @param field_recommender Nombre del campo que almacena el nombre del
-     * sistema de recomendación.
+     * @param field_recommender Nombre del campo que almacena el nombre del sistema de recomendación.
      * @param recommenderName Nombre del sistema de recomendación.
      */
     public RecommendationsOutputDatabase(DatabaseConection databaseConection,
@@ -161,18 +155,16 @@ public class RecommendationsOutputDatabase extends RecommendationsOutputMethod {
             ERROR_CODES.CANNOT_WRITE_RECOMMENDATIONS.exit(ex);
         }
 
-        final String idUser = recommendationsToUser.getTargetIdentifier();
+        final String targetIDString = recommendationsToUser.getTargetIdentifier();
+
+        //CleanUserRecomendations.
+        String deleteStatementString = "delete from " + getTableName() + "\n"
+                + " where \n"
+                + getIdTargetField() + "='" + targetIDString + "'\n"
+                + "and " + getRecommenderField() + " = '" + getRecommenderFieldValue() + "';";
 
         //Primero borro de la tabla si el usuario tenía recomendaciones.
-        try (
-                Statement deleteStatement = getConection().doConnection().createStatement()) {
-
-            //CleanUserRecomendations.
-            String deleteStatementString = "delete from " + getTableName() + "\n"
-                    + " where \n"
-                    + getIdTargetField() + "=" + idUser + " \n"
-                    + "and " + getRecommenderField() + " = '" + getRecommenderFieldValue() + "';";
-
+        try (Statement deleteStatement = getConection().doConnection().createStatement()) {
             deleteStatement.executeUpdate(deleteStatementString);
             deleteStatement.close();
         } catch (ClassNotFoundException ex) {
@@ -188,13 +180,18 @@ public class RecommendationsOutputDatabase extends RecommendationsOutputMethod {
             topNrecommendations = topNrecommendations.subList(0, Math.min(topNrecommendations.size(), getNumberOfRecommendations()));
         }
 
-        //Escribo las recomendaciones.
-        try (
-                Statement statement = getConection().doConnection().createStatement()) {
+        topNrecommendations = topNrecommendations.stream().filter(Recommendation.NON_COVERAGE_FAILURES).collect(Collectors.toList());
 
-            for (Recommendation r : topNrecommendations) {
-                String insert = "INSERT INTO " + getTableName() + "(" + getIdTargetField() + "," + getIdItemField() + "," + getPreferenceField() + "," + getRecommenderField() + ") VALUES "
-                        + "(" + idUser + "," + r.getIdItem() + "," + r.getPreference().doubleValue() + ",'" + getRecommenderFieldValue() + "');";
+        if (topNrecommendations.isEmpty()) {
+            Global.showWarning("No recommendations for '" + recommendationsToUser.getTargetIdentifier() + "', Returning empty list.");
+        }
+
+        //Escribo las recomendaciones.
+        try (Statement statement = getConection().doConnection().createStatement()) {
+
+            for (Recommendation recommendation : topNrecommendations) {
+                String insert = "INSERT INTO " + getTableName() + "(" + getIdTargetField() + "," + getIdItemField() + "," + getPreferenceField() + "," + getRecommenderField() + ") VALUES \n"
+                        + "('" + targetIDString + "'," + recommendation.getIdItem() + "," + recommendation.getPreference().doubleValue() + ",'" + getRecommenderFieldValue() + "');";
                 statement.executeUpdate(insert);
             }
             statement.close();
@@ -227,8 +224,7 @@ public class RecommendationsOutputDatabase extends RecommendationsOutputMethod {
 
     /**
      *
-     * @return @deprecated No se debe usar el método por seguridad de las
-     * claves.
+     * @return @deprecated No se debe usar el método por seguridad de las claves.
      */
     public String getPass() {
         return (String) getParameterValue(CONNECTION_PASSWORD);

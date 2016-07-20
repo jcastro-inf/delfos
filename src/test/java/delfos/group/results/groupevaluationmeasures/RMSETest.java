@@ -78,7 +78,6 @@ public class RMSETest {
         GroupEvaluationMeasureResult groupMaeResult = instance.getMeasureResult(
                 groupRecommenderSystemResult,
                 datasetLoader,
-                testDataset,
                 relevanceCriteria,
                 datasetLoader,
                 datasetLoader);

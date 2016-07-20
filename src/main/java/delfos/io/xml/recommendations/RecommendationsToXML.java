@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -17,9 +17,9 @@
 package delfos.io.xml.recommendations;
 
 import delfos.Constants;
+import delfos.rs.recommendation.DetailField;
 import delfos.rs.recommendation.Recommendation;
 import delfos.rs.recommendation.RecommendationComputationDetails;
-import delfos.rs.recommendation.RecommendationComputationDetails.DetailField;
 import delfos.rs.recommendation.Recommendations;
 import delfos.rs.recommendation.RecommendationsFactory;
 import java.util.ArrayList;
@@ -32,9 +32,8 @@ import org.jdom2.Attribute;
 import org.jdom2.Element;
 
 /**
- * Clase que se utiliza para generar un XML que almacene los productos que un
- * sistema de recomendación devuelve como recomendaciones de manera ordenada,
- * proporcionando el id del producto y su valor de preferencia asignado por el
+ * Clase que se utiliza para generar un XML que almacene los productos que un sistema de recomendación devuelve como
+ * recomendaciones de manera ordenada, proporcionando el id del producto y su valor de preferencia asignado por el
  * sistema de recomendación.
  *
  * @author jcastro-inf ( https://github.com/jcastro-inf )
@@ -108,17 +107,15 @@ public class RecommendationsToXML {
     }
 
     /**
-     * Convierte el elemento XML indicado en un objeto que representa las
-     * recomendaciones al usuario.
+     * Convierte el elemento XML indicado en un objeto que representa las recomendaciones al usuario.
      *
      * @param element Elemento XML a convertir.
      * @return Recomendaciones.
      *
-     * @throws IllegalArgumentException Si el elemento no contiene la
-     * información necesaria para recuperar un objeto {@link Recommendations}.
+     * @throws IllegalArgumentException Si el elemento no contiene la información necesaria para recuperar un objeto
+     * {@link Recommendations}.
      *
-     * @see
-     * RecommendationsToXML#getRecommendationsElement(delfos.RS.Recommendation.Recommendations)
+     * @see RecommendationsToXML#getRecommendationsElement(delfos.RS.Recommendation.Recommendations)
      *
      */
     public static Recommendations getRecommendations(Element element) {

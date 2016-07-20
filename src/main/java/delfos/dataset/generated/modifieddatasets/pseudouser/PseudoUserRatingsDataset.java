@@ -16,6 +16,7 @@
  */
 package delfos.dataset.generated.modifieddatasets.pseudouser;
 
+import delfos.common.StringsOrderings;
 import delfos.common.exceptions.dataset.items.ItemNotFound;
 import delfos.common.exceptions.dataset.users.UserNotFound;
 import delfos.dataset.basic.item.Item;
@@ -25,11 +26,14 @@ import delfos.dataset.basic.rating.RatingsDatasetAdapter;
 import delfos.dataset.basic.rating.domain.Domain;
 import delfos.dataset.basic.user.User;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 /**
  *
@@ -124,8 +128,8 @@ public class PseudoUserRatingsDataset<RatingType extends Rating> extends Ratings
                     = pseudoUsersRatings.get(pseudoUser)
                     .entrySet().stream()
                     .collect(Collectors.toMap(
-                                    entry -> entry.getKey().getId(),
-                                    entry -> entry.getValue()));
+                            entry -> entry.getKey().getId(),
+                            entry -> entry.getValue()));
 
             return pseudoUserRatings;
         } else {
@@ -145,8 +149,8 @@ public class PseudoUserRatingsDataset<RatingType extends Rating> extends Ratings
 
         Map<Integer, RatingType> itemsRatingsRated_byPseudoUsers = ratedByPseudoUsers
                 .stream().collect(Collectors.toMap(
-                                rating -> rating.getIdItem(),
-                                rating -> rating));
+                        rating -> rating.getIdItem(),
+                        rating -> rating));
 
         Map<Integer, RatingType> ret = new TreeMap<>();
 
@@ -159,6 +163,56 @@ public class PseudoUserRatingsDataset<RatingType extends Rating> extends Ratings
     @Override
     public Domain getRatingsDomain() {
         return originalDatasetLoader.getRatingsDataset().getRatingsDomain();
+    }
+
+    @Override
+    public synchronized int hashCode() {
+
+        int originalDatasetHash = originalDatasetLoader.getRatingsDataset().hashCode();
+
+        HashCodeBuilder pseudoRatingsHashCodeBuilder = new HashCodeBuilder(37, 11);
+
+        List<RatingType> ratingsSorted = pseudoUsersRatings.values().stream()
+                .flatMap(userRatings -> userRatings.values().stream())
+                .sorted((rating, rating2) -> StringsOrderings.compareNatural(rating.toString(), rating2.toString()))
+                .collect(Collectors.toList());
+
+        for (RatingType rating : ratingsSorted) {
+            String ratingToString = rating.toString();
+            pseudoRatingsHashCodeBuilder.append(ratingToString);
+        }
+
+        ratingsSorted.stream().forEachOrdered(rating -> pseudoRatingsHashCodeBuilder.append(rating.toString()));
+
+        Integer pseudoRatingsHashCode = pseudoRatingsHashCodeBuilder.build();
+
+        HashCodeBuilder finalHash = new HashCodeBuilder(37, 11);
+
+        Integer finalHashValue = finalHash.append(originalDatasetHash).append(pseudoRatingsHashCode).build();
+
+        return finalHashValue;
+
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final PseudoUserRatingsDataset<?> other = (PseudoUserRatingsDataset<?>) obj;
+        if (!Objects.equals(this.originalDatasetLoader, other.originalDatasetLoader)) {
+            return false;
+        }
+        if (!Objects.equals(this.pseudoUsersRatings, other.pseudoUsersRatings)) {
+            return false;
+        }
+        return true;
     }
 
 }

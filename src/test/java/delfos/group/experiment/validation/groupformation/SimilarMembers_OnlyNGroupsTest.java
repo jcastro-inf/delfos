@@ -33,7 +33,7 @@ public class SimilarMembers_OnlyNGroupsTest extends DelfosTest {
     }
 
     /**
-     * Test of shuffle method, of class SimilarMembers_OnlyNGroups.
+     * Test of generateGroups method, of class SimilarMembers_OnlyNGroups.
      */
     @Test
     public void testShuffle() {
@@ -48,7 +48,7 @@ public class SimilarMembers_OnlyNGroupsTest extends DelfosTest {
             Global.showln(progress + "% " + message + " remainingTime: " + DateCollapse.collapse(remainingTimeInMS));
         });
         instance.setSeedValue(seed);
-        Collection<GroupOfUsers> result = instance.shuffle(datasetLoader);
+        Collection<GroupOfUsers> result = instance.generateGroups(datasetLoader);
 
         Collection<GroupOfUsers> expResult = new ArrayList<>();
         expResult.add(new GroupOfUsers(121, 541, 568, 582, 886));
@@ -56,7 +56,7 @@ public class SimilarMembers_OnlyNGroupsTest extends DelfosTest {
     }
 
     /**
-     * Test of shuffle method, of class SimilarMembers_OnlyNGroups.
+     * Test of generateGroups method, of class SimilarMembers_OnlyNGroups.
      */
     @Test
     public void testSharingUsers() {
@@ -74,7 +74,7 @@ public class SimilarMembers_OnlyNGroupsTest extends DelfosTest {
 
         List<GroupOfUsers> groups;
         {
-            Collection<GroupOfUsers> result = instance.shuffle(datasetLoader);
+            Collection<GroupOfUsers> result = instance.generateGroups(datasetLoader);
             groups = new ArrayList<>(result);
         }
 
@@ -97,7 +97,7 @@ public class SimilarMembers_OnlyNGroupsTest extends DelfosTest {
     }
 
     /**
-     * Test of shuffle method, of class SimilarMembers_OnlyNGroups.
+     * Test of generateGroups method, of class SimilarMembers_OnlyNGroups.
      */
     @Test(expected = IllegalArgumentException.class)
     public void testTooManyGroupsAsked() {
@@ -109,11 +109,11 @@ public class SimilarMembers_OnlyNGroupsTest extends DelfosTest {
 
         SimilarMembers_OnlyNGroups instance = new SimilarMembers_OnlyNGroups(numGroupsValue, groupSizeValue);
 
-        Collection<GroupOfUsers> result = instance.shuffle(datasetLoader);
+        Collection<GroupOfUsers> result = instance.generateGroups(datasetLoader);
     }
 
     /**
-     * Test of shuffle method, of class SimilarMembers_OnlyNGroups.
+     * Test of generateGroups method, of class SimilarMembers_OnlyNGroups.
      */
     @Test
     public void testExactUserPartitionInGroupsAsked() {
@@ -125,7 +125,7 @@ public class SimilarMembers_OnlyNGroupsTest extends DelfosTest {
 
         SimilarMembers_OnlyNGroups instance = new SimilarMembers_OnlyNGroups(numGroupsValue, groupSizeValue);
 
-        Collection<GroupOfUsers> result = instance.shuffle(datasetLoader);
+        Collection<GroupOfUsers> result = instance.generateGroups(datasetLoader);
 
         assertTrue(result.size() == numGroupsValue);
 
@@ -135,7 +135,7 @@ public class SimilarMembers_OnlyNGroupsTest extends DelfosTest {
     }
 
     /**
-     * Test of shuffle method, of class SimilarMembers_OnlyNGroups.
+     * Test of generateGroups method, of class SimilarMembers_OnlyNGroups.
      */
     @Test
     public void testExactUserPartitionInGroupsAsked_changed() {
@@ -147,7 +147,7 @@ public class SimilarMembers_OnlyNGroupsTest extends DelfosTest {
 
         SimilarMembers_OnlyNGroups instance = new SimilarMembers_OnlyNGroups(numGroupsValue, groupSizeValue);
 
-        Collection<GroupOfUsers> result = instance.shuffle(datasetLoader);
+        Collection<GroupOfUsers> result = instance.generateGroups(datasetLoader);
 
         assertTrue(result.size() == numGroupsValue);
 
@@ -157,7 +157,7 @@ public class SimilarMembers_OnlyNGroupsTest extends DelfosTest {
     }
 
     /**
-     * Test of shuffle method, of class SimilarMembers_OnlyNGroups.
+     * Test of generateGroups method, of class SimilarMembers_OnlyNGroups.
      */
     @Test
     public void testAGroupForEachUser() {
@@ -169,7 +169,7 @@ public class SimilarMembers_OnlyNGroupsTest extends DelfosTest {
 
         SimilarMembers_OnlyNGroups instance = new SimilarMembers_OnlyNGroups(numGroupsValue, groupSizeValue);
 
-        Collection<GroupOfUsers> result = instance.shuffle(datasetLoader);
+        Collection<GroupOfUsers> result = instance.generateGroups(datasetLoader);
 
         assertTrue(result.size() == numGroupsValue);
 

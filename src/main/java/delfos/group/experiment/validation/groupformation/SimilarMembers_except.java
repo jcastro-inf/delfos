@@ -111,7 +111,7 @@ public class SimilarMembers_except extends GroupFormationTechnique {
     }
 
     @Override
-    public Collection<GroupOfUsers> shuffle(DatasetLoader<? extends Rating> datasetLoader) throws CannotLoadRatingsDataset {
+    public Collection<GroupOfUsers> generateGroups(DatasetLoader<? extends Rating> datasetLoader) throws CannotLoadRatingsDataset {
         if (datasetLoader == null) {
             throw new IllegalStateException("The datasetLoader is null.");
         }
@@ -142,7 +142,7 @@ public class SimilarMembers_except extends GroupFormationTechnique {
             progressChanged(message, progress, remainingTimeInMS);
         });
 
-        Collection<GroupOfUsers> groupsOfSimilarMembers = similarMembers.shuffle(datasetLoader);
+        Collection<GroupOfUsers> groupsOfSimilarMembers = similarMembers.generateGroups(datasetLoader);
 
         ArrayList<User> usersRemainToSelect = new ArrayList<>(datasetLoader.getUsersDataset());
         groupsOfSimilarMembers.stream().forEach((group) -> {

@@ -66,7 +66,7 @@ public class FixedGroupSize extends GroupFormationTechnique {
     }
 
     @Override
-    public Collection<GroupOfUsers> shuffle(DatasetLoader<? extends Rating> datasetLoader) throws CannotLoadRatingsDataset {
+    public Collection<GroupOfUsers> generateGroups(DatasetLoader<? extends Rating> datasetLoader) throws CannotLoadRatingsDataset {
 
         final long seed = getSeedValue();
         Random random = new Random(seed);

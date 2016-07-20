@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -14,24 +14,13 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package delfos.group.experiment.validation.validationtechniques;
+package delfos.group.results.groupevaluationmeasures;
 
-/**
- * Interfaz que deben implementar los objetos que deseen registrar el progreso
- * de ejecución de una validación
- *
- * @author jcastro-inf ( https://github.com/jcastro-inf )
- * @see GroupValidationTechnique#shuffle() 
- *
- * @version 1.0 (12/12/2012)
- */
-public interface GroupValidationTechniqueProgressListener {
+public class MAE_05 extends MAEonTop {
 
-    /**
-     * Método para informar que el progreso de ejecución ha cambiado.
-     *
-     * @param message Tarea actual
-     * @param percent Porcentaje completado
-     */
-    public void progressChanged(String message, int percent);
+    @Override
+    public int getTopN() {
+        return 5;
+    }
+
 }

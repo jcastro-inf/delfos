@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,15 +16,14 @@
  */
 package delfos.rs;
 
-import java.io.PrintStream;
-import java.util.Date;
 import delfos.common.Chronometer;
 import delfos.common.DateCollapse;
+import java.io.PrintStream;
+import java.util.Date;
 
 /**
- * Listener por defecto que imprime los eventos de cambio en un Stream de
- * salida. Permite limitar la salida para que se haga una vez cada X
- * milisegundos, como muy rápido.
+ * Listener por defecto que imprime los eventos de cambio en un Stream de salida. Permite limitar la salida para que se
+ * haga una vez cada X milisegundos, como muy rápido.
  *
  * @author jcastro-inf ( https://github.com/jcastro-inf )
  * @version 1.0 23-Jan-2013
@@ -34,7 +33,7 @@ public class RecommenderSystemBuildingProgressListener_default implements Recomm
     /**
      * Cronómetro para controlar el tiempo entre escrituras.
      */
-    private Chronometer chronometer;
+    private final Chronometer chronometer;
     /**
      * Stream de salida para escribir los mensajes.
      */
@@ -50,13 +49,13 @@ public class RecommenderSystemBuildingProgressListener_default implements Recomm
     /**
      * Tiempo mínimo que transcurre entre escrituras.
      */
-    private long verbosePeriod;
+    private final long verbosePeriod;
     private boolean beginPrinted;
     private boolean endPrinted;
 
     /**
-     * Constructor por defecto, que establece el stream donde se escribe la
-     * información de progreso y se limita el número de escrituras por tiempo.
+     * Constructor por defecto, que establece el stream donde se escribe la información de progreso y se limita el
+     * número de escrituras por tiempo.
      *
      * @param out Stream de salida en el que se escriben los mensajes.
      * @param verbosePeriod Tiempo mínimo entre escrituras.
@@ -93,7 +92,7 @@ public class RecommenderSystemBuildingProgressListener_default implements Recomm
     }
 
     private void printInfo(String actualJob, int percent, long remainingTime) {
-        String message = new Date().toString()+": "+actualJob + " --> "
+        String message = new Date().toString() + ": " + actualJob + " --> "
                 + percent + "% --> "
                 + DateCollapse.collapse(remainingTime);
         out.println(message);

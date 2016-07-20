@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -81,6 +81,10 @@ public class AddRating extends DatabaseCaseUseSubManager {
             throw new IllegalArgumentException(ex);
         }
 
+        addRating(changeableDatasetLoader, idUser, idItem, ratingValue);
+    }
+
+    public void addRating(ChangeableDatasetLoader changeableDatasetLoader, int idUser, int idItem, Number ratingValue) throws RuntimeException {
         try {
             if (Global.isVerboseAnnoying()) {
                 Global.showInfoMessage("Adding rating (idUser=" + idUser + ", idItem=" + idItem + " ) --> " + ratingValue + "\n");

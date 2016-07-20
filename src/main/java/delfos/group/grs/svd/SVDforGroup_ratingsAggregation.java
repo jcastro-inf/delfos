@@ -37,17 +37,16 @@ import delfos.rs.collaborativefiltering.svd.SVDFoldingIn;
 import delfos.rs.collaborativefiltering.svd.TryThisAtHomeSVD;
 import delfos.rs.collaborativefiltering.svd.TryThisAtHomeSVDModel;
 import delfos.rs.recommendation.Recommendation;
-import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
- * Sistema de recomendación a grupos con agregación de valoraciones de los
- * miembros del grupo. Utiliza el SR a inviduos basado en SVD con actualización
- * FoldIn del modelo. De esta manera se incluyen las valoraciones del
- * pseudo-usuario que representa al grupo.
+ * Sistema de recomendación a grupos con agregación de valoraciones de los miembros del grupo. Utiliza el SR a inviduos
+ * basado en SVD con actualización FoldIn del modelo. De esta manera se incluyen las valoraciones del pseudo-usuario que
+ * representa al grupo.
  *
  * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
@@ -57,8 +56,7 @@ public class SVDforGroup_ratingsAggregation extends GroupRecommenderSystemAdapte
 
     private static final long serialVersionUID = 1L;
     /**
-     * Especifica la técnica de agregación para agregar los ratings de los
-     * usuarios y formar el perfil del grupo.
+     * Especifica la técnica de agregación para agregar los ratings de los usuarios y formar el perfil del grupo.
      */
     public static final Parameter AGGREGATION_OPERATOR = new Parameter(
             "AGGREGATION_METHOD",
@@ -130,7 +128,7 @@ public class SVDforGroup_ratingsAggregation extends GroupRecommenderSystemAdapte
 
         int idPseudoUserIndex = foldInModel.getUsersIndex().get(pseudoUser.getId());
 
-        ArrayList<Double> groupFeatures = foldInModel.getAllUserFeatures().get(idPseudoUserIndex);
+        List<Double> groupFeatures = foldInModel.getAllUserFeatures().get(idPseudoUserIndex);
 
         return new GroupSVDModel(groupOfUsers, groupFeatures);
     }

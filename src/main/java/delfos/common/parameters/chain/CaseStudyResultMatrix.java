@@ -27,8 +27,7 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 
 /**
- * Stores in a tabular form the results of the groupCaseStudy for a given
- * evaluationMeasure.
+ * Stores in a tabular form the results of the groupCaseStudy for a given evaluationMeasure.
  *
  * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
@@ -223,7 +222,9 @@ public class CaseStudyResultMatrix {
 
     public void prepareColumnAndRowNames(List<GroupCaseStudyResult> groupCaseStudyResults) {
 
-        groupCaseStudyResults.stream().map(groupCaseStudyResult -> groupCaseStudyResult.getGroupCaseStudy()).forEach(groupCaseStudy -> this.getColumnIdentifier(groupCaseStudy));
+        groupCaseStudyResults.stream().map(groupCaseStudyResult -> groupCaseStudyResult.getGroupCaseStudy())
+                .forEach(groupCaseStudy -> this.getColumnIdentifier(groupCaseStudy));
+
         groupCaseStudyResults.stream().map(groupCaseStudyResult -> groupCaseStudyResult.getGroupCaseStudy()).forEach(groupCaseStudy -> this.getRowIdentifier(groupCaseStudy));
     }
 }

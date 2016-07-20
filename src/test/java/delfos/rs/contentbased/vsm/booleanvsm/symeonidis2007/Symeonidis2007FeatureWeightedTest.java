@@ -5,25 +5,24 @@ import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
 import delfos.rs.collaborativefiltering.profile.Neighbor;
 import delfos.rs.contentbased.vsm.booleanvsm.BooleanFeaturesTransformation;
+import delfos.rs.contentbased.vsm.booleanvsm.SparseVector;
 import delfos.rs.recommendation.Recommendation;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
-import org.grouplens.lenskit.vectors.MutableSparseVector;
-import org.grouplens.lenskit.vectors.SparseVector;
+import org.apache.commons.math4.util.Pair;
 import static org.junit.Assert.assertEquals;
 import org.junit.Test;
+import static org.junit.Assert.assertEquals;
 
 /**
- * Test del sistema de recomendación {@link Symeonidis2007FeatureWeighted}
- * extraido del paper
+ * Test del sistema de recomendación {@link Symeonidis2007FeatureWeighted} extraido del paper
  * <p>
  * <p>
- * Panagiotis Symeonidis, Alexandros Nanopoulos and Yannis Manolopoulos.
- * "Feature-weighted user model for recommender systems." In User Modeling 2007,
- * pp. 97-106. Springer Berlin Heidelberg, 2007.
+ * Panagiotis Symeonidis, Alexandros Nanopoulos and Yannis Manolopoulos. "Feature-weighted user model for recommender
+ * systems." In User Modeling 2007, pp. 97-106. Springer Berlin Heidelberg, 2007.
  *
  * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
@@ -34,7 +33,7 @@ public class Symeonidis2007FeatureWeightedTest extends DelfosTest {
     /**
      * Delta que se usa para comparar números reales.
      */
-    public static final double delta = 0.001;
+    public static final double DELTA = 0.001;
 
     public Symeonidis2007FeatureWeightedTest() {
     }
@@ -49,20 +48,24 @@ public class Symeonidis2007FeatureWeightedTest extends DelfosTest {
         int idUser = 1;
 
         //Step2: Execution
-        MutableSparseVector ffUserProfile = instance.makeFFUserProfile(idUser, datasetLoader, featureTransformation);
+        SparseVector<Long> ffUserProfile = instance.makeFFUserProfile(idUser, datasetLoader, featureTransformation);
 
         //Step3: Results check
         {
             //Compruebo el cálculo del IUF.
-            SparseVector ffExpected = MutableSparseVector.wrapUnsorted(
-                    new long[]{0, 1, 2},
-                    new double[]{2, 2, 1}).immutable();
-            SparseVector ffActual = ffUserProfile;
+            SparseVector<Long> ffExpected
+                    = SparseVector.createFromPairs(
+                            new Pair<>(0l, 2.0),
+                            new Pair<>(1l, 2.0),
+                            new Pair<>(2l, 1.0)
+                    );
+
+            SparseVector<Long> ffActual = ffUserProfile;
 
             for (long key : ffExpected.keySet()) {
                 double expectedValue = ffExpected.get(key);
                 double actualValue = ffActual.get(key);
-                assertEquals("The ff vector for user " + idUser + " is wrong at " + key + " feature, ", expectedValue, actualValue, delta);
+                assertEquals("The ff vector for user " + idUser + " is wrong at " + key + " feature, ", expectedValue, actualValue, DELTA);
             }
         }
 
@@ -81,75 +84,86 @@ public class Symeonidis2007FeatureWeightedTest extends DelfosTest {
         //Step3: Results check
         {
             //Compruebo el cálculo del IUF.
-            SparseVector iufExpected = MutableSparseVector.wrapUnsorted(
-                    new long[]{0, 1, 2, 3},
-                    new double[]{0.301, 0.125, 0.301, 0.602}).immutable();
-            SparseVector iufActual = model.getAllIUF();
+            SparseVector<Long> iufExpected = SparseVector.createFromPairs(
+                    new Pair<>(0l, 0.301),
+                    new Pair<>(1l, 0.125),
+                    new Pair<>(2l, 0.301),
+                    new Pair<>(3l, 0.602)
+            );
+
+            SparseVector<Long> iufActual = model.getAllIUF();
 
             for (long key : iufExpected.keySet()) {
                 double expectedValue = iufExpected.get(key);
                 double actualValue = iufActual.get(key);
-                assertEquals("The inverse user frequency calculation is wrong, ", expectedValue, actualValue, delta);
+                assertEquals("The inverse user frequency calculation is wrong, ", expectedValue, actualValue, DELTA);
             }
         }
 
         {
             //Compruebo el perfil del User 1.
             final int idUser = 1;
-            SparseVector userExpected = MutableSparseVector.wrap(
-                    new long[]{0, 1, 2},
-                    new double[]{0.602, 0.250, 0.301});
-            SparseVector userActual = model.getBooleanFeaturesTransformation().getDoubleValuesSparseVector(model.getUserProfile(idUser));
+            SparseVector<Long> userExpected = SparseVector.createFromPairs(
+                    new Pair<>(0l, 0.602),
+                    new Pair<>(1l, 0.250),
+                    new Pair<>(2l, 0.301)
+            );
+
+            SparseVector<Long> userActual = model.getBooleanFeaturesTransformation().getDoubleValuesSparseVector(model.getUserProfile(idUser));
 
             for (long key : userExpected.keySet()) {
                 double expectedValue = userExpected.get(key);
                 double actualValue = userActual.get(key);
-                assertEquals("The User " + idUser + " profile is wrong, ", expectedValue, actualValue, delta);
+                assertEquals("The User " + idUser + " profile is wrong, ", expectedValue, actualValue, DELTA);
             }
         }
 
         {
             //Compruebo el perfil del User 2.
             final int idUser = 2;
-            SparseVector userExpected = MutableSparseVector.wrap(
-                    new long[]{0, 1},
-                    new double[]{0.301, 0.250});
-            SparseVector userActual = model.getBooleanFeaturesTransformation().getDoubleValuesSparseVector(model.getUserProfile(idUser));
+            SparseVector<Long> userExpected = SparseVector.createFromPairs(
+                    new Pair<>(0l, 0.301),
+                    new Pair<>(1l, 0.250)
+            );
+
+            SparseVector<Long> userActual = model.getBooleanFeaturesTransformation().getDoubleValuesSparseVector(model.getUserProfile(idUser));
 
             for (long key : userExpected.keySet()) {
                 double expectedValue = userExpected.get(key);
                 double actualValue = userActual.get(key);
-                assertEquals("The User " + idUser + " profile is wrong, ", expectedValue, actualValue, delta);
+                assertEquals("The User " + idUser + " profile is wrong, ", expectedValue, actualValue, DELTA);
             }
         }
 
         {
             //Compruebo el perfil del User 3.
             final int idUser = 3;
-            SparseVector userExpected = MutableSparseVector.wrap(
-                    new long[]{3},
-                    new double[]{0.602});
-            SparseVector userActual = model.getBooleanFeaturesTransformation().getDoubleValuesSparseVector(model.getUserProfile(idUser));
+            SparseVector<Long> userExpected = SparseVector.createFromPairs(
+                    new Pair<>(3l, 0.602)
+            );
+            SparseVector<Long> userActual = model.getBooleanFeaturesTransformation().getDoubleValuesSparseVector(model.getUserProfile(idUser));
 
             for (long key : userExpected.keySet()) {
                 double expectedValue = userExpected.get(key);
                 double actualValue = userActual.get(key);
-                assertEquals("The User " + idUser + " profile is wrong, ", expectedValue, actualValue, delta);
+                assertEquals("The User " + idUser + " profile is wrong, ", expectedValue, actualValue, DELTA);
             }
         }
 
         {
             //Compruebo el perfil del User 4.
             final int idUser = 4;
-            SparseVector userExpected = MutableSparseVector.wrap(
-                    new long[]{1, 2},
-                    new double[]{0.25, 0.301});
-            SparseVector userActual = model.getBooleanFeaturesTransformation().getDoubleValuesSparseVector(model.getUserProfile(idUser));
+            SparseVector<Long> userExpected = SparseVector.createFromPairs(
+                    new Pair<>(1l, 0.250),
+                    new Pair<>(2l, 0.301)
+            );
+
+            SparseVector<Long> userActual = model.getBooleanFeaturesTransformation().getDoubleValuesSparseVector(model.getUserProfile(idUser));
 
             for (long key : userExpected.keySet()) {
                 double expectedValue = userExpected.get(key);
                 double actualValue = userActual.get(key);
-                assertEquals("The User " + idUser + " profile is wrong, ", expectedValue, actualValue, delta);
+                assertEquals("The User " + idUser + " profile is wrong, ", expectedValue, actualValue, DELTA);
             }
         }
     }
@@ -173,8 +187,8 @@ public class Symeonidis2007FeatureWeightedTest extends DelfosTest {
         assertEquals("The neighbor in the second place should be User", 1, result.get(1).getIdNeighbor());
 
         //Check the item preference value
-        assertEquals("The similarity with User 4 is wrong,", 1.0, result.get(0).getSimilarity(), delta);
-        assertEquals("The similarity with User 1 is wrong,", 0.9555106, result.get(1).getSimilarity(), delta);
+        assertEquals("The similarity with User 4 is wrong,", 1.0, result.get(0).getSimilarity(), DELTA);
+        assertEquals("The similarity with User 1 is wrong,", 0.9555106, result.get(1).getSimilarity(), DELTA);
     }
 
     @Test
@@ -201,8 +215,8 @@ public class Symeonidis2007FeatureWeightedTest extends DelfosTest {
         assertEquals("The item recommended in the third place should be Item", 1, sortedRecommendations.get(2).getIdItem());
 
         //Check the item preference value
-        assertEquals("For Item 5, preference value", 6, sortedRecommendations.get(0).getPreference().doubleValue(), delta);
-        assertEquals("For Item 3, preference value", 5, sortedRecommendations.get(1).getPreference().doubleValue(), delta);
-        assertEquals("For Item 1, preference value", 3, sortedRecommendations.get(2).getPreference().doubleValue(), delta);
+        assertEquals("For Item 5, preference value", 6, sortedRecommendations.get(0).getPreference().doubleValue(), DELTA);
+        assertEquals("For Item 3, preference value", 5, sortedRecommendations.get(1).getPreference().doubleValue(), DELTA);
+        assertEquals("For Item 1, preference value", 3, sortedRecommendations.get(2).getPreference().doubleValue(), DELTA);
     }
 }

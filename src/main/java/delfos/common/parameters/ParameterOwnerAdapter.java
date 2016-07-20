@@ -25,6 +25,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Map;
@@ -34,8 +35,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * Clase que define el comportamiento de cualquier objeto al que se le puedan
- * asignar parámetros para determinar su comportamiento
+ * Clase que define el comportamiento de cualquier objeto al que se le puedan asignar parámetros para determinar su
+ * comportamiento
  *
  * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
@@ -82,14 +83,12 @@ public abstract class ParameterOwnerAdapter implements ParameterOwner {
      */
     private Map<Parameter, Object> parameterValues = new TreeMap<>();
     /**
-     * Almacena los objetos que desean ser notificados de cambios en los
-     * parámetros de este objeto.
+     * Almacena los objetos que desean ser notificados de cambios en los parámetros de este objeto.
      */
-    private final Collection<ParameterListener> parammeterListeners = new LinkedList<>();
+    private Collection<ParameterListener> parammeterListeners = new LinkedList<>();
 
     /**
-     * Añade un nuevo parámetro a la lista de parametros del
-     * {@link ParameterOwner}
+     * Añade un nuevo parámetro a la lista de parametros del {@link ParameterOwner}
      *
      * @param parameter nuevo parámetro del {@link ParameterOwner}
      */
@@ -102,9 +101,8 @@ public abstract class ParameterOwnerAdapter implements ParameterOwner {
     }
 
     /**
-     * Añade un listener para que sea notificado de todos los cambios en los
-     * parámetros del {@link ParameterOwner}, tanto de parámetros añadidos como
-     * de cambios del valor asignado a los mismos.
+     * Añade un listener para que sea notificado de todos los cambios en los parámetros del {@link ParameterOwner},
+     * tanto de parámetros añadidos como de cambios del valor asignado a los mismos.
      *
      * @param listener objeto a notificar de los cambios
      */
@@ -115,8 +113,8 @@ public abstract class ParameterOwnerAdapter implements ParameterOwner {
     }
 
     /**
-     * Elimina un listener para que no sea notificado nunca más de los cambios
-     * en los parámetros del {@link ParameterOwner}.
+     * Elimina un listener para que no sea notificado nunca más de los cambios en los parámetros del
+     * {@link ParameterOwner}.
      *
      * @param listener objeto que no desea ser notificado más de los cambios
      */
@@ -126,8 +124,8 @@ public abstract class ParameterOwnerAdapter implements ParameterOwner {
     }
 
     /**
-     * Método que se invoca cuando ocurre algún cambio en los parámetros de este
-     * objeto. Notifica a todos los observadores registrados.
+     * Método que se invoca cuando ocurre algún cambio en los parámetros de este objeto. Notifica a todos los
+     * observadores registrados.
      */
     private void fireParammeterChangedEvent() {
         for (ParameterListener listener : parammeterListeners) {
@@ -156,14 +154,13 @@ public abstract class ParameterOwnerAdapter implements ParameterOwner {
     }
 
     /**
-     * Asigna al parámetro p el valor value. Si el parámetro no es correcto (por
-     * que no coincida el tipo o la restricción sobre el mismo) lanza una
-     * excepción
+     * Asigna al parámetro p el valor value. Si el parámetro no es correcto (por que no coincida el tipo o la
+     * restricción sobre el mismo) lanza una excepción
      *
      * @param p Parámetro al que se desea asignar un nuevo valor
      * @param value Nuevo valor para el parámetro
-     * @return devuelve el valor del objeto si se ha conseguido asignar. Null si
-     * viola las restricciones del parámetro o el parámetro no existe
+     * @return devuelve el valor del objeto si se ha conseguido asignar. Null si viola las restricciones del parámetro o
+     * el parámetro no existe
      */
     @Override
     public final Object setParameterValue(Parameter p, Object value) {
@@ -192,8 +189,7 @@ public abstract class ParameterOwnerAdapter implements ParameterOwner {
     }
 
     /**
-     * Devuelve una colección con todos los {@link Parameter} que posee el
-     * {@link ParameterOwner}
+     * Devuelve una colección con todos los {@link Parameter} que posee el {@link ParameterOwner}
      *
      * @return colección con los parámetros del objeto
      */
@@ -204,11 +200,9 @@ public abstract class ParameterOwnerAdapter implements ParameterOwner {
     }
 
     /**
-     * Devuelve true si el {@link ParameterOwner} tiene algún parámetro. False
-     * si no tiene ningún parámetro
+     * Devuelve true si el {@link ParameterOwner} tiene algún parámetro. False si no tiene ningún parámetro
      *
-     * @return True si el {@link ParameterOwner} tiene algún parámetro. False si
-     * no tiene ningún parámetro
+     * @return True si el {@link ParameterOwner} tiene algún parámetro. False si no tiene ningún parámetro
      */
     @Override
     public final boolean hasParameters() {
@@ -220,8 +214,8 @@ public abstract class ParameterOwnerAdapter implements ParameterOwner {
      *
      * <p>
      * <p>
-     * NOTA: Actualmente devuelve el nombre de la clase que lo implementa, ya
-     * que un {@link ParameterOwner} representa un algoritmo configurable.
+     * NOTA: Actualmente devuelve el nombre de la clase que lo implementa, ya que un {@link ParameterOwner} representa
+     * un algoritmo configurable.
      *
      * @return Nombre de la clase.
      */
@@ -248,16 +242,16 @@ public abstract class ParameterOwnerAdapter implements ParameterOwner {
                 return p;
             }
         }
-        throw new IllegalArgumentException(this.getName() + " hasn't the parammeter " + parameterName);
+
+        Global.showWarning(this.getName() + " does not have the parammeter " + parameterName + ", the ParameterOwner schema changed!");
+        return null;
     }
 
     /**
-     * Devuelve true si el {@link ParameterOwner} tiene definido el párametro
-     * <code>parameter</code>
+     * Devuelve true si el {@link ParameterOwner} tiene definido el párametro <code>parameter</code>
      *
      * @param parameter
-     * @return Devuelve true si el {@link ParameterOwner} tiene definido el
-     * parámetro <code>parameter</code>
+     * @return Devuelve true si el {@link ParameterOwner} tiene definido el parámetro <code>parameter</code>
      */
     @Override
     public final boolean haveParameter(Parameter parameter) {
@@ -265,8 +259,7 @@ public abstract class ParameterOwnerAdapter implements ParameterOwner {
     }
 
     /**
-     * Devuelve el objeto convertido a cadena de manera que se refleje el valor
-     * actual de cada uno de sus parámetros.
+     * Devuelve el objeto convertido a cadena de manera que se refleje el valor actual de cada uno de sus parámetros.
      *
      * @return Cadena que refleja la configuración del {@link ParameterOwner}
      */
@@ -401,9 +394,17 @@ public abstract class ParameterOwnerAdapter implements ParameterOwner {
 
             final String parameterName = parameter.getName();
             hash = 97 * hash + parameterName.hashCode();
+            final Object parameterValue = parameterOwner.getParameterValue(parameter);
 
-            Object parameterValueString = parameterOwner.getParameterValue(parameter).toString();
-            hash = 97 * hash + parameterValueString.hashCode();
+            int parameterValueHashCode;
+            if (parameterValue instanceof ParameterOwner) {
+                ParameterOwner parameterValueAsParameterOwner = (ParameterOwner) parameterValue;
+                parameterValueHashCode = ParameterOwnerAdapter.hashCode(parameterValueAsParameterOwner);
+            } else {
+                parameterValueHashCode = parameterValue.hashCode();
+            }
+
+            hash = 97 * hash + parameterValueHashCode;
         }
 
         return hash;
@@ -444,7 +445,7 @@ public abstract class ParameterOwnerAdapter implements ParameterOwner {
         ParameterOwnerAdapter clone = (ParameterOwnerAdapter) super.clone();
 
         /* The clone should not have listeners */
-        clone.parammeterListeners.clear();
+        clone.parammeterListeners = new ArrayList<>();
         clone.parameterValues = new TreeMap<>();
 
         parameterValues.forEach((parameter, value) -> {

@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -19,12 +19,13 @@ package delfos.common.aggregationoperators;
 import delfos.ERROR_CODES;
 import delfos.common.exceptions.ParammeterIncompatibleValues;
 import delfos.common.parameters.Parameter;
-import delfos.common.parameters.ParameterListener;
 import delfos.common.parameters.restriction.DoubleParameter;
+import delfos.dataset.basic.rating.domain.DecimalDomain;
+import delfos.dataset.basic.rating.domain.Domain;
+import java.util.Collection;
 
 /**
- * Operador de agregación que ensure some degree of fairness for the
- * aggregation.
+ * Operador de agregación que ensure some degree of fairness for the aggregation.
  *
  * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
@@ -54,28 +55,38 @@ public class MultiplicativeAggregation extends AggregationOperator {
         addParameter(MIN_VALUE);
         addParameter(MAX_VALUE);
 
-        addParammeterListener(new ParameterListener() {
-            @Override
-            public void parameterChanged() {
-                if (getMinValue() >= getMaxValue()) {
-                    ERROR_CODES.PARAMETER_VIOLATION.exit(new ParammeterIncompatibleValues(MultiplicativeAggregation.this, MIN_VALUE, MAX_VALUE));
-                }
+        addParammeterListener(() -> {
+            if (getMinValue() >= getMaxValue()) {
+                ERROR_CODES.PARAMETER_VIOLATION.exit(new ParammeterIncompatibleValues(MultiplicativeAggregation.this, MIN_VALUE, MAX_VALUE));
             }
         });
 
     }
 
+    public MultiplicativeAggregation setDomain(Domain domain) {
+        setParameterValue(MIN_VALUE, domain.min().doubleValue());
+        setParameterValue(MAX_VALUE, domain.max().doubleValue());
+
+        return this;
+    }
+
     @Override
-    public double aggregateValues(Iterable<Number> values) {
+    public double aggregateValues(Collection<? extends Number> values) {
         if (values == null) {
         }
 
         double retValue = 1;
         int n = 0;
 
+        DecimalDomain originalDomain = new DecimalDomain(getMinValue(), getMaxValue());
+
         for (Number value : values) {
 
-            if (value.doubleValue() > getMaxValue()) {
+            if (1 < value.doubleValue() && value.doubleValue() < 1 + 1e04) {
+                value = 1;
+            }
+
+            if (value.doubleValue() > 1) {
                 throw new IllegalArgumentException("El valor " + value + " excede el máximo.");
             }
 
@@ -83,7 +94,7 @@ public class MultiplicativeAggregation extends AggregationOperator {
                 throw new IllegalArgumentException("El valor " + value + " excede el mínimo.");
             }
 
-            double normalisedValue = (value.doubleValue() - getMinValue()) / (getMaxValue() - getMinValue());
+            double normalisedValue = originalDomain.convertToDecimalDomain(value, DecimalDomain.ZERO_TO_ONE);
 
             retValue *= normalisedValue;
             n++;
@@ -94,7 +105,7 @@ public class MultiplicativeAggregation extends AggregationOperator {
         }
 
         //deshago la normalización
-        retValue = retValue * (getMaxValue() + getMinValue()) + getMinValue();
+        retValue = DecimalDomain.ZERO_TO_ONE.convertToDecimalDomain(retValue, originalDomain);
 
         return retValue;
     }

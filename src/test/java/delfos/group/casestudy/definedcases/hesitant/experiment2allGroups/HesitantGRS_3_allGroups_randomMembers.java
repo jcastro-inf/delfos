@@ -7,10 +7,10 @@ import delfos.constants.DelfosTest;
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.RelevanceCriteria;
 import delfos.experiment.casestudy.cluster.TuringPreparator;
+import delfos.experiment.validation.validationtechnique.CrossFoldValidation_Ratings;
 import delfos.group.casestudy.defaultcase.GroupCaseStudy;
 import delfos.group.experiment.validation.groupformation.GroupFormationTechnique;
 import delfos.group.experiment.validation.predictionvalidation.NoPredictionProtocol;
-import delfos.group.experiment.validation.validationtechniques.CrossFoldValidation_groupRatedItems;
 import delfos.group.factories.GroupEvaluationMeasuresFactory;
 import delfos.group.grs.GroupRecommenderSystem;
 import java.io.File;
@@ -41,7 +41,7 @@ public class HesitantGRS_3_allGroups_randomMembers extends DelfosTest {
                         null,
                         groupRecommenderSystem,
                         groupFormationTechnique,
-                        new CrossFoldValidation_groupRatedItems(),
+                        new CrossFoldValidation_Ratings(),
                         new NoPredictionProtocol(),
                         GroupEvaluationMeasuresFactory.getInstance().getAllClasses(),
                         new RelevanceCriteria(4),

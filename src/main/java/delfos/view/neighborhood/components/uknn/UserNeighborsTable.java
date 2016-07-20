@@ -17,7 +17,7 @@
 package delfos.view.neighborhood.components.uknn;
 
 import delfos.rs.collaborativefiltering.profile.Neighbor;
-import delfos.rs.recommendation.RecommendationsWithNeighbors;
+import delfos.rs.recommendation.RecommendationsToUserWithNeighbors;
 import java.awt.Component;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -76,7 +76,7 @@ public class UserNeighborsTable {
         return scroll;
     }
 
-    public void setNeighbors(RecommendationsWithNeighbors recommendations) {
+    public void setNeighbors(RecommendationsToUserWithNeighbors recommendations) {
         userNeighborsJTableModel.setNeighbors(recommendations.getNeighbors());
         userNeighborJTable.clearSelection();
     }

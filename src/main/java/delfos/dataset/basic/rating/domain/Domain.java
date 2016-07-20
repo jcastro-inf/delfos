@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -53,5 +53,7 @@ public abstract class Domain implements Serializable {
     public abstract Number width();
 
     public abstract Number mean();
+
+    public abstract boolean isValueInDomain(Number value);
 
 }

@@ -21,7 +21,6 @@ import delfos.common.exceptions.dataset.users.UserNotFound;
 import delfos.common.statisticalfuncions.MeanIterative;
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
-import delfos.dataset.basic.rating.RatingsDataset;
 import delfos.dataset.basic.rating.RelevanceCriteria;
 import delfos.dataset.basic.rating.domain.DecimalDomain;
 import delfos.dataset.basic.rating.domain.Domain;
@@ -33,14 +32,12 @@ import java.util.Map;
 import java.util.TreeMap;
 
 /**
- * Medida de evaluación para calcular el error absoluto medio normalizado del
- * sistema de recomendación evaluado. Calcula la diferencia entre la valoración
- * hecha para el grupo y la valoración individual que cada usuario dió para el
+ * Medida de evaluación para calcular el error absoluto medio normalizado del sistema de recomendación evaluado. Calcula
+ * la diferencia entre la valoración hecha para el grupo y la valoración individual que cada usuario dió para el
  * producto, si lo ha valorado.
  *
  * <p>
- * Es una extensión de la medida de evaluación
- * {@link delfos.Results.EvaluationMeasures.RatingPrediction.NMAE} para
+ * Es una extensión de la medida de evaluación {@link delfos.Results.EvaluationMeasures.RatingPrediction.NMAE} para
  * recomendaciones individuales.
  *
  * @author jcastro-inf ( https://github.com/jcastro-inf )
@@ -52,16 +49,11 @@ public class NMAE extends GroupEvaluationMeasure {
 
     @Override
     public GroupEvaluationMeasureResult getMeasureResult(
-            GroupRecommenderSystemResult groupRecommenderSystemResult,
-            DatasetLoader<? extends Rating> originalDatasetLoader,
-            RatingsDataset<? extends Rating> testDataset,
-            RelevanceCriteria relevanceCriteria,
-            DatasetLoader<? extends Rating> trainingDatasetLoader,
-            DatasetLoader<? extends Rating> testDatasetLoader) {
+            GroupRecommenderSystemResult groupRecommenderSystemResult, DatasetLoader<? extends Rating> originalDatasetLoader, RelevanceCriteria relevanceCriteria, DatasetLoader<? extends Rating> trainingDatasetLoader, DatasetLoader<? extends Rating> testDatasetLoader) {
 
         MeanIterative nmae = new MeanIterative();
 
-        Domain originalDomain = testDataset.getRatingsDomain();
+        Domain originalDomain = testDatasetLoader.getRatingsDataset().getRatingsDomain();
 
         for (GroupOfUsers group : groupRecommenderSystemResult.getGroupsOfUsers()) {
             Collection<Recommendation> groupRecommendations = groupRecommenderSystemResult.getGroupOutput(group).getRecommendations().getRecommendations();
@@ -69,7 +61,7 @@ public class NMAE extends GroupEvaluationMeasure {
             Map<Integer, Map<Integer, ? extends Rating>> groupTrueRatings = new TreeMap<>();
             for (int idUser : group.getIdMembers()) {
                 try {
-                    groupTrueRatings.put(idUser, testDataset.getUserRatingsRated(idUser));
+                    groupTrueRatings.put(idUser, testDatasetLoader.getRatingsDataset().getUserRatingsRated(idUser));
                 } catch (UserNotFound ex) {
                     ERROR_CODES.USER_NOT_FOUND.exit(ex);
                 }

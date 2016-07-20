@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -31,41 +31,35 @@ import delfos.dataset.basic.rating.RatingsDataset;
 import delfos.rs.contentbased.ContentBasedRecommender;
 import static delfos.rs.contentbased.vsm.ContentBasedVSMRS.SIMILARITY_MEASURE;
 import delfos.rs.contentbased.vsm.booleanvsm.BooleanFeaturesTransformation;
+import delfos.rs.contentbased.vsm.booleanvsm.SparseVector;
 import delfos.rs.recommendation.Recommendation;
 import delfos.similaritymeasures.BasicSimilarityMeasure;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import org.grouplens.lenskit.vectors.MutableSparseVector;
-import org.grouplens.lenskit.vectors.SparseVector;
-import org.grouplens.lenskit.vectors.VectorEntry;
+import org.apache.commons.math4.util.Pair;
 
 /**
- * El sistema de recomendación basado en contenido con modelado booleano
- * (BasicBooleanCBRS) realiza una transformación de las características
- * (numéricas o categóricas) de los productos a características booleanas. De
- * esta manera, el perfil de cada producto consiste en un vector de ceros y unos
- * que representa sus características. Una vez realizado esto se calcula el
- * perfil de usuario, que es un vector cuyos valores son la suma de los vectores
- * asociados a los productos que ha indicado que son de su agrado. En la fase de
- * recomendación se calcula la similitud entre el perfil de usuario y el perfil
- * de cada producto no valorado.
+ * El sistema de recomendación basado en contenido con modelado booleano (BasicBooleanCBRS) realiza una transformación
+ * de las características (numéricas o categóricas) de los productos a características booleanas. De esta manera, el
+ * perfil de cada producto consiste en un vector de ceros y unos que representa sus características. Una vez realizado
+ * esto se calcula el perfil de usuario, que es un vector cuyos valores son la suma de los vectores asociados a los
+ * productos que ha indicado que son de su agrado. En la fase de recomendación se calcula la similitud entre el perfil
+ * de usuario y el perfil de cada producto no valorado.
  *
  * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 1.0 (19 Octubre 2011)
- * @version 2.0 (28 de Febrero de 2013) Refactorización de las clases asociadas
- * a los perfiles de usuario.
+ * @version 2.0 (28 de Febrero de 2013) Refactorización de las clases asociadas a los perfiles de usuario.
  * @version 2.1 9-Octubre-2013 Incorporación del método makeUserModel
  */
-public class BasicBooleanCBRS extends ContentBasedRecommender<BasicBooleanCBRSModel, SparseVector> {
+public class BasicBooleanCBRS extends ContentBasedRecommender<BasicBooleanCBRSModel, SparseVector<Long>> {
 
     private static final long serialVersionUID = 1L;
 
     /**
-     * Constructor por defecto del sistema de recomendación, que añade sus
-     * parámetros.
+     * Constructor por defecto del sistema de recomendación, que añade sus parámetros.
      */
     public BasicBooleanCBRS() {
         super();
@@ -73,8 +67,7 @@ public class BasicBooleanCBRS extends ContentBasedRecommender<BasicBooleanCBRSMo
     }
 
     /**
-     * Constructor del sistema de recomendación que establece la medida de
-     * similitud indicada por parámetro.
+     * Constructor del sistema de recomendación que establece la medida de similitud indicada por parámetro.
      *
      * @param similarityMeasure Medida de similitud que utiliza el sistema.
      */
@@ -101,7 +94,7 @@ public class BasicBooleanCBRS extends ContentBasedRecommender<BasicBooleanCBRSMo
         int i = 1;
         for (Item item : contentDataset) {
 
-            MutableSparseVector itemProfile = booleanFeaturesTransformation.newProfile();
+            SparseVector<Long> itemProfile = booleanFeaturesTransformation.newProfile();
 
             for (Feature f : item.getFeatures()) {
                 Object value = item.getFeatureValue(f);
@@ -123,7 +116,7 @@ public class BasicBooleanCBRS extends ContentBasedRecommender<BasicBooleanCBRSMo
     @Override
     protected Collection<Recommendation> recommendOnly(DatasetLoader<? extends Rating> datasetLoader,
             BasicBooleanCBRSModel model,
-            SparseVector userProfile,
+            SparseVector<Long> userProfile,
             Collection<Integer> candidateItems)
             throws UserNotFound, ItemNotFound,
             CannotLoadRatingsDataset, CannotLoadContentDataset {
@@ -150,11 +143,11 @@ public class BasicBooleanCBRS extends ContentBasedRecommender<BasicBooleanCBRSMo
     }
 
     @Override
-    protected SparseVector makeUserProfile(int idUser, DatasetLoader<? extends Rating> datasetLoader, BasicBooleanCBRSModel model) throws CannotLoadRatingsDataset, CannotLoadContentDataset, UserNotFound {
+    protected SparseVector<Long> makeUserProfile(int idUser, DatasetLoader<? extends Rating> datasetLoader, BasicBooleanCBRSModel model) throws CannotLoadRatingsDataset, CannotLoadContentDataset, UserNotFound {
 
         final RatingsDataset<? extends Rating> ratingsDataset = datasetLoader.getRatingsDataset();
 
-        MutableSparseVector userProfile = model.getBooleanFeaturesTransformation().newProfile();
+        SparseVector<Long> userProfile = model.getBooleanFeaturesTransformation().newProfile();
 
         Map<Integer, ? extends Rating> userRatingsRated = ratingsDataset.getUserRatingsRated(idUser);
 
@@ -162,14 +155,14 @@ public class BasicBooleanCBRS extends ContentBasedRecommender<BasicBooleanCBRSMo
         for (Map.Entry<Integer, ? extends Rating> entry : userRatingsRated.entrySet()) {
             int idItem = entry.getKey();
             Rating rating = entry.getValue();
-            SparseVector itemProfile = model.get(idItem);
+            SparseVector<Long> itemProfile = model.get(idItem);
             if (datasetLoader.getDefaultRelevanceCriteria().isRelevant(rating)) {
                 userProfile.add(itemProfile);
             }
         }
 
         double norm = userProfile.norm();
-        for (VectorEntry vectorEntry : userProfile.fast()) {
+        for (Pair<Long, Double> vectorEntry : userProfile.fast()) {
             long key = vectorEntry.getKey();
             double value = vectorEntry.getValue();
             double normalisedValue = value / norm;

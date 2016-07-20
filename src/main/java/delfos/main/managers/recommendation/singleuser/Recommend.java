@@ -19,18 +19,10 @@ package delfos.main.managers.recommendation.singleuser;
 import delfos.ConsoleParameters;
 import delfos.ERROR_CODES;
 import delfos.UndefinedParameterException;
-import delfos.common.Chronometer;
 import delfos.common.Global;
-import delfos.common.exceptions.dataset.CannotLoadContentDataset;
-import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
-import delfos.common.exceptions.dataset.items.ItemNotFound;
-import delfos.common.exceptions.dataset.users.UserNotFound;
-import delfos.common.exceptions.ratings.NotEnoughtUserInformation;
 import delfos.configfile.rs.single.RecommenderSystemConfiguration;
 import delfos.configfile.rs.single.RecommenderSystemConfigurationFileParser;
-import delfos.dataset.basic.item.ContentDataset;
 import delfos.dataset.basic.item.Item;
-import delfos.dataset.basic.loader.types.ContentDatasetLoader;
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.user.User;
@@ -42,13 +34,8 @@ import static delfos.main.managers.recommendation.singleuser.SingleUserRecommend
 import delfos.rs.RecommenderSystem;
 import delfos.rs.persistence.FailureInPersistence;
 import delfos.rs.persistence.PersistenceMethodStrategy;
-import delfos.rs.recommendation.Recommendation;
-import delfos.rs.recommendation.RecommendationComputationDetails;
-import delfos.rs.recommendation.SingleUserRecommendations;
-import java.io.File;
-import java.util.ArrayList;
+import delfos.rs.recommendation.RecommendationsToUser;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -57,16 +44,22 @@ import java.util.stream.Collectors;
  * @version 20-oct-2014
  * @author jcastro-inf ( https://github.com/jcastro-inf )
  */
-class Recommend extends CaseUseSubManager {
+public class Recommend extends CaseUseSubManager {
 
     /**
-     * Parámetro de la linea de comandos para especificar a qué usuario se desea
-     * recomendar.
+     * Parámetro de la linea de comandos para especificar a qué usuario se desea recomendar.
      */
     public final static String USER_COMMAND_LINE_PARAMETER = "-u";
 
     public static Recommend getInstance() {
         return Holder.INSTANCE;
+    }
+
+    public static void recommendToUser(String configurationFile, Integer idUser) {
+
+        RecommenderSystemConfiguration rsc
+                = RecommenderSystemConfigurationFileParser.loadConfigFile(configurationFile);
+        recommendToUser(rsc, idUser);
     }
 
     private static class Holder {
@@ -97,7 +90,20 @@ class Recommend extends CaseUseSubManager {
     public static void manageSingleUserRecommendation(ConsoleParameters consoleParameters) {
 
         String configurationFile = extractConfigurationFile(consoleParameters);
-        Integer idUser = 0;
+
+        int idUser = extractIdUser(consoleParameters);
+
+        RecommenderSystemConfiguration rsc
+                = RecommenderSystemConfigurationFileParser.loadConfigFile(configurationFile);
+
+        User user = rsc.datasetLoader.getUsersDataset().getUser(idUser);
+
+        RecommendationsToUser recommendToUser = recommendToUser(rsc, user);
+
+        rsc.recommdendationsOutputMethod.writeRecommendations(recommendToUser);
+    }
+
+    public static int extractIdUser(ConsoleParameters consoleParameters) {
         String idUserString;
         try {
             idUserString = consoleParameters.getValue(USER_COMMAND_LINE_PARAMETER);
@@ -107,113 +113,60 @@ class Recommend extends CaseUseSubManager {
             ERROR_CODES.MANAGE_RATING_DATABASE_USER_NOT_DEFINED.exit(ex);
             idUserString = null;
         }
+        int idUser;
         try {
             idUser = Integer.parseInt(idUserString);
         } catch (NumberFormatException ex) {
             Global.showError(ex);
             ERROR_CODES.USER_ID_NOT_RECOGNISED.exit(ex);
+            throw ex;
         }
-        recommendToUser(configurationFile, idUser);
+        return idUser;
     }
 
-    public static void recommendToUser(String configurationFile, int idUser) {
+    public static void recommendToUser(RecommenderSystemConfiguration rsc, int idUser) {
+        RecommendationsToUser recommendToUser = recommendToUser(rsc, rsc.datasetLoader.getUsersDataset().getUser(idUser));
+        rsc.recommdendationsOutputMethod.writeRecommendations(recommendToUser);
+    }
 
-        if (configurationFile != null && new File(configurationFile).exists()) {
-            //llamada a la clase que realiza el manejo de este caso de uso
-            Chronometer chronometer = new Chronometer();
-            RecommenderSystemConfiguration rsc
-                    = RecommenderSystemConfigurationFileParser.loadConfigFile(configurationFile);
+    public static RecommendationsToUser recommendToUser(RecommenderSystemConfiguration rsc, User user) {
 
-            chronometer.reset();
+        @SuppressWarnings("unchecked")
+        RecommenderSystem<Object> recommender = (RecommenderSystem<Object>) rsc.recommenderSystem;
 
-            @SuppressWarnings("unchecked")
-            RecommenderSystem<Object> recommender = (RecommenderSystem<Object>) rsc.recommenderSystem;
+        DatasetLoader<? extends Rating> datasetLoader = rsc.datasetLoader;
+        RecommendationsToUser recommendationsToUser;
 
-            DatasetLoader<? extends Rating> datasetLoader = rsc.datasetLoader;
-            Collection<Recommendation> recommendations = null;
-            try {
-                if (rsc.datasetLoader instanceof ContentDatasetLoader) {
-                    ContentDatasetLoader contentDatasetLoader = (ContentDatasetLoader) datasetLoader;
-                    Global.showMessageTimestamped("Loading content dataset");
-                    ContentDataset contentDataset = contentDatasetLoader.getContentDataset();
-                    Global.showMessageTimestamped("Loaded content dataset");
-                } else {
-                    throw new CannotLoadContentDataset("The dataset loader is not a ContentDatasetLoader, cannot apply a content-based ");
-                }
+        Set<Item> candidateItems = rsc.recommendationCandidatesSelector.candidateItems(datasetLoader, user);
 
-            } catch (CannotLoadRatingsDataset ex) {
-                ERROR_CODES.CANNOT_LOAD_RATINGS_DATASET.exit(ex);
-                throw new IllegalArgumentException(ex);
-            } catch (CannotLoadContentDataset ex) {
-                ERROR_CODES.CANNOT_LOAD_CONTENT_DATASET.exit(ex);
-                throw new IllegalArgumentException(ex);
-            }
-
-            Set<Item> candidateItems;
-            try {
-                candidateItems = rsc.recommendationCandidatesSelector.candidateItems(datasetLoader, new User(idUser));
-            } catch (UserNotFound ex) {
-                ERROR_CODES.USER_NOT_FOUND.exit(ex);
-                throw new IllegalArgumentException(ex);
-            }
-
-            if (Global.isVerboseAnnoying()) {
-                Global.showInfoMessage("List of candidate items for user " + idUser + " size: " + candidateItems.size() + "\n");
-                Global.showInfoMessage("\t" + candidateItems + "\n");
-            }
-
-            Object RecommendationModel;
-            try {
-                Global.showMessageTimestamped("Computing recommendations");
-                RecommendationModel = PersistenceMethodStrategy.loadModel(
-                        recommender, rsc.persistenceMethod,
-                        Arrays.asList(idUser),
-                        candidateItems.stream().map(item -> item.getId()).collect(Collectors.toSet()),
-                        datasetLoader);
-                Global.showMessageTimestamped("Computed recommendations");
-            } catch (FailureInPersistence ex) {
-                ERROR_CODES.FAILURE_IN_PERSISTENCE.exit(ex);
-                throw new IllegalArgumentException(ex);
-            }
-
-            try {
-                recommendations = recommender.recommendToUser(datasetLoader, RecommendationModel, idUser,
-                        candidateItems.stream().map(item -> item.getId()).collect(Collectors.toSet())
-                );
-            } catch (UserNotFound ex) {
-                ERROR_CODES.USER_NOT_FOUND.exit(ex);
-                throw new IllegalArgumentException(ex);
-            } catch (ItemNotFound ex) {
-                ERROR_CODES.ITEM_NOT_FOUND.exit(ex);
-                throw new IllegalArgumentException(ex);
-            } catch (NotEnoughtUserInformation ex) {
-                Global.showWarning("Recommender system '" + recommender.getName() + "' reported: Not enought user information (idUser=" + idUser + ".");
-                //ERROR_CODES.USER_NOT_ENOUGHT_INFORMATION.exit(ex);
-                recommendations = new ArrayList<>();
-            }
-
-            if (Global.isVerboseAnnoying()) {
-                if (recommendations.isEmpty()) {
-                    Global.showWarning("Recommendation list for user '" + idUser + "' is empty, check for causes.");
-                } else {
-                    Global.showInfoMessage("Recommendation list for user '" + idUser + "' of size " + recommendations.size() + "\n");
-                    Global.showInfoMessage("\t" + recommendations.toString() + "\n");
-                }
-            }
-
-            Global.showMessageTimestamped("Writting recommendations\n");
-
-            long timeTaken = chronometer.getTotalElapsed();
-            rsc.recommdendationsOutputMethod.writeRecommendations(new SingleUserRecommendations(new User(idUser), recommendations, new RecommendationComputationDetails().addDetail(RecommendationComputationDetails.DetailField.TimeTaken, timeTaken)));
-
-            Global.showMessageTimestamped("Wrote recommendations\n");
-
-        } else {
-            IllegalArgumentException ex = new IllegalArgumentException("Configuration file '" + configurationFile + "' not found");
-            Global.showWarning("Configuration file not found: '" + configurationFile + "'\n");
-            Global.showError(ex);
-            ERROR_CODES.CONFIG_FILE_NOT_EXISTS.exit(ex);
+        if (Global.isVerboseAnnoying()) {
+            Global.showInfoMessage("List of candidate items for user " + user + " size: " + candidateItems.size() + "\n");
+            Global.showInfoMessage("\t" + candidateItems + "\n");
         }
+
+        Object recommendationModel;
+        try {
+            Global.showMessageTimestamped("Computing recommendations");
+            recommendationModel = PersistenceMethodStrategy.loadModel(
+                    recommender, rsc.persistenceMethod,
+                    Arrays.asList(user.getId()),
+                    candidateItems.stream().map(item -> item.getId()).collect(Collectors.toSet()),
+                    datasetLoader);
+            Global.showMessageTimestamped("Computed recommendations");
+        } catch (FailureInPersistence ex) {
+            ERROR_CODES.FAILURE_IN_PERSISTENCE.exit(ex);
+            throw new IllegalArgumentException(ex);
+        }
+
+        recommendationsToUser = recommender.recommendToUser(
+                datasetLoader,
+                recommendationModel,
+                user,
+                candidateItems
+        );
+
+        return recommendationsToUser;
+
     }
 
 }

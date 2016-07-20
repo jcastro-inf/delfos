@@ -65,10 +65,10 @@ public class FixedGroupSize_OnlyNGroupsTest {
 
         long seedValue = System.currentTimeMillis();
         fixedGroupSize_OnlyNGroups.setSeedValue(seedValue);
-        Collection<GroupOfUsers> groupsGenerated1 = fixedGroupSize_OnlyNGroups.shuffle(datasetLoader);
+        Collection<GroupOfUsers> groupsGenerated1 = fixedGroupSize_OnlyNGroups.generateGroups(datasetLoader);
 
         fixedGroupSize_OnlyNGroups.setSeedValue(seedValue);
-        Collection<GroupOfUsers> groupsGenerated2 = fixedGroupSize_OnlyNGroups.shuffle(datasetLoader);
+        Collection<GroupOfUsers> groupsGenerated2 = fixedGroupSize_OnlyNGroups.generateGroups(datasetLoader);
 
         Assert.assertEquals("Groups generated are not equal:\n" + groupsGenerated1.toString() + "\n" + groupsGenerated2 + "\n",
                 groupsGenerated1,
@@ -90,7 +90,7 @@ public class FixedGroupSize_OnlyNGroupsTest {
             Global.showln("testGroupsSizes --> size = " + groupSize);
             FixedGroupSize_OnlyNGroups fixedGroupSize_OnlyNGroups = new FixedGroupSize_OnlyNGroups(numGroups, groupSize);
 
-            Collection<GroupOfUsers> groups = fixedGroupSize_OnlyNGroups.shuffle(datasetLoader);
+            Collection<GroupOfUsers> groups = fixedGroupSize_OnlyNGroups.generateGroups(datasetLoader);
             assert groups.size() == numGroups;
 
             groups.stream().forEach((g) -> {
@@ -107,7 +107,7 @@ public class FixedGroupSize_OnlyNGroupsTest {
     public void testIllegalNumGroups() throws CannotLoadRatingsDataset {
 
         FixedGroupSize_OnlyNGroups fixedGroupSize_OnlyNGroups = new FixedGroupSize_OnlyNGroups(0, 5);
-        fixedGroupSize_OnlyNGroups.shuffle(datasetLoader);
+        fixedGroupSize_OnlyNGroups.generateGroups(datasetLoader);
     }
 
     /**
@@ -118,6 +118,6 @@ public class FixedGroupSize_OnlyNGroupsTest {
     public void testIllegalGroupSize() throws CannotLoadRatingsDataset {
 
         FixedGroupSize_OnlyNGroups fixedGroupSize_OnlyNGroups = new FixedGroupSize_OnlyNGroups(500, 0);
-        fixedGroupSize_OnlyNGroups.shuffle(datasetLoader);
+        fixedGroupSize_OnlyNGroups.generateGroups(datasetLoader);
     }
 }

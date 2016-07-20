@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -18,32 +18,33 @@ package delfos.group.experiment.validation.groupformation;
 
 import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
 import delfos.common.parameters.ParameterListener;
+import delfos.common.parameters.ParameterOwner;
 import delfos.common.parameters.ParameterOwnerAdapter;
 import delfos.common.parameters.ParameterOwnerType;
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
 import delfos.experiment.SeedHolder;
 import delfos.group.groupsofusers.GroupOfUsers;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
+import java.util.List;
 
 /**
- * Clase abstracta que define los métodos que se utilizan para generar los
- * grupos de usuarios que se utilizarán para evaluar los sistemas de
- * recomendación a grupos
+ * Clase abstracta que define los métodos que se utilizan para generar los grupos de usuarios que se utilizarán para
+ * evaluar los sistemas de recomendación a grupos
  *
- * NOTA: Cuando se implementa una clase que herede de
- * {@link GroupFormationTechnique}, se debe llamar en todos los constructores
- * que se implementen al método super(), para realizar las inicializaciones
- * pertinentes.
+ * NOTA: Cuando se implementa una clase que herede de {@link GroupFormationTechnique}, se debe llamar en todos los
+ * constructores que se implementen al método super(), para realizar las inicializaciones pertinentes.
  *
  * @author jcastro-inf ( https://github.com/jcastro-inf )
  */
-public abstract class GroupFormationTechnique extends ParameterOwnerAdapter implements SeedHolder {
+public abstract class GroupFormationTechnique extends ParameterOwnerAdapter implements SeedHolder, Cloneable {
 
     /**
-     * Añade los parámetros de la técnica de formación de grupos y realiza la
-     * inicialización de los valores aleatorios que usa en la misma.
+     * Añade los parámetros de la técnica de formación de grupos y realiza la inicialización de los valores aleatorios
+     * que usa en la misma.
      */
     public GroupFormationTechnique() {
         addParameter(SEED);
@@ -70,20 +71,18 @@ public abstract class GroupFormationTechnique extends ParameterOwnerAdapter impl
     }
 
     /**
-     * Método para generar los grupos de usuarios que se deben evaluar. Los
-     * grupos de usuarios
+     * Método para generar los grupos de usuarios que se deben evaluar. Los grupos de usuarios
      *
      * @param datasetLoader
      * @return
      * @see GroupFormationTechnique#iterator()
      */
-    public abstract Collection<GroupOfUsers> shuffle(DatasetLoader<? extends Rating> datasetLoader) throws CannotLoadRatingsDataset;
+    public abstract Collection<GroupOfUsers> generateGroups(DatasetLoader<? extends Rating> datasetLoader) throws CannotLoadRatingsDataset;
 
-    private final LinkedList<GroupFormationTechniqueProgressListener> listeners = new LinkedList<>();
+    private List<GroupFormationTechniqueProgressListener> listeners = Collections.synchronizedList(new LinkedList<>());
 
     public void addListener(GroupFormationTechniqueProgressListener listener) {
         listeners.add(listener);
-        listener.progressChanged("", 0, -1);
     }
 
     public void removeListener(GroupFormationTechniqueProgressListener listener) {
@@ -95,9 +94,18 @@ public abstract class GroupFormationTechnique extends ParameterOwnerAdapter impl
     }
 
     protected void progressChanged(String message, int progressPercent, long remainingTimeInMS) {
-        listeners.stream().forEach((listener) -> {
-            listener.progressChanged(message, progressPercent, remainingTimeInMS);
-        });
+        synchronized (listeners) {
+            listeners.stream().forEach((listener) -> {
+                listener.progressChanged(message, progressPercent, remainingTimeInMS);
+            });
+        }
+    }
+
+    @Override
+    public ParameterOwner clone() {
+        GroupFormationTechnique clone = (GroupFormationTechnique) super.clone();
+        clone.listeners = Collections.synchronizedList(new ArrayList<>());
+        return clone;
     }
 
     @Override
@@ -115,4 +123,7 @@ public abstract class GroupFormationTechnique extends ParameterOwnerAdapter impl
         return ParameterOwnerType.GROUP_FORMATION_TECHNIQUE;
     }
 
+    public int getGroupSize() {
+        return (Integer) getParameterValue(FixedGroupSize_OnlyNGroups.GROUP_SIZE_PARAMETER);
+    }
 }

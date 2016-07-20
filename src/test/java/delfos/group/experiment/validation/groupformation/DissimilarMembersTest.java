@@ -32,7 +32,7 @@ public class DissimilarMembersTest {
         );
 
         dissimilarMembers.setParameterValue(DissimilarMembers.SIMILARITY_MEASURE, defaultSimilarity);
-        Collection<GroupOfUsers> result = dissimilarMembers.shuffle(datasetLoader);
+        Collection<GroupOfUsers> result = dissimilarMembers.generateGroups(datasetLoader);
     }
 
 }

@@ -21,6 +21,8 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -32,7 +34,7 @@ public class FileUtilities {
     /**
      * Used to execute the create/delete files methods synchronized.
      */
-    public static final Object exMut = 1.0;
+    public static final Object EXMUT = 1.0;
 
     public static synchronized File addPrefix(File originalFile, String prefix) {
         String file = originalFile.getAbsolutePath();
@@ -64,13 +66,12 @@ public class FileUtilities {
     }
 
     /**
-     * Borra el directorio indicado y todos los archivos y directorios que
-     * cuelgan de él.
+     * Borra el directorio indicado y todos los archivos y directorios que cuelgan de él.
      *
      * @param directory Directorio a borrar.
      */
     public static void deleteDirectoryRecursive(File directory) {
-        synchronized (exMut) {
+        synchronized (EXMUT) {
             if (!directory.exists()) {
                 return;
             }
@@ -98,7 +99,7 @@ public class FileUtilities {
     }
 
     public static void createDirectoriesForFile(File file) {
-        synchronized (exMut) {
+        synchronized (EXMUT) {
             if (file == null) {
                 throw new IllegalArgumentException("File for path creation is null");
             }
@@ -116,7 +117,7 @@ public class FileUtilities {
     }
 
     public static void createDirectoryPath(File directory) {
-        synchronized (exMut) {
+        synchronized (EXMUT) {
             if (directory == null) {
                 throw new IllegalStateException("Directory for creation is null.");
             }
@@ -134,7 +135,7 @@ public class FileUtilities {
      * @return True if one or more directories have been created.
      */
     public static boolean createDirectoriesForFileIfNotExist(File file) {
-        synchronized (exMut) {
+        synchronized (EXMUT) {
             if (file == null) {
                 throw new IllegalArgumentException("File for path creation is null");
             }
@@ -150,7 +151,7 @@ public class FileUtilities {
     }
 
     public static boolean createDirectoryPathIfNotExists(File directory) {
-        synchronized (exMut) {
+        synchronized (EXMUT) {
             if (directory == null) {
                 throw new IllegalStateException("Directory for creation is null.");
             }
@@ -160,6 +161,15 @@ public class FileUtilities {
                 if (!mkdirs) {
                     Global.showWarning("Could not create directory '" + directory.getAbsolutePath() + "'");
                     Global.showWarning("Check for permissions.");
+
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException ex) {
+                        Logger.getLogger(FileUtilities.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                    if (directory.exists()) {
+                        return true;
+                    }
 
                     FileNotFoundException ex = new FileNotFoundException("Could not create directory '" + directory.getAbsolutePath() + "'");
                     ERROR_CODES.CANNOT_WRITE_FILE.exit(ex);
@@ -172,7 +182,7 @@ public class FileUtilities {
     }
 
     public static void cleanDirectory(File directory) {
-        synchronized (exMut) {
+        synchronized (EXMUT) {
             if (directory.exists()) {
                 FileUtilities.deleteDirectoryRecursive(directory);
             }

@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,9 +16,9 @@
  */
 package delfos.rs.contentbased.vsm.booleanvsm.basic;
 
-import java.util.TreeMap;
-import org.grouplens.lenskit.vectors.SparseVector;
 import delfos.rs.contentbased.vsm.booleanvsm.BooleanFeaturesTransformation;
+import delfos.rs.contentbased.vsm.booleanvsm.SparseVector;
+import java.util.TreeMap;
 
 /**
  * Almacena el modelo del sistema {@link BasicBooleanCBRS}.
@@ -27,7 +27,7 @@ import delfos.rs.contentbased.vsm.booleanvsm.BooleanFeaturesTransformation;
  *
  * @version 09-oct-2013
  */
-public class BasicBooleanCBRSModel extends TreeMap<Integer, SparseVector> {
+public class BasicBooleanCBRSModel extends TreeMap<Integer, SparseVector<Long>> {
 
     private static final long serialVersionUID = 1L;
     protected BooleanFeaturesTransformation booleanFeaturesTransformation;

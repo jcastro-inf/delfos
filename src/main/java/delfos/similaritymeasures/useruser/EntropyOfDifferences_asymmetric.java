@@ -27,6 +27,7 @@ import delfos.rs.RecommenderSystemAdapter;
 import delfos.rs.collaborativefiltering.knn.CommonRating;
 import delfos.rs.collaborativefiltering.knn.memorybased.KnnMemoryBasedCFRS;
 import delfos.similaritymeasures.CollaborativeSimilarityMeasure;
+import delfos.similaritymeasures.EntropyOfDifferences;
 import delfos.similaritymeasures.SimilarityMeasureAdapter;
 import java.util.Collection;
 
@@ -34,11 +35,14 @@ import java.util.Collection;
  *
  * @author jcastro
  */
-public class SorensenIndex_improved extends SimilarityMeasureAdapter implements CollaborativeSimilarityMeasure {
+public class EntropyOfDifferences_asymmetric extends SimilarityMeasureAdapter implements CollaborativeSimilarityMeasure, UserUserSimilarity {
 
+    @Override
     public double similarity(DatasetLoader<? extends Rating> datasetLoader, User user1, User user2) throws UserNotFound, CannotLoadRatingsDataset {
         return similarity(CommonRating.intersection(datasetLoader, user1, user2), datasetLoader.getRatingsDataset());
     }
+
+    private final EntropyOfDifferences innerSimilarity = new EntropyOfDifferences();
 
     @Override
     public double similarity(Collection<CommonRating> commonRatings, RatingsDataset<? extends Rating> ratings) throws CouldNotComputeSimilarity {
@@ -65,12 +69,26 @@ public class SorensenIndex_improved extends SimilarityMeasureAdapter implements 
             return similarity;
         }).orElse(0.0);
 
+        double entropyOfDifferences = innerSimilarity.similarity(commonRatings, ratings);
+
+        if (Double.isFinite(entropyOfDifferences)) {
+            ret = ret * entropyOfDifferences;
+        }
+
         return ret;
     }
 
     @Override
     public boolean RSallowed(Class<? extends RecommenderSystemAdapter> rs) {
         return KnnMemoryBasedCFRS.class.isAssignableFrom(rs);
+    }
+
+    @Override
+    public double similarity(DatasetLoader<? extends Rating> datasetLoader, int idUser1, int idUser2) {
+        User user1 = datasetLoader.getUsersDataset().get(idUser1);
+        User user2 = datasetLoader.getUsersDataset().get(idUser2);
+
+        return similarity(datasetLoader, user1, user2);
     }
 
 }

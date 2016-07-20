@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -19,10 +19,10 @@ package delfos.group.casestudy;
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RelevanceCriteria;
+import delfos.experiment.validation.validationtechnique.ValidationTechnique;
 import delfos.group.casestudy.defaultcase.GroupCaseStudy;
 import delfos.group.experiment.validation.groupformation.GroupFormationTechnique;
 import delfos.group.experiment.validation.predictionvalidation.GroupPredictionProtocol;
-import delfos.group.experiment.validation.validationtechniques.GroupValidationTechnique;
 import delfos.group.grs.GroupRecommenderSystem;
 import delfos.group.results.groupevaluationmeasures.GroupEvaluationMeasure;
 import delfos.group.results.groupevaluationmeasures.GroupEvaluationMeasureResult;
@@ -41,7 +41,7 @@ public class GroupCaseStudyConfiguration {
     private final GroupRecommenderSystem<? extends Object, ? extends Object> groupRecommenderSystem;
     private final DatasetLoader<? extends Rating> datasetLoader;
     private final GroupFormationTechnique groupFormationTechnique;
-    private final GroupValidationTechnique groupValidationTechnique;
+    private final ValidationTechnique validationTechnique;
     private final GroupPredictionProtocol groupPredictionProtocol;
     private final RelevanceCriteria relevanceCriteria;
     private final Map<GroupEvaluationMeasure, GroupEvaluationMeasureResult> groupEvaluationMeasuresResults;
@@ -54,7 +54,7 @@ public class GroupCaseStudyConfiguration {
             GroupRecommenderSystem<Object, Object> groupRecommenderSystem,
             DatasetLoader<? extends Rating> datasetLoader,
             GroupFormationTechnique groupFormationTechnique,
-            GroupValidationTechnique groupValidationTechnique,
+            ValidationTechnique validationTechnique,
             GroupPredictionProtocol groupPredictionProtocol,
             RelevanceCriteria relevanceCriteria,
             String caseStudyAlias,
@@ -64,7 +64,7 @@ public class GroupCaseStudyConfiguration {
 
         this.groupRecommenderSystem = groupRecommenderSystem;
         this.groupFormationTechnique = groupFormationTechnique;
-        this.groupValidationTechnique = groupValidationTechnique;
+        this.validationTechnique = validationTechnique;
         this.groupPredictionProtocol = groupPredictionProtocol;
         this.datasetLoader = datasetLoader;
         this.relevanceCriteria = relevanceCriteria;
@@ -83,8 +83,8 @@ public class GroupCaseStudyConfiguration {
         return datasetLoader;
     }
 
-    public GroupValidationTechnique getGroupValidationTechnique() {
-        return groupValidationTechnique;
+    public ValidationTechnique getValidationTechnique() {
+        return validationTechnique;
     }
 
     public GroupFormationTechnique getGroupFormationTechnique() {
@@ -109,7 +109,7 @@ public class GroupCaseStudyConfiguration {
                 datasetLoader,
                 groupRecommenderSystem,
                 groupFormationTechnique,
-                groupValidationTechnique,
+                validationTechnique,
                 groupPredictionProtocol,
                 groupEvaluationMeasuresResults.keySet(),
                 relevanceCriteria,

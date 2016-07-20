@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -72,7 +72,14 @@ public class AddUserFeatures extends DatabaseCaseUseSubManager {
             throw new IllegalStateException(ex);
         }
 
+        Map<String, String> featuresToAdd = extractFeaturesFromConsole(consoleParameters);
+        String newName = extractNameFromConsole(consoleParameters);
+
         //Obtener las caracteristicas que se desean añadir al usuario.
+        addUserFeatures(changeableDatasetLoader, user, newName, featuresToAdd);
+    }
+
+    public Map<String, String> extractFeaturesFromConsole(ConsoleParameters consoleParameters) {
         Map<String, String> featuresToAdd = new TreeMap<>();
         try {
             List<String> featuresList = consoleParameters.getValues(MANAGE_RATING_DATABASE_FEATURES);
@@ -99,20 +106,37 @@ public class AddUserFeatures extends DatabaseCaseUseSubManager {
             throw new IllegalArgumentException(ex);
         }
 
-        //Extraigo el nombre de los parámetros, ya que tiene un tratamiento especial.
-        String newName = null;
         if (featuresToAdd.containsKey(ENTITY_NAME)) {
-            newName = featuresToAdd.remove(ENTITY_NAME);
+            featuresToAdd.remove(ENTITY_NAME);
         }
+
+        return featuresToAdd;
+    }
+
+    private String extractNameFromConsole(ConsoleParameters consoleParameters) {
+
+        String newName = consoleParameters.getValues(MANAGE_RATING_DATABASE_FEATURES)
+                .stream()
+                .filter(parameterString -> parameterString.contains(":"))
+                .filter(parameterString -> parameterString.split(":")[0].equals(ENTITY_NAME))
+                .findFirst()
+                .map(newNameParameter -> newNameParameter.split(":")[1])
+                .orElse(null);
+
+        return newName;
+    }
+
+    public void addUserFeatures(ChangeableDatasetLoader changeableDatasetLoader, User user, String newName, Map<String, String> featuresToAdd) throws RuntimeException {
 
         //Añado las características.
         try {
-            Map<Feature, Object> newEntityFeatures = changeableDatasetLoader.getChangeableUsersDataset().parseEntityFeaturesAndAddToExisting(idUser, featuresToAdd);
+            Map<Feature, Object> newEntityFeatures = changeableDatasetLoader.getChangeableUsersDataset()
+                    .parseEntityFeaturesAndAddToExisting(user.getId(), featuresToAdd);
 
             if (newName == null) {
                 newName = user.getName();
             } else {
-                Global.showInfoMessage("User id=" + idUser + " oldName='" + user.getName() + "'  newName='" + newName + "'.\n");
+                Global.showInfoMessage("User id=" + user.getId() + " oldName='" + user.getName() + "'  newName='" + newName + "'.\n");
             }
 
             changeableDatasetLoader.getChangeableUsersDataset().addUser(new User(user.getId(), newName, newEntityFeatures));
@@ -124,4 +148,5 @@ public class AddUserFeatures extends DatabaseCaseUseSubManager {
             throw new IllegalStateException(ex);
         }
     }
+
 }

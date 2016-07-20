@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -17,10 +17,10 @@
 package delfos.common.aggregationoperators;
 
 import delfos.common.datastructures.MultiSet;
+import java.util.Collection;
 
 /**
- * Operador de agregación que devuelve el valor más frecuente de los valores de
- * entrada
+ * Operador de agregación que devuelve el valor más frecuente de los valores de entrada
  *
  * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
@@ -32,7 +32,7 @@ public class Mode extends AggregationOperator {
     private final static long serialVersionUID = 1L;
 
     @Override
-    public double aggregateValues(Iterable<Number> values) {
+    public double aggregateValues(Collection<? extends Number> values) {
         MultiSet<Double> ms = new MultiSet();
         for (Number value : values) {
             Double d = value.doubleValue();

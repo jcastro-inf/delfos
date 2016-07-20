@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -38,6 +38,7 @@ import delfos.rs.collaborativefiltering.knn.RecommendationEntity;
 import delfos.rs.collaborativefiltering.profile.Neighbor;
 import delfos.rs.contentbased.ContentBasedRecommender;
 import delfos.rs.contentbased.vsm.booleanvsm.BooleanFeaturesTransformation;
+import delfos.rs.contentbased.vsm.booleanvsm.SparseVector;
 import delfos.rs.recommendation.Recommendation;
 import delfos.similaritymeasures.CosineCoefficient;
 import java.util.ArrayList;
@@ -49,23 +50,19 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
-import org.grouplens.lenskit.vectors.MutableSparseVector;
-import org.grouplens.lenskit.vectors.SparseVector;
-import org.grouplens.lenskit.vectors.VectorEntry;
+import org.apache.commons.math4.util.Pair;
 
 /**
  * Clase que implementa el sistema de recomendación propuesto en el paper:
  * <p>
  * <p>
- * Panagiotis Symeonidis, Alexandros Nanopoulos and Yannis Manolopoulos.
- * "Feature-weighted user model for recommender systems." In User Modeling 2007,
- * pp. 97-106. Springer Berlin Heidelberg, 2007.
+ * Panagiotis Symeonidis, Alexandros Nanopoulos and Yannis Manolopoulos. "Feature-weighted user model for recommender
+ * systems." In User Modeling 2007, pp. 97-106. Springer Berlin Heidelberg, 2007.
  *
  * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 1.0 (19 Octubre 2011)
- * @version 2.0 (28 de Febrero de 2013) Refactorización de las clases asociadas
- * a los perfiles de usuario.
+ * @version 2.0 (28 de Febrero de 2013) Refactorización de las clases asociadas a los perfiles de usuario.
  * @version 2.1 9-Octubre-2013 Incorporación del método makeUserModel
  * @verison 6-Noviembre-2013 Implementación correcta según el paper.
  */
@@ -73,15 +70,13 @@ public class Symeonidis2007FeatureWeighted extends ContentBasedRecommender<Symeo
 
     private static final long serialVersionUID = 1L;
     /**
-     * Parámetro para almacenar el número de vecinos que se tienen en cuenta
-     * para la predicción de la valoración. Si no se modifica, su valor por
-     * defecto es 20
+     * Parámetro para almacenar el número de vecinos que se tienen en cuenta para la predicción de la valoración. Si no
+     * se modifica, su valor por defecto es 20
      */
     public static final Parameter NEIGHBORHOOD_SIZE = new Parameter("Neighborhood_size", new IntegerParameter(1, 9999, 20));
 
     /**
-     * Constructor por defecto, que añade al sistema de recomendación sus
-     * parámetros.
+     * Constructor por defecto, que añade al sistema de recomendación sus parámetros.
      */
     public Symeonidis2007FeatureWeighted() {
         super();
@@ -101,10 +96,10 @@ public class Symeonidis2007FeatureWeighted extends ContentBasedRecommender<Symeo
     @Override
     protected Symeonidis2007UserProfile makeUserProfile(int idUser, DatasetLoader<? extends Rating> datasetLoader, Symeonidis2007Model model) throws CannotLoadRatingsDataset, CannotLoadContentDataset, UserNotFound {
 
-        MutableSparseVector userFF = makeFFUserProfile(idUser, datasetLoader, model.getBooleanFeaturesTransformation());
+        SparseVector<Long> userFF = makeFFUserProfile(idUser, datasetLoader, model.getBooleanFeaturesTransformation());
 
         //Los multiplico por la ponderación iuf.
-        SparseVector iuf = model.getAllIUF();
+        SparseVector<Long> iuf = model.getAllIUF();
         userFF.multiply(iuf);
 
         Map<Feature, Map<Object, Double>> userProfileValuesMap = model.getBooleanFeaturesTransformation().getFeatureValueMap(userFF);
@@ -112,7 +107,7 @@ public class Symeonidis2007FeatureWeighted extends ContentBasedRecommender<Symeo
         return new Symeonidis2007UserProfile(idUser, userProfileValuesMap);
     }
 
-    private MutableSparseVector makeFFItemProfile(int idItem, DatasetLoader<? extends Rating> datasetLoader, BooleanFeaturesTransformation booleanFeaturesTransformation) throws ItemNotFound {
+    private SparseVector<Long> makeFFItemProfile(int idItem, DatasetLoader<? extends Rating> datasetLoader, BooleanFeaturesTransformation booleanFeaturesTransformation) throws ItemNotFound {
         final ContentDataset contentDataset;
         if (datasetLoader instanceof ContentDatasetLoader) {
             ContentDatasetLoader contentDatasetLoader = (ContentDatasetLoader) datasetLoader;
@@ -122,7 +117,7 @@ public class Symeonidis2007FeatureWeighted extends ContentBasedRecommender<Symeo
         }
 
         try {
-            MutableSparseVector itemProfile = booleanFeaturesTransformation.newProfile();
+            SparseVector<Long> itemProfile = booleanFeaturesTransformation.newProfile();
 
             Item item = contentDataset.get(idItem);
             for (Feature f : item.getFeatures()) {
@@ -139,11 +134,11 @@ public class Symeonidis2007FeatureWeighted extends ContentBasedRecommender<Symeo
 
     }
 
-    protected MutableSparseVector makeFFUserProfile(int idUser, DatasetLoader<? extends Rating> datasetLoader, BooleanFeaturesTransformation booleanFeaturesTransformation) throws CannotLoadRatingsDataset, CannotLoadContentDataset, UserNotFound {
+    protected SparseVector<Long> makeFFUserProfile(int idUser, DatasetLoader<? extends Rating> datasetLoader, BooleanFeaturesTransformation booleanFeaturesTransformation) throws CannotLoadRatingsDataset, CannotLoadContentDataset, UserNotFound {
 
         RelevanceCriteria relevanceCriteria = datasetLoader.getDefaultRelevanceCriteria();
 
-        MutableSparseVector userProfileValues = booleanFeaturesTransformation.newProfile();
+        SparseVector<Long> userProfileValues = booleanFeaturesTransformation.newProfile();
 
         RatingsDataset<? extends Rating> ratingsDataset = datasetLoader.getRatingsDataset();
         //Calculo del perfil, FF(u)
@@ -154,8 +149,8 @@ public class Symeonidis2007FeatureWeighted extends ContentBasedRecommender<Symeo
 
                 if (relevanceCriteria.isRelevant(rating.getRatingValue())) {
 
-                    SparseVector itemProfile = makeFFItemProfile(idItem, datasetLoader, booleanFeaturesTransformation);
-                    for (VectorEntry entryItemProfile : itemProfile.fast()) {
+                    SparseVector<Long> itemProfile = makeFFItemProfile(idItem, datasetLoader, booleanFeaturesTransformation);
+                    for (Pair<Long, Double> entryItemProfile : itemProfile.fast()) {
                         long idFeature = entryItemProfile.getKey();
                         double featureValue = entryItemProfile.getValue();
 
@@ -197,7 +192,7 @@ public class Symeonidis2007FeatureWeighted extends ContentBasedRecommender<Symeo
             int i = 1;
             for (Item item : contentDataset) {
                 try {
-                    MutableSparseVector itemProfile = makeFFItemProfile(item.getId(), datasetLoader, booleanFeaturesTransformation);
+                    SparseVector<Long> itemProfile = makeFFItemProfile(item.getId(), datasetLoader, booleanFeaturesTransformation);
                     model.putItemProfile(item.getId(), itemProfile);
 
                     fireBuildingProgressChangedEvent("Profile creation", (int) ((double) i++ * 100 / contentDataset.size()), -1);
@@ -211,7 +206,7 @@ public class Symeonidis2007FeatureWeighted extends ContentBasedRecommender<Symeo
 
         RelevanceCriteria relevanceCriteria = datasetLoader.getDefaultRelevanceCriteria();
 
-        Map<Integer, SparseVector> ff_userProfiles = new TreeMap<Integer, SparseVector>();
+        Map<Integer, SparseVector<Long>> ff_userProfiles = new TreeMap<Integer, SparseVector<Long>>();
 
         //Calculo los perfiles de usuario, la parte FF(u)
         for (int idUser : ratingsDataset.allUsers()) {
@@ -223,7 +218,7 @@ public class Symeonidis2007FeatureWeighted extends ContentBasedRecommender<Symeo
         }
 
         //Calculo la IUF.
-        MutableSparseVector iuf = booleanFeaturesTransformation.newProfile();
+        SparseVector<Long> iuf = booleanFeaturesTransformation.newProfile();
         {
             int i = 0;
             final double numUsers = ratingsDataset.allUsers().size();
@@ -245,7 +240,7 @@ public class Symeonidis2007FeatureWeighted extends ContentBasedRecommender<Symeo
                                 //Si el rating es negativo, este producto no cuenta.
                                 if (relevanceCriteria.isRelevant(rating)) {
 
-                                    SparseVector itemProfile = model.getItemProfile(idItemRatedByUser);
+                                    SparseVector<Long> itemProfile = model.getItemProfile(idItemRatedByUser);
                                     if (itemProfile.containsKey(idFeatureValue) && itemProfile.get(idFeatureValue) > 0) {
                                         count++;
 
@@ -278,9 +273,9 @@ public class Symeonidis2007FeatureWeighted extends ContentBasedRecommender<Symeo
         //Ahora calculo los perfiles de los usuarios, para luego hacer vecindario...
         {
             for (int idUser : ratingsDataset.allUsers()) {
-                SparseVector userFF = ff_userProfiles.get(idUser);
+                SparseVector<Long> userFF = ff_userProfiles.get(idUser);
 
-                MutableSparseVector userProfileFinalVector = userFF.mutableCopy();
+                SparseVector<Long> userProfileFinalVector = userFF.clone();
                 userProfileFinalVector.multiply(iuf);
 
                 Map<Feature, Map<Object, Double>> userProfileValues = booleanFeaturesTransformation.getFeatureValueMap(userProfileFinalVector);
@@ -316,7 +311,7 @@ public class Symeonidis2007FeatureWeighted extends ContentBasedRecommender<Symeo
         itemsNeighborhood.retainAll(candidateItems);
 //Step 3: We get the features of each item: I1: {F2}, I3: {F2, F3}, I5: {F1, F2, F3}
 //Step 4: We ﬁnd their frequency in the neighborhood:fr(F1)=1, fr(F2)=3, fr(F3)=2
-        MutableSparseVector featureFrequency = model.getBooleanFeaturesTransformation().newProfile();
+        SparseVector<Long> featureFrequency = model.getBooleanFeaturesTransformation().newProfile();
         featureFrequency.fill(0);
         for (int idItem : itemsNeighborhood) {
             try {
@@ -387,8 +382,7 @@ public class Symeonidis2007FeatureWeighted extends ContentBasedRecommender<Symeo
     }
 
     /**
-     * Devuelve el numero de usuarios vecinos que se consideran en el cálculo de
-     * las recomendaciones.
+     * Devuelve el numero de usuarios vecinos que se consideran en el cálculo de las recomendaciones.
      *
      * @return Número de vecinos.
      */

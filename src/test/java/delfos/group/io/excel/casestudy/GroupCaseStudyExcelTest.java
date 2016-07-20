@@ -6,7 +6,7 @@ import delfos.dataset.generated.random.RandomDatasetLoader;
 import delfos.group.casestudy.defaultcase.GroupCaseStudy;
 import delfos.group.experiment.validation.groupformation.FixedGroupSize_OnlyNGroups;
 import delfos.group.experiment.validation.predictionvalidation.HoldOutPrediction;
-import delfos.group.experiment.validation.validationtechniques.CrossFoldValidation_Ratings;
+import delfos.experiment.validation.validationtechnique.CrossFoldValidation_Ratings;
 import delfos.group.factories.GroupEvaluationMeasuresFactory;
 import delfos.group.grs.aggregation.AggregationOfIndividualRatings;
 import java.io.File;

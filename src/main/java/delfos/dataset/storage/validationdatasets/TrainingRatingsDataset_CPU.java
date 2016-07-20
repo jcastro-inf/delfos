@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -37,8 +37,7 @@ import java.util.TreeSet;
  *
  * @version 1.0 Unknow date
  * @version 1.1 (21-01-2013) Ahora implementa de {@link RatingsDatasetAdapter}
- * @version 1.2 06-Mar-2013 Modificación de los parámetros del constructor y
- * corrección de errores.
+ * @version 1.2 06-Mar-2013 Modificación de los parámetros del constructor y corrección de errores.
  * @param <RatingType>
  */
 public class TrainingRatingsDataset_CPU<RatingType extends Rating>
@@ -49,8 +48,8 @@ public class TrainingRatingsDataset_CPU<RatingType extends Rating>
     private final RatingsDataset<RatingType> originalDataset;
     private Set<Integer> allRatedItems;
     /**
-     * Crea un buffer para no tener que recalcular los conjuntos indizados por
-     * item. Acelera la ejecución del metodo item item
+     * Crea un buffer para no tener que recalcular los conjuntos indizados por item. Acelera la ejecución del metodo
+     * item item
      */
     private final Map<Integer, Map<Integer, RatingType>> bufferItems = Collections.synchronizedMap(new TreeMap<Integer, Map<Integer, RatingType>>());
 
@@ -119,7 +118,8 @@ public class TrainingRatingsDataset_CPU<RatingType extends Rating>
         TreeMap<Integer, RatingType> ret = new TreeMap<>(originalDataset.getUserRatingsRated(idUser));
 
         if (testRatings_byUser.containsKey(idUser)) {
-            for (int idItem : testRatings_byUser.get(idUser)) {
+            final Set<Integer> ratingsInTestSet = testRatings_byUser.get(idUser);
+            for (int idItem : ratingsInTestSet) {
                 ret.remove(idItem);
             }
         }

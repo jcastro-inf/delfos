@@ -27,11 +27,11 @@ import delfos.dataset.basic.item.Item;
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.storage.validationdatasets.PairOfTrainTestRatingsDataset;
+import delfos.experiment.validation.validationtechnique.ValidationTechnique;
 import delfos.group.casestudy.parallelisation.SingleGroupRecommendationTaskInput;
 import delfos.group.casestudy.parallelisation.SingleGroupRecommendationTaskOutput;
 import delfos.group.experiment.validation.predictionvalidation.GroupPredictionProtocol;
 import delfos.group.experiment.validation.predictionvalidation.GroupRecommendationRequest;
-import delfos.group.experiment.validation.validationtechniques.GroupValidationTechnique;
 import delfos.group.grouplevelcasestudy.GroupLevelCaseStudy;
 import delfos.group.grouplevelcasestudy.GroupLevelResults;
 import delfos.group.groupsofusers.GroupOfUsers;
@@ -79,7 +79,7 @@ public class SingleGroupTaskExecute implements SingleTaskExecute<SingleGroupTask
 
     private GroupLevelResults[] computeGroup(
             long seed,
-            GroupValidationTechnique validationTechnique,
+            ValidationTechnique validationTechnique,
             DatasetLoader<? extends Rating> originalDatasetLoader,
             GroupOfUsers group,
             GroupRecommenderSystem[] groupRecommenderSystems,
@@ -90,7 +90,7 @@ public class SingleGroupTaskExecute implements SingleTaskExecute<SingleGroupTask
 
         GroupOfUsers[] groups = new GroupOfUsers[1];
         groups[0] = group;
-        PairOfTrainTestRatingsDataset[] pairs = validationTechnique.shuffle(originalDatasetLoader, groups);
+        PairOfTrainTestRatingsDataset[] pairs = validationTechnique.shuffle(originalDatasetLoader);
 
         validationTechnique.setSeedValue(seed);
         predictionProtocol.setSeedValue(seed);
@@ -160,10 +160,8 @@ public class SingleGroupTaskExecute implements SingleTaskExecute<SingleGroupTask
                             singleGroupRecommendationOutputs,
                             GroupLevelCaseStudy.class.getSimpleName(), 0, 0, -1);
 
-                    GroupEvaluationMeasureResult measureResult = evaluationMeasure.getMeasureResult(
-                            groupRecommendationResult,
+                    GroupEvaluationMeasureResult measureResult = evaluationMeasure.getMeasureResult(groupRecommendationResult,
                             originalDatasetLoader,
-                            testDatasetLoader.getRatingsDataset(),
                             originalDatasetLoader.getDefaultRelevanceCriteria(),
                             trainingDatasetLoader,
                             testDatasetLoader);

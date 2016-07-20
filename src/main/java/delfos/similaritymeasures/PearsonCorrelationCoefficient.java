@@ -16,8 +16,14 @@
  */
 package delfos.similaritymeasures;
 
+import delfos.dataset.basic.loader.types.DatasetLoader;
+import delfos.dataset.basic.rating.Rating;
+import delfos.dataset.basic.user.User;
+import delfos.rs.collaborativefiltering.knn.CommonRating;
+import delfos.similaritymeasures.useruser.UserUserSimilarity;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.stream.Collectors;
 
 /**
  * Medida de similitud que utiliza el coeficiente de correlación de pearson para
@@ -31,7 +37,7 @@ import java.util.ListIterator;
  * @version 1.0 Unknown date
  * @version 1.1 20-Mar-2013
  */
-public class PearsonCorrelationCoefficient extends WeightedSimilarityMeasureAdapter {
+public class PearsonCorrelationCoefficient extends WeightedSimilarityMeasureAdapter implements UserUserSimilarity {
 
     @Override
     public double similarity(List<Double> v1, List<Double> v2) {
@@ -183,5 +189,25 @@ public class PearsonCorrelationCoefficient extends WeightedSimilarityMeasureAdap
                 || v2.size() != weights.size()) {
             throw new IllegalArgumentException("The lists have different size: " + v1.size() + " != " + v2.size() + " != " + weights.size());
         }
+    }
+
+    @Override
+    public double similarity(DatasetLoader<? extends Rating> datasetLoader, int idUser1, int idUser2) {
+        User user1 = datasetLoader.getUsersDataset().get(idUser1);
+        User user2 = datasetLoader.getUsersDataset().get(idUser2);
+
+        return similarity(datasetLoader, user1, user2);
+    }
+
+    @Override
+    public double similarity(DatasetLoader<? extends Rating> datasetLoader, User user1, User user2) {
+
+        List<CommonRating> intersection = CommonRating.intersection(datasetLoader, user1, user2).stream().collect(Collectors.toList());
+
+        List<Double> l1 = intersection.stream().map(commonRating -> commonRating.getRating1()).collect(Collectors.toList());
+        List<Double> l2 = intersection.stream().map(commonRating -> commonRating.getRating2()).collect(Collectors.toList());
+
+        return similarity(l1, l2);
+
     }
 }

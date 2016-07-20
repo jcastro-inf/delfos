@@ -21,6 +21,7 @@ import delfos.common.exceptions.dataset.users.UserNotFound;
 import delfos.dataset.basic.features.CollectionOfEntitiesWithFeaturesDefault;
 import delfos.dataset.basic.features.Feature;
 import delfos.dataset.basic.rating.Rating;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -93,10 +94,11 @@ public class UsersDatasetAdapter extends CollectionOfEntitiesWithFeaturesDefault
     public static <RatingType extends Rating> int hashCode(UsersDataset usersDataset) {
         HashCodeBuilder hashCodeBuilder = new HashCodeBuilder(37, 11);
 
-        List<Integer> usersSorted = usersDataset.allIDs().stream().collect(Collectors.toList());
-        usersSorted.sort((i1, i2) -> Integer.compare(i1, i2));
+        List<Integer> usersSorted = usersDataset.allIDs().stream().sorted().collect(Collectors.toList());
 
-        Feature[] features = usersDataset.getFeatures();
+        List<Feature> features = Arrays.asList(usersDataset.getFeatures()).stream()
+                .sorted(Feature.BY_ID)
+                .collect(Collectors.toList());
 
         for (int idUser : usersSorted) {
             User user = usersDataset.get(idUser);
@@ -107,13 +109,15 @@ public class UsersDatasetAdapter extends CollectionOfEntitiesWithFeaturesDefault
                 if (user.getFeatures().contains(feature)) {
                     Object featureValue = user.getFeatureValue(feature);
                     hashCodeBuilder.append(feature.getName());
-                    hashCodeBuilder.append(feature.getType());
+                    hashCodeBuilder.append(feature.getType().name());
                     hashCodeBuilder.append(featureValue);
                 }
             }
         }
 
-        return hashCodeBuilder.hashCode();
+        final int finalHashValue = hashCodeBuilder.hashCode();
+
+        return finalHashValue;
     }
 
 }

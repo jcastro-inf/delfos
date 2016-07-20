@@ -26,10 +26,10 @@ import delfos.common.parameters.chain.ParameterChain;
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RelevanceCriteria;
+import delfos.experiment.validation.validationtechnique.ValidationTechnique;
 import delfos.group.casestudy.defaultcase.GroupCaseStudy;
 import delfos.group.experiment.validation.groupformation.GroupFormationTechnique;
 import delfos.group.experiment.validation.predictionvalidation.GroupPredictionProtocol;
-import delfos.group.experiment.validation.validationtechniques.GroupValidationTechnique;
 import delfos.group.grs.GroupRecommenderSystem;
 import delfos.group.io.xml.casestudy.GroupCaseStudyXML;
 import delfos.group.results.groupevaluationmeasures.GroupEvaluationMeasure;
@@ -45,6 +45,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -76,8 +77,7 @@ import jxl.write.WriteException;
 import jxl.write.biff.RowsExceededException;
 
 /**
- * Clase encargada de hacer la entrada/salida de los resultados de la ejeución
- * de un caso de uso concreto.
+ * Clase encargada de hacer la entrada/salida de los resultados de la ejeución de un caso de uso concreto.
  *
  * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
@@ -105,7 +105,7 @@ public class GroupCaseStudyExcel {
     private static WritableCellFormat defaultFormat = null;
     private static WritableCellFormat decimalFormat;
     private static WritableCellFormat integerFormat;
-    private static final int titleCellWidth = 3 - 1;
+    private static final int TITLE_CELL_WIDTH = 3 - 1;
 
     static {
         try {
@@ -269,7 +269,7 @@ public class GroupCaseStudyExcel {
     }
 
     private static String getConfiguredDatasetLoaderName(Sheet sheet) {
-        String datasetLoaderAlias = null;
+        String datasetLoaderAlias;
 
         Cell datasetLoaderCell = sheet.findCell(DATASET_LOADER_CELL_CONTENT);
         if (datasetLoaderCell == null) {
@@ -319,7 +319,7 @@ public class GroupCaseStudyExcel {
 
             wbSettings.setLocale(new Locale("en", "EN"));
 
-            WritableWorkbook workbook = null;
+            WritableWorkbook workbook;
 
             if (file.exists()) {
                 file.delete();
@@ -358,7 +358,7 @@ public class GroupCaseStudyExcel {
         //Create table for GRS
         {
             GroupRecommenderSystem<Object, Object> groupRecommenderSystem = caseStudyGroup.getGroupRecommenderSystem();
-            sheet.mergeCells(column + 0, row, column + titleCellWidth, row);
+            sheet.mergeCells(column + 0, row, column + TITLE_CELL_WIDTH, row);
             addTitleText(sheet, column, row, "Group Recommender System");
             row++;
             setCellText(sheet, column, row, groupRecommenderSystem.getName());
@@ -374,7 +374,7 @@ public class GroupCaseStudyExcel {
         //Create table for DatasetLoader
         {
             DatasetLoader<? extends Rating> datasetLoader = caseStudyGroup.getDatasetLoader();
-            sheet.mergeCells(column + 0, row, column + titleCellWidth, row);
+            sheet.mergeCells(column + 0, row, column + TITLE_CELL_WIDTH, row);
             addTitleText(sheet, column, row, DATASET_LOADER_CELL_CONTENT);
             row++;
             setCellText(sheet, column, row, datasetLoader.getName());
@@ -390,7 +390,7 @@ public class GroupCaseStudyExcel {
         //Create table for GroupFormationTechnique
         {
             GroupFormationTechnique groupFormationTechnique = caseStudyGroup.getGroupFormationTechnique();
-            sheet.mergeCells(column + 0, row, column + titleCellWidth, row);
+            sheet.mergeCells(column + 0, row, column + TITLE_CELL_WIDTH, row);
             addTitleText(sheet, column, row, "Group Formation Technique");
             row++;
             setCellText(sheet, column, row, groupFormationTechnique.getName());
@@ -403,16 +403,16 @@ public class GroupCaseStudyExcel {
         }
         row += 2;
 
-        //Create table for GroupValidationTechnique
+        //Create table for ValidationTechnique
         {
-            GroupValidationTechnique groupValidationTechnique = caseStudyGroup.getGroupValidationTechnique();
-            sheet.mergeCells(column + 0, row, column + titleCellWidth, row);
+            ValidationTechnique validationTechnique = caseStudyGroup.getValidationTechnique();
+            sheet.mergeCells(column + 0, row, column + TITLE_CELL_WIDTH, row);
             addTitleText(sheet, column, row, "Group Validation Technique");
             row++;
-            setCellText(sheet, column, row, groupValidationTechnique.getName());
+            setCellText(sheet, column, row, validationTechnique.getName());
             row++;
-            for (Parameter parameter : groupValidationTechnique.getParameters()) {
-                Object parameterValue = groupValidationTechnique.getParameterValue(parameter);
+            for (Parameter parameter : validationTechnique.getParameters()) {
+                Object parameterValue = validationTechnique.getParameterValue(parameter);
                 row = writeParameterAndValue(parameter, parameterValue, sheet, column, row);
                 row++;
             }
@@ -422,7 +422,7 @@ public class GroupCaseStudyExcel {
         //Create table for GroupPredictionProtocol
         {
             GroupPredictionProtocol groupPredictionProtocol = caseStudyGroup.getGroupPredictionProtocol();
-            sheet.mergeCells(column + 0, row, column + titleCellWidth, row);
+            sheet.mergeCells(column + 0, row, column + TITLE_CELL_WIDTH, row);
             addTitleText(sheet, column, row, "Group Prediction Protocol");
             row++;
             setCellText(sheet, column, row, groupPredictionProtocol.getName());
@@ -438,16 +438,16 @@ public class GroupCaseStudyExcel {
         //Create table for RelevanceCriteria
         {
             RelevanceCriteria relevanceCriteria = caseStudyGroup.getRelevanceCriteria();
-            sheet.mergeCells(column + 0, row, column + titleCellWidth, row);
+            sheet.mergeCells(column + 0, row, column + TITLE_CELL_WIDTH, row);
             addTitleText(sheet, column, row, "Relevance Criteria threshold >= " + relevanceCriteria.getThreshold().doubleValue());
             row++;
         }
     }
     public static final String DATASET_LOADER_CELL_CONTENT = "Dataset Loader";
 
-    final static int parameterNameOffset = 1;
-    final static int parameterTypeOffset = 2;
-    final static int parameterValueOffset = 3;
+    final static int PARAMETER_NAME_OFFSET = 1;
+    final static int PARAMETER_TYPE_OFFSET = 2;
+    final static int PARAMETER_VALUE_OFFSET = 3;
 
     /**
      *
@@ -463,23 +463,23 @@ public class GroupCaseStudyExcel {
 
         //First write the parameter line
         setCellText(sheet, column, row, "Parameter");
-        setCellText(sheet, column + parameterNameOffset, row, parameter.getName());
-        setCellText(sheet, column + parameterTypeOffset, row, parameter.getRestriction().getName());
+        setCellText(sheet, column + PARAMETER_NAME_OFFSET, row, parameter.getName());
+        setCellText(sheet, column + PARAMETER_TYPE_OFFSET, row, parameter.getRestriction().getName());
 
         if (parameterValue instanceof ParameterOwner) {
             ParameterOwner parameterOwner = (ParameterOwner) parameterValue;
-            setCellText(sheet, column + parameterValueOffset, row, parameterOwner.getName());
+            setCellText(sheet, column + PARAMETER_VALUE_OFFSET, row, parameterOwner.getName());
         } else if (parameterValue instanceof java.lang.Number) {
 
             if ((parameterValue instanceof java.lang.Integer) || (parameterValue instanceof java.lang.Long)) {
                 java.lang.Long number = ((java.lang.Number) parameterValue).longValue();
-                setCellIntegerNumber(sheet, column + parameterValueOffset, row, number);
+                setCellIntegerNumber(sheet, column + PARAMETER_VALUE_OFFSET, row, number);
             } else {
                 java.lang.Number number = (java.lang.Number) parameterValue;
-                setCellDoubleNumber(sheet, column + parameterValueOffset, row, number.doubleValue());
+                setCellDoubleNumber(sheet, column + PARAMETER_VALUE_OFFSET, row, number.doubleValue());
             }
         } else {
-            setCellText(sheet, column + parameterValueOffset, row, parameterValue.toString());
+            setCellText(sheet, column + PARAMETER_VALUE_OFFSET, row, parameterValue.toString());
         }
 
         //Then, if it is a parameter owner, write its children parameters.
@@ -497,14 +497,14 @@ public class GroupCaseStudyExcel {
         return row;
     }
 
-    final static int maxListSize = 20;
+    final static int MAX_LIST_SIZE = 20;
 
     private static void createExecutionsSheet(GroupCaseStudy caseStudyGroup, WritableSheet sheet) throws WriteException {
 
         int row = 0;
 
         final int numExecutions = caseStudyGroup.getNumExecutions();
-        final int numSplits = caseStudyGroup.getGroupValidationTechnique().getNumberOfSplits();
+        final int numSplits = caseStudyGroup.getValidationTechnique().getNumberOfSplits();
 
         final int vueltaColumn = 0;
         final int executionColumn = 1;
@@ -672,8 +672,8 @@ public class GroupCaseStudyExcel {
     }
 
     /**
-     * Converts the parameter structure of the case study definition
-     * (dataset,groupFormation and validations) into a plain key-> value map.
+     * Converts the parameter structure of the case study definition (dataset,groupFormation and validations) into a
+     * plain key-> value map.
      *
      * @param groupCaseStudy
      * @return
@@ -690,9 +690,9 @@ public class GroupCaseStudyExcel {
                 .extractParameterValues(groupCaseStudy.getGroupFormationTechnique());
         caseStudyParameters.putAll(groupFormationTechniqueParameters);
 
-        Map<String, Object> groupValidationTechniqueParameters = ParameterOwnerExcel
-                .extractParameterValues(groupCaseStudy.getGroupValidationTechnique());
-        caseStudyParameters.putAll(groupValidationTechniqueParameters);
+        Map<String, Object> validationTechniqueParameters = ParameterOwnerExcel
+                .extractParameterValues(groupCaseStudy.getValidationTechnique());
+        caseStudyParameters.putAll(validationTechniqueParameters);
 
         Map<String, Object> groupPredictionProtocolParameters = ParameterOwnerExcel
                 .extractParameterValues(groupCaseStudy.getGroupPredictionProtocol());
@@ -702,8 +702,8 @@ public class GroupCaseStudyExcel {
     }
 
     /**
-     * Converts the parameter structure of the case study technique
-     * (groupRecommenderSystem) into a plain key-> value map.
+     * Converts the parameter structure of the case study technique (groupRecommenderSystem) into a plain key-> value
+     * map.
      *
      * @param groupCaseStudy
      * @return
@@ -730,11 +730,11 @@ public class GroupCaseStudyExcel {
 
             Map<String, java.lang.Number> extendedPerformances = evaluationMeasure.agregateResultsExtendedPerformance(measureResult);
 
-            for (String extendedPerformance : extendedPerformances.keySet()) {
+            extendedPerformances.keySet().stream().forEach((extendedPerformance) -> {
                 java.lang.Number extendedPerformanceValue = extendedPerformances.get(extendedPerformance);
 
                 evaluationMeasuresValues.put(evaluationMeasure.getName() + "." + extendedPerformance, extendedPerformanceValue);
-            }
+            });
         }
 
         return evaluationMeasuresValues;
@@ -844,13 +844,18 @@ public class GroupCaseStudyExcel {
 
         List<ParameterChain> differentChainsWithAliases = ParameterChain.obtainDifferentChains(groupCaseStudys);
 
-        List<ParameterChain> differentChains = differentChainsWithAliases.stream().filter(chain -> !chain.isAlias()).collect(Collectors.toList());
+        List<ParameterChain> differentChains = differentChainsWithAliases.stream()
+                .filter(chain -> !chain.isAlias())
+                .filter(chain -> !chain.isSeed())
+                .collect(Collectors.toList());
 
         List<ParameterChain> dataValidationDifferentChains = differentChains.stream()
                 .filter(chain -> chain.isDataValidationParameter())
                 .filter(chain -> !chain.isNumExecutions())
                 .collect(Collectors.toList());
-        List<ParameterChain> techniqueDifferentChains = differentChains.stream().filter(chain -> chain.isTechniqueParameter()).collect(Collectors.toList());
+        List<ParameterChain> techniqueDifferentChains = differentChains.stream()
+                .filter(chain -> chain.isTechniqueParameter())
+                .collect(Collectors.toList());
 
         writeRowAndColumnCombination(techniqueDifferentChains, groupCaseStudys, dataValidationDifferentChains, evaluationMeasure, groupCaseStudyResults, workbook);
     }
@@ -860,17 +865,17 @@ public class GroupCaseStudyExcel {
 
         List<ParameterChain> differentChainsWithAliases = ParameterChain.obtainDifferentChains(groupCaseStudys);
 
-        List<ParameterChain> differentChains = differentChainsWithAliases.stream().filter(chain -> !chain.isAlias()).collect(Collectors.toList());
+        List<ParameterChain> differentChains = differentChainsWithAliases.stream()
+                .filter(chain -> !chain.isAlias())
+                .filter(chain -> !chain.isSeed())
+                .collect(Collectors.toList());
 
         List<ParameterChain> dataValidationDifferentChains = differentChains.stream()
                 .filter(chain -> chain.isDataValidationParameter())
                 .filter(chain -> !chain.isNumExecutions())
                 .collect(Collectors.toList());
-        if (dataValidationDifferentChains.isEmpty() || dataValidationDifferentChains.size() == 1) {
-            return true;
-        } else {
-            return false;
-        }
+
+        return dataValidationDifferentChains.isEmpty() || dataValidationDifferentChains.size() == 1;
     }
 
     public static void writeEvaluationMeasureSpecificFileParameter(List<GroupCaseStudyResult> groupCaseStudyResults, List<String> dataValidationParametersOrder, List<String> techniqueParametersOrder, String evaluationMeasure, WritableWorkbook workbook) throws WriteException, IOException {
@@ -887,7 +892,10 @@ public class GroupCaseStudyExcel {
 
         List<ParameterChain> differentChainsWithAliases = ParameterChain.obtainDifferentChains(groupCaseStudys);
 
-        List<ParameterChain> differentChains = differentChainsWithAliases.stream().filter(chain -> !chain.isAlias()).collect(Collectors.toList());
+        List<ParameterChain> differentChains = differentChainsWithAliases.stream()
+                .filter(chain -> !chain.isAlias())
+                .filter(chain -> !chain.isSeed())
+                .collect(Collectors.toList());
 
         List<ParameterChain> dataValidationDifferentChains = differentChains.stream()
                 .filter(chain -> chain.isDataValidationParameter())
@@ -903,6 +911,14 @@ public class GroupCaseStudyExcel {
             String evaluationMeasure,
             CaseStudyResultMatrix matrix,
             String sheetName) throws WriteException {
+        final int sheetNameMaxLenght = 30;
+
+        if (sheetName.length() > sheetNameMaxLenght) {
+
+            String shortenName = sheetName.substring(0, Math.min(sheetNameMaxLenght, sheetName.length()));
+            Global.showInfoMessage("Sheet name too long! " + sheetName + " --> " + shortenName);
+            sheetName = shortenName;
+        }
 
         WritableSheet sheet = workbook.createSheet(sheetName, workbook.getNumberOfSheets());
 
@@ -969,9 +985,9 @@ public class GroupCaseStudyExcel {
                         String row = matrix.getRow(thisCellGroupCaseStudys.get(0).getGroupCaseStudy());
                         String column = matrix.getColumn(thisCellGroupCaseStudys.get(0).getGroupCaseStudy());
                         Global.show("Executions for cell (" + row + "," + column + ")\n");
-                        for (GroupCaseStudyResult groupCaseStudyResultsMaxNumExecution : thisCellGroupCaseStudys) {
+                        thisCellGroupCaseStudys.stream().forEach((groupCaseStudyResultsMaxNumExecution) -> {
                             Global.show(groupCaseStudyResultsMaxNumExecution.getNumExecutions() + "\n");
-                        }
+                        });
                     }
 
                     groupCaseStudyResultsMaxNumExecutions.add(thisCellGroupCaseStudys.get(0));
@@ -997,16 +1013,41 @@ public class GroupCaseStudyExcel {
         dataValidationAliases.addAll(groupCaseStudyResults);
         techniqueAliases.addAll(groupCaseStudyResults);
 
-        List<ParameterChain> differentChainsWithAliases = ParameterChain.obtainDifferentChains(groupCaseStudys);
+        Map<String, List<GroupCaseStudy>> byCaseStudy = groupCaseStudys.stream().collect(Collectors
+                .groupingBy(groupCaseStudy -> groupCaseStudy.getAlias()));
 
-        List<ParameterChain> differentChains = differentChainsWithAliases.stream().filter(chain -> !chain.isAlias()).collect(Collectors.toList());
+        groupCaseStudys = byCaseStudy.values().parallelStream().map(sameCaseStudyWithDifferentNumExecutions -> {
+            Map<Integer, List<GroupCaseStudy>> byNumExecutions = sameCaseStudyWithDifferentNumExecutions
+                    .parallelStream()
+                    .collect(Collectors.groupingBy(groupCaseStudy -> groupCaseStudy.getNumExecutions()));
+
+            int maxExec = byNumExecutions.keySet().stream().mapToInt(numExec -> numExec)
+                    .max().orElse(-1);
+
+            if (byNumExecutions.get(maxExec).size() > 1) {
+                byNumExecutions.get(maxExec).forEach(groupCaseStudy -> Global.showWarning(groupCaseStudy.getAlias() + "\""));
+                throw new IllegalStateException("More than one execution with the maximum! (" + byNumExecutions.get(maxExec).size() + ")");
+            }
+
+            return byNumExecutions.get(maxExec).get(0);
+        }).collect(Collectors.toList());
+
+        Global.showInfoMessage("Processing " + groupCaseStudys.size() + " different results files.\n");
+
+        List<ParameterChain> differentChainsWithAliasesAndSeed = ParameterChain.obtainDifferentChains(groupCaseStudys);
+
+        List<ParameterChain> differentChains = differentChainsWithAliasesAndSeed.stream()
+                .filter(chain -> !chain.isAlias())
+                .filter(chain -> !chain.isSeed())
+                .collect(Collectors.toList());
 
         List<ParameterChain> dataValidationDifferentChains = differentChains.stream()
                 .filter(chain -> chain.isDataValidationParameter())
                 .filter(chain -> !chain.isNumExecutions())
                 .collect(Collectors.toList());
 
-        List<ParameterChain> techniqueDifferentChains = differentChains.stream().filter(chain -> chain.isTechniqueParameter()).collect(Collectors.toList());
+        List<ParameterChain> techniqueDifferentChains = differentChains.stream()
+                .filter(chain -> chain.isTechniqueParameter()).collect(Collectors.toList());
 
         if (techniqueDifferentChains.isEmpty()) {
             ParameterChain grsAliasChain = new ParameterChain(groupCaseStudys.get(0))
@@ -1065,16 +1106,25 @@ public class GroupCaseStudyExcel {
                 .stream()
                 .filter(chain -> !chain.isAlias())
                 .filter(chain -> !chain.isNumExecutions())
+                .filter(chain -> !chain.isSeed())
                 .collect(Collectors.toList());
 
-        List<Combination> obtainCombinations = obtainAllTwoPartitions(differentChains);
-
-        Set<Combination> distinctCominations = obtainCombinations
+        Set<Combination> combinationsOfColumnRowParameters = obtainDifferentParameterInCollumn(differentChains)
                 .stream()
                 .filter(combination -> combination.row.size() + combination.column.size() == differentChains.size())
                 .collect(Collectors.toCollection(TreeSet::new));
 
-        distinctCominations.parallelStream().forEach(combination -> {
+        List<ParameterChain> columnChains = differentChains.stream()
+                .filter(chain -> chain.isDataValidationParameter())
+                .filter(chain -> !chain.isNumExecutions())
+                .collect(Collectors.toList());
+
+        List<ParameterChain> rowChains = differentChains.stream()
+                .filter(chain -> chain.isTechniqueParameter())
+                .collect(Collectors.toList());
+        combinationsOfColumnRowParameters.add(new Combination(rowChains, columnChains));
+
+        combinationsOfColumnRowParameters.parallelStream().forEach(combination -> {
             try {
 
                 String sheetName = evaluationMeasure;
@@ -1098,16 +1148,6 @@ public class GroupCaseStudyExcel {
             }
         });
 
-        List<ParameterChain> columnChains = differentChains.stream()
-                .filter(chain -> chain.isDataValidationParameter())
-                .filter(chain -> !chain.isNumExecutions())
-                .collect(Collectors.toList());
-
-        List<ParameterChain> rowChains = differentChains.stream()
-                .filter(chain -> chain.isTechniqueParameter())
-                .collect(Collectors.toList());
-
-        writeRowAndColumnCombination(rowChains, groupCaseStudys, columnChains, evaluationMeasure, groupCaseStudyResults, workbook);
     }
 
     public static void writeRowAndColumnCombination(List<ParameterChain> rowChains, List<GroupCaseStudy> groupCaseStudys, List<ParameterChain> columnChains, String evaluationMeasure, List<GroupCaseStudyResult> groupCaseStudyResults, WritableWorkbook workbook) throws WriteException {
@@ -1150,7 +1190,7 @@ public class GroupCaseStudyExcel {
         writeMatrixInSheet(workbook, evaluationMeasure, matrix, sheetName);
     }
 
-    public static final Comparator<Set<ParameterChain>> ComparatorOfListsOfChains = (s1, s2) -> {
+    public static final Comparator<Set<ParameterChain>> COMPARATOR_OF_SET_OF_CHAINS = (s1, s2) -> {
 
         List<ParameterChain> l1 = new ArrayList<>(s1);
         List<ParameterChain> l2 = new ArrayList<>(s2);
@@ -1169,11 +1209,24 @@ public class GroupCaseStudyExcel {
         return Integer.compare(l1.size(), l2.size());
     };
 
-    public static List<Combination> obtainAllTwoPartitions(List<ParameterChain> chains) {
+    public static Set<Combination> obtainDifferentParameterInCollumn(List<ParameterChain> chains) {
+
+        Set<Combination> allCombinations = chains.parallelStream().map(chain -> {
+            List<ParameterChain> chainsWithoutMe = new ArrayList<>(chains);
+            chainsWithoutMe.remove(chain);
+
+            return new Combination(chainsWithoutMe, Arrays.asList(chain));
+        }).collect(Collectors.toSet());
+
+        return allCombinations;
+
+    }
+
+    private static Set<Combination> obtainAllTwoPartitions(List<ParameterChain> chains) {
         List<ParameterChain> sortedChains = chains.parallelStream().sorted().collect(Collectors.toList());
 
         if (sortedChains.isEmpty() || sortedChains.size() == 1) {
-            return Collections.EMPTY_LIST;
+            return Collections.EMPTY_SET;
         } else if (sortedChains.size() == 2) {
 
             ParameterChain element1 = chains.get(0);
@@ -1183,33 +1236,36 @@ public class GroupCaseStudyExcel {
                     Arrays.asList(element1),
                     Arrays.asList(element2));
 
-            return Arrays.asList(combination);
+            return Arrays.asList(combination).stream().collect(Collectors.toSet());
         } else {
-
-            List<Combination> allCombinations = new ArrayList<>();
-
-            for (ParameterChain chain : chains) {
+            Set<Combination> allCombinations = chains.parallelStream().flatMap(chain -> {
                 List<ParameterChain> chainsWithoutMe = new ArrayList<>(chains);
                 chainsWithoutMe.remove(chain);
 
-                List<Combination> obtainCombinationsWithoutMe = obtainAllTwoPartitions(chainsWithoutMe);
+                Set<Combination> obtainCombinationsWithoutMe = obtainAllTwoPartitions(chainsWithoutMe);
+                Set<Combination> combinationsThisChain = obtainCombinationsWithoutMe.parallelStream()
+                        .flatMap(combinationWithoutMe -> {
+                            Set<Combination> combinationsThisCombination = new HashSet<>();
 
-                for (Combination combinationWithoutMe : obtainCombinationsWithoutMe) {
+                            Set<ParameterChain> rowWithMe = combinationWithoutMe.row.stream()
+                                    .collect(Collectors.toCollection(TreeSet::new));
+                            rowWithMe.add(chain);
 
-                    Set<ParameterChain> rowWithMe = combinationWithoutMe.row.stream().collect(Collectors.toSet());
-                    rowWithMe.add(chain);
+                            Set<ParameterChain> columnWithMe = combinationWithoutMe.column.stream()
+                                    .collect(Collectors.toCollection(TreeSet::new));
+                            columnWithMe.add(chain);
 
-                    Set<ParameterChain> columnWithMe = combinationWithoutMe.column.stream().collect(Collectors.toSet());
-                    columnWithMe.add(chain);
+                            combinationsThisCombination.add(new Combination(combinationWithoutMe.row, columnWithMe));
+                            combinationsThisCombination.add(new Combination(rowWithMe, combinationWithoutMe.column));
 
-                    allCombinations.add(new Combination(combinationWithoutMe.row, columnWithMe));
-                    allCombinations.add(new Combination(rowWithMe, combinationWithoutMe.column));
-                }
+                            return combinationsThisCombination.parallelStream();
+                        })
+                        .collect(Collectors.toCollection(TreeSet::new));
 
-                allCombinations.add(new Combination(chainsWithoutMe, Arrays.asList(chain)));
-
-            }
-
+                combinationsThisChain.add(new Combination(chainsWithoutMe, Arrays.asList(chain)));
+                return combinationsThisChain.parallelStream();
+            })
+                    .collect(Collectors.toCollection(TreeSet::new));
             return allCombinations;
         }
     }
@@ -1258,11 +1314,11 @@ public class GroupCaseStudyExcel {
             if (obj instanceof Combination) {
                 Combination combination = (Combination) obj;
 
-                if (ComparatorOfListsOfChains.compare(this.row, combination.row) == 0) {
+                if (COMPARATOR_OF_SET_OF_CHAINS.compare(this.row, combination.row) == 0) {
                     return true;
-                } else if (ComparatorOfListsOfChains.compare(this.row, combination.column) == 0) {
+                } else if (COMPARATOR_OF_SET_OF_CHAINS.compare(this.row, combination.column) == 0) {
                     return true;
-                } else if (ComparatorOfListsOfChains.compare(this.column, combination.row) == 0) {
+                } else if (COMPARATOR_OF_SET_OF_CHAINS.compare(this.column, combination.row) == 0) {
                     return true;
                 } else {
                     return false;
@@ -1282,8 +1338,8 @@ public class GroupCaseStudyExcel {
 
         @Override
         public int compareTo(Combination o) {
-            int compareRow = ComparatorOfListsOfChains.compare(this.row, o.row);
-            int compareColumn = ComparatorOfListsOfChains.compare(this.column, o.column);
+            int compareRow = COMPARATOR_OF_SET_OF_CHAINS.compare(this.row, o.row);
+            int compareColumn = COMPARATOR_OF_SET_OF_CHAINS.compare(this.column, o.column);
 
             if (compareRow == 0 && compareColumn == 0) {
                 return 0;

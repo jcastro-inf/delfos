@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -17,6 +17,7 @@
 package delfos.common.aggregationoperators;
 
 import delfos.common.statisticalfuncions.MeanIterative;
+import java.util.Collection;
 
 /**
  * Operador de agregación de la media aritmética de los valores de entrada
@@ -31,7 +32,7 @@ public class Mean extends AggregationOperator {
     private final static long serialVersionUID = 1L;
 
     @Override
-    public double aggregateValues(Iterable<Number> values) {
+    public double aggregateValues(Collection<? extends Number> values) {
         MeanIterative meanIterative = new MeanIterative();
 
         for (Number value : values) {

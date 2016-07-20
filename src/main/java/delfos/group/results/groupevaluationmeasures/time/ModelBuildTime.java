@@ -31,7 +31,7 @@ import delfos.group.results.grouprecomendationresults.GroupRecommenderSystemResu
 public class ModelBuildTime extends GroupEvaluationMeasure {
 
     @Override
-    public GroupEvaluationMeasureResult getMeasureResult(GroupRecommenderSystemResult groupRecommenderSystemResult, DatasetLoader<? extends Rating> originalDatasetLoader, RatingsDataset<? extends Rating> testDataset, RelevanceCriteria relevanceCriteria, DatasetLoader<? extends Rating> trainingDatasetLoader, DatasetLoader<? extends Rating> testDatasetLoader) {
+    public GroupEvaluationMeasureResult getMeasureResult(GroupRecommenderSystemResult groupRecommenderSystemResult, DatasetLoader<? extends Rating> originalDatasetLoader, RelevanceCriteria relevanceCriteria, DatasetLoader<? extends Rating> trainingDatasetLoader, DatasetLoader<? extends Rating> testDatasetLoader) {
 
         long modelBuildTime = groupRecommenderSystemResult.getModelBuildTime();
 

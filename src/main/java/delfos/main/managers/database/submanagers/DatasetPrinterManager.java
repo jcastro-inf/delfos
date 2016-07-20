@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -50,10 +50,10 @@ public class DatasetPrinterManager extends DatabaseCaseUseSubManager {
 
     public static final String PRINT_RATINGS_TABLE = "--ratings-table";
 
-    private static final DatasetPrinterManager instance = new DatasetPrinterManager();
+    public static final DatasetPrinterManager INSTANCE = new DatasetPrinterManager();
 
     public static DatasetPrinterManager getInstance() {
-        return instance;
+        return INSTANCE;
     }
 
     @Override
@@ -77,10 +77,10 @@ public class DatasetPrinterManager extends DatabaseCaseUseSubManager {
     @Override
     public void manageCaseUse(ConsoleParameters consoleParameters, ChangeableDatasetLoader changeableDatasetLoader) {
         if (consoleParameters.isFlagDefined(PRINT_USER_SET)) {
-            printUserSet(changeableDatasetLoader);
+            System.out.println(printUserSet(changeableDatasetLoader));
         }
         if (consoleParameters.isFlagDefined(PRINT_ITEM_SET)) {
-            printItemSet(changeableDatasetLoader);
+            System.out.println(printItemSet(changeableDatasetLoader));
         }
         if (consoleParameters.isParameterDefined(PRINT_USER_RATINGS)) {
 
@@ -89,7 +89,7 @@ public class DatasetPrinterManager extends DatabaseCaseUseSubManager {
 
                 for (String idUserString : idUserStrings) {
                     int idUser = Integer.parseInt(idUserString);
-                    printUserRatings(changeableDatasetLoader, idUser);
+                    System.out.println(printUserRatings(changeableDatasetLoader, idUser));
                 }
             } catch (UndefinedParameterException ex) {
                 throw new IllegalArgumentException(ex);
@@ -102,7 +102,7 @@ public class DatasetPrinterManager extends DatabaseCaseUseSubManager {
 
                 for (String idItemString : idItemStrings) {
                     int idItem = Integer.parseInt(idItemString);
-                    printItemRatings(changeableDatasetLoader, idItem);
+                    System.out.println(printItemRatings(changeableDatasetLoader, idItem));
                 }
             } catch (UndefinedParameterException ex) {
                 throw new IllegalArgumentException(ex);
@@ -110,109 +110,122 @@ public class DatasetPrinterManager extends DatabaseCaseUseSubManager {
         }
 
         if (consoleParameters.isFlagDefined(PRINT_RATINGS_TABLE)) {
-            printRatingsTable(changeableDatasetLoader);
+            System.out.println(printRatingsTable(changeableDatasetLoader));
         }
 
     }
 
-    private void printUserRatings(ChangeableDatasetLoader changeableDatasetLoader, int idUser) throws RuntimeException {
+    public String printUserRatings(ChangeableDatasetLoader changeableDatasetLoader, int idUser) throws RuntimeException {
+        StringBuilder str = new StringBuilder();
         try {
 
             User user = changeableDatasetLoader.getUsersDataset().getUser(idUser);
             Map<Integer, Rating> userRatings = changeableDatasetLoader.getRatingsDataset().getUserRatingsRated(idUser);
-            System.out.println("==============================================================");
-            System.out.println("User '" + user.getName() + "' (id=" + idUser + ") ratings size: " + userRatings.size());
+            str.append("==============================================================\n");
+            str.append("User '").append(user.getName()).append("' (id=").append(idUser).append(") ratings size: ").append(userRatings.size()).append("\n");
             for (Map.Entry<Integer, Rating> entry : userRatings.entrySet()) {
                 int idItem = entry.getKey();
                 Rating rating = entry.getValue();
 
                 try {
                     Item item = changeableDatasetLoader.getChangeableContentDataset().get(idItem);
-                    System.out.println("Item '" + item.getName() + "' (id=" + idItem + ") ---> " + rating.getRatingValue());
+                    str.append("Item '").append(item.getName()).append("' (id=").append(idItem).append(") ---> ").append(rating.getRatingValue()).append("\n");
                 } catch (EntityNotFound ex) {
                     ERROR_CODES.ITEM_NOT_FOUND.exit(ex);
                     throw new IllegalArgumentException(ex);
                 }
             }
-            System.out.println("==============================================================");
+            str.append("==============================================================").append("\n");
         } catch (UserNotFound ex) {
             Logger.getLogger(DatabaseManager.class.getName()).log(Level.SEVERE, null, ex);
         }
+        return str.toString();
     }
 
-    private void printItemRatings(ChangeableDatasetLoader changeableDatasetLoader, int idItem) throws RuntimeException {
+    public String printItemRatings(ChangeableDatasetLoader changeableDatasetLoader, int idItem) throws RuntimeException {
+        StringBuilder str = new StringBuilder();
         try {
 
             Item item = changeableDatasetLoader.getChangeableContentDataset().getItem(idItem);
             Map<Integer, Rating> userRatings = changeableDatasetLoader.getRatingsDataset().getItemRatingsRated(item.getId());
-            System.out.println("==============================================================");
-            System.out.println("User '" + item.getName() + "' (id=" + idItem + ") ratings size: " + userRatings.size());
+            str.append("==============================================================").append("\n");
+            str.append("User '").append(item.getName()).append("' (id=").append(idItem).append(") ratings size: ").append(userRatings.size()).append("\n");
             for (Map.Entry<Integer, Rating> entry : userRatings.entrySet()) {
                 int idUser = entry.getKey();
                 Rating rating = entry.getValue();
 
                 try {
                     User user = changeableDatasetLoader.getChangeableUsersDataset().get(idUser);
-                    System.out.println("User '" + user.getName() + "' (id=" + idUser + ") ---> " + rating.getRatingValue());
+                    str.append("User '").append(user.getName()).append("' (id=").append(idUser).append(") ---> ").append(rating.getRatingValue()).append("\n");
                 } catch (EntityNotFound ex) {
                     ERROR_CODES.ITEM_NOT_FOUND.exit(ex);
                     throw new IllegalArgumentException(ex);
                 }
             }
-            System.out.println("==============================================================");
+            str.append("==============================================================").append("\n");
         } catch (ItemNotFound ex) {
             Logger.getLogger(DatabaseManager.class.getName()).log(Level.SEVERE, null, ex);
         }
+        return str.toString();
     }
 
-    private void printItemSet(ChangeableDatasetLoader changeableDatasetLoader) throws CannotLoadContentDataset, RuntimeException {
+    public String printItemSet(ChangeableDatasetLoader changeableDatasetLoader) throws CannotLoadContentDataset, RuntimeException {
         TreeSet<Integer> items = new TreeSet<>(changeableDatasetLoader.getContentDataset().allIDs());
-        System.out.println("==============================================================");
-        System.out.println("Item set size: " + items.size());
+
+        StringBuilder str = new StringBuilder();
+        str.append("==============================================================").append("\n");
+        str.append("Item set size: ").append(items.size());
         for (int idItem : items) {
             try {
                 Item item = changeableDatasetLoader.getContentDataset().getItem(idItem);
-                System.out.println("\tidItem '" + idItem + "' with name " + item.getName());
+                str.append("\tidItem '").append(idItem).append("' with name ").append(item.getName()).append("\n");
             } catch (ItemNotFound ex) {
                 ERROR_CODES.ITEM_NOT_FOUND.exit(ex);
                 throw new IllegalArgumentException(ex);
             }
         }
-        System.out.println("==============================================================");
+        str.append("==============================================================").append("\n");
+        return str.toString();
     }
 
-    private void printUserSet(ChangeableDatasetLoader changeableDatasetLoader) throws CannotLoadUsersDataset, RuntimeException {
+    public String printUserSet(ChangeableDatasetLoader changeableDatasetLoader) throws CannotLoadUsersDataset, RuntimeException {
+
+        StringBuilder str = new StringBuilder();
+
         TreeSet<Integer> users = new TreeSet<>(changeableDatasetLoader.getUsersDataset().allIDs());
-        System.out.println("==============================================================");
-        System.out.println("User set size: " + users.size());
+        str.append("==============================================================").append("\n");
+        str.append("User set size: ").append(users.size());
         for (int idUser : users) {
             try {
                 User u = changeableDatasetLoader.getUsersDataset().get(idUser);
-                System.out.println("\tidUser '" + idUser + "' with name " + u.getName());
+                str.append("\tidUser '").append(idUser).append("' with name ").append(u.getName()).append("\n");
             } catch (EntityNotFound ex) {
                 ERROR_CODES.USER_NOT_FOUND.exit(ex);
                 throw new IllegalArgumentException(ex);
             }
         }
-        System.out.println("==============================================================");
+        str.append("==============================================================").append("\n");
+
+        return str.toString();
     }
 
-    private void printRatingsTable(ChangeableDatasetLoader changeableDatasetLoader) {
+    public String printRatingsTable(ChangeableDatasetLoader changeableDatasetLoader) {
         Collection<Integer> users = changeableDatasetLoader.getUsersDataset().allIDs();
         Collection<Integer> items = changeableDatasetLoader.getContentDataset().allIDs();
 
+        StringBuilder str = new StringBuilder();
         if (!users.isEmpty() && !items.isEmpty()) {
             String ratingTable = DatasetPrinter.printCompactRatingTable(
                     changeableDatasetLoader.getRatingsDataset(),
                     users,
                     items);
 
-            System.out.println(ratingTable);
+            str.append(ratingTable).append("\n");
         } else {
-            printUserSet(changeableDatasetLoader);
-            System.out.println("");
-            printItemSet(changeableDatasetLoader);
+            str.append(printUserSet(changeableDatasetLoader));
+            str.append("\n");
+            str.append(printItemSet(changeableDatasetLoader));
         }
+        return str.toString();
     }
-
 }

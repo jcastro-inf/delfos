@@ -65,8 +65,8 @@ public class PseudoUserDatasetLoader<RatingType extends Rating> extends DatasetL
                     return (RatingType) rating.copyWithUser(pseudoUser);
                 })
                 .collect(Collectors.toMap(
-                                rating -> rating.getItem(),
-                                Function.identity()));
+                        rating -> rating.getItem(),
+                        Function.identity()));
 
         pseudoUsersRatings.put(pseudoUser, pseudoUserRatingsConverted);
 
@@ -97,6 +97,11 @@ public class PseudoUserDatasetLoader<RatingType extends Rating> extends DatasetL
     boolean isFrozen = false;
 
     public synchronized void freeze() {
+
+        if (isFrozen) {
+            return;
+        }
+
         isFrozen = true;
 
         ratingsDataset = new PseudoUserRatingsDataset<>(

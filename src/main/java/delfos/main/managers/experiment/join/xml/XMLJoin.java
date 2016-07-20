@@ -29,10 +29,10 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
-import java.util.TreeSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -58,6 +58,8 @@ public class XMLJoin extends CaseUseMode {
 
     public static final String OUTPUT_FILE_PARAMETER = "-o";
 
+    public static final String MEASURES_PARAMETER = "-measures";
+
     @Override
     public String getModeParameter() {
         return MODE_PARAMETER;
@@ -82,8 +84,14 @@ public class XMLJoin extends CaseUseMode {
 
         File outputFile = getOutputFile(consoleParameters, resultsPaths);
 
+        Set<String> filterMeasures = getFilterMeasures(consoleParameters);
+
         consoleParameters.printUnusedParameters(System.err);
-        mergeResultsIntoOutput(resultsPaths, outputFile);
+
+        Global.showMessage("Writing file:  " + outputFile.getAbsolutePath() + "\n");
+        mergeResultsIntoOutput(resultsPaths, outputFile, filterMeasures);
+
+        Global.showMessage("\t\tFinished file: " + outputFile.getAbsolutePath() + "\n");
 
     }
 
@@ -111,7 +119,7 @@ public class XMLJoin extends CaseUseMode {
         return outputFile;
     }
 
-    public static void mergeResultsIntoOutput(List<String> resultsPaths, File outputFile) {
+    public static void mergeResultsIntoOutput(List<String> resultsPaths, File outputFile, Set<String> filterMeasures) {
 
         validateResultsPaths(resultsPaths);
 
@@ -133,7 +141,7 @@ public class XMLJoin extends CaseUseMode {
 
         List<File> relevantFiles = aggregateResultsXML.filterResultsFiles(allFiles);
 
-        Global.showMessage("Parsing " + relevantFiles.size() + " results files.\n");
+        Global.showInfoMessage("Parsing " + relevantFiles.size() + " results files.\n");
 
         if (relevantFiles.isEmpty()) {
             return;
@@ -147,9 +155,9 @@ public class XMLJoin extends CaseUseMode {
 
         }
 
-        writeJoinIntoSpreadsheet(relevantFiles, outputFile);
+        writeJoinIntoSpreadsheet(relevantFiles, outputFile, filterMeasures);
 
-        Global.showMessage("Finished parsing " + relevantFiles.size() + " results files.\n");
+        Global.showInfoMessage("Finished parsing " + relevantFiles.size() + " results files.\n");
 
     }
 
@@ -166,7 +174,7 @@ public class XMLJoin extends CaseUseMode {
         }
     }
 
-    public static void writeJoinIntoSpreadsheet(List<File> relevantFiles, File outputSpreadsheetFile) {
+    public static void writeJoinIntoSpreadsheet(List<File> relevantFiles, File outputSpreadsheetFile, Set<String> filterMeasures) {
         List<GroupCaseStudy> groupCaseStudies = relevantFiles.parallelStream()
                 .map(file -> {
                     try {
@@ -187,6 +195,12 @@ public class XMLJoin extends CaseUseMode {
         List<String> dataValidationParametersOrder = obtainDataValidationParametersOrder(groupCaseStudyResults);
         List<String> techniqueParametersOrder = obtainTechniqueParametersOrder(groupCaseStudyResults);
         List<String> evaluationMeasuresOrder = obtainEvaluationMeasuresOrder(groupCaseStudyResults);
+
+        checkEvaluationMeasuresFilterArePresent(evaluationMeasuresOrder, filterMeasures);
+
+        evaluationMeasuresOrder = filterMeasures.isEmpty()
+                ? evaluationMeasuresOrder
+                : evaluationMeasuresOrder.stream().filter(measure -> filterMeasures.contains(measure)).collect(Collectors.toList());
 
         WorkbookSettings wbSettings = new WorkbookSettings();
         wbSettings.setLocale(new Locale("en", "EN"));
@@ -241,7 +255,6 @@ public class XMLJoin extends CaseUseMode {
 
         if (GroupCaseStudyExcel.isOnlyOneColumn(groupCaseStudyResults)) {
             evaluationMeasuresOrder.parallelStream().forEach(evaluationMeasure -> {
-
                 try {
                     GroupCaseStudyExcel.writeEvaluationMeasureParameterCombinationsSheets(
                             groupCaseStudyResults,
@@ -296,19 +309,17 @@ public class XMLJoin extends CaseUseMode {
     }
 
     private static List<String> obtainEvaluationMeasuresOrder(List<GroupCaseStudyResult> groupCaseStudyResults) {
-        Set<String> commonEvaluationMeasures = new TreeSet<>();
-
-        for (GroupCaseStudyResult groupCaseStudyResult : groupCaseStudyResults) {
-            commonEvaluationMeasures.addAll(groupCaseStudyResult.getDefinedEvaluationMeasures());
-        }
+        Set<String> commonEvaluationMeasures = groupCaseStudyResults.parallelStream()
+                .flatMap(groupCaseStudyResult -> groupCaseStudyResult.getDefinedEvaluationMeasures().parallelStream())
+                .collect(Collectors.toSet());
 
         List<String> evaluationMeasuresOrder = commonEvaluationMeasures.stream().sorted().collect(Collectors.toList());
         return evaluationMeasuresOrder;
     }
 
-    public static void joinDirectory(File directory) {
+    public static void joinDirectory(File directory, Set<String> filterMeasures) {
         File outputFile = new File(directory.getPath() + File.separator + "joined-results");
-        XMLJoin.mergeResultsIntoOutput(Arrays.asList(directory.getPath()), outputFile);
+        XMLJoin.mergeResultsIntoOutput(Arrays.asList(directory.getPath()), outputFile, filterMeasures);
     }
 
     private static void sortSheets(WritableWorkbook workbook) {
@@ -342,5 +353,23 @@ public class XMLJoin extends CaseUseMode {
 
             workbook.moveSheet(fromIndex, toIndex);
         }
+    }
+
+    private Set<String> getFilterMeasures(ConsoleParameters consoleParameters) {
+        if (consoleParameters.isParameterDefined(MEASURES_PARAMETER)) {
+            return consoleParameters.getValues(MEASURES_PARAMETER).stream().collect(Collectors.toSet());
+        } else {
+            return Collections.EMPTY_SET;
+        }
+    }
+
+    private static void checkEvaluationMeasuresFilterArePresent(List<String> evaluationMeasuresOrder, Set<String> filterMeasures) {
+        Set<String> measuresPresent = evaluationMeasuresOrder.stream().collect(Collectors.toSet());
+
+        filterMeasures.stream()
+                .filter(filteredMeasure -> !measuresPresent.contains(filteredMeasure))
+                .forEach(filteredMeasureNotPresent -> {
+                    Global.showWarning("Evaluation measure " + filteredMeasureNotPresent + " is not present in the case studies.");
+                });
     }
 }

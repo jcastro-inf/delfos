@@ -29,8 +29,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * Clase que encapsula los métodos para mostrar información en la consola (o en
- * la salida por defecto) de la aplicación
+ * Clase que encapsula los métodos para mostrar información en la consola (o en la salida por defecto) de la aplicación
  *
  * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
@@ -38,31 +37,31 @@ import java.util.logging.Logger;
  */
 public class Global {
 
-    private static final List<PrintStream> standardOutputWriters = new ArrayList<>();
-    private static final List<PrintStream> errorOutputWriters = new ArrayList<>();
+    private static final List<PrintStream> STANDARD_OUTPUT_WRITERS = new ArrayList<>();
+    private static final List<PrintStream> ERROR_OUTPUT_WRITERS = new ArrayList<>();
 
-    private static final List<FileWriter> standardOutputLoggers = new ArrayList<>();
-    private static final List<FileWriter> errorOutputLoggers = new ArrayList<>();
+    private static final List<FileWriter> STANDARD_OUTPUT_LOGGERS = new ArrayList<>();
+    private static final List<FileWriter> ERROR_OUTPUT_LOGGERS = new ArrayList<>();
 
     static {
-        standardOutputWriters.add(System.out);
-        errorOutputWriters.add(System.err);
+        STANDARD_OUTPUT_WRITERS.add(System.out);
+        ERROR_OUTPUT_WRITERS.add(System.err);
     }
 
     public static void addStandardOutputLogger(FileWriter fileWriter) {
-        standardOutputLoggers.add(fileWriter);
+        STANDARD_OUTPUT_LOGGERS.add(fileWriter);
     }
 
     public static void addErrorOutputLogger(FileWriter fileWriter) {
-        errorOutputLoggers.add(fileWriter);
+        ERROR_OUTPUT_LOGGERS.add(fileWriter);
     }
 
     public static void removeStandardOutputLogger(FileWriter fileWriter) {
-        standardOutputLoggers.remove(fileWriter);
+        STANDARD_OUTPUT_LOGGERS.remove(fileWriter);
     }
 
     public static void removeErrorOutputLogger(FileWriter fileWriter) {
-        errorOutputLoggers.remove(fileWriter);
+        ERROR_OUTPUT_LOGGERS.remove(fileWriter);
     }
 
     public static boolean isPrintDatasets() {
@@ -70,12 +69,10 @@ public class Global {
     }
 
     /**
-     * Hace una pregunta cerrarda al usuario por linea de comandos cuya
-     * respuesta es sí o no. Si el usuario da una respuesta distinta, vuelve a
-     * formularle la pregunta indicando que solo puede responder sí o no.
+     * Hace una pregunta cerrarda al usuario por linea de comandos cuya respuesta es sí o no. Si el usuario da una
+     * respuesta distinta, vuelve a formularle la pregunta indicando que solo puede responder sí o no.
      *
-     * @param textOfQuestion Texto informativo que se muestra al usuario para
-     * informar de la decisión que debe tomar.
+     * @param textOfQuestion Texto informativo que se muestra al usuario para informar de la decisión que debe tomar.
      * @return true si el usuario responde sí, false si responde no.
      */
     public static boolean askUser(String textOfQuestion) {
@@ -258,13 +255,13 @@ public class Global {
             } else if (ERROR.isFlagPresent(consoleParameters)) {
                 return ERROR;
             } else {
-                return MESSAGE;
+                return messageLevelPrinted;
             }
         }
     }
     /**
-     * Indica si se deben mostrar mensajes o no. Los algoritmos indican en qué
-     * punto están en cada momento. Por defecto no se muestran.
+     * Indica si se deben mostrar mensajes o no. Los algoritmos indican en qué punto están en cada momento. Por defecto
+     * no se muestran.
      */
     private static MessageLevel messageLevelPrinted = MessageLevel.MESSAGE;
 
@@ -279,6 +276,10 @@ public class Global {
         }
     }
 
+    public static void showInfoMessageTimestamped(String message) {
+        Global.showInfoMessage(addTimestampToMessage(message));
+    }
+
     /**
      * Muestra la cadena indicada como parámetro en la salida por defecto.
      *
@@ -291,8 +292,7 @@ public class Global {
     }
 
     /**
-     * Muestra el estado de la pila en el momento en que se creó la excepción
-     * indicada por parámetro.
+     * Muestra el estado de la pila en el momento en que se creó la excepción indicada por parámetro.
      *
      * @param ex Excepción con la información del error.
      */
@@ -314,8 +314,7 @@ public class Global {
     }
 
     /**
-     * Muestra el estado de la pila en el momento en que se creó la excepción
-     * indicada por parámetro.
+     * Muestra el estado de la pila en el momento en que se creó la excepción indicada por parámetro.
      *
      * @param ex Excepción con la información de la advertencia.
      */
@@ -347,7 +346,7 @@ public class Global {
     }
 
     public static void printStandard(String message) {
-        standardOutputLoggers.stream().forEach(logger -> {
+        STANDARD_OUTPUT_LOGGERS.stream().forEach(logger -> {
             try {
                 logger.append(message);
             } catch (IOException ex) {
@@ -355,13 +354,13 @@ public class Global {
             }
         });
 
-        standardOutputWriters.stream().forEach(logger -> {
+        STANDARD_OUTPUT_WRITERS.stream().forEach(logger -> {
             logger.append(message);
         });
     }
 
     public static void printError(String message) {
-        errorOutputLoggers.stream().forEach(logger -> {
+        ERROR_OUTPUT_LOGGERS.stream().forEach(logger -> {
             try {
                 logger.append(message);
             } catch (IOException ex) {
@@ -369,7 +368,7 @@ public class Global {
             }
         });
 
-        errorOutputWriters.stream().forEach(logger -> {
+        ERROR_OUTPUT_WRITERS.stream().forEach(logger -> {
             logger.append(message);
         });
     }

@@ -22,6 +22,7 @@ import delfos.common.parameters.Parameter;
 import delfos.common.parameters.restriction.IntegerParameter;
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
+import delfos.dataset.basic.user.User;
 import delfos.similaritymeasures.SimilarityMeasureAdapter;
 import java.util.Collection;
 import java.util.Set;
@@ -78,5 +79,10 @@ public class RelevanceFactor extends SimilarityMeasureAdapter implements UserUse
         }
 
         return similarity;
+    }
+
+    @Override
+    public double similarity(DatasetLoader<? extends Rating> datasetLoader, User user1, User user2) {
+        return similarity(datasetLoader, user1.getId(), user2.getId());
     }
 }

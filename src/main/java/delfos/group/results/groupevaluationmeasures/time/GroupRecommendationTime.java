@@ -35,7 +35,7 @@ import delfos.group.results.grouprecomendationresults.GroupRecommenderSystemResu
 public class GroupRecommendationTime extends GroupEvaluationMeasure {
 
     @Override
-    public GroupEvaluationMeasureResult getMeasureResult(GroupRecommenderSystemResult grsResult, DatasetLoader<? extends Rating> originalDatasetLoader, RatingsDataset<? extends Rating> testDataset, RelevanceCriteria relevanceCriteria, DatasetLoader<? extends Rating> trainingDatasetLoader, DatasetLoader<? extends Rating> testDatasetLoader) {
+    public GroupEvaluationMeasureResult getMeasureResult(GroupRecommenderSystemResult grsResult, DatasetLoader<? extends Rating> originalDatasetLoader, RelevanceCriteria relevanceCriteria, DatasetLoader<? extends Rating> trainingDatasetLoader, DatasetLoader<? extends Rating> testDatasetLoader) {
         MeanIterative_Synchronized mean = new MeanIterative_Synchronized();
         grsResult.getGroupsOfUsers().parallelStream()
                 .forEach(GroupOfUsers -> {

@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,44 +16,40 @@
  */
 package delfos.factories;
 
+import delfos.ERROR_CODES;
+import delfos.common.Global;
+import delfos.common.parameters.ParameterOwner;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
-import delfos.ERROR_CODES;
-import delfos.common.Global;
-import delfos.common.parameters.ParameterOwner;
 
 /**
- * Clase que define el comportamiento general de una factoría. Las factorías que
- * hereden de esta se deben implementar como singleton, es decir, implementando
- * el método:
+ * Clase que define el comportamiento general de una factoría. Las factorías que hereden de esta se deben implementar
+ * como singleton, es decir, implementando el método:
  *
  * <p>
  * public static Factory getInstance();
  *
  * <p>
- * Además deben añadir las clases que crean en su fragmento de inicialización de
- * clase.
+ * Además deben añadir las clases que crean en su fragmento de inicialización de clase.
  *
  * @author jcastro-inf ( https://github.com/jcastro-inf )
  * @version 1.0 09-May-2013
  * @param <TypeForCreation>
  */
-
 public class Factory<TypeForCreation extends ParameterOwner> {
 
     /**
-     * Diccionario de todas las clases que implementan la clase genérica
-     * indicada, indexados por nombre de la clase que lo implementa.
+     * Diccionario de todas las clases que implementan la clase genérica indicada, indexados por nombre de la clase que
+     * lo implementa.
      */
     protected final Map<String, Class<? extends TypeForCreation>> allClasses = new TreeMap<>();
 
     /**
-     * Indica a la biblioteca de recomendación que hay una nueva clase y la
-     * añade a la lista de clases conocidas de este tipo. Le añade también el
-     * alias descrito en el parámetro oldName, para compatibilidad hacia atrás.
+     * Indica a la biblioteca de recomendación que hay una nueva clase y la añade a la lista de clases conocidas de este
+     * tipo. Le añade también el alias descrito en el parámetro oldName, para compatibilidad hacia atrás.
      *
      * @param classObject Clase del tipo que almacena esta factoría.
      * @param oldName Clase del tipo que almacena esta factoría.
@@ -72,8 +68,8 @@ public class Factory<TypeForCreation extends ParameterOwner> {
     }
 
     /**
-     * Indica a la biblioteca de recomendación que hay una nueva clase y la
-     * añade a la lista de clases conocidas de este tipo.
+     * Indica a la biblioteca de recomendación que hay una nueva clase y la añade a la lista de clases conocidas de este
+     * tipo.
      *
      * @param clase Clase del tipo que almacena esta factoría.
      */
@@ -81,10 +77,8 @@ public class Factory<TypeForCreation extends ParameterOwner> {
     public void addClass(Class<? extends TypeForCreation> clase) {
         if (!allClasses.containsKey(clase.getSimpleName())) {
             allClasses.put(clase.getSimpleName(), clase);
-        } else {
-            if (Global.isInfoPrinted()) {
-                Global.showWarning("The class " + clase.getName() + " was already known by the factory (" + this.getClass().getSimpleName() + ")");
-            }
+        } else if (Global.isInfoPrinted()) {
+            Global.showWarning("The class " + clase.getName() + " was already known by the factory (" + this.getClass().getSimpleName() + ")");
         }
         if (ParameterOwner.class.isAssignableFrom(clase)) {
             ParameterOwnerFactory.getInstance().addClass((Class<ParameterOwner>) clase);
@@ -92,13 +86,12 @@ public class Factory<TypeForCreation extends ParameterOwner> {
     }
 
     /**
-     * Busca la clase de entre las conocidas por la biblioteca, la crea y
-     * devuelve.Si el nombre no coincide con ninguna de las clases conocidas,
-     * devuelve null.
+     * Busca la clase de entre las conocidas por la biblioteca, la crea y devuelve.Si el nombre no coincide con ninguna
+     * de las clases conocidas, devuelve null.
      *
      * @param className Nombre de la clase a buscar.
-     * @return Instancia de la clase, creada con el constructor por defecto. Si
-     * el nombre no coincide con ninguna de las clases conocidas, devuelve null.
+     * @return Instancia de la clase, creada con el constructor por defecto. Si el nombre no coincide con ninguna de las
+     * clases conocidas, devuelve null.
      */
     public TypeForCreation getClassByName(String className) {
 
@@ -108,10 +101,6 @@ public class Factory<TypeForCreation extends ParameterOwner> {
 
         if (className == null) {
             throw new IllegalArgumentException("The argument className cannot be null.");
-        }
-
-        if (className.equals("")) {
-            throw new IllegalArgumentException("The argument className cannot be empty.");
         }
 
         Class<? extends TypeForCreation> claseCoincidente = allClasses.get(className);
@@ -132,8 +121,7 @@ public class Factory<TypeForCreation extends ParameterOwner> {
     }
 
     /**
-     * Obtiene una instancia de cada clase conocida por esta factoría, creada
-     * con el constructor por defecto.
+     * Obtiene una instancia de cada clase conocida por esta factoría, creada con el constructor por defecto.
      *
      * @return Lista con una instancia de cada clase que la factoría conoce.
      */

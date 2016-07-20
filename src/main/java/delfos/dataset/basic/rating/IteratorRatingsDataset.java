@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,19 +16,18 @@
  */
 package delfos.dataset.basic.rating;
 
+import delfos.ERROR_CODES;
+import delfos.common.exceptions.dataset.users.UserNotFound;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Map;
-import delfos.ERROR_CODES;
-import delfos.common.exceptions.dataset.users.UserNotFound;
 
 /**
  * Clase para iterar de forma genérica sobre un dataset de valoraciones.
  *
  * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
- * @version 1.0 07-Mar-2013 Implementada como clase, en lugar de como clase
- * interna de {@link RatingsDatasetAdapter}.
+ * @version 1.0 07-Mar-2013 Implementada como clase, en lugar de como clase interna de {@link RatingsDatasetAdapter}.
  * @param <RatingType>
  */
 public class IteratorRatingsDataset<RatingType extends Rating> implements Iterator<RatingType> {
@@ -37,7 +36,7 @@ public class IteratorRatingsDataset<RatingType extends Rating> implements Iterat
     private final LinkedList<Integer> _users;
     private final LinkedList<RatingType> _ratings;
     private final RatingsDataset<RatingType> _ratingsDataset;
-    private final Object exMut = 0;
+    private final Object exMut;
 
     /**
      * Crea el iterador para recorrer todos los ratings del dataset indicado.
@@ -45,9 +44,10 @@ public class IteratorRatingsDataset<RatingType extends Rating> implements Iterat
      * @param ratingsDataset
      */
     public IteratorRatingsDataset(RatingsDataset<RatingType> ratingsDataset) {
-        _users = new LinkedList<Integer>(ratingsDataset.allUsers());
+        _users = new LinkedList<>(ratingsDataset.allUsers());
         _ratingsDataset = ratingsDataset;
-        _ratings = new LinkedList<RatingType>();
+        _ratings = new LinkedList<>();
+        exMut = ratingsDataset;
         loadNextRating();
     }
 

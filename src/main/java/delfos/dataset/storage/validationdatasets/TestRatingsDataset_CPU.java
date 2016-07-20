@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -24,22 +24,20 @@ import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RatingsDataset;
 import delfos.dataset.basic.rating.RatingsDatasetAdapter;
 import delfos.dataset.basic.rating.domain.Domain;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
+import java.util.stream.Collectors;
 
 /**
- * Dataset que deja visibles las valoraciones especificadas en el conjunto de
- * datos indicado.
+ * Dataset que deja visibles las valoraciones especificadas en el conjunto de datos indicado.
  *
  * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 1.0 Unknow date
- * @version 1.2 06-Mar-2013 Modificación de los parámetros del constructor y
- * corrección de errores.
+ * @version 1.2 06-Mar-2013 Modificación de los parámetros del constructor y corrección de errores.
  * @version 1.1 (21-01-2013) Ahora implementa de {@link RatingsDatasetAdapter}
  * @param <RatingType>
  */
@@ -110,22 +108,39 @@ public class TestRatingsDataset_CPU<RatingType extends Rating> extends RatingsDa
         }
     }
 
+    private final Set<Integer> usersWarned = Collections.synchronizedSet(new TreeSet<>());
+
     @Override
     public Map<Integer, RatingType> getUserRatingsRated(Integer idUser) throws UserNotFound {
-        TreeMap<Integer, RatingType> ret = new TreeMap<>();
-        Collection<Integer> testSetForUser = testRatings_byUser.get(idUser);
-        if (testSetForUser == null) {
-            throw new UserNotFound(idUser);
-        }
-        for (int idItem : testSetForUser) {
-            try {
-                ret.put(idItem, originalDataset.getRating(idUser, idItem));
-            } catch (ItemNotFound ex) {
-                Global.showError(ex);
-                ERROR_CODES.ITEM_NOT_FOUND.exit(ex);
+        if (!testRatings_byUser.containsKey(idUser)) {
+            synchronized (usersWarned) {
+                if (!usersWarned.contains(idUser)) {
+                    usersWarned.add(idUser);
+                    if (originalDataset.allUsers().contains(idUser)) {
+                        Global.showWarning("User " + idUser + " has no ratings in the test set.");
+                    } else {
+                        throw new UserNotFound(idUser);
+                    }
+                }
             }
+            return Collections.EMPTY_MAP;
         }
-        return ret;
+
+        Map<Integer, RatingType> userRatingsRated = testRatings_byUser.get(idUser).parallelStream()
+                .collect(Collectors.toMap(
+                        idItem -> idItem,
+                        idItem -> {
+                            try {
+                                return originalDataset.getRating(idUser, idItem);
+                            } catch (ItemNotFound ex) {
+                                Global.showError(ex);
+                                ERROR_CODES.ITEM_NOT_FOUND.exit(ex);
+                                throw new IllegalArgumentException(ex);
+                            }
+                        }
+                ));
+
+        return userRatingsRated;
     }
 
     @Override

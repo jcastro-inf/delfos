@@ -18,6 +18,7 @@ package delfos.rs.bufferedrecommenders;
 
 import delfos.Constants;
 import delfos.ERROR_CODES;
+import delfos.common.FileUtilities;
 import delfos.common.Global;
 import delfos.common.exceptions.dataset.CannotLoadContentDataset;
 import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
@@ -28,13 +29,17 @@ import delfos.common.exceptions.ratings.NotEnoughtUserInformation;
 import delfos.common.parameters.Parameter;
 import delfos.common.parameters.restriction.DirectoryParameter;
 import delfos.common.parameters.restriction.RecommenderSystemParameterRestriction;
+import delfos.dataset.basic.item.Item;
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
+import delfos.dataset.basic.user.User;
 import delfos.rs.RecommendationModelBuildingProgressListener;
 import delfos.rs.RecommenderSystem;
 import delfos.rs.RecommenderSystemAdapter;
 import delfos.rs.collaborativefiltering.svd.TryThisAtHomeSVD;
 import delfos.rs.recommendation.Recommendation;
+import delfos.rs.recommendation.RecommendationsToUser;
+import java.io.EOFException;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -44,12 +49,13 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.Collection;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
- * Sistema de recomendación que almacena las recomendaciones calculadas en un
- * archivo en disco, para agilizar posteriores ejecuciones. Almacena los
- * archivos en el directorio indicado por parámetro. El nombre de los archivos
- * es el hashCode de las valoraciones del usuario.
+ * Sistema de recomendación que almacena las recomendaciones calculadas en un archivo en disco, para agilizar
+ * posteriores ejecuciones. Almacena los archivos en el directorio indicado por parámetro. El nombre de los archivos es
+ * el hashCode de las valoraciones del usuario.
  *
  * @author jcastro-inf ( https://github.com/jcastro-inf )
  * @version 1.0 18-Jun-2013
@@ -73,8 +79,7 @@ public class RecommenderSystem_bufferedRecommendations extends RecommenderSystem
             )
     );
     /**
-     * Sistema de recomendación con persistencia en modelo para el que se fija
-     * el modelo.
+     * Sistema de recomendación con persistencia en modelo para el que se fija el modelo.
      */
     public static final Parameter RECOMMENDER_SYSTEM = new Parameter(
             "recommenderSystem",
@@ -116,29 +121,22 @@ public class RecommenderSystem_bufferedRecommendations extends RecommenderSystem
     }
 
     @Override
-    public Collection<Recommendation> recommendToUser(DatasetLoader<? extends Rating> datasetLoader, Object model, Integer idUser, java.util.Set<Integer> candidateItems) throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset, NotEnoughtUserInformation {
-        Map<Integer, ? extends Rating> userRatings = datasetLoader.getRatingsDataset().getUserRatingsRated(idUser);
+    public RecommendationsToUser recommendToUser(DatasetLoader<? extends Rating> datasetLoader, Object recommendationModel, User user, Set<Item> candidateItems) {
+        Map<Integer, ? extends Rating> userRatings = datasetLoader.getRatingsDataset().getUserRatingsRated(user.getId());
 
         int hashCodeOfRatings = userRatings.hashCode();
-        String fileName = getPersistenceDirectory().getAbsolutePath() + File.separator + "idUser_" + idUser + "_" + hashCodeOfRatings + DEFAULT_RECOMMENDATIONS_EXTENSION;
-        File file = new File(fileName);
+        String recommendationsFileName = getPersistenceDirectory().getAbsolutePath() + File.separator + "idUser_" + user.getId() + "_" + hashCodeOfRatings + DEFAULT_RECOMMENDATIONS_EXTENSION;
+        File recommendationsFile = new File(recommendationsFileName);
 
-        file.getParentFile().mkdirs();
+        FileUtilities.createDirectoriesForFile(recommendationsFile);
 
-        Collection<Recommendation> recommendations;
+        RecommendationsToUser recommendations;
 
-        if (!file.exists()) {
-            recommendations = getRecommenderSystem().recommendToUser(datasetLoader, model, idUser, candidateItems);
-            try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(file))) {
-                oos.writeObject(userRatings);
-                oos.writeObject(recommendations);
-            } catch (IOException ex) {
-                Global.showWarning("The serialization of ratings and recommendations had a problem.");
-                throw new UnsupportedOperationException(ex);
-            }
+        if (!recommendationsFile.exists()) {
+            recommendations = actuallyComputeTheRecommendaitonsAndSaveThem(datasetLoader, recommendationModel, user, candidateItems, recommendationsFile, userRatings);
         } else {
 
-            try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(file))) {
+            try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(recommendationsFile))) {
                 Map<Integer, ? extends Rating> userRatings_file = (Map<Integer, ? extends Rating>) ois.readObject();
                 if (userRatings_file.hashCode() != hashCodeOfRatings) {
                     Global.showWarning("The hash code in the name of loaded file (" + hashCodeOfRatings
@@ -155,7 +153,7 @@ public class RecommenderSystem_bufferedRecommendations extends RecommenderSystem
                             + userRatings_file.toString() + "\n");
                 }
 
-                recommendations = (Collection<Recommendation>) ois.readObject();
+                recommendations = (RecommendationsToUser) ois.readObject();
 
                 if (Global.isVerboseAnnoying()) {
                     Global.showInfoMessage("The recommendations have been loaded: \n" + recommendations.toString() + "\n");
@@ -167,14 +165,38 @@ public class RecommenderSystem_bufferedRecommendations extends RecommenderSystem
                 //Esta excepción no puede ocurrir nunca, ya que se ha comprobado en el if.
                 ERROR_CODES.UNDEFINED_ERROR.exit(ex);
                 throw new IllegalArgumentException(ex);
+            } catch (EOFException ex) {
+                Global.showWarning("Unexpected end of file: " + recommendationsFile.getAbsolutePath() + " building again");
+                recommendations = actuallyComputeTheRecommendaitonsAndSaveThem(datasetLoader, recommendationModel, user, candidateItems, recommendationsFile, userRatings);
             } catch (IOException ex) {
-                Global.showWarning("Cannot read file: " + file.getAbsolutePath());
-                ERROR_CODES.CANNOT_READ_RECOMMENDATIONS.exit(ex);
-                throw new IllegalArgumentException(ex);
+                Global.showWarning("Cannot read file: " + recommendationsFile.getAbsolutePath() + " building again");
+                recommendations = actuallyComputeTheRecommendaitonsAndSaveThem(datasetLoader, recommendationModel, user, candidateItems, recommendationsFile, userRatings);
             }
         }
 
         return recommendations;
+    }
+
+    public RecommendationsToUser actuallyComputeTheRecommendaitonsAndSaveThem(DatasetLoader<? extends Rating> datasetLoader, Object recommendationModel, User user, Set<Item> candidateItems, File recommendationsFile, Map<Integer, ? extends Rating> userRatings) throws UnsupportedOperationException {
+        RecommendationsToUser recommendations = getRecommenderSystem().recommendToUser(datasetLoader, recommendationModel, user, candidateItems);
+        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(recommendationsFile))) {
+            oos.writeObject(userRatings);
+            oos.writeObject(recommendations);
+            oos.flush();
+        } catch (IOException ex) {
+            Global.showWarning("The serialization of ratings and recommendations had a problem.");
+            throw new UnsupportedOperationException(ex);
+        }
+        return recommendations;
+    }
+
+    @Override
+    public Collection<Recommendation> recommendToUser(DatasetLoader<? extends Rating> datasetLoader, Object model, Integer idUser, Set<Integer> candidateIdItems)
+            throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset, NotEnoughtUserInformation {
+
+        User user = datasetLoader.getUsersDataset().get(idUser);
+        Set<Item> candidateItems = candidateIdItems.stream().map(idItem -> datasetLoader.getContentDataset().get(idItem)).collect(Collectors.toSet());
+        return recommendToUser(datasetLoader, model, user, candidateItems).getRecommendations();
     }
 
     public RecommenderSystem getRecommenderSystem() {

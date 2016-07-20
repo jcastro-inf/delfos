@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -23,29 +23,29 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-public class RecommendationsWithNeighbors extends Recommendations {
+public class RecommendationsToUserWithNeighbors extends RecommendationsToUser {
 
     private List<Neighbor> neighbors;
 
-    public static final RecommendationsWithNeighbors EMPTY_LIST = new RecommendationsWithNeighbors(
-            User.ANONYMOUS_USER.getName(),
+    public static final RecommendationsToUserWithNeighbors EMPTY_LIST = new RecommendationsToUserWithNeighbors(
+            User.ANONYMOUS_USER,
             Collections.EMPTY_LIST,
             Collections.EMPTY_LIST);
 
-    public RecommendationsWithNeighbors() {
+    public RecommendationsToUserWithNeighbors() {
         super();
     }
 
-    public RecommendationsWithNeighbors(String targetIdentifier, Collection<Recommendation> recommendations) {
-        super(targetIdentifier, recommendations);
+    public RecommendationsToUserWithNeighbors(User user, Collection<Recommendation> recommendations) {
+        super(user, recommendations);
     }
 
-    public RecommendationsWithNeighbors(String targetIdentifier, Collection<Recommendation> recommendations, RecommendationComputationDetails recommendationComputationDetails) {
-        super(targetIdentifier, recommendations, recommendationComputationDetails);
+    public RecommendationsToUserWithNeighbors(User user, Collection<Recommendation> recommendations, RecommendationComputationDetails recommendationComputationDetails) {
+        super(user, recommendations, recommendationComputationDetails);
     }
 
-    public RecommendationsWithNeighbors(String targetIdentifier, Collection<Recommendation> recommendations, List<Neighbor> neighbors) {
-        super(targetIdentifier, recommendations);
+    public RecommendationsToUserWithNeighbors(User user, Collection<Recommendation> recommendations, List<Neighbor> neighbors) {
+        super(user, recommendations);
         this.neighbors = Collections.unmodifiableList(new ArrayList<Neighbor>(neighbors));
     }
 

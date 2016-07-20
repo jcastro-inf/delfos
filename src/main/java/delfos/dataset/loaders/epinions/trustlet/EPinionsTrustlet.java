@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,7 +16,6 @@
  */
 package delfos.dataset.loaders.epinions.trustlet;
 
-import com.google.common.io.LineReader;
 import delfos.common.Chronometer;
 import delfos.common.Global;
 import delfos.common.exceptions.dataset.CannotLoadContentDataset;
@@ -44,6 +43,7 @@ import delfos.dataset.basic.user.User;
 import delfos.dataset.basic.user.UsersDataset;
 import delfos.dataset.basic.user.UsersDatasetAdapter;
 import delfos.dataset.storage.memory.BothIndexRatingsDataset;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
@@ -105,7 +105,7 @@ public class EPinionsTrustlet extends DatasetLoaderAbstract<Rating> implements U
 
                 String trustFile = directory + File.separator + "user_rating.txt";
                 Collection<TrustStatement> trustStatements = new LinkedList<>();
-                LineReader lineReader = new LineReader(new FileReader(trustFile));
+                BufferedReader lineReader = new BufferedReader(new FileReader(trustFile));
 
                 String line = lineReader.readLine();
                 int lineNumber = 0;
@@ -151,7 +151,7 @@ public class EPinionsTrustlet extends DatasetLoaderAbstract<Rating> implements U
                 Feature authorFeature = featureGenerator.createFeature("author", FeatureType.Nominal);
                 Feature subjectFeature = featureGenerator.createFeature("subject", FeatureType.Nominal);
 
-                LineReader lineReader = new LineReader(new FileReader(contentFile));
+                BufferedReader lineReader = new BufferedReader(new FileReader(contentFile));
                 String line = lineReader.readLine();
 
                 int i = 1;
@@ -250,7 +250,7 @@ public class EPinionsTrustlet extends DatasetLoaderAbstract<Rating> implements U
 
                 FileReader friendshipDataFileReader = new FileReader(ratingsFile);
 
-                LineReader lineReader = new LineReader(friendshipDataFileReader);
+                BufferedReader lineReader = new BufferedReader(friendshipDataFileReader);
                 int lineNumber = 1;
                 String line = lineReader.readLine();
 

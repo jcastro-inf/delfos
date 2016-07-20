@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -17,8 +17,7 @@
 package delfos.common.aggregationoperators;
 
 /**
- * Operador de agregación F1-Score, que agrega los valores indicados según la
- * siguiente fórmula:
+ * Operador de agregación F1-Score, que agrega los valores indicados según la siguiente fórmula:
  *
  * <p>
  * <p>
@@ -49,6 +48,11 @@ public class ArmonicAggregationOfTwoValues extends TwoValuesAggregator {
         if (d2 > 1) {
             throw new IllegalArgumentException("v2 es mayor que uno.");
         }
-        return (double) ((2 * d1 * d2) / (d1 + d2));
+
+        if ((d1 + d2) == 0) {
+            return 0;
+        } else {
+            return (double) ((2 * d1 * d2) / (d1 + d2));
+        }
     }
 }

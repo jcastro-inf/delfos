@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,6 +16,7 @@
  */
 package delfos.rs.recommendation;
 
+import java.io.Serializable;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
@@ -24,33 +25,11 @@ import java.util.TreeMap;
  *
  * @author jcastro-inf ( https://github.com/jcastro-inf )
  */
-public class RecommendationComputationDetails {
+public class RecommendationComputationDetails implements Serializable {
+
+    private static final long serialVersionUID = 65455846L;
 
     private final Map<DetailField, Object> details;
-
-    public enum DetailField {
-
-        TimeTaken;
-
-        public static DetailField valueOfNoCase(String name) {
-            for (DetailField detailField : values()) {
-                if (detailField.name().equalsIgnoreCase(name)) {
-                    return detailField;
-                }
-            }
-
-            throw new IllegalStateException("No DetailField with identifier '" + name + "'");
-        }
-
-        public Object parseValue(String detailFieldValueString) {
-            switch (this) {
-                case TimeTaken:
-                    return Long.parseLong(detailFieldValueString);
-                default:
-                    throw new IllegalStateException("Unknown DetaildField '" + this + "'");
-            }
-        }
-    }
 
     public static final RecommendationComputationDetails EMPTY_DETAILS = new RecommendationComputationDetails();
 

@@ -34,7 +34,7 @@ import java.util.Collection;
  *
  * @author jcastro
  */
-public class ConditionalProbability extends SimilarityMeasureAdapter implements CollaborativeSimilarityMeasure {
+public class ConditionalProbability extends SimilarityMeasureAdapter implements CollaborativeSimilarityMeasure, UserUserSimilarity {
 
     public double similarity(DatasetLoader<? extends Rating> datasetLoader, User user1, User user2) throws UserNotFound, CannotLoadRatingsDataset {
         return similarity(CommonRating.intersection(datasetLoader, user1, user2), datasetLoader.getRatingsDataset());
@@ -66,6 +66,11 @@ public class ConditionalProbability extends SimilarityMeasureAdapter implements 
     @Override
     public boolean RSallowed(Class<? extends RecommenderSystemAdapter> rs) {
         return KnnMemoryBasedCFRS.class.isAssignableFrom(rs);
+    }
+
+    @Override
+    public double similarity(DatasetLoader<? extends Rating> datasetLoader, int idUser1, int idUser2) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
 }

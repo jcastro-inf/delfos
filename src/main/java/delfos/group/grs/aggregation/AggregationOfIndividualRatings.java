@@ -45,18 +45,19 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
- * Implementa un sistema de recomendación a grupos que agrega las valoraciones
- * de cada individuo para formar un perfil asociado al grupo. Una vez obtenido
- * este perfil, calcula las recomendaciones al grupo como si éste se tratara de
- * un usuario individual.
+ * Implementa un sistema de recomendación a grupos que agrega las valoraciones de cada individuo para formar un perfil
+ * asociado al grupo. Una vez obtenido este perfil, calcula las recomendaciones al grupo como si éste se tratara de un
+ * usuario individual.
  *
- * La técnica utilizada para la agregación de preferencias es calcular la media
- * de las valoraciones de los usuarios en cada producto
+ * La técnica utilizada para la agregación de preferencias es calcular la media de las valoraciones de los usuarios en
+ * cada producto
  *
  * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
@@ -68,8 +69,7 @@ public class AggregationOfIndividualRatings
 
     private static final long serialVersionUID = 1L;
     /**
-     * "Especifica el sistema de recomendación single user que se extiende para
-     * ser usado en recomendación a grupos.
+     * "Especifica el sistema de recomendación single user que se extiende para ser usado en recomendación a grupos.
      */
     public static final Parameter SINGLE_USER_RECOMMENDER = new Parameter(
             "SINGLE_USER_RECOMMENDER",
@@ -77,8 +77,7 @@ public class AggregationOfIndividualRatings
             "Especifica el sistema de recomendación single user que se extiende "
             + "para ser usaso en recomendación a grupos.");
     /**
-     * Especifica la técnica de agregación para agregar los ratings de los
-     * usuarios y formar el perfil del grupo.
+     * Especifica la técnica de agregación para agregar los ratings de los usuarios y formar el perfil del grupo.
      */
     public static final Parameter AGGREGATION_OPERATOR = new Parameter(
             "AGGREGATION_OPERATOR",
@@ -188,9 +187,8 @@ public class AggregationOfIndividualRatings
 
     public static <RatingType extends Rating> Map<Item, RatingType> getGroupProfile(
             DatasetLoader<RatingType> datasetLoader,
-            AggregationOperator aggregationOperator,
+            Function<Collection<RatingType>, Optional<RatingType>> ratingsAggregator,
             GroupOfUsers groupOfUsers) throws UserNotFound, CannotLoadRatingsDataset {
-
         //Generate groupProfile:
         Map<Integer, List<RatingType>> groupRatingsList = new TreeMap<>();
 
@@ -210,12 +208,40 @@ public class AggregationOfIndividualRatings
         Map<Item, RatingType> groupRatings = new TreeMap<>();
         groupRatingsList.keySet().stream().forEach((idItem) -> {
             List<RatingType> lista = groupRatingsList.get(idItem);
-            double aggregateValue = aggregationOperator.aggregateValues(lista.stream().map(rating -> rating.getRatingValue().doubleValue()).collect(Collectors.toList()));
-            Item item = datasetLoader.getContentDataset().get(idItem);
-            groupRatings.put(item, (RatingType) lista.get(0).copyWithRatingValue(aggregateValue));
+            Optional<RatingType> groupRating = ratingsAggregator.apply(lista);
+
+            if (groupRating.isPresent()) {
+                groupRatings.put(groupRating.get().getItem(), groupRating.get());
+            }
         });
 
         return groupRatings;
+
+    }
+
+    public static <RatingType extends Rating> Map<Item, RatingType> getGroupProfile(
+            DatasetLoader<RatingType> datasetLoader,
+            AggregationOperator aggregationOperator,
+            GroupOfUsers groupOfUsers) throws UserNotFound, CannotLoadRatingsDataset {
+
+        Function<Collection<RatingType>, Optional<RatingType>> ratingsAggregator
+                = (ratings) -> {
+
+                    List<Number> ratingsValues = ratings.stream().map(rating -> rating.getRatingValue()).collect(Collectors.toList());
+
+                    double aggregatedValue = aggregationOperator.aggregateValues(ratingsValues);
+
+                    RatingType groupRating = (RatingType) ratings.stream()
+                    .findFirst().get()
+                    .copyWithRatingValue(aggregatedValue);
+
+                    return Optional.of(groupRating);
+                };
+
+        return getGroupProfile(
+                datasetLoader,
+                ratingsAggregator,
+                groupOfUsers);
     }
 
     public static <RatingType extends Rating> Collection<Recommendation> recommendWithGroupRatings(

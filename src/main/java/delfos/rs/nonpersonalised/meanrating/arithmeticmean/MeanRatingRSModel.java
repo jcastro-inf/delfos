@@ -16,14 +16,15 @@
  */
 package delfos.rs.nonpersonalised.meanrating.arithmeticmean;
 
+import delfos.rs.recommendation.Recommendation;
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * Modelo de recomendación del sistema {@link MeanRatingRS}, que almacena para
- * cada producto su valoración media.
+ * Modelo de recomendación del sistema {@link MeanRatingRS}, que almacena para cada producto su valoración media.
  *
  * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
@@ -32,6 +33,16 @@ import java.util.stream.Collectors;
 public class MeanRatingRSModel implements Serializable {
 
     private static final long serialVersionUID = 301;
+
+    public static MeanRatingRSModel create(Collection<Recommendation> recommendationModel1) {
+        List<MeanRating> meanRatings = recommendationModel1.stream()
+                .sorted(Recommendation.BY_PREFERENCE_DESC)
+                .map(recommendation -> new MeanRating(recommendation.getItem(), recommendation.getPreference().doubleValue()))
+                .collect(Collectors.toList());
+        MeanRatingRSModel meanRatingRSModel = new MeanRatingRSModel(meanRatings);
+        return meanRatingRSModel;
+
+    }
     private final List<MeanRating> rangedMeanRatings;
 
     public MeanRatingRSModel(List<MeanRating> rangedMeanRatings) {

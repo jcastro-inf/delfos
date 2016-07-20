@@ -25,7 +25,7 @@ import delfos.rs.collaborativefiltering.knn.RecommendationEntity;
 import delfos.rs.collaborativefiltering.profile.Neighbor;
 import delfos.rs.recommendation.Recommendation;
 import delfos.rs.recommendation.Recommendations;
-import delfos.rs.recommendation.RecommendationsWithNeighbors;
+import delfos.rs.recommendation.RecommendationsToUserWithNeighbors;
 import delfos.view.neighborhood.RecommendationsExplainedWindow;
 import delfos.view.neighborhood.components.recommendations.RecommendationsTable;
 import delfos.view.neighborhood.results.RecommendationsGUI;
@@ -203,8 +203,8 @@ public class KnnMemoryCFRSRecommendationsGUI implements RecommendationsGUI {
 
     @Override
     public void clearData() {
-        recommendationsTable.setRecomendaciones(RecommendationsWithNeighbors.EMPTY_LIST);
-        neighborsTable.setNeighbors(RecommendationsWithNeighbors.EMPTY_LIST);
+        recommendationsTable.setRecomendaciones(RecommendationsToUserWithNeighbors.EMPTY_LIST);
+        neighborsTable.setNeighbors(RecommendationsToUserWithNeighbors.EMPTY_LIST);
         ratingsTable.setRatings(recommendationsExplainedWindow.configuredDatasetSelected().getDatasetLoader(), null, null);
 
     }
@@ -229,8 +229,8 @@ public class KnnMemoryCFRSRecommendationsGUI implements RecommendationsGUI {
 
         recommendationsTable.setRecomendaciones(new Recommendations(recommendations.getTarget(), recommendationsComplete));
 
-        if (recommendations instanceof RecommendationsWithNeighbors) {
-            RecommendationsWithNeighbors recommendationsWithNeighbors = (RecommendationsWithNeighbors) recommendations;
+        if (recommendations instanceof RecommendationsToUserWithNeighbors) {
+            RecommendationsToUserWithNeighbors recommendationsWithNeighbors = (RecommendationsToUserWithNeighbors) recommendations;
             Map<Integer, Neighbor> neighbors = recommendationsWithNeighbors.getNeighbors().stream()
                     .collect(Collectors.toMap(
                             (neighbor -> neighbor.getIdNeighbor()),
@@ -248,8 +248,8 @@ public class KnnMemoryCFRSRecommendationsGUI implements RecommendationsGUI {
                     .collect(Collectors.toList());
 
             neighborsComplete.sort(Neighbor.BY_SIMILARITY_DESC);
-            neighborsTable.setNeighbors(new RecommendationsWithNeighbors(
-                    user.getName(),
+            neighborsTable.setNeighbors(new RecommendationsToUserWithNeighbors(
+                    user,
                     recommendations.getRecommendations(),
                     neighborsComplete)
             );

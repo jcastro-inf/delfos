@@ -47,6 +47,8 @@ import org.apache.commons.io.output.WriterOutputStream;
  */
 public class WeightedGraph<Node> implements Serializable, Comparable<WeightedGraph<Node>> {
 
+    public static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat("#0.00");
+
     private static final long serialVersionUID = 115L;
 
     protected final AdjMatrixEdgeWeightedDigraph adjMatrixEdgeWeightedDigraph;
@@ -60,8 +62,7 @@ public class WeightedGraph<Node> implements Serializable, Comparable<WeightedGra
      *
      * @param weightConnections Valores de las conexiones entre los elementos.
      *
-     * @throws IllegalArgumentException Si la estructura de valores de confianza
-     * es nula.
+     * @throws IllegalArgumentException Si la estructura de valores de confianza es nula.
      */
     public WeightedGraph(Map<Node, Map<Node, Number>> weightConnections) {
 
@@ -82,8 +83,7 @@ public class WeightedGraph<Node> implements Serializable, Comparable<WeightedGra
      *
      * @param matrix Connections
      * @param ordering ordering of both columns and rows of the matrix
-     * @throws IllegalArgumentException Si la estructura de valores de confianza
-     * es nula.
+     * @throws IllegalArgumentException Si la estructura de valores de confianza es nula.
      */
     public WeightedGraph(double[][] matrix, List<Node> ordering) {
         validateWeightMatrix(matrix);
@@ -180,8 +180,8 @@ public class WeightedGraph<Node> implements Serializable, Comparable<WeightedGra
      *
      * @return
      */
-    public Collection<Node> allNodes() {
-        return new ArrayList<>(nodesIndex.keySet());
+    public Set<Node> allNodes() {
+        return nodesIndex.keySet().stream().collect(Collectors.toSet());
     }
 
     public double distance(Node node1, Node node2) {
@@ -300,7 +300,6 @@ public class WeightedGraph<Node> implements Serializable, Comparable<WeightedGra
         final List<Node> sortedNodes = this.allNodes().stream().sorted().filter(node -> nodes.contains(node)).collect(Collectors.toList());
         Object[][] data = new Object[sortedNodes.size()][sortedNodes.size() + 1];
         columnNames.addAll(sortedNodes.stream().map(node -> node.toString() + " ").collect(Collectors.toList()));
-        DecimalFormat format = new DecimalFormat("0.0000");
         for (int node1index = 0; node1index < sortedNodes.size(); node1index++) {
             Node node1 = sortedNodes.get(node1index);
             int row = node1index;
@@ -314,7 +313,7 @@ public class WeightedGraph<Node> implements Serializable, Comparable<WeightedGra
                 String cellValue = getEdge(node1, node2)
                         .map(edge -> edge.weight())
                         .filter(weight -> weight > 0)
-                        .map(weight -> format.format(weight))
+                        .map(weight -> DECIMAL_FORMAT.format(weight))
                         .orElse("0");
                 data[row][column] = cellValue + " ";
             }
@@ -555,7 +554,6 @@ public class WeightedGraph<Node> implements Serializable, Comparable<WeightedGra
         final List<Node> sortedNodes = this.allNodes().stream().sorted().filter(node -> nodes.contains(node)).collect(Collectors.toList());
         Object[][] data = new Object[sortedNodes.size()][sortedNodes.size() + 1];
         columnNames.addAll(sortedNodes.stream().map(node -> node.toString()).collect(Collectors.toList()));
-        DecimalFormat format = new DecimalFormat("0.0000");
         for (int node1index = 0; node1index < sortedNodes.size(); node1index++) {
             Node node1 = sortedNodes.get(node1index);
             int row = node1index;
@@ -567,10 +565,11 @@ public class WeightedGraph<Node> implements Serializable, Comparable<WeightedGra
                 int column = node2index + 1;
 
                 double dist = floydWarshall.dist(node1index, node2index);
-                String cellValue = format.format(dist);
+                String cellValue = DECIMAL_FORMAT.format(dist) + " ";
                 data[row][column] = cellValue;
             }
         }
+
         TextTable textTable = new TextTable(columnNames.toArray(new String[0]), data);
         return textTable;
     }
@@ -654,6 +653,47 @@ public class WeightedGraph<Node> implements Serializable, Comparable<WeightedGra
         textTable.printTable(recordingStream, 0);
 
         return baos.toString();
+    }
+
+    public boolean hasAnyEdge() {
+        Optional<PathBetweenNodes<Node>> longestPath = allNodes().parallelStream()
+                .flatMap(user1 -> allNodes()
+                        .parallelStream()
+                        .map(user2 -> shortestPath(user1, user2)))
+                .filter(optionalPath -> optionalPath.isPresent())
+                .map(optionalPath -> optionalPath.get())
+                .filter(path -> !path.isSelf())
+                .collect(Collectors.maxBy(PathBetweenNodes.FURTHEST_PATH()));
+
+        return longestPath.isPresent();
+    }
+
+    public boolean hasAnyEdgeMissing() {
+
+        long count = allEdges().parallelStream().filter(edge -> !edge.isSelf()).count();
+
+        Optional<Optional<PathBetweenNodes<Node>>> missingEdge = allNodes().parallelStream()
+                .flatMap(user1 -> allNodes()
+                        .parallelStream()
+                        .map(user2 -> shortestPath(user1, user2)))
+                .filter(optionalPath -> !optionalPath.isPresent())
+                .findAny();
+
+        return !missingEdge.isPresent();
+    }
+
+    public Map<Node, Map<Node, Double>> getCompleteMapOfConnections() {
+        Map<Node, Map<Node, Double>> edgesOfSubGraph = allNodes().parallelStream().collect(Collectors.toMap(node1 -> node1, node1 -> {
+            Map<Node, Double> edgesFromThisVertex = allNodes().parallelStream()
+                    .collect(Collectors.toMap(
+                            node2 -> node2,
+                            node2 -> {
+                                return this.connectionWeight(node1, node2).orElse(0.0);
+                            }));
+
+            return edgesFromThisVertex;
+        }));
+        return edgesOfSubGraph;
     }
 
 }

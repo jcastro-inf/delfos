@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -30,7 +30,7 @@ import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.user.User;
 import delfos.rs.contentbased.ContentBasedRecommender;
 import delfos.rs.recommendation.Recommendation;
-import delfos.rs.recommendation.Recommendations;
+import delfos.rs.recommendation.RecommendationsToUser;
 import java.util.Collection;
 import java.util.Set;
 import java.util.TreeSet;
@@ -70,18 +70,15 @@ public abstract class RecommenderSystemAdapter<RecommendationModel>
     }
 
     @Override
-    public Recommendations recommendToUser(
-            DatasetLoader<? extends Rating> dataset,
-            RecommendationModel recommendationModel,
-            User user,
-            Set<Item> candidateItems) {
+    public RecommendationsToUser recommendToUser(
+            DatasetLoader<? extends Rating> dataset, RecommendationModel recommendationModel, User user, Set<Item> candidateItems) {
 
         try {
             TreeSet<Integer> itemSet = candidateItems.parallelStream()
                     .map((item) -> item.getId())
                     .collect(Collectors.toCollection(TreeSet::new));
 
-            return new Recommendations(user, recommendToUser(
+            return new RecommendationsToUser(user, recommendToUser(
                     dataset,
                     recommendationModel,
                     user.getId(),
@@ -91,8 +88,8 @@ public abstract class RecommenderSystemAdapter<RecommendationModel>
         } catch (ItemNotFound | CannotLoadContentDataset ex) {
             throw new IllegalStateException(ex);
         } catch (NotEnoughtUserInformation ex) {
-            return new Recommendations(
-                    dataset,
+            return new RecommendationsToUser(
+                    user,
                     candidateItems.parallelStream()
                     .map((item) -> new Recommendation(item, Double.NaN))
                     .collect(Collectors.toList()));

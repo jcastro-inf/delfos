@@ -21,7 +21,6 @@ import delfos.common.FileUtilities;
 import delfos.common.exceptions.dataset.users.UserNotFound;
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
-import delfos.dataset.basic.rating.RatingsDataset;
 import delfos.dataset.basic.rating.RelevanceCriteria;
 import delfos.dataset.util.DatasetPrinter;
 import delfos.group.groupsofusers.GroupOfUsers;
@@ -44,8 +43,8 @@ import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 /**
- * Writes extended information of the recommendation in an XML file. This
- * information is the test ratings of each group and its recommendations.
+ * Writes extended information of the recommendation in an XML file. This information is the test ratings of each group
+ * and its recommendations.
  *
  * @author jcastro-inf ( https://github.com/jcastro-inf )
  */
@@ -55,7 +54,6 @@ public class PrintTestSet extends GroupEvaluationMeasureInformationPrinter {
     public GroupEvaluationMeasureResult getMeasureResult(
             GroupRecommenderSystemResult groupRecommenderSystemResult,
             DatasetLoader<? extends Rating> originalDatasetLoader,
-            RatingsDataset<? extends Rating> testDataset,
             RelevanceCriteria relevanceCriteria,
             DatasetLoader<? extends Rating> trainingDatasetLoader,
             DatasetLoader<? extends Rating> testDatasetLoader) {
@@ -88,13 +86,13 @@ public class PrintTestSet extends GroupEvaluationMeasureInformationPrinter {
                             Map<Integer, Number> thisMemberRatings = new TreeMap<>();
 
                             try {
-                                Map<Integer, ? extends Rating> memberRatings = testDataset.getUserRatingsRated(idMember);
+                                Map<Integer, ? extends Rating> memberRatings = testDatasetLoader.getRatingsDataset().getUserRatingsRated(idMember);
 
                                 memberRatings.values().stream()
-                                .filter((rating) -> (items.contains(rating.getIdItem())))
-                                .forEach((rating) -> {
-                                    thisMemberRatings.put(rating.getIdItem(), rating.getRatingValue());
-                                });
+                                        .filter((rating) -> (items.contains(rating.getIdItem())))
+                                        .forEach((rating) -> {
+                                            thisMemberRatings.put(rating.getIdItem(), rating.getRatingValue());
+                                        });
                             } catch (UserNotFound ex) {
                                 Logger.getLogger(PrintTestSet.class.getName()).log(Level.SEVERE, null, ex);
                             }

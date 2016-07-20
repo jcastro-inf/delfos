@@ -8,11 +8,11 @@ import delfos.constants.DelfosTest;
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.RelevanceCriteria;
 import delfos.experiment.casestudy.cluster.TuringPreparator;
+import delfos.experiment.validation.validationtechnique.CrossFoldValidation_Ratings;
 import delfos.group.casestudy.defaultcase.GroupCaseStudy;
 import delfos.group.experiment.validation.groupformation.FixedGroupSize;
 import delfos.group.experiment.validation.groupformation.GroupFormationTechnique;
 import delfos.group.experiment.validation.predictionvalidation.NoPredictionProtocol;
-import delfos.group.experiment.validation.validationtechniques.CrossFoldValidation_groupRatedItems;
 import delfos.group.factories.GroupEvaluationMeasuresFactory;
 import delfos.group.grs.GroupRecommenderSystem;
 import delfos.group.grs.hesitant.HesitantKnnGroupUser;
@@ -57,16 +57,16 @@ public class HesitantGRS_3_CaseStudy_FixedGroupSize extends DelfosTest {
                 .stream()
                 .map((hesitantSimilarity) -> {
                     return neighborsTried.stream()
-                    .map((neighborhoodSize)
-                            -> {
-                        DecimalFormat format = new DecimalFormat("000");
-                        HesitantKnnGroupUser grs = new HesitantKnnGroupUser();
-                        grs.setAlias(hesitantSimilarity.getName() + "_neighborhoodSize=" + format.format(neighborhoodSize));
-                        grs.setParameterValue(HesitantKnnGroupUser.NEIGHBORHOOD_SIZE, neighborhoodSize);
-                        grs.setParameterValue(HesitantKnnGroupUser.HESITANT_SIMILARITY_MEASURE, hesitantSimilarity);
-                        return grs;
-                    })
-                    .collect(Collectors.toList());
+                            .map((neighborhoodSize)
+                                    -> {
+                                DecimalFormat format = new DecimalFormat("000");
+                                HesitantKnnGroupUser grs = new HesitantKnnGroupUser();
+                                grs.setAlias(hesitantSimilarity.getName() + "_neighborhoodSize=" + format.format(neighborhoodSize));
+                                grs.setParameterValue(HesitantKnnGroupUser.NEIGHBORHOOD_SIZE, neighborhoodSize);
+                                grs.setParameterValue(HesitantKnnGroupUser.HESITANT_SIMILARITY_MEASURE, hesitantSimilarity);
+                                return grs;
+                            })
+                            .collect(Collectors.toList());
                 }).collect(Collectors.toList());
 
         lists.stream().forEach((list) -> {
@@ -104,7 +104,7 @@ public class HesitantGRS_3_CaseStudy_FixedGroupSize extends DelfosTest {
                         null,
                         groupRecommenderSystem,
                         groupFormationTechnique,
-                        new CrossFoldValidation_groupRatedItems(),
+                        new CrossFoldValidation_Ratings(),
                         new NoPredictionProtocol(),
                         GroupEvaluationMeasuresFactory.getInstance().getAllClasses(),
                         new RelevanceCriteria(4),

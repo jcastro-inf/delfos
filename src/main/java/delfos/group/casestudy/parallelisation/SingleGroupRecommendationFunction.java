@@ -41,6 +41,10 @@ public class SingleGroupRecommendationFunction implements Function<SingleGroupRe
         this.recommendationProgress = null;
     }
 
+    public SingleGroupRecommendationFunction(ProgressChangedController recommendationProgress) {
+        this.recommendationProgress = recommendationProgress;
+    }
+
     @Override
     public SingleGroupRecommendationTaskOutput apply(SingleGroupRecommendationTaskInput task) {
 
@@ -51,6 +55,10 @@ public class SingleGroupRecommendationFunction implements Function<SingleGroupRe
         final DatasetLoader<? extends Rating> datasetLoader = task.getDatasetLoader();
         final Object recommendationModel = task.getRecommendationModel();
         final Set<Item> itemsRequested = task.getItemsRequested();
+
+        if (itemsRequested.isEmpty()) {
+            System.out.println(" stop");
+        }
 
         GroupRecommendations recommendations = null;
         long buildTime = -1;

@@ -71,12 +71,7 @@ public abstract class GroupEvaluationMeasure extends ParameterOwnerAdapter imple
      * valor de la métrica para cada ejecución
      */
     public abstract GroupEvaluationMeasureResult getMeasureResult(
-            GroupRecommenderSystemResult groupRecommenderSystemResult,
-            DatasetLoader<? extends Rating> originalDatasetLoader,
-            RatingsDataset<? extends Rating> testDataset,
-            RelevanceCriteria relevanceCriteria,
-            DatasetLoader<? extends Rating> trainingDatasetLoader,
-            DatasetLoader<? extends Rating> testDatasetLoader);
+            GroupRecommenderSystemResult groupRecommenderSystemResult, DatasetLoader<? extends Rating> originalDatasetLoader, RelevanceCriteria relevanceCriteria, DatasetLoader<? extends Rating> trainingDatasetLoader, DatasetLoader<? extends Rating> testDatasetLoader);
 
     /**
      * Devuelve true si la interpretación correcta de los valores de la medida

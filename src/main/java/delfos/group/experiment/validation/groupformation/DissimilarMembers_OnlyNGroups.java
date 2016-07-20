@@ -86,7 +86,7 @@ public class DissimilarMembers_OnlyNGroups extends GroupFormationTechnique {
     }
 
     @Override
-    public Collection<GroupOfUsers> shuffle(DatasetLoader<? extends Rating> datasetLoader) throws CannotLoadRatingsDataset {
+    public Collection<GroupOfUsers> generateGroups(DatasetLoader<? extends Rating> datasetLoader) throws CannotLoadRatingsDataset {
         if (datasetLoader == null) {
             throw new IllegalStateException("The datasetLoader is null.");
         }

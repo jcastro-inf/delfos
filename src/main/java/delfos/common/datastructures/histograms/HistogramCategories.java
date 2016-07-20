@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,12 +16,13 @@
  */
 package delfos.common.datastructures.histograms;
 
+import delfos.common.parameters.ParameterOwner;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.io.Writer;
 import java.util.Map;
 import java.util.TreeMap;
-import delfos.common.parameters.ParameterOwner;
 
 /**
  *
@@ -41,14 +42,12 @@ public class HistogramCategories<E> {
     public synchronized void addValue(E value) {
         if (value == null) {
             throw new IllegalStateException("Null Value added to HistogramCategories.");
+        } else if (!histogram.containsKey(value)) {
+            histogram.put(value, 1);
         } else {
-            if (!histogram.containsKey(value)) {
-                histogram.put(value, 1);
-            } else {
-                Integer frequency = histogram.get(value);
-                frequency++;
-                histogram.put(value, frequency);
-            }
+            Integer frequency = histogram.get(value);
+            frequency++;
+            histogram.put(value, frequency);
         }
         numValuesAdded++;
     }
@@ -94,4 +93,14 @@ public class HistogramCategories<E> {
     public synchronized int getNumBins() {
         return histogram.size();
     }
+
+    @Override
+    public String toString() {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        PrintStream recordingStream = new PrintStream(baos);
+        printHistogram(recordingStream);
+
+        return baos.toString();
+    }
+
 }

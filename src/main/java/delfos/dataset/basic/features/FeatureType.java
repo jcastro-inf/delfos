@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,12 +16,12 @@
  */
 package delfos.dataset.basic.features;
 
+import delfos.common.Global;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import delfos.common.Global;
 
 /**
  * Tipos de características que puede tener un producto.
@@ -30,9 +30,8 @@ import delfos.common.Global;
  *
  * @version 1.1 (01-Feb-2013) Cambio de nombre feature --> feature.
  * @version 1.0 (19 Octubre 2011)
- * @version 2.0 18-Septiembre-2013 Generalizado para que las características
- * sean aplicables a los usuarios también. Previamente, esta clase se denominaba
- * ItemFeatureType.
+ * @version 2.0 18-Septiembre-2013 Generalizado para que las características sean aplicables a los usuarios también.
+ * Previamente, esta clase se denominaba ItemFeatureType.
  */
 public enum FeatureType {
 
@@ -49,21 +48,18 @@ public enum FeatureType {
      */
     Nominal("_nominal", true),
     /**
-     * Tipo nominal que almacena múltiples valores nominales, como puede ser que
-     * una película tenga como palabras clave "humor" y "comedia". Estos valores
-     * se almacenarán como "humor&comedia" en csv.
+     * Tipo nominal que almacena múltiples valores nominales, como puede ser que una película tenga como palabras clave
+     * "humor" y "comedia". Estos valores se almacenarán como "humor&comedia" en csv.
      */
     MultiNominal("_nominal*", true);
 
     /**
-     * Comprueba el sufijo del nombre de la característica y devuelve el tipo
-     * asociado a dicho sufijo.
+     * Comprueba el sufijo del nombre de la característica y devuelve el tipo asociado a dicho sufijo.
      *
-     * @param featureNameExtended Nombre de la característica con el sufijo que
-     * denota su tipo.
+     * @param featureNameExtended Nombre de la característica con el sufijo que denota su tipo.
      * @return Tipo de la característica.
-     * @throws IllegalArgumentException Si el nombre de la característica no
-     * tiene ningún sufijo que coincida con los tipos dados.
+     * @throws IllegalArgumentException Si el nombre de la característica no tiene ningún sufijo que coincida con los
+     * tipos dados.
      */
     public static FeatureType inferTypeByNameWithSuffix(String featureNameExtended) {
 
@@ -76,8 +72,7 @@ public enum FeatureType {
         throw new IllegalArgumentException("Cannot infer type from feature name '" + featureNameExtended + "'");
     }
     /**
-     * Sufijo del tipo. Se utiliza en los nombres extendidos de las
-     * características.
+     * Sufijo del tipo. Se utiliza en los nombres extendidos de las características.
      *
      * @see
      */
@@ -85,8 +80,7 @@ public enum FeatureType {
     private final boolean skipNullValues;
 
     /**
-     * Crea una característica de producto y le asigna el sufijo que denota su
-     * tipo.
+     * Crea una característica de producto y le asigna el sufijo que denota su tipo.
      *
      * @param sufix Sufijo para los nombres extendidos de características.
      */
@@ -96,8 +90,7 @@ public enum FeatureType {
     }
 
     /**
-     * Devuelve el sufijo de este tipo de característica. Se utiliza en los
-     * nombres extendidos de las características.
+     * Devuelve el sufijo de este tipo de característica. Se utiliza en los nombres extendidos de las características.
      *
      * @return Sufijo para los nombres extendidos.
      *
@@ -113,8 +106,7 @@ public enum FeatureType {
     }
 
     /**
-     * Devuelve el tipo de la característica de producto cuyo nombre coincide
-     * con el nombre especificado.
+     * Devuelve el tipo de la característica de producto cuyo nombre coincide con el nombre especificado.
      *
      * <p>
      * <p>
@@ -136,8 +128,7 @@ public enum FeatureType {
     }
 
     /**
-     * Recibe una cadena y la convierte a un objeto según el tipo de
-     * caracteristica al que pertenezca.
+     * Recibe una cadena y la convierte a un objeto según el tipo de caracteristica al que pertenezca.
      *
      * @param featureValue
      * @return
@@ -164,12 +155,10 @@ public enum FeatureType {
                             values.add(value);
                         }
 
+                    } else if (featureValue instanceof List) {
+                        return true;
                     } else {
-                        if (featureValue instanceof List) {
-                            return true;
-                        } else {
-                            throw new IllegalArgumentException("The feature value '" + featureValue + "' is not a string separated by '&'");
-                        }
+                        throw new IllegalArgumentException("The feature value '" + featureValue + "' is not a string separated by '&'");
                     }
                     return values;
                 default:
@@ -181,8 +170,8 @@ public enum FeatureType {
     }
 
     /**
-     * Convierte el valor de la característica en una representación en forma de
-     * cadena de texto. La cadena es recuperable mediante el método {@link FeatureType#parseFeatureValue(java.lang.Object)
+     * Convierte el valor de la característica en una representación en forma de cadena de texto. La cadena es
+     * recuperable mediante el método {@link FeatureType#parseFeatureValue(java.lang.Object)
      * }.
      *
      * @param value

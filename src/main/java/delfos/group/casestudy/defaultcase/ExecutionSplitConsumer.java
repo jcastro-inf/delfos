@@ -17,6 +17,7 @@
 package delfos.group.casestudy.defaultcase;
 
 import delfos.common.Chronometer;
+import delfos.common.Global;
 import delfos.dataset.basic.item.Item;
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
@@ -25,6 +26,8 @@ import delfos.dataset.storage.validationdatasets.PairOfTrainTestRatingsDataset;
 import delfos.group.casestudy.parallelisation.SingleGroupRecommendationFunction;
 import delfos.group.casestudy.parallelisation.SingleGroupRecommendationTaskInput;
 import delfos.group.casestudy.parallelisation.SingleGroupRecommendationTaskOutput;
+import delfos.group.experiment.validation.groupformation.GroupFormationTechnique;
+import delfos.group.experiment.validation.groupformation.GroupFormationTechniqueProgressListener_default;
 import delfos.group.experiment.validation.predictionvalidation.GroupPredictionProtocol;
 import delfos.group.experiment.validation.predictionvalidation.GroupRecommendationRequest;
 import delfos.group.factories.GroupEvaluationMeasuresFactory;
@@ -34,9 +37,9 @@ import delfos.group.grs.recommendations.GroupRecommendations;
 import delfos.group.results.groupevaluationmeasures.GroupEvaluationMeasure;
 import delfos.group.results.groupevaluationmeasures.GroupEvaluationMeasureResult;
 import delfos.group.results.grouprecomendationresults.GroupRecommenderSystemResult;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -47,29 +50,26 @@ import java.util.stream.Collectors;
  *
  * @author jcastro-inf ( https://github.com/jcastro-inf )
  */
-public class ExecutionExplitConsumer {
+public class ExecutionSplitConsumer {
 
     private final GroupCaseStudy groupCaseStudy;
     private final int execution;
     private final int split;
     private final PairOfTrainTestRatingsDataset[] pairsOfTrainTest;
-    private final Collection<GroupOfUsers> groups;
 
-    public ExecutionExplitConsumer(
+    public ExecutionSplitConsumer(
             int execution,
             int split,
-            GroupCaseStudy groupCaseStudy, PairOfTrainTestRatingsDataset[] pairsOfTrainTest,
-            Collection<GroupOfUsers> groups
+            GroupCaseStudy groupCaseStudy, PairOfTrainTestRatingsDataset[] pairsOfTrainTest
     ) {
         this.split = split;
         this.groupCaseStudy = (GroupCaseStudy) groupCaseStudy.clone();
         this.execution = execution;
         this.pairsOfTrainTest = pairsOfTrainTest;
-        this.groups = Collections.unmodifiableCollection(groups);
     }
 
     public Map<GroupEvaluationMeasure, GroupEvaluationMeasureResult> execute() {
-        groupCaseStudy.getLoopSeed(execution, split);
+        long loopSeed = groupCaseStudy.getLoopSeed(execution, split);
 
         final GroupRecommenderSystem groupRecommenderSystem = groupCaseStudy.getGroupRecommenderSystem();
         final RelevanceCriteria relevanceCriteria = groupCaseStudy.getRelevanceCriteria();
@@ -77,11 +77,23 @@ public class ExecutionExplitConsumer {
         final DatasetLoader<? extends Rating> originalDatasetLoader = groupCaseStudy.getDatasetLoader();
 
         DatasetLoader<? extends Rating> trainDatasetLoader = pairsOfTrainTest[split].getTrainingDatasetLoader();
-        trainDatasetLoader.setAlias(trainDatasetLoader.getAlias() + "_execution=" + execution);
+
+        String executionString = new DecimalFormat("00").format(execution);
+
+        trainDatasetLoader.setAlias(trainDatasetLoader.getAlias() + "_execution=" + executionString);
 
         DatasetLoader<? extends Rating> testDatasetLoader = pairsOfTrainTest[split].getTestDatasetLoader();
-        testDatasetLoader.setAlias(testDatasetLoader.getAlias() + "_execution=" + execution);
+        testDatasetLoader.setAlias(testDatasetLoader.getAlias() + "_execution=" + executionString);
 
+        final GroupFormationTechnique groupFormationTechnique = (GroupFormationTechnique) groupCaseStudy.getGroupFormationTechnique().clone();
+
+        groupFormationTechnique.setSeedValue(loopSeed);
+
+        if (Global.isInfoPrinted()) {
+            groupFormationTechnique.addListener(new GroupFormationTechniqueProgressListener_default(System.out, 300000));
+        }
+
+        Collection<GroupOfUsers> groups = groupFormationTechnique.generateGroups(trainDatasetLoader);
         final long recommendationModelBuildTime;
         Object groupRecommendationModel;
         {
@@ -97,7 +109,8 @@ public class ExecutionExplitConsumer {
 
         List<SingleGroupRecommendationTaskInput> taskGroupRecommendationInput = new ArrayList<>(groups.size());
         for (GroupOfUsers groupOfUsers : groups) {
-            for (GroupRecommendationRequest groupRecommendationRequest : groupPredictionProtocol.getGroupRecommendationRequests(trainDatasetLoader, testDatasetLoader, groupOfUsers)) {
+            final Collection<GroupRecommendationRequest> groupRecommendationRequests = groupPredictionProtocol.getGroupRecommendationRequests(trainDatasetLoader, testDatasetLoader, groupOfUsers);
+            for (GroupRecommendationRequest groupRecommendationRequest : groupRecommendationRequests) {
 
                 taskGroupRecommendationInput.add(new SingleGroupRecommendationTaskInput(
                         groupRecommenderSystem,
@@ -118,7 +131,7 @@ public class ExecutionExplitConsumer {
                 throw new IllegalArgumentException("Group request for group '" + groupOfUsers.toString() + "' are null.");
             }
             if (groupRequests.isEmpty()) {
-                throw new IllegalArgumentException("Group request for group '" + groupOfUsers.toString() + "' are empty.");
+                Global.showWarning("Group " + groupOfUsers.toString() + " has no requests in dataset " + task.getDatasetLoader().getAlias());
             }
         });
 
@@ -142,7 +155,7 @@ public class ExecutionExplitConsumer {
             }
 
             if (groupRecommendations.getRecommendations().isEmpty()) {
-                throw new IllegalStateException("Group recommendations for group '" + groupOfUsers.toString() + "'" + groupCaseStudy.getAlias() + " --> Cannot have empty recommendations.");
+                Global.showWarning("Group recommendations for group '" + groupOfUsers.toString() + "'" + groupCaseStudy.getAlias() + " --> Cannot have empty recommendations.");
             }
         });
 
@@ -157,10 +170,8 @@ public class ExecutionExplitConsumer {
 
         Map<GroupEvaluationMeasure, GroupEvaluationMeasureResult> resultsThisExecutionSplit = GroupEvaluationMeasuresFactory.getInstance().getAllClasses().parallelStream().collect(Collectors.toMap(Function.identity(),
                 groupEvaluationMeasure -> {
-                    return groupEvaluationMeasure.getMeasureResult(
-                            groupRecommendationResult,
+                    return groupEvaluationMeasure.getMeasureResult(groupRecommendationResult,
                             originalDatasetLoader,
-                            testDatasetLoader.getRatingsDataset(),
                             relevanceCriteria, trainDatasetLoader, testDatasetLoader);
 
                 }));

@@ -42,9 +42,8 @@ import java.util.Collection;
 import org.apache.commons.collections4.map.LRUMap;
 
 /**
- * Recommender system that stores the recommendation model generated in a common
- * directory for recommendation models. It also does a cache copy in memory of
- * the recommendation models already loaded.
+ * Recommender system that stores the recommendation model generated in a common directory for recommendation models. It
+ * also does a cache copy in memory of the recommendation models already loaded.
  *
  * @author jcastro-inf ( https://github.com/jcastro-inf )
  * @param <RecommendationModel> Modelo de recomendación
@@ -54,7 +53,7 @@ public class RecommenderSystem_cacheRecommendationModel<RecommendationModel> ext
     private static final long serialVersionUID = 1L;
 
     public static final File DEFAULT_DIRECTORY = new File(
-            Constants.getTempDirectory().getAbsolutePath() + File.separator
+            Constants.getTempDirectory() + File.separator
             + "buffered-recommendation-models" + File.separator);
 
     public static final String extension = "model";
@@ -90,7 +89,9 @@ public class RecommenderSystem_cacheRecommendationModel<RecommendationModel> ext
     public RecommendationModel buildRecommendationModel(DatasetLoader<? extends Rating> datasetLoader) throws CannotLoadRatingsDataset, CannotLoadContentDataset, CannotLoadUsersDataset {
 
         final RecommenderSystem<Object> recommenderSystem = getRecommenderSystem();
-        String recommendationModelKey = "dl=" + datasetLoader.hashCode() + "_rs=" + recommenderSystem.hashCode();
+        final int datasetHashCode = datasetLoader.getRatingsDataset().hashCode();
+        final int recommenderSystemHashCode = recommenderSystem.hashCode();
+        String recommendationModelKey = "dl=" + datasetHashCode + "_rs=" + recommenderSystemHashCode;
 
         recommendationModelKey = recommendationModelKey + "";
 
@@ -112,7 +113,6 @@ public class RecommenderSystem_cacheRecommendationModel<RecommendationModel> ext
 
                 }
             }
-
         }
 
         if (buildModel) {
@@ -145,10 +145,13 @@ public class RecommenderSystem_cacheRecommendationModel<RecommendationModel> ext
                     filePersistenceWithHashSuffix,
                     datasetLoader.getUsersDataset().allIDs(),
                     datasetLoader.getContentDataset().allIDs());
+
+            Global.showInfoMessageTimestamped("\t\t\tLoaded recommendation model: " + filePersistenceWithHashSuffix.getCompleteFileName() + "\n");
             model = loadedModel;
         } catch (FailureInPersistence ex) {
             RecommendationModelBuildingProgressListener listener = this::fireBuildingProgressChangedEvent;
-            Global.showMessageTimestamped("Building recommendation model: " + filePersistenceWithHashSuffix.getCompleteFileName() + "\n");
+
+            Global.showMessageTimestamped("Building recommendation model: " + filePersistenceWithHashSuffix.getCompleteFileName() + " (" + ex.getMessage() + ")\n");
             getRecommenderSystem().addRecommendationModelBuildingProgressListener(listener);
             try {
                 RecommendationModel computedModel = (RecommendationModel) getRecommenderSystem().buildRecommendationModel(datasetLoader);
@@ -177,8 +180,7 @@ public class RecommenderSystem_cacheRecommendationModel<RecommendationModel> ext
     }
 
     /**
-     * Devuelve el valor del parámetro
-     * {@link RecommenderSystem_fixedFilePersistence#groupRecommenderSystem}.
+     * Devuelve el valor del parámetro {@link RecommenderSystem_fixedFilePersistence#groupRecommenderSystem}.
      *
      * @return the rs_withFilePersistence
      */

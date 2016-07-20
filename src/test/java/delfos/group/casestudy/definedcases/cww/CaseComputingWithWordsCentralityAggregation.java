@@ -6,14 +6,13 @@ import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RelevanceCriteria;
 import delfos.dataset.generated.random.RandomDatasetLoader;
-import delfos.group.casestudy.defaultcase.GroupCaseStudy;
+import delfos.experiment.validation.validationtechnique.HoldOut_Ratings;
+import delfos.experiment.validation.validationtechnique.ValidationTechnique;
 import delfos.group.casestudy.defaultcase.GroupCaseStudy;
 import delfos.group.experiment.validation.groupformation.FixedGroupSize_OnlyNGroups;
 import delfos.group.experiment.validation.groupformation.GroupFormationTechnique;
 import delfos.group.experiment.validation.predictionvalidation.GroupPredictionProtocol;
 import delfos.group.experiment.validation.predictionvalidation.NoPredictionProtocol;
-import delfos.group.experiment.validation.validationtechniques.GroupValidationTechnique;
-import delfos.group.experiment.validation.validationtechniques.HoldOutGroupRatedItems;
 import delfos.group.factories.GroupEvaluationMeasuresFactory;
 import delfos.group.grs.GroupRecommenderSystem;
 import delfos.group.grs.aggregation.AggregationOfIndividualRatings;
@@ -57,14 +56,14 @@ public class CaseComputingWithWordsCentralityAggregation {
         final Collection<GroupEvaluationMeasure> evaluationMeasures = GroupEvaluationMeasuresFactory.getInstance().getAllClasses();
         final RelevanceCriteria criteria = new RelevanceCriteria(4);
         final GroupPredictionProtocol groupPredictionProtocol = new NoPredictionProtocol();
-        final GroupValidationTechnique groupValidationTechniqueValue = new HoldOutGroupRatedItems();
+        final ValidationTechnique validationTechniqueValue = new HoldOut_Ratings();
 
         for (int groupSize : groupSizeArray) {
 
             final GroupFormationTechnique groupFormationTechnique = new FixedGroupSize_OnlyNGroups(numGroups, groupSize);
 
             for (GroupRecommenderSystem<? extends Object, ? extends Object> groupRecommenderSystem : getGRS()) {
-                GroupCaseStudy groupCaseStudy = new GroupCaseStudy(datasetLoader, groupRecommenderSystem, groupFormationTechnique, groupValidationTechniqueValue, groupPredictionProtocol, evaluationMeasures, criteria, numEjecuciones);
+                GroupCaseStudy groupCaseStudy = new GroupCaseStudy(datasetLoader, groupRecommenderSystem, groupFormationTechnique, validationTechniqueValue, groupPredictionProtocol, evaluationMeasures, criteria, numEjecuciones);
                 String fileName = groupRecommenderSystem.getAlias() + "_group-" + groupSize + ".xml";
                 File file = new File(directory + File.separator + fileName);
                 GroupCaseStudyXML.caseStudyToXMLFile_onlyDescription(groupCaseStudy, file);

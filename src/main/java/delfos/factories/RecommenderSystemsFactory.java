@@ -24,6 +24,7 @@ import delfos.rs.bufferedrecommenders.RecommenderSystem_cacheRecommendationModel
 import delfos.rs.bufferedrecommenders.RecommenderSystem_fixedFilePersistence;
 import delfos.rs.collaborativefiltering.CollaborativeRecommender;
 import delfos.rs.collaborativefiltering.Recommender_DatasetProperties;
+import delfos.rs.collaborativefiltering.als.ALSRecommender;
 import delfos.rs.collaborativefiltering.knn.memorybased.KnnMemoryBasedCFRS;
 import delfos.rs.collaborativefiltering.knn.memorybased.nwr.KnnMemoryBasedNWR;
 import delfos.rs.collaborativefiltering.knn.modelbased.KnnModelBasedCFRS;
@@ -52,9 +53,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Factoría de sistemas de recomendación. Conoce todos los sistemas de
- * recomendación de esta biblioteca y es capaz de recuperar por nombre o tipo
- * cualquiera de ellos.
+ * Factoría de sistemas de recomendación. Conoce todos los sistemas de recomendación de esta biblioteca y es capaz de
+ * recuperar por nombre o tipo cualquiera de ellos.
  *
  * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
@@ -71,8 +71,8 @@ public class RecommenderSystemsFactory extends Factory<GenericRecommenderSystem>
     }
 
     /**
-     * Inicialización de la factoría, asignando los sistemas de recomendación
-     * que la biblioteca esta biblioteca incorpora por defecto.
+     * Inicialización de la factoría, asignando los sistemas de recomendación que la biblioteca esta biblioteca
+     * incorpora por defecto.
      */
     static {
         instance = new RecommenderSystemsFactory();
@@ -94,6 +94,7 @@ public class RecommenderSystemsFactory extends Factory<GenericRecommenderSystem>
         instance.addClass(KnnMemoryBasedCFRS.class);
         instance.addClass(KnnModelBasedCFRS.class);
         instance.addClass(TryThisAtHomeSVD.class);
+        instance.addClass(ALSRecommender.class);
 
         instance.addClass(KnnMemoryBasedNWR.class);
         //instance.addClass_oldName(KnnMemoryBasedNWR.class, "KnnMemoryBasedCFRS_NeighborsWithRatings");
@@ -135,12 +136,10 @@ public class RecommenderSystemsFactory extends Factory<GenericRecommenderSystem>
 
     /**
      * 1
-     * Devuelve los sistemas de recomendación que no son colaborativos, es
-     * decir, los sistemas de recomendación que no usan predicción de
-     * valoraciones.
+     * Devuelve los sistemas de recomendación que no son colaborativos, es decir, los sistemas de recomendación que no
+     * usan predicción de valoraciones.
      *
-     * @return Lista con una instancia de cada sistema de recomendación no
-     * predictivo.
+     * @return Lista con una instancia de cada sistema de recomendación no predictivo.
      */
     @SuppressWarnings({"rawtypes", "unchecked"})
     public List<RecommenderSystem<Object>> getNotCollaborativeRecommenderSystems() {
@@ -177,8 +176,7 @@ public class RecommenderSystemsFactory extends Factory<GenericRecommenderSystem>
     }
 
     /**
-     * Obtiene una lista de sistemas de recomendación basados en contenido que
-     * conoce la factoría.
+     * Obtiene una lista de sistemas de recomendación basados en contenido que conoce la factoría.
      *
      * @return Lista de sistemas recomendación basados en contenido
      */
@@ -198,9 +196,8 @@ public class RecommenderSystemsFactory extends Factory<GenericRecommenderSystem>
     }
 
     /**
-     * Devuelve los sistemas de recomendación basados en conocimiento puros, es
-     * decir, los sistemas de recomendación basados en conocimiento que no se
-     * componen de otros sistemas de recomendación.
+     * Devuelve los sistemas de recomendación basados en conocimiento puros, es decir, los sistemas de recomendación
+     * basados en conocimiento que no se componen de otros sistemas de recomendación.
      *
      * @return Lista de sistemas de recomendación basados en conocimiento
      */

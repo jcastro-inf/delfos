@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -34,36 +34,31 @@ import delfos.dataset.basic.rating.RelevanceCriteria;
 import delfos.rs.contentbased.ContentBasedRecommender;
 import static delfos.rs.contentbased.vsm.ContentBasedVSMRS.SIMILARITY_MEASURE;
 import delfos.rs.contentbased.vsm.booleanvsm.BooleanFeaturesTransformation;
+import delfos.rs.contentbased.vsm.booleanvsm.SparseVector;
 import delfos.rs.recommendation.Recommendation;
 import delfos.similaritymeasures.WeightedSimilarityMeasure;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import org.grouplens.lenskit.vectors.MutableSparseVector;
-import org.grouplens.lenskit.vectors.SparseVector;
-import org.grouplens.lenskit.vectors.VectorEntry;
+import org.apache.commons.math4.util.Pair;
 
 /**
- * Clase que implementa el sistema de pesado Tf Idf (procedente del área de la
- * recuperación de información) aplicado a la recomendación basada en contenido.
- * Su funcionamiento es similar al de {@link BasicBooleanCBRS}, pero añade
+ * Clase que implementa el sistema de pesado Tf Idf (procedente del área de la recuperación de información) aplicado a
+ * la recomendación basada en contenido. Su funcionamiento es similar al de {@link BasicBooleanCBRS}, pero añade
  * ponderación de características.
  *
  * <p>
  * <p>
- * Este sistema de recomendación esta explicado en detalle en: <ul><li> A new
- * weighted model for Content-based Recommender Systems with Contingency and
- * Entropy Measures, Ph.D. candidate: Jorge Castro Gallardo, Advisor: Luis
+ * Este sistema de recomendación esta explicado en detalle en: <ul><li> A new weighted model for Content-based
+ * Recommender Systems with Contingency and Entropy Measures, Ph.D. candidate: Jorge Castro Gallardo, Advisor: Luis
  * Martínez López, Co-advisor: Manuel José Barranco. September 2012.
- * http://sinbad2.ujaen.es/cod/archivosPublicos/dea/TTII_JorgeCastro.pdf
- * García.</li></ul>
+ * http://sinbad2.ujaen.es/cod/archivosPublicos/dea/TTII_JorgeCastro.pdf García.</li></ul>
  *
  * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 1.0 (19 Octubre 2011)
- * @version 2.0 (28 de Febrero de 2013) Refactorización de las clases asociadas
- * a los perfiles de usuario.
+ * @version 2.0 (28 de Febrero de 2013) Refactorización de las clases asociadas a los perfiles de usuario.
  * @version 2.1 9-Octubre-2013 Incorporación del método makeUserModel
  */
 public class TfIdfCBRS extends ContentBasedRecommender<TfIdfCBRSModel, TfIdfCBRSUserProfile> {
@@ -71,8 +66,7 @@ public class TfIdfCBRS extends ContentBasedRecommender<TfIdfCBRSModel, TfIdfCBRS
     private static final long serialVersionUID = -3387516993124229948L;
 
     /**
-     * Constructor por defecto, que añade los parámetros del sistema de
-     * recomendación.
+     * Constructor por defecto, que añade los parámetros del sistema de recomendación.
      */
     public TfIdfCBRS() {
         super();
@@ -100,7 +94,7 @@ public class TfIdfCBRS extends ContentBasedRecommender<TfIdfCBRSModel, TfIdfCBRS
         int i = 1;
         for (Item item : contentDataset) {
 
-            MutableSparseVector itemProfile = booleanFeaturesTransformation.newProfile();
+            SparseVector<Long> itemProfile = booleanFeaturesTransformation.newProfile();
 
             for (Feature f : item.getFeatures()) {
                 Object value = item.getFeatureValue(f);
@@ -123,7 +117,7 @@ public class TfIdfCBRS extends ContentBasedRecommender<TfIdfCBRSModel, TfIdfCBRS
         RelevanceCriteria relevanceCriteria = datasetLoader.getDefaultRelevanceCriteria();
 
         //Calculo la IUF.
-        MutableSparseVector iuf = booleanFeaturesTransformation.newProfile();
+        SparseVector<Long> iuf = booleanFeaturesTransformation.newProfile();
 
         RatingsDataset<? extends Rating> ratingDataset = datasetLoader.getRatingsDataset();
 
@@ -176,12 +170,12 @@ public class TfIdfCBRS extends ContentBasedRecommender<TfIdfCBRSModel, TfIdfCBRS
             double norma = 0;
 
             //Calculo la norma.
-            for (VectorEntry entry : iuf.fast()) {
+            for (Pair<Long, Double> entry : iuf.fast()) {
                 norma += entry.getValue();
             }
 
             //La aplico
-            for (VectorEntry entry : iuf.fast()) {
+            for (Pair<Long, Double> entry : iuf.fast()) {
                 iuf.set(entry.getKey(), entry.getValue() / norma);
             }
         }
@@ -195,8 +189,8 @@ public class TfIdfCBRS extends ContentBasedRecommender<TfIdfCBRSModel, TfIdfCBRS
     public TfIdfCBRSUserProfile makeUserProfile(int idUser, DatasetLoader<? extends Rating> datasetLoader, TfIdfCBRSModel model) throws CannotLoadContentDataset, CannotLoadContentDataset, UserNotFound {
         RelevanceCriteria relevanceCriteria = datasetLoader.getDefaultRelevanceCriteria();
 
-        MutableSparseVector userProfileValues = model.getBooleanFeaturesTransformation().newProfile();
-        MutableSparseVector userProfileWeights;
+        SparseVector<Long> userProfileValues = model.getBooleanFeaturesTransformation().newProfile();
+        SparseVector<Long> userProfileWeights;
 
         int numItemsPositivelyRated = 0;
 
@@ -209,7 +203,7 @@ public class TfIdfCBRS extends ContentBasedRecommender<TfIdfCBRSModel, TfIdfCBRS
 
             if (relevanceCriteria.isRelevant(rating.getRatingValue())) {
                 SparseVector itemProfile = model.get(idItem);
-                userProfileValues.add(itemProfile);
+                userProfileValues.sum(itemProfile);
                 numItemsPositivelyRated++;
             }
         }
@@ -217,7 +211,7 @@ public class TfIdfCBRS extends ContentBasedRecommender<TfIdfCBRSModel, TfIdfCBRS
         {
             //Normalisation of user profile, using the number of positive items to normalise.
             double norm = numItemsPositivelyRated;
-            for (VectorEntry entry : userProfileValues.fast()) {
+            for (Pair<Long, Double> entry : userProfileValues.fast()) {
                 long idFeature = entry.getKey();
                 double value = entry.getValue();
                 userProfileValues.set(idFeature, value / norm);
@@ -226,15 +220,15 @@ public class TfIdfCBRS extends ContentBasedRecommender<TfIdfCBRSModel, TfIdfCBRS
 
         {
             //Creo los pesos para el usuario a partir del TF normalizado.
-            userProfileWeights = userProfileValues.mutableCopy();
+            userProfileWeights = userProfileValues.clone();
 
             //Los multiplico por la ponderación iuf.
             SparseVector iuf = model.getAllIUF();
             userProfileWeights.multiply(iuf);
 
             //Normalizo los pesos para que sumen uno.
-            double norm = userProfileWeights.sum();
-            for (VectorEntry entry : userProfileWeights.fast()) {
+            double norm = userProfileWeights.norm();
+            for (Pair<Long, Double> entry : userProfileWeights.fast()) {
                 long key = entry.getKey();
                 double weight = entry.getValue();
                 double newWeight = weight / norm;

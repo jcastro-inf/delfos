@@ -21,7 +21,6 @@ import delfos.common.exceptions.dataset.users.UserNotFound;
 import delfos.common.statisticalfuncions.MeanIterative;
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
-import delfos.dataset.basic.rating.RatingsDataset;
 import delfos.dataset.basic.rating.RelevanceCriteria;
 import delfos.dataset.basic.user.User;
 import delfos.group.groupsofusers.GroupOfUsers;
@@ -32,14 +31,12 @@ import java.util.Map;
 import java.util.TreeMap;
 
 /**
- * Medida de evaluación para calcular el error absoluto medio del sistema de
- * recomendación evaluado. Calcula la diferencia entre la valoración hecha para
- * el grupo y la valoración individual que cada usuario dió para el producto, si
- * lo ha valorado.
+ * Medida de evaluación para calcular el error absoluto medio del sistema de recomendación evaluado. Calcula la
+ * diferencia entre la valoración hecha para el grupo y la valoración individual que cada usuario dió para el producto,
+ * si lo ha valorado.
  *
  * <p>
- * Es una extensión de la medida de evaluación
- * {@link delfos.Results.EvaluationMeasures.RatingPrediction.MAE} para
+ * Es una extensión de la medida de evaluación {@link delfos.Results.EvaluationMeasures.RatingPrediction.MAE} para
  * recomendaciones individuales.
  *
  * @author jcastro-inf ( https://github.com/jcastro-inf )
@@ -51,12 +48,7 @@ public class MAE extends GroupEvaluationMeasure {
 
     @Override
     public GroupEvaluationMeasureResult getMeasureResult(
-            GroupRecommenderSystemResult groupRecommenderSystemResult,
-            DatasetLoader<? extends Rating> originalDatasetLoader,
-            RatingsDataset<? extends Rating> testDataset,
-            RelevanceCriteria relevanceCriteria,
-            DatasetLoader<? extends Rating> trainingDatasetLoader,
-            DatasetLoader<? extends Rating> testDatasetLoader) {
+            GroupRecommenderSystemResult groupRecommenderSystemResult, DatasetLoader<? extends Rating> originalDatasetLoader, RelevanceCriteria relevanceCriteria, DatasetLoader<? extends Rating> trainingDatasetLoader, DatasetLoader<? extends Rating> testDatasetLoader) {
 
         MeanIterative maeGeneral = new MeanIterative();
         TreeMap<GroupOfUsers, MeanIterative> maeGroups = new TreeMap<>();
@@ -79,7 +71,7 @@ public class MAE extends GroupEvaluationMeasure {
 
             groupOfUsers.getIdMembers().stream().forEach((idUser) -> {
                 try {
-                    groupTrueRatings.put(idUser, testDataset.getUserRatingsRated(idUser));
+                    groupTrueRatings.put(idUser, testDatasetLoader.getRatingsDataset().getUserRatingsRated(idUser));
                 } catch (UserNotFound ex) {
                     ERROR_CODES.USER_NOT_FOUND.exit(ex);
                 }

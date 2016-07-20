@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -26,6 +26,7 @@ import delfos.common.statisticalfuncions.MeanIterative;
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RatingsDataset;
+import delfos.dataset.basic.user.User;
 import delfos.dataset.loaders.given.DatasetLoaderGivenRatingsDataset;
 import delfos.dataset.storage.memory.BothIndexRatingsDataset;
 import delfos.similaritymeasures.BasicSimilarityMeasure;
@@ -69,6 +70,11 @@ public class UserUserMultipleCorrelationCoefficient extends SimilarityMeasureAda
     public UserUserMultipleCorrelationCoefficient(BasicSimilarityMeasure basicSimilarityMeasure) {
         this();
         setParameterValue(WRAPPED_SIMILARITY, basicSimilarityMeasure);
+    }
+
+    @Override
+    public double similarity(DatasetLoader<? extends Rating> datasetLoader, User user1, User user2) {
+        return similarity(datasetLoader, user1.getId(), user2.getId());
     }
 
     @Override

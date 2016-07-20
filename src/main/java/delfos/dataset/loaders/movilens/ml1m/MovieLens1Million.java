@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -99,12 +99,18 @@ public class MovieLens1Million extends DatasetLoaderAbstract<RatingWithTimestamp
     @Override
     public synchronized RatingsDataset<RatingWithTimestamp> getRatingsDataset() throws CannotLoadRatingsDataset {
         if (ratingsDataset == null) {
+
+            getUsersDataset();
+            getContentDataset();
             try {
                 File ratingsDatasetFile = getRatingsFile();
 
                 MovieLens1MillionRatingsDatasetToCSV ratingsDatasetToCSV = new MovieLens1MillionRatingsDatasetToCSV();
-                Collection<RatingWithTimestamp> readContentDataset = ratingsDatasetToCSV.readRatingsDataset(ratingsDatasetFile);
-                ratingsDataset = new BothIndexRatingsDataset<RatingWithTimestamp>(readContentDataset);
+                Collection<RatingWithTimestamp> readContentDataset = ratingsDatasetToCSV.readRatingsDataset(
+                        getUsersDataset(),
+                        getContentDataset(),
+                        ratingsDatasetFile);
+                ratingsDataset = new BothIndexRatingsDataset<>(readContentDataset);
             } catch (FileNotFoundException ex) {
                 throw new CannotLoadRatingsDataset(ex);
             }

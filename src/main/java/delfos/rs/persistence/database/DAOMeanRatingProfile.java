@@ -32,12 +32,9 @@ import java.sql.Statement;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
- * DAO para base de datos que almacena el modelo de recomendación del sistema
- * {@link MeanRatingRS}.
+ * DAO para base de datos que almacena el modelo de recomendación del sistema {@link MeanRatingRS}.
  *
  * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
@@ -98,24 +95,21 @@ public class DAOMeanRatingProfile implements RecommendationModelDatabasePersiste
 
         try {
             createStructure(databasePersistence.getConection());
-        } catch (SQLException ex) {
-            Logger.getLogger(DAOMeanRatingProfile.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (ClassNotFoundException ex) {
-            Logger.getLogger(DAOMeanRatingProfile.class.getName()).log(Level.SEVERE, null, ex);
-        }
 
-        try (
-                Statement statement = databasePersistence.getConection().doConnection().createStatement()) {
+            try (Statement statement = databasePersistence.getConection().doConnection().createStatement()) {
+                List<MeanRating> meanProfile = model.getSortedMeanRatings();
 
-            List<MeanRating> meanProfile = model.getSortedMeanRatings();
-
-            for (MeanRating mr : meanProfile) {
-                String statementString = "INSERT INTO " + PROFILE_TABLE + "(" + ID_COLUMN_NAME + "," + PREFERENCE_COLUMN_NAME + ") "
-                        + "VALUES (" + mr.getItem().getId() + "," + mr.getPreference() + ");";
-                Global.showInfoMessage(statementString + "\n");
-                statement.executeUpdate(statementString);
+                for (MeanRating mr : meanProfile) {
+                    if (Double.isNaN(mr.getPreference())) {
+                        continue;
+                    }
+                    String statementString = "INSERT INTO " + PROFILE_TABLE + "(" + ID_COLUMN_NAME + "," + PREFERENCE_COLUMN_NAME + ") "
+                            + "VALUES (" + mr.getItem().getId() + "," + mr.getPreference() + ");";
+                    Global.showInfoMessage(statementString + "\n");
+                    statement.executeUpdate(statementString);
+                }
             }
-        } catch (Exception ex) {
+        } catch (SQLException | ClassNotFoundException ex) {
             throw new FailureInPersistence(ex);
         }
     }

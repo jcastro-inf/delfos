@@ -55,7 +55,7 @@ public class Recommendations implements Serializable {
         this.recommendationComputationDetails = recommendationComputationDetails;
     }
 
-    public Object getDetails(RecommendationComputationDetails.DetailField detailField) {
+    public Object getDetails(DetailField detailField) {
         return recommendationComputationDetails.getDetailFieldValue(detailField);
     }
 
@@ -81,7 +81,7 @@ public class Recommendations implements Serializable {
         return recommendationComputationDetails;
     }
 
-    public Set<RecommendationComputationDetails.DetailField> detailFieldSet() {
+    public Set<DetailField> detailFieldSet() {
         return recommendationComputationDetails.detailFieldSet();
     }
 

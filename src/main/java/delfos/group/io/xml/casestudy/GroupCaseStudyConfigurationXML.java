@@ -16,14 +16,14 @@
  */
 package delfos.group.io.xml.casestudy;
 
-import org.jdom2.Element;
 import delfos.group.casestudy.GroupCaseStudyConfiguration;
 import delfos.group.io.xml.groupformationtechnique.GroupFormationTechniqueXML;
 import delfos.group.io.xml.predictionprotocol.GroupPredictionProtocolXML;
-import delfos.group.io.xml.validationtechnique.GroupValidationTechniqueXML;
 import delfos.io.xml.dataset.DatasetLoaderXML;
 import delfos.io.xml.dataset.RelevanceCriteriaXML;
 import delfos.io.xml.rs.RecommenderSystemXML;
+import delfos.io.xml.validationtechnique.ValidationTechniqueXML;
+import org.jdom2.Element;
 
 /**
  * Clase encargada de hacer la entrada/salida de los resultados de la ejeución
@@ -45,7 +45,7 @@ public class GroupCaseStudyConfigurationXML {
         groupCaseStudyConfigurationElement.addContent(RecommenderSystemXML.getElement(groupCaseStudyConfiguration.getGroupRecommenderSystem()));
 
         groupCaseStudyConfigurationElement.addContent(GroupFormationTechniqueXML.getElement(groupCaseStudyConfiguration.getGroupFormationTechnique()));
-        groupCaseStudyConfigurationElement.addContent(GroupValidationTechniqueXML.getElement(groupCaseStudyConfiguration.getGroupValidationTechnique()));
+        groupCaseStudyConfigurationElement.addContent(ValidationTechniqueXML.getElement(groupCaseStudyConfiguration.getValidationTechnique()));
         groupCaseStudyConfigurationElement.addContent(GroupPredictionProtocolXML.getElement(groupCaseStudyConfiguration.getGroupPredictionProtocol()));
 
         groupCaseStudyConfigurationElement.addContent(RelevanceCriteriaXML.getElement(groupCaseStudyConfiguration.getRelevanceCriteria()));
