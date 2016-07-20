@@ -100,9 +100,10 @@
             <version>2.4</version>
         </dependency>
         <dependency>
-            <groupId>dnl.utils</groupId>
+            <!-- >Dependency using jitpack.io, if deleted, use: https://github.com/jcastro-inf/j-text-utils<!-->
+            <groupId>com.github.RuedigerMoeller</groupId>
             <artifactId>j-text-utils</artifactId>
-            <version>0.3.3</version>
+            <version>97eb457282b62f2239d715f0eedcc271db89abba</version>
         </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>
