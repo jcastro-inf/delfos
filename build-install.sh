@@ -5,8 +5,8 @@ delfosDirectory=$(pwd)
 
 cd ..
 utilsDirectory=$(pwd)/delfos.util
-rm -r $utilsDirectory
-mkdir $utilsDirectory
+
+mkdir $utilsDirectory -p
 
 cd $delfosDirectory
 
