@@ -3,7 +3,12 @@ set -e
 
 delfosDirectory=$(pwd)
 
-utilsDirectory=$delfosDirectory/../delfos.util/
+cd ..
+utilsDirectory=$(pwd)/delfos.util
+
+mkdir $utilsDirectory -p
+
+cd $delfosDirectory
 
 ./apache-commons-math4-pull-and-build.sh $utilsDirectory
 

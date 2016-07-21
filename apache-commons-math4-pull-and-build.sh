@@ -9,7 +9,7 @@ echo "Installing https://github.com/apache/commons-math.git in " $1
 
 cd $1
 
-commonsMath4Directory=$1"commons-math"
+commonsMath4Directory=$1"/commons-math"
 
 echo $commonsMath4Directory "The directory"
 
