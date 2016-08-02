@@ -214,7 +214,7 @@ public class SVDFoldingIn
                     Integer indexItem = newModel.getItemsIndex().get(idItem);
                     Double predicted;
                     try {
-                        predicted = privatePredictRating(datasetLoader, newModel, idUser, idItem);
+                        predicted = privatePredictRating(datasetLoader, newModel, idUser, idItem, indexFeature + 1);
 
                         double error = (rating.getRatingValue().doubleValue() - predicted);
                         meanAbsoluteError.addValue(Math.abs(error));
@@ -226,8 +226,10 @@ public class SVDFoldingIn
                         if (Double.isInfinite(newUserValue)) {
                             throw new IllegalStateException("Los valores nuevos son erroneos");
                         } else //compruebo que los valores convergen a un valor bajo
-                        if (!(newUserValue > 10E20 || newUserValue < -10E20)) {
-                            thisUserFeatures.set(indexFeature, newUserValue);
+                        {
+                            if (!(newUserValue > 10E20 || newUserValue < -10E20)) {
+                                thisUserFeatures.set(indexFeature, newUserValue);
+                            }
                         }
                     } catch (ItemNotFound ex) {
                         ERROR_CODES.ITEM_NOT_FOUND.exit(ex);

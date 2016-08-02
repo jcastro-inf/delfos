@@ -45,8 +45,6 @@ import org.junit.Test;
  */
 public class TryThisAtHomeSVDTest extends DelfosTest {
 
-    private static MySQLConnection mySQLConnection;
-
     private static final Integer[] users = {727, 38, 466, 232, 927, 915, 764, 382, 649, 645};
 
     public TryThisAtHomeSVDTest() {
@@ -61,14 +59,6 @@ public class TryThisAtHomeSVDTest extends DelfosTest {
 
         FileUtilities.cleanDirectory(new File(TEST_DIRECTORY));
 
-        mySQLConnection = new MySQLConnection(
-                DatabasePersistenceTest.user,
-                DatabasePersistenceTest.pass,
-                DatabasePersistenceTest.databaseName,
-                DatabasePersistenceTest.hostName,
-                DatabasePersistenceTest.port,
-                TryThisAtHomeSVDTest.TABLE_NAME_PREFIX
-        );
     }
 
     @Test
@@ -114,6 +104,15 @@ public class TryThisAtHomeSVDTest extends DelfosTest {
 
     @Test
     public void testDatabasePersistenceRecommendation() throws ClassNotFoundException, SQLException, CannotLoadRatingsDataset, CannotLoadContentDataset {
+
+        MySQLConnection mySQLConnection = new MySQLConnection(
+                DatabasePersistenceTest.user,
+                DatabasePersistenceTest.pass,
+                DatabasePersistenceTest.databaseName,
+                DatabasePersistenceTest.hostName,
+                DatabasePersistenceTest.port,
+                TryThisAtHomeSVDTest.TABLE_NAME_PREFIX
+        );
 
         final DatasetLoader<? extends Rating> datasetLoader = ConfiguredDatasetsFactory.getInstance().getDatasetLoader("ml-100k");
 
@@ -182,5 +181,18 @@ public class TryThisAtHomeSVDTest extends DelfosTest {
         Assert.assertEquals(4, sortedRecommendations.get(0).getPreference().doubleValue(), 0.2);
         assert sortedRecommendations.get(1).getIdItem() == 2;
         Assert.assertEquals(2, sortedRecommendations.get(1).getPreference().doubleValue(), 0.2);
+    }
+
+    @Test
+    public void testInML100K() {
+        TryThisAtHomeSVD svd = new TryThisAtHomeSVD(20, 20);
+        svd.setSeedValue(0);
+
+        DatasetLoader<? extends Rating> datasetLoader = ConfiguredDatasetsFactory.getInstance().getDatasetLoader("ml-100k");
+
+        TryThisAtHomeSVDModel svdModel = svd.buildRecommendationModel(datasetLoader);
+
+        System.out.println("End testInML100K");
+
     }
 }
