@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -17,7 +17,9 @@
 package delfos.factories;
 
 import delfos.configureddatasets.ConfiguredDatasetLoader;
+import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.generated.random.RandomDatasetLoader;
+import delfos.dataset.loaders.bookcrossing.BookCrossingDatasetLoader;
 import delfos.dataset.loaders.csv.CSVfileDatasetLoader;
 import delfos.dataset.loaders.csv.changeable.ChangeableCSVFileDatasetLoader;
 import delfos.dataset.loaders.database.mysql.DatabaseDatasetLoader;
@@ -28,12 +30,10 @@ import delfos.dataset.loaders.epinions.trustlet.EPinionsTrustlet;
 import delfos.dataset.loaders.jester.Jester;
 import delfos.dataset.loaders.movilens.ml100k.MovieLens100k;
 import delfos.dataset.loaders.movilens.ml1m.MovieLens1Million;
-import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.papertestdatasets.ImplicitTrustDataset;
 
 /**
- * Factoría que conoce todos los dataset de los que dispone la biblioteca de
- * recomendación.
+ * Factoría que conoce todos los dataset de los que dispone la biblioteca de recomendación.
  *
  * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
@@ -65,6 +65,9 @@ public class DatasetLoadersFactory extends Factory<DatasetLoader> {
         //Datasets de EPinions
         instance.addClass(EPinionsDatasetLoader.class);
         instance.addClass(EPinionsTrustlet.class);
+
+        //Dataset de BookCrossing
+        instance.addClass(BookCrossingDatasetLoader.class);
 
         //Configured datasets
         instance.addClass(ConfiguredDatasetLoader.class);
