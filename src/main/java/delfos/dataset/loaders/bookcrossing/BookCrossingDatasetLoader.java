@@ -23,6 +23,7 @@ import delfos.common.Global;
 import delfos.common.exceptions.dataset.CannotLoadContentDataset;
 import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
 import delfos.common.exceptions.dataset.CannotLoadUsersDataset;
+import delfos.common.exceptions.dataset.items.ItemNotFound;
 import delfos.common.exceptions.dataset.users.UserNotFound;
 import delfos.common.parameters.Parameter;
 import delfos.common.parameters.restriction.DirectoryParameter;
@@ -131,7 +132,9 @@ public class BookCrossingDatasetLoader extends DatasetLoaderAbstract<Rating> {
             throw new CannotLoadUsersDataset(ex);
         }
         try {
-            contentDataset = loadItems(itemsFile);
+            Set<Item> items = loadItems(itemsFile, ratingsFile);
+            contentDataset = new ContentDatasetDefault(items);
+
         } catch (IOException ex) {
             throw new CannotLoadContentDataset(
                     ex.getMessage() + "[File '" + ratingsFile.getAbsolutePath() + "']",
@@ -139,7 +142,7 @@ public class BookCrossingDatasetLoader extends DatasetLoaderAbstract<Rating> {
             );
         }
         try {
-            ratingsDataset = loadRatings(ratingsFile);
+            ratingsDataset = loadRatings(ratingsFile, usersDataset, contentDataset);
         } catch (IOException ex) {
             throw new CannotLoadRatingsDataset(
                     ex.getMessage() + "[File '" + ratingsFile.getAbsolutePath() + "']",
@@ -147,6 +150,38 @@ public class BookCrossingDatasetLoader extends DatasetLoaderAbstract<Rating> {
             );
         }
 
+    }
+
+    public Set<Item> loadItems(File itemsFile, File ratingsFile) throws IllegalStateException, IOException {
+        ContentDataset runningContentDataset = new ContentDatasetDefault(loadItemsFromContentFile(itemsFile));
+
+        Set<Item> additionalItems = loadItemsFromRatingsFile(ratingsFile, runningContentDataset);
+
+        Feature isbnF = Arrays.stream(runningContentDataset.getFeatures())
+                .filter(feature -> feature.getName().equals("isbn"))
+                .findFirst()
+                .orElseThrow(() -> new IllegalStateException("Feature isbn not found"));
+
+        Set<String> originalItemsByISBN = runningContentDataset.stream()
+                .map(item -> item.getFeatureValue(isbnF).toString())
+                .collect(Collectors.toSet());
+
+        Set<String> newItemsByISBN = additionalItems.stream()
+                .map(item -> item.getFeatureValue(isbnF).toString())
+                .collect(Collectors.toSet());
+
+        Set<String> repeatedISBNs = new HashSet<>();
+        repeatedISBNs.addAll(originalItemsByISBN);
+        repeatedISBNs.retainAll(newItemsByISBN);
+
+        if (!repeatedISBNs.isEmpty()) {
+            throw new IllegalStateException("There were repeated items!");
+        }
+
+        Set<Item> finalItemSet = new HashSet<>();
+        finalItemSet.addAll(runningContentDataset);
+        finalItemSet.addAll(additionalItems);
+        return finalItemSet;
     }
 
     private UsersDataset loadUsers(File usersFile) throws FileNotFoundException, IOException {
@@ -190,8 +225,8 @@ public class BookCrossingDatasetLoader extends DatasetLoaderAbstract<Rating> {
 
     }
 
-    private ContentDataset loadItems(File itemsFile) throws FileNotFoundException, IOException {
-        Set<Item> items = new HashSet<>();
+    private static Set<Item> loadItemsFromContentFile(File itemsFile) throws FileNotFoundException, IOException {
+        Map<String, Item> items = new HashMap<>();
 
         CsvReader reader = new CsvReader(
                 new FileInputStream(itemsFile),
@@ -236,7 +271,7 @@ public class BookCrossingDatasetLoader extends DatasetLoaderAbstract<Rating> {
                 Object[] values = {isbn, bookAuthor, yearOfPublication, publisher};
 
                 Item item = new Item(idItem, bookTitle + "(" + isbn + ")", features, values);
-                items.add(item);
+                items.put(isbn, item);
 
             } catch (IOException | NumberFormatException ex) {
                 Global.showWarning("Error in line " + (i + 2));
@@ -248,10 +283,61 @@ public class BookCrossingDatasetLoader extends DatasetLoaderAbstract<Rating> {
         }
         reader.close();
 
-        return new ContentDatasetDefault(items);
+        return items.values().stream().collect(Collectors.toSet());
     }
 
-    private RatingsDataset<Rating> loadRatings(File ratingsFile) throws FileNotFoundException, IOException {
+    private static Set<Item> loadItemsFromRatingsFile(File ratingsFile, ContentDataset contentDataset) throws FileNotFoundException, IOException {
+        List<Rating> ratings = new ArrayList<>();
+
+        CsvReader reader = new CsvReader(
+                new FileInputStream(ratingsFile),
+                Charset.forName("UTF-8"));
+        Global.showInfoMessage("Loading items not defined in content file from ratings file" + ratingsFile.getPath() + "\n");
+        reader.setDelimiter(';');
+        reader.setEscapeMode(ESCAPE_MODE_BACKSLASH);
+        reader.setTextQualifier('"');
+
+        reader.readHeaders();
+        checkRatingsHeaders(reader.getHeaders());
+
+        Chronometer c = new Chronometer();
+        c.reset();
+        int i = 0;
+
+        Feature isbnFeature = Arrays.stream(contentDataset.getFeatures())
+                .filter(feature -> feature.getName().equals("isbn"))
+                .findFirst()
+                .orElseThrow(() -> new IllegalStateException("ISBN feature not found"));
+
+        Map<String, Item> itemsByISBN = contentDataset.stream().collect(Collectors.toMap(
+                item -> item.getFeatureValue(isbnFeature).toString(),
+                user -> user));
+
+        AtomicInteger nextIdItem = new AtomicInteger(itemsByISBN.values().stream().mapToInt(item -> item.getId()).max().getAsInt() + 1);
+        Feature[] isbnFeatures = {isbnFeature};
+
+        Map<String, Item> additionalItems = new HashMap<>();
+
+        while (reader.readRecord()) {
+
+            String isbn = reader.get("ISBN");
+
+            Item item = itemsByISBN.get(isbn);
+
+            if (item == null) {
+                Object[] featureValues = {isbn};
+                item = new Item(nextIdItem.incrementAndGet(), isbn, isbnFeatures, featureValues);
+                additionalItems.put(isbn, item);
+            }
+
+            i++;
+        }
+        reader.close();
+
+        return additionalItems.values().stream().collect(Collectors.toSet());
+    }
+
+    private static RatingsDataset<Rating> loadRatings(File ratingsFile, UsersDataset usersDataset, ContentDataset contentDataset) throws FileNotFoundException, IOException {
         List<Rating> ratings = new ArrayList<>();
 
         CsvReader reader = new CsvReader(
@@ -282,10 +368,6 @@ public class BookCrossingDatasetLoader extends DatasetLoaderAbstract<Rating> {
                 item -> item.getFeatureValue(isbnFeature).toString(),
                 user -> user));
 
-        Map<String, Item> additionalItems = new HashMap<>();
-        AtomicInteger nextIdItem = new AtomicInteger(contentDataset.allIDs().stream().mapToInt(idItem -> idItem).max().getAsInt() + 1);
-        Feature[] isbnFeatures = {isbnFeature};
-
         while (reader.readRecord()) {
 
             String isbn = reader.get("ISBN");
@@ -301,14 +383,7 @@ public class BookCrossingDatasetLoader extends DatasetLoaderAbstract<Rating> {
             }
 
             if (item == null) {
-                item = additionalItems.get(isbn);
-            }
-
-            if (item == null) {
-                Object[] featureValues = {isbn};
-                item = new Item(nextIdItem.incrementAndGet(), isbn, isbnFeatures, featureValues);
-
-                additionalItems.put(isbn, item);
+                throw new ItemNotFound(-1, "Item with isbn=" + isbn + " not found.");
             }
 
             Rating rating = new Rating(user, item, ratingValue);
@@ -318,14 +393,6 @@ public class BookCrossingDatasetLoader extends DatasetLoaderAbstract<Rating> {
             i++;
         }
         reader.close();
-
-        if (!additionalItems.isEmpty()) {
-            contentDataset = addNotFoundItemsToContentDataset(isbnFeature, additionalItems.values());
-
-            Global.showWarning("Ratings recovered through creation of empty items: " + ratings.parallelStream()
-                    .filter(rating -> additionalItems.containsKey(rating.getItem().getFeatureValue(isbnFeature).toString()))
-                    .count());
-        }
 
         return new BothIndexRatingsDataset<>(ratings);
     }
@@ -345,14 +412,14 @@ public class BookCrossingDatasetLoader extends DatasetLoaderAbstract<Rating> {
         return contentDatasetDefault;
     }
 
-    private void checkUsersHeaders(String[] headers) {
+    private static void checkUsersHeaders(String[] headers) {
         checkHeaderPresent(headers, "User-ID");
         checkHeaderPresent(headers, "Location");
         checkHeaderPresent(headers, "Age");
 
     }
 
-    private void checkItemsHeaders(String[] headers) {
+    private static void checkItemsHeaders(String[] headers) {
 
         checkHeaderPresent(headers, "ISBN");
         checkHeaderPresent(headers, "Book-Title");
@@ -364,13 +431,13 @@ public class BookCrossingDatasetLoader extends DatasetLoaderAbstract<Rating> {
         checkHeaderPresent(headers, "Image-URL-L");
     }
 
-    private void checkRatingsHeaders(String[] headers) {
+    private static void checkRatingsHeaders(String[] headers) {
         checkHeaderPresent(headers, "User-ID");
         checkHeaderPresent(headers, "ISBN");
         checkHeaderPresent(headers, "Book-Rating");
     }
 
-    private void checkHeaderPresent(String[] headers, String headerThatMustBePresent) {
+    private static void checkHeaderPresent(String[] headers, String headerThatMustBePresent) {
         boolean isHeaderPresent = false;
         for (String header : headers) {
             if (header.equals(headerThatMustBePresent)) {
