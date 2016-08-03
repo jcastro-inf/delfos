@@ -23,9 +23,9 @@ import delfos.dataset.changeable.ChangeableRatingsDataset;
 import delfos.dataset.storage.memory.BothIndexRatingsDataset;
 import delfos.io.csv.dataset.rating.RatingsDatasetToCSV;
 import delfos.io.csv.dataset.rating.RatingsDatasetToCSV_JavaCSV20;
+import static delfos.utils.streams.IteratorToList.collectInList;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Collection;
 
 /**
@@ -58,14 +58,6 @@ public class ChangeableRatingsDatasetCSV<RatingType extends Rating> extends Both
 
     public ChangeableRatingsDatasetCSV(final ChangeableCSVFileDatasetLoader parent, Iterable<RatingType> ratings) {
         this(parent, collectInList(ratings));
-    }
-
-    public static <T> Collection<T> collectInList(Iterable<T> elements) {
-        ArrayList<T> list = new ArrayList<>();
-        for (T t : elements) {
-            list.add(t);
-        }
-        return list;
     }
 
     public ChangeableRatingsDatasetCSV(final ChangeableCSVFileDatasetLoader parent, Collection<RatingType> ratings) {
