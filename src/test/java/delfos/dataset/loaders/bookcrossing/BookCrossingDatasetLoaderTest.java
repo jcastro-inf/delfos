@@ -28,8 +28,8 @@ import delfos.dataset.basic.user.User;
 import delfos.dataset.basic.user.UsersDataset;
 import delfos.dataset.storage.memory.BothIndexRatingsDataset;
 import delfos.rs.collaborativefiltering.Recommender_DatasetProperties;
+import delfos.utils.streams.IteratorToList;
 import java.io.File;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -88,7 +88,7 @@ public class BookCrossingDatasetLoaderTest extends DelfosTest {
 
     public RatingsDataset<Rating> filterRatings(RatingsDataset<Rating> ratingsDataset, UsersDataset usersDataset, ContentDataset contentDataset, int minimumUserRatings, int minimumItemRatings) throws CannotLoadContentDataset, CannotLoadUsersDataset {
 
-        List<Rating> ratings = new ArrayList<>(ratingsDataset.getNumRatings());
+        List<Rating> ratings = IteratorToList.collectInList(ratingsDataset);
 
         Set<User> usersWithRatings = usersDataset.parallelStream()
                 .filter(user -> ratingsDataset.getUserRated(user.getId()).size() >= minimumUserRatings)
