@@ -58,9 +58,9 @@ public class BothIndexRatingsDatasetTest extends DelfosTest {
 
         new Recommender_DatasetProperties().buildRecommendationModel(new DatasetLoaderGivenRatingsDataset<>(datasetLoader, newRatingsDataset));
 
-        Assert.assertEquals("ml-100k dataset has 943 users", 943, newRatingsDataset.allUsers().size());
-        Assert.assertEquals("ml-100k dataset has 1682 items", 1682, newRatingsDataset.allRatedItems().size());
-        Assert.assertEquals("ml-100k dataset has 100000 ratings", 100000, newRatingsDataset.getNumRatings());
+        Assert.assertEquals("ml-100k dataset has 943 users", 6040, newRatingsDataset.allUsers().size());
+        Assert.assertEquals("ml-100k dataset has 1682 items", 3706, newRatingsDataset.allRatedItems().size());
+        Assert.assertEquals("ml-100k dataset has 100000 ratings", 1000209, newRatingsDataset.getNumRatings());
 
     }
 
