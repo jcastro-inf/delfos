@@ -167,7 +167,8 @@ public class InitialConfiguration extends CaseUseMode {
 
         Global.showInfoMessage("Searching '" + name + "' dataset in directory '" + datasetDirectory.getAbsolutePath() + "'\n");
         if (!datasetDirectory.exists()) {
-            String msg = "Cannot find directory '" + datasetDirectory.getAbsolutePath() + "' of the " + name + "dataset.";
+            String msg = "Cannot find directory '" + datasetDirectory.getAbsolutePath() 
+                    + "' of the '" + name + "' dataset.";
             ERROR_CODES.CANNOT_LOAD_RATINGS_DATASET.exit(new FileNotFoundException(msg));
         }
 
@@ -195,7 +196,8 @@ public class InitialConfiguration extends CaseUseMode {
 
         Global.showInfoMessage("Searching '" + name + "' dataset in directory '" + datasetDirectory.getAbsolutePath() + "'\n");
         if (!datasetDirectory.exists()) {
-            String msg = "Cannot find directory '" + datasetDirectory.getAbsolutePath() + "' of the " + name + "dataset.";
+            String msg = "Cannot find directory '" + datasetDirectory.getAbsolutePath() 
+                    + "' of the '" + name + "' dataset.";
             ERROR_CODES.CANNOT_LOAD_RATINGS_DATASET.exit(new FileNotFoundException(msg));
         }
 
