@@ -21,9 +21,11 @@ import delfos.common.datastructures.histograms.HistogramCategories;
 import delfos.common.exceptions.dataset.CannotLoadContentDataset;
 import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
 import delfos.common.exceptions.dataset.users.UserNotFound;
+import delfos.dataset.basic.item.ContentDataset;
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RatingsDataset;
+import delfos.dataset.basic.user.UsersDataset;
 import delfos.dataset.storage.memory.BothIndexRatingsDataset;
 import delfos.rs.recommendation.Recommendation;
 import java.util.ArrayList;
@@ -54,16 +56,19 @@ public class Recommender_DatasetProperties extends CollaborativeRecommender<Numb
         Global.showInfoMessage("Num items   " + datasetLoader.getRatingsDataset().allRatedItems().size() + "\n");
 
         RatingsDataset<? extends Rating> ratingsDataset = datasetLoader.getRatingsDataset();
+        UsersDataset usersDataset = datasetLoader.getUsersDataset();
+
+        ContentDataset contentDataset = datasetLoader.getContentDataset();
 
         HistogramCategories<Integer> userNumRatingsHistogram = new HistogramCategories<>();
         HistogramCategories<Integer> itemNumRatingsHistogram = new HistogramCategories<>();
         HistogramCategories<String> ratingsHistogram = new HistogramCategories<>();
 
-        ratingsDataset.allUsers().stream().forEach(user -> {
-            userNumRatingsHistogram.addValue(ratingsDataset.getUserRated(user).size());
+        usersDataset.stream().forEach(user -> {
+            userNumRatingsHistogram.addValue(ratingsDataset.getUserRated(user.getId()).size());
         });
-        ratingsDataset.allRatedItems().stream().forEach(item -> {
-            itemNumRatingsHistogram.addValue(ratingsDataset.getItemRated(item).size());
+        contentDataset.stream().forEach(item -> {
+            itemNumRatingsHistogram.addValue(ratingsDataset.getItemRated(item.getId()).size());
         });
 
         for (Rating rating : ratingsDataset) {
