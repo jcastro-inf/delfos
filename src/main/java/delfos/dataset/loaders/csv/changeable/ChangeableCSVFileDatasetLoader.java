@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -75,12 +75,10 @@ public class ChangeableCSVFileDatasetLoader extends ChangeableDatasetLoaderAbstr
         Object parameterValue = getParameterValue(USERS_FILE);
         if (parameterValue instanceof String) {
             return new File((String) parameterValue);
+        } else if (parameterValue instanceof File) {
+            return (File) parameterValue;
         } else {
-            if (parameterValue instanceof File) {
-                return (File) parameterValue;
-            } else {
-                throw new IllegalArgumentException("The parameter type is not correct (" + parameterValue + ").");
-            }
+            throw new IllegalArgumentException("The parameter type is not correct (" + parameterValue + ").");
         }
     }
 
@@ -93,12 +91,10 @@ public class ChangeableCSVFileDatasetLoader extends ChangeableDatasetLoaderAbstr
         Object parameterValue = getParameterValue(CONTENT_FILE);
         if (parameterValue instanceof String) {
             return new File((String) parameterValue);
+        } else if (parameterValue instanceof File) {
+            return (File) parameterValue;
         } else {
-            if (parameterValue instanceof File) {
-                return (File) parameterValue;
-            } else {
-                throw new IllegalArgumentException("The parameter type is not correct (" + parameterValue + ").");
-            }
+            throw new IllegalArgumentException("The parameter type is not correct (" + parameterValue + ").");
         }
     }
 
@@ -111,12 +107,10 @@ public class ChangeableCSVFileDatasetLoader extends ChangeableDatasetLoaderAbstr
         Object parameterValue = getParameterValue(RATINGS_FILE);
         if (parameterValue instanceof String) {
             return new File((String) parameterValue);
+        } else if (parameterValue instanceof File) {
+            return (File) parameterValue;
         } else {
-            if (parameterValue instanceof File) {
-                return (File) parameterValue;
-            } else {
-                throw new IllegalArgumentException("The parameter type is not correct (" + parameterValue + ").");
-            }
+            throw new IllegalArgumentException("The parameter type is not correct (" + parameterValue + ").");
         }
     }
 
