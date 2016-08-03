@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -23,18 +23,21 @@ import delfos.dataset.basic.rating.RatingsDataset;
 import delfos.dataset.basic.rating.RatingsDatasetAdapter;
 import delfos.dataset.basic.rating.domain.DecimalDomain;
 import delfos.dataset.basic.rating.domain.Domain;
+import delfos.dataset.basic.user.User;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 /**
- * Dataset que almacena las valoraciones doblemente indexadas, es decir, por
- * usuarios y por productos. De esta manera se gana en eficiencia temporal a
- * costa de utilizar una mayor cantidad de memoria ram
+ * Dataset que almacena las valoraciones doblemente indexadas, es decir, por usuarios y por productos. De esta manera se
+ * gana en eficiencia temporal a costa de utilizar una mayor cantidad de memoria ram
  *
  * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
@@ -49,9 +52,8 @@ public class BothIndexRatingsDataset<RatingType extends Rating> extends RatingsD
     protected int numRatings = 0;
 
     /**
-     * Crea un dataset doblemente indexado (por usuarios y por productos) para
-     * ganar en eficiencia en tiempo utilizando una mayor cantidad de memoria.
-     * El dataset está vacío iniciamlente
+     * Crea un dataset doblemente indexado (por usuarios y por productos) para ganar en eficiencia en tiempo utilizando
+     * una mayor cantidad de memoria. El dataset está vacío iniciamlente
      */
     public BothIndexRatingsDataset() {
         //Se crea vacío
@@ -77,8 +79,8 @@ public class BothIndexRatingsDataset<RatingType extends Rating> extends RatingsD
     }
 
     /**
-     * Crea un dataset doblemente indexado (por usuarios y por productos) para
-     * ganar en eficiencia en tiempo utilizando una mayor cantidad de memoria.
+     * Crea un dataset doblemente indexado (por usuarios y por productos) para ganar en eficiencia en tiempo utilizando
+     * una mayor cantidad de memoria.
      *
      * @param ratingsIndexedByUser Valoraciones de todos los usuarios.
      */
@@ -140,10 +142,9 @@ public class BothIndexRatingsDataset<RatingType extends Rating> extends RatingsD
         for (int idUser : ratingsDataset.allUsers()) {
             try {
                 Map<Integer, RatingType> userRatingsRated = ratingsDataset.getUserRatingsRated(idUser);
-                for (int idItem : userRatingsRated.keySet()) {
-                    RatingType rating = userRatingsRated.get(idItem);
+                userRatingsRated.keySet().stream().map((idItem) -> userRatingsRated.get(idItem)).forEach((rating) -> {
                     addOneRating(rating);
-                }
+                });
             } catch (UserNotFound ex) {
                 ERROR_CODES.USER_NOT_FOUND.exit(ex);
             }
@@ -154,9 +155,63 @@ public class BothIndexRatingsDataset<RatingType extends Rating> extends RatingsD
         }
     }
 
-    public BothIndexRatingsDataset(Iterable<RatingType> ratings) {
-        for (RatingType r : ratings) {
-            addOneRating(r);
+    public BothIndexRatingsDataset(Collection<RatingType> ratings) {
+        checkUniqueRatings(ratings);
+
+        Map<Integer, Map<Integer, RatingType>> ratingsByUser = ratings.parallelStream()
+                .collect(Collectors.groupingBy(rating -> rating.getUser(), Collectors.toList()))
+                .entrySet().parallelStream()
+                .filter(userRatingsEntry -> !userRatingsEntry.getValue().isEmpty())
+                .collect(Collectors.toMap(
+                        userRatingsEntry -> userRatingsEntry.getKey().getId(),
+                        userRatingsEntry -> userRatingsEntry.getValue().parallelStream().collect(Collectors.toMap(
+                                rating -> rating.getItem().getId(),
+                                rating -> rating)
+                        )
+                ));
+
+        userIndex = ratingsByUser;
+
+        Map<Integer, Map<Integer, RatingType>> ratingsByItem = ratings.parallelStream()
+                .collect(Collectors.groupingBy(rating -> rating.getItem(), Collectors.toList()))
+                .entrySet().parallelStream()
+                .filter(itemRatingsEntry -> !itemRatingsEntry.getValue().isEmpty())
+                .collect(Collectors.toMap(
+                        itemRatingsEntry -> itemRatingsEntry.getKey().getId(),
+                        itemRatingsEntry -> itemRatingsEntry.getValue().parallelStream().collect(Collectors.toMap(
+                                rating -> rating.getUser().getId(),
+                                rating -> rating)
+                        )
+                ));
+
+        itemIndex = ratingsByItem;
+
+        numRatings = ratings.size();
+    }
+
+    private void checkUniqueRatings(Collection<RatingType> ratings) {
+        Map<User, List<RatingType>> ratingsByUser = ratings.parallelStream().collect(
+                Collectors.groupingBy(
+                        rating -> rating.getUser(),
+                        Collectors.toList()));
+
+        List<User> usersWithDuplicateRatings = ratingsByUser
+                .entrySet().parallelStream()
+                .filter(entry -> {
+
+                    List<RatingType> ratingsThisUser = entry.getValue();
+
+                    long distinctRatingsThisUser = ratingsThisUser.parallelStream()
+                            .map(rating -> rating.getIdItem())
+                            .distinct().count();
+
+                    return ratingsThisUser.size() != distinctRatingsThisUser;
+                })
+                .map(entry -> entry.getKey())
+                .collect(Collectors.toList());
+
+        if (!usersWithDuplicateRatings.isEmpty()) {
+            throw new IllegalStateException("There are duplicate ratings");
         }
     }
 

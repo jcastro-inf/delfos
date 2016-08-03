@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,17 +16,17 @@
  */
 package delfos.dataset.loaders.csv.changeable;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import delfos.ERROR_CODES;
+import delfos.common.parameters.ParameterListener;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.changeable.ChangeableRatingsDataset;
 import delfos.dataset.storage.memory.BothIndexRatingsDataset;
-import delfos.ERROR_CODES;
 import delfos.io.csv.dataset.rating.RatingsDatasetToCSV;
 import delfos.io.csv.dataset.rating.RatingsDatasetToCSV_JavaCSV20;
-import delfos.common.parameters.ParameterListener;
+import static delfos.utils.streams.IteratorToList.collectInList;
+import java.io.File;
+import java.io.IOException;
+import java.util.Collection;
 
 /**
  * Implementa un dataset de valoraciones modificable sobre fichero CSV.
@@ -34,6 +34,7 @@ import delfos.common.parameters.ParameterListener;
  * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 16-sep-2013
+ * @param <RatingType>
  */
 public class ChangeableRatingsDatasetCSV<RatingType extends Rating> extends BothIndexRatingsDataset<RatingType> implements ChangeableRatingsDataset<RatingType> {
 
@@ -48,16 +49,18 @@ public class ChangeableRatingsDatasetCSV<RatingType extends Rating> extends Both
             public void parameterChanged() {
                 if (usersDatasetFile == null) {
                     usersDatasetFile = parent.getUsersDatasetFile();
-                } else {
-                    if (!usersDatasetFile.equals(parent.getUsersDatasetFile())) {
-                        commitChangesInPersistence();
-                    }
+                } else if (!usersDatasetFile.equals(parent.getUsersDatasetFile())) {
+                    commitChangesInPersistence();
                 }
             }
         });
     }
 
     public ChangeableRatingsDatasetCSV(final ChangeableCSVFileDatasetLoader parent, Iterable<RatingType> ratings) {
+        this(parent, collectInList(ratings));
+    }
+
+    public ChangeableRatingsDatasetCSV(final ChangeableCSVFileDatasetLoader parent, Collection<RatingType> ratings) {
         super(ratings);
         this.parent = parent;
 
@@ -68,10 +71,8 @@ public class ChangeableRatingsDatasetCSV<RatingType extends Rating> extends Both
             public void parameterChanged() {
                 if (usersDatasetFile == null) {
                     usersDatasetFile = parent.getUsersDatasetFile();
-                } else {
-                    if (!usersDatasetFile.equals(parent.getUsersDatasetFile())) {
-                        commitChangesInPersistence();
-                    }
+                } else if (!usersDatasetFile.equals(parent.getUsersDatasetFile())) {
+                    commitChangesInPersistence();
                 }
             }
         });

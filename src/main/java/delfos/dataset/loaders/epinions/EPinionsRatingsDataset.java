@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,6 +16,14 @@
  */
 package delfos.dataset.loaders.epinions;
 
+import delfos.common.Chronometer;
+import delfos.common.Global;
+import delfos.common.datastructures.DoubleMapping;
+import delfos.common.exceptions.dataset.items.ItemNotFound;
+import delfos.common.exceptions.dataset.users.UserNotFound;
+import delfos.dataset.basic.rating.RatingsDataset;
+import delfos.dataset.basic.rating.domain.Domain;
+import delfos.dataset.storage.memory.BothIndexRatingsDataset;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -23,21 +31,11 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Collection;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import delfos.common.Chronometer;
-import delfos.common.Global;
-import delfos.common.datastructures.DoubleMapping;
-import delfos.common.exceptions.dataset.items.ItemNotFound;
-import delfos.common.exceptions.dataset.users.UserNotFound;
-import delfos.dataset.basic.rating.RatingsDataset;
-import delfos.dataset.storage.memory.BothIndexRatingsDataset;
-import delfos.dataset.basic.rating.domain.DecimalDomain;
-import delfos.dataset.basic.rating.domain.Domain;
 import java.util.Set;
 
 /**
@@ -51,7 +49,7 @@ public class EPinionsRatingsDataset implements RatingsDataset<EPinionsRating> {
     private final BothIndexRatingsDataset<EPinionsRating> ratingsDataset_overItems;
     private final BothIndexRatingsDataset<EPinionsRating> ratingsDataset_overAuthors;
 
-    private final DoubleMapping<Long, Integer> usersIndex = new DoubleMapping<Long, Integer>();
+    private final DoubleMapping<Long, Integer> usersIndex = new DoubleMapping<>();
 
     /**
      * Carga el fichero de valoraciones del dataset EPinions indicado.
@@ -65,8 +63,8 @@ public class EPinionsRatingsDataset implements RatingsDataset<EPinionsRating> {
         BufferedReader br = new BufferedReader(new FileReader(ratingsFile));
         String linea = br.readLine();
 
-        List<EPinionsRating> ratings_overAuthors = new LinkedList<EPinionsRating>();
-        List<EPinionsRating> ratings_overItems = new LinkedList<EPinionsRating>();
+        List<EPinionsRating> ratings_overAuthors = new ArrayList<>();
+        List<EPinionsRating> ratings_overItems = new ArrayList<>();
 
         Chronometer c = new Chronometer();
         int i = 1;
@@ -89,16 +87,13 @@ public class EPinionsRatingsDataset implements RatingsDataset<EPinionsRating> {
             String typeString = columns[6];
             if (typeString.isEmpty() || typeString.equals("1")) {
                 TYPE = "Item";
+            } else if (typeString.equals("2")) {
+
+                //Se supone que el dataset tiene la opción de valorar otros objetos distintos de los productos.
+                //TYPE = "Author";
+                TYPE = "Item";
             } else {
-
-                if (typeString.equals("2")) {
-
-                    //Se supone que el dataset tiene la opción de valorar otros objetos distintos de los productos.
-                    //TYPE = "Author";
-                    TYPE = "Item";
-                } else {
-                    throw new IllegalArgumentException("Unrecognized rating type at line " + i + " of file " + ratingsFile);
-                }
+                throw new IllegalArgumentException("Unrecognized rating type at line " + i + " of file " + ratingsFile);
             }
 
             MEMBER_ID = new Long(columns[1]);
@@ -118,16 +113,12 @@ public class EPinionsRatingsDataset implements RatingsDataset<EPinionsRating> {
             String statusString = columns[3];
             if (statusString.isEmpty()) {
                 STATUS = false;
+            } else if (statusString.equals("1")) {
+                STATUS = true;
+            } else if (statusString.equals("0")) {
+                STATUS = false;
             } else {
-                if (statusString.equals("1")) {
-                    STATUS = true;
-                } else {
-                    if (statusString.equals("0")) {
-                        STATUS = false;
-                    } else {
-                        throw new IllegalStateException("Status value of '" + statusString + "' is not allowed.");
-                    }
-                }
+                throw new IllegalStateException("Status value of '" + statusString + "' is not allowed.");
             }
 
             SimpleDateFormat df = new SimpleDateFormat("yyyy/MM/dd");
@@ -168,20 +159,18 @@ public class EPinionsRatingsDataset implements RatingsDataset<EPinionsRating> {
                     EPinionsRating ePinionsRating = new EPinionsRating(idUser, idItem, RATING, STATUS, CREATION, LAST_MODIFIED, VERTICAL_ID);
                     ratings_overItems.add(ePinionsRating);
                 }
-            } else {
-                if (TYPE.equals("Author")) {
+            } else if (TYPE.equals("Author")) {
 
-                    if (!epinionsContentDataset.getAuthorsIndex().containsType1Value(OBJECT_ID)) {
-                        Global.showWarning("The author " + OBJECT_ID + " is not defined in the authors index. ¿is in items? " + epinionsContentDataset.getProductsIndex().containsType1Value(OBJECT_ID) + " ¿is in subjects? " + epinionsContentDataset.getSubjectsIndex().containsType1Value(OBJECT_ID));
-                    } else {
-                        int idUser = usersIndex.typeOneToTypeTwo(MEMBER_ID);
-                        int idAuthor = epinionsContentDataset.getAuthorsIndex().typeOneToTypeTwo(OBJECT_ID);
-                        EPinionsRating ePinionsRating = new EPinionsRating(idUser, idAuthor, RATING, STATUS, CREATION, LAST_MODIFIED, VERTICAL_ID);
-                        ratings_overAuthors.add(ePinionsRating);
-                    }
+                if (!epinionsContentDataset.getAuthorsIndex().containsType1Value(OBJECT_ID)) {
+                    Global.showWarning("The author " + OBJECT_ID + " is not defined in the authors index. ¿is in items? " + epinionsContentDataset.getProductsIndex().containsType1Value(OBJECT_ID) + " ¿is in subjects? " + epinionsContentDataset.getSubjectsIndex().containsType1Value(OBJECT_ID));
                 } else {
-                    throw new IllegalArgumentException("Unrecognized rating type at line " + i + " of file " + ratingsFile);
+                    int idUser = usersIndex.typeOneToTypeTwo(MEMBER_ID);
+                    int idAuthor = epinionsContentDataset.getAuthorsIndex().typeOneToTypeTwo(OBJECT_ID);
+                    EPinionsRating ePinionsRating = new EPinionsRating(idUser, idAuthor, RATING, STATUS, CREATION, LAST_MODIFIED, VERTICAL_ID);
+                    ratings_overAuthors.add(ePinionsRating);
                 }
+            } else {
+                throw new IllegalArgumentException("Unrecognized rating type at line " + i + " of file " + ratingsFile);
             }
 
             linea = br.readLine();
@@ -195,8 +184,8 @@ public class EPinionsRatingsDataset implements RatingsDataset<EPinionsRating> {
         }
         br.close();
 
-        ratingsDataset_overItems = new BothIndexRatingsDataset<EPinionsRating>(ratings_overItems);
-        ratingsDataset_overAuthors = new BothIndexRatingsDataset<EPinionsRating>(ratings_overAuthors);
+        ratingsDataset_overItems = new BothIndexRatingsDataset<>(ratings_overItems);
+        ratingsDataset_overAuthors = new BothIndexRatingsDataset<>(ratings_overAuthors);
     }
 
     @Override

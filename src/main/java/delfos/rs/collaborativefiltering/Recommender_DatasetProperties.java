@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,25 +16,26 @@
  */
 package delfos.rs.collaborativefiltering;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
 import delfos.common.Global;
+import delfos.common.datastructures.histograms.HistogramCategories;
 import delfos.common.exceptions.dataset.CannotLoadContentDataset;
 import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
 import delfos.common.exceptions.dataset.users.UserNotFound;
+import delfos.dataset.basic.item.ContentDataset;
+import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RatingsDataset;
-import delfos.dataset.basic.loader.types.DatasetLoader;
+import delfos.dataset.basic.user.UsersDataset;
 import delfos.dataset.storage.memory.BothIndexRatingsDataset;
 import delfos.rs.recommendation.Recommendation;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Map;
+import java.util.TreeMap;
 
 /**
- * Sistema de recomendación para comprobar que las particiones de
- * entrenamiento/evaluación se realizan correctamente. Comprueba que no se
- * solicitan ratings que se usaron en la fase de construcción.
+ * Sistema de recomendación para comprobar que las particiones de entrenamiento/evaluación se realizan correctamente.
+ * Comprueba que no se solicitan ratings que se usaron en la fase de construcción.
  *
  * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
@@ -54,75 +55,34 @@ public class Recommender_DatasetProperties extends CollaborativeRecommender<Numb
         Global.showInfoMessage("Num users   " + datasetLoader.getRatingsDataset().allUsers().size() + "\n");
         Global.showInfoMessage("Num items   " + datasetLoader.getRatingsDataset().allRatedItems().size() + "\n");
 
-        Map<Integer, Integer> usersRatingsNum = new TreeMap<>();
-        Map<Integer, Integer> itemsRatingsNum = new TreeMap<>();
         RatingsDataset<? extends Rating> ratingsDataset = datasetLoader.getRatingsDataset();
+        UsersDataset usersDataset = datasetLoader.getUsersDataset();
+
+        ContentDataset contentDataset = datasetLoader.getContentDataset();
+
+        HistogramCategories<Integer> userNumRatingsHistogram = new HistogramCategories<>();
+        HistogramCategories<Integer> itemNumRatingsHistogram = new HistogramCategories<>();
+        HistogramCategories<String> ratingsHistogram = new HistogramCategories<>();
+
+        usersDataset.stream().forEach(user -> {
+            userNumRatingsHistogram.addValue(ratingsDataset.getUserRated(user.getId()).size());
+        });
+        contentDataset.stream().forEach(item -> {
+            itemNumRatingsHistogram.addValue(ratingsDataset.getItemRated(item.getId()).size());
+        });
+
         for (Rating rating : ratingsDataset) {
-            int idUser = rating.getIdUser();
-            int idItem = rating.getIdItem();
-
-            if (usersRatingsNum.containsKey(idUser)) {
-                int numUserRatings = usersRatingsNum.get(idUser);
-                usersRatingsNum.put(idUser, numUserRatings + 1);
-            } else {
-                usersRatingsNum.put(idUser, 1);
-            }
-
-            if (itemsRatingsNum.containsKey(idItem)) {
-                int numItemRatings = itemsRatingsNum.get(idItem);
-                itemsRatingsNum.put(idItem, numItemRatings + 1);
-            } else {
-                itemsRatingsNum.put(idItem, 1);
-            }
+            ratingsHistogram.addValue(rating.getRatingValue().toString());
         }
 
-        TreeMap<Integer, Integer> userHistogram = new TreeMap<>();
-        for (Map.Entry<Integer, Integer> entry : usersRatingsNum.entrySet()) {
-            Integer idUser = entry.getKey();
-            Integer numRatings = entry.getValue();
-            if (userHistogram.containsKey(numRatings)) {
-                userHistogram.put(numRatings, userHistogram.get(numRatings) + 1);
-            } else {
-                userHistogram.put(numRatings, 1);
-            }
-        }
+        System.out.println("#ratings\t#items");
+        itemNumRatingsHistogram.printHistogram(System.out);
 
-        TreeMap<Integer, Integer> itemHistogram = new TreeMap<>();
-        for (Map.Entry<Integer, Integer> entry : itemsRatingsNum.entrySet()) {
-            Integer idItem = entry.getKey();
-            Integer numRatings = entry.getValue();
-            if (itemHistogram.containsKey(numRatings)) {
-                itemHistogram.put(numRatings, itemHistogram.get(numRatings) + 1);
-            } else {
-                itemHistogram.put(numRatings, 1);
-            }
+        System.out.println("#ratings\t#users");
+        userNumRatingsHistogram.printHistogram(System.out);
 
-        }
-
-        Global.showInfoMessage("\n\nhistograma usuarios\n");
-        for (int numRatings : userHistogram.keySet()) {
-            Global.showInfoMessage("\tUsers with " + numRatings + " ratings\t----->" + userHistogram.get(numRatings) + "\n");
-        }
-        Global.showInfoMessage("\n\n");
-        Global.showInfoMessage("\n\nhistograma productos\n");
-        for (int numRatings : itemHistogram.keySet()) {
-            Global.showInfoMessage("\tItems with " + numRatings + " ratings\t----->" + itemHistogram.get(numRatings) + "\n");
-        }
-
-        if (Global.isVerboseAnnoying()) {
-            Global.showInfoMessage("Histograms in tab separated values format: \n\n");
-            Global.showInfoMessage("NumRatings\tNumUsers\n");
-            for (int numRatings : userHistogram.keySet()) {
-                Global.showInfoMessage(numRatings + "\t" + userHistogram.get(numRatings) + "\n");
-            }
-            Global.showInfoMessage("\n");
-
-            Global.showInfoMessage("NumRatings\tNumItems\n");
-            for (int numRatings : itemHistogram.keySet()) {
-                Global.showInfoMessage(numRatings + "\t" + itemHistogram.get(numRatings) + "\n");
-            }
-            Global.showInfoMessage("\n");
-        }
+        System.out.println("Ratings values histogram");
+        ratingsHistogram.printHistogram(System.out);
 
         return 3;
     }

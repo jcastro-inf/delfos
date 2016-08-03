@@ -29,6 +29,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
+import java.util.stream.Collectors;
 
 /**
  * Dataset para la validación de
@@ -91,11 +92,9 @@ public class TrainingRatingsDataset_CPU<RatingType extends Rating>
     @Override
     public synchronized Set<Integer> allRatedItems() {
         if (this.allRatedItems == null) {
-            allRatedItems = Collections.synchronizedSet(new TreeSet<Integer>());
-
-            for (Rating rating : this) {
-                allRatedItems.add(rating.getIdItem());
-            }
+            allRatedItems = this.allUsers().parallelStream()
+                    .flatMap(user -> this.getUserRated(user).parallelStream())
+                    .collect(Collectors.toSet());
 
             allRatedItems = Collections.unmodifiableSet(allRatedItems);
         }

@@ -24,6 +24,7 @@ import delfos.dataset.basic.rating.Rating;
 import delfos.group.groupsofusers.GroupOfUsers;
 import delfos.group.grs.recommendations.GroupRecommendations;
 import delfos.utils.algorithm.progress.ProgressChangedController;
+import java.util.Collections;
 import java.util.Set;
 import java.util.function.Function;
 
@@ -57,7 +58,12 @@ public class SingleGroupRecommendationFunction implements Function<SingleGroupRe
         final Set<Item> itemsRequested = task.getItemsRequested();
 
         if (itemsRequested.isEmpty()) {
-            System.out.println(" stop");
+            GroupRecommendations recommendations = new GroupRecommendations(groupOfUsers, Collections.EMPTY_LIST);
+            SingleGroupRecommendationTaskOutput groupRecommendationTaskOutput
+                    = new SingleGroupRecommendationTaskOutput(
+                            groupOfUsers, recommendations, -1, -1);
+
+            return groupRecommendationTaskOutput;
         }
 
         GroupRecommendations recommendations = null;

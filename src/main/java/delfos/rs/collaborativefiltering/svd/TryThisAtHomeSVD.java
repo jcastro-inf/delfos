@@ -255,7 +255,7 @@ public class TryThisAtHomeSVD
                     double ratingValue = rating.getRatingValue().doubleValue();
                     double error = 0;
                     try {
-                        predicted = privatePredictRating(datasetLoader, model, idUser, idItem);
+                        predicted = privatePredictRating(datasetLoader, model, idUser, idItem, indexFeature + 1);
                         error = (ratingValue - predicted);
                     } catch (NotEnoughtUserInformation | NotEnoughtItemInformation | UserNotFound | ItemNotFound ex) {
                         throw new IllegalStateException(ex);
@@ -303,15 +303,15 @@ public class TryThisAtHomeSVD
 
             Global.showInfoMessage("=======================================\n");
             Global.showInfoMessage("User features:\n");
-            for (int idUser : ratingsDataset.allUsers()) {
+            ratingsDataset.allUsers().stream().forEach((idUser) -> {
                 Global.showInfoMessage("User " + idUser + " \t" + model.getUserFeatures(idUser).toString() + "\n");
-            }
+            });
             Global.showInfoMessage("---------------------------------------\n");
             Global.showInfoMessage("Item features:\n");
 
-            for (int idItem : ratingsDataset.allRatedItems()) {
+            ratingsDataset.allRatedItems().stream().forEach((idItem) -> {
                 Global.showInfoMessage("Item " + idItem + " \t" + model.getItemFeatures(idItem).toString() + "\n");
-            }
+            });
             Global.showInfoMessage("=======================================\n");
         }
 
@@ -325,6 +325,7 @@ public class TryThisAtHomeSVD
      * @param model Modelo de recomendación.
      * @param idUser Usuario para el que se predice la valoración
      * @param idItem Producto para el que se predice la valoración
+     * @param numFeatures Number of features considered for the prediction
      * @return Valoración predicha del usuario indicado sobre el producto indicado
      * @throws NotEnoughtUserInformation Si el usuario no se encuentra en el dataset de ratings.
      * @throws NotEnoughtItemInformation Si el producto no se encuentra en el dataset de ratings.
@@ -335,7 +336,9 @@ public class TryThisAtHomeSVD
             DatasetLoader<? extends Rating> datasetLoadder,
             TryThisAtHomeSVDModel model,
             int idUser,
-            int idItem) throws NotEnoughtUserInformation, NotEnoughtItemInformation, UserNotFound, ItemNotFound {
+            int idItem,
+            int numFeatures
+    ) throws NotEnoughtUserInformation, NotEnoughtItemInformation, UserNotFound, ItemNotFound {
         double prediction = 0;
 
         if (!model.getUsersIndex().containsKey(idUser)) {
@@ -345,8 +348,6 @@ public class TryThisAtHomeSVD
             throw new NotEnoughtItemInformation("SVD recommendation model does not contains the item.");
         }
 
-        int numFeatures = getNumFeatures();
-
         List<Double> user = model.getAllUserFeatures().get(model.getUsersIndex().get(idUser));
         List<Double> item = model.getAllItemFeatures().get(model.getItemsIndex().get(idItem));
 
@@ -354,7 +355,7 @@ public class TryThisAtHomeSVD
             throw new IllegalArgumentException("Users and item models does not have the same number of features!");
         }
 
-        for (int i = 0; i < user.size() && i <= numFeatures; i++) {
+        for (int i = 0; i < user.size() && i < numFeatures; i++) {
             prediction += user.get(i) * item.get(i);
         }
 
@@ -386,11 +387,13 @@ public class TryThisAtHomeSVD
 
         boolean toRatingRange = (Boolean) getParameterValue(PREDICT_IN_RATING_RANGE);
 
+        int numFeatures = getNumFeatures();
+
         List<Recommendation> ret = candidateItems.parallelStream().map(idItem -> {
             Item item = datasetLoader.getContentDataset().get(idItem);
             Number prediction = Double.NaN;
             try {
-                prediction = privatePredictRating(datasetLoader, model, idUser, idItem);
+                prediction = privatePredictRating(datasetLoader, model, idUser, idItem, numFeatures);
                 if (toRatingRange) {
                     prediction = toRatingRange(datasetLoader, prediction);
                 }

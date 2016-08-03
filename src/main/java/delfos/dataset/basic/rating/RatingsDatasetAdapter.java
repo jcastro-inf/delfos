@@ -350,15 +350,13 @@ public abstract class RatingsDatasetAdapter<RatingType extends Rating> implement
             try {
                 Map<Integer, RatingType> userRatingsRated = ratingsDataset.getUserRatingsRated(idUser);
 
-                for (int idItem : itemsSorted) {
-                    if (userRatingsRated.containsKey(idItem)) {
-                        RatingType rating = userRatingsRated.get(idItem);
-                        double ratingValue = rating.getRatingValue().doubleValue();
-                        hashCodeBuilder.append(idItem);
-                        hashCodeBuilder.append(ratingValue);
-                    }
+                List<Integer> thisUserItemsSorted = userRatingsRated.keySet().stream().sorted((i1, i2) -> Integer.compare(i1, i2)).collect(Collectors.toList());
+                for (Integer idItem : thisUserItemsSorted) {
+                    RatingType rating = userRatingsRated.get(idItem);
+                    double ratingValue = rating.getRatingValue().doubleValue();
+                    hashCodeBuilder.append(idItem);
+                    hashCodeBuilder.append(ratingValue);
                 }
-
             } catch (UserNotFound ex) {
                 ERROR_CODES.USER_NOT_FOUND.exit(ex);
             }
