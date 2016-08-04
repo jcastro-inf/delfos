@@ -99,6 +99,10 @@ public class NDCG extends GroupEvaluationMeasure {
                     double gain = computeDCG(recommendationsIntersectUserRatings, userRatings);
                     double score = gain / idealGain;
 
+                    if (Double.isNaN(score)) {
+                        throw new IllegalStateException("NDCG is NaN, possibly because there are ratings with a Zero value");
+                    }
+
                     ndcgByMember.add(score);
                 }
 
