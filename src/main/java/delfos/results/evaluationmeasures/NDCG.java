@@ -66,6 +66,11 @@ public class NDCG extends EvaluationMeasure {
                 double idealGain = computeDCG(idealRecommendations, userRatings);
                 double gain = computeDCG(recommendations, userRatings);
                 double score = gain / idealGain;
+
+                if (Double.isNaN(score)) {
+                    throw new IllegalStateException("NDCG is NaN, possibly because there are ratings with a Zero value");
+                }
+
                 ndcgPerUser.add(score);
 
             } catch (UserNotFound ex) {
