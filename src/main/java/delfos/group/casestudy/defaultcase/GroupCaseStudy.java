@@ -198,7 +198,7 @@ public class GroupCaseStudy extends ExperimentAdapter {
                 .parallel()
                 .collect(Collectors.toList());
 
-        listOfExecutionSplitConsumers.parallelStream().forEach(executionSplit -> {
+        listOfExecutionSplitConsumers.stream().parallel().forEach(executionSplit -> {
 
             ExecutionSplitDescriptor executionSplitDescriptor = executionSplit.getDescriptorAndResults();
 
@@ -224,11 +224,11 @@ public class GroupCaseStudy extends ExperimentAdapter {
 
         Set<GroupEvaluationMeasure> groupEvaluationMeasures = allLoopsResults.get(0).get(0).keySet();
 
-        aggregateResults = groupEvaluationMeasures.parallelStream().collect(Collectors.toMap(Function.identity(),
+        aggregateResults = groupEvaluationMeasures.stream().parallel().collect(Collectors.toMap(Function.identity(),
                 groupEvaluationMeasure -> {
 
                     List<GroupEvaluationMeasureResult> allResultsThisMeasure
-                    = allLoopsResults.values().parallelStream()
+                    = allLoopsResults.values().stream().parallel()
                     .flatMap(resultsForThisExecution -> resultsForThisExecution.values().stream())
                     .map(resultExecutionSplit -> resultExecutionSplit.get(groupEvaluationMeasure))
                     .collect(Collectors.toList());
@@ -523,11 +523,11 @@ public class GroupCaseStudy extends ExperimentAdapter {
 
             Set<GroupEvaluationMeasure> groupEvaluationMeasures = groupCaseStudyCloned.allLoopsResults.get(0).get(0).keySet();
 
-            groupCaseStudyCloned.aggregateResults = groupEvaluationMeasures.parallelStream().collect(Collectors.toMap(Function.identity(),
+            groupCaseStudyCloned.aggregateResults = groupEvaluationMeasures.stream().parallel().collect(Collectors.toMap(Function.identity(),
                     groupEvaluationMeasure -> {
 
                         List<GroupEvaluationMeasureResult> allResultsThisMeasure
-                        = groupCaseStudyCloned.allLoopsResults.values().parallelStream()
+                        = groupCaseStudyCloned.allLoopsResults.values().stream().parallel()
                         .flatMap(resultsForThisExecution -> resultsForThisExecution.values().stream())
                         .map(resultExecutionSplit -> resultExecutionSplit.get(groupEvaluationMeasure))
                         .collect(Collectors.toList());
