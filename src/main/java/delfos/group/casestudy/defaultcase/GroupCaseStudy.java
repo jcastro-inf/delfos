@@ -33,7 +33,6 @@ import delfos.dataset.basic.loader.types.TrustDatasetLoader;
 import delfos.dataset.basic.loader.types.UsersDatasetLoader;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RelevanceCriteria;
-import delfos.dataset.storage.validationdatasets.PairOfTrainTestRatingsDataset;
 import delfos.experiment.ExperimentAdapter;
 import delfos.experiment.SeedHolder;
 import static delfos.experiment.SeedHolder.SEED;
@@ -54,6 +53,8 @@ import delfos.group.results.groupevaluationmeasures.GroupEvaluationMeasureResult
 import delfos.utils.algorithm.progress.ProgressChangedController;
 import java.io.File;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -163,10 +164,10 @@ public class GroupCaseStudy extends ExperimentAdapter {
     }
 
     /**
-     * First index is the number of execution, the second is the number of
-     * split.
+     * First index is the number of execution, the second is the number of split.
      */
-    private Map<Integer, Map<Integer, Map<GroupEvaluationMeasure, GroupEvaluationMeasureResult>>> allLoopsResults;
+    private Map<Integer, Map<Integer, Map<GroupEvaluationMeasure, GroupEvaluationMeasureResult>>> allLoopsResults = Collections.synchronizedMap(new HashMap<>());
+
     private Map<GroupEvaluationMeasure, GroupEvaluationMeasureResult> aggregateResults;
 
     public void execute() throws CannotLoadContentDataset, CannotLoadRatingsDataset, UserNotFound, ItemNotFound {
@@ -180,35 +181,46 @@ public class GroupCaseStudy extends ExperimentAdapter {
                 numberOfExecutionSplits,
                 this::setExperimentProgress);
 
-        allLoopsResults = IntStream.range(0, getNumExecutions()).boxed().parallel().collect(Collectors.toMap(Function.identity(),
-                execution -> {
-                    long loopSeedForValidation = getLoopSeed(execution, 0);
+        List<ExecutionSplitConsumer> listOfExecutionSplitConsumers = IntStream.range(0, getNumExecutions()).boxed().sequential()
+                .flatMap(execution -> {
 
-                    ValidationTechnique validationTechnique = (ValidationTechnique) getValidationTechnique().clone();
-                    validationTechnique.setSeedValue(loopSeedForValidation);
+                    return IntStream.range(0, getNumSplits())
+                            .boxed().parallel()
+                            .map(split -> {
+                                return new ExecutionSplitConsumer(
+                                        execution,
+                                        split,
+                                        this
+                                );
 
-                    PairOfTrainTestRatingsDataset[] pairsOfTrainTest = validationTechnique.shuffle(originalDatasetLoader);
-
-                    Map<Integer, Map<GroupEvaluationMeasure, GroupEvaluationMeasureResult>> resultsThisExecution = IntStream.range(0, getNumSplits()).boxed().parallel().collect(Collectors.toMap(Function.identity(),
-                    split -> {
-                        Map<GroupEvaluationMeasure, GroupEvaluationMeasureResult> execute
-                        = new ExecutionSplitConsumer(
-                                execution,
-                                split,
-                                this,
-                                pairsOfTrainTest).execute();
-
-                        groupCaseStudyProgressChangedController.setTaskFinished();
-                        return execute;
-                    }
-            )
-            );
-
-                    setResultsThisExecution(execution, resultsThisExecution);
-
-                    return resultsThisExecution;
+                            });
                 })
-        );
+                .parallel()
+                .collect(Collectors.toList());
+
+        listOfExecutionSplitConsumers.parallelStream().forEach(executionSplit -> {
+
+            ExecutionSplitDescriptor executionSplitDescriptor = executionSplit.getDescriptorAndResults();
+
+            synchronized (allLoopsResults) {
+                final int execution = executionSplitDescriptor.getExecution();
+
+                if (!allLoopsResults.containsKey(execution)) {
+                    allLoopsResults.put(execution, Collections.synchronizedMap(new HashMap<>()));
+                }
+
+                allLoopsResults.get(execution).put(executionSplitDescriptor.getSplit(), executionSplitDescriptor.getResults());
+
+                List<Integer> finishedSplits = allLoopsResults.get(execution).keySet().stream().sorted().collect(Collectors.toList());
+                List<Integer> allSplits = IntStream.range(0, getNumSplits()).boxed().sorted().collect(Collectors.toList());
+
+                if (finishedSplits.equals(allSplits)) {
+                    setResultsThisExecution(execution, allLoopsResults.get(execution));
+                }
+            }
+
+            groupCaseStudyProgressChangedController.setTaskFinished();
+        });
 
         Set<GroupEvaluationMeasure> groupEvaluationMeasures = allLoopsResults.get(0).get(0).keySet();
 
@@ -255,9 +267,8 @@ public class GroupCaseStudy extends ExperimentAdapter {
     }
 
     /**
-     * Returns the number of splits per execution in this caseStudy, therefore
-     * the case study evaluates the GRS on numExecutions* numSplits different
-     * datasets.
+     * Returns the number of splits per execution in this caseStudy, therefore the case study evaluates the GRS on
+     * numExecutions* numSplits different datasets.
      *
      * @return
      */
@@ -420,8 +431,7 @@ public class GroupCaseStudy extends ExperimentAdapter {
     }
 
     /**
-     * Devuelve la técnica utilizada para generar los grupos que se evaluarán en
-     * el caso de estudio.
+     * Devuelve la técnica utilizada para generar los grupos que se evaluarán en el caso de estudio.
      *
      * @return Técnica de formación de grupos utilizada
      */

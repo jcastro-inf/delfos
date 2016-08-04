@@ -23,6 +23,7 @@ import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RelevanceCriteria;
 import delfos.dataset.storage.validationdatasets.PairOfTrainTestRatingsDataset;
+import delfos.experiment.validation.validationtechnique.ValidationTechnique;
 import delfos.group.casestudy.parallelisation.SingleGroupRecommendationFunction;
 import delfos.group.casestudy.parallelisation.SingleGroupRecommendationTaskInput;
 import delfos.group.casestudy.parallelisation.SingleGroupRecommendationTaskOutput;
@@ -50,39 +51,48 @@ import java.util.stream.Collectors;
  *
  * @author jcastro-inf ( https://github.com/jcastro-inf )
  */
-public class ExecutionSplitConsumer {
+public class ExecutionSplitConsumer implements Comparable<ExecutionSplitConsumer> {
 
     private final GroupCaseStudy groupCaseStudy;
     private final int execution;
     private final int split;
-    private final PairOfTrainTestRatingsDataset[] pairsOfTrainTest;
 
     public ExecutionSplitConsumer(
             int execution,
             int split,
-            GroupCaseStudy groupCaseStudy, PairOfTrainTestRatingsDataset[] pairsOfTrainTest
+            GroupCaseStudy groupCaseStudy
     ) {
         this.split = split;
         this.groupCaseStudy = (GroupCaseStudy) groupCaseStudy.clone();
         this.execution = execution;
-        this.pairsOfTrainTest = pairsOfTrainTest;
+
     }
 
     public Map<GroupEvaluationMeasure, GroupEvaluationMeasureResult> execute() {
-        long loopSeed = groupCaseStudy.getLoopSeed(execution, split);
 
         final GroupRecommenderSystem groupRecommenderSystem = groupCaseStudy.getGroupRecommenderSystem();
         final RelevanceCriteria relevanceCriteria = groupCaseStudy.getRelevanceCriteria();
         final GroupPredictionProtocol groupPredictionProtocol = groupCaseStudy.getGroupPredictionProtocol();
         final DatasetLoader<? extends Rating> originalDatasetLoader = groupCaseStudy.getDatasetLoader();
 
-        DatasetLoader<? extends Rating> trainDatasetLoader = pairsOfTrainTest[split].getTrainingDatasetLoader();
+        long loopSeed = groupCaseStudy.getLoopSeed(execution, split);
+
+        long loopSeedForValidation = groupCaseStudy.getLoopSeed(execution, 0);
+
+        ValidationTechnique validationTechnique = (ValidationTechnique) groupCaseStudy.getValidationTechnique()
+                .clone();
+        validationTechnique.setSeedValue(loopSeedForValidation);
+
+        final PairOfTrainTestRatingsDataset thisExecutionSplitTrainingTestSet = validationTechnique
+                .shuffle(originalDatasetLoader)[split];
+
+        DatasetLoader<? extends Rating> trainDatasetLoader = thisExecutionSplitTrainingTestSet.getTrainingDatasetLoader();
 
         String executionString = new DecimalFormat("00").format(execution);
 
         trainDatasetLoader.setAlias(trainDatasetLoader.getAlias() + "_execution=" + executionString);
 
-        DatasetLoader<? extends Rating> testDatasetLoader = pairsOfTrainTest[split].getTestDatasetLoader();
+        DatasetLoader<? extends Rating> testDatasetLoader = thisExecutionSplitTrainingTestSet.getTestDatasetLoader();
         testDatasetLoader.setAlias(testDatasetLoader.getAlias() + "_execution=" + executionString);
 
         final GroupFormationTechnique groupFormationTechnique = (GroupFormationTechnique) groupCaseStudy.getGroupFormationTechnique().clone();
@@ -180,4 +190,36 @@ public class ExecutionSplitConsumer {
 
     }
 
+    public int getExecution() {
+        return execution;
+    }
+
+    public int getSplit() {
+        return split;
+    }
+
+    public ExecutionSplitDescriptor getDescriptorAndResults() {
+        return new ExecutionSplitDescriptor(execution, split, groupCaseStudy, this.execute());
+
+    }
+
+    @Override
+    public int compareTo(ExecutionSplitConsumer o) {
+
+        int thisExecution = this.getExecution();
+        int otherExecution = o.getExecution();
+
+        int executionCompare = Integer.compare(thisExecution, otherExecution);
+
+        if (executionCompare != 0) {
+            return executionCompare;
+        } else {
+
+            int thisSplit = this.getSplit();
+            int otherSplit = o.getSplit();
+            int splitCompare = Integer.compare(thisSplit, otherSplit);
+            return splitCompare;
+
+        }
+    }
 }
