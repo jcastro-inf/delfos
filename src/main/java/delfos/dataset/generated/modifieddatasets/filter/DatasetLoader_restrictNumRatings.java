@@ -63,6 +63,13 @@ public class DatasetLoader_restrictNumRatings extends DatasetLoaderAbstract<Rati
     );
 
     public DatasetLoader_restrictNumRatings() {
+
+        super();
+        addParameter(ITERATE_UNTIL_SATISFIED);
+        addParameter(MINIMUM_ITEM_RATINGS);
+        addParameter(MINIMUM_USER_RATINGS);
+        addParameter(DATASET_LOADER);
+
         addParammeterListener(() -> {
             filteredDatasetLoader = null;
         });

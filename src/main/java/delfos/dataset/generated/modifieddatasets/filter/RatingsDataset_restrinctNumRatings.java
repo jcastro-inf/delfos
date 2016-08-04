@@ -40,7 +40,11 @@ public class RatingsDataset_restrinctNumRatings<RatingType extends Rating> exten
             DatasetLoader<RatingType> datasetLoader,
             int minimumUserRatings,
             int minimumItemRatings) {
-        DatasetLoader<RatingType> newDatasetLoader = new DatasetLoaderGivenRatingsDataset<>(datasetLoader, datasetLoader.getRatingsDataset());
+
+        DatasetLoader<RatingType> newDatasetLoader = new DatasetLoaderGivenRatingsDataset<>(
+                datasetLoader,
+                datasetLoader.getRatingsDataset()
+        );
 
         int i = 1;
         while (true) {
@@ -52,10 +56,22 @@ public class RatingsDataset_restrinctNumRatings<RatingType extends Rating> exten
 
             int oldNumRatings = newDatasetLoader.getRatingsDataset().getNumRatings();
 
-            RatingsDataset_restrinctNumRatings<RatingType> newRatingsDataset = new RatingsDataset_restrinctNumRatings<>(newDatasetLoader, minimumUserRatings, minimumItemRatings);
+            RatingsDataset_restrinctNumRatings<RatingType> newRatingsDataset = new RatingsDataset_restrinctNumRatings<>(
+                    newDatasetLoader,
+                    minimumUserRatings,
+                    minimumItemRatings);
+
             newDatasetLoader = new DatasetLoaderGivenRatingsDataset<>(newDatasetLoader, newRatingsDataset);
 
             int newNumRatings = newDatasetLoader.getRatingsDataset().getNumRatings();
+
+            if (newNumRatings == 0) {
+                throw new IllegalStateException(
+                        "Too restrictive conditions for the ratings dataset: " + datasetLoader.getAlias()
+                        + " minimumUserRatings=" + minimumUserRatings
+                        + " minimumItemRatings=" + minimumItemRatings);
+            }
+
             if (oldNumRatings == newNumRatings) {
                 break;
             }
@@ -65,7 +81,8 @@ public class RatingsDataset_restrinctNumRatings<RatingType extends Rating> exten
         return newDatasetLoader.getRatingsDataset();
     }
 
-    public static <RatingType extends Rating> RatingsDataset<? extends RatingType> buildFilteringRatings(DatasetLoader<? extends RatingType> datasetLoader,
+    public static <RatingType extends Rating> RatingsDataset<? extends RatingType> buildFilteringRatings(
+            DatasetLoader<? extends RatingType> datasetLoader,
             int minimumUserRatings,
             int minimumItemRatings) {
 
@@ -98,10 +115,9 @@ public class RatingsDataset_restrinctNumRatings<RatingType extends Rating> exten
                 .collect(Collectors.toList());
 
         if (Global.isInfoPrinted()) {
-            Global.showInfoMessage("Num users OK:         " + usersWithRatings.size() + "/" + datasetLoader.getUsersDataset().size() + "\n");
-            Global.showInfoMessage("Num items OK:         " + itemsWithRatings.size() + "/" + datasetLoader.getContentDataset().size() + "\n");
-            Global.showInfoMessage("Num ratings:          " + ratings.size() + "\n");
-            Global.showInfoMessage("Num ratings filtered: " + ratingsFiltered.size() + "\n");
+            Global.showInfoMessage("Num users:   " + usersWithRatings.size() + "/" + datasetLoader.getUsersDataset().size() + "\n");
+            Global.showInfoMessage("Num items:   " + itemsWithRatings.size() + "/" + datasetLoader.getContentDataset().size() + "\n");
+            Global.showInfoMessage("Num ratings: " + ratingsFiltered.size() + "/" + datasetLoader.getRatingsDataset().getNumRatings() + "\n");
         }
 
         return new BothIndexRatingsDataset<>(ratingsFiltered);
