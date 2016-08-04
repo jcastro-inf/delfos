@@ -17,22 +17,13 @@
 package delfos.dataset.loaders.bookcrossing;
 
 import delfos.common.Global;
-import delfos.common.exceptions.dataset.CannotLoadContentDataset;
-import delfos.common.exceptions.dataset.CannotLoadUsersDataset;
 import delfos.constants.DelfosTest;
-import delfos.dataset.basic.item.ContentDataset;
-import delfos.dataset.basic.item.Item;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RatingsDataset;
-import delfos.dataset.basic.user.User;
-import delfos.dataset.basic.user.UsersDataset;
-import delfos.dataset.storage.memory.BothIndexRatingsDataset;
+import delfos.dataset.generated.modifieddatasets.filter.RatingsDataset_restrinctNumRatings;
+import delfos.dataset.loaders.given.DatasetLoaderGivenRatingsDataset;
 import delfos.rs.collaborativefiltering.Recommender_DatasetProperties;
-import delfos.utils.streams.IteratorToList;
 import java.io.File;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 import org.junit.Test;
 
 /**
@@ -74,43 +65,16 @@ public class BookCrossingDatasetLoaderTest extends DelfosTest {
         int minimumUserRatings = 5;
         int minimumItemRatings = 5;
 
-        RatingsDataset<Rating> ratingsDataset = bookCrossingDataset.getRatingsDataset();
+        RatingsDataset<? extends Rating> filteredRatings = RatingsDataset_restrinctNumRatings
+                .buildFilteringRatingsUntilAllConditionsAreSatisfied(
+                        bookCrossingDataset,
+                        minimumUserRatings,
+                        minimumItemRatings);
 
-        for (int i = 1; i <= 10; i++) {
-            System.out.println("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
-            System.out.println("+++++++++++++++++ Iteration " + i + "+++++++++++++++++++++++++++++++++");
-            System.out.println("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
+        DatasetLoaderGivenRatingsDataset<? extends Rating> filteredBookCrossingDataset = new DatasetLoaderGivenRatingsDataset<>(bookCrossingDataset, filteredRatings);
 
-            ratingsDataset = filterRatings(ratingsDataset, bookCrossingDataset.getUsersDataset(), bookCrossingDataset.getContentDataset(), minimumUserRatings, minimumItemRatings);
-        }
+        new Recommender_DatasetProperties().buildRecommendationModel(filteredBookCrossingDataset);
 
     }
 
-    public RatingsDataset<Rating> filterRatings(RatingsDataset<Rating> ratingsDataset, UsersDataset usersDataset, ContentDataset contentDataset, int minimumUserRatings, int minimumItemRatings) throws CannotLoadContentDataset, CannotLoadUsersDataset {
-
-        List<Rating> ratings = IteratorToList.collectInList(ratingsDataset);
-
-        Set<User> usersWithRatings = usersDataset.parallelStream()
-                .filter(user -> ratingsDataset.getUserRated(user.getId()).size() >= minimumUserRatings)
-                .collect(Collectors.toSet());
-
-        Set<Item> itemsWithRatings = contentDataset.parallelStream()
-                .filter(item -> ratingsDataset.getItemRated(item.getId()).size() >= minimumItemRatings)
-                .collect(Collectors.toSet());
-
-        List<Rating> ratingsFiltered = ratings.parallelStream().filter(rating -> {
-            boolean isUserOk = usersWithRatings.contains(rating.getUser());
-            boolean isItemOk = itemsWithRatings.contains(rating.getItem());
-
-            return isUserOk && isItemOk;
-        })
-                .collect(Collectors.toList());
-
-        System.out.println("Num users OK:         " + usersWithRatings.size() + "/" + usersDataset.size());
-        System.out.println("Num items OK:         " + itemsWithRatings.size() + "/" + contentDataset.size());
-        System.out.println("Num ratings:          " + ratings.size());
-        System.out.println("Num ratings filtered: " + ratingsFiltered.size());
-
-        return new BothIndexRatingsDataset<>(ratingsFiltered);
-    }
 }
