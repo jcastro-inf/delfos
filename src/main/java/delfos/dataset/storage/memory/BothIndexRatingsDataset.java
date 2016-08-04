@@ -64,10 +64,10 @@ public class BothIndexRatingsDataset<RatingType extends Rating> extends RatingsD
      *
      * @param ratingsDataset
      */
-    public BothIndexRatingsDataset(RatingsDataset<RatingType> ratingsDataset) {
+    public BothIndexRatingsDataset(RatingsDataset<? extends RatingType> ratingsDataset) {
         for (int idUser : ratingsDataset.allUsers()) {
             try {
-                Map<Integer, RatingType> userRatingsRated = ratingsDataset.getUserRatingsRated(idUser);
+                Map<Integer, ? extends RatingType> userRatingsRated = ratingsDataset.getUserRatingsRated(idUser);
                 for (int idItem : userRatingsRated.keySet()) {
                     RatingType rating = userRatingsRated.get(idItem);
                     addOneRating(rating);

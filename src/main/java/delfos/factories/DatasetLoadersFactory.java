@@ -18,6 +18,7 @@ package delfos.factories;
 
 import delfos.configureddatasets.ConfiguredDatasetLoader;
 import delfos.dataset.basic.loader.types.DatasetLoader;
+import delfos.dataset.generated.modifieddatasets.filter.DatasetLoader_restrictNumRatings;
 import delfos.dataset.generated.random.RandomDatasetLoader;
 import delfos.dataset.loaders.bookcrossing.BookCrossingDatasetLoader;
 import delfos.dataset.loaders.csv.CSVfileDatasetLoader;
@@ -71,6 +72,9 @@ public class DatasetLoadersFactory extends Factory<DatasetLoader> {
 
         //Configured datasets
         instance.addClass(ConfiguredDatasetLoader.class);
+
+        //Datasets from filtering other datasets
+        instance.addClass(DatasetLoader_restrictNumRatings.class);
 
     }
 
