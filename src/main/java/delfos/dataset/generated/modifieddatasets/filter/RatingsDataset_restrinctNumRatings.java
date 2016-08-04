@@ -48,11 +48,6 @@ public class RatingsDataset_restrinctNumRatings<RatingType extends Rating> exten
 
         int i = 1;
         while (true) {
-            if (Global.isInfoPrinted()) {
-                Global.showInfoMessage("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n");
-                Global.showInfoMessage("+++++++++++++++++ Iteration " + i + " ++++++++++++++++++++++++++++++++\n");
-                Global.showInfoMessage("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n");
-            }
 
             int oldNumRatings = newDatasetLoader.getRatingsDataset().getNumRatings();
 
@@ -72,6 +67,16 @@ public class RatingsDataset_restrinctNumRatings<RatingType extends Rating> exten
                         + " minimumItemRatings=" + minimumItemRatings);
             }
 
+            if (Global.isInfoPrinted()) {
+
+                Global.showInfoMessage("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n");
+                Global.showInfoMessage("+++++++++++++++++ Iteration " + i + " ++++++++++++++++++++++++++++++++\n");
+                Global.showInfoMessage("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n");
+                Global.showInfoMessage("Num users:   " + newDatasetLoader.getRatingsDataset().allUsers().size() + "/" + datasetLoader.getUsersDataset().size() + "\n");
+                Global.showInfoMessage("Num items:   " + newDatasetLoader.getRatingsDataset().allRatedItems().size() + "/" + datasetLoader.getContentDataset().size() + "\n");
+                Global.showInfoMessage("Num ratings: " + newDatasetLoader.getRatingsDataset().getNumRatings() + "/" + datasetLoader.getRatingsDataset().getNumRatings() + "\n");
+            }
+
             if (oldNumRatings == newNumRatings) {
                 break;
             }
@@ -86,7 +91,15 @@ public class RatingsDataset_restrinctNumRatings<RatingType extends Rating> exten
             int minimumUserRatings,
             int minimumItemRatings) {
 
-        return new RatingsDataset_restrinctNumRatings<>(datasetLoader, minimumUserRatings, minimumItemRatings);
+        RatingsDataset_restrinctNumRatings<? extends RatingType> ratingsDataset_restrinctNumRatings = new RatingsDataset_restrinctNumRatings<>(datasetLoader, minimumUserRatings, minimumItemRatings);
+
+        if (Global.isInfoPrinted()) {
+            Global.showInfoMessage("Num users:   " + ratingsDataset_restrinctNumRatings.allUsers().size() + "/" + datasetLoader.getUsersDataset().size() + "\n");
+            Global.showInfoMessage("Num items:   " + ratingsDataset_restrinctNumRatings.allRatedItems().size() + "/" + datasetLoader.getContentDataset().size() + "\n");
+            Global.showInfoMessage("Num ratings: " + ratingsDataset_restrinctNumRatings.getNumRatings() + "/" + datasetLoader.getRatingsDataset().getNumRatings() + "\n");
+        }
+
+        return ratingsDataset_restrinctNumRatings;
     }
 
     public static <RatingType extends Rating> RatingsDataset<? extends RatingType> filterRatings(
@@ -114,12 +127,6 @@ public class RatingsDataset_restrinctNumRatings<RatingType extends Rating> exten
         })
                 .collect(Collectors.toList());
 
-        if (Global.isInfoPrinted()) {
-            Global.showInfoMessage("Num users:   " + usersWithRatings.size() + "/" + datasetLoader.getUsersDataset().size() + "\n");
-            Global.showInfoMessage("Num items:   " + itemsWithRatings.size() + "/" + datasetLoader.getContentDataset().size() + "\n");
-            Global.showInfoMessage("Num ratings: " + ratingsFiltered.size() + "/" + datasetLoader.getRatingsDataset().getNumRatings() + "\n");
-        }
-
         return new BothIndexRatingsDataset<>(ratingsFiltered);
     }
 
@@ -131,6 +138,7 @@ public class RatingsDataset_restrinctNumRatings<RatingType extends Rating> exten
                         minItemRatings
                 )
         );
+
     }
 
 }
