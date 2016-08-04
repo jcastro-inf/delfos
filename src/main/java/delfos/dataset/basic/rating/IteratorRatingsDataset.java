@@ -16,10 +16,9 @@
  */
 package delfos.dataset.basic.rating;
 
-import delfos.ERROR_CODES;
-import delfos.common.exceptions.dataset.users.UserNotFound;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -33,8 +32,8 @@ import java.util.Map;
 public class IteratorRatingsDataset<RatingType extends Rating> implements Iterator<RatingType> {
 
     private RatingType _next;
-    private final LinkedList<Integer> _users;
-    private final LinkedList<RatingType> _ratings;
+    private final List<Integer> _users;
+    private final List<RatingType> _ratings;
     private final RatingsDataset<RatingType> _ratingsDataset;
     private final Object exMut;
 
@@ -84,12 +83,16 @@ public class IteratorRatingsDataset<RatingType extends Rating> implements Iterat
             } else {
                 //Hay mas usuarios, cargar sus ratings.
                 int idUser = _users.remove(0);
-                try {
-                    for (Map.Entry<Integer, RatingType> entry : _ratingsDataset.getUserRatingsRated(idUser).entrySet()) {
-                        _ratings.add(entry.getValue());
-                    }
-                } catch (UserNotFound ex) {
-                    ERROR_CODES.USER_NOT_FOUND.exit(ex);
+
+                Map<Integer, RatingType> userRatingsRated = _ratingsDataset.getUserRatingsRated(idUser);
+
+                while (userRatingsRated.isEmpty()) {
+                    idUser = _users.remove(0);
+                    userRatingsRated = _ratingsDataset.getUserRatingsRated(idUser);
+                }
+
+                for (Map.Entry<Integer, RatingType> entry : userRatingsRated.entrySet()) {
+                    _ratings.add(entry.getValue());
                 }
 
                 //Lista cargada, preparar el siguiente rating.
