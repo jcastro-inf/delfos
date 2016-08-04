@@ -26,6 +26,7 @@ import delfos.common.exceptions.dataset.CannotLoadUsersDataset;
 import delfos.common.exceptions.dataset.items.ItemNotFound;
 import delfos.common.exceptions.dataset.users.UserNotFound;
 import delfos.common.parameters.Parameter;
+import delfos.common.parameters.restriction.BooleanParameter;
 import delfos.common.parameters.restriction.DirectoryParameter;
 import delfos.dataset.basic.features.Feature;
 import delfos.dataset.basic.features.FeatureGenerator;
@@ -69,13 +70,18 @@ public class BookCrossingDatasetLoader extends DatasetLoaderAbstract<Rating> {
     private ContentDataset contentDataset = null;
     private UsersDataset usersDataset = null;
 
+    public static final Parameter CONSIDER_IMPLICIT_RATINGS = new Parameter("ConsiderImplicitRatings", new BooleanParameter(Boolean.FALSE), "True to consider the implicit ratings, false to just ignore them.");
+
     static {
         File bookcrossingDatasetDirectory = new File("." + File.separator + "datasets" + File.separator + "bookcrossing" + File.separator);
         BOOKCROSSING_DATASET_DIRECTORY = new Parameter("BOOKCROSSING_DATASET_DIRECTORY", new DirectoryParameter(bookcrossingDatasetDirectory));
     }
 
     public BookCrossingDatasetLoader() {
+        super();
+
         addParameter(BOOKCROSSING_DATASET_DIRECTORY);
+        addParameter(CONSIDER_IMPLICIT_RATINGS);
 
         addParammeterListener(() -> {
             usersDataset = null;
@@ -142,7 +148,7 @@ public class BookCrossingDatasetLoader extends DatasetLoaderAbstract<Rating> {
             );
         }
         try {
-            ratingsDataset = loadRatings(ratingsFile, usersDataset, contentDataset);
+            ratingsDataset = loadRatings(ratingsFile, usersDataset, contentDataset, isConsiderExplicitRatings());
         } catch (IOException ex) {
             throw new CannotLoadRatingsDataset(
                     ex.getMessage() + "[File '" + ratingsFile.getAbsolutePath() + "']",
@@ -155,7 +161,7 @@ public class BookCrossingDatasetLoader extends DatasetLoaderAbstract<Rating> {
     public Set<Item> loadItems(File itemsFile, File ratingsFile) throws IllegalStateException, IOException {
         ContentDataset runningContentDataset = new ContentDatasetDefault(loadItemsFromContentFile(itemsFile));
 
-        Set<Item> additionalItems = loadItemsFromRatingsFile(ratingsFile, runningContentDataset);
+        Set<Item> additionalItems = loadItemsFromRatingsFile(ratingsFile, runningContentDataset, isConsiderExplicitRatings());
 
         Feature isbnF = Arrays.stream(runningContentDataset.getFeatures())
                 .filter(feature -> feature.getName().equals("isbn"))
@@ -286,7 +292,7 @@ public class BookCrossingDatasetLoader extends DatasetLoaderAbstract<Rating> {
         return items.values().stream().collect(Collectors.toSet());
     }
 
-    private static Set<Item> loadItemsFromRatingsFile(File ratingsFile, ContentDataset contentDataset) throws FileNotFoundException, IOException {
+    private static Set<Item> loadItemsFromRatingsFile(File ratingsFile, ContentDataset contentDataset, boolean isConsiderImplicitRatings) throws FileNotFoundException, IOException {
         List<Rating> ratings = new ArrayList<>();
 
         CsvReader reader = new CsvReader(
@@ -322,14 +328,20 @@ public class BookCrossingDatasetLoader extends DatasetLoaderAbstract<Rating> {
 
             String isbn = reader.get("ISBN");
 
-            Item item = itemsByISBN.get(isbn);
+            int ratingValue = new Integer(reader.get("Book-Rating"));
 
-            if (item == null) {
-                Object[] featureValues = {isbn};
-                item = new Item(nextIdItem.incrementAndGet(), isbn, isbnFeatures, featureValues);
-                additionalItems.put(isbn, item);
+            if (ratingValue == 0 && !isConsiderImplicitRatings) {
+
+            } else {
+
+                Item item = itemsByISBN.get(isbn);
+
+                if (item == null) {
+                    Object[] featureValues = {isbn};
+                    item = new Item(nextIdItem.incrementAndGet(), isbn, isbnFeatures, featureValues);
+                    additionalItems.put(isbn, item);
+                }
             }
-
             i++;
         }
         reader.close();
@@ -337,7 +349,7 @@ public class BookCrossingDatasetLoader extends DatasetLoaderAbstract<Rating> {
         return additionalItems.values().stream().collect(Collectors.toSet());
     }
 
-    private static RatingsDataset<Rating> loadRatings(File ratingsFile, UsersDataset usersDataset, ContentDataset contentDataset) throws FileNotFoundException, IOException {
+    private static RatingsDataset<Rating> loadRatings(File ratingsFile, UsersDataset usersDataset, ContentDataset contentDataset, boolean isConsiderImplicitRatings) throws FileNotFoundException, IOException {
         List<Rating> ratings = new ArrayList<>();
 
         CsvReader reader = new CsvReader(
@@ -375,20 +387,25 @@ public class BookCrossingDatasetLoader extends DatasetLoaderAbstract<Rating> {
 
             int ratingValue = new Integer(reader.get("Book-Rating"));
 
-            User user = usersIndex.get(idUser);
-            Item item = itemsIndex.get(isbn);
+            if (ratingValue == 0 && !isConsiderImplicitRatings) {
 
-            if (user == null) {
-                throw new UserNotFound(idUser, "User " + idUser + "' not found, line " + (i + 2));
+            } else {
+
+                User user = usersIndex.get(idUser);
+                Item item = itemsIndex.get(isbn);
+
+                if (user == null) {
+                    throw new UserNotFound(idUser, "User " + idUser + "' not found, line " + (i + 2));
+                }
+
+                if (item == null) {
+                    throw new ItemNotFound(-1, "Item with isbn=" + isbn + " not found.");
+                }
+
+                Rating rating = new Rating(user, item, ratingValue);
+
+                ratings.add(rating);
             }
-
-            if (item == null) {
-                throw new ItemNotFound(-1, "Item with isbn=" + isbn + " not found.");
-            }
-
-            Rating rating = new Rating(user, item, ratingValue);
-
-            ratings.add(rating);
 
             i++;
         }
@@ -450,4 +467,7 @@ public class BookCrossingDatasetLoader extends DatasetLoaderAbstract<Rating> {
         }
     }
 
+    public Boolean isConsiderExplicitRatings() {
+        return (Boolean) getParameterValue(CONSIDER_IMPLICIT_RATINGS);
+    }
 }
