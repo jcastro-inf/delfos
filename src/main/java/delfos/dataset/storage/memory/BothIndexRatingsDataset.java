@@ -306,9 +306,25 @@ public class BothIndexRatingsDataset<RatingType extends Rating> extends RatingsD
         }
     }
 
+    private Domain ratingsDomain = null;
+
     @Override
-    public Domain getRatingsDomain() {
-        return new DecimalDomain(1, 5);
+    public synchronized Domain getRatingsDomain() {
+        if (ratingsDomain == null) {
+
+            List<Double> distinctRatings = userIndex.values().parallelStream().flatMap(userRatings -> userRatings.values().stream())
+                    .mapToDouble(rating -> rating.getRatingValue().doubleValue())
+                    .distinct()
+                    .boxed()
+                    .sorted()
+                    .collect(Collectors.toList());
+
+            double maxRating = distinctRatings.stream().mapToDouble(v -> v).max().orElseThrow(() -> new IllegalStateException("No ratings in this dataset"));
+            double minRating = distinctRatings.stream().mapToDouble(v -> v).min().orElseThrow(() -> new IllegalStateException("No ratings in this dataset"));
+
+            ratingsDomain = new DecimalDomain(minRating, maxRating);
+        }
+        return ratingsDomain;
     }
 
     @Override

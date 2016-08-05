@@ -289,7 +289,6 @@ public class TryThisAtHomeSVD
 
                 tiempoCiclo.addValue(diff);
 
-                maeAnterior = meanAbsoluteError.getMean();
                 int totalIteraciones = numFeatures * numIterationsPerFeature;
                 int iterActual = indexFeature * numIterationsPerFeature + iteration + 1;
 
@@ -302,6 +301,8 @@ public class TryThisAtHomeSVD
                         + String.format("%.8f", (maeAnterior - meanAbsoluteError.getMean())) + "\t "
                         + "time: " + DateCollapse.collapse(diff) + "\t "
                         + "ETA: " + DateCollapse.collapse(tiempoRestante) + "\n");
+
+                maeAnterior = meanAbsoluteError.getMean();
                 fireBuildingProgressChangedEvent("Training features values", ((indexFeature * numIterationsPerFeature + (iteration + 1)) * 90 / (numFeatures * numIterationsPerFeature)) + 10, tiempoRestante);
             }
         }
