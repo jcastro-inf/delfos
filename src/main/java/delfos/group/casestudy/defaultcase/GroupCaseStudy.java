@@ -181,11 +181,11 @@ public class GroupCaseStudy extends ExperimentAdapter {
                 numberOfExecutionSplits,
                 this::setExperimentProgress);
 
-        List<ExecutionSplitConsumer> listOfExecutionSplitConsumers = IntStream.range(0, getNumExecutions()).boxed().sequential()
+        IntStream.range(0, getNumExecutions()).boxed().sequential()
                 .flatMap(execution -> {
 
                     return IntStream.range(0, getNumSplits())
-                            .boxed().parallel()
+                            .boxed().sequential()
                             .map(split -> {
                                 return new ExecutionSplitConsumer(
                                         execution,
@@ -195,32 +195,28 @@ public class GroupCaseStudy extends ExperimentAdapter {
 
                             });
                 })
-                .parallel()
-                .collect(Collectors.toList());
+                .forEach(executionSplit -> {
+                    ExecutionSplitDescriptor executionSplitDescriptor = executionSplit.getDescriptorAndResults();
 
-        listOfExecutionSplitConsumers.stream().parallel().forEach(executionSplit -> {
+                    synchronized (allLoopsResults) {
+                        final int execution = executionSplitDescriptor.getExecution();
 
-            ExecutionSplitDescriptor executionSplitDescriptor = executionSplit.getDescriptorAndResults();
+                        if (!allLoopsResults.containsKey(execution)) {
+                            allLoopsResults.put(execution, Collections.synchronizedMap(new HashMap<>()));
+                        }
 
-            synchronized (allLoopsResults) {
-                final int execution = executionSplitDescriptor.getExecution();
+                        allLoopsResults.get(execution).put(executionSplitDescriptor.getSplit(), executionSplitDescriptor.getResults());
 
-                if (!allLoopsResults.containsKey(execution)) {
-                    allLoopsResults.put(execution, Collections.synchronizedMap(new HashMap<>()));
-                }
+                        List<Integer> finishedSplits = allLoopsResults.get(execution).keySet().stream().sorted().collect(Collectors.toList());
+                        List<Integer> allSplits = IntStream.range(0, getNumSplits()).boxed().sorted().collect(Collectors.toList());
 
-                allLoopsResults.get(execution).put(executionSplitDescriptor.getSplit(), executionSplitDescriptor.getResults());
+                        if (finishedSplits.equals(allSplits)) {
+                            setResultsThisExecution(execution, allLoopsResults.get(execution));
+                        }
+                    }
 
-                List<Integer> finishedSplits = allLoopsResults.get(execution).keySet().stream().sorted().collect(Collectors.toList());
-                List<Integer> allSplits = IntStream.range(0, getNumSplits()).boxed().sorted().collect(Collectors.toList());
-
-                if (finishedSplits.equals(allSplits)) {
-                    setResultsThisExecution(execution, allLoopsResults.get(execution));
-                }
-            }
-
-            groupCaseStudyProgressChangedController.setTaskFinished();
-        });
+                    groupCaseStudyProgressChangedController.setTaskFinished();
+                });
 
         Set<GroupEvaluationMeasure> groupEvaluationMeasures = allLoopsResults.get(0).get(0).keySet();
 

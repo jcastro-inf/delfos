@@ -20,6 +20,7 @@ import delfos.common.parameters.Parameter;
 import delfos.common.parameters.restriction.StringParameter;
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
+import delfos.dataset.basic.user.User;
 import delfos.group.groupsofusers.GroupOfUsers;
 import java.util.Arrays;
 import java.util.Collection;

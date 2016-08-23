@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -20,15 +20,15 @@ import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
 import delfos.common.parameters.Parameter;
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
+import delfos.dataset.basic.user.User;
 import delfos.group.groupsofusers.GroupOfUsers;
 import delfos.similaritymeasures.useruser.UserUserSimilarity;
 import java.util.Collection;
 import java.util.Random;
 
 /**
- * Crea grupos buscando similitudes entre las preferencias de los miembros. Los
- * grupos no tienen usuarios en común, es decir, la intersección entre cualquier
- * par de grupos generados (de una vez) es siempre el conjunto vacío.
+ * Crea grupos buscando similitudes entre las preferencias de los miembros. Los grupos no tienen usuarios en común, es
+ * decir, la intersección entre cualquier par de grupos generados (de una vez) es siempre el conjunto vacío.
  *
  * @version 10-abr-2014
  * @author jcastro-inf ( https://github.com/jcastro-inf )
@@ -39,8 +39,8 @@ public class DissimilarMembers extends GroupFormationTechnique {
     public static final Parameter SIMILARITY_MEASURE = DissimilarMembers_OnlyNGroups.SIMILARITY_MEASURE;
 
     /**
-     * Genera una validación de usuarios que genera grupos de tamaño fijo. Por
-     * defecto, el tamaño de los grupos es de cuatro miembros.
+     * Genera una validación de usuarios que genera grupos de tamaño fijo. Por defecto, el tamaño de los grupos es de
+     * cuatro miembros.
      */
     public DissimilarMembers() {
         super();
@@ -60,8 +60,8 @@ public class DissimilarMembers extends GroupFormationTechnique {
     }
 
     /**
-     * Genera una validación de usuarios que genera grupos de tamaño fijo. Por
-     * defecto, el tamaño de los grupos es de cuatro miembros.
+     * Genera una validación de usuarios que genera grupos de tamaño fijo. Por defecto, el tamaño de los grupos es de
+     * cuatro miembros.
      *
      * @param groupSizeValue Tamaño de los grupos generados
      */

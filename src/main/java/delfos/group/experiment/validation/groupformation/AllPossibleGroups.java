@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,20 +16,21 @@
  */
 package delfos.group.experiment.validation.groupformation;
 
+import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
+import delfos.dataset.basic.loader.types.DatasetLoader;
+import delfos.dataset.basic.rating.Rating;
+import delfos.dataset.basic.user.User;
+import delfos.group.groupsofusers.GroupOfUsers;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.TreeSet;
-import delfos.dataset.basic.rating.Rating;
-import delfos.dataset.basic.loader.types.DatasetLoader;
-import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
-import delfos.group.groupsofusers.GroupOfUsers;
-import delfos.group.groupsofusers.GroupOfUsers;
+import java.util.stream.Collectors;
 
 /**
- * Devuelve todos los grupos posibles del dataset. Si el dataset tiene más de 10
- * usuarios, no se puede aplicar esta validación.
+ * Devuelve todos los grupos posibles del dataset. Si el dataset tiene más de 10 usuarios, no se puede aplicar esta
+ * validación.
  *
  * @author jcastro-inf ( https://github.com/jcastro-inf )
  * @version 1.0 24-May-2013
@@ -39,30 +40,28 @@ public class AllPossibleGroups extends GroupFormationTechnique {
     @Override
     public Collection<GroupOfUsers> generateGroups(DatasetLoader<? extends Rating> datasetLoader, Collection<User> usersAllowed) throws CannotLoadRatingsDataset {
 
-        Collection<Integer> allUsers = datasetLoader.getRatingsDataset().allUsers();
+        Collection<User> allUsers = datasetLoader.getRatingsDataset().allUsers().stream().map(idUser -> datasetLoader.getUsersDataset().get(idUser)).collect(Collectors.toList());
         if (allUsers.size() > 20) {
             throw new IllegalArgumentException("The number of users cannot be greater than 20.");
         }
 
         double numberOfDifferentGroups = Math.pow(2, allUsers.size());
-        Set<GroupOfUsers> groupsSet = new HashSet<GroupOfUsers>((int) numberOfDifferentGroups);
+        Set<GroupOfUsers> groupsSet = new HashSet<>((int) numberOfDifferentGroups);
 
-        for (int idUser : allUsers) {
-            groupsSet.add(new GroupOfUsers(idUser));
-        }
+        allUsers.stream().forEach(user -> groupsSet.add(new GroupOfUsers(user)));
 
-        for (int idUser : allUsers) {
-            Set<GroupOfUsers> gruposAAñadir = new TreeSet<GroupOfUsers>(groupsSet);
+        allUsers.stream().forEach(user -> {
+            Set<GroupOfUsers> gruposAAñadir = new TreeSet<>(groupsSet);
 
             for (GroupOfUsers groupOfUsers : gruposAAñadir) {
-                Set<Integer> members = new TreeSet<Integer>(groupOfUsers.getIdMembers());
+                Set<User> members = new TreeSet<>(groupOfUsers.getMembers());
 
-                members.add(idUser);
-                groupsSet.add(new GroupOfUsers(members.toArray(new Integer[0])));
+                members.add(user);
+                groupsSet.add(new GroupOfUsers(members));
 
             }
-        }
+        });
 
-        return new ArrayList<GroupOfUsers>(groupsSet);
+        return new ArrayList<>(groupsSet);
     }
 }
