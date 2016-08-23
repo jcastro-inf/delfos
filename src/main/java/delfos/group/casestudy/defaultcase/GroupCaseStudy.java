@@ -181,11 +181,11 @@ public class GroupCaseStudy extends ExperimentAdapter {
                 numberOfExecutionSplits,
                 this::setExperimentProgress);
 
-        IntStream.range(0, getNumExecutions()).boxed().parallel()
+        IntStream.range(0, getNumExecutions()).boxed().sequential()
                 .flatMap(execution -> {
 
                     return IntStream.range(0, getNumSplits())
-                            .boxed().parallel()
+                            .boxed().sequential()
                             .map(split -> {
                                 return new ExecutionSplitConsumer(
                                         execution,
