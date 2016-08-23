@@ -18,9 +18,11 @@ package delfos.group.casestudy.defaultcase;
 
 import delfos.common.Chronometer;
 import delfos.common.Global;
+import delfos.common.exceptions.dataset.users.UserNotFound;
 import delfos.dataset.basic.item.Item;
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
+import delfos.dataset.basic.rating.RatingsDataset;
 import delfos.dataset.basic.rating.RelevanceCriteria;
 import delfos.dataset.storage.validationdatasets.PairOfTrainTestRatingsDataset;
 import delfos.experiment.validation.validationtechnique.ValidationTechnique;
@@ -104,6 +106,9 @@ public class ExecutionSplitConsumer implements Comparable<ExecutionSplitConsumer
         }
 
         Collection<GroupOfUsers> groups = groupFormationTechnique.generateGroups(trainDatasetLoader);
+
+        groups = deleteGroupsWithoutValidationRatings(groups, testDatasetLoader);
+
         final long recommendationModelBuildTime;
         Object groupRecommendationModel;
         {
@@ -221,5 +226,43 @@ public class ExecutionSplitConsumer implements Comparable<ExecutionSplitConsumer
             return splitCompare;
 
         }
+    }
+
+    /**
+     * Returns only groups with at least one rating in the test dataset.
+     *
+     * It is needed that at least one member has one rating to retain the group. Otherwise the group is discarded.
+     *
+     * @param groups
+     * @param testDatasetLoader
+     * @return
+     */
+    private Collection<GroupOfUsers> deleteGroupsWithoutValidationRatings(
+            Collection<GroupOfUsers> groups,
+            DatasetLoader<? extends Rating> testDatasetLoader) {
+
+        final RatingsDataset<? extends Rating> ratingsDataset = testDatasetLoader.getRatingsDataset();
+
+        List<GroupOfUsers> groupsWithTestRatings = groups.parallelStream()
+                .filter(group -> {
+                    boolean anyMatch = group.getMembers().parallelStream()
+                            .anyMatch(user -> {
+                                try {
+                                    return ratingsDataset.isRatedUser(user.getId());
+                                } catch (UserNotFound ex) {
+                                    return false;
+                                }
+                            });
+
+                    return anyMatch;
+                })
+                .collect(Collectors.toList());
+
+        if (Global.isInfoPrinted() && groups.size() != groupsWithTestRatings.size()) {
+            Global.showInfoMessage("Original groups generated: " + groups.size() + " groups with ratings: " + groupsWithTestRatings.size() + "\n");
+        }
+
+        return groupsWithTestRatings;
+
     }
 }
