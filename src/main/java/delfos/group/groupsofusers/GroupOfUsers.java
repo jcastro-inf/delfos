@@ -88,6 +88,10 @@ public class GroupOfUsers implements Comparable<GroupOfUsers>, Iterable<Integer>
         }
     }
 
+    public GroupOfUsers(User... users) {
+        this(Arrays.asList(users));
+    }
+
     public GroupOfUsers(Collection<User> users) {
         members = new TreeSet<>(users);
         idMembers = users.stream().map(user -> user.getId()).collect(Collectors.toCollection(TreeSet::new));
