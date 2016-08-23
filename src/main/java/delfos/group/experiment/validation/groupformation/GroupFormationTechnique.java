@@ -17,12 +17,14 @@
 package delfos.group.experiment.validation.groupformation;
 
 import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
+import delfos.common.exceptions.dataset.users.UserNotFound;
 import delfos.common.parameters.ParameterListener;
 import delfos.common.parameters.ParameterOwner;
 import delfos.common.parameters.ParameterOwnerAdapter;
 import delfos.common.parameters.ParameterOwnerType;
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
+import delfos.dataset.basic.user.User;
 import delfos.experiment.SeedHolder;
 import delfos.group.groupsofusers.GroupOfUsers;
 import java.util.ArrayList;
@@ -30,6 +32,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Clase abstracta que define los métodos que se utilizan para generar los grupos de usuarios que se utilizarán para
@@ -77,7 +81,19 @@ public abstract class GroupFormationTechnique extends ParameterOwnerAdapter impl
      * @return
      * @see GroupFormationTechnique#iterator()
      */
-    public abstract Collection<GroupOfUsers> generateGroups(DatasetLoader<? extends Rating> datasetLoader) throws CannotLoadRatingsDataset;
+    public Collection<GroupOfUsers> generateGroups(DatasetLoader<? extends Rating> datasetLoader) {
+        return generateGroups(datasetLoader, datasetLoader.getUsersDataset().stream().collect(Collectors.toList()));
+    }
+
+    /**
+     * Método para generar los grupos de usuarios que se deben evaluar. Los grupos de usuarios
+     *
+     * @param datasetLoader
+     * @param usersAllowed
+     * @return
+     * @see GroupFormationTechnique#iterator()
+     */
+    public abstract Collection<GroupOfUsers> generateGroups(DatasetLoader<? extends Rating> datasetLoader, Collection<User> usersAllowed) throws CannotLoadRatingsDataset;
 
     private List<GroupFormationTechniqueProgressListener> listeners = Collections.synchronizedList(new LinkedList<>());
 
@@ -125,5 +141,27 @@ public abstract class GroupFormationTechnique extends ParameterOwnerAdapter impl
 
     public int getGroupSize() {
         return (Integer) getParameterValue(FixedGroupSize_OnlyNGroups.GROUP_SIZE_PARAMETER);
+    }
+
+    protected static void checkUsersAllowedAreInDatasetLoader(DatasetLoader<? extends Rating> datasetLoader, Collection<User> usersAllowed) {
+        Optional<User> userNotInDataset = usersAllowed.parallelStream().filter(user -> {
+            try {
+                User get = datasetLoader.getUsersDataset().get(user.getId());
+                return get == null;
+            } catch (UserNotFound ex) {
+                return true;
+            }
+
+        }).findFirst();
+
+        if (userNotInDataset.isPresent()) {
+            throw new IllegalArgumentException("User " + userNotInDataset.get() + " is not in the dataset");
+        }
+    }
+
+    public static void checkDatasetIsNotNull(DatasetLoader<? extends Rating> datasetLoader) throws IllegalStateException {
+        if (datasetLoader == null) {
+            throw new IllegalStateException("The datasetLoader is null.");
+        }
     }
 }

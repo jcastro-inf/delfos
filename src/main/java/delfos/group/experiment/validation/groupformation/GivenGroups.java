@@ -68,7 +68,7 @@ public class GivenGroups extends GroupFormationTechnique {
     }
 
     @Override
-    public Collection<GroupOfUsers> generateGroups(DatasetLoader<? extends Rating> datasetLoader) {
+    public Collection<GroupOfUsers> generateGroups(DatasetLoader<? extends Rating> datasetLoader, Collection<User> usersAllowed) {
 
         String groupsString = (String) getParameterValue(GROUPS);
 

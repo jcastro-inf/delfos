@@ -84,6 +84,17 @@ public class Recommender_DatasetProperties extends CollaborativeRecommender<Numb
         System.out.println("Ratings values histogram");
         ratingsHistogram.printHistogram(System.out);
 
+        System.out.println("Users and items with at least one rating:");
+        final long usersWithRatings = ratingsDataset.allUsers().parallelStream()
+                .filter(idUser -> !ratingsDataset.getUserRated(idUser).isEmpty())
+                .count();
+        final long itemsWithRatings = ratingsDataset.allRatedItems().parallelStream()
+                .filter(idItem -> !ratingsDataset.getItemRated(idItem).isEmpty())
+                .count();
+
+        System.out.println("#Users with ratings: " + usersWithRatings);
+        System.out.println("#Items with ratings: " + itemsWithRatings);
+
         return 3;
     }
 

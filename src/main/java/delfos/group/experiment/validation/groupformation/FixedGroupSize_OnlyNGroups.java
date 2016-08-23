@@ -24,12 +24,12 @@ import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.user.User;
 import delfos.group.groupsofusers.GroupOfUsers;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.LinkedList;
+import java.util.List;
 import java.util.Random;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.stream.Collectors;
 
 /**
  * Validación de grupos que genera grupos de usuarios, utilizando miembros elegidos aleatoriamente, de un tamaño fijo.
@@ -70,59 +70,54 @@ public class FixedGroupSize_OnlyNGroups extends GroupFormationTechnique {
     }
 
     @Override
-    public Collection<GroupOfUsers> generateGroups(DatasetLoader<? extends Rating> datasetLoader) throws CannotLoadRatingsDataset {
-        if (datasetLoader == null) {
-            throw new IllegalStateException("The datasetLoader is null.");
-        }
-        Random random = new Random(getSeedValue());
-        LinkedList<GroupOfUsers> group = new LinkedList<>();
+    public Collection<GroupOfUsers> generateGroups(
+            DatasetLoader<? extends Rating> datasetLoader,
+            Collection<User> usersAllowed) {
+
         int groupSizeValue = (Integer) getParameterValue(GROUP_SIZE_PARAMETER);
         int numGroups = (Integer) getParameterValue(NUM_GROUPS_PARAMETER);
 
-        final int maxNumGroups = datasetLoader.getRatingsDataset().allUsers().size() / groupSizeValue;
+        checkDatasetIsNotNull(datasetLoader);
+        checkUsersAllowedAreInDatasetLoader(datasetLoader, usersAllowed);
+        checkNumGroupsIsValid(datasetLoader, groupSizeValue, numGroups);
 
-        if (maxNumGroups < numGroups) {
-            throw new IllegalArgumentException("The number of groups * groupSize exceed the number of users (" + numGroups + " * " + groupSizeValue + " > " + datasetLoader.getRatingsDataset().allUsers().size());
-        }
+        Random random = new Random(getSeedValue());
+        List<GroupOfUsers> groupsGenerated = new ArrayList<>(numGroups);
 
-        ArrayList<Integer> usuarios;
-        int numGrupos = datasetLoader.getRatingsDataset().allUsers().size() / groupSizeValue;
-        usuarios = new ArrayList<>(datasetLoader.getRatingsDataset().allUsers());
+        final List<Integer> usersAllowedSorted = usersAllowed.parallelStream()
+                .map(user -> user.getId())
+                .sorted()
+                .collect(Collectors.toList());
+
+        List<Integer> users = new ArrayList<>(usersAllowedSorted);
 
         int indexGrupoActual = 0;
-        while (group.size() < numGroups) {
+        while (groupsGenerated.size() < numGroups) {
 
             Set<User> usersGrupoActual = new TreeSet<>();
             while (usersGrupoActual.size() < groupSizeValue) {
-                int idUser = usuarios.remove(random.nextInt(usuarios.size()));
+                int idUser = users.remove(random.nextInt(users.size()));
                 User user = datasetLoader.getUsersDataset().get(idUser);
                 usersGrupoActual.add(user);
 
-                if (usuarios.isEmpty()) {
-                    usuarios.addAll(datasetLoader.getRatingsDataset().allUsers());
+                if (users.isEmpty()) {
+                    users.addAll(usersAllowedSorted);
                 }
             }
-            group.add(new GroupOfUsers(usersGrupoActual));
+            groupsGenerated.add(new GroupOfUsers(usersGrupoActual));
             indexGrupoActual++;
-            progressChanged("Group generation", indexGrupoActual / numGrupos);
-
-            if (usuarios.isEmpty()) {
-                usuarios.addAll(datasetLoader.getRatingsDataset().allUsers());
-            }
-        }
-
-        while (group.size() > numGroups) {
-            group.remove(random.nextInt(group.size()));
-        }
-        GroupOfUsers[] gruposGenerados = new GroupOfUsers[group.size()];
-
-        indexGrupoActual = 0;
-        for (GroupOfUsers grupoActual : group) {
-            gruposGenerados[indexGrupoActual] = grupoActual;
-            indexGrupoActual++;
+            progressChanged("Group generation", indexGrupoActual / numGroups);
         }
 
         progressChanged("Group generation", 100);
-        return Arrays.asList(gruposGenerados);
+        return groupsGenerated;
     }
+
+    public void checkNumGroupsIsValid(DatasetLoader<? extends Rating> datasetLoader, int groupSizeValue, int numGroups) throws CannotLoadRatingsDataset, IllegalArgumentException {
+        final int maxNumGroups = datasetLoader.getRatingsDataset().allUsers().size() / groupSizeValue;
+        if (maxNumGroups < numGroups) {
+            throw new IllegalArgumentException("The number of groups * groupSize exceed the number of users (" + numGroups + " * " + groupSizeValue + " > " + datasetLoader.getRatingsDataset().allUsers().size());
+        }
+    }
+
 }
