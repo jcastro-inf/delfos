@@ -59,8 +59,6 @@ import java.util.stream.Collectors;
 /**
  *
  * @author jcastro-inf ( https://github.com/jcastro-inf )
- *
- * @version 10-dic-2013
  */
 public class BookCrossingDatasetLoader extends DatasetLoaderAbstract<Rating> {
 
