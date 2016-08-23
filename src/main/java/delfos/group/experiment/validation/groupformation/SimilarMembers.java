@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,12 +16,12 @@
  */
 package delfos.group.experiment.validation.groupformation;
 
-import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
 import delfos.common.parameters.Parameter;
 import delfos.common.parameters.restriction.IntegerParameter;
 import delfos.common.parameters.restriction.ParameterOwnerRestriction;
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
+import delfos.dataset.basic.user.User;
 import delfos.group.groupsofusers.GroupOfUsers;
 import delfos.similaritymeasures.PearsonCorrelationCoefficient;
 import delfos.similaritymeasures.useruser.UserUserSimilarity;
@@ -31,9 +31,8 @@ import java.util.Collection;
 import java.util.Random;
 
 /**
- * Crea grupos buscando similitudes entre las preferencias de los miembros. Los
- * grupos no tienen usuarios en común, es decir, la intersección entre cualquier
- * par de grupos generados (de una vez) es siempre el conjunto vacío.
+ * Crea grupos buscando similitudes entre las preferencias de los miembros. Los grupos no tienen usuarios en común, es
+ * decir, la intersección entre cualquier par de grupos generados (de una vez) es siempre el conjunto vacío.
  *
  * @version 10-abr-2014
  * @author jcastro-inf ( https://github.com/jcastro-inf )
@@ -58,15 +57,14 @@ public class SimilarMembers extends GroupFormationTechnique {
     }
 
     /**
-     * Parámetro para establecer el número de usuarios que tendrán los grupos
-     * generados con esta validación de grupos
+     * Parámetro para establecer el número de usuarios que tendrán los grupos generados con esta validación de grupos
      */
     public static final Parameter GROUP_SIZE_PARAMETER = new Parameter("groupSize", new IntegerParameter(1, 10000, 5));
     public static final Parameter SIMILARITY_MEASURE;
 
     /**
-     * Genera una validación de usuarios que genera grupos de tamaño fijo. Por
-     * defecto, el tamaño de los grupos es de cuatro miembros.
+     * Genera una validación de usuarios que genera grupos de tamaño fijo. Por defecto, el tamaño de los grupos es de
+     * cuatro miembros.
      */
     public SimilarMembers() {
         super();
@@ -86,8 +84,8 @@ public class SimilarMembers extends GroupFormationTechnique {
     }
 
     /**
-     * Genera una validación de usuarios que genera grupos de tamaño fijo. Por
-     * defecto, el tamaño de los grupos es de cuatro miembros.
+     * Genera una validación de usuarios que genera grupos de tamaño fijo. Por defecto, el tamaño de los grupos es de
+     * cuatro miembros.
      *
      * @param groupSizeValue Tamaño de los grupos generados
      */
@@ -97,7 +95,9 @@ public class SimilarMembers extends GroupFormationTechnique {
     }
 
     @Override
-    public Collection<GroupOfUsers> generateGroups(DatasetLoader<? extends Rating> datasetLoader, Collection<User> usersAllowed) throws CannotLoadRatingsDataset {
+    public Collection<GroupOfUsers> generateGroups(
+            DatasetLoader<? extends Rating> datasetLoader,
+            Collection<User> usersAllowed) {
 
         if (datasetLoader == null) {
             throw new IllegalStateException("The datasetLoader is null.");

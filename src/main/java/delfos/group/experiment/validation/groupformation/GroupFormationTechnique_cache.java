@@ -25,6 +25,7 @@ import delfos.common.parameters.restriction.DirectoryParameter;
 import delfos.common.parameters.restriction.ParameterOwnerRestriction;
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
+import delfos.dataset.basic.user.User;
 import delfos.group.groupsofusers.GroupOfUsers;
 import java.io.File;
 import java.io.FileInputStream;
