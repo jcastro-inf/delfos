@@ -24,6 +24,7 @@ import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RatingsDataset;
 import delfos.dataset.basic.rating.RelevanceCriteria;
+import delfos.dataset.basic.user.User;
 import delfos.dataset.storage.validationdatasets.PairOfTrainTestRatingsDataset;
 import delfos.experiment.validation.validationtechnique.ValidationTechnique;
 import delfos.group.casestudy.parallelisation.SingleGroupRecommendationFunction;
@@ -105,7 +106,9 @@ public class ExecutionSplitConsumer implements Comparable<ExecutionSplitConsumer
             groupFormationTechnique.addListener(new GroupFormationTechniqueProgressListener_default(System.out, 300000));
         }
 
-        Collection<GroupOfUsers> groups = groupFormationTechnique.generateGroups(trainDatasetLoader);
+        Set<User> usersWithRatingsInTest = obtainUsersWithRatingsInTest(trainDatasetLoader, testDatasetLoader);
+
+        Collection<GroupOfUsers> groups = groupFormationTechnique.generateGroups(trainDatasetLoader, usersWithRatingsInTest);
 
         groups = deleteGroupsWithoutValidationRatings(groups, testDatasetLoader);
 
@@ -264,5 +267,26 @@ public class ExecutionSplitConsumer implements Comparable<ExecutionSplitConsumer
 
         return groupsWithTestRatings;
 
+    }
+
+    private Set<User> obtainUsersWithRatingsInTest(DatasetLoader<? extends Rating> trainDatasetLoader, DatasetLoader<? extends Rating> testDatasetLoader) {
+
+        RatingsDataset<? extends Rating> testRatingsDataset = testDatasetLoader.getRatingsDataset();
+
+        Set<User> usersWithRatingsInTest = trainDatasetLoader.getUsersDataset().parallelStream()
+                .filter(user -> {
+
+                    boolean ratingsInTest;
+                    try {
+                        ratingsInTest = testRatingsDataset.isRatedUser(user.getId());
+                    } catch (UserNotFound ex) {
+                        ratingsInTest = false;
+                    }
+                    return ratingsInTest;
+
+                })
+                .collect(Collectors.toSet());
+
+        return usersWithRatingsInTest;
     }
 }

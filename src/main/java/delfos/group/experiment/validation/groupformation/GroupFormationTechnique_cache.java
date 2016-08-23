@@ -64,7 +64,7 @@ public class GroupFormationTechnique_cache extends GroupFormationTechnique {
     private static final LRUMap<String, Object> CACHE = new LRUMap<>(100);
 
     @Override
-    public Collection<GroupOfUsers> generateGroups(DatasetLoader<? extends Rating> datasetLoader) throws CannotLoadRatingsDataset {
+    public Collection<GroupOfUsers> generateGroups(DatasetLoader<? extends Rating> datasetLoader, Collection<User> usersAllowed) throws CannotLoadRatingsDataset {
 
         final GroupFormationTechnique groupFormationTechnique = getGroupFormationTechnique();
         final int datasetHashCode = datasetLoader.hashCode();
