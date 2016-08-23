@@ -20,7 +20,6 @@ import delfos.common.exceptions.dataset.CannotLoadContentDataset;
 import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
 import delfos.common.exceptions.dataset.CannotLoadUsersDataset;
 import delfos.common.parameters.Parameter;
-import delfos.common.parameters.ParameterListener;
 import delfos.common.parameters.restriction.DirectoryParameter;
 import delfos.common.parameters.restriction.StringParameter;
 import delfos.dataset.basic.item.ContentDataset;
@@ -64,35 +63,32 @@ public class MovieLens1Million extends DatasetLoaderAbstract<RatingWithTimestamp
 
         File directory_C6108 = new File("C:\\Dropbox\\Datasets\\MovieLens\\1 - MovieLens-1M ratings\\ml-1m\\");
 
-        DirectoryOfDataset = new Parameter("Directory", new DirectoryParameter(directory_C6108));
+        DIRECTORY = new Parameter("Directory", new DirectoryParameter(directory_C6108));
     }
 
-    public final static Parameter DirectoryOfDataset;
+    public final static Parameter DIRECTORY;
 
-    public final static Parameter ratingsDatasetParameter = new Parameter("File_ratingsDataset", new StringParameter("ratings.dat"));
-    public final static Parameter contentDatasetParameter = new Parameter("File_contentDataset", new StringParameter("movies.dat"));
-    public final static Parameter usersDatasetParameter = new Parameter("File_usersDataset", new StringParameter("users.dat"));
+    public final static Parameter RATINGS_DATASET_FILE = new Parameter("File_ratingsDataset", new StringParameter("ratings.dat"));
+    public final static Parameter CONTENT_DATASET_FILE = new Parameter("File_contentDataset", new StringParameter("movies.dat"));
+    public final static Parameter USERS_DATASET_FILE = new Parameter("File_usersDataset", new StringParameter("users.dat"));
 
     public MovieLens1Million() {
-        addParameter(DirectoryOfDataset);
-        addParameter(ratingsDatasetParameter);
-        addParameter(contentDatasetParameter);
-        addParameter(usersDatasetParameter);
+        addParameter(DIRECTORY);
+        addParameter(RATINGS_DATASET_FILE);
+        addParameter(CONTENT_DATASET_FILE);
+        addParameter(USERS_DATASET_FILE);
 
-        addParammeterListener(new ParameterListener() {
-            @Override
-            public void parameterChanged() {
-                ratingsDataset = null;
-                contentDataset = null;
-                usersDataset = null;
-            }
+        addParammeterListener(() -> {
+            ratingsDataset = null;
+            contentDataset = null;
+            usersDataset = null;
         });
     }
 
     public MovieLens1Million(File directory) {
         this();
 
-        setParameterValue(DirectoryOfDataset, directory);
+        setParameterValue(DIRECTORY, directory);
 
     }
 
@@ -149,8 +145,8 @@ public class MovieLens1Million extends DatasetLoaderAbstract<RatingWithTimestamp
 
     public File getUsersFile() {
 
-        File directory = (File) getParameterValue(DirectoryOfDataset);
-        String usersDatasetFileName = (String) getParameterValue(usersDatasetParameter);
+        File directory = (File) getParameterValue(DIRECTORY);
+        String usersDatasetFileName = (String) getParameterValue(USERS_DATASET_FILE);
         File usersDatasetFile = new File(directory.getAbsolutePath() + File.separator + usersDatasetFileName);
 
         return usersDatasetFile;
@@ -158,8 +154,8 @@ public class MovieLens1Million extends DatasetLoaderAbstract<RatingWithTimestamp
 
     public File getContentFile() {
 
-        File directory = (File) getParameterValue(DirectoryOfDataset);
-        String contentDatasetFileName = (String) getParameterValue(contentDatasetParameter);
+        File directory = (File) getParameterValue(DIRECTORY);
+        String contentDatasetFileName = (String) getParameterValue(CONTENT_DATASET_FILE);
         File contentDatasetFile = new File(directory.getAbsolutePath() + File.separator + contentDatasetFileName);
 
         return contentDatasetFile;
@@ -167,8 +163,8 @@ public class MovieLens1Million extends DatasetLoaderAbstract<RatingWithTimestamp
 
     public File getRatingsFile() {
 
-        File directory = (File) getParameterValue(DirectoryOfDataset);
-        String ratingsDatasetFileName = (String) getParameterValue(ratingsDatasetParameter);
+        File directory = (File) getParameterValue(DIRECTORY);
+        String ratingsDatasetFileName = (String) getParameterValue(RATINGS_DATASET_FILE);
         File ratingsDatasetFile = new File(directory.getAbsolutePath() + File.separator + ratingsDatasetFileName);
 
         return ratingsDatasetFile;
