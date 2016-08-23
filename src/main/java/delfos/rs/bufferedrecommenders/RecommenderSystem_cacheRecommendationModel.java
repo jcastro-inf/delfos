@@ -56,7 +56,7 @@ public class RecommenderSystem_cacheRecommendationModel<RecommendationModel> ext
             Constants.getTempDirectory() + File.separator
             + "buffered-recommendation-models" + File.separator);
 
-    public static final String extension = "model";
+    public static final String FILE_EXTENSION = "model";
     public static final Parameter RECOMMENDATION_MODELS_DIRECTORY = new Parameter(
             "persistenceFileDirectory",
             new DirectoryParameter(DEFAULT_DIRECTORY));
@@ -65,9 +65,9 @@ public class RecommenderSystem_cacheRecommendationModel<RecommendationModel> ext
             "recommenderSystem",
             new RecommenderSystemParameterRestriction(new KnnModelBasedCFRS(), RecommenderSystem.class));
 
-    private static final Object generalExMut = "GeneralExMut";
+    private static final Object GENERAL_EX_MUT = "GeneralExMut";
 
-    private static final LRUMap<String, Object> cacheOfRecommendationModels = new LRUMap<>(100);
+    private static final LRUMap<String, Object> RECOMMENDATION_MODELS_CACHE = new LRUMap<>(Runtime.getRuntime().availableProcessors() * 2);
 
     public RecommenderSystem_cacheRecommendationModel() {
         super();
@@ -97,18 +97,18 @@ public class RecommenderSystem_cacheRecommendationModel<RecommendationModel> ext
 
         boolean buildModel = false;
 
-        synchronized (generalExMut) {
-            if (cacheOfRecommendationModels.containsKey(recommendationModelKey)
-                    && cacheOfRecommendationModels.get(recommendationModelKey) != null) {
+        synchronized (GENERAL_EX_MUT) {
+            if (RECOMMENDATION_MODELS_CACHE.containsKey(recommendationModelKey)
+                    && RECOMMENDATION_MODELS_CACHE.get(recommendationModelKey) != null) {
 
-                return (RecommendationModel) cacheOfRecommendationModels.get(recommendationModelKey);
+                return (RecommendationModel) RECOMMENDATION_MODELS_CACHE.get(recommendationModelKey);
             }
-            if (!cacheOfRecommendationModels.containsKey(recommendationModelKey)) {
-                cacheOfRecommendationModels.put(recommendationModelKey, null);
+            if (!RECOMMENDATION_MODELS_CACHE.containsKey(recommendationModelKey)) {
+                RECOMMENDATION_MODELS_CACHE.put(recommendationModelKey, null);
                 buildModel = true;
             } else {
                 try {
-                    generalExMut.wait();
+                    GENERAL_EX_MUT.wait();
                 } catch (InterruptedException ex) {
 
                 }
@@ -118,9 +118,9 @@ public class RecommenderSystem_cacheRecommendationModel<RecommendationModel> ext
         if (buildModel) {
             RecommendationModel recommendationModel = actuallyBuildRecommendationModel(datasetLoader, recommenderSystem);
 
-            synchronized (generalExMut) {
-                cacheOfRecommendationModels.put(recommendationModelKey, recommendationModel);
-                generalExMut.notifyAll();
+            synchronized (GENERAL_EX_MUT) {
+                RECOMMENDATION_MODELS_CACHE.put(recommendationModelKey, recommendationModel);
+                GENERAL_EX_MUT.notifyAll();
             }
             return recommendationModel;
         } else {
@@ -136,7 +136,7 @@ public class RecommenderSystem_cacheRecommendationModel<RecommendationModel> ext
         String datasetLoaderString = "_datasetLoader=" + datasetLoaderAlias + "_DLHash=" + ratingsDatasetHashCode;
         FilePersistence filePersistenceWithHashSuffix = new FilePersistence(
                 recommenderSystem.getName(),
-                extension,
+                FILE_EXTENSION,
                 (File) getParameterValue(RECOMMENDATION_MODELS_DIRECTORY))
                 .copyWithSuffix(rsNameIdentifier)
                 .copyWithSuffix(datasetLoaderString);
