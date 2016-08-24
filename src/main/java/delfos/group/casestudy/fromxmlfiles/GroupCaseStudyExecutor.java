@@ -98,8 +98,12 @@ public class GroupCaseStudyExecutor implements Consumer<ExecuteGroupCaseStudy_Ta
             throw new IllegalStateException(ex);
         }
 
+        Global.showMessageTimestamped("Saving results of " + resultsDirectory);
         GroupCaseStudyXML.saveCaseResults(caseStudyGroupRecommendation, resultsDirectory);
+        Global.showMessageTimestamped("Saved XML results of " + resultsDirectory);
+
         GroupCaseStudyExcel.saveCaseResults(caseStudyGroupRecommendation, resultsDirectory);
+        Global.showMessageTimestamped("Saved XLS results of " + resultsDirectory);
 
     }
 
