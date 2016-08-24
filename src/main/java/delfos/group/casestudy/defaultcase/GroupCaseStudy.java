@@ -218,6 +218,8 @@ public class GroupCaseStudy extends ExperimentAdapter {
                     groupCaseStudyProgressChangedController.setTaskFinished();
                 });
 
+        setExperimentProgress("Finished execution, computing evaluation measures", 100, -1);
+
         Set<GroupEvaluationMeasure> groupEvaluationMeasures = allLoopsResults.get(0).get(0).keySet();
 
         aggregateResults = groupEvaluationMeasures.stream().parallel().collect(Collectors.toMap(Function.identity(),
