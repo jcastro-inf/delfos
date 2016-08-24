@@ -227,22 +227,47 @@ public class TryThisAtHomeSVDModel implements Serializable {
         return _itemFeatures.get(_itemsIndex.get(idItem));
     }
 
-    private final Set<Integer> itemsWarned = new TreeSet<>();
+    private Set<Integer> itemsWarned = null;
 
-    public void warningItemNotInModel(int idItem, String message, NotEnoughtItemInformation ex) {
-        if (!itemsWarned.contains(idItem)) {
-            //Global.showWarning(message);
-            itemsWarned.add(idItem);
+    public synchronized void warningItemNotInModel(int idItem, String message, NotEnoughtItemInformation ex) {
+        if (itemsWarned == null) {
+            itemsWarned = new TreeSet<>();
+        }
+
+        try {
+            if (!itemsWarned.contains(idItem)) {
+                itemsWarned.add(idItem);
+            }
+        } catch (NullPointerException ex2) {
+            resetWarnings();
+            warningItemNotInModel(idItem, message, ex);
         }
     }
 
-    private final Set<Integer> usersWarned = new TreeSet<>();
+    public synchronized void resetWarnings() {
+        itemsWarned = null;
+        usersWarned = null;
 
-    public void warningUserNotInModel(int idUser, String message, NotEnoughtUserInformation ex) {
-        if (!usersWarned.contains(idUser)) {
-            //Global.showWarning(message);
-            usersWarned.add(idUser);
+    }
+
+    private Set<Integer> usersWarned = new TreeSet<>();
+
+    public synchronized void warningUserNotInModel(int idUser, String message, NotEnoughtUserInformation ex) {
+        if (usersWarned == null) {
+            usersWarned = new TreeSet<>();
         }
+
+        try {
+            if (!usersWarned.contains(idUser)) {
+                //Global.showWarning(message);
+                usersWarned.add(idUser);
+            }
+
+        } catch (NullPointerException ex2) {
+            resetWarnings();
+            warningUserNotInModel(idUser, message, ex);
+        }
+
     }
 
     public double predict(User user, Item item) {

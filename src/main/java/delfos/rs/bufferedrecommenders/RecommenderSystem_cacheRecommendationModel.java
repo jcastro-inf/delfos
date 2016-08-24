@@ -34,6 +34,7 @@ import delfos.rs.RecommendationModelBuildingProgressListener;
 import delfos.rs.RecommenderSystem;
 import delfos.rs.RecommenderSystemAdapter;
 import delfos.rs.collaborativefiltering.knn.modelbased.KnnModelBasedCFRS;
+import delfos.rs.collaborativefiltering.svd.TryThisAtHomeSVDModel;
 import delfos.rs.persistence.FailureInPersistence;
 import delfos.rs.persistence.FilePersistence;
 import delfos.rs.recommendation.Recommendation;
@@ -121,6 +122,11 @@ public class RecommenderSystem_cacheRecommendationModel<RecommendationModel> ext
             synchronized (GENERAL_EX_MUT) {
                 RECOMMENDATION_MODELS_CACHE.put(recommendationModelKey, recommendationModel);
                 GENERAL_EX_MUT.notifyAll();
+            }
+
+            if (recommendationModel instanceof TryThisAtHomeSVDModel) {
+                TryThisAtHomeSVDModel tryThisAtHomeSVDModel = (TryThisAtHomeSVDModel) recommendationModel;
+                tryThisAtHomeSVDModel.resetWarnings();
             }
             return recommendationModel;
         } else {
