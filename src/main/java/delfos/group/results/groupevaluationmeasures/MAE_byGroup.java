@@ -19,37 +19,40 @@ package delfos.group.results.groupevaluationmeasures;
 import delfos.ERROR_CODES;
 import delfos.common.exceptions.dataset.users.UserNotFound;
 import delfos.common.statisticalfuncions.MeanIterative;
-import delfos.dataset.basic.item.Item;
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RelevanceCriteria;
-import delfos.dataset.basic.user.User;
 import delfos.group.groupsofusers.GroupOfUsers;
-import static delfos.group.results.groupevaluationmeasures.MAE_unpopular.POPULARITY_THRESHOLD;
-import static delfos.group.results.groupevaluationmeasures.MAE_unpopular.getPopularItems;
 import delfos.group.results.grouprecomendationresults.GroupRecommenderSystemResult;
 import delfos.rs.recommendation.Recommendation;
 import java.util.Collection;
 import java.util.Map;
-import java.util.Set;
 import java.util.TreeMap;
 
 /**
+ * Medida de evaluación para calcular el error absoluto medio del sistema de recomendación evaluado. Calcula la
+ * diferencia entre la valoración hecha para el grupo y la valoración individual que cada usuario dió para el producto,
+ * si lo ha valorado.
+ *
+ * <p>
+ * Es una extensión de la medida de evaluación {@link delfos.Results.EvaluationMeasures.RatingPrediction.MAE} para
+ * recomendaciones individuales.
  *
  * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
+ * @see delfos.Results.EvaluationMeasures.RatingPrediction.MAE
  */
-public class MAE_popular extends GroupEvaluationMeasure {
+public class MAE_byGroup extends GroupEvaluationMeasure {
 
     @Override
     public GroupEvaluationMeasureResult getMeasureResult(
-            GroupRecommenderSystemResult groupRecommenderSystemResult, DatasetLoader<? extends Rating> originalDatasetLoader, RelevanceCriteria relevanceCriteria, DatasetLoader<? extends Rating> trainingDatasetLoader, DatasetLoader<? extends Rating> testDatasetLoader) {
+            GroupRecommenderSystemResult groupRecommenderSystemResult,
+            DatasetLoader<? extends Rating> originalDatasetLoader,
+            RelevanceCriteria relevanceCriteria,
+            DatasetLoader<? extends Rating> trainingDatasetLoader,
+            DatasetLoader<? extends Rating> testDatasetLoader) {
 
-        MeanIterative maePopularItems = new MeanIterative();
         TreeMap<GroupOfUsers, MeanIterative> maeGroups = new TreeMap<>();
-        TreeMap<Integer, MeanIterative> maeAllMembers = new TreeMap<>();
-
-        Set<Item> popularItems = getPopularItems(originalDatasetLoader, POPULARITY_THRESHOLD);
 
         for (GroupOfUsers groupOfUsers : groupRecommenderSystemResult.getGroupsOfUsers()) {
             Collection<Recommendation> groupRecommendations = groupRecommenderSystemResult
@@ -59,10 +62,6 @@ public class MAE_popular extends GroupEvaluationMeasure {
                 continue;
             }
             MeanIterative maeGroup = new MeanIterative();
-            Map<Integer, MeanIterative> maeMembers = new TreeMap<>();
-            for (User member : groupOfUsers.getMembers()) {
-                maeMembers.put(member.getId(), new MeanIterative());
-            }
 
             Map<Integer, Map<Integer, ? extends Rating>> groupTrueRatings = new TreeMap<>();
 
@@ -78,37 +77,32 @@ public class MAE_popular extends GroupEvaluationMeasure {
                 if (Double.isNaN(recommendation.getPreference().doubleValue())) {
                     continue;
                 }
-                Item item = recommendation.getItem();
-
-                if (!popularItems.contains(item)) {
-                    continue;
-                }
-                double itemWeight = 1;
-
+                int idItem = recommendation.getItem().getId();
                 for (int idUser : groupOfUsers.getIdMembers()) {
-                    if (groupTrueRatings.get(idUser).containsKey(item.getId())) {
-                        double trueRating = groupTrueRatings.get(idUser).get(item.getId()).getRatingValue().doubleValue();
+                    if (groupTrueRatings.get(idUser).containsKey(idItem)) {
+                        double trueRating = groupTrueRatings.get(idUser).get(idItem).getRatingValue().doubleValue();
                         double predicted = recommendation.getPreference().doubleValue();
                         double absoluteError = Math.abs(predicted - trueRating);
 
-                        absoluteError = absoluteError * itemWeight;
-
-                        maePopularItems.addValue(absoluteError);
                         maeGroup.addValue(absoluteError);
-                        maeMembers.get(idUser).addValue(absoluteError);
                     }
                 }
             }
 
             maeGroups.put(groupOfUsers, maeGroup);
-            maeAllMembers.putAll(maeMembers);
 
         }
 
-        if (maePopularItems.isEmpty()) {
+        MeanIterative meanMAEbyGroups = new MeanIterative();
+
+        maeGroups.values().stream()
+                .filter(maeOfGroup -> !maeOfGroup.isEmpty())
+                .forEach(maeOfGroup -> meanMAEbyGroups.addValue(maeOfGroup.getMean()));
+
+        if (meanMAEbyGroups.isEmpty()) {
             return new GroupEvaluationMeasureResult(this, Double.NaN);
         } else {
-            double mae = maePopularItems.getMean();
+            double mae = meanMAEbyGroups.getMean();
             return new GroupEvaluationMeasureResult(this, mae);
         }
     }
