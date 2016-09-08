@@ -43,8 +43,7 @@ public class RecommendationsOutputStandardRaw extends RecommendationsOutputMetho
     public static final Parameter SORT_BY = new Parameter("SORT_BY", new ObjectParameter(SortBy.values(), SortBy.SORT_BY_NO_SORT));
 
     /**
-     * Constructor por defecto, que añade los parámetros de este método de
-     * salida de recomendaciones.
+     * Constructor por defecto, que añade los parámetros de este método de salida de recomendaciones.
      */
     public RecommendationsOutputStandardRaw() {
         super();
@@ -83,7 +82,7 @@ public class RecommendationsOutputStandardRaw extends RecommendationsOutputMetho
                 throw new IllegalStateException("Not implemented yet: " + sortBy);
         }
 
-        List<Recommendation> topRecommendations = getNumberOfRecommendations() == 0
+        List<Recommendation> topRecommendations = getNumberOfRecommendations() <= 0
                 ? recommendationsSorted
                 : recommendationsSorted.stream().limit(getNumberOfRecommendations()).collect(Collectors.toList());
 
