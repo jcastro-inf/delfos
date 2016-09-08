@@ -96,7 +96,7 @@ public class ChangeableDatasetConfigurationFileParser {
      * valoraciones.
      * @throws FileNotFoundException Si el archivo indicado no existe.
      */
-    public static ChangeableDatasetConfiguration loadConfigFile(File configFile) throws JDOMException, CannotLoadContentDataset, CannotLoadRatingsDataset, FileNotFoundException {
+    public static ChangeableDatasetConfiguration loadChangeableConfigFile(File configFile) throws JDOMException, CannotLoadContentDataset, CannotLoadRatingsDataset, FileNotFoundException {
         SAXBuilder builder = new SAXBuilder();
         Document doc = null;
         try {
