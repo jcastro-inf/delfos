@@ -23,6 +23,10 @@ import delfos.group.results.groupevaluationmeasures.GroupEvaluationMeasure;
 import delfos.group.results.groupevaluationmeasures.MAE;
 import delfos.group.results.groupevaluationmeasures.MAE_05;
 import delfos.group.results.groupevaluationmeasures.MAE_10;
+import delfos.group.results.groupevaluationmeasures.MAE_byGroup;
+import delfos.group.results.groupevaluationmeasures.MAE_byGroupStdDev;
+import delfos.group.results.groupevaluationmeasures.MAE_byMember;
+import delfos.group.results.groupevaluationmeasures.MAE_byMemberStdDev;
 import delfos.group.results.groupevaluationmeasures.MAE_popular;
 import delfos.group.results.groupevaluationmeasures.MAE_unpopular;
 import delfos.group.results.groupevaluationmeasures.NDCG;
@@ -98,6 +102,11 @@ public class GroupEvaluationMeasuresFactory extends Factory<GroupEvaluationMeasu
         instance.addClass(MAE_popular.class);
         instance.addClass(MAE_05.class);
         instance.addClass(MAE_10.class);
+
+        instance.addClass(MAE_byGroup.class);
+        instance.addClass(MAE_byGroupStdDev.class);
+        instance.addClass(MAE_byMember.class);
+        instance.addClass(MAE_byMemberStdDev.class);
 
         //TODO: Rank measures
         instance.addClass(NDCG.class);

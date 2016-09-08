@@ -17,11 +17,14 @@
 package delfos.group.results.groupevaluationmeasures;
 
 import delfos.ERROR_CODES;
+import delfos.common.exceptions.dataset.CannotLoadContentDataset;
 import delfos.common.exceptions.dataset.users.UserNotFound;
 import delfos.common.statisticalfuncions.MeanIterative;
+import delfos.dataset.basic.item.ContentDataset;
 import delfos.dataset.basic.item.Item;
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
+import delfos.dataset.basic.rating.RatingsDataset;
 import delfos.dataset.basic.rating.RelevanceCriteria;
 import delfos.dataset.basic.user.User;
 import delfos.group.groupsofusers.GroupOfUsers;
@@ -29,6 +32,7 @@ import delfos.group.results.grouprecomendationresults.GroupRecommenderSystemResu
 import delfos.rs.recommendation.Recommendation;
 import java.util.Collection;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 
@@ -39,26 +43,17 @@ import java.util.stream.Collectors;
  */
 public class MAE_unpopular extends GroupEvaluationMeasure {
 
-    public static final double POPULARITY_THRESHOLD = 0.2;
+    public static final double POPULARITY_THRESHOLD = 0.05;
 
     @Override
     public GroupEvaluationMeasureResult getMeasureResult(
             GroupRecommenderSystemResult groupRecommenderSystemResult, DatasetLoader<? extends Rating> originalDatasetLoader, RelevanceCriteria relevanceCriteria, DatasetLoader<? extends Rating> trainingDatasetLoader, DatasetLoader<? extends Rating> testDatasetLoader) {
 
-        MeanIterative maeGeneral = new MeanIterative();
+        MeanIterative maeUnpopularItems = new MeanIterative();
         TreeMap<GroupOfUsers, MeanIterative> maeGroups = new TreeMap<>();
         TreeMap<Integer, MeanIterative> maeAllMembers = new TreeMap<>();
 
-        Map<Item, Double> inverseFrequency = originalDatasetLoader.getContentDataset().parallelStream().collect(Collectors.toMap(item -> item, item -> {
-
-            int numUsersRated = originalDatasetLoader.getRatingsDataset().getItemRated(item.getId()).size();
-
-            double popularity = numUsersRated / (double) originalDatasetLoader.getUsersDataset().size();
-
-            double weight = popularity < POPULARITY_THRESHOLD ? 1 : 0;
-
-            return weight;
-        }));
+        Set<Item> popularItems = getPopularItems(originalDatasetLoader, POPULARITY_THRESHOLD);
 
         for (GroupOfUsers groupOfUsers : groupRecommenderSystemResult.getGroupsOfUsers()) {
             Collection<Recommendation> groupRecommendations = groupRecommenderSystemResult
@@ -88,10 +83,11 @@ public class MAE_unpopular extends GroupEvaluationMeasure {
                     continue;
                 }
                 Item item = recommendation.getItem();
-                double itemWeight = inverseFrequency.get(item);
-                if (itemWeight == 0) {
+
+                if (popularItems.contains(item)) {
                     continue;
                 }
+                double itemWeight = 1;
 
                 for (int idUser : groupOfUsers.getIdMembers()) {
                     if (groupTrueRatings.get(idUser).containsKey(item.getId())) {
@@ -101,7 +97,7 @@ public class MAE_unpopular extends GroupEvaluationMeasure {
 
                         absoluteError = absoluteError * itemWeight;
 
-                        maeGeneral.addValue(absoluteError);
+                        maeUnpopularItems.addValue(absoluteError);
                         maeGroup.addValue(absoluteError);
                         maeMembers.get(idUser).addValue(absoluteError);
                     }
@@ -113,12 +109,44 @@ public class MAE_unpopular extends GroupEvaluationMeasure {
 
         }
 
-        if (maeGeneral.isEmpty()) {
+        if (maeUnpopularItems.isEmpty()) {
             return new GroupEvaluationMeasureResult(this, Double.NaN);
         } else {
-            double mae = maeGeneral.getMean();
+            double mae = maeUnpopularItems.getMean();
             return new GroupEvaluationMeasureResult(this, mae);
         }
+    }
+
+    /**
+     * Get the set of most popular items, computed by taking the <b>popularityThreshold</b> most rated items. Not-rated
+     * items are ignored.
+     *
+     * @param originalDatasetLoader
+     * @param popularityThreshold
+     * @return
+     * @throws CannotLoadContentDataset
+     */
+    public static Set<Item> getPopularItems(DatasetLoader<? extends Rating> originalDatasetLoader, double popularityThreshold) throws CannotLoadContentDataset {
+        final ContentDataset contentDataset = originalDatasetLoader.getContentDataset();
+        final RatingsDataset<? extends Rating> ratingsDataset = originalDatasetLoader.getRatingsDataset();
+
+        Map<Item, Integer> itemsWithNumRatings = contentDataset.parallelStream().collect(
+                Collectors.toMap(item -> item, item -> {
+
+                    int numUsersRated = ratingsDataset.getItemRated(item.getId()).size();
+                    return numUsersRated;
+                })).entrySet().parallelStream()
+                .filter(entry -> entry.getValue() != 0)
+                .collect(Collectors.toMap(entry -> entry.getKey(), entry -> entry.getValue()));
+
+        int indexPopular = itemsWithNumRatings.size() - (int) (popularityThreshold * itemsWithNumRatings.size());
+        int numRatingsToBePopular = itemsWithNumRatings.values().stream().sorted().mapToInt(entry -> entry).toArray()[indexPopular];
+        Set<Item> popularItems = itemsWithNumRatings.entrySet()
+                .parallelStream()
+                .filter(entry -> entry.getValue() >= numRatingsToBePopular)
+                .map(entry -> entry.getKey())
+                .collect(Collectors.toSet());
+        return popularItems;
     }
 
     @Override
