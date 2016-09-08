@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -21,7 +21,7 @@ import delfos.ERROR_CODES;
 import delfos.UndefinedParameterException;
 import delfos.common.exceptions.dataset.CannotLoadContentDataset;
 import delfos.dataset.basic.item.Item;
-import delfos.dataset.changeable.ChangeableDatasetLoader;
+import delfos.dataset.basic.loader.types.DatasetLoader;
 import static delfos.main.managers.database.DatabaseManager.MANAGE_RATING_DATABASE_ADD_ITEM;
 
 /**
@@ -42,16 +42,17 @@ public class AddItem extends DatabaseCaseUseSubManager {
     }
 
     @Override
-    public void manageCaseUse(ConsoleParameters consoleParameters, ChangeableDatasetLoader changeableDatasetLoader) {
+    public void manageCaseUse(ConsoleParameters consoleParameters, DatasetLoader datasetLoader) {
 
         try {
 
             int idItem = new Integer(consoleParameters.getValue(MANAGE_RATING_DATABASE_ADD_ITEM));
-            if (changeableDatasetLoader.getContentDataset().allIDs().contains(idItem)) {
+            if (datasetLoader.getContentDataset().allIDs().contains(idItem)) {
                 IllegalArgumentException ex = new IllegalArgumentException();
                 ERROR_CODES.MANAGE_RATING_DATABASE_ITEM_ALREADY_EXISTS.exit(ex);
             }
-            changeableDatasetLoader.getChangeableContentDataset().addItem(new Item(idItem));
+
+            viewDatasetLoaderAsChangeable(datasetLoader).getChangeableContentDataset().addItem(new Item(idItem));
         } catch (NumberFormatException ex) {
             ERROR_CODES.ITEM_ID_NOT_RECOGNISED.exit(ex);
             throw new IllegalArgumentException(ex);

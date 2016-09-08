@@ -25,7 +25,6 @@ import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
 import delfos.configfile.rs.single.ChangeableDatasetConfiguration;
 import delfos.configfile.rs.single.ChangeableDatasetConfigurationFileParser;
 import delfos.dataset.basic.loader.types.DatasetLoader;
-import delfos.dataset.changeable.ChangeableDatasetLoader;
 import delfos.main.managers.CaseUseModeWithSubManagers;
 import delfos.main.managers.CaseUseSubManager;
 import delfos.main.managers.database.submanagers.AddItem;
@@ -146,20 +145,6 @@ public class DatabaseManager extends CaseUseModeWithSubManagers {
         caseUseManagers.add(DatasetPrinterManager.getInstance());
 
         return caseUseManagers;
-    }
-
-    public static ChangeableDatasetLoader extractChangeableDatasetHandler(ConsoleParameters consoleParameters) throws RuntimeException {
-
-        DatasetLoader datasetLoader = extractDatasetHandler(consoleParameters);
-        if (datasetLoader instanceof ChangeableDatasetLoader) {
-            ChangeableDatasetLoader changeableDatasetLoader = (ChangeableDatasetLoader) datasetLoader;
-            return changeableDatasetLoader;
-        } else {
-            IllegalStateException ex = new IllegalStateException("The dataset is not changeable");
-            ERROR_CODES.MANAGE_RATING_DATABASE_DATASET_NOT_CHANGEABLE.exit(ex);
-            throw ex;
-        }
-
     }
 
     public static DatasetLoader extractDatasetHandler(ConsoleParameters consoleParameters) throws RuntimeException {

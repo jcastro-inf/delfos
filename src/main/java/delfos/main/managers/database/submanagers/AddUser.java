@@ -20,6 +20,7 @@ import delfos.ConsoleParameters;
 import delfos.ERROR_CODES;
 import delfos.UndefinedParameterException;
 import delfos.common.exceptions.dataset.CannotLoadUsersDataset;
+import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.user.User;
 import delfos.dataset.changeable.ChangeableDatasetLoader;
 import static delfos.main.managers.database.DatabaseManager.MANAGE_RATING_DATABASE_ADD_USER;
@@ -42,7 +43,8 @@ public class AddUser extends DatabaseCaseUseSubManager {
     }
 
     @Override
-    public void manageCaseUse(ConsoleParameters consoleParameters, ChangeableDatasetLoader changeableDatasetLoader) {
+    public void manageCaseUse(ConsoleParameters consoleParameters, DatasetLoader datasetLoader) {
+        ChangeableDatasetLoader changeableDatasetLoader = viewDatasetLoaderAsChangeable(datasetLoader);
 
         try {
 

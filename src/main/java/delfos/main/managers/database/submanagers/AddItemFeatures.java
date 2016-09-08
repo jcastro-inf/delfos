@@ -25,6 +25,7 @@ import delfos.common.exceptions.dataset.entity.EntityNotFound;
 import delfos.common.exceptions.dataset.items.ItemNotFound;
 import delfos.dataset.basic.features.Feature;
 import delfos.dataset.basic.item.Item;
+import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.changeable.ChangeableDatasetLoader;
 import static delfos.main.managers.database.DatabaseManager.ENTITY_NAME;
 import static delfos.main.managers.database.DatabaseManager.MANAGE_RATING_DATABASE_ADD_ITEM_FEATURES;
@@ -51,7 +52,8 @@ public class AddItemFeatures extends DatabaseCaseUseSubManager {
     }
 
     @Override
-    public void manageCaseUse(ConsoleParameters consoleParameters, ChangeableDatasetLoader changeableDatasetLoader) {
+    public void manageCaseUse(ConsoleParameters consoleParameters, DatasetLoader datasetLoader) {
+        ChangeableDatasetLoader changeableDatasetLoader = viewDatasetLoaderAsChangeable(datasetLoader);
 
         int idItem;
         try {
@@ -127,8 +129,9 @@ public class AddItemFeatures extends DatabaseCaseUseSubManager {
         return featuresToAdd;
     }
 
-    public void addItemFeatures(ChangeableDatasetLoader changeableDatasetLoader, Item item, String newName, Map<String, String> featuresToAdd) throws RuntimeException {
+    public void addItemFeatures(DatasetLoader datasetLoader, Item item, String newName, Map<String, String> featuresToAdd) throws RuntimeException {
 
+        ChangeableDatasetLoader changeableDatasetLoader = viewDatasetLoaderAsChangeable(datasetLoader);
         //Añado las características.
         try {
             Map<Feature, Object> newEntityFeatures = changeableDatasetLoader.getChangeableContentDataset()

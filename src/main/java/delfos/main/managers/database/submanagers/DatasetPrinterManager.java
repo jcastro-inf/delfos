@@ -25,9 +25,9 @@ import delfos.common.exceptions.dataset.entity.EntityNotFound;
 import delfos.common.exceptions.dataset.items.ItemNotFound;
 import delfos.common.exceptions.dataset.users.UserNotFound;
 import delfos.dataset.basic.item.Item;
+import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.user.User;
-import delfos.dataset.changeable.ChangeableDatasetLoader;
 import delfos.dataset.util.DatasetPrinter;
 import delfos.main.managers.database.DatabaseManager;
 import java.util.Collection;
@@ -75,12 +75,12 @@ public class DatasetPrinterManager extends DatabaseCaseUseSubManager {
     }
 
     @Override
-    public void manageCaseUse(ConsoleParameters consoleParameters, ChangeableDatasetLoader changeableDatasetLoader) {
+    public void manageCaseUse(ConsoleParameters consoleParameters, DatasetLoader datasetLoader) {
         if (consoleParameters.isFlagDefined(PRINT_USER_SET)) {
-            System.out.println(printUserSet(changeableDatasetLoader));
+            System.out.println(printUserSet(datasetLoader));
         }
         if (consoleParameters.isFlagDefined(PRINT_ITEM_SET)) {
-            System.out.println(printItemSet(changeableDatasetLoader));
+            System.out.println(printItemSet(datasetLoader));
         }
         if (consoleParameters.isParameterDefined(PRINT_USER_RATINGS)) {
 
@@ -89,7 +89,7 @@ public class DatasetPrinterManager extends DatabaseCaseUseSubManager {
 
                 for (String idUserString : idUserStrings) {
                     int idUser = Integer.parseInt(idUserString);
-                    System.out.println(printUserRatings(changeableDatasetLoader, idUser));
+                    System.out.println(printUserRatings(datasetLoader, idUser));
                 }
             } catch (UndefinedParameterException ex) {
                 throw new IllegalArgumentException(ex);
@@ -102,7 +102,7 @@ public class DatasetPrinterManager extends DatabaseCaseUseSubManager {
 
                 for (String idItemString : idItemStrings) {
                     int idItem = Integer.parseInt(idItemString);
-                    System.out.println(printItemRatings(changeableDatasetLoader, idItem));
+                    System.out.println(printItemRatings(datasetLoader, idItem));
                 }
             } catch (UndefinedParameterException ex) {
                 throw new IllegalArgumentException(ex);
@@ -110,17 +110,17 @@ public class DatasetPrinterManager extends DatabaseCaseUseSubManager {
         }
 
         if (consoleParameters.isFlagDefined(PRINT_RATINGS_TABLE)) {
-            System.out.println(printRatingsTable(changeableDatasetLoader));
+            System.out.println(printRatingsTable(datasetLoader));
         }
 
     }
 
-    public String printUserRatings(ChangeableDatasetLoader changeableDatasetLoader, int idUser) throws RuntimeException {
+    public String printUserRatings(DatasetLoader datasetLoader, int idUser) throws RuntimeException {
         StringBuilder str = new StringBuilder();
         try {
 
-            User user = changeableDatasetLoader.getUsersDataset().getUser(idUser);
-            Map<Integer, Rating> userRatings = changeableDatasetLoader.getRatingsDataset().getUserRatingsRated(idUser);
+            User user = datasetLoader.getUsersDataset().getUser(idUser);
+            Map<Integer, Rating> userRatings = datasetLoader.getRatingsDataset().getUserRatingsRated(idUser);
             str.append("==============================================================\n");
             str.append("User '").append(user.getName()).append("' (id=").append(idUser).append(") ratings size: ").append(userRatings.size()).append("\n");
             for (Map.Entry<Integer, Rating> entry : userRatings.entrySet()) {
@@ -128,7 +128,7 @@ public class DatasetPrinterManager extends DatabaseCaseUseSubManager {
                 Rating rating = entry.getValue();
 
                 try {
-                    Item item = changeableDatasetLoader.getChangeableContentDataset().get(idItem);
+                    Item item = datasetLoader.getContentDataset().get(idItem);
                     str.append("Item '").append(item.getName()).append("' (id=").append(idItem).append(") ---> ").append(rating.getRatingValue()).append("\n");
                 } catch (EntityNotFound ex) {
                     ERROR_CODES.ITEM_NOT_FOUND.exit(ex);
@@ -142,12 +142,12 @@ public class DatasetPrinterManager extends DatabaseCaseUseSubManager {
         return str.toString();
     }
 
-    public String printItemRatings(ChangeableDatasetLoader changeableDatasetLoader, int idItem) throws RuntimeException {
+    public String printItemRatings(DatasetLoader datasetLoader, int idItem) throws RuntimeException {
         StringBuilder str = new StringBuilder();
         try {
 
-            Item item = changeableDatasetLoader.getChangeableContentDataset().getItem(idItem);
-            Map<Integer, Rating> userRatings = changeableDatasetLoader.getRatingsDataset().getItemRatingsRated(item.getId());
+            Item item = datasetLoader.getContentDataset().getItem(idItem);
+            Map<Integer, Rating> userRatings = datasetLoader.getRatingsDataset().getItemRatingsRated(item.getId());
             str.append("==============================================================").append("\n");
             str.append("User '").append(item.getName()).append("' (id=").append(idItem).append(") ratings size: ").append(userRatings.size()).append("\n");
             for (Map.Entry<Integer, Rating> entry : userRatings.entrySet()) {
@@ -155,7 +155,7 @@ public class DatasetPrinterManager extends DatabaseCaseUseSubManager {
                 Rating rating = entry.getValue();
 
                 try {
-                    User user = changeableDatasetLoader.getChangeableUsersDataset().get(idUser);
+                    User user = datasetLoader.getUsersDataset().get(idUser);
                     str.append("User '").append(user.getName()).append("' (id=").append(idUser).append(") ---> ").append(rating.getRatingValue()).append("\n");
                 } catch (EntityNotFound ex) {
                     ERROR_CODES.ITEM_NOT_FOUND.exit(ex);
@@ -169,15 +169,15 @@ public class DatasetPrinterManager extends DatabaseCaseUseSubManager {
         return str.toString();
     }
 
-    public String printItemSet(ChangeableDatasetLoader changeableDatasetLoader) throws CannotLoadContentDataset, RuntimeException {
-        TreeSet<Integer> items = new TreeSet<>(changeableDatasetLoader.getContentDataset().allIDs());
+    public String printItemSet(DatasetLoader datasetLoader) throws CannotLoadContentDataset, RuntimeException {
+        TreeSet<Integer> items = new TreeSet<>(datasetLoader.getContentDataset().allIDs());
 
         StringBuilder str = new StringBuilder();
         str.append("==============================================================").append("\n");
         str.append("Item set size: ").append(items.size());
         for (int idItem : items) {
             try {
-                Item item = changeableDatasetLoader.getContentDataset().getItem(idItem);
+                Item item = datasetLoader.getContentDataset().getItem(idItem);
                 str.append("\tidItem '").append(idItem).append("' with name ").append(item.getName()).append("\n");
             } catch (ItemNotFound ex) {
                 ERROR_CODES.ITEM_NOT_FOUND.exit(ex);
@@ -188,16 +188,16 @@ public class DatasetPrinterManager extends DatabaseCaseUseSubManager {
         return str.toString();
     }
 
-    public String printUserSet(ChangeableDatasetLoader changeableDatasetLoader) throws CannotLoadUsersDataset, RuntimeException {
+    public String printUserSet(DatasetLoader datasetLoader) throws CannotLoadUsersDataset, RuntimeException {
 
         StringBuilder str = new StringBuilder();
 
-        TreeSet<Integer> users = new TreeSet<>(changeableDatasetLoader.getUsersDataset().allIDs());
+        TreeSet<Integer> users = new TreeSet<>(datasetLoader.getUsersDataset().allIDs());
         str.append("==============================================================").append("\n");
         str.append("User set size: ").append(users.size());
         for (int idUser : users) {
             try {
-                User u = changeableDatasetLoader.getUsersDataset().get(idUser);
+                User u = datasetLoader.getUsersDataset().get(idUser);
                 str.append("\tidUser '").append(idUser).append("' with name ").append(u.getName()).append("\n");
             } catch (EntityNotFound ex) {
                 ERROR_CODES.USER_NOT_FOUND.exit(ex);
@@ -209,22 +209,22 @@ public class DatasetPrinterManager extends DatabaseCaseUseSubManager {
         return str.toString();
     }
 
-    public String printRatingsTable(ChangeableDatasetLoader changeableDatasetLoader) {
-        Collection<Integer> users = changeableDatasetLoader.getUsersDataset().allIDs();
-        Collection<Integer> items = changeableDatasetLoader.getContentDataset().allIDs();
+    public String printRatingsTable(DatasetLoader datasetLoader) {
+        Collection<Integer> users = datasetLoader.getUsersDataset().allIDs();
+        Collection<Integer> items = datasetLoader.getContentDataset().allIDs();
 
         StringBuilder str = new StringBuilder();
         if (!users.isEmpty() && !items.isEmpty()) {
             String ratingTable = DatasetPrinter.printCompactRatingTable(
-                    changeableDatasetLoader.getRatingsDataset(),
+                    datasetLoader.getRatingsDataset(),
                     users,
                     items);
 
             str.append(ratingTable).append("\n");
         } else {
-            str.append(printUserSet(changeableDatasetLoader));
+            str.append(printUserSet(datasetLoader));
             str.append("\n");
-            str.append(printItemSet(changeableDatasetLoader));
+            str.append(printItemSet(datasetLoader));
         }
         return str.toString();
     }

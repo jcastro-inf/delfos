@@ -26,6 +26,7 @@ import delfos.common.exceptions.dataset.CannotLoadUsersDataset;
 import delfos.common.exceptions.dataset.entity.EntityNotFound;
 import delfos.common.exceptions.dataset.items.ItemNotFound;
 import delfos.common.exceptions.dataset.users.UserNotFound;
+import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.RatingWithTimestamp;
 import delfos.dataset.changeable.ChangeableDatasetLoader;
 import static delfos.main.managers.database.DatabaseManager.MANAGE_RATING_DATABASE_ADD_RATING;
@@ -51,7 +52,8 @@ public class AddRating extends DatabaseCaseUseSubManager {
     }
 
     @Override
-    public void manageCaseUse(ConsoleParameters consoleParameters, ChangeableDatasetLoader changeableDatasetLoader) {
+    public void manageCaseUse(ConsoleParameters consoleParameters, DatasetLoader datasetLoader) {
+        ChangeableDatasetLoader changeableDatasetLoader = viewDatasetLoaderAsChangeable(datasetLoader);
 
         int idUser, idItem;
         Number ratingValue;
