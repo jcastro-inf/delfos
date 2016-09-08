@@ -1,7 +1,7 @@
 package delfos.main.managers.database;
 
 import delfos.common.FileUtilities;
-import delfos.configfile.rs.single.ChangeableDatasetConfigurationFileParser;
+import delfos.configfile.rs.single.DatasetConfigurationFileParser;
 import delfos.constants.DelfosTest;
 import delfos.constants.TestConstants;
 import delfos.dataset.loaders.csv.changeable.ChangeableCSVFileDatasetLoader;
@@ -49,7 +49,7 @@ public class DatabaseManagerCSVDatasetPrinterManagerTest extends DelfosTest {
                 contentFile.getPath(),
                 usersFile.getPath());
 
-        ChangeableDatasetConfigurationFileParser.saveConfigFile(
+        DatasetConfigurationFileParser.saveConfigFile(
                 manageDatasetConfigFile,
                 datasetLoader_ManageDataset);
     }

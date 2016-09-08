@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -22,9 +22,9 @@ import delfos.UndefinedParameterException;
 import delfos.common.Global;
 import delfos.common.exceptions.dataset.CannotLoadContentDataset;
 import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
-import delfos.configfile.rs.single.ChangeableDatasetConfiguration;
-import delfos.configfile.rs.single.ChangeableDatasetConfigurationFileParser;
-import delfos.dataset.changeable.ChangeableDatasetLoader;
+import delfos.configfile.rs.single.DatasetConfiguration;
+import delfos.configfile.rs.single.DatasetConfigurationFileParser;
+import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.main.managers.CaseUseModeWithSubManagers;
 import delfos.main.managers.CaseUseSubManager;
 import delfos.main.managers.database.submanagers.AddItem;
@@ -47,8 +47,7 @@ import org.jdom2.JDOMException;
 public class DatabaseManager extends CaseUseModeWithSubManagers {
 
     /**
-     * Parametro para especificar que la biblioteca funcione en modo de
-     * administración de la base de datos de ratings.
+     * Parametro para especificar que la biblioteca funcione en modo de administración de la base de datos de ratings.
      */
     public static final String MODE_PARAMETER = "--manage-database";
 
@@ -70,57 +69,48 @@ public class DatabaseManager extends CaseUseModeWithSubManagers {
     public static final String MANAGE_RATING_DATABASE_INIT_DATABASE_GUI = "--init-database-x";
 
     /**
-     * Parametro para especificar que la biblioteca añada un usuario a la base
-     * de datos que está siendo administrada.
+     * Parametro para especificar que la biblioteca añada un usuario a la base de datos que está siendo administrada.
      */
     public static final String MANAGE_RATING_DATABASE_ADD_USER = "-add-user";
 
     /**
-     * Parametro para especificar que la biblioteca añada un producto a la base
-     * de datos que está siendo administrada.
+     * Parametro para especificar que la biblioteca añada un producto a la base de datos que está siendo administrada.
      */
     public static final String MANAGE_RATING_DATABASE_ADD_ITEM = "-add-item";
 
     /**
-     * Parametro para especificar que la biblioteca añada un usuario a la base
-     * de datos que está siendo administrada.
+     * Parametro para especificar que la biblioteca añada un usuario a la base de datos que está siendo administrada.
      */
     public static final String MANAGE_RATING_DATABASE_ADD_RATING = "--add-rating";
 
     public static final String MANAGE_RATING_DATABASE_ID_USER = "-user";
     /**
-     * Parametro para especificar a la biblioteca el producto con el que se está
-     * trabajando.
+     * Parametro para especificar a la biblioteca el producto con el que se está trabajando.
      */
     public static final String MANAGE_RATING_DATABASE_ID_ITEM = "-item";
     /**
-     * Parametro para especificar a la biblioteca el valor del rating que se
-     * desea añadir.
+     * Parametro para especificar a la biblioteca el valor del rating que se desea añadir.
      */
     public static final String MANAGE_RATING_DATABASE_RATING_VALUE = "-value";
 
     /**
-     * Parámetro para especificar que se use el modo de añadir características a
-     * un usuario.
+     * Parámetro para especificar que se use el modo de añadir características a un usuario.
      */
     public static final String MANAGE_RATING_DATABASE_ADD_USER_FEATURES = "-add-user-features";
 
     /**
-     * Parámetro para especificar que se use el modo de añadir características a
-     * un producto.
+     * Parámetro para especificar que se use el modo de añadir características a un producto.
      */
     public static final String MANAGE_RATING_DATABASE_ADD_ITEM_FEATURES = "-add-item-features";
 
     /**
-     * Parámetro para especificar las características que se añaden en los modos
-     * {@link AddUserFeatures} y {@link AddItemFeatures}.
+     * Parámetro para especificar las características que se añaden en los modos {@link AddUserFeatures} y
+     * {@link AddItemFeatures}.
      */
     public static final String MANAGE_RATING_DATABASE_FEATURES = "-features";
     /**
-     * Cadena que denota el nombre de una entidad {@link EntityWithFeatures}.
-     * Por ejemplo, en una base de datos se utilizará esta cadena como la
-     * columna que contiene el nombre de cada producto. (usuario, producto,
-     * etc.).
+     * Cadena que denota el nombre de una entidad {@link EntityWithFeatures}. Por ejemplo, en una base de datos se
+     * utilizará esta cadena como la columna que contiene el nombre de cada producto. (usuario, producto, etc.).
      */
     public static final String ENTITY_NAME = "name";
 
@@ -157,7 +147,7 @@ public class DatabaseManager extends CaseUseModeWithSubManagers {
         return caseUseManagers;
     }
 
-    public static ChangeableDatasetLoader extractChangeableDatasetHandler(ConsoleParameters consoleParameters) throws RuntimeException {
+    public static DatasetLoader extractDatasetHandler(ConsoleParameters consoleParameters) throws RuntimeException {
         try {
 
             File configurationFile;
@@ -174,14 +164,9 @@ public class DatabaseManager extends CaseUseModeWithSubManagers {
             }
 
             try {
-                ChangeableDatasetConfiguration loadConfigFile = ChangeableDatasetConfigurationFileParser.loadConfigFile(configurationFile);
-                if (loadConfigFile.datasetLoader instanceof ChangeableDatasetLoader) {
-                    return loadConfigFile.datasetLoader;
-                } else {
-                    IllegalStateException ex = new IllegalStateException("The dataset is not changeable");
-                    ERROR_CODES.MANAGE_RATING_DATABASE_DATASET_NOT_CHANGEABLE.exit(ex);
-                    throw ex;
-                }
+                DatasetConfiguration loadConfigFile = DatasetConfigurationFileParser.loadDatasetLoaderFromConfigFile(configurationFile);
+
+                return loadConfigFile.getDatasetLoader();
             } catch (JDOMException ex) {
                 ERROR_CODES.CANNOT_LOAD_CONFIG_FILE.exit(ex);
                 throw new IllegalStateException(ex);

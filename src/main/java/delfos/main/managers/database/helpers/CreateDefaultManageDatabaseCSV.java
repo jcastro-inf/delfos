@@ -18,7 +18,7 @@ package delfos.main.managers.database.helpers;
 
 import delfos.ConsoleParameters;
 import delfos.ERROR_CODES;
-import delfos.configfile.rs.single.ChangeableDatasetConfigurationFileParser;
+import delfos.configfile.rs.single.DatasetConfigurationFileParser;
 import delfos.dataset.changeable.ChangeableDatasetLoader;
 import delfos.dataset.loaders.csv.changeable.ChangeableCSVFileDatasetLoader;
 import delfos.main.managers.CaseUseMode;
@@ -52,7 +52,7 @@ public class CreateDefaultManageDatabaseCSV extends CaseUseMode {
                 "dataset-users-file.csv");
 
         try {
-            ChangeableDatasetConfigurationFileParser.saveConfigFile(
+            DatasetConfigurationFileParser.saveConfigFile(
                     new File("csv-db-config.xml"),
                     datasetLoader);
         } catch (IOException ex) {

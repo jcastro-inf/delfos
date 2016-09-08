@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,8 +16,11 @@
  */
 package delfos.configfile.rs.single;
 
+import delfos.dataset.basic.loader.types.DatasetLoader;
+import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.changeable.ChangeableDatasetLoader;
 import delfos.dataset.changeable.ChangeableDatasetLoaderAbstract;
+import delfos.main.managers.database.submanagers.DatabaseCaseUseSubManager;
 
 /**
  * Clase para almacenar la configuración de un dataset modificable.
@@ -28,19 +31,30 @@ import delfos.dataset.changeable.ChangeableDatasetLoaderAbstract;
  *
  * @version 1.0 17-Septiembre-2013
  */
-public class ChangeableDatasetConfiguration {
+public class DatasetConfiguration {
 
     /**
      * Cargador de dataset modificable recuperado del fichero de configuración.
      */
-    public final ChangeableDatasetLoader datasetLoader;
+    private final DatasetLoader<? extends Rating> datasetLoader;
 
     /**
      * Constructor de la estructura.
      *
      * @param datasetLoader Cargador de dataset.
      */
-    public ChangeableDatasetConfiguration(ChangeableDatasetLoader datasetLoader) {
+    public DatasetConfiguration(DatasetLoader<? extends Rating> datasetLoader) {
         this.datasetLoader = datasetLoader;
+    }
+
+    /**
+     * @return the datasetLoader
+     */
+    public DatasetLoader<? extends Rating> getDatasetLoader() {
+        return datasetLoader;
+    }
+
+    public ChangeableDatasetLoader getChangeableDatasetLoader() {
+        return DatabaseCaseUseSubManager.viewDatasetLoaderAsChangeable(datasetLoader);
     }
 }

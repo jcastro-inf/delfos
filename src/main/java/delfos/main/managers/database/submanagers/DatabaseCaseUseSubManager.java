@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -17,10 +17,11 @@
 package delfos.main.managers.database.submanagers;
 
 import delfos.ConsoleParameters;
+import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.changeable.ChangeableDatasetLoader;
 import delfos.main.managers.CaseUseSubManager;
 import delfos.main.managers.database.DatabaseManager;
-import static delfos.main.managers.database.DatabaseManager.extractChangeableDatasetHandler;
+import static delfos.main.managers.database.DatabaseManager.extractDatasetHandler;
 
 /**
  *
@@ -34,8 +35,7 @@ public abstract class DatabaseCaseUseSubManager extends CaseUseSubManager {
     }
 
     /**
-     * Comprueba si este es el manager correcto para la linea de comandos
-     * especificada.
+     * Comprueba si este es el manager correcto para la linea de comandos especificada.
      *
      * @param consoleParameters Parámetros de la línea de comandos.
      * @return true si es el manager adecuado.
@@ -45,9 +45,13 @@ public abstract class DatabaseCaseUseSubManager extends CaseUseSubManager {
 
     @Override
     public final void manageCaseUse(ConsoleParameters consoleParameters) {
-        ChangeableDatasetLoader changeableDatasetLoader = extractChangeableDatasetHandler(consoleParameters);
-        this.manageCaseUse(consoleParameters, changeableDatasetLoader);
-        changeableDatasetLoader.commitChangesInPersistence();
+        DatasetLoader datasetLoader = extractDatasetHandler(consoleParameters);
+        this.manageCaseUse(consoleParameters, datasetLoader);
+
+        if (datasetLoader instanceof ChangeableDatasetLoader) {
+            ChangeableDatasetLoader changeableDatasetLoader = (ChangeableDatasetLoader) datasetLoader;
+            changeableDatasetLoader.commitChangesInPersistence();
+        }
     }
 
     /**
@@ -56,6 +60,15 @@ public abstract class DatabaseCaseUseSubManager extends CaseUseSubManager {
      * @param consoleParameters Parámetros de la línea de comandos.
      * @param changeableDatasetLoader changeable dataset loader.
      */
-    public abstract void manageCaseUse(ConsoleParameters consoleParameters, ChangeableDatasetLoader changeableDatasetLoader);
+    public abstract void manageCaseUse(ConsoleParameters consoleParameters, DatasetLoader changeableDatasetLoader);
+
+    public static ChangeableDatasetLoader viewDatasetLoaderAsChangeable(DatasetLoader datasetLoader) {
+        if (datasetLoader instanceof ChangeableDatasetLoader) {
+            ChangeableDatasetLoader changeableDatasetLoader = (ChangeableDatasetLoader) datasetLoader;
+            return changeableDatasetLoader;
+        } else {
+            throw new IllegalStateException("The dataset loader '" + datasetLoader.getAlias() + "' is not changeable (read-only)");
+        }
+    }
 
 }

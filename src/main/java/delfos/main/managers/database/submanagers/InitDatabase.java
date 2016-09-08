@@ -18,6 +18,7 @@ package delfos.main.managers.database.submanagers;
 
 import delfos.ConsoleParameters;
 import delfos.common.Global;
+import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.changeable.ChangeableDatasetLoader;
 import static delfos.main.managers.database.DatabaseManager.MANAGE_RATING_DATABASE_INIT_DATABASE;
 
@@ -39,7 +40,8 @@ public class InitDatabase extends DatabaseCaseUseSubManager {
     }
 
     @Override
-    public void manageCaseUse(ConsoleParameters consoleParameters, ChangeableDatasetLoader changeableDatasetLoader) {
+    public void manageCaseUse(ConsoleParameters consoleParameters, DatasetLoader datasetLoader) {
+        ChangeableDatasetLoader changeableDatasetLoader = viewDatasetLoaderAsChangeable(datasetLoader);
         manageCaseUse(changeableDatasetLoader);
     }
 
