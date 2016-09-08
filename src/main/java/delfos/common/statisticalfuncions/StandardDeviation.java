@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -23,7 +23,6 @@ import java.util.LinkedList;
  * Clase para calcular la desviación típica de una colección de valores.
  *
  * @author jcastro-inf ( https://github.com/jcastro-inf )
- * @version 1.0 (05/11/2012)
  */
 public class StandardDeviation {
 
@@ -36,21 +35,19 @@ public class StandardDeviation {
      * Almacena el último valor medio devuelto.
      */
     /**
-     * Crea un objeto para calcular la desviación típica de un conjunto de
-     * valores.
+     * Crea un objeto para calcular la desviación típica de un conjunto de valores.
      */
     public StandardDeviation() {
-        _values = new LinkedList<Number>();
+        _values = new LinkedList<>();
     }
 
     /**
-     * Crea un objeto para calcular la desviación típica y le asigna el conjunto
-     * de valores indicado por parámetro.
+     * Crea un objeto para calcular la desviación típica y le asigna el conjunto de valores indicado por parámetro.
      *
      * @param values Valores a los que se calcula la desviación típica.
      */
     public StandardDeviation(Collection<? extends Number> values) {
-        _values = new LinkedList<Number>(values);
+        _values = new LinkedList<>(values);
     }
 
     /**
@@ -77,8 +74,7 @@ public class StandardDeviation {
     }
 
     /**
-     * Añade un valor para que sea tenido en cuenta en el cálcuo de la
-     * desviación típica
+     * Añade un valor para que sea tenido en cuenta en el cálculo de la desviación típica
      *
      * @param value valor que se añade a la serie de valores
      */
@@ -87,8 +83,7 @@ public class StandardDeviation {
     }
 
     /**
-     * Añade una colección de valores para que sean tenidos en cuenta en el
-     * cálculo de la desviación típica
+     * Añade una colección de valores para que sean tenidos en cuenta en el cálculo de la desviación típica
      *
      * @param values Coleccion de valores a tener en cuenta.
      */
@@ -97,8 +92,7 @@ public class StandardDeviation {
     }
 
     /**
-     * Devuelve el número de valores que se están teniendo en cuenta para el
-     * cálculo de la desviación típica
+     * Devuelve el número de valores que se están teniendo en cuenta para el cálculo de la desviación típica
      *
      * @return Número de valores que se tienen en cuenta
      */
