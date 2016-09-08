@@ -22,8 +22,8 @@ import delfos.UndefinedParameterException;
 import delfos.common.Global;
 import delfos.common.exceptions.dataset.CannotLoadContentDataset;
 import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
-import delfos.configfile.rs.single.ChangeableDatasetConfiguration;
-import delfos.configfile.rs.single.ChangeableDatasetConfigurationFileParser;
+import delfos.configfile.rs.single.DatasetConfiguration;
+import delfos.configfile.rs.single.DatasetConfigurationFileParser;
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.main.managers.CaseUseModeWithSubManagers;
 import delfos.main.managers.CaseUseSubManager;
@@ -164,9 +164,9 @@ public class DatabaseManager extends CaseUseModeWithSubManagers {
             }
 
             try {
-                ChangeableDatasetConfiguration loadConfigFile = ChangeableDatasetConfigurationFileParser.loadChangeableConfigFile(configurationFile);
+                DatasetConfiguration loadConfigFile = DatasetConfigurationFileParser.loadDatasetLoaderFromConfigFile(configurationFile);
 
-                return loadConfigFile.datasetLoader;
+                return loadConfigFile.getDatasetLoader();
             } catch (JDOMException ex) {
                 ERROR_CODES.CANNOT_LOAD_CONFIG_FILE.exit(ex);
                 throw new IllegalStateException(ex);

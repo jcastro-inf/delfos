@@ -17,8 +17,8 @@
 package delfos.view.dataset.changeable;
 
 import delfos.common.parameters.view.EditParameterDialog;
-import delfos.configfile.rs.single.ChangeableDatasetConfigurationFileParser;
-import static delfos.configfile.rs.single.ChangeableDatasetConfigurationFileParser.CONFIGURATION_EXTENSION;
+import delfos.configfile.rs.single.DatasetConfigurationFileParser;
+import static delfos.configfile.rs.single.DatasetConfigurationFileParser.CONFIGURATION_EXTENSION;
 import delfos.configuration.scopes.SwingGUIScope;
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
@@ -199,7 +199,7 @@ public class ChangeableDatasetDefinitorSwingGUI extends Frame {
                 if (isPreparedToSave) {
                     final ChangeableDatasetLoader loader = (ChangeableDatasetLoader) datasetSelector.getSelectedItem();
                     try {
-                        ChangeableDatasetConfigurationFileParser.saveConfigFile(configFile, loader);
+                        DatasetConfigurationFileParser.saveConfigFile(configFile, loader);
                         isConfigFileSaved = true;
                     } catch (IOException ex) {
                         JOptionPane.showMessageDialog(this,

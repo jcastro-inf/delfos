@@ -2,7 +2,7 @@ package delfos.main.managers.database;
 
 import delfos.common.FileUtilities;
 import delfos.common.Global;
-import delfos.configfile.rs.single.ChangeableDatasetConfigurationFileParser;
+import delfos.configfile.rs.single.DatasetConfigurationFileParser;
 import delfos.constants.DelfosTest;
 import delfos.constants.TestConstants;
 import delfos.databaseconnections.MySQLConnection;
@@ -102,7 +102,7 @@ public class DatabaseManagerMySQLDatasetPrinterManagerTest extends DelfosTest {
 
         ChangeableMySQLDatasetLoader datasetLoader = new ChangeableMySQLDatasetLoader(mySQLConnection);
 
-        ChangeableDatasetConfigurationFileParser.saveConfigFile(
+        DatasetConfigurationFileParser.saveConfigFile(
                 manageDatasetConfigFile,
                 datasetLoader);
     }

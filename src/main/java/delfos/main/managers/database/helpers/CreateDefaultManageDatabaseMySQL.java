@@ -18,7 +18,7 @@ package delfos.main.managers.database.helpers;
 
 import delfos.ConsoleParameters;
 import delfos.ERROR_CODES;
-import delfos.configfile.rs.single.ChangeableDatasetConfigurationFileParser;
+import delfos.configfile.rs.single.DatasetConfigurationFileParser;
 import delfos.dataset.changeable.ChangeableDatasetLoader;
 import delfos.dataset.loaders.database.mysql.changeable.ChangeableMySQLDatasetLoader;
 import delfos.main.managers.CaseUseMode;
@@ -49,7 +49,7 @@ public class CreateDefaultManageDatabaseMySQL extends CaseUseMode {
         ChangeableDatasetLoader datasetLoader = new ChangeableMySQLDatasetLoader();
 
         try {
-            ChangeableDatasetConfigurationFileParser.saveConfigFile(
+            DatasetConfigurationFileParser.saveConfigFile(
                     new File("mysql-db-config.xml"),
                     datasetLoader);
         } catch (IOException ex) {
