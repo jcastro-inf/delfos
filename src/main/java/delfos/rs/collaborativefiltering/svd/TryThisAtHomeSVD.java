@@ -434,19 +434,23 @@ public class TryThisAtHomeSVD
         return (Long) getParameterValue(SEED);
     }
 
-    protected final int getNumFeatures() {
+    public final int getNumFeatures() {
         return (Integer) getParameterValue(NUM_FEATURES);
     }
 
-    protected final boolean isNormalised() {
+    public final void setNumFeatures(int numFeatures) {
+        setParameterValue(NUM_FEATURES, numFeatures);
+    }
+
+    public final boolean isNormalised() {
         return (Boolean) getParameterValue(NORMALIZE_WITH_USER_MEAN);
     }
 
-    protected final double getLearningRate() {
-        return ((Number) getParameterValue(LEARNING_RATE)).doubleValue();
+    public void setNumIterPerFeature(int numIterPerFeature) {
+        setParameterValue(NUM_ITER_PER_FEATURE, numIterPerFeature);
     }
 
-    protected final int getNumIterPerFeature() {
+    public final int getNumIterPerFeature() {
         return (Integer) getParameterValue(NUM_ITER_PER_FEATURE);
     }
 
@@ -465,8 +469,12 @@ public class TryThisAtHomeSVD
      *
      * @return
      */
-    protected final double getK() {
+    public final double getK() {
         return (Double) getParameterValue(K);
+    }
+
+    public void setK(double k) {
+        setParameterValue(K, k);
     }
 
     public TryThisAtHomeSVD setNormalizeWithUserMean(boolean isNormalizeWithUserMean) {
@@ -474,5 +482,29 @@ public class TryThisAtHomeSVD
 
         return this;
 
+    }
+
+    public void setLearningRate(double learningRate) {
+        setParameterValue(LEARNING_RATE, learningRate);
+    }
+
+    public final double getLearningRate() {
+        return ((Number) getParameterValue(LEARNING_RATE)).doubleValue();
+    }
+
+    public boolean isSmartInit() {
+        return (Boolean) getParameterValue(SMART_INITIALISATION);
+    }
+
+    public void setSmartInit(boolean smartInit) {
+        setParameterValue(SMART_INITIALISATION, smartInit);
+    }
+
+    public boolean isPredictInRatingRange() {
+        return (Boolean) getParameterValue(PREDICT_IN_RATING_RANGE);
+    }
+
+    public void setPredictInRatingRange(boolean predictInRatingRange) {
+        setParameterValue(PREDICT_IN_RATING_RANGE, predictInRatingRange);
     }
 }
