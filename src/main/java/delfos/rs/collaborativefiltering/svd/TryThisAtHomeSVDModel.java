@@ -64,6 +64,16 @@ public class TryThisAtHomeSVDModel implements Serializable {
     private Map<Integer, Integer> _usersIndex;
     private Bias bias;
 
+    private String modelName = "";
+
+    public void setModelName(String modelName) {
+        this.modelName = modelName;
+    }
+
+    public String getModelName() {
+        return modelName;
+    }
+
     /**
      * Crea el modelo a partir de las matrices de características para los usuarios y productos.
      *

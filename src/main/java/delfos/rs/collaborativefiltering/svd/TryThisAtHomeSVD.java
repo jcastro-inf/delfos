@@ -389,7 +389,9 @@ public class TryThisAtHomeSVD
         }
 
         if (!model.getUsersIndex().containsKey(idUser)) {
-            Global.showWarning("SVD recommendation model does not contains the user (" + idUser + "): Returning empty list.");
+            if (Global.isVerboseAnnoying()) {
+                Global.showWarning("SVD recommendation model does not contains the user (" + idUser + "): Returning empty list.");
+            }
             return new ArrayList<>();
         }
 
