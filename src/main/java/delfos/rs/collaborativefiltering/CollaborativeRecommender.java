@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -31,15 +31,13 @@ import java.util.Collection;
 import java.util.TreeSet;
 
 /**
- * Interface of a collaborative recommender. Collaborative recommenders are, by
- * definition, rating predictors. Therefore the preference of the
- * recommendations must be given on the ratingsDomain of the dataset.
+ * Interface of a collaborative recommender. Collaborative recommenders are, by definition, rating predictors. Therefore
+ * the preference of the recommendations must be given on the ratingsDomain of the dataset.
  *
  * <p>
  * <p>
- * Classes that inhterit {@link CollaborativeRecommender} must call this class
- * default constructor (super) on every constructor that they implement.
- * Otherwise, the correct behaviour is not guaranteed.
+ * Classes that inhterit {@link CollaborativeRecommender} must call this class default constructor (super) on every
+ * constructor that they implement. Otherwise, the correct behaviour is not guaranteed.
  *
  * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
@@ -59,9 +57,8 @@ public abstract class CollaborativeRecommender<RecommendationModel>
     }
 
     /**
-     * Los sistemas de recomendación colaborativos funcionan prediciendo la
-     * valoración para los productos no valorados, por lo que siempre devuelve
-     * true;
+     * Los sistemas de recomendación colaborativos funcionan prediciendo la valoración para los productos no valorados,
+     * por lo que siempre devuelve true;
      *
      * {@inheritDoc }
      *
@@ -78,9 +75,8 @@ public abstract class CollaborativeRecommender<RecommendationModel>
             throws CannotLoadRatingsDataset, CannotLoadContentDataset, CannotLoadUsersDataset;
 
     /**
-     * Transforma una predicción del sistema de recomendación en una predicción
-     * dentro del rango de valoraciones. De esta manera se mejora el error de
-     * predicción.
+     * Transforma una predicción del sistema de recomendación en una predicción dentro del rango de valoraciones. De
+     * esta manera se mejora el error de predicción.
      *
      * @param datasetLoader Conjunto de datos.
      * @param rating Predicción en bruto.
@@ -101,15 +97,14 @@ public abstract class CollaborativeRecommender<RecommendationModel>
     }
 
     /**
-     * Predice la valoración que un usuario daría a un producto, utilizando el
-     * sistema de recomendación.
+     * Predice la valoración que un usuario daría a un producto, utilizando el sistema de recomendación.
      *
      * @param datasetLoader Conjunto de datos.
      * @param model Modelo de recomendación.
      * @param idUser Usuario para el que se realiza la predicción.
      * @param idItem Producto para el que se realiza la predicción.
-     * @return Valoración predicha del usuario sobre el producto. Si no se puede
-     * calcular, devuelve null (indica un fallo de cobertura)
+     * @return Valoración predicha del usuario sobre el producto. Si no se puede calcular, devuelve null (indica un
+     * fallo de cobertura)
      * @throws UserNotFound Si no se encuentra el usuario en los datasets.
      * @throws ItemNotFound Si no se encuenta el producto en los datasets.
      * @throws delfos.common.exceptions.ratings.NotEnoughtUserInformation
@@ -135,7 +130,7 @@ public abstract class CollaborativeRecommender<RecommendationModel>
             if (Global.isVerboseAnnoying()) {
                 Global.showInfoMessage("Prediction of rating of user " + idUser + " over item " + idItem + " can't be predicted\n");
             }
-            return null;
+            return Double.NaN;
         } else {
             double prediction = recommendOnly.iterator().next().getPreference().doubleValue();
             if (Global.isVerboseAnnoying()) {
