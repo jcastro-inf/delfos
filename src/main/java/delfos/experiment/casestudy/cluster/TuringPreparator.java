@@ -31,6 +31,7 @@ import delfos.group.io.xml.casestudy.GroupCaseStudyXML;
 import delfos.io.xml.casestudy.CaseStudyXML;
 import delfos.main.Main;
 import delfos.main.managers.experiment.ExecuteGroupXML;
+import delfos.main.managers.experiment.ExecuteXML;
 import java.io.File;
 import java.lang.management.ManagementFactory;
 import java.util.Arrays;
@@ -41,8 +42,8 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
- * Class to create and execute experiments with a fixed directory structure that
- * allows the latter execution in other machines.
+ * Class to create and execute experiments with a fixed directory structure that allows the latter execution in other
+ * machines.
  *
  * @author jcastro-inf ( https://github.com/jcastro-inf )
  */
@@ -225,8 +226,8 @@ public class TuringPreparator implements ExperimentPreparator {
     }
 
     /**
-     * Renames the case studys to a default alias with the hash of the technique
-     * and validation and the alias of the GRS.
+     * Renames the case studys to a default alias with the hash of the technique and validation and the alias of the
+     * GRS.
      *
      * @param groupCaseStudys
      */
@@ -281,5 +282,30 @@ public class TuringPreparator implements ExperimentPreparator {
             String newAlias = "dataValidation_" + dataValidationAlias + "__" + "technique_" + techniqueAlias;
             groupCaseStudy.setAlias(newAlias);
         }
+    }
+
+    public void executeAllIndividualExperimentsInDirectory_withSeed(File directory, int numExec, int seedValue) {
+        List<File> experimentsToBeExecuted = Arrays.asList(directory.listFiles());
+
+        Collections.shuffle(experimentsToBeExecuted, getRandomToShuffleExperiments());
+
+        Stream<File> stream = parallel ? experimentsToBeExecuted.parallelStream() : experimentsToBeExecuted.stream();
+        stream.forEach((singleExperimentDirectory) -> {
+            String[] args = {
+                ExecuteXML.SEED_PARAMETER, Integer.toString(seedValue),
+                ExecuteXML.MODE_PARAMETER,
+                ExecuteXML.XML_DIRECTORY, singleExperimentDirectory.getPath(),
+                ExecuteXML.NUM_EXEC_PARAMETER, Integer.toString(numExec),
+                Constants.PRINT_FULL_XML,
+                Constants.RAW_DATA};
+
+            try {
+                Main.mainWithExceptions(args);
+            } catch (Exception ex) {
+                Global.showWarning("Experiment failed in directory '" + singleExperimentDirectory.getAbsolutePath());
+                Global.showError(ex);
+            }
+            Global.show("==============================\n");
+        });
     }
 }

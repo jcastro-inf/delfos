@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -80,11 +80,7 @@ public class CaseStudy_SingleTaskExecute implements SingleTaskExecute<ExecuteCas
 
         caseStudyRecommendation.execute();
 
-        File fileToSaveResults = new File(caseName);
-
-        fileToSaveResults = FileUtilities.addPrefix(
-                fileToSaveResults,
-                experimentsDirectory + File.separator + "results" + File.separator);
+        File fileToSaveResults = new File(experimentsDirectory.getPath() + File.separator + "results" + File.separator + caseName);
 
         File excelFile = FileUtilities.changeExtension(fileToSaveResults, "xls");
         File xmlFile = FileUtilities.changeExtension(fileToSaveResults, "xml");

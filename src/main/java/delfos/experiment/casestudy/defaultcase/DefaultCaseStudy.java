@@ -67,14 +67,11 @@ import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 /**
- * Clase encargada de realizar las ejecuciones de los sistemas de recomendación
- * tradicionales, es decir, single user, recomendando conjuntos de productos a
- * un usuario utilizando datos de usuario, datos de productos y valoraciones. Se
- * encarga realizar el proceso completo de prueba de un sistema de
- * recomendación: invoca al método de validación, invocar al metodo
- * buildRecommendationModel del sistema de recomendación, realiza la petición de
- * recomendaciones y recoge los resultados, almacenando el tiempo de ejecución y
- * llamando a las métricas de evaluación.
+ * Clase encargada de realizar las ejecuciones de los sistemas de recomendación tradicionales, es decir, single user,
+ * recomendando conjuntos de productos a un usuario utilizando datos de usuario, datos de productos y valoraciones. Se
+ * encarga realizar el proceso completo de prueba de un sistema de recomendación: invoca al método de validación,
+ * invocar al metodo buildRecommendationModel del sistema de recomendación, realiza la petición de recomendaciones y
+ * recoge los resultados, almacenando el tiempo de ejecución y llamando a las métricas de evaluación.
  *
  * @author jcastro-inf ( https://github.com/jcastro-inf )
  * @version 1.0 (19 Octubre 2011)
@@ -100,29 +97,22 @@ public class DefaultCaseStudy extends CaseStudy implements ParameterListener {
     private boolean errors = false;
 
     /**
-     * Constructor del caso de uso. Recoge la configuración del mismo por los
-     * parámetros y los almacena en la clase creada. La ejecución del mismo se
-     * realizará posteriormente con el método <b>execute()</b>.
+     * Constructor del caso de uso. Recoge la configuración del mismo por los parámetros y los almacena en la clase
+     * creada. La ejecución del mismo se realizará posteriormente con el método <b>execute()</b>.
      * <p>
      * <b>Nota:</b>
-     * El número de ejecuciones se asigna en el caso de uso, pero el número de
-     * particiones del conjunto de datos que se realiza en cada ejecución lo
-     * determina la clase que implementa
-     * <code>{@link ValidationTechnique}</code>
+     * El número de ejecuciones se asigna en el caso de uso, pero el número de particiones del conjunto de datos que se
+     * realiza en cada ejecución lo determina la clase que implementa <code>{@link ValidationTechnique}</code>
      *
-     * @param validationTechnique Método de validación que se usará para la
-     * división de los datasets en training y test. Tras cada ejecución se llama
-     * al método
-     * <b>shuffle()</b> para que realice una nueva división aleatoria del
-     * conjunto.
-     * @param rs Sistema de recomendación que será probado en el caso de uso.
-     * Los parámetros del mismo deben haber sido asignados al objeto con
-     * anterioridad mediante sus métodos <b>setParameter(parameter)</b>
-     * @param numEjecuciones número de veces que se ejecutará la recomendación
-     * Cuanto mayor sea el número de ejecuciones, más fiel es el valor de las
-     * métricas de evaluación, pero se incrementa el tiempo de ejecución.
-     * @param evaluationMeasures Vector con las medidas de evaluación que se
-     * aplicarán a los resultados de las ejecuciones.
+     * @param validationTechnique Método de validación que se usará para la división de los datasets en training y test.
+     * Tras cada ejecución se llama al método
+     * <b>shuffle()</b> para que realice una nueva división aleatoria del conjunto.
+     * @param rs Sistema de recomendación que será probado en el caso de uso. Los parámetros del mismo deben haber sido
+     * asignados al objeto con anterioridad mediante sus métodos <b>setParameter(parameter)</b>
+     * @param numEjecuciones número de veces que se ejecutará la recomendación Cuanto mayor sea el número de
+     * ejecuciones, más fiel es el valor de las métricas de evaluación, pero se incrementa el tiempo de ejecución.
+     * @param evaluationMeasures Vector con las medidas de evaluación que se aplicarán a los resultados de las
+     * ejecuciones.
      * @param datasetLoader
      * @param relevanceCriteria
      * @param predictionValidationTechnique
@@ -204,10 +194,8 @@ public class DefaultCaseStudy extends CaseStudy implements ParameterListener {
     /**
      * Realiza la ejecución del caso de uso.
      *
-     * @throws CannotLoadContentDataset Si el dataset de contenido no sepuede
-     * recuperar.
-     * @throws CannotLoadRatingsDataset Si el dataset de valoraciones no se
-     * puede recuperar.
+     * @throws CannotLoadContentDataset Si el dataset de contenido no sepuede recuperar.
+     * @throws CannotLoadRatingsDataset Si el dataset de valoraciones no se puede recuperar.
      */
     @Override
     public void execute() throws CannotLoadRatingsDataset, CannotLoadContentDataset, CannotLoadUsersDataset {
@@ -215,8 +203,7 @@ public class DefaultCaseStudy extends CaseStudy implements ParameterListener {
         finished = false;
 
         /**
-         * Como estoy calculando medidas de evaluación, a esta hebra le pongo la
-         * prioridad mínima.
+         * Como estoy calculando medidas de evaluación, a esta hebra le pongo la prioridad mínima.
          */
         setRunning(true);
         executionProgressFireEvent("Starting", 0, -1);
@@ -274,42 +261,42 @@ public class DefaultCaseStudy extends CaseStudy implements ParameterListener {
                         .filter(user -> !predictionProtocolTechnique.getRecommendationRequests(pairsValidation[_conjuntoActual].test, user.getId()).isEmpty())
                         .map(user -> {
                             List<Recommendation> ret = predictionProtocolTechnique
-                            .getRecommendationRequests(pairsValidation[_conjuntoActual].test, user.getId())
-                            .parallelStream()
-                            .map(candidateItems -> {
+                                    .getRecommendationRequests(pairsValidation[_conjuntoActual].test, user.getId())
+                                    .parallelStream()
+                                    .map(candidateItems -> {
 
-                                Integer idUser = user.getId();
-                                try {
-                                    Map<Integer, Set<Integer>> predictionRatings = new TreeMap<>();
-                                    predictionRatings.put(idUser, new TreeSet<>(candidateItems));
-                                    RatingsDataset<Rating> predictionRatingsDataset = ValidationDatasets.getInstance().createTrainingDataset((RatingsDataset<Rating>) datasetLoader.getRatingsDataset(), predictionRatings);
-                                    DatasetLoader<Rating> predictionDatasetLoader = new DatasetLoaderGivenRatingsDataset<>(
-                                            datasetLoader,
-                                            predictionRatingsDataset);
-                                    return new SingleUserRecommendationTask(
-                                            recommenderSystem,
-                                            predictionDatasetLoader,
-                                            model,
-                                            idUser,
-                                            candidateItems.stream().map(idItem -> datasetLoader.getContentDataset().get(idItem)).collect(Collectors.toSet())
-                                    );
+                                        Integer idUser = user.getId();
+                                        try {
+                                            Map<Integer, Set<Integer>> predictionRatings = new TreeMap<>();
+                                            predictionRatings.put(idUser, new TreeSet<>(candidateItems));
+                                            RatingsDataset<Rating> predictionRatingsDataset = ValidationDatasets.getInstance().createTrainingDataset((RatingsDataset<Rating>) datasetLoader.getRatingsDataset(), predictionRatings);
+                                            DatasetLoader<Rating> predictionDatasetLoader = new DatasetLoaderGivenRatingsDataset<>(
+                                                    datasetLoader,
+                                                    predictionRatingsDataset);
+                                            return new SingleUserRecommendationTask(
+                                                    recommenderSystem,
+                                                    predictionDatasetLoader,
+                                                    model,
+                                                    idUser,
+                                                    candidateItems.stream().map(idItem -> datasetLoader.getContentDataset().get(idItem)).collect(Collectors.toSet())
+                                            );
 
-                                } catch (UserNotFound ex) {
-                                    ERROR_CODES.USER_NOT_FOUND.exit(ex);
-                                    throw new IllegalStateException(ex);
-                                } catch (ItemNotFound ex) {
-                                    ERROR_CODES.ITEM_NOT_FOUND.exit(ex);
-                                    throw new IllegalStateException(ex);
-                                }
-                            }).map(new SingleUserRecommendationTaskExecutor())
-                            .map(recommendations2 -> recommendations2.getRecommendations())
-                            .flatMap(recommendations2 -> recommendations2.stream())
-                            .collect(Collectors.toList());
+                                        } catch (UserNotFound ex) {
+                                            ERROR_CODES.USER_NOT_FOUND.exit(ex);
+                                            throw new IllegalStateException(ex);
+                                        } catch (ItemNotFound ex) {
+                                            ERROR_CODES.ITEM_NOT_FOUND.exit(ex);
+                                            throw new IllegalStateException(ex);
+                                        }
+                                    }).map(new SingleUserRecommendationTaskExecutor())
+                                    .map(recommendations2 -> recommendations2.getRecommendations())
+                                    .flatMap(recommendations2 -> recommendations2.stream())
+                                    .collect(Collectors.toList());
 
                             return new RecommendationsToUser(user, ret);
                         }).collect(Collectors.toMap(
-                                        recommendationsToUser -> recommendationsToUser.getUser().getId(),
-                                        recommendationsToUser -> recommendationsToUser.getRecommendations()));
+                        recommendationsToUser -> recommendationsToUser.getUser().getId(),
+                        recommendationsToUser -> recommendationsToUser.getRecommendations()));
 
                 predictions.entrySet().stream().forEach((entry) -> {
                     int idUser = entry.getKey();
@@ -397,7 +384,8 @@ public class DefaultCaseStudy extends CaseStudy implements ParameterListener {
 
     @Override
     public MeasureResult getMeasureResult(EvaluationMeasure em, int execution, int split) {
-        return executionsResult[execution][split].get(em);
+        Map<EvaluationMeasure, MeasureResult> thisExecutionSplitResults = executionsResult[execution][split];
+        return thisExecutionSplitResults.get(em);
     }
 
     @Override
@@ -672,13 +660,15 @@ public class DefaultCaseStudy extends CaseStudy implements ParameterListener {
      */
     @Override
     public MeasureResult getAggregateMeasureResult(EvaluationMeasure em) {
-        List<MeasureResult> measureResult = new ArrayList<>();
+        List<MeasureResult> measureResults = new ArrayList<>();
         for (int execution = 0; execution < getNumExecutions(); execution++) {
             for (int split = 0; split < getValidationTechnique().getNumberOfSplits(); split++) {
-                measureResult.add(getMeasureResult(em, execution, split));
+                MeasureResult measureResult = getMeasureResult(em, execution, split);
+                measureResults.add(measureResult);
             }
 
         }
-        return em.agregateResults(measureResult);
+
+        return em.agregateResults(measureResults);
     }
 }

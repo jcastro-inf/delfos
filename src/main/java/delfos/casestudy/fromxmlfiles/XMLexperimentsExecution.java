@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -41,8 +41,8 @@ import jxl.write.WriteException;
 import org.jdom2.JDOMException;
 
 /**
- * Ejecuta los experimentos que hay definidos en el directorio indicado, leyendo
- * los XML que existen para generar los casos de estudio.
+ * Ejecuta los experimentos que hay definidos en el directorio indicado, leyendo los XML que existen para generar los
+ * casos de estudio.
  *
  * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
@@ -126,7 +126,6 @@ public class XMLexperimentsExecution {
                             evaluationMeasures,
                             numExecutions,
                             seed));
-
                 }
             } catch (JDOMException | IOException ex) {
                 ERROR_CODES.CANNOT_READ_CASE_STUDY_XML.exit(ex);

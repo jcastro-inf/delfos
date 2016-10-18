@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -19,9 +19,9 @@ package delfos.main.managers.experiment;
 import delfos.ConsoleParameters;
 import delfos.ERROR_CODES;
 import delfos.UndefinedParameterException;
+import delfos.casestudy.fromxmlfiles.XMLexperimentsExecution;
 import delfos.common.exceptions.dataset.CannotLoadContentDataset;
 import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
-import delfos.group.casestudy.fromxmlfiles.GroupXMLexperimentsExecution;
 import delfos.main.managers.CaseUseMode;
 import java.io.File;
 
@@ -95,7 +95,8 @@ public class ExecuteXML extends CaseUseMode {
 
     private static void xmlExperimentsExecution(String experimentsDirectory, String datasetDirectory, int numExecutions, long seed) {
         try {
-            GroupXMLexperimentsExecution execution = new GroupXMLexperimentsExecution(
+
+            XMLexperimentsExecution execution = new XMLexperimentsExecution(
                     experimentsDirectory,
                     datasetDirectory,
                     numExecutions,
