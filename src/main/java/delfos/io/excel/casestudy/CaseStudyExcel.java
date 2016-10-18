@@ -57,8 +57,7 @@ import jxl.write.WriteException;
 import jxl.write.biff.RowsExceededException;
 
 /**
- * Clase encargada de hacer la entrada/salida de los resultados de la ejeución
- * de un caso de uso concreto.
+ * Clase encargada de hacer la entrada/salida de los resultados de la ejeución de un caso de uso concreto.
  *
  * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
@@ -330,19 +329,17 @@ public class CaseStudyExcel {
         if (parameterValue instanceof ParameterOwner) {
             ParameterOwner parameterOwner = (ParameterOwner) parameterValue;
             addText(sheet, column + parameterValueOffset, row, parameterOwner.getName());
-        } else {
-            if (parameterValue instanceof java.lang.Number) {
+        } else if (parameterValue instanceof java.lang.Number) {
 
-                if ((parameterValue instanceof java.lang.Integer) || (parameterValue instanceof java.lang.Long)) {
-                    java.lang.Long number = ((java.lang.Number) parameterValue).longValue();
-                    addNumber(sheet, column + parameterValueOffset, row, number);
-                } else {
-                    java.lang.Number number = (java.lang.Number) parameterValue;
-                    addNumber(sheet, column + parameterValueOffset, row, number.doubleValue());
-                }
+            if ((parameterValue instanceof java.lang.Integer) || (parameterValue instanceof java.lang.Long)) {
+                java.lang.Long number = ((java.lang.Number) parameterValue).longValue();
+                addNumber(sheet, column + parameterValueOffset, row, number);
             } else {
-                addText(sheet, column + parameterValueOffset, row, parameterValue.toString());
+                java.lang.Number number = (java.lang.Number) parameterValue;
+                addNumber(sheet, column + parameterValueOffset, row, number.doubleValue());
             }
+        } else {
+            addText(sheet, column + parameterValueOffset, row, parameterValue.toString());
         }
 
         //Then, if it is a parameter owner, write its children parameters.
@@ -360,7 +357,7 @@ public class CaseStudyExcel {
         return row;
     }
 
-    final static int maxListSize = 20;
+    final static int MAX_LIST_SIZE = 20;
 
     private static void createExecutionsSheet(CaseStudy caseStudy, WritableSheet sheet) throws WriteException {
 
@@ -393,7 +390,7 @@ public class CaseStudyExcel {
 
                 if (evaluationMeasure instanceof PRSpace) {
                     pRSpace = (PRSpace) evaluationMeasure;
-                    for (int listSize = 1; listSize <= maxListSize; listSize++) {
+                    for (int listSize = 1; listSize <= MAX_LIST_SIZE; listSize++) {
                         indexOfMeasures.put("Precision@" + listSize, i++);
                     }
                 }
@@ -427,14 +424,18 @@ public class CaseStudyExcel {
                     final double value;
 
                     //Es una medida cualquiera.
-                    EvaluationMeasure groupEvaluationMeasure = metricsByName.get(name);
-                    value = caseStudy.getMeasureResult(groupEvaluationMeasure, thisExecution, thisSplit).getValue();
+                    if (metricsByName.containsKey(name)) {
+                        EvaluationMeasure groupEvaluationMeasure = metricsByName.get(name);
+                        value = caseStudy.getMeasureResult(groupEvaluationMeasure, thisExecution, thisSplit).getValue();
+                    } else {
+                        value = Double.NaN;
+                    }
 
-                    if (!Double.isNaN(value)) {
+                    if (Double.isNaN(value)) {
+                        addText(sheet, column, row, "");
+                    } else {
                         double decimalTrimmedValue = NumberRounder.round(value);
                         addNumber(sheet, column, row, decimalTrimmedValue);
-                    } else {
-                        addText(sheet, column, row, "");
                     }
                 }
 
@@ -461,7 +462,7 @@ public class CaseStudyExcel {
 
                 if (groupEvaluationMeasure instanceof PRSpace) {
                     pRSpaces = (PRSpace) groupEvaluationMeasure;
-                    for (int listSize = 1; listSize <= maxListSize; listSize++) {
+                    for (int listSize = 1; listSize <= MAX_LIST_SIZE; listSize++) {
                         indexOfMeasures.put("Precision@" + listSize, i++);
                     }
                 }
@@ -487,6 +488,11 @@ public class CaseStudyExcel {
 
             //Es una medida cualquiera.
             EvaluationMeasure groupEvaluationMeasure = metricsByName.get(name);
+
+            if (groupEvaluationMeasure == null) {
+                continue;
+            }
+
             value = caseStudy.getAggregateMeasureResult(groupEvaluationMeasure).getValue();
 
             if (!Double.isNaN(value)) {
