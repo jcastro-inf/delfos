@@ -52,8 +52,7 @@ import org.jdom2.input.SAXBuilder;
 import org.jdom2.output.XMLOutputter;
 
 /**
- * Clase encargada de hacer la entrada/salida de los resultados de la ejeución
- * de un caso de uso concreto.
+ * Clase encargada de hacer la entrada/salida de los resultados de la ejeución de un caso de uso concreto.
  *
  * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
@@ -156,8 +155,7 @@ public class CaseStudyXML {
     /**
      * Carga un caso de estudio desde un archivo XML
      *
-     * @param file Archivo XML del que se carga la configuración del caso de
-     * estudio.
+     * @param file Archivo XML del que se carga la configuración del caso de estudio.
      * @return
      * @throws org.jdom2.JDOMException
      * @throws java.io.IOException
@@ -242,7 +240,6 @@ public class CaseStudyXML {
         }
 
         File aggregateFileName = FileUtilities.addSufix(fileFile, "_AGGR");
-        aggregateFileName = FileUtilities.changeExtension(aggregateFileName, ".aggr.XML");
         caseStudyToXMLFile_onlyAggregate(caseStudy, descriptivePrefix, aggregateFileName);
     }
 
@@ -311,8 +308,7 @@ public class CaseStudyXML {
     /**
      * Carga un caso de estudio desde un archivo XML
      *
-     * @param file Archivo XML del que se carga la configuración del caso de
-     * estudio.
+     * @param file Archivo XML del que se carga la configuración del caso de estudio.
      * @return
      * @throws org.jdom2.JDOMException
      * @throws java.io.IOException
