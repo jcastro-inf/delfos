@@ -292,8 +292,11 @@ public class AggregationOfIndividualRecommendations extends GroupRecommenderSyst
         List<Recommendation> recommendations = memberRecommendationsByItem.entrySet().parallelStream()
                 .map(entry -> {
                     Item item = entry.getKey();
-                    Collection<Number> predictionsThisItem = entry.getValue().parallelStream().map(r -> r.getPreference()).collect(Collectors.toList());
-                    double aggregateValues = aggregationOperator.aggregateValues(predictionsThisItem);
+                    Collection<Double> predictionsThisItem = entry.getValue().parallelStream()
+                            .map(r -> r.getPreference().doubleValue())
+                            .filter(value -> !Double.isNaN(value))
+                            .collect(Collectors.toList());
+                    double aggregateValues = predictionsThisItem.isEmpty() ? Double.NaN : aggregationOperator.aggregateValues(predictionsThisItem);
 
                     return new Recommendation(item, aggregateValues);
                 }).collect(Collectors.toList());
