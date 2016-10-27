@@ -26,6 +26,7 @@ import delfos.common.exceptions.dataset.items.ItemNotFound;
 import delfos.common.exceptions.dataset.users.UserNotFound;
 import delfos.common.exceptions.ratings.NotEnoughtUserInformation;
 import delfos.common.parameters.Parameter;
+import delfos.common.parameters.ParameterOwnerAdapter;
 import delfos.common.parameters.restriction.DirectoryParameter;
 import delfos.common.parameters.restriction.RecommenderSystemParameterRestriction;
 import delfos.dataset.basic.loader.types.DatasetLoader;
@@ -193,4 +194,10 @@ public class RecommenderSystem_cacheRecommendationModel<RecommendationModel> ext
     private RecommenderSystem<Object> getRecommenderSystem() {
         return (RecommenderSystem<Object>) getParameterValue(RECOMMENDER_SYSTEM);
     }
+
+    @Override
+    public int hashCode() {
+        return ParameterOwnerAdapter.hashCode(getRecommenderSystem());
+    }
+
 }
