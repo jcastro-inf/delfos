@@ -89,12 +89,12 @@ public class CrossFoldValidation_Items extends ValidationTechnique {
             productosEnTraining.removeAll(itemsTest[idPartition]);
 
             SelectionDataset training = new SelectionDataset(datasetLoader.getRatingsDataset());
-            training.setProductosPermitidos(productosEnTraining);
-            training.setUsuariosPermitidos(allUsers);
+            training.setAllowedItems(productosEnTraining);
+            training.setAllowedUsers(allUsers);
 
             SelectionDataset test = new SelectionDataset(datasetLoader.getRatingsDataset());
-            test.setProductosPermitidos(itemsTest[idPartition]);
-            test.setUsuariosPermitidos(allUsers);
+            test.setAllowedItems(itemsTest[idPartition]);
+            test.setAllowedUsers(allUsers);
             ret[idPartition] = new PairOfTrainTestRatingsDataset(datasetLoader, training, test,
                     "_" + this.getClass().getSimpleName() + "_seed=" + getSeedValue() + "_partition=" + idPartition);
             Global.showInfoMessage("------------------  " + idPartition + "  ------------------\n");

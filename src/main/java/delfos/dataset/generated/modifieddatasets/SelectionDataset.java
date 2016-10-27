@@ -25,29 +25,23 @@ import delfos.dataset.basic.rating.RatingsDataset;
 import delfos.dataset.basic.rating.RatingsDatasetAdapter;
 import delfos.dataset.basic.rating.domain.Domain;
 import java.util.Collection;
-import java.util.Iterator;
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
-import java.util.TreeMap;
-import java.util.TreeSet;
 import java.util.stream.Collectors;
 
 /**
- * Clase que se comporta como una envoltura de un dataset, haciendo visibles solo los productos y los usuarios que se le
- * pasan por parámetros.
- *
+ * Wraps a dataset and make visible only the users and items specified as allowed.
  *
  * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
- * @version 1.1 (21-01-2013) Ahora implementa de {@link RatingsDatasetAdapter}
- * @version 1.0 Unknow date
- * @param <RatingType>
+ * @param <RatingType> Type of the rating of this dataset.
  */
 public class SelectionDataset<RatingType extends Rating> extends RatingsDatasetAdapter<RatingType> {
 
-    private Collection<Integer> usuariosPermitidos = new TreeSet<>();
-    private Collection<Integer> productosPermitidos = new TreeSet<>();
+    private Collection<Integer> allowedUsers = Collections.EMPTY_SET;
+    private Collection<Integer> allowedItems = Collections.EMPTY_SET;
     private RatingsDataset<RatingType> originalDataset;
 
     public SelectionDataset(RatingsDataset<RatingType> ratingsDataset) {
@@ -57,39 +51,40 @@ public class SelectionDataset<RatingType extends Rating> extends RatingsDatasetA
 
     public void setOriginalDataset(RatingsDataset<RatingType> originalDataset) {
         this.originalDataset = originalDataset;
-        usuariosPermitidos = new TreeSet<>();
-        productosPermitidos = new TreeSet<>();
     }
 
-    public void setProductosPermitidos(Collection<Integer> productosPermitidos) {
+    public void setAllowedItems(Collection<Integer> allowedItems) {
         //Comprobar si el conjunto de productos existe en el dataset
-        TreeSet<Integer> productosPermitidosPrev = new TreeSet<>(productosPermitidos);
-        productosPermitidosPrev.removeAll(originalDataset.allRatedItems());
+        List<Integer> notInOriginal = allowedItems.parallelStream()
+                .filter(allowedItem -> !originalDataset.allRatedItems().contains(allowedItem))
+                .sorted().collect(Collectors.toList());
 
-        productosPermitidosPrev.parallelStream().forEach((idItem) -> {
-            Global.showWarning("Item " + idItem + " not in original dataset");
-        });
-
-        this.productosPermitidos = productosPermitidos;
-    }
-
-    public void setUsuariosPermitidos(Collection<Integer> usuariosPermitidos) {
-        //Comprobar si el conjunto de usuarios existe en el dataset
-        for (Integer idUser : usuariosPermitidos) {
-            if (!originalDataset.allUsers().contains(idUser)) {
-                Global.showWarning("User " + idUser + " not in original dataset");
-            }
+        if (!notInOriginal.isEmpty()) {
+            Global.showWarning(notInOriginal.size() + " items not in original dataset: " + notInOriginal.toString());
         }
 
-        this.usuariosPermitidos = usuariosPermitidos;
+        this.allowedItems = allowedItems.parallelStream().collect(Collectors.toSet());
+    }
+
+    public void setAllowedUsers(Collection<Integer> allowedUsers) {
+        //Comprobar si el conjunto de usuarios existe en el dataset
+        List<Integer> notInOriginal = allowedUsers.parallelStream()
+                .filter(allowedItem -> !originalDataset.allUsers().contains(allowedItem))
+                .sorted().collect(Collectors.toList());
+
+        if (!notInOriginal.isEmpty()) {
+            Global.showWarning(notInOriginal.size() + " items not in original dataset: " + notInOriginal.toString());
+        }
+
+        this.allowedUsers = allowedUsers.parallelStream().collect(Collectors.toSet());
     }
 
     @Override
     public RatingType getRating(int idUser, int idItem) throws UserNotFound, ItemNotFound {
-        if (!usuariosPermitidos.contains(idUser)) {
+        if (!allowedUsers.contains(idUser)) {
             throw new UserNotFound(idUser);
         }
-        if (!productosPermitidos.contains(idItem)) {
+        if (!allowedItems.contains(idItem)) {
             throw new ItemNotFound(idItem);
         }
         return originalDataset.getRating(idUser, idItem);
@@ -97,7 +92,7 @@ public class SelectionDataset<RatingType extends Rating> extends RatingsDatasetA
 
     @Override
     public Set<Integer> allUsers() {
-        Set<Integer> ratedUsers = usuariosPermitidos
+        Set<Integer> ratedUsers = allowedUsers
                 .parallelStream()
                 .filter((idUser) -> !getUserRated(idUser).isEmpty()).
                 collect(Collectors.toSet());
@@ -106,7 +101,7 @@ public class SelectionDataset<RatingType extends Rating> extends RatingsDatasetA
 
     @Override
     public Set<Integer> allRatedItems() {
-        Set<Integer> ratedItems = productosPermitidos
+        Set<Integer> ratedItems = allowedItems
                 .parallelStream()
                 .filter(idItem -> isRatedItem(idItem))
                 .collect(Collectors.toSet());
@@ -115,52 +110,57 @@ public class SelectionDataset<RatingType extends Rating> extends RatingsDatasetA
 
     @Override
     public Set<Integer> getUserRated(Integer idUser) throws UserNotFound {
-        if (!usuariosPermitidos.contains(idUser)) {
+        if (!allowedUsers.contains(idUser)) {
             throw new UserNotFound(idUser);
         }
-        TreeSet<Integer> userRated = new TreeSet<>(originalDataset.getUserRated(idUser));
-        userRated.retainAll(productosPermitidos);
+        Set<Integer> userRated = originalDataset.getUserRated(idUser).parallelStream()
+                .filter(item -> allowedItems.contains(item))
+                .collect(Collectors.toSet());
+
         return userRated;
+
     }
 
     @Override
     public Map<Integer, RatingType> getUserRatingsRated(Integer idUser) throws UserNotFound {
-        if (!usuariosPermitidos.contains(idUser)) {
+        if (!allowedUsers.contains(idUser)) {
             throw new UserNotFound(idUser);
         }
 
-        Map<Integer, RatingType> userRatingsRated = new TreeMap<>(originalDataset.getUserRatingsRated(idUser));
-        for (Iterator<Entry<Integer, RatingType>> it = userRatingsRated.entrySet().iterator(); it.hasNext();) {
-            Entry<Integer, RatingType> entry = it.next();
-            if (!productosPermitidos.contains(entry.getKey())) {
-                it.remove();
-            }
-        }
+        Map<Integer, RatingType> userRatingsRated = originalDataset.getUserRatingsRated(idUser).values()
+                .parallelStream()
+                .filter(rating -> allowedItems.contains(rating.getItem().getId()))
+                .collect(Collectors.toMap(
+                        rating -> rating.getItem().getId(),
+                        rating -> rating)
+                );
+
         return userRatingsRated;
     }
 
     @Override
     public Set<Integer> getItemRated(Integer idItem) throws ItemNotFound {
-        if (!productosPermitidos.contains(idItem)) {
+        if (!allowedItems.contains(idItem)) {
             throw new ItemNotFound(idItem);
         }
-        TreeSet<Integer> itemRatingsRated = new TreeSet<>(originalDataset.getItemRated(idItem));
-        itemRatingsRated.retainAll(usuariosPermitidos);
+        Set<Integer> itemRatingsRated = originalDataset.getItemRated(idItem).parallelStream()
+                .filter(user -> allowedUsers.contains(user))
+                .collect(Collectors.toSet());
         return itemRatingsRated;
     }
 
     @Override
     public Map<Integer, RatingType> getItemRatingsRated(Integer idItem) throws ItemNotFound {
-        if (!productosPermitidos.contains(idItem)) {
+        if (!allowedItems.contains(idItem)) {
             throw new ItemNotFound(idItem);
         }
-        Map<Integer, RatingType> itemRatingsRated = new TreeMap<>(originalDataset.getItemRatingsRated(idItem));
-        for (Iterator<Entry<Integer, RatingType>> it = itemRatingsRated.entrySet().iterator(); it.hasNext();) {
-            Entry<Integer, RatingType> entry = it.next();
-            if (!usuariosPermitidos.contains(entry.getKey())) {
-                it.remove();
-            }
-        }
+        Map<Integer, RatingType> itemRatingsRated = originalDataset.getItemRatingsRated(idItem).values().parallelStream()
+                .filter(rating -> allowedUsers.contains(rating.getUser().getId()))
+                .collect(Collectors.toMap(
+                        rating -> rating.getUser().getId(),
+                        rating -> rating)
+                );
+
         return itemRatingsRated;
     }
 
@@ -172,7 +172,7 @@ public class SelectionDataset<RatingType extends Rating> extends RatingsDatasetA
     @Override
     public int getNumRatings() {
         int size = 0;
-        for (int idUser : usuariosPermitidos) {
+        for (int idUser : allowedUsers) {
             try {
                 size += getUserRated(idUser).size();
             } catch (UserNotFound ex) {
@@ -182,31 +182,4 @@ public class SelectionDataset<RatingType extends Rating> extends RatingsDatasetA
         return size;
     }
 
-    @Override
-    public boolean isRatedItem(int idItem) throws ItemNotFound {
-        Collection<Integer> itemRated = new TreeSet<>(originalDataset.getItemRated(idItem));
-        itemRated.retainAll(usuariosPermitidos);
-        return !itemRated.isEmpty();
-    }
-
-    @Override
-    public int sizeOfItemRatings(int idItem) throws ItemNotFound {
-        Collection<Integer> itemRated = new TreeSet<>(originalDataset.getItemRated(idItem));
-        itemRated.retainAll(usuariosPermitidos);
-        return itemRated.size();
-    }
-
-    @Override
-    public boolean isRatedUser(int idUser) throws UserNotFound {
-        Collection<Integer> userRated = new TreeSet<>(originalDataset.getUserRated(idUser));
-        userRated.retainAll(productosPermitidos);
-        return !userRated.isEmpty();
-    }
-
-    @Override
-    public int sizeOfUserRatings(int idUser) throws UserNotFound {
-        Collection<Integer> userRated = new TreeSet<>(originalDataset.getUserRated(idUser));
-        userRated.retainAll(productosPermitidos);
-        return userRated.size();
-    }
 }
