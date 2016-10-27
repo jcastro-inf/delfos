@@ -105,7 +105,10 @@ public class CaseStudyResultMatrix {
             String parameterName = chain.getLeaf().getParameter().getName();
             str.append(parameterName).append("=").append(value.toString()).append("_");
         }
-        str.delete(str.length() - 1, str.length());
+
+        if (str.length() > 0) {
+            str.delete(str.length() - 1, str.length());
+        }
 
         final String rowName = str.toString();
 
@@ -225,6 +228,7 @@ public class CaseStudyResultMatrix {
         groupCaseStudyResults.stream().map(groupCaseStudyResult -> groupCaseStudyResult.getGroupCaseStudy())
                 .forEach(groupCaseStudy -> this.getColumnIdentifier(groupCaseStudy));
 
-        groupCaseStudyResults.stream().map(groupCaseStudyResult -> groupCaseStudyResult.getGroupCaseStudy()).forEach(groupCaseStudy -> this.getRowIdentifier(groupCaseStudy));
+        groupCaseStudyResults.stream().map(groupCaseStudyResult -> groupCaseStudyResult.getGroupCaseStudy())
+                .forEach(groupCaseStudy -> this.getRowIdentifier(groupCaseStudy));
     }
 }
