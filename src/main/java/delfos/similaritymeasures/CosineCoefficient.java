@@ -70,6 +70,58 @@ public class CosineCoefficient extends WeightedSimilarityMeasureAdapter implemen
         }
     }
 
+    public static double cosineCoefficient(List<Double> v1, List<Double> v2) {
+        if (v1.size() != v2.size()) {
+            throw new IllegalArgumentException("The vector lengths are different");
+        }
+
+        double numerator = 0;
+        double denominator1 = 0, denominator2 = 0;
+
+        for (int i = 0; i < v1.size(); i++) {
+            double r1 = v1.get(i);
+            double r2 = v2.get(i);
+
+            numerator = numerator + r1 * r2;
+            denominator1 = denominator1 + r1 * r1;
+            denominator2 = denominator2 + r2 * r2;
+
+        }
+
+        if (denominator1 == 0 || denominator2 == 0) {
+            return 0;
+        } else {
+            double coseno = (double) (numerator / (Math.sqrt(denominator1) * Math.sqrt(denominator2)));
+            return coseno;
+        }
+    }
+
+    public static double cosineCoefficient(double[] v1, double[] v2) {
+        if (v1.length != v2.length) {
+            throw new IllegalArgumentException("The vector lengths are different");
+        }
+
+        double numerator = 0;
+        double denominator1 = 0, denominator2 = 0;
+
+        for (int i = 0; i < v1.length; i++) {
+            double r1 = v1[i];
+            double r2 = v2[i];
+
+            numerator = numerator + r1 * r2;
+            denominator1 = denominator1 + r1 * r1;
+            denominator2 = denominator2 + r2 * r2;
+
+        }
+
+        if (denominator1 == 0 || denominator2 == 0) {
+            return 0;
+        } else {
+            double coseno = (double) (numerator / (Math.sqrt(denominator1) * Math.sqrt(denominator2)));
+            return coseno;
+        }
+    }
+
     @Override
     public double similarity(DatasetLoader<? extends Rating> datasetLoader, int idUser1, int idUser2) {
         User user1 = datasetLoader.getUsersDataset().get(idUser1);
