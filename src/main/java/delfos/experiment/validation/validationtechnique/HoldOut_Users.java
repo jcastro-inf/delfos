@@ -93,12 +93,12 @@ public class HoldOut_Users extends ValidationTechnique {
         usuariosEnTraining.removeAll(usersInTest);
 
         SelectionDataset training = new SelectionDataset(datasetLoader.getRatingsDataset());
-        training.setProductosPermitidos(allItems);
-        training.setUsuariosPermitidos(usuariosEnTraining);
+        training.setAllowedItems(allItems);
+        training.setAllowedUsers(usuariosEnTraining);
 
         SelectionDataset test = new SelectionDataset(datasetLoader.getRatingsDataset());
-        test.setProductosPermitidos(allItems);
-        test.setUsuariosPermitidos(usersInTest);
+        test.setAllowedItems(allItems);
+        test.setAllowedUsers(usersInTest);
 
         ret[0] = new PairOfTrainTestRatingsDataset(datasetLoader, training, test,
                 "_" + this.getClass().getSimpleName() + "_seed=" + getSeedValue());
