@@ -619,11 +619,7 @@ public class WeightedGraph<Node> implements Serializable, Comparable<WeightedGra
 
                     Collection<PathBetweenNodes<Node>> edgesFromNode = this.getEdgesFromNode(node1);
 
-                    if (edgesFromNode.isEmpty()) {
-                        return new ArrayList<PathBetweenNodes<Node>>().parallelStream();
-                    } else {
-                        return edgesFromNode.parallelStream();
-                    }
+                    return edgesFromNode.parallelStream();
                 })
                 .filter(path -> path.isEdge())
                 .filter(path -> !path.isSelf())
@@ -658,8 +654,8 @@ public class WeightedGraph<Node> implements Serializable, Comparable<WeightedGra
     public boolean hasAnyEdge() {
         Optional<PathBetweenNodes<Node>> longestPath = allNodes().parallelStream()
                 .flatMap(user1 -> allNodes()
-                        .parallelStream()
-                        .map(user2 -> shortestPath(user1, user2)))
+                .parallelStream()
+                .map(user2 -> shortestPath(user1, user2)))
                 .filter(optionalPath -> optionalPath.isPresent())
                 .map(optionalPath -> optionalPath.get())
                 .filter(path -> !path.isSelf())
@@ -674,8 +670,8 @@ public class WeightedGraph<Node> implements Serializable, Comparable<WeightedGra
 
         Optional<Optional<PathBetweenNodes<Node>>> missingEdge = allNodes().parallelStream()
                 .flatMap(user1 -> allNodes()
-                        .parallelStream()
-                        .map(user2 -> shortestPath(user1, user2)))
+                .parallelStream()
+                .map(user2 -> shortestPath(user1, user2)))
                 .filter(optionalPath -> !optionalPath.isPresent())
                 .findAny();
 
