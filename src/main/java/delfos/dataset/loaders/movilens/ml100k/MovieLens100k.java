@@ -226,7 +226,7 @@ public class MovieLens100k extends CompleteDatasetLoaderAbstract<Rating> {
                             throw new IllegalStateException("Field #4 in movieLens 100k is usually empty, but in item '" + idItem + "' is '" + emptyField + "'.");
                         }
 
-                        Map<Feature, String> features = new TreeMap<>();
+                        Map<Feature, Object> features = new TreeMap<>();
 
                         addGenres(indexInicialGeneros, fields, generos_byIndex, featureGenerator, features);
                         addYear(featureGenerator, date, idItem, itemName, features);
@@ -254,7 +254,7 @@ public class MovieLens100k extends CompleteDatasetLoaderAbstract<Rating> {
         return contentDataset;
     }
 
-    public void addGenres(final int indexInicialGeneros, String[] fields, List<String> generos_byIndex, FeatureGenerator featureGenerator, Map<Feature, String> features) {
+    public void addGenres(final int indexInicialGeneros, String[] fields, List<String> generos_byIndex, FeatureGenerator featureGenerator, Map<Feature, Object> features) {
         for (int indexGenero = indexInicialGeneros; indexGenero < fields.length; indexGenero++) {
             String featureName = generos_byIndex.get(indexGenero - indexInicialGeneros);
             String featureValue = fields[indexGenero];
@@ -378,7 +378,7 @@ public class MovieLens100k extends CompleteDatasetLoaderAbstract<Rating> {
         return (Integer) getParameterValue(Index_init_genres);
     }
 
-    public void addYear(FeatureGenerator featureGenerator, String rawDate, int idItem, String itemName, Map<Feature, String> features) throws IllegalStateException {
+    public void addYear(FeatureGenerator featureGenerator, String rawDate, int idItem, String itemName, Map<Feature, Object> features) throws IllegalStateException {
 
         if ("".equals(rawDate)) {
             return;
@@ -386,7 +386,7 @@ public class MovieLens100k extends CompleteDatasetLoaderAbstract<Rating> {
 
         Feature yearFeature;
         if (!featureGenerator.containsFeature("year")) {
-            yearFeature = featureGenerator.createFeature("year", FeatureType.Nominal);
+            yearFeature = featureGenerator.createFeature("year", FeatureType.Numerical);
         } else {
             yearFeature = featureGenerator.searchFeature("year");
         }
@@ -401,11 +401,11 @@ public class MovieLens100k extends CompleteDatasetLoaderAbstract<Rating> {
         DateFormat df = new SimpleDateFormat("dd-MMM-yyyy");
 
         String completeDate;
-        String year;
+        Integer year;
         try {
             Date dateParsed = df.parse(rawDate);
 
-            year = new SimpleDateFormat("yyyy").format(dateParsed);
+            year = Integer.parseInt(new SimpleDateFormat("yyyy").format(dateParsed));
 
             completeDate = new SimpleDateFormat("yyyy-MM-dd").format(dateParsed);
 
@@ -417,7 +417,7 @@ public class MovieLens100k extends CompleteDatasetLoaderAbstract<Rating> {
         features.put(completeDateFeature, completeDate);
     }
 
-    private void addIMDBLink(FeatureGenerator featureGenerator, String imdbUrl, int idItem, String itemName, Map<Feature, String> features) {
+    private void addIMDBLink(FeatureGenerator featureGenerator, String imdbUrl, int idItem, String itemName, Map<Feature, Object> features) {
         if ("".equals(imdbUrl)) {
             return;
         }
