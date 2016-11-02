@@ -71,4 +71,14 @@ public abstract class DatabaseCaseUseSubManager extends CaseUseSubManager {
         }
     }
 
+    /**
+     * Checks whether the datasetLoader is writable
+     *
+     * @param datasetLoader Dataset loader to be checked.
+     * @return true if the datasetLoader is writable
+     */
+    public static boolean isDatasetLoaderChangeable(DatasetLoader datasetLoader) {
+        return datasetLoader instanceof ChangeableDatasetLoader;
+    }
+
 }
