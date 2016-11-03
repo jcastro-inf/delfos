@@ -25,6 +25,9 @@ fi
 echo "Now i should compile"
 cd $commonsMath4Directory
 
+#Current commit in master fails, using 2016 june one.
+git checkout dccc1255413adc1a212dbe3bf40accb70ccd44ef
+
 mvn install -DskipTests
 
 #Return to original directory
