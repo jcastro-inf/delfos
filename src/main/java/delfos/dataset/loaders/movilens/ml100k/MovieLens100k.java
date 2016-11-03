@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -48,7 +48,11 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -215,27 +219,24 @@ public class MovieLens100k extends CompleteDatasetLoaderAbstract<Rating> {
 
                         String itemName = fields[1];
                         String date = fields[2];
-                        String unknownField = fields[3];
+                        String emptyField = fields[3];
                         String imdbUrl = fields[4];
 
-                        Map<Feature, String> nominalFeatures = new TreeMap<>();
-
-                        for (int indexGenero = indexInicialGeneros; indexGenero < fields.length; indexGenero++) {
-                            String featureName = generos_byIndex.get(indexGenero - indexInicialGeneros);
-                            String featureValue = fields[indexGenero];
-
-                            if (!featureGenerator.containsFeature(featureName)) {
-                                featureGenerator.createFeature(featureName, FeatureType.Nominal);
-                            }
-                            Feature thisGenreFeature = featureGenerator.searchFeature(featureName);
-                            nominalFeatures.put(thisGenreFeature, featureValue);
+                        if (!"".equals(emptyField)) {
+                            throw new IllegalStateException("Field #4 in movieLens 100k is usually empty, but in item '" + idItem + "' is '" + emptyField + "'.");
                         }
+
+                        Map<Feature, Object> features = new TreeMap<>();
+
+                        addGenres(indexInicialGeneros, fields, generos_byIndex, featureGenerator, features);
+                        addYear(featureGenerator, date, idItem, itemName, features);
+                        addIMDBLink(featureGenerator, imdbUrl, idItem, itemName, features);
 
                         Item item = new Item(
                                 idItem,
                                 itemName,
-                                nominalFeatures.keySet().toArray(new Feature[0]),
-                                nominalFeatures.values().toArray());
+                                features.keySet().toArray(new Feature[0]),
+                                features.values().toArray());
 
                         boolean added = items.add(item);
                         if (!added) {
@@ -251,6 +252,19 @@ public class MovieLens100k extends CompleteDatasetLoaderAbstract<Rating> {
             }
         }
         return contentDataset;
+    }
+
+    public void addGenres(final int indexInicialGeneros, String[] fields, List<String> generos_byIndex, FeatureGenerator featureGenerator, Map<Feature, Object> features) {
+        for (int indexGenero = indexInicialGeneros; indexGenero < fields.length; indexGenero++) {
+            String featureName = generos_byIndex.get(indexGenero - indexInicialGeneros);
+            String featureValue = fields[indexGenero];
+
+            if (!featureGenerator.containsFeature(featureName)) {
+                featureGenerator.createFeature(featureName, FeatureType.Nominal);
+            }
+            Feature thisGenreFeature = featureGenerator.searchFeature(featureName);
+            features.put(thisGenreFeature, featureValue);
+        }
     }
 
     @Override
@@ -362,5 +376,61 @@ public class MovieLens100k extends CompleteDatasetLoaderAbstract<Rating> {
 
     private int getIndexInicialGeneros() {
         return (Integer) getParameterValue(Index_init_genres);
+    }
+
+    public void addYear(FeatureGenerator featureGenerator, String rawDate, int idItem, String itemName, Map<Feature, Object> features) throws IllegalStateException {
+
+        if ("".equals(rawDate)) {
+            return;
+        }
+
+        Feature yearFeature;
+        if (!featureGenerator.containsFeature("year")) {
+            yearFeature = featureGenerator.createFeature("year", FeatureType.Numerical);
+        } else {
+            yearFeature = featureGenerator.searchFeature("year");
+        }
+
+        Feature completeDateFeature;
+        if (!featureGenerator.containsFeature("date")) {
+            completeDateFeature = featureGenerator.createFeature("date", FeatureType.Nominal);
+        } else {
+            completeDateFeature = featureGenerator.searchFeature("date");
+        }
+
+        DateFormat df = new SimpleDateFormat("dd-MMM-yyyy");
+
+        String completeDate;
+        Integer year;
+        try {
+            Date dateParsed = df.parse(rawDate);
+
+            year = Integer.parseInt(new SimpleDateFormat("yyyy").format(dateParsed));
+
+            completeDate = new SimpleDateFormat("yyyy-MM-dd").format(dateParsed);
+
+        } catch (ParseException ex) {
+            throw new IllegalStateException("Cannot parse date of item " + idItem + " " + itemName + ": '" + rawDate + "'");
+        }
+
+        features.put(yearFeature, year);
+        features.put(completeDateFeature, completeDate);
+    }
+
+    private void addIMDBLink(FeatureGenerator featureGenerator, String imdbUrl, int idItem, String itemName, Map<Feature, Object> features) {
+        if ("".equals(imdbUrl)) {
+            return;
+        }
+
+        Feature imdbURLFeature;
+
+        final String imdbURLFeatureName = "imdbURL";
+        if (!featureGenerator.containsFeature(imdbURLFeatureName)) {
+            imdbURLFeature = featureGenerator.createFeature(imdbURLFeatureName, FeatureType.Nominal);
+        } else {
+            imdbURLFeature = featureGenerator.searchFeature(imdbURLFeatureName);
+        }
+
+        features.put(imdbURLFeature, imdbUrl);
     }
 }

@@ -27,8 +27,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
- * Almacena los resultados de recomendaciones de un sistema de recomendación a
- * grupos
+ * Almacena los resultados de recomendaciones de un sistema de recomendación a grupos
  *
  * @author jcastro-inf ( https://github.com/jcastro-inf )
  */
@@ -112,7 +111,9 @@ public class GroupRecommenderSystemResult {
     }
 
     public SingleGroupRecommendationTaskOutput getGroupOutput(GroupOfUsers groupOfUsers) {
-        Optional<SingleGroupRecommendationTaskOutput> findAny = singleGroupRecommendationOutputs.stream().filter(singleGroupRecommendationOutput -> singleGroupRecommendationOutput.getGroup().equals(groupOfUsers)).findAny();
+        Optional<SingleGroupRecommendationTaskOutput> findAny = singleGroupRecommendationOutputs.parallelStream()
+                .filter(singleGroupRecommendationOutput -> singleGroupRecommendationOutput.getGroup().equals(groupOfUsers))
+                .findAny();
 
         if (findAny.isPresent()) {
             return findAny.get();
