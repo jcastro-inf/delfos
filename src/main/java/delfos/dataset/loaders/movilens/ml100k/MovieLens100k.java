@@ -55,6 +55,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.TreeSet;
@@ -398,16 +399,16 @@ public class MovieLens100k extends CompleteDatasetLoaderAbstract<Rating> {
             completeDateFeature = featureGenerator.searchFeature("date");
         }
 
-        DateFormat df = new SimpleDateFormat("dd-MMM-yyyy");
+        DateFormat df = new SimpleDateFormat("dd-MMM-yyyy", Locale.ENGLISH);
 
         String completeDate;
         Integer year;
         try {
             Date dateParsed = df.parse(rawDate);
 
-            year = Integer.parseInt(new SimpleDateFormat("yyyy").format(dateParsed));
+            year = Integer.parseInt(new SimpleDateFormat("yyyy", Locale.ENGLISH).format(dateParsed));
 
-            completeDate = new SimpleDateFormat("yyyy-MM-dd").format(dateParsed);
+            completeDate = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH).format(dateParsed);
 
         } catch (ParseException ex) {
             throw new IllegalStateException("Cannot parse date of item " + idItem + " " + itemName + ": '" + rawDate + "'");
