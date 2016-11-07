@@ -22,7 +22,7 @@ import delfos.group.casestudy.parallelisation.SingleGroupRecommendationTaskOutpu
 import delfos.group.groupsofusers.GroupOfUsers;
 import java.util.Collection;
 import java.util.List;
-import java.util.Optional;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -33,8 +33,8 @@ import java.util.stream.Collectors;
  */
 public class GroupRecommenderSystemResult {
 
-    protected List<SingleGroupRecommendationTaskInput> singleGroupRecommendationInputs;
-    protected List<SingleGroupRecommendationTaskOutput> singleGroupRecommendationOutputs;
+    protected Map<GroupOfUsers, SingleGroupRecommendationTaskInput> singleGroupRecommendationInputs;
+    protected Map<GroupOfUsers, SingleGroupRecommendationTaskOutput> singleGroupRecommendationOutputs;
 
     private final String groupCaseStudyAlias;
     private final int thisExecution;
@@ -53,8 +53,15 @@ public class GroupRecommenderSystemResult {
 
         validateSameGroups(singleGroupRecommendationInputs, singleGroupRecommendationOutputs);
 
-        this.singleGroupRecommendationInputs = singleGroupRecommendationInputs;
-        this.singleGroupRecommendationOutputs = singleGroupRecommendationOutputs;
+        this.singleGroupRecommendationInputs = singleGroupRecommendationInputs.parallelStream()
+                .collect(Collectors.toMap(
+                        output -> output.getGroupOfUsers(),
+                        output -> output));
+
+        this.singleGroupRecommendationOutputs = singleGroupRecommendationOutputs.parallelStream()
+                .collect(Collectors.toMap(
+                        output -> output.getGroup(),
+                        output -> output));
         this.groupCaseStudyAlias = caseStudyAlias;
         this.thisExecution = thisExecution;
         this.thisSplit = thisSplit;
@@ -89,34 +96,28 @@ public class GroupRecommenderSystemResult {
     }
 
     public Collection<GroupOfUsers> getGroupsOfUsers() {
-        return singleGroupRecommendationInputs.stream().map(task -> task.getGroupOfUsers()).collect(Collectors.toList());
+        return singleGroupRecommendationInputs.keySet().stream().collect(Collectors.toList());
     }
 
     public Collection<SingleGroupRecommendationTaskInput> inputsIterator() {
-        return singleGroupRecommendationInputs.stream().collect(Collectors.toList());
+        return singleGroupRecommendationInputs.values().stream().collect(Collectors.toList());
     }
 
     public Collection<SingleGroupRecommendationTaskOutput> outputsIterator() {
-        return singleGroupRecommendationOutputs.stream().collect(Collectors.toList());
+        return singleGroupRecommendationOutputs.values().stream().collect(Collectors.toList());
     }
 
     public SingleGroupRecommendationTaskInput getGroupInput(GroupOfUsers groupOfUsers) {
-        Optional<SingleGroupRecommendationTaskInput> findAny = singleGroupRecommendationInputs.stream().filter(singleGroupRecommendationInput -> singleGroupRecommendationInput.getGroupOfUsers().equals(groupOfUsers)).findAny();
-
-        if (findAny.isPresent()) {
-            return findAny.get();
+        if (singleGroupRecommendationInputs.containsKey(groupOfUsers)) {
+            return singleGroupRecommendationInputs.get(groupOfUsers);
         } else {
             throw new IllegalArgumentException("Group '" + groupOfUsers.toString() + "' not in the input list");
         }
     }
 
     public SingleGroupRecommendationTaskOutput getGroupOutput(GroupOfUsers groupOfUsers) {
-        Optional<SingleGroupRecommendationTaskOutput> findAny = singleGroupRecommendationOutputs.parallelStream()
-                .filter(singleGroupRecommendationOutput -> singleGroupRecommendationOutput.getGroup().equals(groupOfUsers))
-                .findAny();
-
-        if (findAny.isPresent()) {
-            return findAny.get();
+        if (singleGroupRecommendationOutputs.containsKey(groupOfUsers)) {
+            return singleGroupRecommendationOutputs.get(groupOfUsers);
         } else {
             throw new IllegalArgumentException("Group '" + groupOfUsers.toString() + "' not in the output list");
         }
