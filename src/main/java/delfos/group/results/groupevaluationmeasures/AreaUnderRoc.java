@@ -23,6 +23,7 @@ import delfos.common.statisticalfuncions.MeanIterative;
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RelevanceCriteria;
+import delfos.group.casestudy.parallelisation.SingleGroupRecommendationTaskOutput;
 import delfos.group.groupsofusers.GroupOfUsers;
 import delfos.group.results.grouprecomendationresults.GroupRecommenderSystemResult;
 import delfos.results.evaluationmeasures.confusionmatrix.ConfusionMatricesCurve;
@@ -60,8 +61,10 @@ public class AreaUnderRoc extends GroupEvaluationMeasure {
         Map<GroupOfUsers, ConfusionMatricesCurve> prCurves = new TreeMap<>();
 
         int gruposSinMatriz = 0;
-        for (GroupOfUsers group : groupRecommenderSystemResult.getGroupsOfUsers()) {
-            Collection<Recommendation> groupRecommendations = groupRecommenderSystemResult.getGroupOutput(group)
+        for (SingleGroupRecommendationTaskOutput groupOutput : groupRecommenderSystemResult.outputsIterator()) {
+
+            GroupOfUsers group = groupOutput.getGroup();
+            Collection<Recommendation> groupRecommendations = groupOutput
                     .getRecommendations().getRecommendations();
 
             List<Boolean> recommendacionesGrupo = new ArrayList<>(groupRecommendations.size());
