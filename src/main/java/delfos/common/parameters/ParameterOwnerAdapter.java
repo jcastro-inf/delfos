@@ -184,7 +184,7 @@ public abstract class ParameterOwnerAdapter implements ParameterOwner {
             fireParammeterChangedEvent();
             return value;
         } else {
-            throw new IllegalArgumentException(this.getClass().getName() + " hasn't the parameter " + p.getName());
+            throw new IllegalArgumentException(this.getClass().getName() + " does not have parameter " + p.getName());
         }
     }
 
