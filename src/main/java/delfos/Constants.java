@@ -68,7 +68,7 @@ public class Constants {
     /**
      * States the temporal directory used by the library.
      */
-    static final String TEMP_DIRECTORY = "-temp-directory";
+    public static final String TEMP_DIRECTORY = "-temp-directory";
 
     private static boolean printFullXML;
     /**
