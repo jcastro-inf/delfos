@@ -23,6 +23,7 @@ import delfos.common.exceptions.dataset.CannotLoadUsersDataset;
 import delfos.common.exceptions.dataset.items.ItemNotFound;
 import delfos.common.exceptions.dataset.users.UserNotFound;
 import delfos.common.parameters.Parameter;
+import delfos.common.parameters.ParameterOwner;
 import delfos.common.parameters.ParameterOwnerType;
 import delfos.common.parameters.restriction.IntegerParameter;
 import delfos.common.parameters.restriction.ParameterOwnerRestriction;
@@ -34,7 +35,6 @@ import delfos.dataset.basic.loader.types.UsersDatasetLoader;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RelevanceCriteria;
 import delfos.experiment.ExperimentAdapter;
-import delfos.experiment.SeedHolder;
 import static delfos.experiment.SeedHolder.SEED;
 import delfos.experiment.casestudy.CaseStudyParameterChangedListener;
 import delfos.experiment.validation.validationtechnique.CrossFoldValidation_Ratings;
@@ -227,9 +227,9 @@ public class GroupCaseStudy extends ExperimentAdapter {
 
                     List<GroupEvaluationMeasureResult> allResultsThisMeasure
                     = allLoopsResults.values().stream().parallel()
-                    .flatMap(resultsForThisExecution -> resultsForThisExecution.values().stream())
-                    .map(resultExecutionSplit -> resultExecutionSplit.get(groupEvaluationMeasure))
-                    .collect(Collectors.toList());
+                            .flatMap(resultsForThisExecution -> resultsForThisExecution.values().stream())
+                            .map(resultExecutionSplit -> resultExecutionSplit.get(groupEvaluationMeasure))
+                            .collect(Collectors.toList());
 
                     GroupEvaluationMeasureResult resultsAggregated
                     = groupEvaluationMeasure.agregateResults(allResultsThisMeasure);
@@ -317,6 +317,31 @@ public class GroupCaseStudy extends ExperimentAdapter {
         return (Long) getParameterValue(SEED);
     }
 
+    /**
+     * Sets the seed recursively to the structure of parameter owners.
+     *
+     * @param parameterOwner
+     * @param seedValue
+     */
+    public void setSeedValue(ParameterOwner parameterOwner, long seedValue) {
+
+        parameterOwner.getParameters().stream().forEach(parameter -> {
+
+            Object parameterValue = parameterOwner.getParameterValue(parameter);
+
+            if (parameter.equals(SEED)) {
+                parameterOwner.setParameterValue(SEED, seedValue);
+            } else if (parameter.getRestriction() instanceof ParameterOwnerRestriction) {
+                ParameterOwner innerParameterOwner = (ParameterOwner) parameterValue;
+                setSeedValue(innerParameterOwner, seedValue);
+            } else if (parameterValue instanceof ParameterOwner) {
+                ParameterOwner innerParameterOwner = (ParameterOwner) parameterValue;
+                setSeedValue(innerParameterOwner, seedValue);
+            }
+        });
+
+    }
+
     @Override
     public final void setSeedValue(long seedValue) {
         setParameterValue(SEED, seedValue);
@@ -327,19 +352,11 @@ public class GroupCaseStudy extends ExperimentAdapter {
         final ValidationTechnique validationTechnique = getValidationTechnique();
         final DatasetLoader<? extends Rating> datasetLoader = getDatasetLoader();
 
-        if (datasetLoader instanceof SeedHolder) {
-            SeedHolder seedHolder = (SeedHolder) datasetLoader;
-            seedHolder.setSeedValue(getSeedValue());
-        }
-
-        if (groupRecommenderSystem instanceof SeedHolder) {
-            SeedHolder seedHolder = (SeedHolder) groupRecommenderSystem;
-            seedHolder.setSeedValue(getSeedValue());
-        }
-
-        groupFormationTechnique.setSeedValue(getSeedValue());
-        validationTechnique.setSeedValue(getSeedValue());
-        groupPredictionProtocol.setSeedValue(getSeedValue());
+        setSeedValue(datasetLoader, seedValue);
+        setSeedValue(groupRecommenderSystem, seedValue);
+        setSeedValue(groupFormationTechnique, seedValue);
+        setSeedValue(validationTechnique, seedValue);
+        setSeedValue(groupPredictionProtocol, seedValue);
     }
 
     public static final Object exmutLoadDatasetsOnceAtATime = 1;
@@ -512,12 +529,12 @@ public class GroupCaseStudy extends ExperimentAdapter {
 
             groupCaseStudyCloned.allLoopsResults
                     = resultsAsTheyFinish.entrySet().stream()
-                    .filter(entry -> entry.getKey() <= execution)
-                    .collect(Collectors.toMap(
-                            entry -> entry.getKey(),
-                            entry -> entry.getValue()
-                    )
-                    );
+                            .filter(entry -> entry.getKey() <= execution)
+                            .collect(Collectors.toMap(
+                                    entry -> entry.getKey(),
+                                    entry -> entry.getValue()
+                            )
+                            );
 
             Set<GroupEvaluationMeasure> groupEvaluationMeasures = groupCaseStudyCloned.allLoopsResults.get(0).get(0).keySet();
 
@@ -526,9 +543,9 @@ public class GroupCaseStudy extends ExperimentAdapter {
 
                         List<GroupEvaluationMeasureResult> allResultsThisMeasure
                         = groupCaseStudyCloned.allLoopsResults.values().stream().parallel()
-                        .flatMap(resultsForThisExecution -> resultsForThisExecution.values().stream())
-                        .map(resultExecutionSplit -> resultExecutionSplit.get(groupEvaluationMeasure))
-                        .collect(Collectors.toList());
+                                .flatMap(resultsForThisExecution -> resultsForThisExecution.values().stream())
+                                .map(resultExecutionSplit -> resultExecutionSplit.get(groupEvaluationMeasure))
+                                .collect(Collectors.toList());
 
                         GroupEvaluationMeasureResult resultsAggregated
                         = groupEvaluationMeasure.agregateResults(allResultsThisMeasure);
