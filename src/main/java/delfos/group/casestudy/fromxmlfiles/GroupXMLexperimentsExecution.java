@@ -44,8 +44,8 @@ import java.util.logging.Logger;
 import org.jdom2.JDOMException;
 
 /**
- * Ejecuta los experimentos que hay definidos en el directorio indicado, leyendo
- * los XML que existen para generar los casos de estudio.
+ * Ejecuta los experimentos que hay definidos en el directorio indicado, leyendo los XML que existen para generar los
+ * casos de estudio.
  *
  * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
@@ -137,7 +137,7 @@ public class GroupXMLexperimentsExecution {
             }
         }
 
-        List<ExecuteGroupCaseStudy_Task> listOfTasks = new ArrayList<>();
+        List<ExecuteGroupCaseStudy_Task> groupCaseStudiesToExecute = new ArrayList<>();
 
         for (File datasetFile : datasetFiles) {
             try {
@@ -155,7 +155,7 @@ public class GroupXMLexperimentsExecution {
                     GroupCaseStudyConfiguration caseStudyConfiguration = GroupCaseStudyXML
                             .loadGroupCaseDescription(experimentFile);
 
-                    listOfTasks.add(new ExecuteGroupCaseStudy_Task(
+                    groupCaseStudiesToExecute.add(new ExecuteGroupCaseStudy_Task(
                             experimentsDirectoryDirectory,
                             experimentFile.getName(),
                             caseStudyConfiguration,
@@ -169,16 +169,8 @@ public class GroupXMLexperimentsExecution {
             }
         }
 
-        listOfTasks.stream().forEach(new GroupCaseStudyExecutor());
+        groupCaseStudiesToExecute.stream().forEach(new GroupCaseStudyExecutor());
 
-//        File aggregateFile = FileUtilities.addSufix(resultsDirectory, File.separator + "aggregateResults.xls");
-//        try {
-//            GroupCaseStudyExcel.aggregateExcels(
-//                    resultsDirectory.listFiles(new FileFilterByExtension(false, "xls")),
-//                    aggregateFile);
-//        } catch (WriteException ex) {
-//            Logger.getLogger(GroupXMLexperimentsExecution.class.getName()).log(Level.SEVERE, null, ex);
-//        }
         Global.showln("Finished.");
         Global.removeErrorOutputLogger(errLogWriter);
         Global.removeStandardOutputLogger(stdLogWriter);
