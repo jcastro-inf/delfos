@@ -16,6 +16,8 @@
  */
 package delfos.rs.collaborativefiltering.als;
 
+import delfos.common.exceptions.dataset.items.ItemNotFound;
+import delfos.common.exceptions.dataset.users.UserNotFound;
 import delfos.dataset.basic.item.Item;
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
@@ -74,28 +76,61 @@ public class Bias implements Serializable {
         });
     }
 
+    public double removeBias(int idUser, int idItem, double rating) {
+        double userBias = usersBias.get(idUser);
+        double itemBias = itemsBias.get(idItem);
+        double unbiasedValue = rating
+                - this.generalBias
+                - userBias
+                - itemBias;
+
+        return unbiasedValue;
+    }
+
+    public double restoreBias(int idUser, int idItem, double unbiased) {
+        double userBias = usersBias.get(idUser);
+        double itemBias = itemsBias.get(idItem);
+        double unbiasedValue = unbiased
+                + this.generalBias
+                + userBias
+                + itemBias;
+
+        return unbiasedValue;
+    }
+
     public Bias(DatasetLoader<? extends Rating> datasetLoader) {
 
         generalBias = datasetLoader.getRatingsDataset().getMeanRating();
 
         usersBias = datasetLoader.getUsersDataset().parallelStream().collect(Collectors.toMap(user -> user.getId(), user -> {
-            double userBias = datasetLoader.getRatingsDataset()
-                    .getUserRatingsRated(user.getId()).values()
-                    .parallelStream()
-                    .mapToDouble(rating -> rating.getRatingValue().doubleValue() - generalBias)
-                    .average()
-                    .orElse(0);
-            return userBias;
+            double userBias;
+
+            try {
+                userBias = datasetLoader.getRatingsDataset()
+                        .getUserRatingsRated(user.getId()).values()
+                        .parallelStream()
+                        .mapToDouble(rating -> rating.getRatingValue().doubleValue() - generalBias)
+                        .average()
+                        .orElse(0);
+                return userBias;
+            } catch (UserNotFound ex) {
+                return 0.0;
+            }
         }));
 
         itemsBias = datasetLoader.getContentDataset().parallelStream().collect(Collectors.toMap(item -> item.getId(), item -> {
-            double itemBias = datasetLoader.getRatingsDataset()
-                    .getItemRatingsRated(item.getId()).values()
-                    .parallelStream()
-                    .mapToDouble(rating -> rating.getRatingValue().doubleValue() - generalBias - usersBias.get(rating.getUser().getId()))
-                    .average()
-                    .orElse(0);
-            return itemBias;
+            double itemBias;
+            try {
+                itemBias = datasetLoader.getRatingsDataset()
+                        .getItemRatingsRated(item.getId()).values()
+                        .parallelStream()
+                        .mapToDouble(rating -> rating.getRatingValue().doubleValue() - generalBias - usersBias.get(rating.getUser().getId()))
+                        .average()
+                        .orElse(0);
+                return itemBias;
+            } catch (ItemNotFound ex) {
+                return 0.0;
+            }
         }));
     }
 

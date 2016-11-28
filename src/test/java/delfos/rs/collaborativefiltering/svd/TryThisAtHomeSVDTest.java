@@ -186,6 +186,7 @@ public class TryThisAtHomeSVDTest extends DelfosTest {
     @Test
     public void testInML100K() {
         TryThisAtHomeSVD svd = new TryThisAtHomeSVD(20, 20);
+        svd.setNormalizeWithUserMean(true);
         svd.setSeedValue(0);
 
         DatasetLoader<? extends Rating> datasetLoader = ConfiguredDatasetsFactory.getInstance().getDatasetLoader("ml-100k");

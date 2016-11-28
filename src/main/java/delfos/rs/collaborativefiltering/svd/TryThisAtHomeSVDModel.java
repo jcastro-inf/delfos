@@ -41,7 +41,7 @@ import java.util.stream.IntStream;
  */
 public class TryThisAtHomeSVDModel implements Serializable {
 
-    private static final long serialVersionUID = 108L;
+    private static final long serialVersionUID = 109L;
     /**
      * Matriz para guardar los valores que describen a cada usuario. Es una matriz de vectores, cada vector indica el
      * perfil del usuario i
@@ -102,6 +102,38 @@ public class TryThisAtHomeSVDModel implements Serializable {
 
         this._itemFeatures = itemFeatures;
         this._itemsIndex = itemsIndex;
+    }
+
+    /**
+     * Crea el modelo a partir de las matrices de características para los usuarios y productos.
+     *
+     * @param userFeatures Matriz de características de los usuarios.
+     * @param usersIndex Índice que indica en qué fila de la matriz de características de los usuarios están las
+     * características de un usuario.
+     * @param itemFeatures Matriz de características de los productos.
+     * @param itemsIndex Índice que indica en qué fila de la matriz de características de los productos están las
+     * características de un producto.
+     * @param bias
+     */
+    public TryThisAtHomeSVDModel(List<List<Double>> userFeatures, TreeMap<Integer, Integer> usersIndex, List<List<Double>> itemFeatures, TreeMap<Integer, Integer> itemsIndex, Bias bias) {
+
+        if (userFeatures.size() != usersIndex.size()) {
+            throw new IllegalArgumentException("The feature matrix and the user index do not have the same size.");
+        }
+        if (itemFeatures.size() != itemsIndex.size()) {
+            throw new IllegalArgumentException("The feature matrix and the item index do not have the same size.");
+        }
+
+        if (userFeatures.get(0).size() != itemFeatures.get(0).size()) {
+            throw new IllegalArgumentException("The model have different number of features for users and items.");
+        }
+
+        this._userFeatures = userFeatures;
+        this._usersIndex = usersIndex;
+
+        this._itemFeatures = itemFeatures;
+        this._itemsIndex = itemsIndex;
+        this.bias = bias;
     }
 
     public TryThisAtHomeSVDModel(Map<User, List<Double>> userFeatures, Map<Item, List<Double>> itemFeatures, Bias bias) {
@@ -298,6 +330,10 @@ public class TryThisAtHomeSVDModel implements Serializable {
         } else {
             return bias.restoreBias(user, item, predict);
         }
+    }
+
+    public Bias getBias() {
+        return bias;
     }
 
 }

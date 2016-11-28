@@ -36,6 +36,7 @@ import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RatingsDataset;
 import delfos.experiment.SeedHolder;
 import delfos.rs.collaborativefiltering.CollaborativeRecommender;
+import delfos.rs.collaborativefiltering.als.Bias;
 import delfos.rs.persistence.DatabasePersistence;
 import delfos.rs.persistence.FailureInPersistence;
 import delfos.rs.persistence.database.DAOTryThisAtHomeDatabaseModel;
@@ -155,7 +156,6 @@ public class TryThisAtHomeSVD
     @Override
     public TryThisAtHomeSVDModel buildRecommendationModel(DatasetLoader<? extends Rating> datasetLoader) throws CannotLoadRatingsDataset, CannotLoadRatingsDataset, CannotLoadContentDataset {
 
-        boolean normalise = (Boolean) getParameterValue(NORMALIZE_WITH_USER_MEAN);
         final double lrate = getLearningRate();
         final int numFeatures = (Integer) getParameterValue(NUM_FEATURES);
         final int numIterationsPerFeature = (Integer) getParameterValue(NUM_ITER_PER_FEATURE);
@@ -235,7 +235,13 @@ public class TryThisAtHomeSVD
         /**
          * Modelo que se entrena a continuación.
          */
-        TryThisAtHomeSVDModel model = new TryThisAtHomeSVDModel(usersFeatures, usersIndex, itemsFeatures, itemsIndex);
+        TryThisAtHomeSVDModel model;
+        if (isNormalised()) {
+            Bias bias = new Bias(datasetLoader);
+            model = new TryThisAtHomeSVDModel(usersFeatures, usersIndex, itemsFeatures, itemsIndex, bias);
+        } else {
+            model = new TryThisAtHomeSVDModel(usersFeatures, usersIndex, itemsFeatures, itemsIndex);
+        }
 
         double maeAnterior = 0;
         for (int indexFeature = 0; indexFeature < numFeatures; indexFeature++) {
@@ -340,7 +346,7 @@ public class TryThisAtHomeSVD
      * @throws delfos.common.exceptions.dataset.users.UserNotFound
      * @throws delfos.common.exceptions.dataset.items.ItemNotFound
      */
-    protected final double privatePredictRating(
+    protected final static double privatePredictRating(
             DatasetLoader<? extends Rating> datasetLoadder,
             TryThisAtHomeSVDModel model,
             int idUser,
@@ -371,14 +377,10 @@ public class TryThisAtHomeSVD
             Global.showWarning("Rating prediction overflow occured. Please revise learning rate parammeter");
         }
 
-        if (isNormalised()) {
-            RatingsDataset<? extends Rating> ratingsDataset = datasetLoadder.getRatingsDataset();
-            double meanRating = ratingsDataset.getMeanRating();
-            double meanRatingUser = meanRating - ratingsDataset.getMeanRatingUser(idUser);
-            double meanRatingItem = meanRating - ratingsDataset.getMeanRatingItem(idItem);
-
-            prediction = prediction + meanRating + meanRatingUser + meanRatingItem;
+        if (model.getBias() != null) {
+            prediction = model.getBias().restoreBias(idUser, idItem, prediction);
         }
+
         return prediction;
     }
 
