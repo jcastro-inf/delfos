@@ -28,7 +28,6 @@ import delfos.group.grs.consensus.ConsensusGRS;
 import delfos.group.grs.cww.CentralityWeightedAggregationGRS;
 import delfos.group.grs.filtered.GroupRecommenderSystemWithPostFilter;
 import delfos.group.grs.filtered.GroupRecommenderSystemWithPreFilter;
-import delfos.group.grs.hesitant.HesitantKnnGroupUser;
 import delfos.group.grs.mean.MeanRatingGRS;
 import delfos.group.grs.persistence.GroupRecommenderSystem_fixedFilePersistence;
 import delfos.group.grs.svd.SVDforGroup_ratingsAggregation;
@@ -65,8 +64,6 @@ public class GroupRecommenderSystemsFactory extends Factory<GroupRecommenderSyst
 
         instance.addClass(ConsensusGRS.class);
 
-        instance.addClass(HesitantKnnGroupUser.class);
-
     }
 
     public static GroupRecommenderSystemsFactory getInstance() {
@@ -77,8 +74,7 @@ public class GroupRecommenderSystemsFactory extends Factory<GroupRecommenderSyst
     }
 
     /**
-     * Mete los sistemas de recomendación en la factoría de sistemas de
-     * recomendación general.
+     * Mete los sistemas de recomendación en la factoría de sistemas de recomendación general.
      */
     public void copyInSingleUserRecommender() {
         for (Class<? extends GroupRecommenderSystem> clase : allClasses.values()) {

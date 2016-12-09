@@ -9,7 +9,6 @@ import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.experiment.casestudy.cluster.TuringPreparator;
 import delfos.experiment.validation.validationtechnique.HoldOut_Ratings;
 import delfos.group.casestudy.defaultcase.GroupCaseStudy;
-import static delfos.group.casestudy.definedcases.hesitant.experiment0.HesitantGRS_CaseStudy.SEED_VALUE;
 import delfos.group.experiment.validation.groupformation.FixedGroupSize_OnlyNGroups;
 import delfos.group.experiment.validation.groupformation.GroupFormationTechnique;
 import delfos.group.experiment.validation.predictionvalidation.NoPredictionProtocol;
@@ -44,8 +43,8 @@ public class XMLJoinTest {
 
         List<GroupFormationTechnique> groupFormationTechniques
                 = Arrays.asList(1, 2, 3).stream()
-                .map((groupSize -> new FixedGroupSize_OnlyNGroups(10, groupSize)))
-                .collect(Collectors.toList());
+                        .map((groupSize -> new FixedGroupSize_OnlyNGroups(10, groupSize)))
+                        .collect(Collectors.toList());
 
         DatasetLoader ml100k = new ConfiguredDatasetLoader("ml-100k");
 
@@ -65,7 +64,7 @@ public class XMLJoinTest {
                         .setValidationTechnique(new HoldOut_Ratings())
                         .setNumExecutions(1);
 
-                groupCaseStudy.setSeedValue(SEED_VALUE);
+                groupCaseStudy.setSeedValue(123456L);
 
                 groupCaseStudy.setAlias(
                         "_dataValidation=" + groupCaseStudy.hashDataValidation()
