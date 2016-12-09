@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -29,33 +29,27 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 
 /**
- * Guarda los parámetros definidos en una estructura para que sean fácilmente
- * accesibles en el codigo de una aplicación
+ * Guarda los parámetros definidos en una estructura para que sean fácilmente accesibles en el codigo de una aplicación
  *
  * @author jcastro-inf ( https://github.com/jcastro-inf )
  */
 public class ConsoleParameters {
 
     /**
-     * Función para inicializar este objeto a partir de los argumentos de la
-     * linea de comandos.
+     * Función para inicializar este objeto a partir de los argumentos de la linea de comandos.
      *
      * @param args Argumentos especificados en la llamada al programa.
-     * @return The console parameters object that is later used to access the
-     * command line.
-     * @throws delfos.CommandLineParametersError If a parameter has no values or
-     * a flag has values.
+     * @return The console parameters object that is later used to access the command line.
+     * @throws delfos.CommandLineParametersError If a parameter has no values or a flag has values.
      */
     public static ConsoleParameters parseArguments(String... args) throws CommandLineParametersError {
         return new ConsoleParameters(args);
     }
 
     /**
-     * Estructura de parámetros. Como clave se usan los tokens que satisfacen la
-     * expresión regular de los parametros con valores asociados y como valor,
-     * el siguiente parámetro si no satisface la expresión regular. Si el
-     * siguiente parámetro satisface la expresión regular, se asigna null y se
-     * considera que es un flag.
+     * Estructura de parámetros. Como clave se usan los tokens que satisfacen la expresión regular de los parametros con
+     * valores asociados y como valor, el siguiente parámetro si no satisface la expresión regular. Si el siguiente
+     * parámetro satisface la expresión regular, se asigna null y se considera que es un flag.
      */
     private final Map<String, List<String>> parametersWithValues;
     private final Set<String> presentFlags;
@@ -64,15 +58,13 @@ public class ConsoleParameters {
     private final String[] consoleRawParameters;
 
     /**
-     * Constructor de la estructura de parámetros. No se recomienda su uso en la
-     * programación de sistemas de recomendación.
+     * Constructor de la estructura de parámetros. No se recomienda su uso en la programación de sistemas de
+     * recomendación.
      *
      * Use only in test methods.
      *
-     * @param console Vector de cadenas con los parámetros de la línea de
-     * comandos
-     * @throws delfos.CommandLineParametersError If the parameter specification
-     * does not follow the required syntax.
+     * @param console Vector de cadenas con los parámetros de la línea de comandos
+     * @throws delfos.CommandLineParametersError If the parameter specification does not follow the required syntax.
      */
     protected ConsoleParameters(String... console) throws CommandLineParametersError {
         this.parametersWithValues = new TreeMap<>();
@@ -138,8 +130,7 @@ public class ConsoleParameters {
     }
 
     /**
-     * Comprueba si el nombre del parámetro cumple con la expresion regular
-     * -[a-zA-Z][a-zA-Z]*[0-9]*.
+     * Comprueba si el nombre del parámetro cumple la sintaxis requerida.
      *
      * <p>
      * <p>
@@ -153,7 +144,7 @@ public class ConsoleParameters {
      * @return True si es un parámetro válido, false en otro caso
      */
     private boolean isValidParameter(String parameter) {
-        return parameter.matches("-[a-zA-Z][a-zA-Z0-9]*((-[a-zA-Z][a-zA-Z0-9]*)*)");
+        return parameter.matches("-[a-zA-Z][a-zA-Z0-9]*(-[a-zA-Z0-9]*)*");
     }
 
     /**
@@ -175,12 +166,12 @@ public class ConsoleParameters {
      * @return true if it is a valid flag.
      */
     private boolean isValidFlag(String parameter) {
-        return parameter.matches("--[a-zA-Z][a-zA-Z0-9]*((-[a-zA-Z][a-zA-Z0-9]*)*)");
+        return parameter.matches("--[a-zA-Z][a-zA-Z0-9]*((-[a-zA-Z0-9]*)*)");
     }
 
     /**
-     * True si el parametro empieza por un guión seguido de un caracter
-     * alfanumérico.
+     * True si el parametro cumple la sintaxis de flag o parametro con valores, es decir, si empieza por un guión
+     * seguido de un caracter alfanumérico.
      *
      * @param parameter
      * @return
@@ -190,12 +181,11 @@ public class ConsoleParameters {
     }
 
     /**
-     * Comprueba si un nombre de parámetro aparece en la línea de comandos de la
-     * llamada al programa
+     * Comprueba si un nombre de parámetro aparece en la línea de comandos de la llamada al programa
      *
      * @param parameter Cadena con el nombre del parámetro buscado
-     * @return Devuelve true si el parámetro aparece en la linea de comandos del
-     * programa, tenga o no asociado un valor. Devuelve false en otro caso.
+     * @return Devuelve true si el parámetro aparece en la linea de comandos del programa, tenga o no asociado un valor.
+     * Devuelve false en otro caso.
      *
      * @throws IllegalArgumentException El parámetro indicado no es válido.
      */
@@ -214,8 +204,7 @@ public class ConsoleParameters {
      *
      * @param flag Flag that this method searches for.
      * @return true if the flag is present, false otherwise.
-     * @throws IllegalArgumentException The flag do not have the right syntax.
-     * Check {@link delfos.ConsoleParameters#isValidFlag(java.lang.String) function.
+     * @throws IllegalArgumentException The flag do not have the right syntax. Check {@link delfos.ConsoleParameters#isValidFlag(java.lang.String) function.
      */
     public boolean isFlagDefined(String flag) {
         if (isValidFlag(flag)) {
@@ -244,18 +233,16 @@ public class ConsoleParameters {
     }
 
     /**
-     * Devuelve el valor asociado al parámetro dado. Si el parámetro tiene
-     * múltiples valores, devuelve el primero.
+     * Devuelve el valor asociado al parámetro dado. Si el parámetro tiene múltiples valores, devuelve el primero.
      *
      * @param parameter Nombre del parámetro para el que se busca su valor.
      * @return Valor del parámetro indicado.
      *
-     * @throws UndefinedParameterException Cuando el parámetro indicado no está
-     * presente en la llamada por línea de comandos o cuando no tiene valores
-     * asociados al mismo.
+     * @throws UndefinedParameterException Cuando el parámetro indicado no está presente en la llamada por línea de
+     * comandos o cuando no tiene valores asociados al mismo.
      *
-     * @throws IllegalArgumentException El parámetro indicado no es válido. Debe
-     * satisfacer la siguiente expresión regular:
+     * @throws IllegalArgumentException El parámetro indicado no es válido. Debe satisfacer la siguiente expresión
+     * regular:
      * <b>-[a-zA-Z][a-zA-Z]*[0-9]*</b>
      */
     public String getValue(String parameter) throws UndefinedParameterException {
