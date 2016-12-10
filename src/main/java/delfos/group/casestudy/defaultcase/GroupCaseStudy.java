@@ -16,6 +16,7 @@
  */
 package delfos.group.casestudy.defaultcase;
 
+import delfos.common.Global;
 import delfos.common.exceptions.dataset.CannotLoadContentDataset;
 import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
 import delfos.common.exceptions.dataset.CannotLoadTrustDataset;
@@ -64,6 +65,7 @@ import java.util.TreeMap;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 /**
  *
@@ -181,11 +183,21 @@ public class GroupCaseStudy extends ExperimentAdapter {
                 numberOfExecutionSplits,
                 this::setExperimentProgress);
 
-        IntStream.range(0, getNumExecutions()).boxed().parallel()
-                .flatMap(execution -> {
+        Stream<Integer> executionsStream = IntStream.range(0, getNumExecutions()).boxed();
 
-                    return IntStream.range(0, getNumSplits())
-                            .boxed().parallel()
+        if (Global.isParallelExecutionSplits()) {
+            executionsStream = executionsStream.parallel();
+        }
+
+        executionsStream
+                .flatMap(execution -> {
+                    Stream<Integer> splitsStream = IntStream.range(0, getNumSplits()).boxed();
+
+                    if (Global.isParallelExecutionSplits()) {
+                        splitsStream = splitsStream.parallel();
+                    }
+
+                    return splitsStream
                             .map(split -> {
                                 return new ExecutionSplitConsumer(
                                         execution,

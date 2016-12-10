@@ -180,6 +180,16 @@ public class Global {
         printStandard(message + "\n");
     }
 
+    private static boolean parallelExecutionSplits = true;
+
+    public static boolean isParallelExecutionSplits() {
+        return parallelExecutionSplits;
+    }
+
+    public static void setParallelExecutionSplits(boolean parallelExecutionSplits) {
+        Global.parallelExecutionSplits = parallelExecutionSplits;
+    }
+
     public enum MessageLevel {
 
         /**

@@ -41,6 +41,8 @@ public class Constants {
 
     private static File tempDirectory = new File("." + File.separator + "temp");
     public static int COMPARE_NUM_DECIMALS = 4;
+    private static final String DISABLE_PARALLEL_EXECUTIONS_WITHIN_GROUP_CASE_STUDY = "--single-executions";
+    private static final String ENABLE_PARALLEL_EXECUTIONS_WITHIN_GROUP_CASE_STUDY = "--parallel-executions";
 
     public static void getLibraryGeneralParameters(ConsoleParameters consoleParameters) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
@@ -172,6 +174,17 @@ public class Constants {
 
         if (consoleParameters.isFlagDefined(PRINT_FULL_XML)) {
             Constants.setPrintFullXML(true);
+        }
+
+        if (consoleParameters.isFlagDefined(DISABLE_PARALLEL_EXECUTIONS_WITHIN_GROUP_CASE_STUDY) && consoleParameters.isFlagDefined(ENABLE_PARALLEL_EXECUTIONS_WITHIN_GROUP_CASE_STUDY)) {
+
+        } else if (consoleParameters.isFlagDefined(DISABLE_PARALLEL_EXECUTIONS_WITHIN_GROUP_CASE_STUDY)) {
+            System.out.println("Forced single execution: " + DISABLE_PARALLEL_EXECUTIONS_WITHIN_GROUP_CASE_STUDY + " (single execution/split execution in the group case study)");
+            Global.setParallelExecutionSplits(false);
+        } else if (consoleParameters.isFlagDefined(ENABLE_PARALLEL_EXECUTIONS_WITHIN_GROUP_CASE_STUDY)) {
+            Global.setParallelExecutionSplits(true);
+        } else {
+
         }
     }
 
