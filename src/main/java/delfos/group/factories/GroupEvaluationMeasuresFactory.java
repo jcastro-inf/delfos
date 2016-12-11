@@ -45,6 +45,17 @@ import delfos.group.results.groupevaluationmeasures.diversity.ils.IntraListSimil
 import delfos.group.results.groupevaluationmeasures.diversity.ils.IntraListSimilarity_08;
 import delfos.group.results.groupevaluationmeasures.diversity.ils.IntraListSimilarity_09;
 import delfos.group.results.groupevaluationmeasures.diversity.ils.IntraListSimilarity_10;
+import delfos.group.results.groupevaluationmeasures.novelty.miuf.MIUF;
+import delfos.group.results.groupevaluationmeasures.novelty.miuf.MIUF_01;
+import delfos.group.results.groupevaluationmeasures.novelty.miuf.MIUF_02;
+import delfos.group.results.groupevaluationmeasures.novelty.miuf.MIUF_03;
+import delfos.group.results.groupevaluationmeasures.novelty.miuf.MIUF_04;
+import delfos.group.results.groupevaluationmeasures.novelty.miuf.MIUF_05;
+import delfos.group.results.groupevaluationmeasures.novelty.miuf.MIUF_06;
+import delfos.group.results.groupevaluationmeasures.novelty.miuf.MIUF_07;
+import delfos.group.results.groupevaluationmeasures.novelty.miuf.MIUF_08;
+import delfos.group.results.groupevaluationmeasures.novelty.miuf.MIUF_09;
+import delfos.group.results.groupevaluationmeasures.novelty.miuf.MIUF_10;
 import delfos.group.results.groupevaluationmeasures.precisionrecall.PRSpaceGroups;
 import delfos.group.results.groupevaluationmeasures.precisionrecall.Precision_01;
 import delfos.group.results.groupevaluationmeasures.precisionrecall.Precision_02;
@@ -138,6 +149,19 @@ public class GroupEvaluationMeasuresFactory extends Factory<GroupEvaluationMeasu
         instance.addClass(Precision_08.class);
         instance.addClass(Precision_09.class);
         instance.addClass(Precision_10.class);
+
+        //Novelty
+        instance.addClass(MIUF.class);
+        instance.addClass(MIUF_01.class);
+        instance.addClass(MIUF_02.class);
+        instance.addClass(MIUF_03.class);
+        instance.addClass(MIUF_04.class);
+        instance.addClass(MIUF_05.class);
+        instance.addClass(MIUF_06.class);
+        instance.addClass(MIUF_07.class);
+        instance.addClass(MIUF_08.class);
+        instance.addClass(MIUF_09.class);
+        instance.addClass(MIUF_10.class);
 
         //Time measures
         instance.addClass(ModelBuildTime.class);
