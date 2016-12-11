@@ -192,7 +192,11 @@ public class MIUF extends GroupEvaluationMeasure {
         return new GroupEvaluationMeasureResult(this, measureValue);
     }
 
-    public MIUF(int listSizeOfMeasure) {
+    public MIUF() {
+        this.listSizeOfMeasure = 5;
+    }
+
+    protected MIUF(int listSizeOfMeasure) {
         this.listSizeOfMeasure = listSizeOfMeasure;
 
     }
