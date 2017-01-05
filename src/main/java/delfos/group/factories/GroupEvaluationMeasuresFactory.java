@@ -56,6 +56,17 @@ import delfos.group.results.groupevaluationmeasures.novelty.miuf.MIUF_07;
 import delfos.group.results.groupevaluationmeasures.novelty.miuf.MIUF_08;
 import delfos.group.results.groupevaluationmeasures.novelty.miuf.MIUF_09;
 import delfos.group.results.groupevaluationmeasures.novelty.miuf.MIUF_10;
+import delfos.group.results.groupevaluationmeasures.novelty.usu.UserSpecificUnexpectedness;
+import delfos.group.results.groupevaluationmeasures.novelty.usu.UserSpecificUnexpectedness_01;
+import delfos.group.results.groupevaluationmeasures.novelty.usu.UserSpecificUnexpectedness_02;
+import delfos.group.results.groupevaluationmeasures.novelty.usu.UserSpecificUnexpectedness_03;
+import delfos.group.results.groupevaluationmeasures.novelty.usu.UserSpecificUnexpectedness_04;
+import delfos.group.results.groupevaluationmeasures.novelty.usu.UserSpecificUnexpectedness_05;
+import delfos.group.results.groupevaluationmeasures.novelty.usu.UserSpecificUnexpectedness_06;
+import delfos.group.results.groupevaluationmeasures.novelty.usu.UserSpecificUnexpectedness_07;
+import delfos.group.results.groupevaluationmeasures.novelty.usu.UserSpecificUnexpectedness_08;
+import delfos.group.results.groupevaluationmeasures.novelty.usu.UserSpecificUnexpectedness_09;
+import delfos.group.results.groupevaluationmeasures.novelty.usu.UserSpecificUnexpectedness_10;
 import delfos.group.results.groupevaluationmeasures.precisionrecall.PRSpaceGroups;
 import delfos.group.results.groupevaluationmeasures.precisionrecall.Precision_01;
 import delfos.group.results.groupevaluationmeasures.precisionrecall.Precision_02;
@@ -162,6 +173,19 @@ public class GroupEvaluationMeasuresFactory extends Factory<GroupEvaluationMeasu
         instance.addClass(MIUF_08.class);
         instance.addClass(MIUF_09.class);
         instance.addClass(MIUF_10.class);
+
+        //Novelty
+        instance.addClass(UserSpecificUnexpectedness.class);
+        instance.addClass(UserSpecificUnexpectedness_01.class);
+        instance.addClass(UserSpecificUnexpectedness_02.class);
+        instance.addClass(UserSpecificUnexpectedness_03.class);
+        instance.addClass(UserSpecificUnexpectedness_04.class);
+        instance.addClass(UserSpecificUnexpectedness_05.class);
+        instance.addClass(UserSpecificUnexpectedness_06.class);
+        instance.addClass(UserSpecificUnexpectedness_07.class);
+        instance.addClass(UserSpecificUnexpectedness_08.class);
+        instance.addClass(UserSpecificUnexpectedness_09.class);
+        instance.addClass(UserSpecificUnexpectedness_10.class);
 
         //Time measures
         instance.addClass(ModelBuildTime.class);
