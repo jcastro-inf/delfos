@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -19,8 +19,6 @@ package delfos.group.factories;
 import delfos.factories.Factory;
 import delfos.group.results.groupevaluationmeasures.AreaUnderRoc;
 import delfos.group.results.groupevaluationmeasures.Coverage;
-import delfos.group.results.groupevaluationmeasures.GroupAverageNumberOfRecommendations;
-import delfos.group.results.groupevaluationmeasures.GroupAverageNumberOfRequests;
 import delfos.group.results.groupevaluationmeasures.GroupEvaluationMeasure;
 import delfos.group.results.groupevaluationmeasures.MAE;
 import delfos.group.results.groupevaluationmeasures.NDCG;
@@ -39,15 +37,35 @@ import delfos.group.results.groupevaluationmeasures.diversity.ils.IntraListSimil
 import delfos.group.results.groupevaluationmeasures.diversity.ils.IntraListSimilarity_08;
 import delfos.group.results.groupevaluationmeasures.diversity.ils.IntraListSimilarity_09;
 import delfos.group.results.groupevaluationmeasures.diversity.ils.IntraListSimilarity_10;
+import delfos.group.results.groupevaluationmeasures.novelty.miuf.MIUF;
+import delfos.group.results.groupevaluationmeasures.novelty.miuf.MIUF_01;
+import delfos.group.results.groupevaluationmeasures.novelty.miuf.MIUF_02;
+import delfos.group.results.groupevaluationmeasures.novelty.miuf.MIUF_03;
+import delfos.group.results.groupevaluationmeasures.novelty.miuf.MIUF_04;
+import delfos.group.results.groupevaluationmeasures.novelty.miuf.MIUF_05;
+import delfos.group.results.groupevaluationmeasures.novelty.miuf.MIUF_06;
+import delfos.group.results.groupevaluationmeasures.novelty.miuf.MIUF_07;
+import delfos.group.results.groupevaluationmeasures.novelty.miuf.MIUF_08;
+import delfos.group.results.groupevaluationmeasures.novelty.miuf.MIUF_09;
+import delfos.group.results.groupevaluationmeasures.novelty.miuf.MIUF_10;
+import delfos.group.results.groupevaluationmeasures.novelty.usu.UserSpecificUnexpectedness;
+import delfos.group.results.groupevaluationmeasures.novelty.usu.UserSpecificUnexpectedness_01;
+import delfos.group.results.groupevaluationmeasures.novelty.usu.UserSpecificUnexpectedness_02;
+import delfos.group.results.groupevaluationmeasures.novelty.usu.UserSpecificUnexpectedness_03;
+import delfos.group.results.groupevaluationmeasures.novelty.usu.UserSpecificUnexpectedness_04;
+import delfos.group.results.groupevaluationmeasures.novelty.usu.UserSpecificUnexpectedness_05;
+import delfos.group.results.groupevaluationmeasures.novelty.usu.UserSpecificUnexpectedness_06;
+import delfos.group.results.groupevaluationmeasures.novelty.usu.UserSpecificUnexpectedness_07;
+import delfos.group.results.groupevaluationmeasures.novelty.usu.UserSpecificUnexpectedness_08;
+import delfos.group.results.groupevaluationmeasures.novelty.usu.UserSpecificUnexpectedness_09;
+import delfos.group.results.groupevaluationmeasures.novelty.usu.UserSpecificUnexpectedness_10;
 import delfos.group.results.groupevaluationmeasures.precisionrecall.PRSpaceGroups;
 import delfos.group.results.groupevaluationmeasures.printers.PrintGroupRatingsToPlainText;
 import delfos.group.results.groupevaluationmeasures.printers.PrintGroups;
-import delfos.group.results.groupevaluationmeasures.printers.PrintNeighborsToXML;
 import delfos.group.results.groupevaluationmeasures.printers.PrintTestSet;
 
 /**
- * Clase que conoce todas las medidas de evaluación a grupos y permite
- * recuperarlas para su uso en los casos de estudio.
+ * Clase que conoce todas las medidas de evaluación a grupos y permite recuperarlas para su uso en los casos de estudio.
  *
  * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
@@ -61,15 +79,12 @@ public class GroupEvaluationMeasuresFactory extends Factory<GroupEvaluationMeasu
         instance = new GroupEvaluationMeasuresFactory();
 
         //Medidas relacionadas con la cobertura.
-        instance.addClass(GroupAverageNumberOfRecommendations.class);
-        instance.addClass(GroupAverageNumberOfRequests.class);
         instance.addClass(Coverage.class);
         instance.addClass(NumberOfRecommendations.class);
         instance.addClass(NumberOfRequests.class);
 
         //Grupos evaluados
         instance.addClass(PrintGroups.class);
-        instance.addClass(PrintNeighborsToXML.class);
         instance.addClass(PrintGroupRatingsToPlainText.class);
 
         //Decision making measures
@@ -99,6 +114,36 @@ public class GroupEvaluationMeasuresFactory extends Factory<GroupEvaluationMeasu
         instance.addClass(IntraListSimilarity_08.class);
         instance.addClass(IntraListSimilarity_09.class);
         instance.addClass(IntraListSimilarity_10.class);
+
+        //Precision
+        instance.addClass(IntraListSimilarity.class);
+
+        //Novelty
+        instance.addClass(MIUF.class);
+        instance.addClass(MIUF_01.class);
+        instance.addClass(MIUF_02.class);
+        instance.addClass(MIUF_03.class);
+        instance.addClass(MIUF_04.class);
+        instance.addClass(MIUF_05.class);
+        instance.addClass(MIUF_06.class);
+        instance.addClass(MIUF_07.class);
+        instance.addClass(MIUF_08.class);
+        instance.addClass(MIUF_09.class);
+        instance.addClass(MIUF_10.class);
+
+        //Novelty
+        instance.addClass(UserSpecificUnexpectedness.class);
+        instance.addClass(UserSpecificUnexpectedness_01.class);
+        instance.addClass(UserSpecificUnexpectedness_02.class);
+        instance.addClass(UserSpecificUnexpectedness_03.class);
+        instance.addClass(UserSpecificUnexpectedness_04.class);
+        instance.addClass(UserSpecificUnexpectedness_05.class);
+        instance.addClass(UserSpecificUnexpectedness_06.class);
+        instance.addClass(UserSpecificUnexpectedness_07.class);
+        instance.addClass(UserSpecificUnexpectedness_08.class);
+        instance.addClass(UserSpecificUnexpectedness_09.class);
+        instance.addClass(UserSpecificUnexpectedness_10.class);
+
     }
 
     private GroupEvaluationMeasuresFactory() {
