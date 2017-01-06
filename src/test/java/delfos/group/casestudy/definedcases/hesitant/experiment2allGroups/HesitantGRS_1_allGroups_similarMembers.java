@@ -9,13 +9,17 @@ import delfos.dataset.basic.rating.RelevanceCriteria;
 import delfos.experiment.casestudy.cluster.TuringPreparator;
 import delfos.group.casestudy.defaultcase.GroupCaseStudy;
 import delfos.group.experiment.validation.groupformation.GroupFormationTechnique;
+import delfos.group.experiment.validation.groupformation.SimilarMembers;
 import delfos.group.experiment.validation.predictionvalidation.NoPredictionProtocol;
 import delfos.group.experiment.validation.validationtechniques.CrossFoldValidation_groupRatedItems;
 import delfos.group.factories.GroupEvaluationMeasuresFactory;
 import delfos.group.grs.GroupRecommenderSystem;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 import org.junit.Test;
 
 public class HesitantGRS_1_allGroups_similarMembers extends DelfosTest {
@@ -35,7 +39,7 @@ public class HesitantGRS_1_allGroups_similarMembers extends DelfosTest {
 
         List<GroupCaseStudy> groupCaseStudys = new ArrayList<>();
 
-        for (GroupFormationTechnique groupFormationTechnique : HesitantGRS_configuration.getGroupFormationTechnique()) {
+        for (GroupFormationTechnique groupFormationTechnique : getGroupFormationTechnique()) {
             for (GroupRecommenderSystem groupRecommenderSystem : HesitantGRS_configuration.getGRSs()) {
                 GroupCaseStudy groupCaseStudy = new GroupCaseStudy(
                         null,
@@ -69,4 +73,16 @@ public class HesitantGRS_1_allGroups_similarMembers extends DelfosTest {
                 .sizeOfAllExperimentsInDirectory(experimentDirectory)
                 + " experiments");
     }
+
+    public static final Collection<GroupFormationTechnique> getGroupFormationTechnique() {
+        return Arrays.asList(
+                20, 25, 50, 100, 200, 500)
+                .stream()
+                .map((groupSize) -> {
+                    GroupFormationTechnique gft = new SimilarMembers(groupSize);
+                    return gft;
+                }).collect(Collectors.toList());
+
+    }
+
 }
