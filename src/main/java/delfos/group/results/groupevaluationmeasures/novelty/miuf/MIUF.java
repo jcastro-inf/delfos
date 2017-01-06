@@ -19,6 +19,7 @@ package delfos.group.results.groupevaluationmeasures.novelty.miuf;
 import delfos.common.statisticalfuncions.MeanIterative;
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
+import delfos.dataset.basic.rating.RatingsDataset;
 import delfos.dataset.basic.rating.RelevanceCriteria;
 import delfos.group.casestudy.parallelisation.SingleGroupRecommendationTaskInput;
 import delfos.group.casestudy.parallelisation.SingleGroupRecommendationTaskOutput;
@@ -158,6 +159,7 @@ public class MIUF extends GroupEvaluationMeasure {
     public GroupEvaluationMeasureResult getMeasureResult(
             GroupRecommenderSystemResult groupRecommenderSystemResult,
             DatasetLoader<? extends Rating> originalDatasetLoader,
+            RatingsDataset<? extends Rating> testDataset,
             RelevanceCriteria relevanceCriteria,
             DatasetLoader<? extends Rating> trainingDatasetLoader,
             DatasetLoader<? extends Rating> testDatasetLoader) {
@@ -168,14 +170,18 @@ public class MIUF extends GroupEvaluationMeasure {
                 .getGroupsOfUsers().parallelStream()
                 .filter(groupOfUsers -> {
                     SingleGroupRecommendationTaskOutput singleGroupRecommendationTaskOutput = groupRecommenderSystemResult.getGroupOutput(groupOfUsers);
-                    return !singleGroupRecommendationTaskOutput.getRecommendations().getRecommendations().isEmpty();
+                    return !singleGroupRecommendationTaskOutput.getRecommendations().isEmpty();
                 })
                 .map(groupOfUsers -> {
 
                     SingleGroupRecommendationTaskInput singleGroupRecommendationTaskInput = groupRecommenderSystemResult.getGroupInput(groupOfUsers);
                     SingleGroupRecommendationTaskOutput singleGroupRecommendationTaskOutput = groupRecommenderSystemResult.getGroupOutput(groupOfUsers);
 
-                    MeanByListSize meanByListSize = new MeanByListSize(singleGroupRecommendationTaskOutput.getRecommendations(), iuf_byItem);
+                    MeanByListSize meanByListSize = new MeanByListSize(
+                            new Recommendations(
+                                    groupOfUsers,
+                                    singleGroupRecommendationTaskOutput.getRecommendations()),
+                            iuf_byItem);
 
                     return meanByListSize;
                 })

@@ -20,6 +20,7 @@ import delfos.common.statisticalfuncions.MeanIterative;
 import delfos.dataset.basic.item.Item;
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
+import delfos.dataset.basic.rating.RatingsDataset;
 import delfos.dataset.basic.rating.RelevanceCriteria;
 import delfos.group.casestudy.parallelisation.SingleGroupRecommendationTaskInput;
 import delfos.group.casestudy.parallelisation.SingleGroupRecommendationTaskOutput;
@@ -197,6 +198,7 @@ public class UserSpecificUnexpectedness extends GroupEvaluationMeasure {
     public GroupEvaluationMeasureResult getMeasureResult(
             GroupRecommenderSystemResult groupRecommenderSystemResult,
             DatasetLoader<? extends Rating> originalDatasetLoader,
+            RatingsDataset<? extends Rating> testDataset,
             RelevanceCriteria relevanceCriteria,
             DatasetLoader<? extends Rating> trainingDatasetLoader,
             DatasetLoader<? extends Rating> testDatasetLoader) {
@@ -206,7 +208,7 @@ public class UserSpecificUnexpectedness extends GroupEvaluationMeasure {
                 .filter(groupOfUsers -> {
                     SingleGroupRecommendationTaskOutput singleGroupRecommendationTaskOutput = groupRecommenderSystemResult
                             .getGroupOutput(groupOfUsers);
-                    return !singleGroupRecommendationTaskOutput.getRecommendations().getRecommendations().isEmpty();
+                    return !singleGroupRecommendationTaskOutput.getRecommendations().isEmpty();
                 })
                 .map(groupOfUsers -> {
                     SingleGroupRecommendationTaskInput singleGroupRecommendationTaskInput = groupRecommenderSystemResult
@@ -215,7 +217,9 @@ public class UserSpecificUnexpectedness extends GroupEvaluationMeasure {
                     SingleGroupRecommendationTaskOutput singleGroupRecommendationTaskOutput = groupRecommenderSystemResult
                             .getGroupOutput(groupOfUsers);
 
-                    GroupRecommendations recommendations = singleGroupRecommendationTaskOutput.getRecommendations();
+                    GroupRecommendations recommendations = new GroupRecommendations(
+                            groupOfUsers,
+                            singleGroupRecommendationTaskOutput.getRecommendations());
 
                     Optional<MeanByListSize> userSpecificUnexpectedness_byMember = groupOfUsers.getMembers().stream()
                             .map((member) -> {
