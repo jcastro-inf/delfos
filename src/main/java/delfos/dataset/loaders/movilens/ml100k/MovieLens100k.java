@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -67,14 +67,8 @@ import java.util.logging.Logger;
 public class MovieLens100k extends CompleteDatasetLoaderAbstract<Rating> {
 
     private static final long serialVersionUID = 1L;
-    public final static Parameter DirectoryOfDataset = new Parameter("Directory", new DirectoryParameter(new File(
-            ".." + File.separator
-            + ".." + File.separator
-            + ".." + File.separator
-            + "Datasets" + File.separator
-            + "MovieLens" + File.separator
-            + "MovieLens-100k ratings" + File.separator
-            + "ml-100k" + File.separator)));
+    public final static Parameter DirectoryOfDataset = new Parameter("Directory", new DirectoryParameter(new File("ml-100k" + File.separator)));
+
     public final static Parameter Index_init_genres = new Parameter("Index_init_genres", new IntegerParameter(0, 1000, 5));
     private RatingsDataset<Rating> ratingsDataset = null;
     private ContentDataset contentDataset = null;
