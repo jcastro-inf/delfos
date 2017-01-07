@@ -76,7 +76,7 @@ public class UserSpecificUnexpectedness extends GroupEvaluationMeasure {
             PearsonCorrelationCoefficient pcc = new PearsonCorrelationCoefficient();
 
             List<List<Double>> recommendationsUSU = IntStream
-                    .range(0, recommendations.getRecommendations().size()).boxed()
+                    .range(0, recommendationsSorted.size()).boxed()
                     .map(listSize -> {
 
                         Recommendation recommendation = recommendationsSorted.get(listSize);
@@ -105,30 +105,28 @@ public class UserSpecificUnexpectedness extends GroupEvaluationMeasure {
 
             IntStream.range(0, recommendationsUSU.size()).boxed()
                     .parallel()
-                    .forEach(listSize -> {
-                        List<Double> usus = recommendationsUSU.subList(0, listSize + 1)
+                    .forEach(indexList -> {
+                        List<Double> usus = recommendationsUSU.subList(0, indexList + 1)
                                 .parallelStream()
                                 .flatMap(listForSize -> listForSize.parallelStream())
                                 .map(value -> value)
                                 .collect(Collectors.toList());
 
                         MeanIterative meanIterative = new MeanIterative(usus);
-                        addILS(meanIterative.getMean(), listSize);
+                        addILS(meanIterative.getMean(), indexList + 1);
 
                     });
 
         }
 
-        public void addILS(double value, int listSize) {
+        public void addILS(double value, int indexList) {
 
             synchronized (meanByListSize) {
-                while (meanByListSize.size() < listSize) {
+                while (meanByListSize.size() < indexList + 1) {
                     meanByListSize.add(new MeanIterative());
                 }
 
-                int index = listSize - 1;
-
-                meanByListSize.get(index).addValue(value);
+                meanByListSize.get(indexList).addValue(value);
             }
         }
 
