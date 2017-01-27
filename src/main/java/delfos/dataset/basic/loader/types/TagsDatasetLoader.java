@@ -16,14 +16,16 @@
  */
 package delfos.dataset.basic.loader.types;
 
-import delfos.dataset.basic.rating.Rating;
+import delfos.dataset.basic.tags.TagsDataset;
 
 /**
  *
  * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
- * @version 26-nov-2013
- * @param <RatingType>
+ * @version 26-Noviembre-2013
  */
-public interface CompleteDatasetLoader<RatingType extends Rating> extends DatasetLoader<RatingType>, ContentDatasetLoader, UsersDatasetLoader, TrustDatasetLoader {
+public interface TagsDatasetLoader {
+
+    public TagsDataset getTagsDataset();
+
 }

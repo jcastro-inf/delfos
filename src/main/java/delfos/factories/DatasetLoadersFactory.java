@@ -31,6 +31,7 @@ import delfos.dataset.loaders.epinions.trustlet.EPinionsTrustlet;
 import delfos.dataset.loaders.jester.Jester;
 import delfos.dataset.loaders.movilens.ml100k.MovieLens100k;
 import delfos.dataset.loaders.movilens.ml1m.MovieLens1Million;
+import delfos.dataset.loaders.rscoursera.RSCourseraDatasetLoader;
 import delfos.dataset.papertestdatasets.ImplicitTrustDataset;
 
 /**
@@ -75,6 +76,8 @@ public class DatasetLoadersFactory extends Factory<DatasetLoader> {
 
         //Datasets from filtering other datasets
         instance.addClass(DatasetLoader_restrictNumRatings.class);
+
+        instance.addClass(RSCourseraDatasetLoader.class);
 
     }
 
