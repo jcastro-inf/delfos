@@ -26,6 +26,7 @@ import delfos.common.parameters.restriction.IntegerParameter;
 import delfos.dataset.basic.item.Item;
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
+import delfos.dataset.basic.user.User;
 import delfos.rs.collaborativefiltering.CollaborativeRecommender;
 import delfos.rs.collaborativefiltering.knn.CommonRating;
 import delfos.rs.collaborativefiltering.knn.KnnCollaborativeRecommender;
@@ -47,16 +48,12 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
- * Sistema de recomendación basado en el filtrado colaborativo basado en
- * productos, también denominado Item-Item o filtrado colaborativo basado en
- * modelo. Este sistema de recomendación calcula un perfil de cada producto. El
- * perfil consta de los k vecinos más cercanos, es decir, los k
- * ({@link KnnModelBasedCFRS#NEIGHBORHOOD_SIZE}) productos más similares
- * ({@link KnnModelBasedCFRS#SIMILARITY_MEASURE}). La predicción de la
- * valoración de un producto i para un usuario u se realiza agregando las
- * valoraciones del usuario u sobre los productos vecinos del producto i,
- * utilizando para ello una técnica de predicción
- * ({@link KnnModelBasedCFRS#PREDICTION_TECHNIQUE})
+ * Sistema de recomendación basado en el filtrado colaborativo basado en productos, también denominado Item-Item o
+ * filtrado colaborativo basado en modelo. Este sistema de recomendación calcula un perfil de cada producto. El perfil
+ * consta de los k vecinos más cercanos, es decir, los k ({@link KnnModelBasedCFRS#NEIGHBORHOOD_SIZE}) productos más
+ * similares ({@link KnnModelBasedCFRS#SIMILARITY_MEASURE}). La predicción de la valoración de un producto i para un
+ * usuario u se realiza agregando las valoraciones del usuario u sobre los productos vecinos del producto i, utilizando
+ * para ello una técnica de predicción ({@link KnnModelBasedCFRS#PREDICTION_TECHNIQUE})
  *
  * @author jcastro-inf ( https://github.com/jcastro-inf )
  */
@@ -66,17 +63,17 @@ public class KnnModelBasedCFRS
     private static final long serialVersionUID = 1L;
 
     /**
-     * Parámetro para almacenar el número de vecinos que se almacenan en el
-     * perfil de cada producto. Si no se modifica, su valor por defecto es 20
+     * Parámetro para almacenar el número de vecinos que se almacenan en el perfil de cada producto. Si no se modifica,
+     * su valor por defecto es 20
      */
     public static final Parameter NEIGHBORHOOD_SIZE_STORE = new Parameter(
             "Neighborhood_size_store",
             new IntegerParameter(1, 9999, 1000));
 
     /**
-     * Constructor por defecto que llama al constructor por defecto de la clase
-     * padre directa {@link CollaborativeRecommender}. También asigna la suma
-     * ponderada como técnica de predicción a utilizar por defecto
+     * Constructor por defecto que llama al constructor por defecto de la clase padre directa
+     * {@link CollaborativeRecommender}. También asigna la suma ponderada como técnica de predicción a utilizar por
+     * defecto
      */
     public KnnModelBasedCFRS() {
         super();
@@ -141,7 +138,9 @@ public class KnnModelBasedCFRS
 
         int neighborhoodSize = (Integer) getParameterValue(NEIGHBORHOOD_SIZE);
 
-        List<Recommendation> recommendationList = Collections.synchronizedList(new LinkedList<>());
+        User user = datasetLoader.getUsersDataset().get(idUser);
+
+        List<Recommendation> recommendations = Collections.synchronizedList(new LinkedList<>());
         Map<Integer, ? extends Rating> targetUserRatings = datasetLoader.getRatingsDataset().getUserRatingsRated(idUser);
 
         for (int idItem : candidateItems) {
@@ -160,11 +159,12 @@ public class KnnModelBasedCFRS
             selectedNeighbors = selectedNeighbors
                     .subList(0, Math.min(selectedNeighbors.size(), neighborhoodSize));
 
-            for (Neighbor itemNeighbor : selectedNeighbors) {
-                double similarity = itemNeighbor.getSimilarity();
-                Rating rating = targetUserRatings.get(itemNeighbor.getIdNeighbor());
+            for (Neighbor neighbor : selectedNeighbors) {
+                double similarity = neighbor.getSimilarity();
+                Rating rating = targetUserRatings.get(neighbor.getIdNeighbor());
                 if (rating != null) {
-                    matchRatings.add(new MatchRating(RecommendationEntity.USER, idUser, itemNeighbor.getIdNeighbor(), rating.getRatingValue(), similarity));
+                    Item itemNeighbor = datasetLoader.getContentDataset().get(rating.getIdItem());
+                    matchRatings.add(new MatchRating(RecommendationEntity.USER, user, itemNeighbor, rating.getRatingValue().doubleValue(), similarity));
                 }
             }
 
@@ -174,21 +174,19 @@ public class KnnModelBasedCFRS
             } catch (CouldNotPredictRating ex) {
                 predictedRating = Double.NaN;
             }
-
-            recommendationList.add(new Recommendation(idItem, predictedRating));
+            final Item item = datasetLoader.getContentDataset().get(idItem);
+            recommendations.add(new Recommendation(item, predictedRating));
 
         }
-        return recommendationList;
+        return recommendations;
     }
 
     /**
-     * Computes the list of neighbors for the given item, sorted by similarity
-     * DESC.
+     * Computes the list of neighbors for the given item, sorted by similarity DESC.
      * <p>
      * <p>
-     * This method must return a Neighbor object for each item in the dataset.
-     * For the neighbors that is not possible to compute a similarity,
-     * {@link Double#NaN} similarity is assigned.
+     * This method must return a Neighbor object for each item in the dataset. For the neighbors that is not possible to
+     * compute a similarity, {@link Double#NaN} similarity is assigned.
      * <p>
      * <p>
      * The neighbors will be selected in the prediction step.
@@ -197,8 +195,7 @@ public class KnnModelBasedCFRS
      * @param item1 Target item, for which the neighbors are computed.
      * @param similarityMeasure
      * @param relevanceFactorValue
-     * @return A list wit a Neighbor object for each item in the dataset, sorted
-     * by similarity desc.
+     * @return A list wit a Neighbor object for each item in the dataset, sorted by similarity desc.
      */
     public static List<Neighbor> getNeighbors(
             DatasetLoader<? extends Rating> datasetLoader,
