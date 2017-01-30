@@ -149,6 +149,7 @@ public class CaseStudyXML {
 
         File tmp = new File(Constants.getTempDirectory().getAbsolutePath() + File.separator + dateBasedName);
 
+        FileUtilities.createDirectoriesForFileIfNotExist(tmp);
         CaseStudyXML.caseStudyToXMLFile(caseStudy, tmp);
     }
 
