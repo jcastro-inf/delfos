@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,18 +16,19 @@
  */
 package delfos.factories;
 
+import delfos.common.Global;
 import delfos.experiment.validation.validationtechnique.CrossFoldValidation_Items;
 import delfos.experiment.validation.validationtechnique.CrossFoldValidation_Ratings;
 import delfos.experiment.validation.validationtechnique.CrossFoldValidation_Users;
+import delfos.experiment.validation.validationtechnique.GivenTrainingTestInCSV;
 import delfos.experiment.validation.validationtechnique.HoldOut_Ratings;
 import delfos.experiment.validation.validationtechnique.HoldOut_Users;
 import delfos.experiment.validation.validationtechnique.NoPartitions;
 import delfos.experiment.validation.validationtechnique.ValidationTechnique;
-import delfos.common.Global;
 
 /**
- * Clase que implementa el patrón factoría para las técnicas de validación.
- * Permite ver las técnicas que hay implementadas, obtener una técnica concreta.
+ * Clase que implementa el patrón factoría para las técnicas de validación. Permite ver las técnicas que hay
+ * implementadas, obtener una técnica concreta.
  *
  * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
@@ -36,21 +37,23 @@ import delfos.common.Global;
  */
 public class ValidationTechniquesFactory extends Factory<ValidationTechnique> {
 
-    private static final ValidationTechniquesFactory instance;
+    private static final ValidationTechniquesFactory INSTANCE;
 
     public static ValidationTechniquesFactory getInstance() {
-        return instance;
+        return INSTANCE;
     }
 
     static {
         Global.showInfoMessage("Validation techniques loaded\n");
-        instance = new ValidationTechniquesFactory();
-        instance.addClass(NoPartitions.class);
-        instance.addClass(HoldOut_Ratings.class);
-        instance.addClass(HoldOut_Users.class);
-        instance.addClass(CrossFoldValidation_Ratings.class);
-        instance.addClass(CrossFoldValidation_Users.class);
-        instance.addClass(CrossFoldValidation_Items.class);
+        INSTANCE = new ValidationTechniquesFactory();
+        INSTANCE.addClass(NoPartitions.class);
+        INSTANCE.addClass(HoldOut_Ratings.class);
+        INSTANCE.addClass(HoldOut_Users.class);
+        INSTANCE.addClass(CrossFoldValidation_Ratings.class);
+        INSTANCE.addClass(CrossFoldValidation_Users.class);
+        INSTANCE.addClass(CrossFoldValidation_Items.class);
+
+        INSTANCE.addClass(GivenTrainingTestInCSV.class);
     }
 
     private ValidationTechniquesFactory() {
