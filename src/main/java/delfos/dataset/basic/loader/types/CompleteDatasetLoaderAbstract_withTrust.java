@@ -23,13 +23,13 @@ import delfos.dataset.basic.item.ContentDataset;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RatingsDataset;
 import delfos.dataset.basic.rating.RelevanceCriteria;
+import delfos.dataset.basic.tags.TagsDataset;
 import delfos.dataset.basic.trust.TrustDataset;
 import delfos.dataset.basic.user.UsersDataset;
 
 /**
- * DatasetLoader<? extends Rating> con todos los métodos posibles, dejando que
- * ocurran en tiempo de ejecución los fallos derivados de la no implementación
- * de alguna de las interfaces de los dataset loader.
+ * DatasetLoader<? extends Rating> con todos los métodos posibles, dejando que ocurran en tiempo de ejecución los fallos
+ * derivados de la no implementación de alguna de las interfaces de los dataset loader.
  *
  * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
@@ -67,4 +67,8 @@ public class CompleteDatasetLoaderAbstract_withTrust<RatingType extends Rating>
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
+    @Override
+    public TagsDataset getTagsDataset() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
 }
