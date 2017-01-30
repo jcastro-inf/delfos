@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package delfos.results.evaluationmeasures;
+package delfos.results.evaluationmeasures.prspace.recall;
 
 import delfos.ERROR_CODES;
 import delfos.common.Global;
@@ -25,6 +25,7 @@ import delfos.dataset.basic.rating.RelevanceCriteria;
 import delfos.io.xml.evaluationmeasures.confusionmatricescurve.ConfusionMatricesCurveXML;
 import delfos.results.MeasureResult;
 import delfos.results.RecommendationResults;
+import delfos.results.evaluationmeasures.EvaluationMeasure;
 import delfos.results.evaluationmeasures.confusionmatrix.ConfusionMatricesCurve;
 import delfos.rs.recommendation.Recommendation;
 import java.util.ArrayList;
@@ -35,15 +36,22 @@ import java.util.TreeMap;
 import org.jdom2.Element;
 
 /**
- * Medida de evaluación que calcula la precisión y recall a lo largo de todos
- * los posibles tamaños de la lista de recomendaciones. Muestra como valor
- * agregado la precisión suponiendo una recomendación.
- *
  * @author jcastro-inf ( https://github.com/jcastro-inf )
  */
-public class PRSpace extends EvaluationMeasure {
+public abstract class Recall extends EvaluationMeasure {
 
     private static final long serialVersionUID = 1L;
+
+    private final int listSize;
+
+    public Recall() {
+        listSize = 5;
+    }
+
+    public Recall(int listSize) {
+        this.listSize = listSize;
+
+    }
 
     @Override
     public boolean usesRatingPrediction() {
@@ -73,7 +81,7 @@ public class PRSpace extends EvaluationMeasure {
                 Map<Integer, ? extends Rating> userRatings = testDataset.getUserRatingsRated(idUser);
                 for (Recommendation r : recommendationList) {
 
-                    int idItem = r.getIdItem();
+                    int idItem = r.getItem().getId();
                     resultados.add(relevanceCriteria.isRelevant(userRatings.get(idItem).getRatingValue()));
                 }
             } catch (UserNotFound ex) {
@@ -95,14 +103,10 @@ public class PRSpace extends EvaluationMeasure {
         element.setAttribute(EvaluationMeasure.VALUE_ATTRIBUTE_NAME, Double.toString(areaUnderPR));
         element.setContent(ConfusionMatricesCurveXML.getElement(agregada));
 
-        Map<String, Double> detailedResult = new TreeMap<>();
-        for (int i = 0; i < agregada.size(); i++) {
-            double precisionAt = agregada.getPrecisionAt(i);
-            detailedResult.put("Precision@" + i, precisionAt);
-        }
+        double recall = agregada.getRecallAt(listSize);
 
         return new MeasureResult(
                 this,
-                areaUnderPR);
+                recall);
     }
 }

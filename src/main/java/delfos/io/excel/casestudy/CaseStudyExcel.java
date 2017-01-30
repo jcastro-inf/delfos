@@ -27,7 +27,7 @@ import delfos.experiment.casestudy.CaseStudy;
 import delfos.experiment.validation.predictionprotocol.PredictionProtocol;
 import delfos.experiment.validation.validationtechnique.ValidationTechnique;
 import delfos.results.evaluationmeasures.EvaluationMeasure;
-import delfos.results.evaluationmeasures.PRSpace;
+import delfos.results.evaluationmeasures.prspace.PRSpace;
 import delfos.rs.RecommenderSystem;
 import java.io.File;
 import java.io.FileNotFoundException;

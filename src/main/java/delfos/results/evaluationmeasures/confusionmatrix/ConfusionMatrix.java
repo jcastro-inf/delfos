@@ -17,7 +17,7 @@
 package delfos.results.evaluationmeasures.confusionmatrix;
 
 import java.util.Collection;
-import delfos.results.evaluationmeasures.PRSpace;
+import delfos.results.evaluationmeasures.prspace.PRSpace;
 
 /**
  * Matriz de confusión de un algoritmo de clasificación binario.
