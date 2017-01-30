@@ -55,6 +55,7 @@ import delfos.rs.RecommenderSystem;
 import delfos.rs.nonpersonalised.randomrecommender.RandomRecommender;
 import delfos.rs.recommendation.Recommendation;
 import delfos.rs.recommendation.RecommendationsToUser;
+import delfos.utils.algorithm.progress.ProgressChangedController;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -254,9 +255,19 @@ public class DefaultCaseStudy extends CaseStudy implements ParameterListener {
 
                 Global.showInfoMessage("----------------------- End of Build ----------------------------------" + "\n");
                 this.executionProgressFireEvent(getAlias() + " --> Recommendation process", 50, -1);
+
                 final RatingsDataset<? extends Rating> testRatingsDataset = pairsValidation[_conjuntoActual].test;
 
                 Collection<Integer> thisDatasetUsers = testRatingsDataset.allUsers();
+                final int numUsers = (int) thisDatasetUsers.parallelStream().map(idUser -> datasetLoader.getUsersDataset().get(idUser))
+                        .filter(user -> !predictionProtocolTechnique.getRecommendationRequests(testRatingsDataset, user.getId()).isEmpty()).count();
+
+                ProgressChangedController progressChangedController = new ProgressChangedController(
+                        getAlias() + " --> Recommendation process",
+                        numUsers,
+                        (String task, int percent, long remainingTime) -> {
+                            executionProgressFireEvent(task, percent / 2 + 50, remainingTime);
+                        });
 
                 Map<Integer, Collection<Recommendation>> predictions = thisDatasetUsers.parallelStream().map(idUser -> datasetLoader.getUsersDataset().get(idUser))
                         .filter(user -> !predictionProtocolTechnique.getRecommendationRequests(testRatingsDataset, user.getId()).isEmpty())
@@ -299,6 +310,7 @@ public class DefaultCaseStudy extends CaseStudy implements ParameterListener {
                                     .map(recommendations2 -> recommendations2.getRecommendations())
                                     .flatMap(recommendations2 -> recommendations2.stream())
                                     .collect(Collectors.toList());
+                            progressChangedController.setTaskFinished();
 
                             return new RecommendationsToUser(user, ret);
                         }).collect(Collectors.toMap(
