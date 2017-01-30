@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -23,17 +23,15 @@ import delfos.common.parameters.restriction.IntegerParameter;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RatingsDataset;
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.List;
 import java.util.Random;
 import java.util.Set;
 import java.util.TreeSet;
 
 /**
- * Técnica de validación que permite controlar de una manera avanzada el número
- * usuarios para los que se realiza una predicción y el número de valoraciones
- * que se predicen para cada uno de ellos. Consta de dos parámetros que
- * controlan el número de datos que se predicen y otro parámetro que funciona
- * como restricción
+ * Técnica de validación que permite controlar de una manera avanzada el número usuarios para los que se realiza una
+ * predicción y el número de valoraciones que se predicen para cada uno de ellos. Consta de dos parámetros que controlan
+ * el número de datos que se predicen y otro parámetro que funciona como restricción
  *
  * Esta técnica de predicción surge al comprobar que la validación
  *
@@ -70,14 +68,12 @@ public class ValidacionPersonalizada extends PredictionProtocol {
     }
 
     /**
-     * Crea la técnica de validación asignando los valores de los parámetros que
-     * controlan el número de datos que se evaluan.
+     * Crea la técnica de validación asignando los valores de los parámetros que controlan el número de datos que se
+     * evaluan.
      *
-     * @param minRatingsValue Número mínimo de ratings que un usuario tiene en
-     * el conjunto de entrenamiento
+     * @param minRatingsValue Número mínimo de ratings que un usuario tiene en el conjunto de entrenamiento
      * @param userPercentValue Porcentaje de usuarios que se comprueban
-     * @param ratingsToPredictPercentValue Porcentaje de valoraciones de un
-     * usuario que se comprueban.
+     * @param ratingsToPredictPercentValue Porcentaje de valoraciones de un usuario que se comprueban.
      */
     public ValidacionPersonalizada(int minRatingsValue, double userPercentValue, double ratingsToPredictPercentValue) {
         addParameter(minRatings);
@@ -90,7 +86,7 @@ public class ValidacionPersonalizada extends PredictionProtocol {
     }
 
     @Override
-    public Collection<Set<Integer>> getRecommendationRequests(RatingsDataset<? extends Rating> testRatingsDataset, int idUser) throws UserNotFound {
+    public List<Set<Integer>> getRecommendationRequests(RatingsDataset<? extends Rating> testRatingsDataset, int idUser) throws UserNotFound {
         Random random = new Random(getSeedValue());
 
         double userPercentValue = (Double) getParameterValue(userPercent);
@@ -116,7 +112,7 @@ public class ValidacionPersonalizada extends PredictionProtocol {
             extraidos.add(itemsRated[index]);
         }
 
-        Collection<Set<Integer>> ret = new ArrayList<>(extraidos.size());
+        List<Set<Integer>> ret = new ArrayList<>(extraidos.size());
         ret.add(extraidos);
         return ret;
     }

@@ -61,10 +61,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
-import java.util.TreeSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 /**
  * Clase encargada de realizar las ejecuciones de los sistemas de recomendación tradicionales, es decir, single user,
@@ -254,21 +254,28 @@ public class DefaultCaseStudy extends CaseStudy implements ParameterListener {
 
                 Global.showInfoMessage("----------------------- End of Build ----------------------------------" + "\n");
                 this.executionProgressFireEvent(getAlias() + " --> Recommendation process", 50, -1);
+                final RatingsDataset<? extends Rating> testRatingsDataset = pairsValidation[_conjuntoActual].test;
 
-                Collection<Integer> thisDatasetUsers = pairsValidation[_conjuntoActual].test.allUsers();
+                Collection<Integer> thisDatasetUsers = testRatingsDataset.allUsers();
 
                 Map<Integer, Collection<Recommendation>> predictions = thisDatasetUsers.parallelStream().map(idUser -> datasetLoader.getUsersDataset().get(idUser))
-                        .filter(user -> !predictionProtocolTechnique.getRecommendationRequests(pairsValidation[_conjuntoActual].test, user.getId()).isEmpty())
+                        .filter(user -> !predictionProtocolTechnique.getRecommendationRequests(testRatingsDataset, user.getId()).isEmpty())
                         .map(user -> {
-                            List<Recommendation> ret = predictionProtocolTechnique
-                                    .getRecommendationRequests(pairsValidation[_conjuntoActual].test, user.getId())
-                                    .parallelStream()
-                                    .map(candidateItems -> {
+                            List<Set<Integer>> recommendationRequests = predictionProtocolTechnique
+                                    .getRecommendationRequests(testRatingsDataset, user.getId());
+                            List<Set<Integer>> ratingsToHide = predictionProtocolTechnique
+                                    .getRatingsToHide(testRatingsDataset, user.getId());
 
+                            List<Recommendation> ret = IntStream.range(0, recommendationRequests.size())
+                                    .boxed()
+                                    .parallel()
+                                    .map(i -> {
+
+                                        Set<Integer> candidateItems = recommendationRequests.get(i);
                                         Integer idUser = user.getId();
                                         try {
                                             Map<Integer, Set<Integer>> predictionRatings = new TreeMap<>();
-                                            predictionRatings.put(idUser, new TreeSet<>(candidateItems));
+                                            predictionRatings.put(idUser, ratingsToHide.get(i));
                                             RatingsDataset<Rating> predictionRatingsDataset = ValidationDatasets.getInstance().createTrainingDataset((RatingsDataset<Rating>) datasetLoader.getRatingsDataset(), predictionRatings);
                                             DatasetLoader<Rating> predictionDatasetLoader = new DatasetLoaderGivenRatingsDataset<>(
                                                     datasetLoader,
@@ -307,8 +314,7 @@ public class DefaultCaseStudy extends CaseStudy implements ParameterListener {
                 multiThreadExecutionManagerEvaluationMeasures.addTask(new DefaultCaseStudyEvaluationMeasures_Task(
                         _ejecucionActual,
                         _conjuntoActual,
-                        esr,
-                        pairsValidation[_conjuntoActual].test,
+                        esr, testRatingsDataset,
                         evaluationMeasures,
                         relevanceCriteria));
 

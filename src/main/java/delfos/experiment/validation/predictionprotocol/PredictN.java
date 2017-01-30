@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -24,15 +24,15 @@ import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RatingsDataset;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Random;
 import java.util.Set;
 import java.util.TreeSet;
 
 /**
- * Implementa la validación de predicción que realiza una validación que predice
- * N valoraciones de cada usuario. Por lo tanto, en cada perfil de usuario
- * quedarán X-n valoraciones, donde X es el número d evaloraciones original que
- * el usuario había hecho.
+ * Implementa la validación de predicción que realiza una validación que predice N valoraciones de cada usuario. Por lo
+ * tanto, en cada perfil de usuario quedarán X-n valoraciones, donde X es el número d evaloraciones original que el
+ * usuario había hecho.
  *
  * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
@@ -56,8 +56,8 @@ public class PredictN extends PredictionProtocol {
     }
 
     /**
-     * Constructor que asigna el n especificado en el parámetro <code>n</code>
-     * para que se prediga dicho número de valoraciones de cada usuario
+     * Constructor que asigna el n especificado en el parámetro <code>n</code> para que se prediga dicho número de
+     * valoraciones de cada usuario
      *
      * @param nValue Cantidad de valoraciones que se predicen para un usuario
      */
@@ -67,7 +67,7 @@ public class PredictN extends PredictionProtocol {
     }
 
     @Override
-    public Collection<Set<Integer>> getRecommendationRequests(RatingsDataset<? extends Rating> testRatingsDataset, int idUser) throws UserNotFound {
+    public List<Set<Integer>> getRecommendationRequests(RatingsDataset<? extends Rating> testRatingsDataset, int idUser) throws UserNotFound {
         Random random = new Random(getSeedValue());
         Collection<Integer> userRated = new TreeSet<>(testRatingsDataset.getUserRated(idUser));
         Set<Integer> extraidos = new TreeSet<>();
@@ -77,7 +77,7 @@ public class PredictN extends PredictionProtocol {
             //no se pueden extraer el número que se solicita, qué hacer?
             Global.showWarning("User " + idUser + " has not enough test rating to extract " + extraer + "\n");
 
-            Collection<Set<Integer>> ret = new ArrayList<>(extraidos.size());
+            List<Set<Integer>> ret = new ArrayList<>(extraidos.size());
             Set<Integer> l = new TreeSet<>(userRated);
             ret.add(l);
             return ret;
@@ -89,7 +89,7 @@ public class PredictN extends PredictionProtocol {
                 extraidos.add(idItem);
             }
 
-            Collection<Set<Integer>> ret = new ArrayList<>(extraidos.size());
+            List<Set<Integer>> ret = new ArrayList<>(extraidos.size());
             ret.add(extraidos);
             return ret;
         }
