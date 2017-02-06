@@ -93,7 +93,7 @@ public class KnnMemoryBasedCFRS extends KnnCollaborativeRecommender<KnnMemoryMod
         try {
             List<Neighbor> neighbors;
             neighbors = getNeighbors(datasetLoader, user, this);
-            Collection<Recommendation> ret = recommendWithNeighbors(datasetLoader.getRatingsDataset(), user.getId(), neighbors, candidateItems);
+            Collection<Recommendation> ret = recommendWithNeighbors(datasetLoader.getRatingsDataset(), user, neighbors, candidateItems);
             return new RecommendationsToUserWithNeighbors(user, ret, neighbors);
         } catch (CannotLoadRatingsDataset ex) {
             throw new IllegalArgumentException(ex);
@@ -140,7 +140,7 @@ public class KnnMemoryBasedCFRS extends KnnCollaborativeRecommender<KnnMemoryMod
      * activo a partir de los vecinos indicados por parámetro
      *
      * @param ratingsDataset Conjunto de valoraciones.
-     * @param idUser Id del usuario activo
+     * @param user Target user
      * @param neighbors Vecinos del usuario activo
      * @param candidateItems Lista de productos que se consideran recomendables, es decir, que podrían ser recomendados
      * si la predicción es alta
@@ -149,7 +149,7 @@ public class KnnMemoryBasedCFRS extends KnnCollaborativeRecommender<KnnMemoryMod
      */
     public Collection<Recommendation> recommendWithNeighbors(
             RatingsDataset<? extends Rating> ratingsDataset,
-            Integer idUser,
+            User user,
             List<Neighbor> neighbors,
             Collection<Item> candidateItems) {
 
@@ -166,7 +166,7 @@ public class KnnMemoryBasedCFRS extends KnnCollaborativeRecommender<KnnMemoryMod
 
         if (Global.isVerboseAnnoying()) {
             Global.showMessageTimestamped("============ Selected neighborhood =================");
-            printNeighborhood(idUser, neighborsWithPositiveSimilarityAndSelected);
+            printNeighborhood(user.getId(), neighborsWithPositiveSimilarityAndSelected);
         }
 
         //Predicción de la valoración
@@ -187,7 +187,7 @@ public class KnnMemoryBasedCFRS extends KnnCollaborativeRecommender<KnnMemoryMod
             }
 
             try {
-                double predicted = predictionTechnique_.predictRating(idUser, item.getId(), match, ratingsDataset);
+                double predicted = predictionTechnique_.predictRating(user.getId(), item.getId(), match, ratingsDataset);
                 recommendations.add(new Recommendation(item, predicted));
             } catch (CouldNotPredictRating ex) {
                 recommendations.add(new Recommendation(item, Double.NaN));

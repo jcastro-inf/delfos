@@ -18,46 +18,32 @@ package delfos.rs.collaborativefiltering.knn.memorybased.nwr;
 
 import delfos.common.Global;
 import delfos.common.exceptions.CouldNotPredictRating;
-import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
 import delfos.common.exceptions.dataset.items.ItemNotFound;
 import delfos.common.exceptions.dataset.users.UserNotFound;
-import delfos.dataset.basic.item.ContentDataset;
 import delfos.dataset.basic.item.Item;
-import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RatingsDataset;
 import delfos.dataset.basic.user.User;
 import delfos.rs.collaborativefiltering.knn.MatchRating;
 import delfos.rs.collaborativefiltering.knn.RecommendationEntity;
 import delfos.rs.collaborativefiltering.knn.memorybased.KnnMemoryBasedCFRS;
-import delfos.rs.collaborativefiltering.knn.memorybased.KnnMemoryModel;
-import delfos.rs.collaborativefiltering.knn.memorybased.KnnMemoryNeighborCalculator;
-import delfos.rs.collaborativefiltering.knn.memorybased.KnnMemoryNeighborTask;
 import delfos.rs.collaborativefiltering.predictiontechniques.PredictionTechnique;
 import delfos.rs.collaborativefiltering.profile.Neighbor;
-import delfos.rs.persistence.DatabasePersistence;
-import delfos.rs.persistence.FailureInPersistence;
 import delfos.rs.recommendation.Recommendation;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
- * Sistema de recomendación basado en el filtrado colaborativo basado en
- * usuarios, también denominado User-User o filtrado colaborativo basado en
- * memoria. Este sistema de recomendación no realiza un cálculo de perfil de
- * usuarios o productos, sino que en el momento de la predicción, calcula los k
- * vecinos más cercanos al usuario activo, es decir, los k
- * ({@link KnnMemoryBasedCFRS#neighborhoodSize}) usuarios más similares
- * ({@link KnnMemoryBasedCFRS#similarityMeasure}). La predicción de la
- * valoración de un producto i para un usuario u se realiza agregando las
- * valoraciones de los vecinos del usuario u sobre el producto i, utilizando
- * para ello una técnica de predicción
- * ({@link KnnMemoryBasedCFRS#predictionTechnique})
+ * Sistema de recomendación basado en el filtrado colaborativo basado en usuarios, también denominado User-User o
+ * filtrado colaborativo basado en memoria. Este sistema de recomendación no realiza un cálculo de perfil de usuarios o
+ * productos, sino que en el momento de la predicción, calcula los k vecinos más cercanos al usuario activo, es decir,
+ * los k ({@link KnnMemoryBasedCFRS#neighborhoodSize}) usuarios más similares
+ * ({@link KnnMemoryBasedCFRS#similarityMeasure}). La predicción de la valoración de un producto i para un usuario u se
+ * realiza agregando las valoraciones de los vecinos del usuario u sobre el producto i, utilizando para ello una técnica
+ * de predicción ({@link KnnMemoryBasedCFRS#predictionTechnique})
  *
  * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
@@ -73,84 +59,27 @@ public class KnnMemoryBasedNWR extends KnnMemoryBasedCFRS {
     }
 
     @Override
-    public KnnMemoryModel buildRecommendationModel(DatasetLoader<? extends Rating> datasetLoader) {
-        return new KnnMemoryModel();
-    }
+    public Collection<Recommendation> recommendWithNeighbors(RatingsDataset<? extends Rating> ratingsDataset, User user, List<Neighbor> neighbors, Collection<Item> candidateItems) {
 
-    @Override
-    public Collection<Recommendation> recommendToUser(DatasetLoader<? extends Rating> datasetLoader, KnnMemoryModel model, Integer idUser, Set<Integer> candidateItems) throws UserNotFound {
-
+        int neighborhoodSize = getNeighborhoodSize();
         PredictionTechnique predictionTechnique = (PredictionTechnique) getParameterValue(PREDICTION_TECHNIQUE);
-        int neighborhoodSize = (Integer) getParameterValue(NEIGHBORHOOD_SIZE);
 
-        try {
-            List<Neighbor> neighbors;
-            neighbors = getNeighbors(datasetLoader, idUser);
-
-            Collection<Recommendation> ret = recommendWithNeighbors(datasetLoader, idUser, neighbors, neighborhoodSize, candidateItems, predictionTechnique);
-            if (Global.isVerboseAnnoying()) {
-                Global.showInfoMessage("Finished recommendations for user '" + idUser + "'\n");
-            }
-            return ret;
-        } catch (CannotLoadRatingsDataset ex) {
-            throw new IllegalArgumentException(ex);
-        }
+        return KnnMemoryBasedNWR.recommendWithNeighbors(
+                ratingsDataset,
+                user.getId(),
+                neighbors, neighborhoodSize,
+                predictionTechnique,
+                candidateItems
+        );
     }
 
-    /**
-     * Calcula los vecinos mas cercanos del usuario indicado por parámetro. Para
-     * ello, utiliza los valores especificados en los parámetros del algoritmo y
-     * los datasets de valoraciones y productos que se indicaron al sistema
-     *
-     * @param datasetLoader Dataset de valoraciones.
-     * @param idUser id del usuario para el que se calculan sus vecinos
-     * @return Devuelve una lista ordenada por similitud de los vecinos más
-     * cercanos al usuario indicado
-     * @throws UserNotFound Si el usuario indicado no existe en el conjunto de
-     * datos
-     */
-    public List<Neighbor> getNeighbors(
-            DatasetLoader<? extends Rating> datasetLoader,
-            int idUser)
-            throws UserNotFound {
-
-        User user = datasetLoader.getUsersDataset().get(idUser);
-
-        List<Neighbor> neigbors = datasetLoader.getUsersDataset().stream()
-                .filter(neighbor -> !Objects.equals(neighbor.getId(), user.getId()))
-                .map((neighbor) -> new KnnMemoryNeighborTask(datasetLoader, user, neighbor, this))
-                .map(new KnnMemoryNeighborCalculator())
-                .sorted(Neighbor.BY_SIMILARITY_DESC)
-                .collect(Collectors.toList());
-
-        return neigbors;
-    }
-
-    /**
-     * Devuelva las recomendaciones, teniendo en cuenta sólo los productos
-     * indicados por parámetro, para el usuario activo a partir de los vecinos
-     * indicados por parámetro
-     *
-     * @param datasetLoader Input data.
-     * @param idUser Id del usuario activo
-     * @param _neighborhood Vecinos del usuario activo
-     * @param neighborhoodSize
-     * @param candidateIdItems Lista de productos que se consideran
-     * recomendables, es decir, que podrían ser recomendados si la predicción es
-     * alta
-     * @param predictionTechnique
-     * @return Lista de recomendaciones para el usuario, ordenadas por
-     * valoracion predicha.
-     * @throws UserNotFound Si el usuario activo o alguno de los vecinos
-     * indicados no se encuentra en el dataset.
-     */
     public static Collection<Recommendation> recommendWithNeighbors(
-            DatasetLoader<? extends Rating> datasetLoader,
+            RatingsDataset<? extends Rating> ratingsDataset,
             Integer idUser,
             List<Neighbor> _neighborhood,
             int neighborhoodSize,
-            Collection<Integer> candidateIdItems,
-            PredictionTechnique predictionTechnique)
+            PredictionTechnique predictionTechnique,
+            Collection<Item> candidateItems)
             throws UserNotFound {
 
         List<Neighbor> neighborhood = _neighborhood.stream()
@@ -160,14 +89,7 @@ public class KnnMemoryBasedNWR extends KnnMemoryBasedCFRS {
 
         neighborhood.sort(Neighbor.BY_SIMILARITY_DESC);
 
-        RatingsDataset ratingsDataset = datasetLoader.getRatingsDataset();
-        ContentDataset contentDataset = datasetLoader.getContentDataset();
-
         Collection<Recommendation> recommendationList = new ArrayList<>();
-
-        List<Item> candidateItems = candidateIdItems.stream()
-                .map(idItem -> contentDataset.get(idItem))
-                .collect(Collectors.toList());
 
         for (Item item : candidateItems) {
 
@@ -200,15 +122,5 @@ public class KnnMemoryBasedNWR extends KnnMemoryBasedCFRS {
         }
 
         return recommendationList;
-    }
-
-    @Override
-    public KnnMemoryModel loadRecommendationModel(DatabasePersistence databasePersistence, Collection<Integer> users, Collection<Integer> items, DatasetLoader<? extends Rating> datasetLoader) throws FailureInPersistence {
-        return new KnnMemoryModel();
-    }
-
-    @Override
-    public void saveRecommendationModel(DatabasePersistence databasePersistence, KnnMemoryModel model) throws FailureInPersistence {
-        //No hay modelo que guardar.
     }
 }
