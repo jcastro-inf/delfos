@@ -89,38 +89,39 @@ public class KnnMemoryBasedNWR extends KnnMemoryBasedCFRS {
 
         neighborhood.sort(Neighbor.BY_SIMILARITY_DESC);
 
-        Collection<Recommendation> recommendationList = new ArrayList<>();
+        Collection<Recommendation> recommendations = candidateItems.parallelStream()
+                .map(item -> {
+                    Collection<MatchRating> match = new ArrayList<>();
+                    int numNeighborsUsed = 0;
+                    Map<Integer, ? extends Rating> itemRatingsRated;
+                    try {
+                        itemRatingsRated = ratingsDataset.getItemRatingsRated(item.getId());
+                    } catch (ItemNotFound ex) {
+                        Global.showError(ex);
+                        return new Recommendation(item, Double.NaN);
+                    }
+                    for (Neighbor neighbor : neighborhood) {
 
-        for (Item item : candidateItems) {
+                        Rating rating = itemRatingsRated.get(neighbor.getIdNeighbor());
+                        if (rating != null) {
+                            match.add(new MatchRating(RecommendationEntity.ITEM, (User) neighbor.getNeighbor(), item, rating.getRatingValue(), neighbor.getSimilarity()));
+                            numNeighborsUsed++;
+                        }
 
-            Collection<MatchRating> match = new ArrayList<>();
-            int numNeighborsUsed = 0;
-            try {
-                Map<Integer, ? extends Rating> itemRatingsRated = ratingsDataset.getItemRatingsRated(item.getId());
-                for (Neighbor neighbor : neighborhood) {
-
-                    Rating rating = itemRatingsRated.get(neighbor.getIdNeighbor());
-                    if (rating != null) {
-                        match.add(new MatchRating(RecommendationEntity.ITEM, (User) neighbor.getNeighbor(), item, rating.getRatingValue(), neighbor.getSimilarity()));
-                        numNeighborsUsed++;
+                        if (numNeighborsUsed >= neighborhoodSize) {
+                            break;
+                        }
                     }
 
-                    if (numNeighborsUsed >= neighborhoodSize) {
-                        break;
+                    try {
+                        double predicted = predictionTechnique.predictRating(idUser, item.getId(), match, ratingsDataset);
+                        return new Recommendation(item, predicted);
+                    } catch (CouldNotPredictRating ex) {
+                        return new Recommendation(item, Double.NaN);
                     }
-                }
+                })
+                .collect(Collectors.toList());
 
-                try {
-                    double predicted = predictionTechnique.predictRating(idUser, item.getId(), match, ratingsDataset);
-                    recommendationList.add(new Recommendation(item, predicted));
-
-                } catch (CouldNotPredictRating ex) {
-                }
-            } catch (ItemNotFound ex) {
-                Global.showError(ex);
-            }
-        }
-
-        return recommendationList;
+        return recommendations;
     }
 }
