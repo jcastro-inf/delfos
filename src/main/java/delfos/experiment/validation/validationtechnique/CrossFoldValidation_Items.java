@@ -56,7 +56,7 @@ public class CrossFoldValidation_Items extends ValidationTechnique {
     }
 
     @Override
-    public <RatingType extends Rating> PairOfTrainTestRatingsDataset[] shuffle(DatasetLoader<RatingType> datasetLoader) throws CannotLoadContentDataset, CannotLoadRatingsDataset {
+    public <RatingType extends Rating> PairOfTrainTestRatingsDataset<RatingType>[] shuffle(DatasetLoader<RatingType> datasetLoader) throws CannotLoadContentDataset, CannotLoadRatingsDataset {
         Random random = new Random(getSeedValue());
 
         int numSplits = getNumberOfFolds();

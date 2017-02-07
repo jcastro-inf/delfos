@@ -51,12 +51,12 @@ public class LeaveOneOut extends ValidationTechnique {
     }
 
     @Override
-    public <RatingType extends Rating> PairOfTrainTestRatingsDataset[] shuffle(DatasetLoader<RatingType> datasetLoader) throws CannotLoadRatingsDataset, CannotLoadContentDataset {
+    public <RatingType extends Rating> PairOfTrainTestRatingsDataset<RatingType>[] shuffle(DatasetLoader<RatingType> datasetLoader) throws CannotLoadRatingsDataset, CannotLoadContentDataset {
 
         int numRatings = datasetLoader.getRatingsDataset().getNumRatings();
 
-        PairOfTrainTestRatingsDataset[] ret = new PairOfTrainTestRatingsDataset[numRatings];
-        RatingsDataset<? extends Rating> ratingsDataset = datasetLoader.getRatingsDataset();
+        PairOfTrainTestRatingsDataset<RatingType>[] ret = new PairOfTrainTestRatingsDataset[numRatings];
+        RatingsDataset<RatingType> ratingsDataset = datasetLoader.getRatingsDataset();
 
         int split = 0;
         for (Rating rating : ratingsDataset) {
@@ -65,7 +65,7 @@ public class LeaveOneOut extends ValidationTechnique {
             conjuntoTest.put(rating.getIdUser(), new TreeSet<>());
             conjuntoTest.get(rating.getIdUser()).add(rating.getIdItem());
 
-            ret[split] = new PairOfTrainTestRatingsDataset(
+            ret[split] = new PairOfTrainTestRatingsDataset<>(
                     datasetLoader,
                     ValidationDatasets.getInstance().createTrainingDataset(datasetLoader.getRatingsDataset(), conjuntoTest),
                     ValidationDatasets.getInstance().createTestDataset(datasetLoader.getRatingsDataset(), conjuntoTest),

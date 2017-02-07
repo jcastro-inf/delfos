@@ -39,7 +39,6 @@ import java.util.TreeSet;
  * por usuarios, no por ratings o por items) con la predicción todos menos 1 rating. {@link KnnMemoryBasedCFRS}
  *
  * @author jcastro-inf ( https://github.com/jcastro-inf )
- * @version 1.0 (19 Octubre 2011)
  */
 public class CrossFoldValidation_Users extends ValidationTechnique {
 
@@ -59,7 +58,7 @@ public class CrossFoldValidation_Users extends ValidationTechnique {
     }
 
     @Override
-    public <RatingType extends Rating> PairOfTrainTestRatingsDataset[] shuffle(DatasetLoader<RatingType> datasetLoader) throws CannotLoadRatingsDataset, CannotLoadContentDataset {
+    public <RatingType extends Rating> PairOfTrainTestRatingsDataset<RatingType>[] shuffle(DatasetLoader<RatingType> datasetLoader) throws CannotLoadRatingsDataset, CannotLoadContentDataset {
 
         Random randomGenerator = new Random(getSeedValue());
 
