@@ -20,7 +20,7 @@ import delfos.results.evaluationmeasures.Coverage;
 import delfos.results.evaluationmeasures.EvaluationMeasure;
 import delfos.results.evaluationmeasures.NDCG;
 import delfos.results.evaluationmeasures.NumberOfRecommendations;
-import delfos.results.evaluationmeasures.prediction.PredicitonErrorHistogram;
+import delfos.results.evaluationmeasures.prediction.PredictionErrorHistogram;
 import delfos.results.evaluationmeasures.prediction.list.HalfLifeUtility;
 import delfos.results.evaluationmeasures.prspace.PRSpace;
 import delfos.results.evaluationmeasures.prspace.precision.Precision_01;
@@ -89,7 +89,7 @@ public class EvaluationMeasuresFactory extends Factory<EvaluationMeasure> {
         instance.addClass(NRMSE.class);
 
         instance.addClass(HalfLifeUtility.class);
-        instance.addClass(PredicitonErrorHistogram.class);
+        instance.addClass(PredictionErrorHistogram.class);
 
         instance.addClass(Precision_01.class);
         instance.addClass(Precision_02.class);
