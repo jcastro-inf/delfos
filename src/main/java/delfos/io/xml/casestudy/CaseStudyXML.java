@@ -66,36 +66,37 @@ public class CaseStudyXML {
     public static final String AGGREGATE_VALUES_ELEMENT_NAME = "Aggregate_values";
     public static final String EXECUTIONS_RESULTS_ELEMENT_NAME = "Executions";
 
-    private static Element getResultsElement(CaseStudy c) {
+    private static Element getResultsElement(CaseStudy caseStudy) {
 
-        Element ejecuciones = new Element(EXECUTIONS_RESULTS_ELEMENT_NAME);
-        Element ejecucion;
-        int numExecutions = c.getNumExecutions();
-        int numSplits = c.getNumberOfSplits();
-        for (int ex = 0; ex < numExecutions; ex++) {
-            ejecucion = new Element("Execution");
-            for (int nSplit = 0; nSplit < numSplits; nSplit++) {
-                Element split = new Element("Split");
-                for (EvaluationMeasure em : c.getEvaluationMeasures()) {
+        Element executionsElement = new Element(EXECUTIONS_RESULTS_ELEMENT_NAME);
+        Element executionElement;
+        int numExecutions = caseStudy.getNumExecutions();
+        int numSplits = caseStudy.getNumberOfSplits();
+        for (int execution = 0; execution < numExecutions; execution++) {
+            executionElement = new Element("Execution");
+            for (int split = 0; split < numSplits; split++) {
+                Element splitElement = new Element("Split");
+                for (EvaluationMeasure evaluationMeasure : caseStudy.getEvaluationMeasures()) {
 
-                    MeasureResult mr = c.getMeasureResult(em, ex, nSplit);
-                    split.addContent((Element) mr.getXMLElement().clone());
+                    MeasureResult measureResult = caseStudy.getMeasureResult(evaluationMeasure, execution, split);
+                    splitElement.addContent((Element) measureResult.getXMLElement().clone());
+
                 }
-                ejecucion.addContent(split);
+                executionElement.addContent(splitElement);
             }
-            ejecuciones.addContent(ejecucion);
+            executionsElement.addContent(executionElement);
         }
-        return ejecuciones;
+        return executionsElement;
     }
 
-    private static Element getAggregatedResultsElement(CaseStudy c) {
-        Element mediaMedidas = new Element(AGGREGATE_VALUES_ELEMENT_NAME);
-        for (EvaluationMeasure em : c.getEvaluationMeasures()) {
-            Element element = c.getMeasureResult(em).getXMLElement();
-            mediaMedidas.addContent(element);
+    private static Element getAggregatedResultsElement(CaseStudy caseStudy) {
+        Element aggregatedResultsElement = new Element(AGGREGATE_VALUES_ELEMENT_NAME);
+        for (EvaluationMeasure evaluationMeasure : caseStudy.getEvaluationMeasures()) {
+            Element evaluationMesureElement = caseStudy.getMeasureResult(evaluationMeasure).getXMLElement();
+            aggregatedResultsElement.addContent(evaluationMesureElement);
         }
 
-        return mediaMedidas;
+        return aggregatedResultsElement;
     }
 
     public synchronized static void caseStudyToXMLFile(CaseStudy caseStudy, File file) {
@@ -234,14 +235,14 @@ public class CaseStudyXML {
         CaseStudyXML.caseStudyToXMLFile_onlyDescription(caseStudy, new File(file));
     }
 
-    public static void saveCaseResults(CaseStudy caseStudy, String descriptivePrefix, String file) {
-        File fileFile = FileUtilities.addPrefix(new File(file), descriptivePrefix);
+    public static void saveCaseResults(CaseStudy caseStudy, File file) {
+
         if (Constants.isPrintFullXML()) {
-            caseStudyToXMLFile(caseStudy, "", FileUtilities.addSufix(fileFile, "_FULL"));
+            caseStudyToXMLFile(caseStudy, "", FileUtilities.addSufix(file, "_FULL"));
         }
 
-        File aggregateFileName = FileUtilities.addSufix(fileFile, "_AGGR");
-        caseStudyToXMLFile_onlyAggregate(caseStudy, descriptivePrefix, aggregateFileName);
+        File aggregateFileName = FileUtilities.addSufix(file, "_AGGR");
+        caseStudyToXMLFile_onlyAggregate(caseStudy, aggregateFileName);
     }
 
     private static void caseStudyToXMLFile_onlyDescription(CaseStudy caseStudy, File file) {
@@ -261,8 +262,6 @@ public class CaseStudyXML {
         casoDeUso.addContent(RelevanceCriteriaXML.getElement(caseStudy.getRelevanceCriteria()));
         casoDeUso.addContent(DatasetLoaderXML.getElement(caseStudy.getDatasetLoader()));
 
-        //casoDeUso.addContent(getResultsElement(caseStudy));
-        //casoDeUso.addContent(getAggregatedResultsElement(caseStudy));
         doc.addContent(casoDeUso);
 
         XMLOutputter outputter = new XMLOutputter(Constants.getXMLFormat());
@@ -274,7 +273,7 @@ public class CaseStudyXML {
         }
     }
 
-    private static void caseStudyToXMLFile_onlyAggregate(CaseStudy caseStudy, String descriptivePrefix, File file) {
+    private static void caseStudyToXMLFile_onlyAggregate(CaseStudy caseStudy, File file) {
         if (!caseStudy.isFinished()) {
             throw new UnsupportedOperationException("No se ha ejecutado el caso de uso todavía");
         }

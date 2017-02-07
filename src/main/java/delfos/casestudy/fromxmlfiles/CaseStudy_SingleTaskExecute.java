@@ -85,7 +85,7 @@ public class CaseStudy_SingleTaskExecute implements SingleTaskExecute<ExecuteCas
         File excelFile = FileUtilities.changeExtension(fileToSaveResults, "xls");
         File xmlFile = FileUtilities.changeExtension(fileToSaveResults, "xml");
 
-        CaseStudyXML.saveCaseResults(caseStudyRecommendation, "", xmlFile.getAbsolutePath());
+        CaseStudyXML.saveCaseResults(caseStudyRecommendation, xmlFile.getAbsoluteFile());
         CaseStudyExcel.saveCaseResults(caseStudyRecommendation, excelFile);
 
     }
