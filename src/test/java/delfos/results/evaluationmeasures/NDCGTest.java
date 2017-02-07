@@ -72,9 +72,14 @@ public class NDCGTest {
                 .sorted(Recommendation.BY_PREFERENCE_DESC)
                 .collect(Collectors.toList());
 
-        double dcg = NDCG.computeDCG(recommendations, userRatingsByItemId);
+        double dcg = NDCG.computeDCG(recommendations,
+                userRatingsByItemId,
+                datasetLoader.getRatingsDataset().getRatingsDomain()
+        );
 
-        double dcg_perfect = NDCG.computeDCG(recommendationPerfect, userRatingsByItemId);
+        double dcg_perfect = NDCG.computeDCG(recommendationPerfect, userRatingsByItemId,
+                datasetLoader.getRatingsDataset().getRatingsDomain()
+        );
         double ndcg = dcg / dcg_perfect;
 
         double dcg_expected = 14.023716584582989;
@@ -113,9 +118,13 @@ public class NDCGTest {
                 .sorted(Recommendation.BY_PREFERENCE_DESC)
                 .collect(Collectors.toList());
 
-        double dcg = NDCG.computeDCG(recommendations, userRatingsByItemId);
+        double dcg = NDCG.computeDCG(recommendations, userRatingsByItemId,
+                datasetLoader.getRatingsDataset().getRatingsDomain()
+        );
 
-        double dcg_perfect = NDCG.computeDCG(recommendationPerfect, userRatingsByItemId);
+        double dcg_perfect = NDCG.computeDCG(recommendationPerfect, userRatingsByItemId,
+                datasetLoader.getRatingsDataset().getRatingsDomain()
+        );
         double ndcg = dcg / dcg_perfect;
 
         double dcg_expected = 12.323465818787765;
@@ -152,9 +161,13 @@ public class NDCGTest {
                 .sorted(Recommendation.BY_PREFERENCE_DESC)
                 .collect(Collectors.toList());
 
-        double dcg = NDCG.computeDCG(recommendations, userRatingsByItemId);
+        double dcg = NDCG.computeDCG(recommendations, userRatingsByItemId,
+                datasetLoader.getRatingsDataset().getRatingsDomain()
+        );
 
-        double dcg_perfect = NDCG.computeDCG(recommendationPerfect, userRatingsByItemId);
+        double dcg_perfect = NDCG.computeDCG(recommendationPerfect, userRatingsByItemId,
+                datasetLoader.getRatingsDataset().getRatingsDomain()
+        );
         double ndcg = dcg / dcg_perfect;
 
         double dcg_expected = 12.323465818787765;
@@ -191,9 +204,13 @@ public class NDCGTest {
                 .sorted(Recommendation.BY_PREFERENCE_DESC)
                 .collect(Collectors.toList());
 
-        double dcg = NDCG.computeDCG(recommendations, userRatingsByItemId);
+        double dcg = NDCG.computeDCG(recommendations, userRatingsByItemId,
+                datasetLoader.getRatingsDataset().getRatingsDomain()
+        );
 
-        double dcg_perfect = NDCG.computeDCG(recommendationPerfect, userRatingsByItemId);
+        double dcg_perfect = NDCG.computeDCG(recommendationPerfect, userRatingsByItemId,
+                datasetLoader.getRatingsDataset().getRatingsDomain()
+        );
         double ndcg = dcg / dcg_perfect;
 
         double dcg_expected = 11.922959427791637;

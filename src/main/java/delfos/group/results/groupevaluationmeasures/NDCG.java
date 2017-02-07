@@ -95,8 +95,18 @@ public class NDCG extends GroupEvaluationMeasure {
 
                     Collections.sort(idealRecommendations);
 
-                    double idealGain = computeDCG(idealRecommendations, userRatings);
-                    double gain = computeDCG(recommendationsIntersectUserRatings, userRatings);
+                    double idealGain = computeDCG(
+                            idealRecommendations,
+                            userRatings,
+                            originalDatasetLoader.getRatingsDataset().getRatingsDomain()
+                    );
+
+                    double gain = computeDCG(
+                            recommendationsIntersectUserRatings,
+                            userRatings,
+                            originalDatasetLoader.getRatingsDataset().getRatingsDomain()
+                    );
+
                     double score = gain / idealGain;
 
                     if (Double.isNaN(score)) {
