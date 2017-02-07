@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -71,11 +71,9 @@ import javax.swing.SwingConstants;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 /**
- * Clase que encapsula el funcionamiento de la interfaz destinada a la
- * realización de ejecuciones de evaluación con algoritmos de recomendación
- * colaborativos, es decir, algoritmos que predicen la valoración que el usuario
- * daría a un item no valorado basándose en las valoraciones del resto de
- * usuarios.
+ * Clase que encapsula el funcionamiento de la interfaz destinada a la realización de ejecuciones de evaluación con
+ * algoritmos de recomendación colaborativos, es decir, algoritmos que predicen la valoración que el usuario daría a un
+ * item no valorado basándose en las valoraciones del resto de usuarios.
  *
  * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
@@ -106,11 +104,11 @@ public class SingleExperiment_TraditionalRecommender_Window extends JFrame imple
     private JLabel remainingTime;
     private JComboBox comboPredictionValidationTechniques;
     private JButton botonPredictionValidation;
-    private static final String anchoVentana = "COLLABORATIVE_WINDOW_WIDTH";
-    private static final String altoVentana = "COLLABORATIVE_WINDOW_HEIGHT";
+    private static final String WINDOW_WIDTH = "COLLABORATIVE_WINDOW_WIDTH";
+    private static final String WINDOW_HEIGHT = "COLLABORATIVE_WINDOW_HEIGHT";
 
     public SingleExperiment_TraditionalRecommender_Window(InitialFrame initialFrame) {
-        super("Collaborative filtering Recommender System Test Environment - " + ManagementFactory.getRuntimeMXBean().getName());
+        super("Single User Recommender Systems Experimentation - " + ManagementFactory.getRuntimeMXBean().getName());
         initComponents();
 
         this.addWindowListener(new ComportamientoSubVentanas(initialFrame, this));
@@ -393,36 +391,36 @@ public class SingleExperiment_TraditionalRecommender_Window extends JFrame imple
         ret.add(guardarResultado, constraints);
 
         this.guardarResultado.addActionListener((ActionEvent e) -> {
-                    JFileChooser chooser = new JFileChooser();
-                    chooser.setDialogTitle("Save result to XML");
-                    chooser.setCurrentDirectory(SwingGUIScope.getInstance().getCurrentDirectory());
+            JFileChooser chooser = new JFileChooser();
+            chooser.setDialogTitle("Save result to XML");
+            chooser.setCurrentDirectory(SwingGUIScope.getInstance().getCurrentDirectory());
 
-                    String[] extensions = {CaseStudyXML.RESULT_EXTENSION};
-                    chooser.setFileFilter(new FileNameExtensionFilter("Extensible Markup Language", extensions));
+            String[] extensions = {CaseStudyXML.RESULT_EXTENSION};
+            chooser.setFileFilter(new FileNameExtensionFilter("Extensible Markup Language", extensions));
 
-                    boolean ok = false;
-                    while (!ok) {
-                        int opcion = chooser.showSaveDialog(SingleExperiment_TraditionalRecommender_Window.this);
-                        if (opcion == JFileChooser.APPROVE_OPTION) {
-                            File selected = chooser.getSelectedFile();
-                            String nombre = selected.getAbsolutePath();
-                            SwingGUIScope.getInstance().setCurrentDirectory(selected);
+            boolean ok = false;
+            while (!ok) {
+                int opcion = chooser.showSaveDialog(SingleExperiment_TraditionalRecommender_Window.this);
+                if (opcion == JFileChooser.APPROVE_OPTION) {
+                    File selected = chooser.getSelectedFile();
+                    String nombre = selected.getAbsolutePath();
+                    SwingGUIScope.getInstance().setCurrentDirectory(selected);
 
-                            if (!nombre.toLowerCase().endsWith("." + CaseStudyXML.RESULT_EXTENSION)) {
-                                // Add correct extension
-                                nombre += "." + CaseStudyXML.RESULT_EXTENSION;
-                            }
-                            File tmp = new File(nombre);
-                            if (!tmp.exists() || JOptionPane.showConfirmDialog(SingleExperiment_TraditionalRecommender_Window.this, "File " + nombre + " already exists. Do you want to replace it?",
-                                    "Confirm", JOptionPane.YES_NO_OPTION, 3) == JOptionPane.YES_OPTION) {
-                                CaseStudyXML.caseStudyToXMLFile(caseStudy, tmp);
-                                ok = true;
-                            }
-                        } else {
-                            ok = true;
-                        }
+                    if (!nombre.toLowerCase().endsWith("." + CaseStudyXML.RESULT_EXTENSION)) {
+                        // Add correct extension
+                        nombre += "." + CaseStudyXML.RESULT_EXTENSION;
                     }
-                });
+                    File tmp = new File(nombre);
+                    if (!tmp.exists() || JOptionPane.showConfirmDialog(SingleExperiment_TraditionalRecommender_Window.this, "File " + nombre + " already exists. Do you want to replace it?",
+                            "Confirm", JOptionPane.YES_NO_OPTION, 3) == JOptionPane.YES_OPTION) {
+                        CaseStudyXML.caseStudyToXMLFile(caseStudy, tmp);
+                        ok = true;
+                    }
+                } else {
+                    ok = true;
+                }
+            }
+        });
 
         return ret;
     }
@@ -760,21 +758,19 @@ public class SingleExperiment_TraditionalRecommender_Window extends JFrame imple
             this.remainingTime.setVisible(true);
             this.previousPercent = executionProgressPercent;
             this.previousProceso = executionProgressTask;
-        } else {
-            if (previousProceso.equals(executionProgressTask) && previousPercent == executionProgressPercent) {
-                if (chrono.getPartialElapsed() > 5000) {
-                    this.remainingTime.setText(DateCollapse.collapse(executionProgressRemainingTime));
-                    this.remainingTime.setVisible(true);
-                    chrono.reset();
-                }
-            } else {
-                this.previousPercent = executionProgressPercent;
-                this.previousProceso = executionProgressTask;
-                this.remainingTime.setVisible(false);
+        } else if (previousProceso.equals(executionProgressTask) && previousPercent == executionProgressPercent) {
+            if (chrono.getPartialElapsed() > 5000) {
                 this.remainingTime.setText(DateCollapse.collapse(executionProgressRemainingTime));
                 this.remainingTime.setVisible(true);
                 chrono.reset();
             }
+        } else {
+            this.previousPercent = executionProgressPercent;
+            this.previousProceso = executionProgressTask;
+            this.remainingTime.setVisible(false);
+            this.remainingTime.setText(DateCollapse.collapse(executionProgressRemainingTime));
+            this.remainingTime.setVisible(true);
+            chrono.reset();
         }
 
         if (algorithmExperiment.isFinished()) {
