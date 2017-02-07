@@ -25,8 +25,7 @@ import delfos.dataset.basic.rating.RatingsDataset;
 import delfos.dataset.loaders.given.DatasetLoaderGivenRatingsDataset;
 
 /**
- * Par de conjuntos entrenamiento y evaluación. La unión de los dos conjuntos
- * resulta en el conjunto de datos original.
+ * Par de conjuntos entrenamiento y evaluación. La unión de los dos conjuntos resulta en el conjunto de datos original.
  *
  * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
@@ -53,8 +52,7 @@ public class PairOfTrainTestRatingsDataset<RatingType extends Rating> extends Co
      * @param originalDatasetLoader
      * @param train
      * @param test
-     * @param generationExplanation String to explain how the train and test
-     * sets have been generated.
+     * @param generationExplanation String to explain how the train and test sets have been generated.
      * @throws CannotLoadRatingsDataset
      * @throws CannotLoadContentDataset
      */
@@ -71,11 +69,11 @@ public class PairOfTrainTestRatingsDataset<RatingType extends Rating> extends Co
         this.generationExplanation = generationExplanation;
     }
 
-    public DatasetLoader<? extends Rating> getTrainingDatasetLoader() {
+    public DatasetLoader<RatingType> getTrainingDatasetLoader() {
         return new DatasetLoaderGivenRatingsDataset(originalDatasetLoader, train, generationExplanation + "_train");
     }
 
-    public DatasetLoader<? extends Rating> getTestDatasetLoader() {
+    public DatasetLoader<RatingType> getTestDatasetLoader() {
         return new DatasetLoaderGivenRatingsDataset(originalDatasetLoader, test, generationExplanation + "_test");
     }
 }
