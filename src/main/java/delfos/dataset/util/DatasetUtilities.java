@@ -24,6 +24,7 @@ import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.user.User;
 import delfos.group.groupsofusers.GroupOfUsers;
 import delfos.rs.recommendation.Recommendation;
+import delfos.rs.recommendation.Recommendations;
 import delfos.rs.recommendation.RecommendationsToUser;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -33,10 +34,16 @@ import java.util.TreeMap;
 import java.util.stream.Collectors;
 
 /**
- * Clase para transformar mapas de valoraciones
+ * Class with utility methods to manage different indexing of ratings.
+ * <p>
+ * <p>
+ * It includes transformations such as converting user indexed maps to item indexed
+ * <p>
+ * Extraction of submatrices from datasets.
+ * <p>
+ * Conversion from ratings to recommendations and vice-versa.
  *
  * @author jcastro-inf ( https://github.com/jcastro-inf )
- * @version 25-Agosto-2014
  */
 public class DatasetUtilities {
 
@@ -166,19 +173,11 @@ public class DatasetUtilities {
         return mapOfMapOfRecommendationsByMember;
     }
 
-    public static Map convertToMemberRatings(Map<Integer, Collection<Recommendation>> recommendationsLists_byMember) {
-        Map<Integer, List<Number>> membersRatingsPrediction_byItem = new TreeMap<>();
-        for (int idUser : recommendationsLists_byMember.keySet()) {
-            for (Recommendation recommendation : recommendationsLists_byMember.get(idUser)) {
-                int idItem = recommendation.getIdItem();
-                Number prediction = recommendation.getPreference();
-                if (!membersRatingsPrediction_byItem.containsKey(idItem)) {
-                    membersRatingsPrediction_byItem.put(idItem, new ArrayList<>());
-                }
-                membersRatingsPrediction_byItem.get(idItem).add(prediction);
-            }
-        }
-        return membersRatingsPrediction_byItem;
+    public static Map<Item, Recommendation> convertToMapOfRecommendations(Recommendations recommendations) {
+
+        return recommendations.getRecommendations().parallelStream().collect(Collectors.toMap(
+                recommendation -> recommendation.getItem(),
+                recommendation -> recommendation));
     }
 
     private static Map<Item, Recommendation> getMapOfRecommendationsByItem(Collection<Recommendation> recommendations) {
@@ -222,8 +221,7 @@ public class DatasetUtilities {
                         recommendation -> recommendation.getItem(),
                         recommendation -> recommendation)
                 )
-        )
-        );
+        ));
     }
 
     public static <RatingType extends Rating> Map<User, Map<Item, RatingType>> getRatingsByUserAndItem(
@@ -233,14 +231,12 @@ public class DatasetUtilities {
         Map<User, Map<Item, RatingType>> ret = users.parallelStream().collect(Collectors.toMap(user -> user, user -> {
             Map<Integer, RatingType> userRatingsRated = datasetLoader.getRatingsDataset().getUserRatingsRated(user.getId());
 
-            userRatingsRated.values().parallelStream().collect(Collectors.toMap(
+            Map<Item, RatingType> userRatings = userRatingsRated.values().parallelStream().collect(Collectors.toMap(
                     rating -> rating.getItem(),
                     rating -> rating));
 
-            return null;
-        }
-        )
-        );
+            return userRatings;
+        }));
 
         return ret;
     }
