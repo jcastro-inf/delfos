@@ -20,8 +20,8 @@ import delfos.common.Global;
 import delfos.common.exceptions.dataset.users.UserNotFound;
 import delfos.common.parameters.Parameter;
 import delfos.common.parameters.restriction.IntegerParameter;
+import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
-import delfos.dataset.basic.rating.RatingsDataset;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -67,9 +67,13 @@ public class PredictN extends PredictionProtocol {
     }
 
     @Override
-    public List<Set<Integer>> getRecommendationRequests(RatingsDataset<? extends Rating> testRatingsDataset, int idUser) throws UserNotFound {
+    public <RatingType extends Rating> List<Set<Integer>> getRecommendationRequests(
+            DatasetLoader<RatingType> trainingDatasetLoader,
+            DatasetLoader<RatingType> testDatasetLoader,
+            int idUser) throws UserNotFound {
+
         Random random = new Random(getSeedValue());
-        Collection<Integer> userRated = new TreeSet<>(testRatingsDataset.getUserRated(idUser));
+        Collection<Integer> userRated = new TreeSet<>(testDatasetLoader.getRatingsDataset().getUserRated(idUser));
         Set<Integer> extraidos = new TreeSet<>();
         Number extraer = (Number) getParameterValue(PredictN.n);
 

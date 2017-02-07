@@ -20,8 +20,8 @@ import delfos.common.Global;
 import delfos.common.exceptions.dataset.users.UserNotFound;
 import delfos.common.parameters.Parameter;
 import delfos.common.parameters.restriction.IntegerParameter;
+import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
-import delfos.dataset.basic.rating.RatingsDataset;
 import delfos.rs.RecommenderSystemAdapter;
 import java.util.ArrayList;
 import java.util.List;
@@ -73,9 +73,13 @@ public class GivenN extends PredictionProtocol {
      * @throws UserNotFound
      */
     @Override
-    public List<Set<Integer>> getRecommendationRequests(RatingsDataset<? extends Rating> testRatingsDataset, int idUser) throws UserNotFound {
+    public <RatingType extends Rating> List<Set<Integer>> getRecommendationRequests(
+            DatasetLoader<RatingType> trainingDatasetLoader,
+            DatasetLoader<RatingType> testDatasetLoader,
+            int idUser) throws UserNotFound {
+
         Random random = new Random(getSeedValue());
-        Integer[] itemsRated = testRatingsDataset.getUserRatingsRated(idUser).keySet().toArray(new Integer[0]);
+        Integer[] itemsRated = testDatasetLoader.getRatingsDataset().getUserRatingsRated(idUser).keySet().toArray(new Integer[0]);
         int nValue = (Integer) getParameterValue(n);
         Set<Integer> dadosN = new TreeSet<>();
 

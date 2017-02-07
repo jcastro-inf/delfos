@@ -17,8 +17,8 @@
 package delfos.experiment.validation.predictionprotocol;
 
 import delfos.common.exceptions.dataset.users.UserNotFound;
+import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
-import delfos.dataset.basic.rating.RatingsDataset;
 import delfos.rs.collaborativefiltering.svd.TryThisAtHomeSVD;
 import java.util.ArrayList;
 import java.util.List;
@@ -43,10 +43,13 @@ public class NoPredictionProtocol extends PredictionProtocol {
     public static final long serialVersionUID = 1L;
 
     @Override
-    public List<Set<Integer>> getRecommendationRequests(RatingsDataset<? extends Rating> testRatingsDataset, int idUser) throws UserNotFound {
+    public <RatingType extends Rating> List<Set<Integer>> getRecommendationRequests(
+            DatasetLoader<RatingType> trainingDatasetLoader,
+            DatasetLoader<RatingType> testDatasetLoader,
+            int idUser) throws UserNotFound {
         List<Set<Integer>> listOfRequests = new ArrayList<>(1);
 
-        Set<Integer> userRated = new TreeSet<>(testRatingsDataset.getUserRated(idUser));
+        Set<Integer> userRated = new TreeSet<>(testDatasetLoader.getRatingsDataset().getUserRated(idUser));
 
         listOfRequests.add(userRated);
 
@@ -54,8 +57,11 @@ public class NoPredictionProtocol extends PredictionProtocol {
     }
 
     @Override
-    public List<Set<Integer>> getRatingsToHide(RatingsDataset<? extends Rating> testRatingsDataset, int idUser) throws UserNotFound {
-        return getRecommendationRequests(testRatingsDataset, idUser)
+    public <RatingType extends Rating> List<Set<Integer>> getRatingsToHide(
+            DatasetLoader<RatingType> trainingDatasetLoader,
+            DatasetLoader<RatingType> testDatasetLoader,
+            int idUser) throws UserNotFound {
+        return getRecommendationRequests(trainingDatasetLoader, testDatasetLoader, idUser)
                 .stream()
                 .map(object -> new TreeSet<Integer>())
                 .collect(Collectors.toList());

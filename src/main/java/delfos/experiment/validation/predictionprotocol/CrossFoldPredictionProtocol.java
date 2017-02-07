@@ -19,8 +19,8 @@ package delfos.experiment.validation.predictionprotocol;
 import delfos.common.exceptions.dataset.users.UserNotFound;
 import delfos.common.parameters.Parameter;
 import delfos.common.parameters.restriction.IntegerParameter;
+import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
-import delfos.dataset.basic.rating.RatingsDataset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -49,10 +49,14 @@ public class CrossFoldPredictionProtocol extends PredictionProtocol {
     }
 
     @Override
-    public List<Set<Integer>> getRecommendationRequests(RatingsDataset<? extends Rating> testRatingsDataset, int idUser) throws UserNotFound {
+    public <RatingType extends Rating> List<Set<Integer>> getRecommendationRequests(
+            DatasetLoader<RatingType> trainingDatasetLoader,
+            DatasetLoader<RatingType> testDatasetLoader,
+            int idUser) throws UserNotFound {
+
         Random random = new Random(getSeedValue());
         ArrayList<Set<Integer>> ret = new ArrayList<>();
-        Set<Integer> items = new TreeSet<>(testRatingsDataset.getUserRated(idUser));
+        Set<Integer> items = new TreeSet<>(testDatasetLoader.getRatingsDataset().getUserRated(idUser));
         for (int i = 0; i < getNumPartitions(); i++) {
             ret.add(new TreeSet<>());
         }
