@@ -16,19 +16,22 @@
  */
 package delfos.results.evaluationmeasures.prediction;
 
-import delfos.ERROR_CODES;
 import delfos.common.Global;
 import delfos.common.datastructures.histograms.HistogramNumbersSmart;
-import delfos.common.exceptions.dataset.users.UserNotFound;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RatingsDataset;
 import delfos.dataset.basic.rating.RelevanceCriteria;
+import delfos.dataset.basic.user.User;
+import delfos.dataset.util.DatasetUtilities;
 import delfos.results.MeasureResult;
 import delfos.results.RecommendationResults;
 import delfos.results.evaluationmeasures.EvaluationMeasure;
 import delfos.rs.recommendation.Recommendation;
+import delfos.rs.recommendation.RecommendationsToUser;
 import java.util.Collection;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 import org.jdom2.Element;
 
 /**
@@ -38,7 +41,7 @@ import org.jdom2.Element;
  *
  * @version 1-julio-2014
  */
-public class PredicitonErrorHistogram extends EvaluationMeasure {
+public class PredictionErrorHistogram extends EvaluationMeasure {
 
     private static final long serialVersionUID = 1L;
     private static final String HISTOGRAM_ELEMENT_NAME = "Histogram";
@@ -54,7 +57,7 @@ public class PredicitonErrorHistogram extends EvaluationMeasure {
     /**
      * Constructor por defecto de la medida de evaluación.
      */
-    public PredicitonErrorHistogram() {
+    public PredictionErrorHistogram() {
     }
 
     @Override
@@ -69,27 +72,42 @@ public class PredicitonErrorHistogram extends EvaluationMeasure {
 
         for (int idUser : testDataset.allUsers()) {
             Collection<Recommendation> recommendationList = recommendationResults.getRecommendationsForUser(idUser);
-            try {
-                Map<Integer, ? extends Rating> userRated = testDataset.getUserRatingsRated(idUser);
-                for (Recommendation lista : recommendationList) {
-                    Number rating = userRated.get(lista.getIdItem()).getRatingValue();
-                    Number prediction = lista.getPreference();
 
-                    if (rating != null
-                            && !Double.isNaN(rating.doubleValue())
-                            && !Double.isInfinite(rating.doubleValue())
-                            && prediction != null
-                            && !Double.isNaN(prediction.doubleValue())
-                            && !Double.isInfinite(prediction.doubleValue())) {
-                        double error = prediction.doubleValue() - rating.doubleValue();
-                        histogram.addValue(error);
-                    }
-                }
-            } catch (UserNotFound ex) {
-                ERROR_CODES.USER_NOT_FOUND.exit(ex);
-            }
+            Map<Integer, Double> recommendations = DatasetUtilities
+                    .convertToMapOfRecommendations(new RecommendationsToUser(new User(idUser), recommendationList))
+                    .entrySet()
+                    .parallelStream()
+                    .filter(entry -> !Double.isNaN(entry.getValue().getPreference().doubleValue()))
+                    .filter(entry -> !Double.isInfinite(entry.getValue().getPreference().doubleValue()))
+                    .collect(Collectors.toMap(
+                            entry -> entry.getKey().getId(),
+                            entry -> entry.getValue().getPreference().doubleValue())
+                    );
+
+            Map<Integer, Double> testRatings = testDataset
+                    .getUserRatingsRated(idUser)
+                    .values()
+                    .parallelStream()
+                    .filter(rating -> !Double.isNaN(rating.getRatingValue().doubleValue()))
+                    .filter(rating -> !Double.isInfinite(rating.getRatingValue().doubleValue()))
+                    .collect(Collectors.toMap(
+                            rating -> rating.getItem().getId(),
+                            rating -> rating.getRatingValue().doubleValue())
+                    );
+
+            Set<Integer> commonItems = recommendations.keySet();
+            commonItems.retainAll(testRatings.keySet());
+
+            commonItems.stream().forEach(idItem -> {
+                Double predictedRating = recommendations.get(idItem);
+                Double trueRating = testRatings.get(idItem);
+
+                double error = Math.abs(trueRating - predictedRating);
+                histogram.addValue(error);
+            });
 
         }
+
         if (histogram.getNumValues() == 0) {
             Global.showWarning("Cannot compute 'MAE' since the RS did not predicted any recommendation!!");
         }
