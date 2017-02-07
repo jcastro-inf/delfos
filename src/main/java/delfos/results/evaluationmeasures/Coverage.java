@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,10 +16,6 @@
  */
 package delfos.results.evaluationmeasures;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 import delfos.ERROR_CODES;
 import delfos.common.exceptions.dataset.users.UserNotFound;
 import delfos.common.statisticalfuncions.MeanIterative;
@@ -30,11 +26,16 @@ import delfos.results.MeasureResult;
 import delfos.results.RecommendationResults;
 import delfos.rs.recommendation.Recommendation;
 import delfos.rs.recommendation.SingleUserRecommendations;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.atomic.AtomicLong;
+import java.util.stream.Collectors;
 
 /**
- * Medida de similitud que calcula la cobertura de una ejecución de un sistema
- * de recomendación. La cobertura representa el ratio de items que se pudo
- * calcular un valor de preferencia del total consultados.
+ * Medida de similitud que calcula la cobertura de una ejecución de un sistema de recomendación. La cobertura representa
+ * el ratio de items que se pudo calcular un valor de preferencia del total consultados.
  *
  * @author jcastro-inf ( https://github.com/jcastro-inf )
  */
@@ -44,23 +45,31 @@ public class Coverage extends EvaluationMeasure {
 
     @Override
     public MeasureResult getMeasureResult(RecommendationResults recommendationResults, RatingsDataset<? extends Rating> testDataset, RelevanceCriteria relevanceCriteria) {
-        double cobertura;
 
-        long total = 0;
-        long positivos = 0;
+        AtomicLong requested = new AtomicLong(0);
+        AtomicLong predicted = new AtomicLong(0);
 
-        for (int idUser : testDataset.allUsers()) {
+        testDataset.allUsers().parallelStream().forEach(idUser -> {
             try {
-                Collection<Recommendation> positivosList = recommendationResults.getRecommendationsForUser(idUser);
-                Collection<Integer> totalList = testDataset.getUserRated(idUser);
-                positivos += positivosList.size();
-                total += totalList.size();
+                final List<Recommendation> recommendationsForUser = recommendationResults
+                        .getRecommendationsForUser(idUser);
+
+                Collection<Recommendation> recommendationsNonCoverageFailures = recommendationsForUser
+                        .parallelStream()
+                        .filter(Recommendation.NON_COVERAGE_FAILURES)
+                        .collect(Collectors.toList());
+
+                Collection<Integer> itemsRatedByUser = testDataset.getUserRated(idUser);
+                predicted.addAndGet(recommendationsNonCoverageFailures.size());
+                requested.addAndGet(itemsRatedByUser.size());
             } catch (UserNotFound ex) {
                 ERROR_CODES.USER_NOT_FOUND.exit(ex);
             }
-        }
-        cobertura = (double) positivos / total;
-        return new MeasureResult(this, cobertura);
+
+        });
+
+        final double coverage = ((double) predicted.get()) / ((double) requested.get());
+        return new MeasureResult(this, coverage);
     }
 
     @Override
