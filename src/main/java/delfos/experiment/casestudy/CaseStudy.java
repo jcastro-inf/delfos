@@ -50,10 +50,8 @@ public abstract class CaseStudy extends ExperimentAdapter implements Recommendat
     /**
      * Realiza la ejecución del caso de uso.
      *
-     * @throws CannotLoadContentDataset Si el dataset de contenido no sepuede
-     * recuperar.
-     * @throws CannotLoadRatingsDataset Si el dataset de valoraciones no se
-     * puede recuperar.
+     * @throws CannotLoadContentDataset Si el dataset de contenido no sepuede recuperar.
+     * @throws CannotLoadRatingsDataset Si el dataset de valoraciones no se puede recuperar.
      */
     public abstract void execute() throws CannotLoadRatingsDataset, CannotLoadContentDataset, CannotLoadUsersDataset;
 
@@ -129,8 +127,6 @@ public abstract class CaseStudy extends ExperimentAdapter implements Recommendat
 
     @Override
     public abstract void removeExperimentListener(ExperimentListener listener);
-
-    public abstract void setDatasetLoader(DatasetLoader<? extends Rating> loader);
 
     public abstract void setEvaluationMeasures(Collection<EvaluationMeasure> evaluationMeasures);
 
