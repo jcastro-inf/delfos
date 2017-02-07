@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,24 +16,22 @@
  */
 package delfos.results.evaluationmeasures.ratingprediction;
 
-import java.util.Map;
-import java.util.TreeMap;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RatingsDataset;
 import delfos.dataset.basic.rating.RelevanceCriteria;
-import delfos.ERROR_CODES;
-import delfos.rs.recommendation.Recommendation;
-import delfos.results.evaluationmeasures.EvaluationMeasure;
-import delfos.results.RecommendationResults;
 import delfos.results.MeasureResult;
-import delfos.common.exceptions.dataset.users.UserNotFound;
+import delfos.results.RecommendationResults;
+import delfos.results.evaluationmeasures.EvaluationMeasure;
+import delfos.rs.recommendation.Recommendation;
+import java.util.Collection;
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 /**
- * Clase que implementa el algoritmo de cálculo del recall en sistemas de
- * recomendación. El recall en predicción se refiere a comprobar que los que el
- * sistema predice como positivos son positivos, es decir, supone que el número
- * de recomendaciones es, para cada usuario, las predicciones que el criterio de
- * relevancia clasifica como positivas.
+ * Clase que implementa el algoritmo de cálculo del recall en sistemas de recomendación. El recall en predicción se
+ * refiere a comprobar que los que el sistema predice como positivos son positivos, es decir, supone que el número de
+ * recomendaciones es, para cada usuario, las predicciones que el criterio de relevancia clasifica como positivas.
  *
  * @author jcastro-inf ( https://github.com/jcastro-inf )
  * @version 1.0 (19 de Octubre 2011)
@@ -45,49 +43,56 @@ public class RecallCollaborative extends EvaluationMeasure {
     @Override
     public MeasureResult getMeasureResult(RecommendationResults recommendationResults, RatingsDataset<? extends Rating> testDataset, RelevanceCriteria relevanceCriteria) {
         double recall;
-        int relevantesRecomendadas = 0;
-        int relevantesNoRecomendadas = 0;
-        int noRelevantesRecomendadas = 0;
-        int noRelevantesNoRecomendadas = 0;
+
+        final AtomicInteger falsePositive = new AtomicInteger(0);
+        final AtomicInteger truePositive = new AtomicInteger(0);
+        final AtomicInteger falseNegative = new AtomicInteger(0);
+        final AtomicInteger trueNegative = new AtomicInteger(0);
 
         for (int idUser : testDataset.allUsers()) {
-            try {
-                Map<Integer, ? extends Rating> userRatingsRated = testDataset.getUserRatingsRated(idUser);
-                TreeMap<Integer, Recommendation> l = new TreeMap<Integer, Recommendation>();
-                for (Recommendation r : recommendationResults.getRecommendationsForUser(idUser)) {
-                    l.put(r.getIdItem(), r);
+            Collection<Recommendation> recommendationList = recommendationResults.getRecommendationsForUser(idUser);
+            if (recommendationList == null) {
+                continue;
+            }
+
+            Map<Integer, Double> testRatings = testDataset
+                    .getUserRatingsRated(idUser)
+                    .values()
+                    .parallelStream()
+                    .filter(rating -> !Double.isNaN(rating.getRatingValue().doubleValue()))
+                    .filter(rating -> !Double.isInfinite(rating.getRatingValue().doubleValue()))
+                    .collect(Collectors.toMap(
+                            rating -> rating.getItem().getId(),
+                            rating -> rating.getRatingValue().doubleValue())
+                    );
+
+            recommendationList.parallelStream().forEach(recommendation -> {
+                final Integer idItem = recommendation.getItem().getId();
+
+                if (relevanceCriteria.isRelevant(recommendation.getPreference())) {
+
+                    //positive
+                    if (!testRatings.containsKey(idItem) || !relevanceCriteria.isRelevant(testRatings.get(idItem))) {
+                        falsePositive.incrementAndGet();
+                    } else {
+                        truePositive.incrementAndGet();
+                    }
+                } else if (!testRatings.containsKey(idItem) || !relevanceCriteria.isRelevant(testRatings.get(idItem))) {
+                    trueNegative.incrementAndGet();
+                } else {
+                    falsePositive.incrementAndGet();
                 }
 
-                for (int idItem : testDataset.getUserRated(idUser)) {
-                    if (l.containsKey(idItem)) {
-                        double originalRating = userRatingsRated.get(idItem).getRatingValue().doubleValue();
-                        double predictedRating = l.get(idItem).getPreference().doubleValue();
-                        if (relevanceCriteria.isRelevant(originalRating)) {
-                            if (relevanceCriteria.isRelevant(predictedRating)) {
-                                relevantesRecomendadas++;
-                            } else {
-                                relevantesNoRecomendadas++;
-                            }
-                        } else {
-                            if (relevanceCriteria.isRelevant(predictedRating)) {
-                                noRelevantesRecomendadas++;
-                            } else {
-                                noRelevantesNoRecomendadas++;
-                            }
-                        }
-                    } else {
-                        //Fallo de cobertura
-                    }
-                }
-            } catch (UserNotFound ex) {
-                ERROR_CODES.USER_NOT_FOUND.exit(ex);
-            }
+            });
+
         }
-        if (relevantesRecomendadas + relevantesNoRecomendadas == 0) {
+
+        if ((truePositive.get() + falseNegative.get()) == 0) {
             recall = 0;
         } else {
-            recall = (double) relevantesRecomendadas / ((double) relevantesRecomendadas + (double) relevantesNoRecomendadas);
+            recall = (double) truePositive.get() / ((double) truePositive.get() + (double) falseNegative.get());
         }
+
         return new MeasureResult(this, recall);
     }
 
