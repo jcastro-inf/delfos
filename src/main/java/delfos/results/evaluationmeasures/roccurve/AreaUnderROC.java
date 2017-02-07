@@ -38,10 +38,9 @@ import java.util.Map;
 import org.jdom2.Element;
 
 /**
- * Medida de evaluación para calcular el area bajo roc, tomando el tamaño de la
- * lista de recomendaciones como el umbral. Esta medida calcula la sensitividad
- * y especificidad en cada valor del umbral para generar una curva, cuyo área es
- * uno si el clasificador es perfecto y 0,5 si el clasificador es aleatorio.
+ * Medida de evaluación para calcular el area bajo roc, tomando el tamaño de la lista de recomendaciones como el umbral.
+ * Esta medida calcula la sensitividad y especificidad en cada valor del umbral para generar una curva, cuyo área es uno
+ * si el clasificador es perfecto y 0,5 si el clasificador es aleatorio.
  *
  * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
@@ -88,10 +87,14 @@ public class AreaUnderROC extends EvaluationMeasure {
 
             try {
                 Map<Integer, ? extends Rating> userRatings = testDataset.getUserRatingsRated(idUser);
-                recommendationList.stream().map((r) -> r.getIdItem()).map((idItem) -> {
+                recommendationList.stream().map((r) -> r.getItem().getId()).map((idItem) -> {
                     return idItem;
                 }).forEach((idItem) -> {
-                    listaTransformada.add(relevanceCriteria.isRelevant(userRatings.get(idItem).getRatingValue()));
+                    if (userRatings.containsKey(idItem)) {
+                        listaTransformada.add(relevanceCriteria.isRelevant(userRatings.get(idItem).getRatingValue()));
+                    } else {
+                        listaTransformada.add(false);
+                    }
                 });
                 resultados.add(listaTransformada);
             } catch (UserNotFound ex) {

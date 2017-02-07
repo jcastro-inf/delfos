@@ -22,13 +22,14 @@ import delfos.common.statisticalfuncions.MeanIterative;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RatingsDataset;
 import delfos.dataset.basic.rating.RelevanceCriteria;
+import delfos.dataset.basic.rating.domain.Domain;
 import delfos.results.MeasureResult;
 import delfos.results.RecommendationResults;
 import delfos.rs.recommendation.Recommendation;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Evalúa las recomendaciones de un sistema aplicando NDCG, usando logaritmo en base 2. Se calcula el nDCG por usuarios
@@ -55,16 +56,16 @@ public class NDCG extends EvaluationMeasure {
                     continue;
                 }
 
-                List<Recommendation> idealRecommendations = new ArrayList<>(recommendations.size());
                 Map<Integer, Rating> userRatings = (Map<Integer, Rating>) testDataset.getUserRatingsRated(idUser);
 
-                for (Recommendation recommendation : recommendations) {
-                    int idItem = recommendation.getIdItem();
-                    idealRecommendations.add(new Recommendation(idItem, userRatings.get(idItem).getRatingValue()));
-                }
+                List<Recommendation> idealRecommendations = userRatings
+                        .values().parallelStream()
+                        .map(rating -> new Recommendation(rating.getItem(), rating.getRatingValue()))
+                        .sorted(Recommendation.BY_PREFERENCE_DESC)
+                        .collect(Collectors.toList());
 
-                double idealGain = computeDCG(idealRecommendations, userRatings);
-                double gain = computeDCG(recommendations, userRatings);
+                double idealGain = computeDCG(idealRecommendations, userRatings, testDataset.getRatingsDomain());
+                double gain = computeDCG(recommendations, userRatings, testDataset.getRatingsDomain());
                 double score = gain / idealGain;
 
                 if (Double.isNaN(score)) {
@@ -89,21 +90,22 @@ public class NDCG extends EvaluationMeasure {
     /**
      * Compute the DCG of a list of items with respect to a value vector.
      *
-     * @param items
+     * @param recommendations
      * @param values
      * @return
      */
-    public static double computeDCG(List<Recommendation> items, Map<Integer, ? extends Rating> values) {
+    public static double computeDCG(List<Recommendation> recommendations, Map<Integer, ? extends Rating> values, Domain ratingsDomain) {
         final double base = 2;
         final double logBaseChange = Math.log(base);
 
         double gain = 0;
         int rank = 0;
 
-        Iterator<Recommendation> iit = items.iterator();
-        while (iit.hasNext()) {
-            final int idItem = iit.next().getItem().getId();
-            final double rating = values.get(idItem).getRatingValue().doubleValue();
+        for (Recommendation recommendation : recommendations) {
+            final int idItem = recommendation.getItem().getId();
+            final double rating = values.containsKey(idItem)
+                    ? values.get(idItem).getRatingValue().doubleValue()
+                    : ratingsDomain.min().doubleValue();
             rank++;
 
             double discount;

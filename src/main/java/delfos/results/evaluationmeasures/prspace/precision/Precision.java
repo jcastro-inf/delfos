@@ -16,25 +16,21 @@
  */
 package delfos.results.evaluationmeasures.prspace.precision;
 
-import delfos.ERROR_CODES;
-import delfos.common.Global;
-import delfos.common.exceptions.dataset.users.UserNotFound;
 import delfos.dataset.basic.item.Item;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RatingsDataset;
 import delfos.dataset.basic.rating.RelevanceCriteria;
-import delfos.io.xml.evaluationmeasures.confusionmatricescurve.ConfusionMatricesCurveXML;
 import delfos.results.MeasureResult;
 import delfos.results.RecommendationResults;
 import delfos.results.evaluationmeasures.EvaluationMeasure;
 import delfos.results.evaluationmeasures.confusionmatrix.ConfusionMatricesCurve;
+import delfos.results.evaluationmeasures.prspace.PRSpace;
 import delfos.rs.recommendation.Recommendation;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
-import org.jdom2.Element;
+import java.util.stream.Collectors;
 
 /**
  * Medida de evaluación que calcula la precisión y recall a lo largo de todos los posibles tamaños de la lista de
@@ -74,40 +70,37 @@ public abstract class Precision extends EvaluationMeasure {
             }
         }
 
-        Map<Integer, ConfusionMatricesCurve> allUsersCurves = new TreeMap<>();
+        Map<Integer, ConfusionMatricesCurve> allUsersCurves = testDataset.allUsers().parallelStream()
+                .filter(new PRSpace.UsersWithRecommendationsInTestSet(recommendationResults, testDataset))
+                .collect(Collectors.toMap(idUser -> idUser, idUser -> {
 
-        for (int idUser : testDataset.allUsers()) {
+                    List<Boolean> resultados = new ArrayList<>(recommendationResults.usersWithRecommendations().size());
+                    Collection<Recommendation> recommendations = recommendationResults.getRecommendationsForUser(idUser);
+                    Map<Integer, ? extends Rating> userRatings = testDataset.getUserRatingsRated(idUser);
 
-            List<Boolean> resultados = new ArrayList<>(recommendationResults.usersWithRecommendations().size());
-            Collection<Recommendation> recommendationList = recommendationResults.getRecommendationsForUser(idUser);
+                    recommendations.stream().map(recommendation -> {
+                        Item item = recommendation.getItem();
+                        if (userRatings.containsKey(item.getId())) {
+                            return relevanceCriteria.isRelevant(userRatings.get(item.getId()).getRatingValue());
+                        } else {
+                            return false;
+                        }
+                    });
 
-            try {
-                Map<Integer, ? extends Rating> userRatings = testDataset.getUserRatingsRated(idUser);
-                for (Recommendation r : recommendationList) {
+                    return new ConfusionMatricesCurve(resultados);
 
-                    Item item = r.getItem();
-                    resultados.add(relevanceCriteria.isRelevant(userRatings.get(item.getId()).getRatingValue()));
-                }
-            } catch (UserNotFound ex) {
-                ERROR_CODES.USER_NOT_FOUND.exit(ex);
-            }
-
-            try {
-                allUsersCurves.put(idUser, new ConfusionMatricesCurve(resultados));
-            } catch (IllegalArgumentException iae) {
-                Global.showWarning("User " + idUser + ": " + iae.getMessage());
-            }
-        }
+                }));
 
         ConfusionMatricesCurve agregada = ConfusionMatricesCurve.mergeCurves(allUsersCurves.values());
 
-        double areaUnderPR = agregada.getAreaPRSpace();
+        double precisionAt;
+        if (agregada.size() == 0) {
+            precisionAt = 0;
+        } else {
+            int size = Math.min(listSize, agregada.size() - 1);
 
-        Element element = new Element(this.getName());
-        element.setAttribute(EvaluationMeasure.VALUE_ATTRIBUTE_NAME, Double.toString(areaUnderPR));
-        element.setContent(ConfusionMatricesCurveXML.getElement(agregada));
-
-        double precisionAt = agregada.getPrecisionAt(listSize);
+            precisionAt = agregada.getPrecisionAt(size);
+        }
 
         return new MeasureResult(
                 this,
