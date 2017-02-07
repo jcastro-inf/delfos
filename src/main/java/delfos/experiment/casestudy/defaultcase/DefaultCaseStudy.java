@@ -76,8 +76,9 @@ import java.util.stream.IntStream;
  *
  * @author jcastro-inf ( https://github.com/jcastro-inf )
  * @version 1.0 (19 Octubre 2011)
+ * @param <RatingType>
  */
-public class DefaultCaseStudy extends CaseStudy implements ParameterListener {
+public class DefaultCaseStudy<RatingType extends Rating> extends CaseStudy implements ParameterListener {
 
     protected final ArrayList<CaseStudyParameterChangedListener> propertyListeners = new ArrayList<>();
     protected final ArrayList<ExperimentListener> experimentProgressListeners = new ArrayList<>();
@@ -90,7 +91,7 @@ public class DefaultCaseStudy extends CaseStudy implements ParameterListener {
     protected final RecommenderSystem<? extends Object> recommenderSystem;
     protected Collection<EvaluationMeasure> evaluationMeasures;
     protected Map<EvaluationMeasure, MeasureResult>[][] executionsResult;
-    protected DatasetLoader<? extends Rating> datasetLoader;
+    protected DatasetLoader<RatingType> datasetLoader;
     protected RelevanceCriteria relevanceCriteria;
     private final PredictionProtocol predictionProtocolTechnique;
     private final int numVueltas;
@@ -120,7 +121,7 @@ public class DefaultCaseStudy extends CaseStudy implements ParameterListener {
      */
     public DefaultCaseStudy(
             RecommenderSystem<? extends Object> rs,
-            DatasetLoader<? extends Rating> datasetLoader,
+            DatasetLoader<RatingType> datasetLoader,
             ValidationTechnique validationTechnique,
             PredictionProtocol predictionValidationTechnique,
             RelevanceCriteria relevanceCriteria,
@@ -146,7 +147,7 @@ public class DefaultCaseStudy extends CaseStudy implements ParameterListener {
         setAlias(recommenderSystem.getAlias());
     }
 
-    public DefaultCaseStudy(DatasetLoader<? extends Rating> configuredDatasetLoader) {
+    public DefaultCaseStudy(DatasetLoader<RatingType> configuredDatasetLoader) {
         this(
                 new RandomRecommender(),
                 configuredDatasetLoader,
@@ -233,7 +234,7 @@ public class DefaultCaseStudy extends CaseStudy implements ParameterListener {
             Global.showInfoMessage(getAlias() + "validation.shuffle()\n");
             executionProgressFireEvent(getAlias() + "Performing validation split", 0, -1);
 
-            PairOfTrainTestRatingsDataset<? extends Rating>[] pairsValidation = validationTechnique.shuffle(datasetLoader);
+            PairOfTrainTestRatingsDataset<RatingType>[] pairsValidation = validationTechnique.shuffle(datasetLoader);
 
             if (_ejecucionActual == 0) {
                 initStructures(executionNumber, pairsValidation.length);
@@ -256,11 +257,12 @@ public class DefaultCaseStudy extends CaseStudy implements ParameterListener {
                 Global.showInfoMessage("----------------------- End of Build ----------------------------------" + "\n");
                 this.executionProgressFireEvent(getAlias() + " --> Recommendation process", 50, -1);
 
-                final RatingsDataset<? extends Rating> testRatingsDataset = pairsValidation[_conjuntoActual].test;
+                final DatasetLoader<RatingType> trainingDatasetLoader = pairsValidation[_conjuntoActual].getTrainingDatasetLoader();
+                final DatasetLoader<RatingType> testDatasetLoader = pairsValidation[_conjuntoActual].getTestDatasetLoader();
 
-                Collection<Integer> thisDatasetUsers = testRatingsDataset.allUsers();
+                Collection<Integer> thisDatasetUsers = testDatasetLoader.getRatingsDataset().allUsers();
                 final int numUsers = (int) thisDatasetUsers.parallelStream().map(idUser -> datasetLoader.getUsersDataset().get(idUser))
-                        .filter(user -> !predictionProtocolTechnique.getRecommendationRequests(testRatingsDataset, user.getId()).isEmpty()).count();
+                        .filter(user -> !predictionProtocolTechnique.getRecommendationRequests(trainingDatasetLoader, testDatasetLoader, user.getId()).isEmpty()).count();
 
                 ProgressChangedController progressChangedController = new ProgressChangedController(
                         getAlias() + " --> Recommendation process",
@@ -270,12 +272,12 @@ public class DefaultCaseStudy extends CaseStudy implements ParameterListener {
                         });
 
                 Map<Integer, Collection<Recommendation>> predictions = thisDatasetUsers.parallelStream().map(idUser -> datasetLoader.getUsersDataset().get(idUser))
-                        .filter(user -> !predictionProtocolTechnique.getRecommendationRequests(testRatingsDataset, user.getId()).isEmpty())
+                        .filter(user -> !predictionProtocolTechnique.getRecommendationRequests(trainingDatasetLoader, testDatasetLoader, user.getId()).isEmpty())
                         .map(user -> {
                             List<Set<Integer>> recommendationRequests = predictionProtocolTechnique
-                                    .getRecommendationRequests(testRatingsDataset, user.getId());
+                                    .getRecommendationRequests(trainingDatasetLoader, testDatasetLoader, user.getId());
                             List<Set<Integer>> ratingsToHide = predictionProtocolTechnique
-                                    .getRatingsToHide(testRatingsDataset, user.getId());
+                                    .getRatingsToHide(trainingDatasetLoader, testDatasetLoader, user.getId());
 
                             List<Recommendation> ret = IntStream.range(0, recommendationRequests.size())
                                     .boxed()
@@ -326,7 +328,7 @@ public class DefaultCaseStudy extends CaseStudy implements ParameterListener {
                 multiThreadExecutionManagerEvaluationMeasures.addTask(new DefaultCaseStudyEvaluationMeasures_Task(
                         _ejecucionActual,
                         _conjuntoActual,
-                        esr, testRatingsDataset,
+                        esr, testDatasetLoader.getRatingsDataset(),
                         evaluationMeasures,
                         relevanceCriteria));
 
@@ -425,16 +427,6 @@ public class DefaultCaseStudy extends CaseStudy implements ParameterListener {
     @Override
     public DatasetLoader<? extends Rating> getDatasetLoader() {
         return datasetLoader;
-    }
-
-    @Override
-    public void setDatasetLoader(DatasetLoader<? extends Rating> loader) {
-        if (this.datasetLoader != null) {
-            this.datasetLoader.removeParammeterListener(this);
-        }
-        this.datasetLoader = loader;
-        this.datasetLoader.addParammeterListener(this);
-        setRunning(false);
     }
 
     @Override
