@@ -17,12 +17,10 @@
 package delfos.results.evaluationmeasures.prspace;
 
 import delfos.ERROR_CODES;
-import delfos.common.Global;
 import delfos.common.exceptions.dataset.users.UserNotFound;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RatingsDataset;
 import delfos.dataset.basic.rating.RelevanceCriteria;
-import delfos.io.xml.evaluationmeasures.confusionmatricescurve.ConfusionMatricesCurveXML;
 import delfos.results.MeasureResult;
 import delfos.results.RecommendationResults;
 import delfos.results.evaluationmeasures.EvaluationMeasure;
@@ -33,12 +31,11 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
-import org.jdom2.Element;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
- * Medida de evaluación que calcula la precisión y recall a lo largo de todos
- * los posibles tamaños de la lista de recomendaciones. Muestra como valor
- * agregado la precisión suponiendo una recomendación.
+ * Medida de evaluación que calcula la precisión y recall a lo largo de todos los posibles tamaños de la lista de
+ * recomendaciones. Muestra como valor agregado la precisión suponiendo una recomendación.
  *
  * @author jcastro-inf ( https://github.com/jcastro-inf )
  */
@@ -65,6 +62,8 @@ public class PRSpace extends EvaluationMeasure {
 
         Map<Integer, ConfusionMatricesCurve> allUsersCurves = new TreeMap<>();
 
+        AtomicInteger usersWithoutMatrix = new AtomicInteger(0);
+
         for (int idUser : testDataset.allUsers()) {
 
             List<Boolean> resultados = new ArrayList<>(recommendationResults.usersWithRecommendations().size());
@@ -84,23 +83,13 @@ public class PRSpace extends EvaluationMeasure {
             try {
                 allUsersCurves.put(idUser, new ConfusionMatricesCurve(resultados));
             } catch (IllegalArgumentException iae) {
-                Global.showWarning("User " + idUser + ": " + iae.getMessage());
+                usersWithoutMatrix.incrementAndGet();
             }
         }
 
         ConfusionMatricesCurve agregada = ConfusionMatricesCurve.mergeCurves(allUsersCurves.values());
 
         double areaUnderPR = agregada.getAreaPRSpace();
-
-        Element element = new Element(this.getName());
-        element.setAttribute(EvaluationMeasure.VALUE_ATTRIBUTE_NAME, Double.toString(areaUnderPR));
-        element.setContent(ConfusionMatricesCurveXML.getElement(agregada));
-
-        Map<String, Double> detailedResult = new TreeMap<>();
-        for (int i = 0; i < agregada.size(); i++) {
-            double precisionAt = agregada.getPrecisionAt(i);
-            detailedResult.put("Precision@" + i, precisionAt);
-        }
 
         return new MeasureResult(
                 this,

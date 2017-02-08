@@ -17,12 +17,10 @@
 package delfos.results.evaluationmeasures.prspace.recall;
 
 import delfos.ERROR_CODES;
-import delfos.common.Global;
 import delfos.common.exceptions.dataset.users.UserNotFound;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RatingsDataset;
 import delfos.dataset.basic.rating.RelevanceCriteria;
-import delfos.io.xml.evaluationmeasures.confusionmatricescurve.ConfusionMatricesCurveXML;
 import delfos.results.MeasureResult;
 import delfos.results.RecommendationResults;
 import delfos.results.evaluationmeasures.EvaluationMeasure;
@@ -33,7 +31,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
-import org.jdom2.Element;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * @author jcastro-inf ( https://github.com/jcastro-inf )
@@ -71,6 +69,7 @@ public abstract class Recall extends EvaluationMeasure {
         }
 
         Map<Integer, ConfusionMatricesCurve> allUsersCurves = new TreeMap<>();
+        AtomicInteger usersWithoutMatrix = new AtomicInteger(0);
 
         for (int idUser : testDataset.allUsers()) {
 
@@ -91,17 +90,11 @@ public abstract class Recall extends EvaluationMeasure {
             try {
                 allUsersCurves.put(idUser, new ConfusionMatricesCurve(resultados));
             } catch (IllegalArgumentException iae) {
-                Global.showWarning("User " + idUser + ": " + iae.getMessage());
+                usersWithoutMatrix.incrementAndGet();
             }
         }
 
         ConfusionMatricesCurve agregada = ConfusionMatricesCurve.mergeCurves(allUsersCurves.values());
-
-        double areaUnderPR = agregada.getAreaPRSpace();
-
-        Element element = new Element(this.getName());
-        element.setAttribute(EvaluationMeasure.VALUE_ATTRIBUTE_NAME, Double.toString(areaUnderPR));
-        element.setContent(ConfusionMatricesCurveXML.getElement(agregada));
 
         double recall = agregada.getRecallAt(listSize);
 
