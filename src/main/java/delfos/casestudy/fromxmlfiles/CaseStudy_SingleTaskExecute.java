@@ -20,7 +20,6 @@ import delfos.ERROR_CODES;
 import delfos.common.FileUtilities;
 import delfos.common.exceptions.dataset.CannotLoadContentDataset;
 import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
-import delfos.common.parallelwork.SingleTaskExecute;
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RelevanceCriteria;
@@ -36,6 +35,7 @@ import delfos.results.evaluationmeasures.EvaluationMeasure;
 import delfos.rs.RecommenderSystem;
 import java.io.File;
 import java.util.Collection;
+import java.util.function.Consumer;
 
 /**
  *
@@ -43,7 +43,7 @@ import java.util.Collection;
  *
  * @version 27-ene-2014
  */
-public class CaseStudy_SingleTaskExecute implements SingleTaskExecute<ExecuteCaseStudy_Task> {
+public class CaseStudy_SingleTaskExecute implements Consumer<ExecuteCaseStudy_Task> {
 
     private void executeCaseStudy(
             File experimentsDirectory,
@@ -91,7 +91,7 @@ public class CaseStudy_SingleTaskExecute implements SingleTaskExecute<ExecuteCas
     }
 
     @Override
-    public void executeSingleTask(ExecuteCaseStudy_Task task) {
+    public void accept(ExecuteCaseStudy_Task task) {
         try {
             executeCaseStudy(
                     task.getExperimentsDirectory(),
