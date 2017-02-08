@@ -108,40 +108,40 @@ public class DefaultCaseStudy extends CaseStudy implements ParameterListener {
      * @param validationTechnique Método de validación que se usará para la división de los datasets en training y test.
      * Tras cada ejecución se llama al método
      * <b>shuffle()</b> para que realice una nueva división aleatoria del conjunto.
-     * @param rs Sistema de recomendación que será probado en el caso de uso. Los parámetros del mismo deben haber sido
-     * asignados al objeto con anterioridad mediante sus métodos <b>setParameter(parameter)</b>
-     * @param numEjecuciones número de veces que se ejecutará la recomendación Cuanto mayor sea el número de
+     * @param recommenderSystem Sistema de recomendación que será probado en el caso de uso. Los parámetros del mismo
+     * deben haber sido asignados al objeto con anterioridad mediante sus métodos <b>setParameter(parameter)</b>
+     * @param executionNumber número de veces que se ejecutará la recomendación Cuanto mayor sea el número de
      * ejecuciones, más fiel es el valor de las métricas de evaluación, pero se incrementa el tiempo de ejecución.
      * @param evaluationMeasures Vector con las medidas de evaluación que se aplicarán a los resultados de las
      * ejecuciones.
      * @param datasetLoader
      * @param relevanceCriteria
-     * @param predictionValidationTechnique
+     * @param predictionProtocol
      */
     public DefaultCaseStudy(
-            RecommenderSystem<? extends Object> rs,
+            RecommenderSystem<? extends Object> recommenderSystem,
             DatasetLoader<? extends Rating> datasetLoader,
             ValidationTechnique validationTechnique,
-            PredictionProtocol predictionValidationTechnique,
+            PredictionProtocol predictionProtocol,
             RelevanceCriteria relevanceCriteria,
             Collection<EvaluationMeasure> evaluationMeasures,
-            int numEjecuciones) {
+            int executionNumber) {
         super();
 
         this.relevanceCriteria = relevanceCriteria;
         this.validationTechnique = validationTechnique;
 
-        numVueltas = validationTechnique.getNumberOfSplits() * numEjecuciones;
+        numVueltas = validationTechnique.getNumberOfSplits() * executionNumber;
 
-        this.recommenderSystem = rs;
+        this.recommenderSystem = recommenderSystem;
 
-        executionNumber = numEjecuciones;
+        this.executionNumber = executionNumber;
         this.evaluationMeasures = new ArrayList<>(evaluationMeasures);
 
         this.datasetLoader = datasetLoader;
         registerInListeners();
 
-        this.predictionProtocolTechnique = predictionValidationTechnique;
+        this.predictionProtocolTechnique = predictionProtocol;
 
         setAlias(recommenderSystem.getAlias());
     }
