@@ -16,6 +16,7 @@
  */
 package delfos.rs.collaborativefiltering.knn.modelbased;
 
+import delfos.common.Global;
 import delfos.common.exceptions.CouldNotPredictRating;
 import delfos.common.exceptions.dataset.CannotLoadContentDataset;
 import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
@@ -26,10 +27,10 @@ import delfos.common.parameters.restriction.IntegerParameter;
 import delfos.dataset.basic.item.Item;
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
-import delfos.dataset.basic.user.User;
 import delfos.rs.collaborativefiltering.CollaborativeRecommender;
 import delfos.rs.collaborativefiltering.knn.CommonRating;
 import delfos.rs.collaborativefiltering.knn.KnnCollaborativeRecommender;
+import static delfos.rs.collaborativefiltering.knn.KnnCollaborativeRecommender.NEIGHBORHOOD_SIZE;
 import delfos.rs.collaborativefiltering.knn.MatchRating;
 import delfos.rs.collaborativefiltering.knn.RecommendationEntity;
 import delfos.rs.collaborativefiltering.predictiontechniques.PredictionTechnique;
@@ -44,7 +45,6 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -131,18 +131,20 @@ public class KnnModelBasedCFRS
 
     @Override
     public Collection<Recommendation> recommendToUser(
-            DatasetLoader<? extends Rating> datasetLoader, KnnModelBasedCFRSModel model, Integer idUser, Set<Integer> candidateItems)
+            DatasetLoader<? extends Rating> datasetLoader, KnnModelBasedCFRSModel model, Integer idUser, java.util.Set<Integer> candidateItems)
             throws UserNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset, ItemNotFound {
 
         PredictionTechnique prediction = (PredictionTechnique) getParameterValue(KnnModelBasedCFRS.PREDICTION_TECHNIQUE);
 
+        Collection<Recommendation> recommendationList = new LinkedList<>();
+        Map<Integer, ? extends Rating> userRated = datasetLoader.getRatingsDataset().getUserRatingsRated(idUser);
+        if (userRated.isEmpty()) {
+            return Collections.EMPTY_LIST;
+        }
+
         int neighborhoodSize = (Integer) getParameterValue(NEIGHBORHOOD_SIZE);
 
-        User user = datasetLoader.getUsersDataset().get(idUser);
-
-        List<Recommendation> recommendations = Collections.synchronizedList(new LinkedList<>());
-        Map<Integer, ? extends Rating> targetUserRatings = datasetLoader.getRatingsDataset().getUserRatingsRated(idUser);
-
+        int itemsWithProfile = 0;
         for (int idItem : candidateItems) {
             List<MatchRating> matchRatings = new LinkedList<>();
             KnnModelItemProfile profile = model.getItemProfile(idItem);
@@ -151,34 +153,37 @@ public class KnnModelBasedCFRS
                 continue;
             }
 
-            List<Neighbor> selectedNeighbors = profile.getAllNeighbors().stream()
-                    .filter(neighbor -> neighbor.getSimilarity() > 0)
-                    .filter(neighbor -> Double.isFinite(neighbor.getSimilarity()))
-                    .filter(neighbor -> !Double.isNaN(neighbor.getSimilarity())).collect(Collectors.toList());
+            itemsWithProfile++;
 
-            selectedNeighbors = selectedNeighbors
-                    .subList(0, Math.min(selectedNeighbors.size(), neighborhoodSize));
-
-            for (Neighbor neighbor : selectedNeighbors) {
+            for (Neighbor neighbor : profile.getAllNeighbors()) {
+                int idItemNeighbor = neighbor.getIdNeighbor();
                 double similarity = neighbor.getSimilarity();
-                Rating rating = targetUserRatings.get(neighbor.getIdNeighbor());
+                Rating rating = userRated.get(idItemNeighbor);
                 if (rating != null) {
-                    Item itemNeighbor = datasetLoader.getContentDataset().get(rating.getIdItem());
-                    matchRatings.add(new MatchRating(RecommendationEntity.USER, user, itemNeighbor, rating.getRatingValue().doubleValue(), similarity));
+                    matchRatings.add(new MatchRating(RecommendationEntity.USER, idUser, idItemNeighbor, rating, similarity));
+                    if (Global.isVerboseAnnoying()) {
+                        Global.showInfoMessage(idItemNeighbor + "\the prediction is\t" + rating + "\n");
+                    }
+                }
+
+                if (matchRatings.size() >= neighborhoodSize) {
+                    break;
                 }
             }
 
-            Double predictedRating;
-            try {
-                predictedRating = prediction.predictRating(idUser, idItem, matchRatings, datasetLoader.getRatingsDataset());
-            } catch (CouldNotPredictRating ex) {
-                predictedRating = Double.NaN;
+            if (!matchRatings.isEmpty()) {
+                Double predictedRating;
+                try {
+                    predictedRating = prediction.predictRating(idUser, idItem, matchRatings, datasetLoader.getRatingsDataset());
+                    recommendationList.add(new Recommendation(idItem, predictedRating));
+                } catch (UserNotFound | ItemNotFound ex) {
+                    throw new IllegalArgumentException(ex);
+                } catch (CouldNotPredictRating ex) {
+                }
             }
-            final Item item = datasetLoader.getContentDataset().get(idItem);
-            recommendations.add(new Recommendation(item, predictedRating));
 
         }
-        return recommendations;
+        return recommendationList;
     }
 
     /**
@@ -241,5 +246,9 @@ public class KnnModelBasedCFRS
 
     public final int getNeighborhoodSizeStore() {
         return (Integer) getParameterValue(NEIGHBORHOOD_SIZE_STORE);
+    }
+
+    public void setNeighborhoodSizeStore(int neighbourhoodSizeStore) {
+        setParameterValue(NEIGHBORHOOD_SIZE_STORE, neighbourhoodSizeStore);
     }
 }

@@ -28,7 +28,7 @@ import delfos.group.grs.aggregation.AggregationOfIndividualRecommendations;
 import delfos.rs.RecommenderSystem;
 import delfos.rs.bufferedrecommenders.RecommenderSystem_fixedFilePersistence;
 import delfos.rs.collaborativefiltering.knn.memorybased.nwr.KnnMemoryBasedNWR;
-import delfos.rs.collaborativefiltering.knn.modelbased.nwr.KnnModelBased_NWR;
+import delfos.rs.collaborativefiltering.knn.modelbased.KnnModelBasedCFRS;
 import delfos.rs.collaborativefiltering.predictiontechniques.WeightedSum;
 import delfos.rs.collaborativefiltering.svd.SVDFoldingIn;
 import delfos.rs.persistence.FilePersistence;
@@ -43,8 +43,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 /**
- * Caso de estudio que ejecuta y recopila todas las técnicas consideradas
- * baseline para grupos.
+ * Caso de estudio que ejecuta y recopila todas las técnicas consideradas baseline para grupos.
  *
  * @author jcastro-inf ( https://github.com/jcastro-inf )
  * @version 28-enero-2015
@@ -256,11 +255,12 @@ public class CaseStudyAllBaselines {
     }
 
     private RecommenderSystem getKnnItemRecommender() {
-        KnnModelBased_NWR knnItem = new KnnModelBased_NWR();
+        KnnModelBasedCFRS knnItem = new KnnModelBasedCFRS();
 
         knnItem.setSIMILARITY_MEASURE(new PearsonCorrelationCoefficient());
         knnItem.setRELEVANCE_FACTOR_VALUE(30);
         knnItem.setNeighborhoodSize(60);
+        knnItem.setNeighborhoodSizeStore(2000);
         knnItem.setPREDICTION_TECHNIQUE(new WeightedSum());
 
         File directory = new File(
