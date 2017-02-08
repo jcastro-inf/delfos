@@ -8,7 +8,7 @@ import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
 import delfos.common.exceptions.dataset.items.ItemNotFound;
 import delfos.common.exceptions.dataset.users.UserNotFound;
 import delfos.dataset.loaders.csv.CSVfileDatasetLoader;
-import delfos.experiment.ExperimentListerner_default;
+import delfos.experiment.ExperimentListener_default;
 import delfos.experiment.casestudy.ExecutionProgressListener_default;
 import delfos.experiment.validation.validationtechnique.HoldOut_Ratings;
 import delfos.group.casestudy.defaultcase.GroupCaseStudy;
@@ -99,7 +99,7 @@ public class CheckCoverageTest {
                 groupFormationTechnique, new HoldOut_Ratings(), new NoPredictionProtocol(),
                 evaluationMeasures,
                 datasetLoader.getDefaultRelevanceCriteria(), NUM_EJECUCIONES);
-        caseStudy.addExperimentListener(new ExperimentListerner_default(System.out, 10000));
+        caseStudy.addExperimentListener(new ExperimentListener_default(System.out, 10000));
         caseStudy.addExecutionProgressListener(new ExecutionProgressListener_default(System.out, 10000));
 
         String caseStudyAlias = "CheckCoverageTest_" + GroupCaseStudyXML.getCaseStudyFileNameTimestamped(caseStudy);
@@ -127,7 +127,7 @@ public class CheckCoverageTest {
                 groupFormationTechnique, new HoldOut_Ratings(), new NoPredictionProtocol(),
                 evaluationMeasures,
                 datasetLoader.getDefaultRelevanceCriteria(), NUM_EJECUCIONES);
-        caseStudy.addExperimentListener(new ExperimentListerner_default(System.out, 10000));
+        caseStudy.addExperimentListener(new ExperimentListener_default(System.out, 10000));
         caseStudy.addExecutionProgressListener(new ExecutionProgressListener_default(System.out, 10000));
 
         caseStudy.addExecutionProgressListener((String proceso, int percent, long remainingMiliSeconds) -> {

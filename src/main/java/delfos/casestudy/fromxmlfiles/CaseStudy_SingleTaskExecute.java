@@ -23,7 +23,7 @@ import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RelevanceCriteria;
-import delfos.experiment.ExperimentListerner_default;
+import delfos.experiment.ExperimentListener_default;
 import delfos.experiment.casestudy.CaseStudy;
 import delfos.experiment.casestudy.CaseStudyConfiguration;
 import delfos.experiment.casestudy.defaultcase.DefaultCaseStudy;
@@ -75,7 +75,7 @@ public class CaseStudy_SingleTaskExecute implements Consumer<ExecuteCaseStudy_Ta
         String newThreadName = threadName + "_" + caseStudyRecommendation.getAlias();
         Thread.currentThread().setName(newThreadName);
 
-        caseStudyRecommendation.addExperimentListener(new ExperimentListerner_default(System.out, 10000));
+        caseStudyRecommendation.addExperimentListener(new ExperimentListener_default(System.out, 10000));
         caseStudyRecommendation.setSeedValue(seed);
 
         caseStudyRecommendation.execute();
