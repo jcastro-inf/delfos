@@ -22,8 +22,7 @@ import delfos.common.exceptions.dataset.CannotLoadContentDataset;
 import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
 import delfos.common.exceptions.dataset.items.ItemNotFound;
 import delfos.common.exceptions.dataset.users.UserNotFound;
-import delfos.common.parameters.Parameter;
-import delfos.common.parameters.restriction.IntegerParameter;
+import delfos.dataset.basic.item.ContentDataset;
 import delfos.dataset.basic.item.Item;
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
@@ -61,14 +60,6 @@ public class KnnModelBasedCFRS
         extends KnnCollaborativeRecommender<KnnModelBasedCFRSModel> {
 
     private static final long serialVersionUID = 1L;
-
-    /**
-     * Parámetro para almacenar el número de vecinos que se almacenan en el perfil de cada producto. Si no se modifica,
-     * su valor por defecto es 20
-     */
-    public static final Parameter NEIGHBORHOOD_SIZE_STORE = new Parameter(
-            "Neighborhood_size_store",
-            new IntegerParameter(1, 9999, 1000));
 
     /**
      * Constructor por defecto que llama al constructor por defecto de la clase padre directa
@@ -144,8 +135,12 @@ public class KnnModelBasedCFRS
 
         int neighborhoodSize = (Integer) getParameterValue(NEIGHBORHOOD_SIZE);
 
+        final ContentDataset contentDataset = datasetLoader.getContentDataset();
+
         int itemsWithProfile = 0;
         for (int idItem : candidateItems) {
+            Item item = contentDataset.get(idItem);
+
             List<MatchRating> matchRatings = new LinkedList<>();
             KnnModelItemProfile profile = model.getItemProfile(idItem);
 
@@ -175,7 +170,7 @@ public class KnnModelBasedCFRS
                 Double predictedRating;
                 try {
                     predictedRating = prediction.predictRating(idUser, idItem, matchRatings, datasetLoader.getRatingsDataset());
-                    recommendationList.add(new Recommendation(idItem, predictedRating));
+                    recommendationList.add(new Recommendation(item, predictedRating));
                 } catch (UserNotFound | ItemNotFound ex) {
                     throw new IllegalArgumentException(ex);
                 } catch (CouldNotPredictRating ex) {
@@ -244,11 +239,4 @@ public class KnnModelBasedCFRS
         dao.saveModel(databasePersistence, model);
     }
 
-    public final int getNeighborhoodSizeStore() {
-        return (Integer) getParameterValue(NEIGHBORHOOD_SIZE_STORE);
-    }
-
-    public void setNeighborhoodSizeStore(int neighbourhoodSizeStore) {
-        setParameterValue(NEIGHBORHOOD_SIZE_STORE, neighbourhoodSizeStore);
-    }
 }
