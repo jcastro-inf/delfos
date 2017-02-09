@@ -27,7 +27,7 @@ import delfos.group.grs.aggregation.AggregationOfIndividualRatings;
 import delfos.group.grs.aggregation.AggregationOfIndividualRecommendations;
 import delfos.rs.RecommenderSystem;
 import delfos.rs.bufferedrecommenders.RecommenderSystem_fixedFilePersistence;
-import delfos.rs.collaborativefiltering.knn.memorybased.nwr.KnnMemoryBasedNWR;
+import delfos.rs.collaborativefiltering.knn.memorybased.KnnMemoryBasedCFRS;
 import delfos.rs.collaborativefiltering.knn.modelbased.KnnModelBasedCFRS;
 import delfos.rs.collaborativefiltering.predictiontechniques.WeightedSum;
 import delfos.rs.collaborativefiltering.svd.SVDFoldingIn;
@@ -240,7 +240,7 @@ public class CaseStudyAllBaselines {
 
     private RecommenderSystem getKnnUserRecommender() {
 
-        KnnMemoryBasedNWR rs = new KnnMemoryBasedNWR();
+        KnnMemoryBasedCFRS rs = new KnnMemoryBasedCFRS();
 
         rs.setSIMILARITY_MEASURE(new PearsonCorrelationCoefficient());
         rs.setRELEVANCE_FACTOR_VALUE(30);

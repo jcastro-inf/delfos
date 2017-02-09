@@ -19,7 +19,7 @@ import delfos.group.grs.aggregation.AggregationOfIndividualRatings;
 import delfos.group.grs.cww.CentralityWeightedAggregationGRS;
 import delfos.group.io.xml.casestudy.GroupCaseStudyXML;
 import delfos.group.results.groupevaluationmeasures.GroupEvaluationMeasure;
-import delfos.rs.collaborativefiltering.knn.memorybased.nwr.KnnMemoryBasedNWR;
+import delfos.rs.collaborativefiltering.knn.memorybased.KnnMemoryBasedCFRS;
 import java.io.File;
 import java.util.Collection;
 import java.util.LinkedList;
@@ -79,7 +79,7 @@ public class CaseComputingWithWordsCentralityAggregation {
 
         int i = 0;
 
-        grsList.add(new AggregationOfIndividualRatings(new KnnMemoryBasedNWR()));
+        grsList.add(new AggregationOfIndividualRatings(new KnnMemoryBasedCFRS()));
         grsList.getLast().setAlias("0" + i++ + "_" + "MeanAggregationGRS");
 
         for (boolean normalise : normaliseArray) {
@@ -87,7 +87,7 @@ public class CaseComputingWithWordsCentralityAggregation {
                 double aStrong = strongDefinitionArray[index];
                 double bStrong = strongDefinitionArray[index + 1];
 
-                grsList.add(new CentralityWeightedAggregationGRS(new KnnMemoryBasedNWR(), true, aStrong, bStrong, normalise));
+                grsList.add(new CentralityWeightedAggregationGRS(new KnnMemoryBasedCFRS(), true, aStrong, bStrong, normalise));
                 grsList.getLast().setAlias("0" + i++ + "_CentralityAggrGRS_norm=(" + normalise + "_ST(" + aStrong + "," + bStrong + ")");
 
             }

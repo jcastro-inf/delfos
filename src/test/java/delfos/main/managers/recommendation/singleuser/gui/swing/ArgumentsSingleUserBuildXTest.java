@@ -10,7 +10,7 @@ import delfos.dataset.basic.rating.Rating;
 import delfos.main.managers.CaseUseManagerTest;
 import delfos.recommendationcandidates.OnlyNewItems;
 import delfos.rs.RecommenderSystem;
-import delfos.rs.collaborativefiltering.knn.memorybased.nwr.KnnMemoryBasedNWR;
+import delfos.rs.collaborativefiltering.knn.memorybased.KnnMemoryBasedCFRS;
 import delfos.rs.output.RecommendationsOutputStandardRaw;
 import delfos.rs.output.sort.SortBy;
 import delfos.rs.persistence.FilePersistence;
@@ -28,13 +28,11 @@ public class ArgumentsSingleUserBuildXTest extends DelfosTest {
     }
 
     /**
-     * Directorio en el que se almacenan los ficheros relacionados con los tests
-     * del manejo de un dataset.
+     * Directorio en el que se almacenan los ficheros relacionados con los tests del manejo de un dataset.
      */
     private final static String TEST_DIRECTORY = DelfosTest.getTemporalDirectoryForTest(ArgumentsSingleUserBuildXTest.class).getPath() + File.separator;
     /**
-     * Nombre del fichero que almacena la configuración del dataset manejado por
-     * la biblioteca.
+     * Nombre del fichero que almacena la configuración del dataset manejado por la biblioteca.
      */
     private final static String SINGLE_USER_RS_CONFIG_XML = TEST_DIRECTORY + "single-user-rs-config.xml";
 
@@ -73,7 +71,7 @@ public class ArgumentsSingleUserBuildXTest extends DelfosTest {
         File directory = new File(TEST_DIRECTORY);
 
         RecommenderSystem<? extends Object> singleUserRecommender
-                = new KnnMemoryBasedNWR();
+                = new KnnMemoryBasedCFRS();
 
         DatasetLoader<? extends Rating> datasetLoader
                 = ConfiguredDatasetsFactory.getInstance().getDatasetLoader("ml-100k");

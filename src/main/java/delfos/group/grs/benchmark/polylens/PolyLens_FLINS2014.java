@@ -34,12 +34,10 @@ import delfos.group.grs.aggregation.AggregationOfIndividualRatings;
 import delfos.group.grs.aggregation.GroupModelPseudoUser;
 import delfos.group.grs.recommendations.GroupRecommendations;
 import delfos.rs.collaborativefiltering.knn.KnnCollaborativeRecommender;
-import delfos.rs.collaborativefiltering.knn.memorybased.nwr.KnnMemoryBasedNWR;
+import delfos.rs.collaborativefiltering.knn.memorybased.KnnMemoryBasedCFRS;
 import delfos.rs.collaborativefiltering.predictiontechniques.WeightedSum;
 import delfos.rs.explanation.GroupModelWithExplanation;
-import delfos.rs.recommendation.Recommendation;
 import delfos.similaritymeasures.PearsonCorrelationCoefficient;
-import java.util.Collection;
 import java.util.Set;
 
 /**
@@ -53,8 +51,8 @@ import java.util.Set;
  * Mark O'Connor, Dan Cosley, Joseph A. Konstan and John Riedl
  *
  * <p>
- * Published in: Proceeding ECSCW'01 Proceedings of the seventh conference on
- * European Conference on Computer Supported Cooperative Work Pages, 199 - 218.
+ * Published in: Proceeding ECSCW'01 Proceedings of the seventh conference on European Conference on Computer Supported
+ * Cooperative Work Pages, 199 - 218.
  *
  * @author jcastro-inf ( https://github.com/jcastro-inf )
  * @version 1.0 20-May-2013
@@ -64,14 +62,13 @@ public class PolyLens_FLINS2014 extends GroupRecommenderSystemAdapter<SingleReco
     private final AggregationOfIndividualRatings aggregationOfIndividualRatings;
 
     /**
-     * Parámetro para almacenar el número de vecinos que se tienen en cuenta
-     * para la predicción de la valoración. Si no se modifica, su valor por
-     * defecto es 20
+     * Parámetro para almacenar el número de vecinos que se tienen en cuenta para la predicción de la valoración. Si no
+     * se modifica, su valor por defecto es 20
      */
-    public static final Parameter neighborhoodSize = new Parameter("Neighborhood_size", new IntegerParameter(1, 9999, 60));
+    public static final Parameter NEIGHBORHOOD_SIZE = new Parameter("Neighborhood_size", new IntegerParameter(1, 9999, 60));
 
     public PolyLens_FLINS2014() {
-        final KnnMemoryBasedNWR knnMemory = new KnnMemoryBasedNWR();
+        final KnnMemoryBasedCFRS knnMemory = new KnnMemoryBasedCFRS();
 
         knnMemory.setParameterValue(KnnCollaborativeRecommender.SIMILARITY_MEASURE, new PearsonCorrelationCoefficient());
         knnMemory.setParameterValue(KnnCollaborativeRecommender.RELEVANCE_FACTOR, 20);
@@ -82,17 +79,17 @@ public class PolyLens_FLINS2014 extends GroupRecommenderSystemAdapter<SingleReco
         knnMemory.setParameterValue(KnnCollaborativeRecommender.PREDICTION_TECHNIQUE, new WeightedSum());
 
         aggregationOfIndividualRatings = new AggregationOfIndividualRatings(knnMemory, new Mean());
-        addParameter(neighborhoodSize);
+        addParameter(NEIGHBORHOOD_SIZE);
 
         addParammeterListener(() -> {
-            knnMemory.setParameterValue(KnnMemoryBasedNWR.NEIGHBORHOOD_SIZE, getParameterValue(neighborhoodSize));
+            knnMemory.setParameterValue(KnnMemoryBasedCFRS.NEIGHBORHOOD_SIZE, getParameterValue(NEIGHBORHOOD_SIZE));
         });
     }
 
     public PolyLens_FLINS2014(int neighborhoodSize) {
         this();
 
-        setParameterValue(PolyLens_FLINS2014.neighborhoodSize, neighborhoodSize);
+        setParameterValue(PolyLens_FLINS2014.NEIGHBORHOOD_SIZE, neighborhoodSize);
     }
 
     @Override

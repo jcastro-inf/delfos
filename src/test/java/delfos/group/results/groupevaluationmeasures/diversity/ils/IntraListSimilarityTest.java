@@ -16,7 +16,7 @@ import delfos.group.groupsofusers.GroupOfUsers;
 import delfos.group.grs.GroupRecommenderSystem;
 import delfos.group.grs.aggregation.AggregationOfIndividualRatings;
 import delfos.recommendationcandidates.OnlyNewItems;
-import delfos.rs.collaborativefiltering.knn.memorybased.nwr.KnnMemoryBasedNWR;
+import delfos.rs.collaborativefiltering.knn.memorybased.KnnMemoryBasedCFRS;
 import java.util.Arrays;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -53,7 +53,7 @@ public class IntraListSimilarityTest {
         DatasetLoader<? extends Rating> testDatasetLoader = shuffle[0].getTestDatasetLoader();
         RelevanceCriteria relevanceCriteria = new RelevanceCriteria();
 
-        GroupRecommenderSystem grs = new AggregationOfIndividualRatings(new KnnMemoryBasedNWR(), new Mean());
+        GroupRecommenderSystem grs = new AggregationOfIndividualRatings(new KnnMemoryBasedCFRS(), new Mean());
         Object buildRecommendationModel = grs.buildRecommendationModel(originalDatasetLoader);
 
         Set<Item> candidateItems = new OnlyNewItems().candidateItems(originalDatasetLoader, groupOfUsers);
