@@ -16,12 +16,22 @@
  */
 package delfos.dataset.loaders.rscoursera;
 
+import delfos.common.datastructures.histograms.HistogramNumbersSmart;
+import delfos.configureddatasets.ConfiguredDatasetsFactory;
+import delfos.constants.DelfosTest;
 import delfos.dataset.basic.item.ContentDataset;
+import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RatingsDataset;
 import delfos.dataset.basic.tags.TagsDataset;
 import delfos.dataset.basic.user.UsersDataset;
+import delfos.dataset.storage.validationdatasets.PairOfTrainTestRatingsDataset;
+import delfos.experiment.validation.validationtechnique.CrossFoldValidation_Ratings;
+import delfos.io.csv.dataset.rating.RatingsDatasetToCSV;
+import delfos.io.csv.dataset.rating.RatingsDatasetToCSV_JavaCSV20;
 import java.io.File;
+import java.io.IOException;
+import java.util.Set;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -29,7 +39,7 @@ import org.junit.Test;
  *
  * @author jcastro
  */
-public class RSCourseraDatasetLoaderTest {
+public class RSCourseraDatasetLoaderTest extends DelfosTest {
 
     public RSCourseraDatasetLoaderTest() {
     }
@@ -102,5 +112,63 @@ public class RSCourseraDatasetLoaderTest {
         instance.setTagsDatasetFile(new File("temp" + File.separator + "rs-coursera" + File.separator
                 + "movie-tags.csv"));
         return instance;
+    }
+
+    @Test
+    public void generatePartitions() throws IOException {
+        RSCourseraDatasetLoader rsCourseraDatasetLoader = ConfiguredDatasetsFactory.getInstance().getDatasetLoader("rs-coursera", RSCourseraDatasetLoader.class);
+
+        CrossFoldValidation_Ratings cfv = new CrossFoldValidation_Ratings();
+
+        cfv.setNumberOfPartitions(5);
+        cfv.setSeedValue(0);
+
+        String directory = DelfosTest.getTemporalDirectoryForTest(this.getClass()).getPath()
+                + File.separator;
+
+        PairOfTrainTestRatingsDataset[] shuffle = cfv.shuffle(rsCourseraDatasetLoader);
+
+        RatingsDatasetToCSV ratingsDatasetToCSV = new RatingsDatasetToCSV_JavaCSV20();
+
+        ratingsDatasetToCSV.writeDataset(shuffle[0].train, directory + "ratings_train_0.csv");
+        ratingsDatasetToCSV.writeDataset(shuffle[0].test, directory + "ratings_test_0.csv");
+
+        ratingsDatasetToCSV.writeDataset(shuffle[1].train, directory + "ratings_train_1.csv");
+        ratingsDatasetToCSV.writeDataset(shuffle[1].test, directory + "ratings_test_1.csv");
+
+        ratingsDatasetToCSV.writeDataset(shuffle[2].train, directory + "ratings_train_2.csv");
+        ratingsDatasetToCSV.writeDataset(shuffle[2].test, directory + "ratings_test_2.csv");
+
+        ratingsDatasetToCSV.writeDataset(shuffle[3].train, directory + "ratings_train_3.csv");
+        ratingsDatasetToCSV.writeDataset(shuffle[3].test, directory + "ratings_test_3.csv");
+
+        ratingsDatasetToCSV.writeDataset(shuffle[4].train, directory + "ratings_train_4.csv");
+        ratingsDatasetToCSV.writeDataset(shuffle[4].test, directory + "ratings_test_4.csv");
+
+    }
+
+    @Test
+    public void userHistogram() {
+
+        DatasetLoader<? extends Rating> rsCourseraDatasetLoader = ConfiguredDatasetsFactory.getInstance()
+                .getDatasetLoader("ml-100k");
+
+        HistogramNumbersSmart histogramNumbersSmart = new HistogramNumbersSmart(1);
+
+        Set<Integer> allUsers = rsCourseraDatasetLoader.getRatingsDataset().allUsers();
+
+        allUsers.stream().forEach(user -> {
+
+            int numRatings = rsCourseraDatasetLoader
+                    .getRatingsDataset()
+                    .getUserRated(user)
+                    .size();
+
+            histogramNumbersSmart.addValue(numRatings);
+
+        });
+
+        histogramNumbersSmart.printHistogram(System.out);
+
     }
 }

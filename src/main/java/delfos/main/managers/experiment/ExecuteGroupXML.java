@@ -23,13 +23,8 @@ import delfos.common.Global;
 import delfos.common.exceptions.dataset.CannotLoadContentDataset;
 import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
 import delfos.group.casestudy.fromxmlfiles.GroupXMLexperimentsExecution;
-import delfos.group.io.xml.casestudy.GroupCaseStudyXML;
 import delfos.main.managers.CaseUseMode;
 import java.io.File;
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
-import org.jdom2.JDOMException;
 
 /**
  *
@@ -53,48 +48,6 @@ public class ExecuteGroupXML extends CaseUseMode {
         return MODE_PARAMETER;
     }
 
-    private boolean isForceExecution(ConsoleParameters consoleParameters) {
-        return consoleParameters.isFlagDefined(FORCE_EXECUTION);
-    }
-
-    private boolean isAnyResultAggregatedXMLPresent(File xmlExperimentsDirectory) {
-        File xmlExperimentResultsDirectory = new File(xmlExperimentsDirectory.getPath() + File.separator + "results" + File.separator);
-        if (!xmlExperimentResultsDirectory.exists()) {
-            return false;
-        }
-        if (!xmlExperimentResultsDirectory.isDirectory()) {
-            throw new IllegalStateException("Results directory not found (is a file) ['" + xmlExperimentResultsDirectory.getAbsolutePath() + "']");
-        }
-
-        List<File> aggregateResults = Arrays.asList(xmlExperimentResultsDirectory.listFiles((File dir, String name) -> name.contains("_AGGR.xml")));
-        return !aggregateResults.isEmpty();
-    }
-
-    private boolean isNumExecGreaterThanAllTheExisting(File xmlExperimentsDirectory, int NUM_EJECUCIONES) {
-
-        File xmlExperimentResultsDirectory = new File(xmlExperimentsDirectory.getPath() + File.separator + "results" + File.separator);
-        List<File> aggregateResults = Arrays.asList(xmlExperimentResultsDirectory.listFiles((File dir, String name) -> name.contains("_AGGR.xml")));
-
-        boolean isNumExecGreaterThanTheExisting = true;
-
-        for (File resultAggregatedXML : aggregateResults) {
-
-            try {
-                int resultAggregatedXML_numExec = GroupCaseStudyXML.extractResultNumExec(resultAggregatedXML);
-
-                if (resultAggregatedXML_numExec >= NUM_EJECUCIONES) {
-                    isNumExecGreaterThanTheExisting = false;
-                }
-            } catch (JDOMException | IOException ex) {
-                ERROR_CODES.CANNOT_READ_CASE_STUDY_XML.exit(ex);
-            }
-
-        }
-
-        return isNumExecGreaterThanTheExisting;
-
-    }
-
     private static class Holder {
 
         private static final ExecuteGroupXML INSTANCE = new ExecuteGroupXML();
@@ -111,13 +64,13 @@ public class ExecuteGroupXML extends CaseUseMode {
     public void manageCaseUse(ConsoleParameters consoleParameters) {
         try {
             File xmlExperimentsDirectory = new File(consoleParameters.getValue(ExecuteGroupXML.XML_DIRECTORY));
-            int NUM_EJECUCIONES = getNumExecutions(consoleParameters);
-            long SEED = getSeed(consoleParameters);
-            boolean forceReExecution = isForceExecution(consoleParameters);
+            int NUM_EJECUCIONES = ExecuteXML.getNumExecutions(consoleParameters);
+            long SEED = ExecuteXML.getSeed(consoleParameters);
+            boolean forceReExecution = ExecuteXML.isForceExecution(consoleParameters);
 
             consoleParameters.printUnusedParameters(System.err);
 
-            if (shouldExecuteTheExperiment(xmlExperimentsDirectory, NUM_EJECUCIONES, forceReExecution)) {
+            if (ExecuteXML.shouldExecuteTheExperiment(xmlExperimentsDirectory, NUM_EJECUCIONES, forceReExecution)) {
 
                 Global.showMessageTimestamped("The experiment is going to be executed (" + xmlExperimentsDirectory.getAbsolutePath() + ")");
                 Global.showMessageTimestamped("command: " + consoleParameters.printOriginalParameters());
@@ -128,34 +81,6 @@ public class ExecuteGroupXML extends CaseUseMode {
         } catch (UndefinedParameterException ex) {
             consoleParameters.printUnusedParameters(System.err);
         }
-    }
-
-    private long getSeed(ConsoleParameters consoleParameters) throws NumberFormatException {
-        long SEED;
-        {
-            long num;
-            try {
-                num = Long.parseLong(consoleParameters.getValue(SEED_PARAMETER));
-            } catch (UndefinedParameterException ex) {
-                num = System.currentTimeMillis();
-            }
-            SEED = num;
-        }
-        return SEED;
-    }
-
-    private int getNumExecutions(ConsoleParameters consoleParameters) throws NumberFormatException {
-        final int NUM_EJECUCIONES;
-        {
-            int num;
-            try {
-                num = Integer.parseInt(consoleParameters.getValue(NUM_EXEC_PARAMETER));
-            } catch (UndefinedParameterException ex) {
-                num = 1;
-            }
-            NUM_EJECUCIONES = num;
-        }
-        return NUM_EJECUCIONES;
     }
 
     public static void manageCaseUse(File experimentsDirectory, String datasetDirectory, int numExecutions, long seed) {
@@ -173,13 +98,4 @@ public class ExecuteGroupXML extends CaseUseMode {
         }
     }
 
-    public boolean shouldExecuteTheExperiment(File xmlExperimentsDirectory, int NUM_EJECUCIONES, boolean forceReExecution) {
-        if (forceReExecution) {
-            return true;
-        } else if (isAnyResultAggregatedXMLPresent(xmlExperimentsDirectory)) {
-            return isNumExecGreaterThanAllTheExisting(xmlExperimentsDirectory, NUM_EJECUCIONES);
-        } else {
-            return true;
-        }
-    }
 }

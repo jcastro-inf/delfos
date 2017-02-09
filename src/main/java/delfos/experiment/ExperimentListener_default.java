@@ -23,13 +23,13 @@ import java.io.PrintStream;
 import java.util.Date;
 
 /**
- * Listener por defecto, que escribe en la salida indicada el progreso con una
- * frecuencia no superior al tiempo indicado.
+ * Listener por defecto, que escribe en la salida indicada el progreso con una frecuencia no superior al tiempo
+ * indicado.
  *
  * @author jcastro-inf ( https://github.com/jcastro-inf )
  * @version 1.0 22-May-2013
  */
-public class ExperimentListerner_default implements ExperimentListener {
+public class ExperimentListener_default implements ExperimentListener {
 
     /**
      * Cronómetro para controlar el tiempo entre escrituras.
@@ -49,20 +49,20 @@ public class ExperimentListerner_default implements ExperimentListener {
     private final long verbosePeriod;
 
     /**
-     * Constructor por defecto, que establece el stream donde se escribe la
-     * información de progreso y se limita el número de escrituras por tiempo.
+     * Constructor por defecto, que establece el stream donde se escribe la información de progreso y se limita el
+     * número de escrituras por tiempo.
      *
      * @param out Stream de salida en el que se escriben los mensajes.
      * @param verbosePeriod Tiempo mínimo entre escrituras.
      */
-    public ExperimentListerner_default(PrintStream out, long verbosePeriod) {
+    public ExperimentListener_default(PrintStream out, long verbosePeriod) {
         this.out = out;
         this.verbosePeriod = verbosePeriod;
         chronometer = new Chronometer();
     }
 
     @Override
-    public void progressChanged(ExperimentProgress algorithmExperiment) {
+    public synchronized void progressChanged(ExperimentProgress algorithmExperiment) {
 
         String executionTask = algorithmExperiment.getExecutionProgressTask();
         int executionPercent = algorithmExperiment.getExecutionProgressPercent();

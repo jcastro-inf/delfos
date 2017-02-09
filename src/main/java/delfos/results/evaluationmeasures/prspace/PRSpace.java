@@ -19,7 +19,6 @@ package delfos.results.evaluationmeasures.prspace;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RatingsDataset;
 import delfos.dataset.basic.rating.RelevanceCriteria;
-import delfos.io.xml.evaluationmeasures.confusionmatricescurve.ConfusionMatricesCurveXML;
 import delfos.results.MeasureResult;
 import delfos.results.RecommendationResults;
 import delfos.results.evaluationmeasures.EvaluationMeasure;
@@ -29,10 +28,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
-import org.jdom2.Element;
 
 /**
  * Medida de evaluación que calcula la precisión y recall a lo largo de todos los posibles tamaños de la lista de
@@ -97,16 +94,6 @@ public class PRSpace extends EvaluationMeasure {
         ConfusionMatricesCurve agregada = ConfusionMatricesCurve.mergeCurves(allUserCurves.values());
 
         double areaUnderPR = agregada.getAreaPRSpace();
-
-        Element element = new Element(this.getName());
-        element.setAttribute(EvaluationMeasure.VALUE_ATTRIBUTE_NAME, Double.toString(areaUnderPR));
-        element.setContent(ConfusionMatricesCurveXML.getElement(agregada));
-
-        Map<String, Double> detailedResult = new TreeMap<>();
-        for (int i = 0; i < agregada.size(); i++) {
-            double precisionAt = agregada.getPrecisionAt(i);
-            detailedResult.put("Precision@" + i, precisionAt);
-        }
 
         return new MeasureResult(
                 this,

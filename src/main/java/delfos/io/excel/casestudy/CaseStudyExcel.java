@@ -27,7 +27,6 @@ import delfos.experiment.casestudy.CaseStudy;
 import delfos.experiment.validation.predictionprotocol.PredictionProtocol;
 import delfos.experiment.validation.validationtechnique.ValidationTechnique;
 import delfos.results.evaluationmeasures.EvaluationMeasure;
-import delfos.results.evaluationmeasures.prspace.PRSpace;
 import delfos.rs.RecommenderSystem;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -111,8 +110,10 @@ public class CaseStudyExcel {
 
                         Double measureValue = numberRecord.getValue();
                         valoresDeMetricas.put(measureName, measureValue);
+                    } else if (type == CellType.EMPTY) {
+                        valoresDeMetricas.put(measureName, 0.0);
                     } else {
-                        throw new IllegalStateException("CAnnot recognize cell type");
+                        throw new IllegalStateException("Cannot recognize cell type");
                     }
                 }
 
@@ -369,16 +370,12 @@ public class CaseStudyExcel {
         final int vueltaColumn = 0;
         final int executionColumn = 1;
         final int splitColumn = 2;
-        /**
-         * Numero de recomendaciones que se consideran para la precisión.
-         */
 
         //Escribo los titulos de las columnas.
         addTitleText(sheet, vueltaColumn, row, "#");
         addTitleText(sheet, executionColumn, row, "Execution");
         addTitleText(sheet, splitColumn, row, "Split");
 
-        PRSpace pRSpace = null;
         Map<String, Integer> indexOfMeasures = new TreeMap<>();
         Map<String, EvaluationMeasure> metricsByName = new TreeMap<>();
         {
@@ -388,12 +385,6 @@ public class CaseStudyExcel {
 
                 metricsByName.put(evaluationMeasure.getName(), evaluationMeasure);
 
-                if (evaluationMeasure instanceof PRSpace) {
-                    pRSpace = (PRSpace) evaluationMeasure;
-                    for (int listSize = 1; listSize <= MAX_LIST_SIZE; listSize++) {
-                        indexOfMeasures.put("Precision@" + listSize, i++);
-                    }
-                }
             }
             indexOfMeasures.put("BuildTime", i++);
             indexOfMeasures.put("RecommendationTime", i++);
@@ -450,7 +441,6 @@ public class CaseStudyExcel {
     private static void createAggregateResultsSheet(CaseStudy caseStudy, WritableSheet sheet) throws WriteException {
         int row = 0;
 
-        PRSpace pRSpaces = null;
         Map<String, Integer> indexOfMeasures = new TreeMap<>();
         Map<String, EvaluationMeasure> metricsByName = new TreeMap<>();
         {
@@ -459,13 +449,6 @@ public class CaseStudyExcel {
                 indexOfMeasures.put(groupEvaluationMeasure.getName(), i++);
 
                 metricsByName.put(groupEvaluationMeasure.getName(), groupEvaluationMeasure);
-
-                if (groupEvaluationMeasure instanceof PRSpace) {
-                    pRSpaces = (PRSpace) groupEvaluationMeasure;
-                    for (int listSize = 1; listSize <= MAX_LIST_SIZE; listSize++) {
-                        indexOfMeasures.put("Precision@" + listSize, i++);
-                    }
-                }
             }
             indexOfMeasures.put("BuildTime", i++);
             indexOfMeasures.put("RecommendationTime", i++);

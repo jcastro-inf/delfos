@@ -17,7 +17,7 @@ import delfos.experiment.validation.validationtechnique.ValidationTechnique;
 import delfos.factories.EvaluationMeasuresFactory;
 import delfos.results.evaluationmeasures.EvaluationMeasure;
 import delfos.rs.RecommenderSystem;
-import delfos.rs.collaborativefiltering.knn.memorybased.nwr.KnnMemoryBasedNWR;
+import delfos.rs.collaborativefiltering.knn.memorybased.KnnMemoryBasedCFRS;
 import delfos.rs.collaborativefiltering.predictiontechniques.PredictionTechnique;
 import delfos.rs.collaborativefiltering.predictiontechniques.WeightedSum;
 import delfos.similaritymeasures.CollaborativeSimilarityMeasure;
@@ -100,7 +100,7 @@ public class OptimizationKnnMemoryBasedNWR {
                             for (int neighborhoodSize : neighborhoodSizes) {
                                 for (PredictionTechnique predictionTechnique : predictionTechniques) {
 
-                                    KnnMemoryBasedNWR rs = new KnnMemoryBasedNWR();
+                                    KnnMemoryBasedCFRS rs = new KnnMemoryBasedCFRS();
 
                                     rs.setSIMILARITY_MEASURE(similarityMeasure);
                                     rs.setRELEVANCE_FACTOR_VALUE(relevanceFactor);
@@ -108,6 +108,7 @@ public class OptimizationKnnMemoryBasedNWR {
                                     rs.setINVERSE_FREQUENCY(inverseFrequency);
                                     rs.setCASE_AMPLIFICATION(caseAmplification);
                                     rs.setNeighborhoodSize(neighborhoodSize);
+                                    rs.setNeighborhoodSizeStore(999999);
                                     rs.setPREDICTION_TECHNIQUE(predictionTechnique);
 
                                     recommenders.add(rs);

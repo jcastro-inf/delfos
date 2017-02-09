@@ -25,7 +25,7 @@ import delfos.common.exceptions.dataset.users.UserNotFound;
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RelevanceCriteria;
-import delfos.experiment.ExperimentListerner_default;
+import delfos.experiment.ExperimentListener_default;
 import delfos.experiment.casestudy.ExecutionProgressListener_default;
 import delfos.experiment.validation.validationtechnique.ValidationTechnique;
 import delfos.group.casestudy.GroupCaseStudyConfiguration;
@@ -82,7 +82,7 @@ public class GroupCaseStudyExecutor implements Consumer<ExecuteGroupCaseStudy_Ta
         String threadName = Thread.currentThread().getName();
         Thread.currentThread().setName(threadName + "_" + caseStudyGroupRecommendation.getAlias());
 
-        caseStudyGroupRecommendation.addExperimentListener(new ExperimentListerner_default(System.out, 10000));
+        caseStudyGroupRecommendation.addExperimentListener(new ExperimentListener_default(System.out, 10000));
         caseStudyGroupRecommendation.addExecutionProgressListener(new ExecutionProgressListener_default(System.out, 10000));
         caseStudyGroupRecommendation.setSeedValue(seed);
 

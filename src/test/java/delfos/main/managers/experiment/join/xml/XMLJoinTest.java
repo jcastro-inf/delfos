@@ -15,7 +15,7 @@ import delfos.group.experiment.validation.predictionvalidation.NoPredictionProto
 import delfos.group.grs.GroupRecommenderSystem;
 import delfos.group.grs.aggregation.AggregationOfIndividualRatings;
 import delfos.group.grs.aggregation.AggregationOfIndividualRecommendations;
-import delfos.rs.collaborativefiltering.knn.memorybased.nwr.KnnMemoryBasedNWR;
+import delfos.rs.collaborativefiltering.knn.memorybased.KnnMemoryBasedCFRS;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -43,16 +43,16 @@ public class XMLJoinTest {
 
         List<GroupFormationTechnique> groupFormationTechniques
                 = Arrays.asList(1, 2, 3).stream()
-                        .map((groupSize -> new FixedGroupSize_OnlyNGroups(10, groupSize)))
-                        .collect(Collectors.toList());
+                .map((groupSize -> new FixedGroupSize_OnlyNGroups(10, groupSize)))
+                .collect(Collectors.toList());
 
         DatasetLoader ml100k = new ConfiguredDatasetLoader("ml-100k");
 
         List<GroupRecommenderSystem> groupRecommenderSystems = Arrays.asList(
-                new AggregationOfIndividualRatings(new KnnMemoryBasedNWR(), new Mean()),
-                new AggregationOfIndividualRatings(new KnnMemoryBasedNWR(), new MaximumValue()),
-                new AggregationOfIndividualRecommendations(new KnnMemoryBasedNWR(), new MaximumValue()),
-                new AggregationOfIndividualRecommendations(new KnnMemoryBasedNWR(), new Mean())
+                new AggregationOfIndividualRatings(new KnnMemoryBasedCFRS(), new Mean()),
+                new AggregationOfIndividualRatings(new KnnMemoryBasedCFRS(), new MaximumValue()),
+                new AggregationOfIndividualRecommendations(new KnnMemoryBasedCFRS(), new MaximumValue()),
+                new AggregationOfIndividualRecommendations(new KnnMemoryBasedCFRS(), new Mean())
         );
 
         for (GroupFormationTechnique groupFormationTechnique : groupFormationTechniques) {

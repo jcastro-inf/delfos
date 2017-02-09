@@ -159,7 +159,7 @@ public class ExecuteManyExperiments {
                             caseStudyConfiguration.getValidationTechnique(),
                             caseStudyConfiguration.getPredictionProtocol(), datasetLoader.getDefaultRelevanceCriteria(), caseStudyConfiguration.getEvaluationMeasures(), numExecutions);
 
-                    caseStudy.addExperimentListener(new ExperimentListerner_default(System.out, 10000));
+                    caseStudy.addExperimentListener(new ExperimentListener_default(System.out, 10000));
 
                     String defaultFileName = CaseStudyXML.getDefaultFileName(caseStudy);
                     File file = FileUtilities.addPrefix(new File(defaultFileName), caseStudy.getRecommenderSystem().getAlias() + " -- ");

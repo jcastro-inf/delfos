@@ -27,7 +27,7 @@ import delfos.configfile.rs.single.RecommenderSystemConfiguration;
 import delfos.configfile.rs.single.RecommenderSystemConfigurationFileParser;
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
-import delfos.experiment.ExperimentListerner_default;
+import delfos.experiment.ExperimentListener_default;
 import delfos.experiment.casestudy.ExecutionProgressListener_onlyChanges;
 import delfos.experiment.validation.validationtechnique.CrossFoldValidation_Ratings;
 import delfos.group.casestudy.defaultcase.GroupCaseStudy;
@@ -114,7 +114,7 @@ public class FilterCaseStudy implements Runnable {
                         datasetLoader.getDefaultRelevanceCriteria(), NUM_EJECUCIONES);
 
                 caseStudy.addExecutionProgressListener(new ExecutionProgressListener_onlyChanges(System.out, 10000));
-                caseStudy.addExperimentListener(new ExperimentListerner_default(System.out, 10000));
+                caseStudy.addExperimentListener(new ExperimentListener_default(System.out, 10000));
 
                 caseStudy.setSeedValue(SEED);
 

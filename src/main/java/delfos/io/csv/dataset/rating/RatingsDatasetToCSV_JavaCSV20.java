@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -18,6 +18,7 @@ package delfos.io.csv.dataset.rating;
 
 import com.csvreader.CsvReader;
 import delfos.common.Chronometer;
+import delfos.common.FileUtilities;
 import delfos.common.Global;
 import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
 import delfos.dataset.basic.rating.Rating;
@@ -70,7 +71,11 @@ public class RatingsDatasetToCSV_JavaCSV20 implements RatingsDatasetToCSV {
         if (!fileNameWithExtension.endsWith(".csv")) {
             fileNameWithExtension = fileNameWithExtension + "." + CSV_EXTENSION;
         }
-        BufferedWriter bw = new BufferedWriter(new FileWriter(new File(fileNameWithExtension)));
+        final File fileWithExtension = new File(fileNameWithExtension);
+
+        FileUtilities.createDirectoriesForFileIfNotExist(fileWithExtension);
+
+        BufferedWriter bw = new BufferedWriter(new FileWriter(fileWithExtension));
 
         bw.write(stringSeparator + ID_USER_COLUMN_NAME + stringSeparator
                 + fieldSeparator

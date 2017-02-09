@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,6 +16,14 @@
  */
 package delfos.casestudy.fromxmlfiles;
 
+import delfos.Constants;
+import delfos.common.parallelwork.Task;
+import delfos.dataset.basic.loader.types.DatasetLoader;
+import delfos.dataset.basic.rating.Rating;
+import delfos.dataset.basic.rating.RelevanceCriteria;
+import delfos.experiment.casestudy.CaseStudyConfiguration;
+import delfos.io.xml.casestudy.CaseStudyConfigurationXML;
+import delfos.results.evaluationmeasures.EvaluationMeasure;
 import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
@@ -25,14 +33,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.jdom2.Element;
 import org.jdom2.output.XMLOutputter;
-import delfos.Constants;
-import delfos.common.parallelwork.Task;
-import delfos.dataset.basic.rating.Rating;
-import delfos.dataset.basic.rating.RelevanceCriteria;
-import delfos.dataset.basic.loader.types.DatasetLoader;
-import delfos.experiment.casestudy.CaseStudyConfiguration;
-import delfos.io.xml.casestudy.CaseStudyConfigurationXML;
-import delfos.results.evaluationmeasures.EvaluationMeasure;
 
 /**
  *

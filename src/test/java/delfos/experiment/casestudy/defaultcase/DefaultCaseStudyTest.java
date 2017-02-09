@@ -6,7 +6,7 @@ import delfos.dataset.generated.random.RandomDatasetLoader;
 import delfos.experiment.validation.predictionprotocol.NoPredictionProtocol;
 import delfos.experiment.validation.validationtechnique.HoldOut_Ratings;
 import delfos.factories.EvaluationMeasuresFactory;
-import delfos.rs.collaborativefiltering.knn.memorybased.nwr.KnnMemoryBasedNWR;
+import delfos.rs.collaborativefiltering.knn.memorybased.KnnMemoryBasedCFRS;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -45,7 +45,7 @@ public class DefaultCaseStudyTest extends DelfosTest {
     @Test
     public void testExecute() {
         DefaultCaseStudy instance = new DefaultCaseStudy(
-                new KnnMemoryBasedNWR(),
+                new KnnMemoryBasedCFRS(),
                 new RandomDatasetLoader(),
                 new HoldOut_Ratings(),
                 new NoPredictionProtocol(),

@@ -266,6 +266,7 @@ public class CaseStudyXML {
 
         XMLOutputter outputter = new XMLOutputter(Constants.getXMLFormat());
 
+        FileUtilities.createDirectoriesForFile(file);
         try (FileWriter fileWriter = new FileWriter(file)) {
             outputter.output(doc, fileWriter);
         } catch (IOException ex) {

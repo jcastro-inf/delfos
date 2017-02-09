@@ -34,7 +34,6 @@ import delfos.group.grs.GroupRecommenderSystem;
 import delfos.group.io.xml.casestudy.GroupCaseStudyXML;
 import delfos.group.results.groupevaluationmeasures.GroupEvaluationMeasure;
 import delfos.group.results.groupevaluationmeasures.GroupEvaluationMeasureResult;
-import delfos.group.results.groupevaluationmeasures.precisionrecall.PRSpaceGroups;
 import delfos.io.excel.casestudy.CaseStudyExcel;
 import delfos.io.excel.parameterowner.ParameterOwnerExcel;
 import delfos.main.managers.experiment.join.xml.GroupCaseStudyResult;
@@ -518,7 +517,6 @@ public class GroupCaseStudyExcel {
         addTitleText(sheet, executionColumn, row, "Execution");
         addTitleText(sheet, splitColumn, row, "Split");
 
-        PRSpaceGroups pRSpaceGroups = null;
         Map<String, Integer> indexOfMeasures = new TreeMap<>();
         Map<String, GroupEvaluationMeasure> metricsByName = new TreeMap<>();
         {

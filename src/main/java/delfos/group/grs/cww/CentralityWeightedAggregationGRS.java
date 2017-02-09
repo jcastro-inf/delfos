@@ -43,7 +43,7 @@ import delfos.group.grs.cww.centrality.definitions.AritmethicMeanConnectionWeigh
 import delfos.group.grs.recommendations.GroupRecommendations;
 import delfos.rs.RecommendationModelBuildingProgressListener;
 import delfos.rs.RecommenderSystem;
-import delfos.rs.collaborativefiltering.knn.memorybased.nwr.KnnMemoryBasedNWR;
+import delfos.rs.collaborativefiltering.knn.memorybased.KnnMemoryBasedCFRS;
 import delfos.rs.recommendation.Recommendation;
 import delfos.rs.trustbased.StrongTermOverConnections;
 import delfos.rs.trustbased.WeightedGraph;
@@ -60,8 +60,8 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 
 /**
- * Sistema de recomendación a grupos de usuarios que agrega las valoraciones de
- * los miembros teniendo en cuenta la centralidad de los mismos.
+ * Sistema de recomendación a grupos de usuarios que agrega las valoraciones de los miembros teniendo en cuenta la
+ * centralidad de los mismos.
  *
  * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
@@ -73,13 +73,13 @@ public class CentralityWeightedAggregationGRS extends GroupRecommenderSystemAdap
 
     public static final Parameter SINGLE_USER_RECOMMENDER = new Parameter(
             "SINGLE_USER_RECOMMENDER",
-            new RecommenderSystemParameterRestriction(new KnnMemoryBasedNWR(), RecommenderSystem.class),
+            new RecommenderSystemParameterRestriction(new KnnMemoryBasedCFRS(), RecommenderSystem.class),
             "Especifica el sistema de recomendación single user que se extiende "
             + "para ser usaso en recomendación a grupos.");
 
     /**
-     * Especifica el método de cálculo de la red social del grupo. Debe ser un
-     * objeto de tipo {@link WeightedGraphCalculation}.
+     * Especifica el método de cálculo de la red social del grupo. Debe ser un objeto de tipo
+     * {@link WeightedGraphCalculation}.
      */
     public static final Parameter SOCIAL_NETWORK_CALCULATOR = new Parameter(
             "SOCIAL_NETWORK_CALCULATOR",
@@ -94,8 +94,7 @@ public class CentralityWeightedAggregationGRS extends GroupRecommenderSystemAdap
     public static final Parameter NORMALISE_SOCIAL_NETWORK_CONNECTIONS = new Parameter("NORMALISE_SOCIAL_NETWORK_CONNECTIONS", new BooleanParameter(Boolean.FALSE));
 
     /**
-     * "Especifica el sistema de recomendación single user que se extiende para
-     * ser usado en recomendación a grupos.
+     * "Especifica el sistema de recomendación single user que se extiende para ser usado en recomendación a grupos.
      */
     public CentralityWeightedAggregationGRS() {
         super();

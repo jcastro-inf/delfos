@@ -19,7 +19,7 @@ import delfos.group.grs.aggregation.GroupModelPseudoUser;
 import delfos.group.grs.recommendations.GroupRecommendations;
 import delfos.rs.RecommenderSystemBuildingProgressListener_default;
 import delfos.rs.collaborativefiltering.knn.KnnCollaborativeRecommender;
-import delfos.rs.collaborativefiltering.knn.memorybased.nwr.KnnMemoryBasedNWR;
+import delfos.rs.collaborativefiltering.knn.memorybased.KnnMemoryBasedCFRS;
 import delfos.rs.collaborativefiltering.predictiontechniques.WeightedSum;
 import delfos.rs.explanation.GroupModelWithExplanation;
 import delfos.rs.output.RecommendationsOutputStandardRaw;
@@ -49,7 +49,7 @@ public class AggregationOfIndividualRatingsTest extends DelfosTest {
     public void testWholeProccess() throws UserNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset, ItemNotFound, NotEnoughtUserInformation {
         final RatingsDataset<? extends Rating> ratingsDataset = datasetLoader.getRatingsDataset();
 
-        KnnMemoryBasedNWR knnMemory = new KnnMemoryBasedNWR();
+        KnnMemoryBasedCFRS knnMemory = new KnnMemoryBasedCFRS();
 
         knnMemory.setParameterValue(KnnCollaborativeRecommender.SIMILARITY_MEASURE, new CosineCoefficient());
         knnMemory.setParameterValue(KnnCollaborativeRecommender.RELEVANCE_FACTOR, 30);
