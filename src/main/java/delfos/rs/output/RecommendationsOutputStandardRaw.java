@@ -95,7 +95,7 @@ public class RecommendationsOutputStandardRaw extends RecommendationsOutputMetho
             } else {
                 prediction = "NaN";
             }
-            Global.showln("\t" + r.getItem() + "," + r.getItem().getName() + "," + prediction);
+            Global.showln("\t" + r.getItem().getId() + "," + r.getItem().getName() + "," + prediction);
         }
     }
 }
