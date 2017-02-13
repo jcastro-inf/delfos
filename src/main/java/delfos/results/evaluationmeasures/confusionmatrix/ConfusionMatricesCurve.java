@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -23,8 +23,8 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Representa una curva ROC. Proporciona operaciones básicas sobre curvas, como
- * la agregación de varias o el cálculo del área bajo una curva.
+ * Representa una curva ROC. Proporciona operaciones básicas sobre curvas, como la agregación de varias o el cálculo del
+ * área bajo una curva.
  *
  * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
@@ -32,15 +32,14 @@ import java.util.List;
  * @version 1.1 (Anterior a verano del 2012)
  * @version 2.0 (11-01-2013)
  * @version 2.01 (14-01-2013) Cambiada la forma en que se construye la curva.
- * @version 2.1 (14-01-2013) Eliminados los métodos deprecated (addPoint) y
- * añadida construcción mediante matrices de confusión y lista de booleanos.
+ * @version 2.1 (14-01-2013) Eliminados los métodos deprecated (addPoint) y añadida construcción mediante matrices de
+ * confusión y lista de booleanos.
  *
  */
 public class ConfusionMatricesCurve {
 
     /**
-     * Crea una curva de matrices de confusión vacía, es decir, con un único
-     * punto que no tiene ningún elemento.
+     * Crea una curva de matrices de confusión vacía, es decir, con un único punto que no tiene ningún elemento.
      *
      * @return Curva vacía.
      */
@@ -50,21 +49,18 @@ public class ConfusionMatricesCurve {
         return c;
     }
     /**
-     * Lista de matrices que almacena las matrices de confusión con cada tamaño
-     * de la lista de recomendaciones.
+     * Lista de matrices que almacena las matrices de confusión con cada tamaño de la lista de recomendaciones.
      */
     private List<ConfusionMatrix> matrices = new LinkedList<>();
 
     /**
      * Crea una curva a partir de las matrices de confusión en cada punto.
      *
-     * @param matrices Lista de matrices de confusión. En el índice cero, la
-     * matriz de confusión se rellena considerando que no se ha recomendado
-     * ningún elemento, es decir, que todos los elementos son falsePositive o
-     * trueNegative.
+     * @param matrices Lista de matrices de confusión. En el índice cero, la matriz de confusión se rellena considerando
+     * que no se ha recomendado ningún elemento, es decir, que todos los elementos son falsePositive o trueNegative.
      *
-     * @throws IllegalArgumentException Todas las recomendaciones son positivas
-     * o negativas, por lo que no se puede calcular la curva.
+     * @throws IllegalArgumentException Todas las recomendaciones son positivas o negativas, por lo que no se puede
+     * calcular la curva.
      */
     public ConfusionMatricesCurve(ConfusionMatrix[] matrices) {
         this.matrices = new ArrayList<>(matrices.length);
@@ -85,15 +81,13 @@ public class ConfusionMatricesCurve {
     }
 
     /**
-     * Genera una curva tomando como entrada la lista de si son relevantes o no
-     * para el usuario las recomcendaciones.
+     * Genera una curva tomando como entrada la lista de si son relevantes o no para el usuario las recomcendaciones.
      *
-     * @param listOfRecommendations Lista que representa si la recomendación i
-     * del sistema de recomendación es en realidad relevante para el usuario
-     * (true) o no (false).
+     * @param listOfRecommendations Lista que representa si la recomendación i del sistema de recomendación es en
+     * realidad relevante para el usuario (true) o no (false).
      *
-     * @throws IllegalArgumentException Todas las recomendaciones son positivas
-     * o negativas, por lo que no se puede calcular la curva.
+     * @throws IllegalArgumentException Todas las recomendaciones son positivas o negativas, por lo que no se puede
+     * calcular la curva.
      */
     public ConfusionMatricesCurve(List<Boolean> listOfRecommendations) {
         int falsePositive = 0;
@@ -140,28 +134,6 @@ public class ConfusionMatricesCurve {
     private ConfusionMatricesCurve() {
     }
 
-    @Override
-    public String toString() {
-        return "AUROC=" + getAreaUnderROC() + " size=" + size();
-    }
-
-    /**
-     * Devuelve una cadena que representa la información que la curva contiene.
-     *
-     * @return Cadena que representa la curva.
-     */
-    public String printCurve() {
-
-        StringBuilder builder = new StringBuilder();
-        for (ConfusionMatrix confusionMatrix : matrices) {
-            builder.append(confusionMatrix.getFalsePositiveRate());
-            builder.append("\t");
-            builder.append(confusionMatrix.getTruePositiveRate());
-            builder.append("\n");
-        }
-        return builder.toString();
-    }
-
     /**
      * Comprueba si la curva es monótona y creciente.
      *
@@ -187,10 +159,8 @@ public class ConfusionMatricesCurve {
         for (ConfusionMatrix confusionMatrix : matrices) {
             if (anterior == null) {
                 anterior = confusionMatrix;
-            } else {
-                if (anterior.getFalsePositiveRate() > confusionMatrix.getFalsePositiveRate()) {
-                    correcta = false;
-                }
+            } else if (anterior.getFalsePositiveRate() > confusionMatrix.getFalsePositiveRate()) {
+                correcta = false;
             }
         }
         return correcta;
@@ -354,8 +324,7 @@ public class ConfusionMatricesCurve {
      * Comprueba que se compara con una curva y que son exactamente iguales.
      *
      * @param obj Objeto con el que se desea comparar
-     * @return True si los objetos son idénticos en contenido, false en otro
-     * caso.
+     * @return True si los objetos son idénticos en contenido, false en otro caso.
      *
      * @see Object#equals(java.lang.Object)
      */
@@ -408,8 +377,7 @@ public class ConfusionMatricesCurve {
         double recall_previo = 0;
 
         /**
-         * Se ignora el valor en el punto de recomendación 0, ya que la
-         * precisión no está definida para dicho punto.
+         * Se ignora el valor en el punto de recomendación 0, ya que la precisión no está definida para dicho punto.
          */
         for (int i = 1; i < matrices.size(); i++) {
 
@@ -429,5 +397,64 @@ public class ConfusionMatricesCurve {
             recall_previo = recall;
         }
         return (double) areaUnderPRSPace;
+    }
+
+    @Override
+    public String toString() {
+        return "AUROC=" + getAreaUnderROC() + " size=" + size();
+    }
+
+    /**
+     * Devuelve una cadena que representa la información que la curva contiene.
+     *
+     * @return Cadena que representa la curva.
+     */
+    public String printCurve() {
+
+        StringBuilder builder = new StringBuilder();
+        for (ConfusionMatrix confusionMatrix : matrices) {
+            builder.append(confusionMatrix.getFalsePositiveRate());
+            builder.append("\t");
+            builder.append(confusionMatrix.getTruePositiveRate());
+            builder.append("\n");
+        }
+        return builder.toString();
+    }
+
+    public String printCurvePrecisionRecallTSV() {
+        StringBuilder str = new StringBuilder();
+        str.append("listSize").append("\t").append("precision").append("\t").append("recall").append("\n");
+        for (int i = 0; i < size(); i++) {
+            final double precision = getPrecisionAt(i);
+            final double recall = getRecallAt(i);
+            str.append(i).append("\t").append(precision).append("\t").append(recall).append("\n");
+        }
+
+        return str.toString();
+    }
+
+    public String printCurveTSV() {
+        StringBuilder str = new StringBuilder();
+        str.append("listSize").append("\t")
+                .append("tp").append("\t")
+                .append("fp").append("\t")
+                .append("fn").append("\t")
+                .append("tn").append("\n");
+
+        for (int i = 0; i < size(); i++) {
+            final double truePositive = getTruePositiveAt(i);
+            final double falsePositive = getFalseNegativeAt(i);
+            final double falseNegative = getFalseNegativeAt(i);
+            final double trueNegative = getTrueNegativeAt(i);
+
+            str.append(i).append("\t")
+                    .append(truePositive).append("\t")
+                    .append(falsePositive).append("\t")
+                    .append(falseNegative).append("\t")
+                    .append(trueNegative)
+                    .append("\n");
+        }
+
+        return str.toString();
     }
 }
