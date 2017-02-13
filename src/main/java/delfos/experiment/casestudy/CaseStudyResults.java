@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,20 +16,23 @@
  */
 package delfos.experiment.casestudy;
 
-import java.util.Collection;
-import java.util.Map;
-import java.util.TreeMap;
-import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.loader.types.DatasetLoader;
-import delfos.factories.EvaluationMeasuresFactory;
+import delfos.dataset.basic.rating.Rating;
 import delfos.experiment.validation.predictionprotocol.PredictionProtocol;
 import delfos.experiment.validation.validationtechnique.ValidationTechnique;
+import delfos.factories.EvaluationMeasuresFactory;
+import delfos.io.excel.casestudy.CaseStudyExcel;
 import delfos.results.evaluationmeasures.EvaluationMeasure;
 import delfos.rs.GenericRecommenderSystem;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.Map;
+import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 /**
- * Almacena los valores y resultados de un caso de estudio de sistemas de
- * recomendación tradicionales ya ejecutado.
+ * Almacena los valores y resultados de un caso de estudio de sistemas de recomendación tradicionales ya ejecutado.
  *
  * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
@@ -37,42 +40,73 @@ import delfos.rs.GenericRecommenderSystem;
  */
 public class CaseStudyResults {
 
-    private final GenericRecommenderSystem<Object> recommenderSystem;
-    private final DatasetLoader<? extends Rating> datasetLoader;
-    private final ValidationTechnique validationTechnique;
-    private final PredictionProtocol predictionProtocol;
-    private final Map<EvaluationMeasure, Double> evaluationMeasuresResults;
-    private final long buildTime;
-    private final long recommendationTime;
+    public static final Comparator<CaseStudyResults> dataValidationComparator = (CaseStudyResults o1, CaseStudyResults o2) -> {
 
-    public CaseStudyResults(
-            GenericRecommenderSystem<Object> recommenderSystem,
-            DatasetLoader<? extends Rating> datasetLoader,
-            ValidationTechnique validationTechnique,
-            PredictionProtocol predictionProtocol,
-            Map<EvaluationMeasure, Double> evaluationMeasuresResults,
-            long buildTime,
-            long recommendationTime) {
+        int datasetCompare = o1.caseStudy.getDatasetLoader().compareTo(o2.caseStudy.getDatasetLoader());
+        if (datasetCompare != 0) {
+            return datasetCompare;
+        }
 
-        this.recommenderSystem = recommenderSystem;
-        this.validationTechnique = validationTechnique;
-        this.predictionProtocol = predictionProtocol;
-        this.datasetLoader = datasetLoader;
-        this.evaluationMeasuresResults = evaluationMeasuresResults;
-        this.buildTime = buildTime;
-        this.recommendationTime = recommendationTime;
+        int validationTechniqueCompare = o1.caseStudy.getValidationTechnique().compareTo(o2.caseStudy.getValidationTechnique());
+        if (validationTechniqueCompare != 0) {
+            return validationTechniqueCompare;
+        }
+
+        return 0;
+    };
+
+    public static final Comparator<CaseStudyResults> techniqueComparator = (CaseStudyResults o1, CaseStudyResults o2) -> {
+
+        int groupRecommenderSystemCompare = o1.caseStudy.getRecommenderSystem().compareTo(o2.caseStudy.getRecommenderSystem());
+        return groupRecommenderSystemCompare;
+
+    };
+
+    private final int caseStudyHash;
+    private final int techniqueHash;
+    private final int dataValidationHash;
+    private final int numExecutions;
+
+    private final Map<String, Object> dataValidationParameters;
+    private final Map<String, Object> techniqueParameters;
+    private final Map<String, Number> evaluationMeasuresValues;
+    private final long seed;
+    private final CaseStudy caseStudy;
+
+    public String caseStudyAlias;
+
+    /**
+     *
+     * @param caseStudy
+     */
+    public CaseStudyResults(CaseStudy caseStudy) {
+
+        this.caseStudy = caseStudy;
+
+        caseStudyHash = caseStudy.hashCode();
+        techniqueHash = caseStudy.hashTechnique();
+        dataValidationHash = caseStudy.hashDataValidation();
+        numExecutions = caseStudy.getNumExecutions();
+        caseStudyAlias = caseStudy.getAlias();
+        seed = caseStudy.getSeedValue();
+
+        dataValidationParameters = CaseStudyExcel.extractDataValidationParameters(caseStudy);
+
+        techniqueParameters = CaseStudyExcel.extractTechniqueParameters(caseStudy);
+
+        evaluationMeasuresValues = CaseStudyExcel.extractEvaluationMeasuresValues(caseStudy);
     }
 
     public GenericRecommenderSystem<Object> getRecommenderSystem() {
-        return recommenderSystem;
+        return (GenericRecommenderSystem<Object>) caseStudy.getRecommenderSystem();
     }
 
     public ValidationTechnique getValidationTechnique() {
-        return validationTechnique;
+        return caseStudy.getValidationTechnique();
     }
 
     public PredictionProtocol getPredictionProtocol() {
-        return predictionProtocol;
+        return caseStudy.getPredictionProtocol();
     }
 
     public Collection<EvaluationMeasure> getEvaluationMeasures() {
@@ -80,18 +114,63 @@ public class CaseStudyResults {
     }
 
     public DatasetLoader<? extends Rating> getDatasetLoader() {
-        return datasetLoader;
+        return caseStudy.getDatasetLoader();
     }
 
     public Map<EvaluationMeasure, Double> getEvaluationMeasuresResults() {
-        return new TreeMap<EvaluationMeasure, Double>(evaluationMeasuresResults);
+
+        return caseStudy.getEvaluationMeasures().parallelStream().collect(Collectors.toMap(
+                Function.identity(),
+                evaluationMeasure -> caseStudy.getMeasureResult(evaluationMeasure).getValue()
+        ));
+
     }
 
     public long getBuildTime() {
-        return buildTime;
+        return 0;
     }
 
     public long getRecommendationTime() {
-        return recommendationTime;
+        return 0;
+    }
+
+    public String getCaseStudyAlias() {
+        return caseStudyAlias;
+    }
+
+    public void setCaseStudyAlias(String caseStudyAlias) {
+        this.caseStudyAlias = caseStudyAlias;
+    }
+
+    public CaseStudy getCaseStudy() {
+        return caseStudy;
+    }
+
+    public Set<String> getDefinedDataValidationParameters() {
+        return dataValidationParameters.keySet().parallelStream().collect(Collectors.toSet());
+    }
+
+    public Set<String> getDefinedTechniqueParameters() {
+        return techniqueParameters.keySet().parallelStream().collect(Collectors.toSet());
+    }
+
+    public Set<String> getDefinedEvaluationMeasures() {
+        return evaluationMeasuresValues.keySet().parallelStream().collect(Collectors.toSet());
+    }
+
+    public Object getDataValidationParameterValue(String dataValidationParameter) {
+        return dataValidationParameters.get(dataValidationParameter);
+    }
+
+    public Object getTechniqueParameterValue(String techniqueParameter) {
+        return techniqueParameters.get(techniqueParameter);
+    }
+
+    public Number getEvaluationMeasureValue(String evaluationMeasure) {
+        return evaluationMeasuresValues.get(evaluationMeasure);
+    }
+
+    public int getNumExecutions() {
+        return caseStudy.getNumExecutions();
     }
 }

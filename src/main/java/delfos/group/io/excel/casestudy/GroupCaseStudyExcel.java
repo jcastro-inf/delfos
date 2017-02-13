@@ -859,9 +859,12 @@ public class GroupCaseStudyExcel {
     }
 
     public static boolean isOnlyOneColumn(List<GroupCaseStudyResult> groupCaseStudyResults) {
-        List<GroupCaseStudy> groupCaseStudys = groupCaseStudyResults.stream().map(groupCaseStudyResult -> groupCaseStudyResult.getGroupCaseStudy()).collect(Collectors.toList());
+        List<GroupCaseStudy> groupCaseStudys = groupCaseStudyResults.stream()
+                .map(groupCaseStudyResult -> groupCaseStudyResult.getGroupCaseStudy())
+                .collect(Collectors.toList());
 
-        List<ParameterChain> differentChainsWithAliases = ParameterChain.obtainDifferentChains(groupCaseStudys);
+        List<ParameterChain> differentChainsWithAliases = ParameterChain
+                .obtainDifferentChains(groupCaseStudys);
 
         List<ParameterChain> differentChains = differentChainsWithAliases.stream()
                 .filter(chain -> !chain.isAlias())
@@ -878,7 +881,8 @@ public class GroupCaseStudyExcel {
 
     public static void writeEvaluationMeasureSpecificFileParameter(List<GroupCaseStudyResult> groupCaseStudyResults, List<String> dataValidationParametersOrder, List<String> techniqueParametersOrder, String evaluationMeasure, WritableWorkbook workbook) throws WriteException, IOException {
 
-        List<GroupCaseStudy> groupCaseStudys = groupCaseStudyResults.stream().map(groupCaseStudyResult -> groupCaseStudyResult.getGroupCaseStudy()).collect(Collectors.toList());
+        List<GroupCaseStudy> groupCaseStudys = groupCaseStudyResults.stream()
+                .map(groupCaseStudyResult -> groupCaseStudyResult.getGroupCaseStudy()).collect(Collectors.toList());
 
         Set<GroupCaseStudyResult> dataValidationAliases = new TreeSet<>(
                 GroupCaseStudyResult.dataValidationComparator);
@@ -959,7 +963,7 @@ public class GroupCaseStudyExcel {
 
     public static CaseStudyResultMatrix prepareExcelMatrix(List<ParameterChain> rowChains, List<ParameterChain> columnChains, String evaluationMeasure, List<GroupCaseStudyResult> groupCaseStudyResults) {
         CaseStudyResultMatrix matrix = new CaseStudyResultMatrix(rowChains, columnChains, evaluationMeasure);
-        matrix.prepareColumnAndRowNames(groupCaseStudyResults);
+        matrix.prepareColumnAndRowNames_group(groupCaseStudyResults);
         List<GroupCaseStudyResult> groupCaseStudyResultsMaxNumExecutions = new ArrayList<>();
         for (String rowName : matrix.getRowNames()) {
             for (String columnName : matrix.getColumnNames()) {
@@ -1270,8 +1274,8 @@ public class GroupCaseStudyExcel {
 
     public static class Combination implements Comparable<Combination> {
 
-        Set<ParameterChain> row;
-        Set<ParameterChain> column;
+        public Set<ParameterChain> row;
+        public Set<ParameterChain> column;
 
         public Combination(List<ParameterChain> row, List<ParameterChain> column) {
             this.row = row.parallelStream().sorted().collect(Collectors.toSet());
@@ -1282,6 +1286,9 @@ public class GroupCaseStudyExcel {
                 this.row = this.column;
                 this.column = aux;
             }
+
+            this.row = (Set<ParameterChain>) Collections.unmodifiableSet(this.row);
+            this.column = (Set<ParameterChain>) Collections.unmodifiableSet(this.column);
         }
 
         public Combination(Set<ParameterChain> row, Set<ParameterChain> column) {
