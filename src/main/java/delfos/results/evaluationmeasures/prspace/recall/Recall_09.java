@@ -16,9 +16,7 @@
  */
 package delfos.results.evaluationmeasures.prspace.recall;
 
-import delfos.results.evaluationmeasures.prspace.precision.Precision;
-
-public class Recall_09 extends Precision {
+public class Recall_09 extends Recall {
 
     public Recall_09() {
         super(9);

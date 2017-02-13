@@ -23,13 +23,10 @@ import delfos.results.MeasureResult;
 import delfos.results.RecommendationResults;
 import delfos.results.evaluationmeasures.EvaluationMeasure;
 import delfos.results.evaluationmeasures.confusionmatrix.ConfusionMatricesCurve;
-import delfos.rs.recommendation.Recommendation;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
 /**
  * Medida de evaluación que calcula la precisión y recall a lo largo de todos los posibles tamaños de la lista de
@@ -69,34 +66,23 @@ public class PRSpace extends EvaluationMeasure {
 
     }
 
+    List<ConfusionMatricesCurve> curves = new ArrayList<>();
+
     @Override
-    public MeasureResult getMeasureResult(RecommendationResults recommendationResults, RatingsDataset<? extends Rating> testDataset, RelevanceCriteria relevanceCriteria) {
+    public MeasureResult getMeasureResult(
+            RecommendationResults recommendationResults,
+            RatingsDataset<? extends Rating> testDataset,
+            RelevanceCriteria relevanceCriteria) {
 
-        Map<Integer, ConfusionMatricesCurve> allUserCurves = testDataset.allUsers().parallelStream()
-                .filter(new UsersWithRecommendationsInTestSet(recommendationResults, testDataset))
-                .collect(Collectors.toMap(idUser -> idUser, idUser -> {
-                    List<Boolean> resultados = new ArrayList<>();
-                    Collection<Recommendation> recommendations = recommendationResults.getRecommendationsForUser(idUser);
+        ConfusionMatricesCurve confusionMatricesCurve = ConfusionMatricesCurve
+                .getConfusionMatricesCurve(testDataset, recommendationResults, relevanceCriteria);
 
-                    Map<Integer, ? extends Rating> userRatings = testDataset.getUserRatingsRated(idUser);
-                    for (Recommendation recommendation : recommendations) {
-
-                        int idItem = recommendation.getItem().getId();
-                        if (userRatings.containsKey(idItem)) {
-                            resultados.add(relevanceCriteria.isRelevant(userRatings.get(idItem).getRatingValue()));
-                        } else {
-                            resultados.add(false);
-                        }
-                    }
-                    return new ConfusionMatricesCurve(resultados);
-                }));
-
-        ConfusionMatricesCurve agregada = ConfusionMatricesCurve.mergeCurves(allUserCurves.values());
-
-        double areaUnderPR = agregada.getAreaPRSpace();
+        double areaUnderPR = confusionMatricesCurve.getAreaPRSpace();
+        curves.add(confusionMatricesCurve);
 
         return new MeasureResult(
                 this,
                 areaUnderPR);
     }
+
 }

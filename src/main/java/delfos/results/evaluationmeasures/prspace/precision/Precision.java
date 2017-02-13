@@ -16,7 +16,6 @@
  */
 package delfos.results.evaluationmeasures.prspace.precision;
 
-import delfos.dataset.basic.item.Item;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RatingsDataset;
 import delfos.dataset.basic.rating.RelevanceCriteria;
@@ -24,13 +23,6 @@ import delfos.results.MeasureResult;
 import delfos.results.RecommendationResults;
 import delfos.results.evaluationmeasures.EvaluationMeasure;
 import delfos.results.evaluationmeasures.confusionmatrix.ConfusionMatricesCurve;
-import delfos.results.evaluationmeasures.prspace.PRSpace;
-import delfos.rs.recommendation.Recommendation;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
  * Medida de evaluación que calcula la precisión y recall a lo largo de todos los posibles tamaños de la lista de
@@ -59,48 +51,18 @@ public abstract class Precision extends EvaluationMeasure {
     }
 
     @Override
-    public MeasureResult getMeasureResult(RecommendationResults recommendationResults, RatingsDataset<? extends Rating> testDataset, RelevanceCriteria relevanceCriteria) {
+    public MeasureResult getMeasureResult(
+            RecommendationResults recommendationResults,
+            RatingsDataset<? extends Rating> testDataset,
+            RelevanceCriteria relevanceCriteria) {
 
-        int maxLength = 0;
-        for (int idUser : testDataset.allUsers()) {
-            Collection<Recommendation> lr = recommendationResults.getRecommendationsForUser(idUser);
+        ConfusionMatricesCurve confusionMatricesCurve = ConfusionMatricesCurve
+                .getConfusionMatricesCurve(
+                        testDataset,
+                        recommendationResults,
+                        relevanceCriteria);
 
-            if (lr.size() > maxLength) {
-                maxLength = lr.size();
-            }
-        }
-
-        Map<Integer, ConfusionMatricesCurve> allUsersCurves = testDataset.allUsers().parallelStream()
-                .filter(new PRSpace.UsersWithRecommendationsInTestSet(recommendationResults, testDataset))
-                .collect(Collectors.toMap(idUser -> idUser, idUser -> {
-
-                    List<Boolean> resultados = new ArrayList<>(recommendationResults.usersWithRecommendations().size());
-                    Collection<Recommendation> recommendations = recommendationResults.getRecommendationsForUser(idUser);
-                    Map<Integer, ? extends Rating> userRatings = testDataset.getUserRatingsRated(idUser);
-
-                    recommendations.stream().map(recommendation -> {
-                        Item item = recommendation.getItem();
-                        if (userRatings.containsKey(item.getId())) {
-                            return relevanceCriteria.isRelevant(userRatings.get(item.getId()).getRatingValue());
-                        } else {
-                            return false;
-                        }
-                    });
-
-                    return new ConfusionMatricesCurve(resultados);
-
-                }));
-
-        ConfusionMatricesCurve agregada = ConfusionMatricesCurve.mergeCurves(allUsersCurves.values());
-
-        double precisionAt;
-        if (agregada.size() == 0) {
-            precisionAt = 0;
-        } else {
-            int size = Math.min(listSize, agregada.size() - 1);
-
-            precisionAt = agregada.getPrecisionAt(size);
-        }
+        double precisionAt = confusionMatricesCurve.getPrecisionAt(listSize);
 
         return new MeasureResult(
                 this,

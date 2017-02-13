@@ -16,11 +16,21 @@
  */
 package delfos.results.evaluationmeasures.confusionmatrix;
 
+import delfos.ERROR_CODES;
+import delfos.common.exceptions.dataset.users.UserNotFound;
+import delfos.dataset.basic.rating.Rating;
+import delfos.dataset.basic.rating.RatingsDataset;
+import delfos.dataset.basic.rating.RelevanceCriteria;
+import delfos.results.RecommendationResults;
+import delfos.rs.recommendation.Recommendation;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Representa una curva ROC. Proporciona operaciones básicas sobre curvas, como la agregación de varias o el cálculo del
@@ -47,6 +57,38 @@ public class ConfusionMatricesCurve {
         ConfusionMatricesCurve c = new ConfusionMatricesCurve();
         c.matrices.add(new ConfusionMatrix(0, 0, 0, 0));
         return c;
+    }
+
+    public static ConfusionMatricesCurve getConfusionMatricesCurve(RatingsDataset<? extends Rating> testDataset, RecommendationResults recommendationResults, RelevanceCriteria relevanceCriteria) throws RuntimeException {
+        int maxLength = 0;
+        for (int idUser : testDataset.allUsers()) {
+            Collection<Recommendation> lr = recommendationResults.getRecommendationsForUser(idUser);
+            if (lr.size() > maxLength) {
+                maxLength = lr.size();
+            }
+        }
+        Map<Integer, ConfusionMatricesCurve> allUsersCurves = new TreeMap<>();
+        AtomicInteger usersWithoutMatrix = new AtomicInteger(0);
+        for (int idUser : testDataset.allUsers()) {
+            List<Boolean> resultados = new ArrayList<>(recommendationResults.usersWithRecommendations().size());
+            Collection<Recommendation> recommendationList = recommendationResults.getRecommendationsForUser(idUser);
+            try {
+                Map<Integer, ? extends Rating> userRatings = testDataset.getUserRatingsRated(idUser);
+                for (Recommendation r : recommendationList) {
+                    int idItem = r.getItem().getId();
+                    resultados.add(relevanceCriteria.isRelevant(userRatings.get(idItem).getRatingValue()));
+                }
+            } catch (UserNotFound ex) {
+                ERROR_CODES.USER_NOT_FOUND.exit(ex);
+            }
+            try {
+                allUsersCurves.put(idUser, new ConfusionMatricesCurve(resultados));
+            } catch (IllegalArgumentException iae) {
+                usersWithoutMatrix.incrementAndGet();
+            }
+        }
+        ConfusionMatricesCurve mergedCurves = ConfusionMatricesCurve.mergeCurves(allUsersCurves.values());
+        return mergedCurves;
     }
     /**
      * Lista de matrices que almacena las matrices de confusión con cada tamaño de la lista de recomendaciones.
@@ -78,6 +120,11 @@ public class ConfusionMatricesCurve {
      * @param listOfRecommendations Lista que representa si la recomendación i del sistema de recomendación es en
      * realidad relevante para el usuario (true) o no (false).
      *
+<<<<<<< HEAD
+=======
+     * @throws IllegalArgumentException Todas las recomendaciones son positivas o negativas, por lo que no se puede
+     * calcular la curva.
+>>>>>>> version-evaluation-results
      */
     public ConfusionMatricesCurve(List<Boolean> listOfRecommendations) {
         int falsePositive = 0;
@@ -114,28 +161,6 @@ public class ConfusionMatricesCurve {
     }
 
     private ConfusionMatricesCurve() {
-    }
-
-    @Override
-    public String toString() {
-        return "AUROC=" + getAreaUnderROC() + " size=" + size();
-    }
-
-    /**
-     * Devuelve una cadena que representa la información que la curva contiene.
-     *
-     * @return Cadena que representa la curva.
-     */
-    public String printCurve() {
-
-        StringBuilder builder = new StringBuilder();
-        for (ConfusionMatrix confusionMatrix : matrices) {
-            builder.append(confusionMatrix.getFalsePositiveRate());
-            builder.append("\t");
-            builder.append(confusionMatrix.getTruePositiveRate());
-            builder.append("\n");
-        }
-        return builder.toString();
     }
 
     /**
@@ -401,5 +426,64 @@ public class ConfusionMatricesCurve {
             recall_previo = recall;
         }
         return (double) areaUnderPRSPace;
+    }
+
+    @Override
+    public String toString() {
+        return "AUROC=" + getAreaUnderROC() + " size=" + size();
+    }
+
+    /**
+     * Devuelve una cadena que representa la información que la curva contiene.
+     *
+     * @return Cadena que representa la curva.
+     */
+    public String printCurve() {
+
+        StringBuilder builder = new StringBuilder();
+        for (ConfusionMatrix confusionMatrix : matrices) {
+            builder.append(confusionMatrix.getFalsePositiveRate());
+            builder.append("\t");
+            builder.append(confusionMatrix.getTruePositiveRate());
+            builder.append("\n");
+        }
+        return builder.toString();
+    }
+
+    public String printCurvePrecisionRecallTSV() {
+        StringBuilder str = new StringBuilder();
+        str.append("listSize").append("\t").append("precision").append("\t").append("recall").append("\n");
+        for (int i = 0; i < size(); i++) {
+            final double precision = getPrecisionAt(i);
+            final double recall = getRecallAt(i);
+            str.append(i).append("\t").append(precision).append("\t").append(recall).append("\n");
+        }
+
+        return str.toString();
+    }
+
+    public String printCurveTSV() {
+        StringBuilder str = new StringBuilder();
+        str.append("listSize").append("\t")
+                .append("tp").append("\t")
+                .append("fp").append("\t")
+                .append("fn").append("\t")
+                .append("tn").append("\n");
+
+        for (int i = 0; i < size(); i++) {
+            final double truePositive = getTruePositiveAt(i);
+            final double falsePositive = getFalseNegativeAt(i);
+            final double falseNegative = getFalseNegativeAt(i);
+            final double trueNegative = getTrueNegativeAt(i);
+
+            str.append(i).append("\t")
+                    .append(truePositive).append("\t")
+                    .append(falsePositive).append("\t")
+                    .append(falseNegative).append("\t")
+                    .append(trueNegative)
+                    .append("\n");
+        }
+
+        return str.toString();
     }
 }
