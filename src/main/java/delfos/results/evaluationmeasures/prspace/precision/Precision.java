@@ -16,9 +16,6 @@
  */
 package delfos.results.evaluationmeasures.prspace.precision;
 
-import delfos.ERROR_CODES;
-import delfos.common.exceptions.dataset.users.UserNotFound;
-import delfos.dataset.basic.item.Item;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RatingsDataset;
 import delfos.dataset.basic.rating.RelevanceCriteria;
@@ -26,13 +23,6 @@ import delfos.results.MeasureResult;
 import delfos.results.RecommendationResults;
 import delfos.results.evaluationmeasures.EvaluationMeasure;
 import delfos.results.evaluationmeasures.confusionmatrix.ConfusionMatricesCurve;
-import delfos.rs.recommendation.Recommendation;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
-import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Medida de evaluación que calcula la precisión y recall a lo largo de todos los posibles tamaños de la lista de
@@ -61,48 +51,18 @@ public abstract class Precision extends EvaluationMeasure {
     }
 
     @Override
-    public MeasureResult getMeasureResult(RecommendationResults recommendationResults, RatingsDataset<? extends Rating> testDataset, RelevanceCriteria relevanceCriteria) {
+    public MeasureResult getMeasureResult(
+            RecommendationResults recommendationResults,
+            RatingsDataset<? extends Rating> testDataset,
+            RelevanceCriteria relevanceCriteria) {
 
-        int maxLength = 0;
-        for (int idUser : testDataset.allUsers()) {
-            Collection<Recommendation> lr = recommendationResults.getRecommendationsForUser(idUser);
+        ConfusionMatricesCurve confusionMatricesCurve = ConfusionMatricesCurve
+                .getConfusionMatricesCurve(
+                        testDataset,
+                        recommendationResults,
+                        relevanceCriteria);
 
-            if (lr.size() > maxLength) {
-                maxLength = lr.size();
-            }
-        }
-
-        Map<Integer, ConfusionMatricesCurve> allUsersCurves = new TreeMap<>();
-
-        AtomicInteger usersWithoutMatrix = new AtomicInteger(0);
-        for (int idUser : testDataset.allUsers()) {
-
-            List<Boolean> resultados = new ArrayList<>(recommendationResults.usersWithRecommendations().size());
-            Collection<Recommendation> recommendationList = recommendationResults.getRecommendationsForUser(idUser);
-
-            try {
-                Map<Integer, ? extends Rating> userRatings = testDataset.getUserRatingsRated(idUser);
-                for (Recommendation r : recommendationList) {
-
-                    Item item = r.getItem();
-                    resultados.add(relevanceCriteria.isRelevant(userRatings.get(item.getId()).getRatingValue()));
-                }
-            } catch (UserNotFound ex) {
-                ERROR_CODES.USER_NOT_FOUND.exit(ex);
-            }
-
-            try {
-                allUsersCurves.put(idUser, new ConfusionMatricesCurve(resultados));
-            } catch (IllegalArgumentException iae) {
-                usersWithoutMatrix.incrementAndGet();
-            }
-        }
-
-        ConfusionMatricesCurve agregada = ConfusionMatricesCurve.mergeCurves(allUsersCurves.values());
-
-        double areaUnderPR = agregada.getAreaPRSpace();
-
-        double precisionAt = agregada.getPrecisionAt(listSize);
+        double precisionAt = confusionMatricesCurve.getPrecisionAt(listSize);
 
         return new MeasureResult(
                 this,

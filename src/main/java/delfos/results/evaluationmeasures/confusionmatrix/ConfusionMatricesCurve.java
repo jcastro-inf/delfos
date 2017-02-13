@@ -16,11 +16,21 @@
  */
 package delfos.results.evaluationmeasures.confusionmatrix;
 
+import delfos.ERROR_CODES;
+import delfos.common.exceptions.dataset.users.UserNotFound;
+import delfos.dataset.basic.rating.Rating;
+import delfos.dataset.basic.rating.RatingsDataset;
+import delfos.dataset.basic.rating.RelevanceCriteria;
+import delfos.results.RecommendationResults;
+import delfos.rs.recommendation.Recommendation;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Representa una curva ROC. Proporciona operaciones básicas sobre curvas, como la agregación de varias o el cálculo del
@@ -47,6 +57,38 @@ public class ConfusionMatricesCurve {
         ConfusionMatricesCurve c = new ConfusionMatricesCurve();
         c.matrices.add(new ConfusionMatrix(0, 0, 0, 0));
         return c;
+    }
+
+    public static ConfusionMatricesCurve getConfusionMatricesCurve(RatingsDataset<? extends Rating> testDataset, RecommendationResults recommendationResults, RelevanceCriteria relevanceCriteria) throws RuntimeException {
+        int maxLength = 0;
+        for (int idUser : testDataset.allUsers()) {
+            Collection<Recommendation> lr = recommendationResults.getRecommendationsForUser(idUser);
+            if (lr.size() > maxLength) {
+                maxLength = lr.size();
+            }
+        }
+        Map<Integer, ConfusionMatricesCurve> allUsersCurves = new TreeMap<>();
+        AtomicInteger usersWithoutMatrix = new AtomicInteger(0);
+        for (int idUser : testDataset.allUsers()) {
+            List<Boolean> resultados = new ArrayList<>(recommendationResults.usersWithRecommendations().size());
+            Collection<Recommendation> recommendationList = recommendationResults.getRecommendationsForUser(idUser);
+            try {
+                Map<Integer, ? extends Rating> userRatings = testDataset.getUserRatingsRated(idUser);
+                for (Recommendation r : recommendationList) {
+                    int idItem = r.getItem().getId();
+                    resultados.add(relevanceCriteria.isRelevant(userRatings.get(idItem).getRatingValue()));
+                }
+            } catch (UserNotFound ex) {
+                ERROR_CODES.USER_NOT_FOUND.exit(ex);
+            }
+            try {
+                allUsersCurves.put(idUser, new ConfusionMatricesCurve(resultados));
+            } catch (IllegalArgumentException iae) {
+                usersWithoutMatrix.incrementAndGet();
+            }
+        }
+        ConfusionMatricesCurve mergedCurves = ConfusionMatricesCurve.mergeCurves(allUsersCurves.values());
+        return mergedCurves;
     }
     /**
      * Lista de matrices que almacena las matrices de confusión con cada tamaño de la lista de recomendaciones.
