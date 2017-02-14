@@ -14,9 +14,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package delfos.results.evaluationmeasures;
+package delfos.results.evaluationmeasures.ndcg;
 
-import delfos.results.evaluationmeasures.ndcg.NDCG;
 import delfos.configureddatasets.ConfiguredDatasetsFactory;
 import delfos.dataset.basic.item.Item;
 import delfos.dataset.basic.loader.types.DatasetLoader;

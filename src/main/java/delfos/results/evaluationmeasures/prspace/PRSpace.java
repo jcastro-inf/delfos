@@ -25,6 +25,8 @@ import delfos.results.evaluationmeasures.EvaluationMeasure;
 import delfos.results.evaluationmeasures.confusionmatrix.ConfusionMatricesCurve;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Predicate;
 
 /**
  * Medida de evaluación que calcula la precisión y recall a lo largo de todos los posibles tamaños de la lista de
@@ -41,6 +43,29 @@ public class PRSpace extends EvaluationMeasure {
         return false;
     }
 
+    public static class UsersWithRecommendationsInTestSet implements Predicate<Integer> {
+
+        private final RecommendationResults recommendationResults;
+        private final RatingsDataset<? extends Rating> testDataset;
+
+        public UsersWithRecommendationsInTestSet(
+                RecommendationResults recommendationResults,
+                RatingsDataset<? extends Rating> testDataset) {
+            this.recommendationResults = recommendationResults;
+            this.testDataset = testDataset;
+        }
+
+        @Override
+        public boolean test(Integer idUser) {
+
+            Map<Integer, ? extends Rating> userRatings = testDataset.getUserRatingsRated(idUser);
+            return recommendationResults
+                    .getRecommendationsForUser(idUser).parallelStream()
+                    .anyMatch(recommendation -> userRatings.containsKey(recommendation.getItem().getId()));
+        }
+
+    }
+
     List<ConfusionMatricesCurve> curves = new ArrayList<>();
 
     @Override
@@ -53,7 +78,6 @@ public class PRSpace extends EvaluationMeasure {
                 .getConfusionMatricesCurve(testDataset, recommendationResults, relevanceCriteria);
 
         double areaUnderPR = confusionMatricesCurve.getAreaPRSpace();
-
         curves.add(confusionMatricesCurve);
 
         return new MeasureResult(

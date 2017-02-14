@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -31,8 +31,7 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 
 /**
- * Ventana inicial en la que se muestran las opciones para utilizar la interfaz
- * de experimentación o de recomendación.
+ * Ventana inicial en la que se muestran las opciones para utilizar la interfaz de experimentación o de recomendación.
  *
  * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
@@ -79,7 +78,7 @@ public class InitialFrame extends JFrame {
         constraints.gridheight = 1;
         constraints.insets = new Insets(3, 4, 3, 4);
 
-        JButton colaborativo = new JButton("Collaborative filtering recommender system");
+        JButton colaborativo = new JButton("Single User Recommender Systems Experimentation");
         colaborativo.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {

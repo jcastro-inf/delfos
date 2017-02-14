@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -160,13 +160,12 @@ public class ExecuteManyExperiments {
                             caseStudyConfiguration.getPredictionProtocol(), datasetLoader.getDefaultRelevanceCriteria(), caseStudyConfiguration.getEvaluationMeasures(), numExecutions);
 
                     caseStudy.addExperimentListener(new ExperimentListener_default(System.out, 10000));
-                    //caseStudy.addExecutionProgressListener(new ExecutionProgressListener_onlyChanges(System.out, 10000));
 
                     String defaultFileName = CaseStudyXML.getDefaultFileName(caseStudy);
-                    File fileWithAlias = FileUtilities.addPrefix(new File(defaultFileName), caseStudy.getRecommenderSystem().getAlias() + " -- ");
-                    CaseStudyXML.saveCaseDescription(caseStudy, fileWithAlias.getAbsolutePath() + ".tmp");
+                    File file = FileUtilities.addPrefix(new File(defaultFileName), caseStudy.getRecommenderSystem().getAlias() + " -- ");
+                    CaseStudyXML.saveCaseDescription(caseStudy, file.getAbsolutePath() + ".tmp");
                     caseStudy.execute();
-                    CaseStudyXML.saveCaseResults(caseStudy, caseStudy.getRecommenderSystem().getAlias(), defaultFileName);
+                    CaseStudyXML.saveCaseResults(caseStudy, file);
 
                     Global.showInfoMessage("================ FIN Sistema " + i + " de " + caseStudyConfigurations.size() + "=================== \n");
                     i++;

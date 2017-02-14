@@ -37,13 +37,11 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.Collection;
-import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.function.Predicate;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
 import org.apache.commons.io.FileUtils;
 import org.jdom2.Attribute;
 import org.jdom2.Document;
@@ -60,15 +58,6 @@ public class AggregateResultsXML {
     public static final Predicate<? super File> RESULTS_FILES = file -> file.getName().endsWith(AGGREGATE_XML_SUFFIX);
 
     public AggregateResultsXML() {
-    }
-
-    public List<File> filterResultsFiles(List<File> files) {
-
-        List<File> returnFiles = files.parallelStream()
-                .filter(RESULTS_FILES)
-                .collect(Collectors.toList());
-
-        return returnFiles;
     }
 
     public void joinAndWrite(Collection<File> files, File outputFile) {

@@ -19,18 +19,25 @@ package delfos.experiment.casestudy;
 import delfos.common.exceptions.dataset.CannotLoadContentDataset;
 import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
 import delfos.common.exceptions.dataset.CannotLoadUsersDataset;
+import delfos.common.parameters.Parameter;
 import delfos.common.parameters.ParameterOwnerType;
+import delfos.common.parameters.restriction.IntegerParameter;
+import delfos.common.parameters.restriction.ParameterOwnerRestriction;
+import delfos.configureddatasets.ConfiguredDatasetLoader;
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RelevanceCriteria;
 import delfos.experiment.ExperimentAdapter;
 import delfos.experiment.ExperimentListener;
+import delfos.experiment.validation.predictionprotocol.NoPredictionProtocol;
 import delfos.experiment.validation.predictionprotocol.PredictionProtocol;
+import delfos.experiment.validation.validationtechnique.CrossFoldValidation_Ratings;
 import delfos.experiment.validation.validationtechnique.ValidationTechnique;
 import delfos.results.MeasureResult;
 import delfos.results.evaluationmeasures.EvaluationMeasure;
 import delfos.rs.RecommendationModelBuildingProgressListener;
 import delfos.rs.RecommenderSystem;
+import delfos.rs.nonpersonalised.randomrecommender.RandomRecommender;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Objects;
@@ -43,8 +50,37 @@ import java.util.Objects;
  */
 public abstract class CaseStudy extends ExperimentAdapter implements RecommendationModelBuildingProgressListener {
 
+    /**
+     * Parameter to store the dataset used in this case study
+     */
+    public static final Parameter DATASET_LOADER = new Parameter(
+            DatasetLoader.class.getSimpleName(),
+            new ParameterOwnerRestriction(DatasetLoader.class, new ConfiguredDatasetLoader("ml-100k")));
+
+    public static final Parameter VALIDATION_TECHNIQUE = new Parameter(
+            ValidationTechnique.class.getSimpleName(),
+            new ParameterOwnerRestriction(ValidationTechnique.class, new CrossFoldValidation_Ratings()));
+
+    public static final Parameter PREDICTION_PROTOCOL = new Parameter(
+            PredictionProtocol.class.getSimpleName(),
+            new ParameterOwnerRestriction(PredictionProtocol.class, new NoPredictionProtocol()));
+
+    /*------------------------- TECHNIQUE PARAMETERS -------------------------*/
+    public static final Parameter RECOMMENDER_SYSTEM = new Parameter(
+            RecommenderSystem.class.getSimpleName(),
+            new ParameterOwnerRestriction(RecommenderSystem.class, new RandomRecommender()));
+
+    public static final Parameter NUM_EXECUTIONS = new Parameter(
+            "numExecutions",
+            new IntegerParameter(1, 100000000, 1));
+
     public CaseStudy() {
         addParameter(SEED);
+        addParameter(NUM_EXECUTIONS);
+        addParameter(DATASET_LOADER);
+        addParameter(VALIDATION_TECHNIQUE);
+        addParameter(PREDICTION_PROTOCOL);
+        addParameter(RECOMMENDER_SYSTEM);
     }
 
     public abstract void addCaseStudyPropertyListener(CaseStudyParameterChangedListener listener);
@@ -129,8 +165,6 @@ public abstract class CaseStudy extends ExperimentAdapter implements Recommendat
 
     @Override
     public abstract void removeExperimentListener(ExperimentListener listener);
-
-    public abstract void setDatasetLoader(DatasetLoader<? extends Rating> loader);
 
     public abstract void setEvaluationMeasures(Collection<EvaluationMeasure> evaluationMeasures);
 

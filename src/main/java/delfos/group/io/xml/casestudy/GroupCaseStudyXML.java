@@ -50,6 +50,7 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.function.Predicate;
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
@@ -57,8 +58,7 @@ import org.jdom2.input.SAXBuilder;
 import org.jdom2.output.XMLOutputter;
 
 /**
- * Clase encargada de hacer la entrada/salida de los resultados de la ejeución
- * de un caso de uso concreto.
+ * Clase encargada de hacer la entrada/salida de los resultados de la ejeución de un caso de uso concreto.
  *
  * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
@@ -76,6 +76,18 @@ public class GroupCaseStudyXML {
     public static final String AGGR_RESULT_SUFFIX = "_AGGR";
 
     public static final String AGGREGATE_VALUES_ELEMENT_NAME = CaseStudyXML.AGGREGATE_VALUES_ELEMENT_NAME;
+
+    public static Predicate<File> RESULTS_FILES = (file) -> {
+        try {
+            GroupCaseStudyConfiguration loadCaseResults = loadGroupCaseWithResults(file);
+            return true;
+        } catch (JDOMException ex) {
+            return false;
+        } catch (IOException ex) {
+            ERROR_CODES.CANNOT_READ_FILE.exit(ex);
+            return false;
+        }
+    };
 
     private GroupCaseStudyXML() {
     }
@@ -173,8 +185,7 @@ public class GroupCaseStudyXML {
     }
 
     /**
-     * Saves the xml with the description of the case study in de file
-     * specified.
+     * Saves the xml with the description of the case study in de file specified.
      *
      * @param caseStudyGroup Group case study whose description is saved.
      * @param directory File in which the description is saved.
@@ -202,8 +213,7 @@ public class GroupCaseStudyXML {
     }
 
     /**
-     * Saves the xml with the description of the case study in de file
-     * specified.
+     * Saves the xml with the description of the case study in de file specified.
      *
      * @param caseStudyGroup Group case study whose description is saved.
      * @param file File in which the description is saved.
@@ -284,15 +294,14 @@ public class GroupCaseStudyXML {
     }
 
     /**
-     * Carga la descripción de un caso de estudio para sistemas de recomendación
-     * para grupos.
+     * Carga la descripción de un caso de estudio para sistemas de recomendación para grupos.
      *
      * @param file Archivo donde se encuentra almacenado el caso de estudio.
      * @return Caso de estudio recuperado del archivo.
-     * @throws org.jdom2.JDOMException Cuando se intenta cargar un xml que no
-     * tiene la estructura esperada. Chequear si esta desfasada la versión.
-     * @throws IOException Cuando no se puede leer el archivo indicado o existe
-     * algun fallo de conversión de datos al leer el contenido del mismo.
+     * @throws org.jdom2.JDOMException Cuando se intenta cargar un xml que no tiene la estructura esperada. Chequear si
+     * esta desfasada la versión.
+     * @throws IOException Cuando no se puede leer el archivo indicado o existe algun fallo de conversión de datos al
+     * leer el contenido del mismo.
      */
     public static GroupCaseStudyConfiguration loadGroupCaseDescription(File file) throws JDOMException, IOException {
         SAXBuilder builder = new SAXBuilder();
@@ -328,15 +337,14 @@ public class GroupCaseStudyXML {
     }
 
     /**
-     * Carga la descripción de un caso de estudio para sistemas de recomendación
-     * para grupos.
+     * Carga la descripción de un caso de estudio para sistemas de recomendación para grupos.
      *
      * @param file Archivo donde se encuentra almacenado el caso de estudio.
      * @return Caso de estudio recuperado del archivo.
-     * @throws org.jdom2.JDOMException Cuando se intenta cargar un xml que no
-     * tiene la estructura esperada. Chequear si esta desfasada la versión.
-     * @throws IOException Cuando no se puede leer el archivo indicado o existe
-     * algun fallo de conversión de datos al leer el contenido del mismo.
+     * @throws org.jdom2.JDOMException Cuando se intenta cargar un xml que no tiene la estructura esperada. Chequear si
+     * esta desfasada la versión.
+     * @throws IOException Cuando no se puede leer el archivo indicado o existe algun fallo de conversión de datos al
+     * leer el contenido del mismo.
      */
     public static GroupCaseStudyConfiguration loadGroupCaseWithResults(File file) throws JDOMException, IOException {
         SAXBuilder builder = new SAXBuilder();

@@ -111,14 +111,6 @@ public class ConfusionMatricesCurve {
             throw new IllegalArgumentException("No recomendations provided");
         }
 
-        if (matrices[0].falseNegative == 0) {
-            throw new IllegalArgumentException("All recommendations are not relevant.");
-        }
-
-        if (matrices[0].trueNegative == 0) {
-            throw new IllegalArgumentException("All recommendations are relevant.");
-        }
-
         this.matrices.addAll(Arrays.asList(matrices));
     }
 
@@ -128,8 +120,11 @@ public class ConfusionMatricesCurve {
      * @param listOfRecommendations Lista que representa si la recomendación i del sistema de recomendación es en
      * realidad relevante para el usuario (true) o no (false).
      *
+<<<<<<< HEAD
+=======
      * @throws IllegalArgumentException Todas las recomendaciones son positivas o negativas, por lo que no se puede
      * calcular la curva.
+>>>>>>> version-evaluation-results
      */
     public ConfusionMatricesCurve(List<Boolean> listOfRecommendations) {
         int falsePositive = 0;
@@ -147,14 +142,6 @@ public class ConfusionMatricesCurve {
 
         if (listOfRecommendations.isEmpty()) {
             throw new IllegalArgumentException("No recomendations provided");
-        }
-
-        if (falseNegative == 0) {
-            throw new IllegalArgumentException("All test values are not relevant");
-        }
-
-        if (trueNegative == 0) {
-            throw new IllegalArgumentException("All test values are relevant");
         }
 
         matrices.add(new ConfusionMatrix(falsePositive, falseNegative, truePositive, trueNegative));

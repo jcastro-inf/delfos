@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016 jcastro
+ * Copyright (C) 2017 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,26 +19,21 @@ package delfos.experiment.validation.predictionprotocol;
 import delfos.common.exceptions.dataset.users.UserNotFound;
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
-import delfos.rs.collaborativefiltering.svd.TryThisAtHomeSVD;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
-import java.util.TreeSet;
 import java.util.stream.Collectors;
 
 /**
- * Protocolo de predicción nulo, es decir, no hace nada. Solo solicita todas las valoraciones que están en el conjunto
- * de test de una vez.
- *
- * Se utiliza cuando no se desea aplicar porotocolo de predicción, por ejemplo, en el sistema de recomendación SVD
- * {@link TryThisAtHomeSVD} no tiene sentido aplicar protocolo de predicción, ya que cuando cambian las valoraciones del
- * usuario se debe volver a construir el modelo para que se actualicen las recomendaciones.
+ * This prediction protodol requests all the items that a real recommender system would recommend to a user considering
+ * that already rated items are not recommended. This validation is useful to study coverage, diversity and novelty
+ * simulating a real recommendation scenario.
  *
  * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
- * @version 1.0 21-Jan-2013
  */
-public class NoPredictionProtocol extends PredictionProtocol {
+public class RecommendationScopeNewItems extends PredictionProtocol {
 
     public static final long serialVersionUID = 1L;
 
@@ -46,25 +41,34 @@ public class NoPredictionProtocol extends PredictionProtocol {
     public <RatingType extends Rating> List<Set<Integer>> getRecommendationRequests(
             DatasetLoader<RatingType> trainingDatasetLoader,
             DatasetLoader<RatingType> testDatasetLoader,
-            int idUser) throws UserNotFound {
-        List<Set<Integer>> listOfRequests = new ArrayList<>(1);
+            int idUser)
+            throws UserNotFound {
 
-        Set<Integer> userRated = new TreeSet<>(testDatasetLoader.getRatingsDataset().getUserRated(idUser));
+        Set<Integer> userRatedItems = trainingDatasetLoader.getRatingsDataset().getUserRated(idUser);
 
-        listOfRequests.add(userRated);
+        Set<Integer> itemsNotRated = trainingDatasetLoader.getContentDataset()
+                .allIDs()
+                .parallelStream()
+                .filter(idItem -> !userRatedItems.contains(idItem))
+                .collect(Collectors.toSet());
 
-        return listOfRequests;
+        List<Set<Integer>> recommendationRequests = new ArrayList<>();
+        recommendationRequests.add(itemsNotRated);
+
+        return recommendationRequests;
     }
 
     @Override
     public <RatingType extends Rating> List<Set<Integer>> getRatingsToHide(
             DatasetLoader<RatingType> trainingDatasetLoader,
             DatasetLoader<RatingType> testDatasetLoader,
-            int idUser) throws UserNotFound {
-        return getRecommendationRequests(trainingDatasetLoader, testDatasetLoader, idUser)
-                .stream()
-                .map(object -> new TreeSet<Integer>())
-                .collect(Collectors.toList());
+            int idUser)
+            throws UserNotFound {
+
+        List<Set<Integer>> ratingsToHide = new ArrayList<>();
+        ratingsToHide.add(Collections.EMPTY_SET);
+        return ratingsToHide;
+
     }
 
 }

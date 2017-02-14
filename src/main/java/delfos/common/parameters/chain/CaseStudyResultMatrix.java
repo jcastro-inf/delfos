@@ -18,6 +18,7 @@ package delfos.common.parameters.chain;
 
 import delfos.common.StringsOrderings;
 import delfos.common.parameters.ParameterOwner;
+import delfos.experiment.casestudy.CaseStudyResults;
 import delfos.main.managers.experiment.join.xml.GroupCaseStudyResult;
 import java.util.Collections;
 import java.util.List;
@@ -223,12 +224,21 @@ public class CaseStudyResultMatrix {
         }
     }
 
-    public void prepareColumnAndRowNames(List<GroupCaseStudyResult> groupCaseStudyResults) {
+    public void prepareColumnAndRowNames_group(List<GroupCaseStudyResult> groupCaseStudyResults) {
 
         groupCaseStudyResults.stream().map(groupCaseStudyResult -> groupCaseStudyResult.getGroupCaseStudy())
                 .forEach(groupCaseStudy -> this.getColumnIdentifier(groupCaseStudy));
 
         groupCaseStudyResults.stream().map(groupCaseStudyResult -> groupCaseStudyResult.getGroupCaseStudy())
                 .forEach(groupCaseStudy -> this.getRowIdentifier(groupCaseStudy));
+    }
+
+    public void prepareColumnAndRowNames(List<CaseStudyResults> caseStudyResultses) {
+
+        caseStudyResultses.stream().map(groupCaseStudyResult -> groupCaseStudyResult.getCaseStudy())
+                .forEach(caseStudy -> this.getColumnIdentifier(caseStudy));
+
+        caseStudyResultses.stream().map(groupCaseStudyResult -> groupCaseStudyResult.getCaseStudy())
+                .forEach(caseStudy -> this.getRowIdentifier(caseStudy));
     }
 }

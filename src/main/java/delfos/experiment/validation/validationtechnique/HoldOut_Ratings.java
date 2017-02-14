@@ -63,9 +63,9 @@ public class HoldOut_Ratings extends ValidationTechnique {
     }
 
     @Override
-    public <RatingType extends Rating> PairOfTrainTestRatingsDataset[] shuffle(DatasetLoader<RatingType> datasetLoader) throws CannotLoadRatingsDataset, CannotLoadContentDataset {
+    public <RatingType extends Rating> PairOfTrainTestRatingsDataset<RatingType>[] shuffle(DatasetLoader<RatingType> datasetLoader) throws CannotLoadRatingsDataset, CannotLoadContentDataset {
         Random random = new Random(getSeedValue());
-        PairOfTrainTestRatingsDataset[] ret = new PairOfTrainTestRatingsDataset[1];
+        PairOfTrainTestRatingsDataset<RatingType>[] ret = new PairOfTrainTestRatingsDataset[1];
 
         //HoldOut initialization
         Map<Integer, Set<Integer>> testSet = new TreeMap<>();
@@ -105,7 +105,7 @@ public class HoldOut_Ratings extends ValidationTechnique {
         }
 
         try {
-            ret[0] = new PairOfTrainTestRatingsDataset(
+            ret[0] = new PairOfTrainTestRatingsDataset<>(
                     datasetLoader,
                     ValidationDatasets.getInstance().createTrainingDataset(datasetLoader.getRatingsDataset(), testSet),
                     ValidationDatasets.getInstance().createTestDataset(datasetLoader.getRatingsDataset(), testSet),

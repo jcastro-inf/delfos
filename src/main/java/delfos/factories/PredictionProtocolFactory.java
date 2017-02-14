@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -21,11 +21,11 @@ import delfos.experiment.validation.predictionprotocol.GivenN;
 import delfos.experiment.validation.predictionprotocol.NoPredictionProtocol;
 import delfos.experiment.validation.predictionprotocol.PredictN;
 import delfos.experiment.validation.predictionprotocol.PredictionProtocol;
+import delfos.experiment.validation.predictionprotocol.RecommendationScopeNewItems;
 
 /**
- * Clase que implementa el patrón factoría para las validaciones de predicciones
- * para algoritmos colaborativos . Permite ver las técnicas que hay
- * implementadas, obtener una técnica concreta.
+ * Clase que implementa el patrón factoría para las validaciones de predicciones para algoritmos colaborativos . Permite
+ * ver las técnicas que hay implementadas, obtener una técnica concreta.
  *
  * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
@@ -47,6 +47,8 @@ public class PredictionProtocolFactory extends Factory<PredictionProtocol> {
         instance.addClass(GivenN.class);
         instance.addClass(PredictN.class);
         instance.addClass(AllButOne.class);
+
+        instance.addClass(RecommendationScopeNewItems.class);
     }
 
     private PredictionProtocolFactory() {

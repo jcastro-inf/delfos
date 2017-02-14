@@ -51,6 +51,11 @@ public class ParameterOwnerXML {
 
         ParameterOwner parameterOwner = parameterOwnerType.createObjectFromClassName(className);
 
+        if (parameterOwner == null) {
+            System.out.println("ParameterOwner is null");
+            parameterOwner = parameterOwnerType.createObjectFromClassName(className);
+        }
+
         for (Element parameterElement : parameterOwnerElement.getChildren(ParameterXML.PARAMETER_ELEMENT_NAME)) {
             final String parameterName = parameterElement.getAttributeValue(ParameterXML.PARAMETER_NAME);
 
@@ -62,6 +67,8 @@ public class ParameterOwnerXML {
                 }
 
                 parameterOwner.setParameterValue(parameter, parameterValue);
+            } else {
+                System.out.println("Parameter is null");
             }
         }
         return parameterOwner;

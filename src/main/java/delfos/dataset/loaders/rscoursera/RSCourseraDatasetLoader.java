@@ -120,12 +120,10 @@ public class RSCourseraDatasetLoader extends DatasetLoaderAbstract<Rating> imple
     @Override
     public ContentDataset getContentDataset() throws CannotLoadContentDataset {
 
-        File contentCSV = (File) getParameterValue(CONTENT_FILE);
-
         if (contentDataset == null) {
             ContentDatasetToCSV contentDatasetToCSV = new RSCourseraContentDatasetToCSV();
             try {
-                contentDataset = contentDatasetToCSV.readContentDataset(contentCSV);
+                contentDataset = contentDatasetToCSV.readContentDataset(getContentDatasetFile());
             } catch (FileNotFoundException ex) {
                 throw new CannotLoadContentDataset(ex);
             }
@@ -139,7 +137,7 @@ public class RSCourseraDatasetLoader extends DatasetLoaderAbstract<Rating> imple
         if (usersDataset == null) {
             UsersDatasetToCSV usersDatasetToCSV = new RSCourseraUsersDatasetToCSV();
             try {
-                usersDataset = usersDatasetToCSV.readUsersDataset(getUsersDatasetFile().getAbsoluteFile());
+                usersDataset = usersDatasetToCSV.readUsersDataset(getUsersDatasetFile());
             } catch (FileNotFoundException ex) {
                 throw new CannotLoadUsersDataset(ex);
             }

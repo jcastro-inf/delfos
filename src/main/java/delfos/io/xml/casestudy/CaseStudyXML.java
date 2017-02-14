@@ -49,6 +49,7 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.function.Predicate;
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
@@ -70,36 +71,49 @@ public class CaseStudyXML {
     public static final String AGGREGATE_VALUES_ELEMENT_NAME = "Aggregate_values";
     public static final String EXECUTIONS_RESULTS_ELEMENT_NAME = "Executions";
 
-    private static Element getResultsElement(CaseStudy c) {
-
-        Element ejecuciones = new Element(EXECUTIONS_RESULTS_ELEMENT_NAME);
-        Element ejecucion;
-        int numExecutions = c.getNumExecutions();
-        int numSplits = c.getNumberOfSplits();
-        for (int ex = 0; ex < numExecutions; ex++) {
-            ejecucion = new Element("Execution");
-            for (int nSplit = 0; nSplit < numSplits; nSplit++) {
-                Element split = new Element("Split");
-                for (EvaluationMeasure em : c.getEvaluationMeasures()) {
-
-                    MeasureResult mr = c.getMeasureResult(em, ex, nSplit);
-                    split.addContent((Element) mr.getXMLElement().clone());
-                }
-                ejecucion.addContent(split);
-            }
-            ejecuciones.addContent(ejecucion);
+    public static Predicate<File> RESULTS_FILES = (file) -> {
+        try {
+            CaseStudyResults loadCaseResults = loadCaseResults(file);
+            return true;
+        } catch (JDOMException ex) {
+            return false;
+        } catch (IOException ex) {
+            ERROR_CODES.CANNOT_READ_FILE.exit(ex);
+            return false;
         }
-        return ejecuciones;
+    };
+
+    private static Element getResultsElement(CaseStudy caseStudy) {
+
+        Element executionsElement = new Element(EXECUTIONS_RESULTS_ELEMENT_NAME);
+        Element executionElement;
+        int numExecutions = caseStudy.getNumExecutions();
+        int numSplits = caseStudy.getNumberOfSplits();
+        for (int execution = 0; execution < numExecutions; execution++) {
+            executionElement = new Element("Execution");
+            for (int split = 0; split < numSplits; split++) {
+                Element splitElement = new Element("Split");
+                for (EvaluationMeasure evaluationMeasure : caseStudy.getEvaluationMeasures()) {
+
+                    MeasureResult measureResult = caseStudy.getMeasureResult(evaluationMeasure, execution, split);
+                    splitElement.addContent((Element) measureResult.getXMLElement().clone());
+
+                }
+                executionElement.addContent(splitElement);
+            }
+            executionsElement.addContent(executionElement);
+        }
+        return executionsElement;
     }
 
-    private static Element getAggregatedResultsElement(CaseStudy c) {
-        Element mediaMedidas = new Element(AGGREGATE_VALUES_ELEMENT_NAME);
-        for (EvaluationMeasure em : c.getEvaluationMeasures()) {
-            Element element = c.getMeasureResult(em).getXMLElement();
-            mediaMedidas.addContent(element);
+    private static Element getAggregatedResultsElement(CaseStudy caseStudy) {
+        Element aggregatedResultsElement = new Element(AGGREGATE_VALUES_ELEMENT_NAME);
+        for (EvaluationMeasure evaluationMeasure : caseStudy.getEvaluationMeasures()) {
+            Element evaluationMesureElement = caseStudy.getMeasureResult(evaluationMeasure).getXMLElement();
+            aggregatedResultsElement.addContent(evaluationMesureElement);
         }
 
-        return mediaMedidas;
+        return aggregatedResultsElement;
     }
 
     public synchronized static void caseStudyToXMLFile(CaseStudy caseStudy, File file) {
@@ -238,14 +252,14 @@ public class CaseStudyXML {
         CaseStudyXML.caseStudyToXMLFile_onlyDescription(caseStudy, new File(file));
     }
 
-    public static void saveCaseResults(CaseStudy caseStudy, String descriptivePrefix, String file) {
-        File fileFile = FileUtilities.addPrefix(new File(file), descriptivePrefix);
+    public static void saveCaseResults(CaseStudy caseStudy, File file) {
+
         if (Constants.isPrintFullXML()) {
-            caseStudyToXMLFile(caseStudy, "", FileUtilities.addSufix(fileFile, "_FULL"));
+            caseStudyToXMLFile(caseStudy, "", FileUtilities.addSufix(file, "_FULL"));
         }
 
-        File aggregateFileName = FileUtilities.addSufix(fileFile, "_AGGR");
-        caseStudyToXMLFile_onlyAggregate(caseStudy, descriptivePrefix, aggregateFileName);
+        File aggregateFileName = FileUtilities.addSufix(file, "_AGGR");
+        caseStudyToXMLFile_onlyAggregate(caseStudy, aggregateFileName);
     }
 
     private static void caseStudyToXMLFile_onlyDescription(CaseStudy caseStudy, File file) {
@@ -265,8 +279,6 @@ public class CaseStudyXML {
         casoDeUso.addContent(RelevanceCriteriaXML.getElement(caseStudy.getRelevanceCriteria()));
         casoDeUso.addContent(DatasetLoaderXML.getElement(caseStudy.getDatasetLoader()));
 
-        //casoDeUso.addContent(getResultsElement(caseStudy));
-        //casoDeUso.addContent(getAggregatedResultsElement(caseStudy));
         doc.addContent(casoDeUso);
 
         XMLOutputter outputter = new XMLOutputter(Constants.getXMLFormat());
@@ -279,7 +291,7 @@ public class CaseStudyXML {
         }
     }
 
-    private static void caseStudyToXMLFile_onlyAggregate(CaseStudy caseStudy, String descriptivePrefix, File file) {
+    private static void caseStudyToXMLFile_onlyAggregate(CaseStudy caseStudy, File file) {
         if (!caseStudy.isFinished()) {
             throw new UnsupportedOperationException("No se ha ejecutado el caso de uso todavía");
         }
@@ -345,8 +357,6 @@ public class CaseStudyXML {
 
         Map<EvaluationMeasure, MeasureResult> evaluationMeasuresResults = getEvaluationMeasures(caseStudyElement);
 
-        EvaluationMeasuresResults aggregatedElement = getAggregateEvaluationMeasures(caseStudyElement.getChild("Aggregate_values"));
-
         long seed = Long.parseLong(caseStudyElement.getAttributeValue(SeedHolder.SEED.getName()));
         int numExecutions = Integer.parseInt(caseStudyElement.getAttributeValue(NUM_EXEC_ATTRIBUTE_NAME));
         String caseStudyAlias = caseStudyElement.getAttributeValue(ParameterOwner.ALIAS.getName());
@@ -399,10 +409,11 @@ public class CaseStudyXML {
             double measureValue = new Double(valueString);
 
             if (evaluationMeasure == null) {
-                throw new IllegalStateException("Evaluation measure cannot be null.");
+                IllegalStateException ex = new IllegalStateException("Evaluation measure '" + evaluationMeasureName + "' not in factory.");
+                Global.showError(ex);
+            } else {
+                ret.put(evaluationMeasure, measureValue);
             }
-
-            ret.put(evaluationMeasure, measureValue);
         }
 
         return new EvaluationMeasuresResults(ret, buildTime, recommendationTime);

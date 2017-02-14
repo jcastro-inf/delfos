@@ -70,7 +70,7 @@ public class HoldOut_Users extends ValidationTechnique {
     }
 
     @Override
-    public <RatingType extends Rating> PairOfTrainTestRatingsDataset[] shuffle(DatasetLoader<RatingType> datasetLoader) throws CannotLoadRatingsDataset, CannotLoadContentDataset {
+    public <RatingType extends Rating> PairOfTrainTestRatingsDataset<RatingType>[] shuffle(DatasetLoader<RatingType> datasetLoader) throws CannotLoadRatingsDataset, CannotLoadContentDataset {
         Random random = new Random(getSeedValue());
         PairOfTrainTestRatingsDataset[] ret = new PairOfTrainTestRatingsDataset[1];
 
@@ -100,7 +100,7 @@ public class HoldOut_Users extends ValidationTechnique {
         test.setAllowedItems(allItems);
         test.setAllowedUsers(usersInTest);
 
-        ret[0] = new PairOfTrainTestRatingsDataset(datasetLoader, training, test,
+        ret[0] = new PairOfTrainTestRatingsDataset<>(datasetLoader, training, test,
                 "_" + this.getClass().getSimpleName() + "_seed=" + getSeedValue());
 
         Global.showInfoMessage("Training dataset #users " + training.allUsers().size() + "\n");

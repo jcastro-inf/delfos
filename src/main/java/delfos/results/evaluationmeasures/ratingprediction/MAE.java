@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,31 +16,30 @@
  */
 package delfos.results.evaluationmeasures.ratingprediction;
 
-import delfos.ERROR_CODES;
 import delfos.common.Global;
-import delfos.common.exceptions.dataset.users.UserNotFound;
 import delfos.common.statisticalfuncions.MeanIterative;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RatingsDataset;
 import delfos.dataset.basic.rating.RelevanceCriteria;
 import delfos.dataset.basic.user.User;
+import delfos.dataset.util.DatasetUtilities;
 import delfos.results.MeasureResult;
 import delfos.results.RecommendationResults;
 import delfos.results.evaluationmeasures.EvaluationMeasure;
 import delfos.rs.recommendation.Recommendation;
+import delfos.rs.recommendation.RecommendationsToUser;
 import delfos.rs.recommendation.SingleUserRecommendations;
-import java.util.List;
+import java.util.Collection;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
- * Calcula el error absoluto medio de una ejecución con un algoritmo de
- * recomendación que utiliza predicción de valoraciones
+ * Calcula el error absoluto medio de una ejecución con un algoritmo de recomendación que utiliza predicción de
+ * valoraciones
  *
  * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
- * @version 1.2 (21-Jan-2013)
- * @version 1.1 (9-Jan-2013)
- * @version 1.0 (Unknow date)
  */
 public class MAE extends EvaluationMeasure {
 
@@ -52,22 +51,46 @@ public class MAE extends EvaluationMeasure {
         MeanIterative mean = new MeanIterative();
 
         for (int idUser : recommendationResults.usersWithRecommendations()) {
-            User user = new User(idUser);
-            List<Recommendation> recommendationList = recommendationResults.getRecommendationsForUser(idUser);
-            try {
-                Map<Integer, ? extends Rating> userRated = testDataset.getUserRatingsRated(idUser);
-                MeanIterative userMean = getUserResult(new SingleUserRecommendations(user, recommendationList), userRated);
-
-                if (!userMean.isEmpty()) {
-                    mean.addMean(userMean);
-                }
-            } catch (UserNotFound ex) {
-                ERROR_CODES.USER_NOT_FOUND.exit(ex);
+            Collection<Recommendation> recommendationList = recommendationResults.getRecommendationsForUser(idUser);
+            if (recommendationList == null) {
+                continue;
             }
+
+            Map<Integer, Double> recommendations = DatasetUtilities
+                    .convertToMapOfRecommendations(new RecommendationsToUser(new User(idUser), recommendationList))
+                    .entrySet()
+                    .parallelStream()
+                    .filter(entry -> !Double.isNaN(entry.getValue().getPreference().doubleValue()))
+                    .filter(entry -> !Double.isInfinite(entry.getValue().getPreference().doubleValue()))
+                    .collect(Collectors.toMap(
+                            entry -> entry.getKey().getId(),
+                            entry -> entry.getValue().getPreference().doubleValue())
+                    );
+
+            Map<Integer, Double> testRatings = testDataset
+                    .getUserRatingsRated(idUser)
+                    .values()
+                    .parallelStream()
+                    .filter(rating -> !Double.isNaN(rating.getRatingValue().doubleValue()))
+                    .filter(rating -> !Double.isInfinite(rating.getRatingValue().doubleValue()))
+                    .collect(Collectors.toMap(
+                            rating -> rating.getItem().getId(),
+                            rating -> rating.getRatingValue().doubleValue())
+                    );
+
+            Set<Integer> commonItems = recommendations.keySet();
+            commonItems.retainAll(testRatings.keySet());
+
+            commonItems.stream().forEach(idItem -> {
+                Double predictedRating = recommendations.get(idItem);
+                Double trueRating = testRatings.get(idItem);
+
+                mean.addValue(Math.abs(trueRating - predictedRating));
+            });
 
         }
         if (mean.getNumValues() == 0) {
-            Global.showWarning("Cannot compute 'MAE' since the RS did not predicted any recommendation!!");
+            Global.showWarning("Cannot compute 'MAE' since the RS did not predicted any item with a rating in the test set.");
         }
 
         return new MeasureResult(this, (double) mean.getMean());

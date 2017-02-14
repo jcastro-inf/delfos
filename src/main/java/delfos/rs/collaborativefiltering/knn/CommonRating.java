@@ -16,6 +16,7 @@
  */
 package delfos.rs.collaborativefiltering.knn;
 
+import delfos.dataset.basic.item.ContentDataset;
 import delfos.dataset.basic.item.Item;
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
@@ -28,17 +29,16 @@ import java.util.TreeSet;
 import java.util.stream.Collectors;
 
 /**
- * Entidad que encapsula un rating en común. rating1 y rating2 son valoraciones
- * que tienen en común una entidad <b>commonEntity</b> con id <b> idCommon</b>.
+ * Entidad que encapsula un rating en común. rating1 y rating2 son valoraciones que tienen en común una entidad
+ * <b>commonEntity</b> con id <b> idCommon</b>.
  *
  *
  * <p>
  * <p>
- * Se utiliza, por ejemplo, para almacenar que el usuario u54 y el usuario u98
- * valoraron el producto i46 con una valoración de 3 y 5 respectivamente. En
- * este caso, {@link CommonRating#getCommonEntity() } indicara que es un
- * producto y {@link CommonRating#getRatingEntity() } indicará que es un
- * usuario. El método {@link CommonRating#getIdR1() } devuelve 54 y el método {@link CommonRating#getIdR3()
+ * Se utiliza, por ejemplo, para almacenar que el usuario u54 y el usuario u98 valoraron el producto i46 con una
+ * valoración de 3 y 5 respectivamente. En este caso, {@link CommonRating#getCommonEntity() } indicara que es un
+ * producto y {@link CommonRating#getRatingEntity() } indicará que es un usuario. El método {@link CommonRating#getIdR1()
+ * } devuelve 54 y el método {@link CommonRating#getIdR3()
  * } devuelve 98.
  *
  * @author jcastro-inf ( https://github.com/jcastro-inf )
@@ -56,8 +56,7 @@ public class CommonRating {
             = BY_ID_COMMON_ASC.reversed();
 
     /**
-     * Returns the intersection of the items rated by both users. This method is
-     * symmetric.
+     * Returns the intersection of the items rated by both users. This method is symmetric.
      *
      * @param datasetLoader Dataset from which the information is loaded.
      * @param user1 User 1.
@@ -76,8 +75,12 @@ public class CommonRating {
         intersection.addAll(itemsRatedUser1.keySet());
         intersection.retainAll(itemsRatedUser2.keySet());
 
+        final ContentDataset contentDataset = datasetLoader.getContentDataset();
+
         Set<Item> itemsIntersection = intersection.parallelStream()
-                .map(idItem -> datasetLoader.getContentDataset().get(idItem))
+                .map(idItem -> {
+                    return contentDataset.get(idItem);
+                })
                 .collect(Collectors.toSet());
 
         Collection<CommonRating> commonRatings = itemsIntersection.parallelStream().map(item -> {
@@ -138,8 +141,7 @@ public class CommonRating {
     }
 
     /**
-     * Tipo de la entidad común, es decir, tipo al que todos los ratings se
-     * refieren.
+     * Tipo de la entidad común, es decir, tipo al que todos los ratings se refieren.
      */
     private final RecommendationEntity commonEntity;
     private final RecommendationEntity ratingEntity;
@@ -151,11 +153,9 @@ public class CommonRating {
     private Double weight = null;
 
     /**
-     * Crea una entidad de rating común, que almacena dos ratings dados sobre
-     * una misma entidad.
+     * Crea una entidad de rating común, que almacena dos ratings dados sobre una misma entidad.
      *
-     * @param commonEntity Tipo de la entidad a la que se refieren las dos
-     * valoraciones.
+     * @param commonEntity Tipo de la entidad a la que se refieren las dos valoraciones.
      * @param idCommon Id de la entidad en común.
      * @param ratingEntity Tipo de la entidad que es distinta.
      * @param idR1 Id de la entidad distinta 1.
@@ -176,11 +176,9 @@ public class CommonRating {
     }
 
     /**
-     * Crea una entidad de rating común, que almacena dos ratings dados sobre
-     * una misma entidad.
+     * Crea una entidad de rating común, que almacena dos ratings dados sobre una misma entidad.
      *
-     * @param commonEntity Tipo de la entidad a la que se refieren las dos
-     * valoraciones.
+     * @param commonEntity Tipo de la entidad a la que se refieren las dos valoraciones.
      * @param idCommon Id de la entidad en común.
      * @param ratingEntity Tipo de la entidad que es distinta.
      * @param idR1 Id de la entidad distinta 1.
@@ -199,20 +197,17 @@ public class CommonRating {
     }
 
     /**
-     * Devuelve el tipo de la entidad común, es decir, tipo al que todos los
-     * ratings se refieren.
+     * Devuelve el tipo de la entidad común, es decir, tipo al que todos los ratings se refieren.
      *
-     * @return Tipo de la entidad común, es decir, tipo al que todos los ratings
-     * se refieren.
+     * @return Tipo de la entidad común, es decir, tipo al que todos los ratings se refieren.
      */
     public RecommendationEntity getCommonEntity() {
         return commonEntity;
     }
 
     /**
-     * Devuelve el ID de la entidad en común. La entidad de recomendación será
-     * un usuario o un producto, dependiendo del valor del método
-     * {@link CommonRating#commonEntity}.
+     * Devuelve el ID de la entidad en común. La entidad de recomendación será un usuario o un producto, dependiendo del
+     * valor del método {@link CommonRating#commonEntity}.
      *
      * @return ID de la entidad en común.
      */
@@ -221,8 +216,7 @@ public class CommonRating {
     }
 
     /**
-     * Devuelve el ID de la entidad de valoración 1, que será un usuario o un
-     * producto dependiendo del valor del método
+     * Devuelve el ID de la entidad de valoración 1, que será un usuario o un producto dependiendo del valor del método
      * {@link CommonRating#ratingEntity}.
      *
      * @return ID de la entidad de valoración 1.
@@ -232,8 +226,7 @@ public class CommonRating {
     }
 
     /**
-     * Devuelve el ID de la entidad de valoración 2, que será un usuario o un
-     * producto dependiendo del valor del método
+     * Devuelve el ID de la entidad de valoración 2, que será un usuario o un producto dependiendo del valor del método
      * {@link CommonRating#ratingEntity}.
      *
      * @return ID de la entidad de valoración 2.
@@ -261,8 +254,7 @@ public class CommonRating {
     }
 
     /**
-     * Devuelve el tipo de la entidad de valoración, es decir, las entidades
-     * diferentes.
+     * Devuelve el tipo de la entidad de valoración, es decir, las entidades diferentes.
      *
      * @return Tipo de la entidad de valoración.
      */

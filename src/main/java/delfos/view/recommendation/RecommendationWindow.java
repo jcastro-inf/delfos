@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,7 +16,6 @@
  */
 package delfos.view.recommendation;
 
-import delfos.view.neighborhood.components.recommendations.RecommendationsTable;
 import delfos.ERROR_CODES;
 import delfos.common.Chronometer;
 import delfos.common.DateCollapse;
@@ -39,6 +38,7 @@ import delfos.rs.RecommenderSystem;
 import delfos.rs.RecommenderSystemAdapter;
 import delfos.rs.recommendation.Recommendation;
 import delfos.rs.recommendation.Recommendations;
+import delfos.view.neighborhood.components.recommendations.RecommendationsTable;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
@@ -70,11 +70,9 @@ import javax.swing.SwingConstants;
 import javax.swing.SwingWorker;
 
 /**
- * Clase que encapsula el funcionamiento de la interfaz destinada a la
- * realización de ejecuciones de evaluación con algoritmos de recomendación
- * colaborativos, es decir, algoritmos que predicen la valoración que el usuario
- * daría a un item no valorado basándose en las valoraciones del resto de
- * usuarios.
+ * Clase que encapsula el funcionamiento de la interfaz destinada a la realización de ejecuciones de evaluación con
+ * algoritmos de recomendación colaborativos, es decir, algoritmos que predicen la valoración que el usuario daría a un
+ * item no valorado basándose en las valoraciones del resto de usuarios.
  *
  * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
@@ -99,11 +97,12 @@ public class RecommendationWindow extends JFrame {
 
     private RecommendationsTable recommendationsTable;
 
+    private JLabel userCoverageLabel;
+
     private JComboBox selectorUsuario;
 
     /**
-     * Crea la ventana general para la interacción con el módulo de
-     * recomendaciones.
+     * Crea la ventana general para la interacción con el módulo de recomendaciones.
      */
     public RecommendationWindow() {
         super("Recommendations - " + ManagementFactory.getRuntimeMXBean().getName());
@@ -338,6 +337,10 @@ public class RecommendationWindow extends JFrame {
 
             Collection<Recommendation> recommendations = recommenderSystem.recommendToUser(datasetLoader, recommendationModel, idUser, noValoradas);
             recommendationsTable.setRecomendaciones(new Recommendations(idUser, recommendations));
+            final double predicted = recommendations.parallelStream().filter(Recommendation.NON_COVERAGE_FAILURES).count();
+            final double requested = noValoradas.size();
+
+            userCoverageLabel.setText(Double.toString(predicted / requested));
         } catch (CannotLoadRatingsDataset ex) {
             ERROR_CODES.CANNOT_LOAD_RATINGS_DATASET.exit(ex);
         } catch (UserNotFound ex) {
@@ -557,21 +560,19 @@ public class RecommendationWindow extends JFrame {
             this.remainingTime.setVisible(true);
             this.previousPercent = percent;
             this.previousProceso = proceso;
-        } else {
-            if (previousProceso.equals(proceso) && previousPercent == percent) {
-                if (chrono.getPartialElapsed() > 5000) {
-                    this.remainingTime.setText(DateCollapse.collapse(remainingSeconds));
-                    this.remainingTime.setVisible(true);
-                    chrono.reset();
-                }
-            } else {
-                this.previousPercent = percent;
-                this.previousProceso = proceso;
-                this.remainingTime.setVisible(false);
+        } else if (previousProceso.equals(proceso) && previousPercent == percent) {
+            if (chrono.getPartialElapsed() > 5000) {
                 this.remainingTime.setText(DateCollapse.collapse(remainingSeconds));
                 this.remainingTime.setVisible(true);
                 chrono.reset();
             }
+        } else {
+            this.previousPercent = percent;
+            this.previousProceso = proceso;
+            this.remainingTime.setVisible(false);
+            this.remainingTime.setText(DateCollapse.collapse(remainingSeconds));
+            this.remainingTime.setVisible(true);
+            chrono.reset();
         }
     }
 
@@ -630,6 +631,52 @@ public class RecommendationWindow extends JFrame {
 
         recommendationsTable = new RecommendationsTable();
         ret.add(recommendationsTable.getComponent(), constraints);
+
+        constraints = new GridBagConstraints();
+        constraints.fill = GridBagConstraints.HORIZONTAL;
+        constraints.weightx = 0.0;
+        constraints.weighty = 0.0;
+        constraints.gridx = 0;
+        constraints.gridy = 1;
+        constraints.gridwidth = 1;
+        constraints.gridheight = 1;
+        constraints.insets = new Insets(3, 4, 3, 4);
+
+        JPanel recommendationsCoveragePanel = createRecommendationsCoveragePannel();
+        ret.add(recommendationsCoveragePanel, constraints);
+
+        return ret;
+    }
+
+    private JPanel createRecommendationsCoveragePannel() {
+        JPanel ret = new JPanel(new GridBagLayout());
+        ret.setBorder(BorderFactory.createTitledBorder("Recommendations statistics"));
+
+        GridBagConstraints constraints = new GridBagConstraints();
+        constraints.fill = GridBagConstraints.BOTH;
+        constraints.weightx = 1.0;
+        constraints.weighty = 1.0;
+        constraints.gridx = 0;
+        constraints.gridy = 0;
+        constraints.gridwidth = 1;
+        constraints.gridheight = 1;
+        constraints.insets = new Insets(3, 4, 3, 4);
+
+        ret.add(new JLabel("Coverage"), constraints);
+
+        constraints = new GridBagConstraints();
+        constraints.fill = GridBagConstraints.BOTH;
+        constraints.anchor = GridBagConstraints.WEST;
+        constraints.weightx = 1.0;
+        constraints.weighty = 1.0;
+        constraints.gridx = 1;
+        constraints.gridy = 0;
+        constraints.gridwidth = 1;
+        constraints.gridheight = 1;
+        constraints.insets = new Insets(3, 4, 3, 4);
+
+        userCoverageLabel = new JLabel("NaN");
+        ret.add(userCoverageLabel, constraints);
 
         return ret;
     }

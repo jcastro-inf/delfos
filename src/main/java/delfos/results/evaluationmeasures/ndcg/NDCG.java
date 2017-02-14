@@ -19,7 +19,6 @@ package delfos.results.evaluationmeasures.ndcg;
 import delfos.ERROR_CODES;
 import delfos.common.exceptions.dataset.users.UserNotFound;
 import delfos.common.statisticalfuncions.MeanIterative;
-import delfos.dataset.basic.item.Item;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RatingsDataset;
 import delfos.dataset.basic.rating.RelevanceCriteria;
@@ -69,15 +68,12 @@ public class NDCG extends EvaluationMeasure {
                     continue;
                 }
 
-                Map<Integer, ? extends Rating> userRatings = testDataset.getUserRatingsRated(idUser);
+                Map<Integer, Rating> userRatings = (Map<Integer, Rating>) testDataset.getUserRatingsRated(idUser);
 
-                List<Recommendation> idealRecommendations = recommendations.stream()
-                        .map(recommendation -> {
-                            final Item item = recommendation.getItem();
-                            final Rating rating = userRatings.get(recommendation.getItem().getId());
-
-                            return new Recommendation(item, rating.getRatingValue().doubleValue());
-                        })
+                List<Recommendation> idealRecommendations = userRatings
+                        .values().parallelStream()
+                        .map(rating -> new Recommendation(rating.getItem(), rating.getRatingValue()))
+                        .sorted(Recommendation.BY_PREFERENCE_DESC)
                         .collect(Collectors.toList());
 
                 if (listSize > 0) {
@@ -120,18 +116,21 @@ public class NDCG extends EvaluationMeasure {
     /**
      * Compute the DCG of a list of items with respect to a value vector.
      *
-     * @param items
+     * @param recommendations
      * @param values
      * @return
      */
-    public static double computeDCG(List<Recommendation> items, Map<Integer, ? extends Rating> values) {
+    public static double computeDCG(
+            List<Recommendation> recommendations,
+            Map<Integer, ? extends Rating> values) {
+
         final double base = 2;
         final double logBaseChange = Math.log(base);
 
         double gain = 0;
         int rank = 0;
 
-        Iterator<Recommendation> iit = items.iterator();
+        Iterator<Recommendation> iit = recommendations.iterator();
         while (iit.hasNext()) {
             final Recommendation recommendation = iit.next();
             final int idItem = recommendation.getItem().getId();

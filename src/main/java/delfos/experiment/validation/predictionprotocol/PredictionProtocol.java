@@ -21,8 +21,8 @@ import delfos.common.exceptions.dataset.users.UserNotFound;
 import delfos.common.parameters.ParameterListener;
 import delfos.common.parameters.ParameterOwnerAdapter;
 import delfos.common.parameters.ParameterOwnerType;
+import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
-import delfos.dataset.basic.rating.RatingsDataset;
 import delfos.experiment.SeedHolder;
 import delfos.rs.RecommenderSystemAdapter;
 import java.util.List;
@@ -67,17 +67,23 @@ public abstract class PredictionProtocol extends ParameterOwnerAdapter implement
      * Calcula la lista que define cuántas peticiones de recomendación se realizarán al sistema de recomendación y qué
      * items debe predecir en cada una de las mismas. Para ello se devuelve una lista de listas de idItems
      *
-     * @param testRatingsDataset
+     * @param trainingDatasetLoader
+     * @param testDatasetLoader
      * @param idUser Usuario para el que se calcula la lista de peticiones
      * @return Lista que define cuántas peticiones y con qué items se debe solicitar al sistema de recomendación
      * colaborativo que realice recomendaciones para su validación
-     * @throws UserNotFound Si el usuario <code>idUser<\code> no se encuentra en el dataset original.
+     * @throws UserNotFound Si el usuario idUser no se encuentra en el dataset original.
      */
-    public abstract List<Set<Integer>> getRecommendationRequests(RatingsDataset<? extends Rating> testRatingsDataset, int idUser) throws UserNotFound;
+    public abstract <RatingType extends Rating> List<Set<Integer>> getRecommendationRequests(
+            DatasetLoader<RatingType> trainingDatasetLoader,
+            DatasetLoader<RatingType> testDatasetLoader,
+            int idUser) throws UserNotFound;
 
-    public List<Set<Integer>> getRatingsToHide(
-            RatingsDataset<? extends Rating> testRatingsDataset, int idUser) throws UserNotFound {
-        return getRecommendationRequests(testRatingsDataset, idUser);
+    public <RatingType extends Rating> List<Set<Integer>> getRatingsToHide(
+            DatasetLoader<RatingType> trainingDatasetLoader,
+            DatasetLoader<RatingType> testDatasetLoader,
+            int idUser) throws UserNotFound {
+        return getRecommendationRequests(trainingDatasetLoader, testDatasetLoader, idUser);
     }
 
     @Override
