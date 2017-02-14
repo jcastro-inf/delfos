@@ -20,12 +20,15 @@ import delfos.Constants;
 import delfos.ERROR_CODES;
 import delfos.common.FileUtilities;
 import delfos.common.Global;
+import delfos.common.parameters.ParameterOwner;
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RelevanceCriteria;
+import delfos.experiment.SeedHolder;
 import delfos.experiment.casestudy.CaseStudy;
 import delfos.experiment.casestudy.CaseStudyConfiguration;
 import delfos.experiment.casestudy.CaseStudyResults;
+import delfos.experiment.casestudy.defaultcase.DefaultCaseStudy;
 import delfos.experiment.validation.predictionprotocol.PredictionProtocol;
 import delfos.experiment.validation.validationtechnique.ValidationTechnique;
 import delfos.factories.EvaluationMeasuresFactory;
@@ -37,6 +40,7 @@ import delfos.io.xml.validationtechnique.ValidationTechniqueXML;
 import delfos.results.MeasureResult;
 import delfos.results.evaluationmeasures.EvaluationMeasure;
 import delfos.rs.GenericRecommenderSystem;
+import delfos.rs.RecommenderSystem;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -324,7 +328,7 @@ public class CaseStudyXML {
         if (!caseStudyElement.getName().equals(CASE_ROOT_ELEMENT_NAME)) {
             throw new IllegalArgumentException("The XML does not contains a Case Study.");
         }
-        GenericRecommenderSystem recommenderSystem = RecommenderSystemXML
+        RecommenderSystem<? extends Object> recommenderSystem = (RecommenderSystem<? extends Object>) RecommenderSystemXML
                 .getRecommenderSystem(caseStudyElement.getChild(RecommenderSystemXML.ELEMENT_NAME));
 
         DatasetLoader<? extends Rating> datasetLoader = DatasetLoaderXML
@@ -343,14 +347,23 @@ public class CaseStudyXML {
 
         EvaluationMeasuresResults aggregatedElement = getAggregateEvaluationMeasures(caseStudyElement.getChild("Aggregate_values"));
 
-        return new CaseStudyResults(
+        long seed = Long.parseLong(caseStudyElement.getAttributeValue(SeedHolder.SEED.getName()));
+        int numExecutions = Integer.parseInt(caseStudyElement.getAttributeValue(NUM_EXEC_ATTRIBUTE_NAME));
+        String caseStudyAlias = caseStudyElement.getAttributeValue(ParameterOwner.ALIAS.getName());
+
+        CaseStudy caseStudy = new DefaultCaseStudy(
                 recommenderSystem,
-                datasetLoader,
-                validationTechnique,
+                datasetLoader, validationTechnique,
                 predictionProtocol,
-                aggregatedElement.evaluationMeasuresResults,
-                aggregatedElement.buildTime,
-                aggregatedElement.recommendationTime);
+                relevanceCriteria,
+                evaluationMeasuresResults.keySet(),
+                numExecutions);
+
+        caseStudy.setAlias(caseStudyAlias);
+        caseStudy.setSeedValue(seed);
+        caseStudy.setAggregateResults(evaluationMeasuresResults);
+
+        return new CaseStudyResults(caseStudy);
     }
 
     static class EvaluationMeasuresResults {

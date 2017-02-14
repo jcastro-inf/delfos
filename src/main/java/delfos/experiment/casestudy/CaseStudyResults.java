@@ -26,6 +26,8 @@ import delfos.rs.GenericRecommenderSystem;
 import java.util.Collection;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 /**
  * Almacena los valores y resultados de un caso de estudio de sistemas de recomendación tradicionales ya ejecutado.
@@ -62,6 +64,19 @@ public class CaseStudyResults {
         this.recommendationTime = recommendationTime;
     }
 
+    public CaseStudyResults(CaseStudy caseStudy) {
+        this.recommenderSystem = caseStudy.getRecommenderSystem();
+        this.datasetLoader = caseStudy.getDatasetLoader();
+        this.validationTechnique = caseStudy.getValidationTechnique();
+        this.predictionProtocol = caseStudy.getPredictionProtocol();
+        this.evaluationMeasuresResults = caseStudy.getEvaluationMeasures().parallelStream().collect(Collectors.toMap(Function.identity(), evaluationMeasure -> {
+            return caseStudy.getMeasureResult(evaluationMeasure).getValue();
+        }));
+
+        this.buildTime = 0;
+        this.recommendationTime = 0;
+    }
+
     public GenericRecommenderSystem<? extends Object> getRecommenderSystem() {
         return recommenderSystem;
     }
@@ -83,7 +98,7 @@ public class CaseStudyResults {
     }
 
     public Map<EvaluationMeasure, Double> getEvaluationMeasuresResults() {
-        return new TreeMap<EvaluationMeasure, Double>(evaluationMeasuresResults);
+        return new TreeMap<>(evaluationMeasuresResults);
     }
 
     public long getBuildTime() {

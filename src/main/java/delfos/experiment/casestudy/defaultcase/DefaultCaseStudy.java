@@ -92,6 +92,7 @@ public class DefaultCaseStudy extends CaseStudy implements ParameterListener {
     protected int _conjuntoActual;
     protected final RecommenderSystem<? extends Object> recommenderSystem;
     protected Collection<EvaluationMeasure> evaluationMeasures;
+
     private Map<Integer, Map<Integer, Map<EvaluationMeasure, MeasureResult>>> executionsResult = Collections
             .synchronizedMap(new HashMap<>());
 
