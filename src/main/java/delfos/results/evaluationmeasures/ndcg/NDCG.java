@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package delfos.results.evaluationmeasures;
+package delfos.results.evaluationmeasures.ndcg;
 
 import delfos.ERROR_CODES;
 import delfos.common.exceptions.dataset.users.UserNotFound;
@@ -25,6 +25,7 @@ import delfos.dataset.basic.rating.RelevanceCriteria;
 import delfos.dataset.basic.rating.domain.Domain;
 import delfos.results.MeasureResult;
 import delfos.results.RecommendationResults;
+import delfos.results.evaluationmeasures.EvaluationMeasure;
 import delfos.rs.recommendation.Recommendation;
 import java.util.ArrayList;
 import java.util.List;
@@ -43,8 +44,19 @@ public class NDCG extends EvaluationMeasure {
 
     private static final long serialVersionUID = 1L;
 
+    protected final int listSize;
+
+    public NDCG() {
+        this.listSize = -1;
+    }
+
+    protected NDCG(int listSize) {
+        this.listSize = listSize;
+    }
+
     @Override
-    public MeasureResult getMeasureResult(RecommendationResults recommendationResults, RatingsDataset<? extends Rating> testDataset, RelevanceCriteria relevanceCriteria) {
+    public MeasureResult getMeasureResult(
+            RecommendationResults recommendationResults, RatingsDataset<? extends Rating> testDataset, RelevanceCriteria relevanceCriteria) {
 
         List<Double> ndcgPerUser = new ArrayList<>();
 
@@ -63,6 +75,17 @@ public class NDCG extends EvaluationMeasure {
                         .map(rating -> new Recommendation(rating.getItem(), rating.getRatingValue()))
                         .sorted(Recommendation.BY_PREFERENCE_DESC)
                         .collect(Collectors.toList());
+
+                if (listSize > 0) {
+                    recommendations = recommendations.stream()
+                            .sorted(Recommendation.BY_PREFERENCE_DESC)
+                            .limit(listSize)
+                            .collect(Collectors.toList());
+
+                    idealRecommendations = idealRecommendations.stream()
+                            .limit(listSize)
+                            .collect(Collectors.toList());
+                }
 
                 double idealGain = computeDCG(idealRecommendations, userRatings, testDataset.getRatingsDomain());
                 double gain = computeDCG(recommendations, userRatings, testDataset.getRatingsDomain());

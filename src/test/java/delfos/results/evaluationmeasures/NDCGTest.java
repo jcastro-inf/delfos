@@ -16,6 +16,7 @@
  */
 package delfos.results.evaluationmeasures;
 
+import delfos.results.evaluationmeasures.ndcg.NDCG;
 import delfos.configureddatasets.ConfiguredDatasetsFactory;
 import delfos.dataset.basic.item.Item;
 import delfos.dataset.basic.loader.types.DatasetLoader;
