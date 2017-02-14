@@ -25,7 +25,7 @@ import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RelevanceCriteria;
 import delfos.group.groupsofusers.GroupOfUsers;
 import delfos.group.results.grouprecomendationresults.GroupRecommenderSystemResult;
-import static delfos.results.evaluationmeasures.NDCG.computeDCG;
+import static delfos.results.evaluationmeasures.ndcg.NDCG.computeDCG;
 import delfos.rs.recommendation.Recommendation;
 import java.util.ArrayList;
 import java.util.Collection;

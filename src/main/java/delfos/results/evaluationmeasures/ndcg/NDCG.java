@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package delfos.results.evaluationmeasures;
+package delfos.results.evaluationmeasures.ndcg;
 
 import delfos.ERROR_CODES;
 import delfos.common.exceptions.dataset.users.UserNotFound;
@@ -24,11 +24,13 @@ import delfos.dataset.basic.rating.RatingsDataset;
 import delfos.dataset.basic.rating.RelevanceCriteria;
 import delfos.results.MeasureResult;
 import delfos.results.RecommendationResults;
+import delfos.results.evaluationmeasures.EvaluationMeasure;
 import delfos.rs.recommendation.Recommendation;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Evalúa las recomendaciones de un sistema aplicando NDCG, usando logaritmo en base 2. Se calcula el nDCG por usuarios
@@ -42,8 +44,19 @@ public class NDCG extends EvaluationMeasure {
 
     private static final long serialVersionUID = 1L;
 
+    protected final int listSize;
+
+    public NDCG() {
+        this.listSize = -1;
+    }
+
+    protected NDCG(int listSize) {
+        this.listSize = listSize;
+    }
+
     @Override
-    public MeasureResult getMeasureResult(RecommendationResults recommendationResults, RatingsDataset<? extends Rating> testDataset, RelevanceCriteria relevanceCriteria) {
+    public MeasureResult getMeasureResult(
+            RecommendationResults recommendationResults, RatingsDataset<? extends Rating> testDataset, RelevanceCriteria relevanceCriteria) {
 
         List<Double> ndcgPerUser = new ArrayList<>();
 
@@ -56,15 +69,27 @@ public class NDCG extends EvaluationMeasure {
                 }
 
                 List<Recommendation> idealRecommendations = new ArrayList<>(recommendations.size());
-                Map<Integer, Rating> userRatings = (Map<Integer, Rating>) testDataset.getUserRatingsRated(idUser);
+                Map<Integer, ? extends Rating> userRatings = testDataset.getUserRatingsRated(idUser);
 
                 for (Recommendation recommendation : recommendations) {
                     int idItem = recommendation.getIdItem();
                     idealRecommendations.add(new Recommendation(idItem, userRatings.get(idItem).getRatingValue()));
                 }
 
+                if (listSize > 0) {
+                    recommendations = recommendations.stream()
+                            .sorted(Recommendation.BY_PREFERENCE_DESC)
+                            .limit(listSize)
+                            .collect(Collectors.toList());
+
+                    idealRecommendations = idealRecommendations.stream()
+                            .limit(listSize)
+                            .collect(Collectors.toList());
+                }
+
                 double idealGain = computeDCG(idealRecommendations, userRatings);
                 double gain = computeDCG(recommendations, userRatings);
+
                 double score = gain / idealGain;
 
                 if (Double.isNaN(score)) {

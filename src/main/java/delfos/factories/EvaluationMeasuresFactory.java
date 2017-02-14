@@ -18,8 +18,18 @@ package delfos.factories;
 
 import delfos.results.evaluationmeasures.Coverage;
 import delfos.results.evaluationmeasures.EvaluationMeasure;
-import delfos.results.evaluationmeasures.NDCG;
 import delfos.results.evaluationmeasures.NumberOfRecommendations;
+import delfos.results.evaluationmeasures.ndcg.NDCG;
+import delfos.results.evaluationmeasures.ndcg.NDCG_01;
+import delfos.results.evaluationmeasures.ndcg.NDCG_02;
+import delfos.results.evaluationmeasures.ndcg.NDCG_03;
+import delfos.results.evaluationmeasures.ndcg.NDCG_04;
+import delfos.results.evaluationmeasures.ndcg.NDCG_05;
+import delfos.results.evaluationmeasures.ndcg.NDCG_06;
+import delfos.results.evaluationmeasures.ndcg.NDCG_07;
+import delfos.results.evaluationmeasures.ndcg.NDCG_08;
+import delfos.results.evaluationmeasures.ndcg.NDCG_09;
+import delfos.results.evaluationmeasures.ndcg.NDCG_10;
 import delfos.results.evaluationmeasures.prediction.PredicitonErrorHistogram;
 import delfos.results.evaluationmeasures.prediction.list.HalfLifeUtility;
 import delfos.results.evaluationmeasures.prspace.PRSpace;
@@ -112,6 +122,17 @@ public class EvaluationMeasuresFactory extends Factory<EvaluationMeasure> {
         instance.addClass(Recall_08.class);
         instance.addClass(Recall_09.class);
         instance.addClass(Recall_10.class);
+
+        instance.addClass(NDCG_01.class);
+        instance.addClass(NDCG_02.class);
+        instance.addClass(NDCG_03.class);
+        instance.addClass(NDCG_04.class);
+        instance.addClass(NDCG_05.class);
+        instance.addClass(NDCG_06.class);
+        instance.addClass(NDCG_07.class);
+        instance.addClass(NDCG_08.class);
+        instance.addClass(NDCG_09.class);
+        instance.addClass(NDCG_10.class);
 
     }
 
