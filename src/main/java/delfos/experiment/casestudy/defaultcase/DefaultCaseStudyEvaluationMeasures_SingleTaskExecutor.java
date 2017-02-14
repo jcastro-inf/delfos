@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -19,7 +19,6 @@ package delfos.experiment.casestudy.defaultcase;
 import delfos.common.Global;
 import delfos.common.parallelwork.SingleTaskExecute;
 import delfos.results.MeasureResult;
-import delfos.results.evaluationmeasures.EvaluationMeasure;
 
 /**
  *
@@ -31,18 +30,17 @@ public class DefaultCaseStudyEvaluationMeasures_SingleTaskExecutor
 
     @Override
     public void executeSingleTask(DefaultCaseStudyEvaluationMeasures_Task task) {
-        try {
-            for (EvaluationMeasure e : task.evaluationMeasures) {
-                try {
-                    MeasureResult measureResult = e.getMeasureResult(task.recommendationResults, task.testSet, task.relevanceCriteria);
-                    task.executionsResult.put(e, measureResult);
-                } catch (Throwable ex) {
-                    Global.showWarning(ex);
-                }
-            }
-        } catch (Throwable ex) {
-            Global.showWarning(ex);
-        }
+
+        task.evaluationMeasures.parallelStream()
+                .forEach(evaluationMeasure -> {
+                    try {
+                        MeasureResult measureResult = evaluationMeasure
+                                .getMeasureResult(task.recommendationResults, task.testSet, task.relevanceCriteria);
+                        task.executionsResult.put(evaluationMeasure, measureResult);
+                    } catch (Throwable ex) {
+                        Global.showWarning(ex);
+                    }
+                });
         task.recommendationResults.clear();
         task.recommendationResults = null;
         task.evaluationMeasures = null;

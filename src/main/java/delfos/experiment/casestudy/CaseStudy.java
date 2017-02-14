@@ -32,6 +32,8 @@ import delfos.results.evaluationmeasures.EvaluationMeasure;
 import delfos.rs.RecommendationModelBuildingProgressListener;
 import delfos.rs.RecommenderSystem;
 import java.util.Collection;
+import java.util.Map;
+import java.util.Objects;
 
 /**
  *
@@ -50,10 +52,8 @@ public abstract class CaseStudy extends ExperimentAdapter implements Recommendat
     /**
      * Realiza la ejecución del caso de uso.
      *
-     * @throws CannotLoadContentDataset Si el dataset de contenido no sepuede
-     * recuperar.
-     * @throws CannotLoadRatingsDataset Si el dataset de valoraciones no se
-     * puede recuperar.
+     * @throws CannotLoadContentDataset Si el dataset de contenido no sepuede recuperar.
+     * @throws CannotLoadRatingsDataset Si el dataset de valoraciones no se puede recuperar.
      */
     public abstract void execute() throws CannotLoadRatingsDataset, CannotLoadContentDataset, CannotLoadUsersDataset;
 
@@ -153,4 +153,21 @@ public abstract class CaseStudy extends ExperimentAdapter implements Recommendat
     public ParameterOwnerType getParameterOwnerType() {
         return ParameterOwnerType.CASE_STUDY;
     }
+
+    public int hashDataValidation() {
+        int hash = 7;
+        hash = 97 * hash + Objects.hashCode(this.getSeedValue());
+        hash = 97 * hash + Objects.hashCode(this.getDatasetLoader());
+        hash = 97 * hash + Objects.hashCode(this.getPredictionProtocol());
+        hash = 97 * hash + Objects.hashCode(this.getRelevanceCriteria());
+        hash = 97 * hash + Objects.hashCode(this.getValidationTechnique());
+        return hash;
+    }
+
+    public int hashTechnique() {
+        return this.getRecommenderSystem().hashCode();
+    }
+
+    public abstract void setAggregateResults(Map<EvaluationMeasure, MeasureResult> aggregateResults);
+
 }

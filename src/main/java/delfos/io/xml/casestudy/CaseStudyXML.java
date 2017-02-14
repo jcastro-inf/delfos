@@ -320,16 +320,28 @@ public class CaseStudyXML {
         SAXBuilder builder = new SAXBuilder();
         Document doc = builder.build(file);
 
-        Element caseStudy = doc.getRootElement();
-        if (!caseStudy.getName().equals(CASE_ROOT_ELEMENT_NAME)) {
+        Element caseStudyElement = doc.getRootElement();
+        if (!caseStudyElement.getName().equals(CASE_ROOT_ELEMENT_NAME)) {
             throw new IllegalArgumentException("The XML does not contains a Case Study.");
         }
-        GenericRecommenderSystem<Object> recommenderSystem = RecommenderSystemXML.getRecommenderSystem(caseStudy.getChild(RecommenderSystemXML.ELEMENT_NAME));
-        ValidationTechnique validationTechnique = ValidationTechniqueXML.getValidationTechnique(caseStudy.getChild(ValidationTechniqueXML.ELEMENT_NAME));
-        PredictionProtocol predictionProtocol = PredictionProtocolXML.getPredictionProtocol(caseStudy.getChild(PredictionProtocolXML.ELEMENT_NAME));
-        DatasetLoader<? extends Rating> datasetLoader = DatasetLoaderXML.getDatasetLoader(caseStudy.getChild(DatasetLoaderXML.ELEMENT_NAME));
+        GenericRecommenderSystem recommenderSystem = RecommenderSystemXML
+                .getRecommenderSystem(caseStudyElement.getChild(RecommenderSystemXML.ELEMENT_NAME));
 
-        EvaluationMeasuresResults aggregatedElement = getAggregateEvaluationMeasures(caseStudy.getChild("Aggregate_values"));
+        DatasetLoader<? extends Rating> datasetLoader = DatasetLoaderXML
+                .getDatasetLoader(caseStudyElement.getChild(DatasetLoaderXML.ELEMENT_NAME));
+
+        ValidationTechnique validationTechnique = ValidationTechniqueXML
+                .getValidationTechnique(caseStudyElement.getChild(ValidationTechniqueXML.ELEMENT_NAME));
+
+        PredictionProtocol predictionProtocol = PredictionProtocolXML
+                .getPredictionProtocol(caseStudyElement.getChild(PredictionProtocolXML.ELEMENT_NAME));
+
+        RelevanceCriteria relevanceCriteria = RelevanceCriteriaXML
+                .getRelevanceCriteria(caseStudyElement.getChild(RelevanceCriteriaXML.ELEMENT_NAME));
+
+        Map<EvaluationMeasure, MeasureResult> evaluationMeasuresResults = getEvaluationMeasures(caseStudyElement);
+
+        EvaluationMeasuresResults aggregatedElement = getAggregateEvaluationMeasures(caseStudyElement.getChild("Aggregate_values"));
 
         return new CaseStudyResults(
                 recommenderSystem,
@@ -339,7 +351,6 @@ public class CaseStudyXML {
                 aggregatedElement.evaluationMeasuresResults,
                 aggregatedElement.buildTime,
                 aggregatedElement.recommendationTime);
-
     }
 
     static class EvaluationMeasuresResults {
@@ -383,4 +394,29 @@ public class CaseStudyXML {
 
         return new EvaluationMeasuresResults(ret, buildTime, recommendationTime);
     }
+
+    private static Map<EvaluationMeasure, MeasureResult> getEvaluationMeasures(Element caseStudy) {
+
+        Map<EvaluationMeasure, MeasureResult> evaluationMeasuresResults = new TreeMap<>();
+
+        Element aggregateValues = caseStudy.getChild(AGGREGATE_VALUES_ELEMENT_NAME);
+
+        if (aggregateValues == null) {
+            throw new IllegalStateException("Unable to load a case study description only, the XML must have results details.");
+        }
+
+        for (Element evaluationMeasureResultElement : aggregateValues.getChildren()) {
+            String name = evaluationMeasureResultElement.getName();
+
+            EvaluationMeasure evaluationMeasure = EvaluationMeasuresFactory.getInstance().getClassByName(name);
+            if (evaluationMeasure == null) {
+                throw new IllegalStateException("The group evaluation measure '" + name + "' does not exists in delfos' factory");
+            } else {
+                evaluationMeasuresResults.put(evaluationMeasure, evaluationMeasure.getEvaluationMeasureResultFromXML(evaluationMeasureResultElement));
+            }
+        }
+
+        return evaluationMeasuresResults;
+    }
+
 }

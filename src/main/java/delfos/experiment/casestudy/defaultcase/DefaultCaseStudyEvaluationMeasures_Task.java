@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,16 +16,17 @@
  */
 package delfos.experiment.casestudy.defaultcase;
 
-import java.util.Collection;
-import java.util.Map;
-import java.util.TreeMap;
 import delfos.common.parallelwork.Task;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RatingsDataset;
 import delfos.dataset.basic.rating.RelevanceCriteria;
-import delfos.results.RecommendationResults;
 import delfos.results.MeasureResult;
+import delfos.results.RecommendationResults;
 import delfos.results.evaluationmeasures.EvaluationMeasure;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Map;
+import java.util.TreeMap;
 
 /**
  *
@@ -45,7 +46,7 @@ public class DefaultCaseStudyEvaluationMeasures_Task extends Task {
     /**
      * Campo de salida.
      */
-    protected Map<EvaluationMeasure, MeasureResult> executionsResult = new TreeMap<>();
+    protected Map<EvaluationMeasure, MeasureResult> executionsResult = Collections.synchronizedMap(new TreeMap<>());
 
     public DefaultCaseStudyEvaluationMeasures_Task(
             int ejecucion,

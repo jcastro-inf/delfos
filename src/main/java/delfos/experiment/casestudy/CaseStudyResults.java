@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,20 +16,19 @@
  */
 package delfos.experiment.casestudy;
 
+import delfos.dataset.basic.loader.types.DatasetLoader;
+import delfos.dataset.basic.rating.Rating;
+import delfos.experiment.validation.predictionprotocol.PredictionProtocol;
+import delfos.experiment.validation.validationtechnique.ValidationTechnique;
+import delfos.factories.EvaluationMeasuresFactory;
+import delfos.results.evaluationmeasures.EvaluationMeasure;
+import delfos.rs.GenericRecommenderSystem;
 import java.util.Collection;
 import java.util.Map;
 import java.util.TreeMap;
-import delfos.dataset.basic.rating.Rating;
-import delfos.dataset.basic.loader.types.DatasetLoader;
-import delfos.factories.EvaluationMeasuresFactory;
-import delfos.experiment.validation.predictionprotocol.PredictionProtocol;
-import delfos.experiment.validation.validationtechnique.ValidationTechnique;
-import delfos.results.evaluationmeasures.EvaluationMeasure;
-import delfos.rs.GenericRecommenderSystem;
 
 /**
- * Almacena los valores y resultados de un caso de estudio de sistemas de
- * recomendación tradicionales ya ejecutado.
+ * Almacena los valores y resultados de un caso de estudio de sistemas de recomendación tradicionales ya ejecutado.
  *
  * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
@@ -37,7 +36,7 @@ import delfos.rs.GenericRecommenderSystem;
  */
 public class CaseStudyResults {
 
-    private final GenericRecommenderSystem<Object> recommenderSystem;
+    private final GenericRecommenderSystem recommenderSystem;
     private final DatasetLoader<? extends Rating> datasetLoader;
     private final ValidationTechnique validationTechnique;
     private final PredictionProtocol predictionProtocol;
@@ -63,7 +62,7 @@ public class CaseStudyResults {
         this.recommendationTime = recommendationTime;
     }
 
-    public GenericRecommenderSystem<Object> getRecommenderSystem() {
+    public GenericRecommenderSystem<? extends Object> getRecommenderSystem() {
         return recommenderSystem;
     }
 

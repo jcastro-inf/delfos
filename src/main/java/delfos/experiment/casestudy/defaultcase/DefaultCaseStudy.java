@@ -58,10 +58,13 @@ import delfos.rs.recommendation.RecommendationsToUser;
 import delfos.utils.algorithm.progress.ProgressChangedController;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.function.Function;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -89,13 +92,17 @@ public class DefaultCaseStudy extends CaseStudy implements ParameterListener {
     protected int _conjuntoActual;
     protected final RecommenderSystem<? extends Object> recommenderSystem;
     protected Collection<EvaluationMeasure> evaluationMeasures;
-    protected Map<EvaluationMeasure, MeasureResult>[][] executionsResult;
+    private Map<Integer, Map<Integer, Map<EvaluationMeasure, MeasureResult>>> executionsResult = Collections
+            .synchronizedMap(new HashMap<>());
+
     protected DatasetLoader<? extends Rating> datasetLoader;
     protected RelevanceCriteria relevanceCriteria;
     private final PredictionProtocol predictionProtocolTechnique;
     private final int numVueltas;
     private int loopCount = 0;
     private boolean errors = false;
+
+    private Map<EvaluationMeasure, MeasureResult> aggregateResults;
 
     /**
      * Constructor del caso de uso. Recoge la configuración del mismo por los parámetros y los almacena en la clase
@@ -184,10 +191,11 @@ public class DefaultCaseStudy extends CaseStudy implements ParameterListener {
 
     @SuppressWarnings({"unchecked", "rawtypes"})
     private void initStructures(int executionNumber, int splitNumber) {
-        executionsResult = (Map<EvaluationMeasure, MeasureResult>[][]) new Map[executionNumber][splitNumber];
+
         for (int execution = 0; execution < executionNumber; execution++) {
+            executionsResult.put(execution, Collections.synchronizedMap(new TreeMap<>()));
             for (int split = 0; split < splitNumber; split++) {
-                executionsResult[execution][split] = new TreeMap<>();
+                executionsResult.get(execution).put(split, Collections.synchronizedMap(new TreeMap<>()));
             }
         }
     }
@@ -342,8 +350,25 @@ public class DefaultCaseStudy extends CaseStudy implements ParameterListener {
         }
 
         multiThreadExecutionManagerEvaluationMeasures.getAllFinishedTasks().stream().forEach((task) -> {
-            executionsResult[task.ejecucion][task.particion] = task.executionsResult;
+
+            int execution = task.ejecucion;
+            int split = task.particion;
+            final Map<EvaluationMeasure, MeasureResult> executionsResult1 = task.executionsResult;
+
+            executionsResult.get(execution).put(split, executionsResult1);
         });
+
+        aggregateResults = evaluationMeasures.parallelStream().collect(Collectors.toMap(Function.identity(), evaluationMeasure -> {
+
+            List<MeasureResult> allResultsThisMeasure = executionsResult.values().stream().parallel()
+                    .flatMap(resultsForThisExecution -> resultsForThisExecution.values().stream())
+                    .map(resultExecutionSplit -> resultExecutionSplit.get(evaluationMeasure))
+                    .collect(Collectors.toList());
+
+            MeasureResult agregateResults = evaluationMeasure.agregateResults(allResultsThisMeasure);
+
+            return agregateResults;
+        }));
 
         recommenderSystem.removeRecommendationModelBuildingProgressListener(this);
         validationTechnique.removeListener(validationListener);
@@ -402,8 +427,14 @@ public class DefaultCaseStudy extends CaseStudy implements ParameterListener {
 
     @Override
     public MeasureResult getMeasureResult(EvaluationMeasure em, int execution, int split) {
-        Map<EvaluationMeasure, MeasureResult> thisExecutionSplitResults = executionsResult[execution][split];
-        return thisExecutionSplitResults.get(em);
+
+        Map<Integer, Map<EvaluationMeasure, MeasureResult>> thisExecutionResults = executionsResult.get(execution);
+
+        Map<EvaluationMeasure, MeasureResult> thisSplitResults = thisExecutionResults.get(split);
+
+        MeasureResult measureResult = thisSplitResults.get(em);
+
+        return measureResult;
     }
 
     @Override
@@ -689,4 +720,10 @@ public class DefaultCaseStudy extends CaseStudy implements ParameterListener {
 
         return em.agregateResults(measureResults);
     }
+
+    @Override
+    public void setAggregateResults(Map<EvaluationMeasure, MeasureResult> aggregateResults) {
+        this.aggregateResults = aggregateResults;
+    }
+
 }
