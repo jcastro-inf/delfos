@@ -19,6 +19,7 @@ package delfos.results.evaluationmeasures.ndcg;
 import delfos.ERROR_CODES;
 import delfos.common.exceptions.dataset.users.UserNotFound;
 import delfos.common.statisticalfuncions.MeanIterative;
+import delfos.dataset.basic.item.Item;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RatingsDataset;
 import delfos.dataset.basic.rating.RelevanceCriteria;
@@ -68,13 +69,16 @@ public class NDCG extends EvaluationMeasure {
                     continue;
                 }
 
-                List<Recommendation> idealRecommendations = new ArrayList<>(recommendations.size());
                 Map<Integer, ? extends Rating> userRatings = testDataset.getUserRatingsRated(idUser);
 
-                for (Recommendation recommendation : recommendations) {
-                    int idItem = recommendation.getIdItem();
-                    idealRecommendations.add(new Recommendation(idItem, userRatings.get(idItem).getRatingValue()));
-                }
+                List<Recommendation> idealRecommendations = recommendations.stream()
+                        .map(recommendation -> {
+                            final Item item = recommendation.getItem();
+                            final Rating rating = userRatings.get(recommendation.getItem().getId());
+
+                            return new Recommendation(item, rating.getRatingValue().doubleValue());
+                        })
+                        .collect(Collectors.toList());
 
                 if (listSize > 0) {
                     recommendations = recommendations.stream()
@@ -83,6 +87,7 @@ public class NDCG extends EvaluationMeasure {
                             .collect(Collectors.toList());
 
                     idealRecommendations = idealRecommendations.stream()
+                            .sorted(Recommendation.BY_PREFERENCE_DESC)
                             .limit(listSize)
                             .collect(Collectors.toList());
                 }
@@ -102,8 +107,9 @@ public class NDCG extends EvaluationMeasure {
                 ERROR_CODES.USER_NOT_FOUND.exit(ex);
             }
         }
+        final double ndcg = (double) new MeanIterative(ndcgPerUser).getMean();
 
-        return new MeasureResult(this, (double) new MeanIterative(ndcgPerUser).getMean());
+        return new MeasureResult(this, ndcg);
     }
 
     @Override
@@ -127,7 +133,8 @@ public class NDCG extends EvaluationMeasure {
 
         Iterator<Recommendation> iit = items.iterator();
         while (iit.hasNext()) {
-            final int idItem = iit.next().getItem().getId();
+            final Recommendation recommendation = iit.next();
+            final int idItem = recommendation.getItem().getId();
             final double rating = values.get(idItem).getRatingValue().doubleValue();
             rank++;
 
