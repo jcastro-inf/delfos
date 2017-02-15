@@ -22,11 +22,7 @@ import delfos.dataset.basic.rating.RelevanceCriteria;
 import delfos.results.MeasureResult;
 import delfos.results.RecommendationResults;
 import delfos.results.evaluationmeasures.EvaluationMeasure;
-import delfos.rs.recommendation.Recommendation;
-import java.util.Collection;
-import java.util.Map;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.Collectors;
+import delfos.results.evaluationmeasures.confusionmatrix.ConfusionMatrix;
 
 /**
  * Clase que implementa el algoritmo de cálculo del recall en sistemas de recomendación. El recall en predicción se
@@ -44,53 +40,17 @@ public class RecallCollaborative extends EvaluationMeasure {
     public MeasureResult getMeasureResult(RecommendationResults recommendationResults, RatingsDataset<? extends Rating> testDataset, RelevanceCriteria relevanceCriteria) {
         double recall;
 
-        final AtomicInteger falsePositive = new AtomicInteger(0);
-        final AtomicInteger truePositive = new AtomicInteger(0);
-        final AtomicInteger falseNegative = new AtomicInteger(0);
-        final AtomicInteger trueNegative = new AtomicInteger(0);
+        ConfusionMatrix confusionMatrixCollaborative = PrecisionCollaborative.getConfusionMatrixCollaborative(recommendationResults, testDataset, relevanceCriteria);
 
-        for (int idUser : testDataset.allUsers()) {
-            Collection<Recommendation> recommendationList = recommendationResults.getRecommendationsForUser(idUser);
-            if (recommendationList == null) {
-                continue;
-            }
+        final int truePositive = confusionMatrixCollaborative.getTruePositive();
+        final int trueNegative = confusionMatrixCollaborative.getTrueNegative();
+        final int falsePositive = confusionMatrixCollaborative.getFalsePositive();
+        final int falseNegative = confusionMatrixCollaborative.getFalseNegative();
 
-            Map<Integer, Double> testRatings = testDataset
-                    .getUserRatingsRated(idUser)
-                    .values()
-                    .parallelStream()
-                    .filter(rating -> !Double.isNaN(rating.getRatingValue().doubleValue()))
-                    .filter(rating -> !Double.isInfinite(rating.getRatingValue().doubleValue()))
-                    .collect(Collectors.toMap(
-                            rating -> rating.getItem().getId(),
-                            rating -> rating.getRatingValue().doubleValue())
-                    );
-
-            recommendationList.parallelStream().forEach(recommendation -> {
-                final Integer idItem = recommendation.getItem().getId();
-
-                if (relevanceCriteria.isRelevant(recommendation.getPreference())) {
-
-                    //positive
-                    if (!testRatings.containsKey(idItem) || !relevanceCriteria.isRelevant(testRatings.get(idItem))) {
-                        falsePositive.incrementAndGet();
-                    } else {
-                        truePositive.incrementAndGet();
-                    }
-                } else if (!testRatings.containsKey(idItem) || !relevanceCriteria.isRelevant(testRatings.get(idItem))) {
-                    trueNegative.incrementAndGet();
-                } else {
-                    falsePositive.incrementAndGet();
-                }
-
-            });
-
-        }
-
-        if ((truePositive.get() + falseNegative.get()) == 0) {
+        if ((truePositive + falseNegative) == 0) {
             recall = 0;
         } else {
-            recall = (double) truePositive.get() / ((double) truePositive.get() + (double) falseNegative.get());
+            recall = (double) truePositive / (truePositive + falseNegative);
         }
 
         return new MeasureResult(this, recall);

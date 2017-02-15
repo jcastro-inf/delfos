@@ -22,6 +22,7 @@ import delfos.dataset.basic.rating.RelevanceCriteria;
 import delfos.results.MeasureResult;
 import delfos.results.RecommendationResults;
 import delfos.results.evaluationmeasures.EvaluationMeasure;
+import delfos.results.evaluationmeasures.confusionmatrix.ConfusionMatrix;
 import delfos.rs.recommendation.Recommendation;
 import java.util.Collection;
 import java.util.Map;
@@ -44,6 +45,29 @@ public class PrecisionCollaborative extends EvaluationMeasure {
     @Override
     public MeasureResult getMeasureResult(RecommendationResults recommendationResults, RatingsDataset<? extends Rating> testDataset, RelevanceCriteria relevanceCriteria) {
         double precision;
+
+        ConfusionMatrix confusionMatrixCollaborative = getConfusionMatrixCollaborative(recommendationResults, testDataset, relevanceCriteria);
+
+        final int truePositive = confusionMatrixCollaborative.getTruePositive();
+        final int trueNegative = confusionMatrixCollaborative.getTrueNegative();
+        final int falsePositive = confusionMatrixCollaborative.getFalsePositive();
+        final int falseNegative = confusionMatrixCollaborative.getFalseNegative();
+
+        if ((truePositive + falsePositive) == 0) {
+            precision = 0;
+        } else {
+            precision = (double) truePositive / (truePositive + falsePositive);
+        }
+
+        return new MeasureResult(this, precision);
+    }
+
+    @Override
+    public boolean usesRatingPrediction() {
+        return true;
+    }
+
+    public static ConfusionMatrix getConfusionMatrixCollaborative(RecommendationResults recommendationResults, RatingsDataset<? extends Rating> testDataset, RelevanceCriteria relevanceCriteria) {
 
         final AtomicInteger falsePositive = new AtomicInteger(0);
         final AtomicInteger truePositive = new AtomicInteger(0);
@@ -70,34 +94,35 @@ public class PrecisionCollaborative extends EvaluationMeasure {
             recommendationList.parallelStream().forEach(recommendation -> {
                 final Integer idItem = recommendation.getItem().getId();
 
-                if (relevanceCriteria.isRelevant(recommendation.getPreference())) {
-                    //positive
-                    if (!testRatings.containsKey(idItem) || !relevanceCriteria.isRelevant(testRatings.get(idItem))) {
-                        falsePositive.incrementAndGet();
-                    } else {
-                        truePositive.incrementAndGet();
-                    }
-                } else if (!testRatings.containsKey(idItem) || !relevanceCriteria.isRelevant(testRatings.get(idItem))) {
+                boolean isInTestSet = testRatings.containsKey(idItem);
+
+                Double prediction = recommendation.getPreference().doubleValue();
+                Double rating = isInTestSet ? testRatings.get(idItem) : null;
+
+                boolean isRatingRelevant = isInTestSet ? relevanceCriteria.isRelevant(rating) : false;
+                boolean isPredictionRelevant = relevanceCriteria.isRelevant(prediction);
+
+                if (isRatingRelevant && isPredictionRelevant) {
+                    truePositive.incrementAndGet();
+                } else if (isRatingRelevant && !isPredictionRelevant) {
+                    falseNegative.incrementAndGet();
+                } else if (!isRatingRelevant && isPredictionRelevant) {
+                    falsePositive.incrementAndGet();
+                } else if (!isRatingRelevant && !isPredictionRelevant) {
                     trueNegative.incrementAndGet();
                 } else {
-                    falsePositive.incrementAndGet();
+                    throw new IllegalStateException("Error situation");
                 }
 
             });
 
         }
 
-        if ((truePositive.get() + falsePositive.get()) == 0) {
-            precision = 0;
-        } else {
-            precision = truePositive.get() / (truePositive.get() + falsePositive.get());
-        }
+        return new ConfusionMatrix(
+                falsePositive.get(),
+                falseNegative.get(),
+                truePositive.get(),
+                trueNegative.get());
 
-        return new MeasureResult(this, precision);
-    }
-
-    @Override
-    public boolean usesRatingPrediction() {
-        return true;
     }
 }
