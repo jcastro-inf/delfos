@@ -17,6 +17,7 @@
 package delfos.experiment.casestudy.defaultcase;
 
 import delfos.common.parallelwork.Task;
+import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RatingsDataset;
 import delfos.dataset.basic.rating.RelevanceCriteria;
@@ -38,6 +39,8 @@ public class DefaultCaseStudyEvaluationMeasures_Task extends Task {
     protected final int ejecucion;
     protected final int particion;
 
+    protected DatasetLoader<? extends Rating> originalDataset;
+    protected RatingsDataset<? extends Rating> trainingSet;
     protected RatingsDataset<? extends Rating> testSet;
     protected Collection<EvaluationMeasure> evaluationMeasures;
     protected RelevanceCriteria relevanceCriteria;
@@ -52,13 +55,17 @@ public class DefaultCaseStudyEvaluationMeasures_Task extends Task {
             int ejecucion,
             int particion,
             RecommendationResults esr,
+            DatasetLoader<? extends Rating> originalDataset,
+            RatingsDataset<? extends Rating> trainingSet,
             RatingsDataset<? extends Rating> testSet,
             Collection<EvaluationMeasure> evaluationMeasures,
             RelevanceCriteria relevanceCriteria) {
+        this.ejecucion = ejecucion;
         this.particion = particion;
         this.recommendationResults = esr;
+        this.originalDataset = originalDataset;
+        this.trainingSet = trainingSet;
         this.testSet = testSet;
-        this.ejecucion = ejecucion;
         this.evaluationMeasures = evaluationMeasures;
         this.relevanceCriteria = relevanceCriteria;
     }

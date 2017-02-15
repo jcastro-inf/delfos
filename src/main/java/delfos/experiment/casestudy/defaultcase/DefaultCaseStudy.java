@@ -254,7 +254,7 @@ public class DefaultCaseStudy<RatingType extends Rating> extends CaseStudy imple
             for (_conjuntoActual = 0; _conjuntoActual < pairsValidation.length; _conjuntoActual++) {
 
                 setNextSeedToSeedHolders(getSeedValue() + loopCount);
-                final RecommendationResults esr = new RecommendationResults();
+                final RecommendationResults recommendationResults = new RecommendationResults();
 
                 long initTime = System.currentTimeMillis();
 
@@ -262,6 +262,7 @@ public class DefaultCaseStudy<RatingType extends Rating> extends CaseStudy imple
                 final Object model = recommenderSystem.buildRecommendationModel(pairsValidation[_conjuntoActual].getTrainingDatasetLoader());
 
                 final long modelBuildTime = System.currentTimeMillis() - initTime;
+                recommendationResults.setModelBuildTime(modelBuildTime);
 
                 Global.showInfoMessage("----------------------- End of Build ----------------------------------" + "\n");
                 this.executionProgressFireEvent(getAlias() + " --> Recommendation process", 50, -1);
@@ -331,13 +332,16 @@ public class DefaultCaseStudy<RatingType extends Rating> extends CaseStudy imple
                 predictions.entrySet().stream().forEach((entry) -> {
                     int idUser = entry.getKey();
                     Collection<Recommendation> prediction = entry.getValue();
-                    esr.add(idUser, prediction);
+                    recommendationResults.add(idUser, prediction);
                 });
 
                 multiThreadExecutionManagerEvaluationMeasures.addTask(new DefaultCaseStudyEvaluationMeasures_Task(
                         _ejecucionActual,
                         _conjuntoActual,
-                        esr, testDatasetLoader.getRatingsDataset(),
+                        recommendationResults,
+                        datasetLoader,
+                        trainingDatasetLoader.getRatingsDataset(),
+                        testDatasetLoader.getRatingsDataset(),
                         evaluationMeasures,
                         relevanceCriteria));
 
