@@ -24,9 +24,8 @@ import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RelevanceCriteria;
 import delfos.experiment.ExperimentListener_default;
-import delfos.experiment.casestudy.CaseStudy;
 import delfos.experiment.casestudy.CaseStudyConfiguration;
-import delfos.experiment.casestudy.defaultcase.DefaultCaseStudy;
+import delfos.experiment.casestudy.CaseStudy;
 import delfos.experiment.validation.predictionprotocol.PredictionProtocol;
 import delfos.experiment.validation.validationtechnique.ValidationTechnique;
 import delfos.io.excel.casestudy.CaseStudyExcel;
@@ -61,7 +60,7 @@ public class CaseStudy_SingleTaskExecute implements Consumer<ExecuteCaseStudy_Ta
         PredictionProtocol predictionProtocol = caseStudyConfiguration.getPredictionProtocol();
         ValidationTechnique validationTechnique = caseStudyConfiguration.getValidationTechnique();
 
-        CaseStudy caseStudyRecommendation = new DefaultCaseStudy(
+        CaseStudy caseStudyRecommendation = new CaseStudy(
                 recommenderSystem,
                 datasetLoader,
                 validationTechnique,

@@ -27,9 +27,8 @@ import delfos.configfile.rs.single.RecommenderSystemConfiguration;
 import delfos.configfile.rs.single.RecommenderSystemConfigurationFileParser;
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
-import delfos.experiment.casestudy.CaseStudy;
 import delfos.experiment.casestudy.CaseStudyConfiguration;
-import delfos.experiment.casestudy.defaultcase.DefaultCaseStudy;
+import delfos.experiment.casestudy.CaseStudy;
 import delfos.io.xml.casestudy.CaseStudyXML;
 import delfos.rs.RecommenderSystem;
 import java.io.File;
@@ -153,7 +152,7 @@ public class ExecuteManyExperiments {
                 RecommenderSystem<Object> recommenderSystem = (RecommenderSystem<Object>) caseStudyConfiguration.getRecommenderSystem();
                 for (DatasetLoader<? extends Rating> datasetLoader : datasets) {
 
-                    CaseStudy caseStudy = new DefaultCaseStudy(
+                    CaseStudy caseStudy = new CaseStudy(
                             recommenderSystem,
                             datasetLoader,
                             caseStudyConfiguration.getValidationTechnique(),

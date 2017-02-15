@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package delfos.experiment.casestudy.defaultcase;
+package delfos.experiment.casestudy;
 
 import delfos.common.Global;
 import delfos.common.parallelwork.SingleTaskExecute;
@@ -25,11 +25,11 @@ import delfos.results.MeasureResult;
  * @version 29-may-2014
  * @author jcastro-inf ( https://github.com/jcastro-inf )
  */
-public class DefaultCaseStudyEvaluationMeasures_SingleTaskExecutor
-        implements SingleTaskExecute<DefaultCaseStudyEvaluationMeasures_Task> {
+public class CaseStudyEvaluationMeasures_SingleTaskExecutor
+        implements SingleTaskExecute<CaseStudyEvaluationMeasures_Task> {
 
     @Override
-    public void executeSingleTask(DefaultCaseStudyEvaluationMeasures_Task task) {
+    public void executeSingleTask(CaseStudyEvaluationMeasures_Task task) {
 
         task.evaluationMeasures.parallelStream()
                 .forEach(evaluationMeasure -> {

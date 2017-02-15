@@ -16,6 +16,7 @@
  */
 package delfos.view.results;
 
+import delfos.dataset.basic.rating.Rating;
 import delfos.experiment.casestudy.CaseStudy;
 import delfos.results.MeasureResult;
 import delfos.results.evaluationmeasures.EvaluationMeasure;
@@ -32,22 +33,24 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 
 /**
- * Clase utilizada para generar cuadros de diálogo con un resumen de los
- * resultados de un algoritmo sobre un dataset concreto.
+ * Clase utilizada para generar cuadros de diálogo con un resumen de los resultados de un algoritmo sobre un dataset
+ * concreto.
  *
  * @author jcastro-inf ( https://github.com/jcastro-inf )
  */
 public class ResultsDialog {
 
     /**
-     * Crea un cuadro de diálogo con los resultados del estudio de casos
-     * indicado.
+     * Crea un cuadro de diálogo con los resultados del estudio de casos indicado.
      *
+     * @param <RecommendationModel>
+     * @param <RatingType>
      * @param f Ventana a la que se asocia el cuadro de diálogo.
      * @param c Caso de estudio cuyos resultados se desea mostrar
      * @return Diálogo con los resultados.
      */
-    public static JDialog showResultsDialog(JFrame f, CaseStudy c) {
+    public static <RecommendationModel extends Object, RatingType extends Rating>
+            JDialog showResultsDialog(JFrame f, CaseStudy<RecommendationModel, RatingType> c) {
 
         JDialog dialog;
         Date d = new Date();

@@ -25,13 +25,14 @@ import delfos.common.parameters.chain.ParameterChain;
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
 import delfos.experiment.casestudy.CaseStudy;
-import delfos.experiment.casestudy.defaultcase.DefaultCaseStudy;
+import delfos.experiment.casestudy.CaseStudy;
 import delfos.group.casestudy.defaultcase.GroupCaseStudy;
 import delfos.group.io.xml.casestudy.GroupCaseStudyXML;
 import delfos.io.xml.casestudy.CaseStudyXML;
 import delfos.main.Main;
 import delfos.main.managers.experiment.ExecuteGroupXML;
 import delfos.main.managers.experiment.ExecuteXML;
+import delfos.rs.nonpersonalised.randomrecommender.RandomRecommender;
 import java.io.File;
 import java.lang.management.ManagementFactory;
 import java.util.Arrays;
@@ -96,7 +97,8 @@ public class TuringPreparator implements ExperimentPreparator {
 
             //generateDatasetFile
             {
-                CaseStudy datasetLoaderCaseStudy = new DefaultCaseStudy(
+                CaseStudy datasetLoaderCaseStudy = new CaseStudy(
+                        new RandomRecommender(),
                         datasetLoader
                 );
 

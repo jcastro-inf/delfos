@@ -433,7 +433,10 @@ public class CaseStudyExcel {
 
     final static int MAX_LIST_SIZE = 20;
 
-    private static void createExecutionsSheet(CaseStudy caseStudy, WritableSheet sheet) throws WriteException {
+    private static <RecommendationModel extends Object, RatingType extends Rating> void createExecutionsSheet(
+            CaseStudy<RecommendationModel, RatingType> caseStudy,
+            WritableSheet sheet)
+            throws WriteException {
 
         int row = 0;
 
@@ -511,7 +514,9 @@ public class CaseStudyExcel {
 
     }
 
-    private static void createAggregateResultsSheet(CaseStudy caseStudy, WritableSheet sheet) throws WriteException {
+    private static <RecommendationModel extends Object, RatingType extends Rating> void
+            createAggregateResultsSheet(CaseStudy<RecommendationModel, RatingType> caseStudy, WritableSheet sheet)
+            throws WriteException {
         int row = 0;
 
         Map<String, Integer> indexOfMeasures = new TreeMap<>();
@@ -653,7 +658,13 @@ public class CaseStudyExcel {
         sheet.addCell(label);
     }
 
-    public static void writeGeneralSheet(List<CaseStudyResults> caseStudyResultss, List<String> dataValidationParametersOrder, List<String> techniqueParametersOrder, List<String> evaluationMeasuresOrder, WritableWorkbook workbook) throws WriteException, IOException {
+    public static <RecommendationModel extends Object, RatingType extends Rating>
+            void writeGeneralSheet(List<CaseStudyResults<RecommendationModel, RatingType>> caseStudyResultss,
+                    List<String> dataValidationParametersOrder,
+                    List<String> techniqueParametersOrder,
+                    List<String> evaluationMeasuresOrder,
+                    WritableWorkbook workbook)
+            throws WriteException, IOException {
 
         WritableSheet allCasesAggregateResults = workbook.createSheet("AllCasesAggregateResults", 0);
 
@@ -757,7 +768,7 @@ public class CaseStudyExcel {
      * @param caseStudy
      * @return
      */
-    public static Map<String, Object> extractDataValidationParameters(CaseStudy caseStudy) {
+    public static <RecommendationModel extends Object, RatingType extends Rating> Map<String, Object> extractDataValidationParameters(CaseStudy caseStudy) {
 
         Map<String, Object> caseStudyParameters = new TreeMap<>();
 
@@ -812,7 +823,7 @@ public class CaseStudyExcel {
      * @param caseStudy
      * @return
      */
-    public static Map<String, Object> extractTechniqueParameters(CaseStudy caseStudy) {
+    public static <RecommendationModel extends Object, RatingType extends Rating> Map<String, Object> extractTechniqueParameters(CaseStudy caseStudy) {
         Map<String, Object> techniqueParameters = new TreeMap<>();
 
         Map<String, Object> RecommenderSystemParameters = ParameterOwnerExcel
@@ -822,7 +833,9 @@ public class CaseStudyExcel {
         return techniqueParameters;
     }
 
-    public static Map<String, java.lang.Number> extractEvaluationMeasuresValues(CaseStudy caseStudy) {
+    public static <RecommendationModel extends Object, RatingType extends Rating>
+            Map<String, java.lang.Number> extractEvaluationMeasuresValues(
+                    CaseStudy<RecommendationModel, RatingType> caseStudy) {
 
         Map<String, java.lang.Number> evaluationMeasuresValues = new TreeMap<>();
 
@@ -837,7 +850,14 @@ public class CaseStudyExcel {
         return evaluationMeasuresValues;
     }
 
-    public static void writeNumExecutionsSheet(List<CaseStudyResults> caseStudyResultses, List<String> dataValidationParametersOrder, List<String> techniqueParametersOrder, List<String> evaluationMeasuresOrder, WritableWorkbook workbook) throws WriteException {
+    public static <RecommendationModel extends Object, RatingType extends Rating>
+            void writeNumExecutionsSheet(
+                    List<CaseStudyResults<RecommendationModel, RatingType>> caseStudyResultses,
+                    List<String> dataValidationParametersOrder,
+                    List<String> techniqueParametersOrder,
+                    List<String> evaluationMeasuresOrder,
+                    WritableWorkbook workbook)
+            throws WriteException {
 
         List<CaseStudy> caseStudys = caseStudyResultses.stream().map(caseStudyResults -> caseStudyResults.getCaseStudy()).collect(Collectors.toList());
 
@@ -904,10 +924,10 @@ public class CaseStudyExcel {
         writeMatrixInSheet(workbook, CaseStudy.NUM_EXECUTIONS.getName(), matrix, CaseStudy.NUM_EXECUTIONS.getName());
     }
 
-    public static CaseStudyResultMatrix getNumExecutionsMatrix(
+    public static <RecommendationModel extends Object, RatingType extends Rating> CaseStudyResultMatrix getNumExecutionsMatrix(
             List<ParameterChain> techniqueDifferentChains,
             List<ParameterChain> dataValidationDifferentChains,
-            List<CaseStudyResults> caseStudyResultses) {
+            List<CaseStudyResults<RecommendationModel, RatingType>> caseStudyResultses) {
         CaseStudyResultMatrix matrix = new CaseStudyResultMatrix(techniqueDifferentChains, dataValidationDifferentChains, CaseStudy.NUM_EXECUTIONS.getName());
         caseStudyResultses.stream().forEach(caseStudyResults -> {
             int numExecutions = caseStudyResults.getNumExecutions();
@@ -922,19 +942,28 @@ public class CaseStudyExcel {
         return matrix;
     }
 
-    public static void writeEvaluationMeasureSpecificSheet(List<CaseStudyResults> caseStudyResultses, List<String> dataValidationParametersOrder, List<String> techniqueParametersOrder, String evaluationMeasure, WritableWorkbook workbook) throws WriteException, IOException {
+    public static <RecommendationModel extends Object, RatingType extends Rating>
+            void writeEvaluationMeasureSpecificSheet(
+                    List<CaseStudyResults<RecommendationModel, RatingType>> caseStudyResultses,
+                    List<String> dataValidationParametersOrder,
+                    List<String> techniqueParametersOrder,
+                    String evaluationMeasure,
+                    WritableWorkbook workbook)
+            throws WriteException, IOException {
 
-        List<CaseStudy> CaseStudys = caseStudyResultses.stream().map(caseStudyResult -> caseStudyResult.getCaseStudy()).collect(Collectors.toList());
+        List<CaseStudy<RecommendationModel, RatingType>> caseStudys = caseStudyResultses.stream()
+                .map(caseStudyResult -> caseStudyResult.getCaseStudy())
+                .collect(Collectors.toList());
 
-        Set<CaseStudyResults> dataValidationAliases = new TreeSet<>(
+        Set<CaseStudyResults<RecommendationModel, RatingType>> dataValidationAliases = new TreeSet<>(
                 CaseStudyResults.dataValidationComparator);
-        Set<CaseStudyResults> techniqueAliases = new TreeSet<>(
+        Set<CaseStudyResults<RecommendationModel, RatingType>> techniqueAliases = new TreeSet<>(
                 CaseStudyResults.techniqueComparator);
 
         dataValidationAliases.addAll(caseStudyResultses);
         techniqueAliases.addAll(caseStudyResultses);
 
-        List<ParameterChain> differentChainsWithAliases = ParameterChain.obtainDifferentChains(CaseStudys);
+        List<ParameterChain> differentChainsWithAliases = ParameterChain.obtainDifferentChains(caseStudys);
 
         List<ParameterChain> differentChains = differentChainsWithAliases.stream()
                 .filter(chain -> !chain.isAlias())
@@ -949,21 +978,30 @@ public class CaseStudyExcel {
                 .filter(chain -> chain.isTechniqueParameter())
                 .collect(Collectors.toList());
 
-        writeRowAndColumnCombination(techniqueDifferentChains, CaseStudys, dataValidationDifferentChains, evaluationMeasure, caseStudyResultses, workbook);
+        writeRowAndColumnCombination(techniqueDifferentChains, caseStudys, dataValidationDifferentChains, evaluationMeasure, caseStudyResultses, workbook);
     }
 
-    public static void writeRowAndColumnCombination(List<ParameterChain> rowChains, List<CaseStudy> CaseStudys, List<ParameterChain> columnChains, String evaluationMeasure, List<CaseStudyResults> CaseStudyResults, WritableWorkbook workbook) throws WriteException {
+    public static <RecommendationModel extends Object, RatingType extends Rating>
+            void writeRowAndColumnCombination(
+                    List<ParameterChain> rowChains,
+                    List<CaseStudy<RecommendationModel, RatingType>> CaseStudys,
+                    List<ParameterChain> columnChains,
+                    String evaluationMeasure,
+                    List<CaseStudyResults<RecommendationModel, RatingType>> CaseStudyResults,
+                    WritableWorkbook workbook) throws WriteException {
+
         writeRowAndColumnCombination(rowChains, CaseStudys, columnChains, evaluationMeasure, CaseStudyResults, workbook, evaluationMeasure);
     }
 
-    public static void writeRowAndColumnCombination(
-            List<ParameterChain> rowChains,
-            List<CaseStudy> CaseStudys,
-            List<ParameterChain> columnChains,
-            String evaluationMeasure,
-            List<CaseStudyResults> CaseStudyResults,
-            WritableWorkbook workbook,
-            String sheetName) throws WriteException {
+    public static <RecommendationModel extends Object, RatingType extends Rating>
+            void writeRowAndColumnCombination(
+                    List<ParameterChain> rowChains,
+                    List<CaseStudy<RecommendationModel, RatingType>> CaseStudys,
+                    List<ParameterChain> columnChains,
+                    String evaluationMeasure,
+                    List<CaseStudyResults<RecommendationModel, RatingType>> CaseStudyResults,
+                    WritableWorkbook workbook,
+                    String sheetName) throws WriteException {
         if (rowChains.isEmpty()) {
             ParameterChain grsAliasChain = new ParameterChain(CaseStudys.get(0))
                     .createWithNode(CaseStudy.RECOMMENDER_SYSTEM, null)
@@ -987,11 +1025,11 @@ public class CaseStudyExcel {
         writeMatrixInSheet(workbook, evaluationMeasure, matrix, sheetName);
     }
 
-    public static CaseStudyResultMatrix prepareExcelMatrix(
+    public static <RecommendationModel extends Object, RatingType extends Rating> CaseStudyResultMatrix prepareExcelMatrix(
             List<ParameterChain> rowChains,
             List<ParameterChain> columnChains,
             String evaluationMeasure,
-            List<CaseStudyResults> caseStudyResultses) {
+            List<CaseStudyResults<RecommendationModel, RatingType>> caseStudyResultses) {
 
         CaseStudyResultMatrix matrix = new CaseStudyResultMatrix(rowChains, columnChains, evaluationMeasure);
         matrix.prepareColumnAndRowNames(caseStudyResultses);
@@ -1087,8 +1125,9 @@ public class CaseStudyExcel {
         autoSizeColumns(sheet);
     }
 
-    public static boolean isOnlyOneColumn(List<CaseStudyResults> caseStudyResultses) {
-        List<CaseStudy> caseStudys = caseStudyResultses.stream()
+    public static <RecommendationModel extends Object, RatingType extends Rating>
+            boolean isOnlyOneColumn(List<CaseStudyResults<RecommendationModel, RatingType>> caseStudyResultses) {
+        List<CaseStudy<RecommendationModel, RatingType>> caseStudys = caseStudyResultses.stream()
                 .map(caseStudyResult -> caseStudyResult.getCaseStudy())
                 .collect(Collectors.toList());
 
@@ -1107,19 +1146,20 @@ public class CaseStudyExcel {
         return dataValidationDifferentChains.isEmpty() || dataValidationDifferentChains.size() == 1;
     }
 
-    public static void writeEvaluationMeasureParameterCombinationsSheets(
-            List<CaseStudyResults> caseStudyResultses,
-            List<String> dataValidationParametersOrder,
-            List<String> techniqueParametersOrder,
-            String evaluationMeasure,
-            WritableWorkbook workbook
-    ) throws WriteException {
+    public static <RecommendationModel extends Object, RatingType extends Rating>
+            void writeEvaluationMeasureParameterCombinationsSheets(
+                    List<CaseStudyResults<RecommendationModel, RatingType>> caseStudyResultses,
+                    List<String> dataValidationParametersOrder,
+                    List<String> techniqueParametersOrder,
+                    String evaluationMeasure,
+                    WritableWorkbook workbook
+            ) throws WriteException {
 
-        List<CaseStudy> caseStudys = caseStudyResultses.stream().map(caseStudyResult -> caseStudyResult.getCaseStudy()).collect(Collectors.toList());
+        List<CaseStudy<RecommendationModel, RatingType>> caseStudys = caseStudyResultses.stream().map(caseStudyResult -> caseStudyResult.getCaseStudy()).collect(Collectors.toList());
 
-        Set<CaseStudyResults> dataValidationAliases = new TreeSet<>(
+        Set<CaseStudyResults<RecommendationModel, RatingType>> dataValidationAliases = new TreeSet<>(
                 CaseStudyResults.dataValidationComparator);
-        Set<CaseStudyResults> techniqueAliases = new TreeSet<>(
+        Set<CaseStudyResults<RecommendationModel, RatingType>> techniqueAliases = new TreeSet<>(
                 CaseStudyResults.techniqueComparator);
 
         dataValidationAliases.addAll(caseStudyResultses);

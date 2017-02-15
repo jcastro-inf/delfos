@@ -14,10 +14,11 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package delfos.group.casestudy.defaultcase;
+package delfos.casestudy.defaultcase;
 
-import delfos.group.results.groupevaluationmeasures.GroupEvaluationMeasure;
-import delfos.group.results.groupevaluationmeasures.GroupEvaluationMeasureResult;
+import delfos.experiment.casestudy.CaseStudy;
+import delfos.results.MeasureResult;
+import delfos.results.evaluationmeasures.EvaluationMeasure;
 import java.util.Map;
 
 /**
@@ -26,17 +27,17 @@ import java.util.Map;
  */
 public class ExecutionSplitDescriptor implements Comparable<ExecutionSplitDescriptor> {
 
-    private final GroupCaseStudy groupCaseStudy;
+    private final CaseStudy caseStudy;
     private final int execution;
     private final int split;
-    private final Map<GroupEvaluationMeasure, GroupEvaluationMeasureResult> results;
+    private final Map<EvaluationMeasure, MeasureResult> results;
 
     ExecutionSplitDescriptor(
             int execution,
-            int split, GroupCaseStudy groupCaseStudy,
-            Map<GroupEvaluationMeasure, GroupEvaluationMeasureResult> results) {
+            int split, CaseStudy caseStudy,
+            Map<EvaluationMeasure, MeasureResult> results) {
         this.split = split;
-        this.groupCaseStudy = (GroupCaseStudy) groupCaseStudy.clone();
+        this.caseStudy = (CaseStudy) caseStudy.clone();
         this.execution = execution;
         this.results = results;
     }
@@ -49,11 +50,11 @@ public class ExecutionSplitDescriptor implements Comparable<ExecutionSplitDescri
         return split;
     }
 
-    public GroupCaseStudy getGroupCaseStudy() {
-        return groupCaseStudy;
+    public CaseStudy getCaseStudy() {
+        return caseStudy;
     }
 
-    public Map<GroupEvaluationMeasure, GroupEvaluationMeasureResult> getResults() {
+    public Map<EvaluationMeasure, MeasureResult> getResults() {
         return results;
     }
 

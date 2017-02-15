@@ -27,7 +27,7 @@ import delfos.dataset.basic.rating.RelevanceCriteria;
 import delfos.experiment.ExperimentListener;
 import delfos.experiment.ExperimentProgress;
 import delfos.experiment.casestudy.CaseStudy;
-import delfos.experiment.casestudy.defaultcase.DefaultCaseStudy;
+import delfos.experiment.casestudy.CaseStudy;
 import delfos.experiment.validation.predictionprotocol.PredictionProtocol;
 import delfos.experiment.validation.validationtechnique.ValidationTechnique;
 import delfos.factories.DatasetLoadersFactory;
@@ -354,7 +354,7 @@ public class SingleExperiment_TraditionalRecommender_Window extends JFrame imple
 
             PredictionProtocol pvt = (PredictionProtocol) comboPredictionValidationTechniques.getSelectedItem();
 
-            caseStudy = new DefaultCaseStudy(cbrs, mdc, validation, pvt, rc, ems, n);
+            caseStudy = new CaseStudy(cbrs, mdc, validation, pvt, rc, ems, n);
             if (parallelExecution != null) {
                 parallelExecution.cancel(true);
             }

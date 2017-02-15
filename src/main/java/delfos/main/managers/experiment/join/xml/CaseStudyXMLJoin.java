@@ -19,6 +19,7 @@ package delfos.main.managers.experiment.join.xml;
 import delfos.ERROR_CODES;
 import delfos.common.Global;
 import delfos.common.StringsOrderings;
+import delfos.dataset.basic.rating.Rating;
 import delfos.experiment.casestudy.CaseStudyResults;
 import delfos.io.excel.casestudy.CaseStudyExcel;
 import delfos.io.xml.casestudy.CaseStudyXML;
@@ -46,15 +47,16 @@ import org.jdom2.JDOMException;
  */
 public class CaseStudyXMLJoin {
 
-    public static void writeJoinIntoSpreadsheet(
-            List<File> relevantFiles,
-            File outputSpreadsheetFile,
-            Set<String> filterMeasures) {
+    public static <RecommendationModel extends Object, RatingType extends Rating>
+            void writeJoinIntoSpreadsheet(
+                    List<File> relevantFiles,
+                    File outputSpreadsheetFile,
+                    Set<String> filterMeasures) {
 
-        List<CaseStudyResults> caseStudyResultss = relevantFiles.parallelStream()
+        List<CaseStudyResults<RecommendationModel, RatingType>> caseStudyResultss = relevantFiles.parallelStream()
                 .map((File file) -> {
                     try {
-                        return CaseStudyXML.loadCaseResults(file);
+                        return (CaseStudyResults< RecommendationModel, RatingType>) CaseStudyXML.loadCaseResults(file);
                     } catch (JDOMException | IOException ex) {
                         Logger.getLogger(XMLJoin.class.getName()).log(Level.SEVERE, null, ex);
                         return null;
@@ -121,7 +123,9 @@ public class CaseStudyXMLJoin {
         }
     }
 
-    private static List<String> obtainDataValidationParametersOrder(List<CaseStudyResults> caseStudyResultses) {
+    private static <RecommendationModel extends Object, RatingType extends Rating>
+            List<String> obtainDataValidationParametersOrder(List<CaseStudyResults<RecommendationModel, RatingType>> caseStudyResultses) {
+
         List<String> commonParametersOrder
                 = caseStudyResultses.parallelStream()
                 .map((CaseStudyResult) -> (CaseStudyResult.getDefinedDataValidationParameters()))
@@ -134,7 +138,8 @@ public class CaseStudyXMLJoin {
         return commonParametersOrder;
     }
 
-    private static List<String> obtainTechniqueParametersOrder(List<CaseStudyResults> caseStudyResultses) {
+    private static <RecommendationModel extends Object, RatingType extends Rating>
+            List<String> obtainTechniqueParametersOrder(List<CaseStudyResults<RecommendationModel, RatingType>> caseStudyResultses) {
 
         List<String> commonParametersOrder
                 = caseStudyResultses.parallelStream()
@@ -148,7 +153,8 @@ public class CaseStudyXMLJoin {
         return commonParametersOrder;
     }
 
-    private static List<String> obtainEvaluationMeasuresOrder(List<CaseStudyResults> caseStudyResultses) {
+    private static <RecommendationModel extends Object, RatingType extends Rating>
+            List<String> obtainEvaluationMeasuresOrder(List<CaseStudyResults<RecommendationModel, RatingType>> caseStudyResultses) {
         Set<String> commonEvaluationMeasures = caseStudyResultses.parallelStream()
                 .flatMap(CaseStudyResult -> CaseStudyResult.getDefinedEvaluationMeasures().parallelStream())
                 .collect(Collectors.toSet());

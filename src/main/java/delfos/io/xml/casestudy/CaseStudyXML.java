@@ -28,7 +28,6 @@ import delfos.experiment.SeedHolder;
 import delfos.experiment.casestudy.CaseStudy;
 import delfos.experiment.casestudy.CaseStudyConfiguration;
 import delfos.experiment.casestudy.CaseStudyResults;
-import delfos.experiment.casestudy.defaultcase.DefaultCaseStudy;
 import delfos.experiment.validation.predictionprotocol.PredictionProtocol;
 import delfos.experiment.validation.validationtechnique.ValidationTechnique;
 import delfos.factories.EvaluationMeasuresFactory;
@@ -83,7 +82,8 @@ public class CaseStudyXML {
         }
     };
 
-    private static Element getResultsElement(CaseStudy caseStudy) {
+    private static <RecommendationModel extends Object, RatingType extends Rating> Element getResultsElement(
+            CaseStudy<RecommendationModel, RatingType> caseStudy) {
 
         Element executionsElement = new Element(EXECUTIONS_RESULTS_ELEMENT_NAME);
         Element executionElement;
@@ -106,7 +106,10 @@ public class CaseStudyXML {
         return executionsElement;
     }
 
-    private static Element getAggregatedResultsElement(CaseStudy caseStudy) {
+    private static <RecommendationModel extends Object, RatingType extends Rating>
+            Element getAggregatedResultsElement(
+                    CaseStudy<RecommendationModel, RatingType> caseStudy) {
+
         Element aggregatedResultsElement = new Element(AGGREGATE_VALUES_ELEMENT_NAME);
         for (EvaluationMeasure evaluationMeasure : caseStudy.getEvaluationMeasures()) {
             Element evaluationMesureElement = caseStudy.getMeasureResult(evaluationMeasure).getXMLElement();
@@ -323,15 +326,27 @@ public class CaseStudyXML {
         }
     }
 
+    public static <RecommendationModel extends Object, RatingType extends Rating>
+            CaseStudyResults<RecommendationModel, RatingType> loadCaseResults(
+                    File file,
+                    Class<RecommendationModel> recommendationModelClass,
+                    Class<RatingType> ratingTypeClass
+            ) throws JDOMException, IOException {
+
+        return (CaseStudyResults<RecommendationModel, RatingType>) loadCaseResults(file);
+    }
+
     /**
      * Carga un caso de estudio desde un archivo XML
      *
+     * @param <RecommendationModel>
+     * @param <RatingType>
      * @param file Archivo XML del que se carga la configuración del caso de estudio.
      * @return
      * @throws org.jdom2.JDOMException
      * @throws java.io.IOException
      */
-    public static CaseStudyResults loadCaseResults(File file) throws JDOMException, IOException {
+    public static <RecommendationModel extends Object, RatingType extends Rating> CaseStudyResults<RecommendationModel, RatingType> loadCaseResults(File file) throws JDOMException, IOException {
 
         SAXBuilder builder = new SAXBuilder();
         Document doc = builder.build(file);
@@ -361,7 +376,7 @@ public class CaseStudyXML {
         int numExecutions = Integer.parseInt(caseStudyElement.getAttributeValue(NUM_EXEC_ATTRIBUTE_NAME));
         String caseStudyAlias = caseStudyElement.getAttributeValue(ParameterOwner.ALIAS.getName());
 
-        CaseStudy caseStudy = new DefaultCaseStudy(
+        CaseStudy caseStudy = new CaseStudy(
                 recommenderSystem,
                 datasetLoader, validationTechnique,
                 predictionProtocol,

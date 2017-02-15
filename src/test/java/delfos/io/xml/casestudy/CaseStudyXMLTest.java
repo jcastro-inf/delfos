@@ -6,7 +6,6 @@ import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RelevanceCriteria;
 import delfos.experiment.ExperimentListener_default;
 import delfos.experiment.casestudy.CaseStudy;
-import delfos.experiment.casestudy.defaultcase.DefaultCaseStudy;
 import delfos.experiment.validation.predictionprotocol.NoPredictionProtocol;
 import delfos.experiment.validation.validationtechnique.CrossFoldValidation_Ratings;
 import delfos.experiment.validation.validationtechnique.HoldOut_Ratings;
@@ -35,7 +34,7 @@ public class CaseStudyXMLTest {
         ValidationTechnique validationTechnique = new HoldOut_Ratings();
         validationTechnique.setSeedValue(123456);
 
-        CaseStudy caseStudy = new DefaultCaseStudy(
+        CaseStudy caseStudy = new CaseStudy(
                 recommenderSystem,
                 datasetLoader,
                 validationTechnique,
@@ -60,7 +59,7 @@ public class CaseStudyXMLTest {
         ValidationTechnique validationTechnique = new HoldOut_Ratings();
         validationTechnique.setSeedValue(123456);
 
-        CaseStudy caseStudy = new DefaultCaseStudy(
+        CaseStudy caseStudy = new CaseStudy(
                 recommenderSystem,
                 datasetLoader,
                 validationTechnique,
@@ -86,7 +85,7 @@ public class CaseStudyXMLTest {
         validationTechnique.setParameterValue(CrossFoldValidation_Ratings.NUM_PARTITIONS, 2);
         validationTechnique.setSeedValue(123456);
 
-        CaseStudy caseStudy = new DefaultCaseStudy(
+        CaseStudy caseStudy = new CaseStudy(
                 recommenderSystem,
                 datasetLoader,
                 validationTechnique,
@@ -112,7 +111,7 @@ public class CaseStudyXMLTest {
         validationTechnique.setParameterValue(CrossFoldValidation_Ratings.NUM_PARTITIONS, 2);
         validationTechnique.setSeedValue(123456);
 
-        CaseStudy caseStudy = new DefaultCaseStudy(
+        CaseStudy caseStudy = new CaseStudy(
                 recommenderSystem,
                 datasetLoader,
                 validationTechnique,
