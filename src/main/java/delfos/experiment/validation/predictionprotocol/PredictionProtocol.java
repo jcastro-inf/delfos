@@ -21,12 +21,24 @@ import delfos.common.exceptions.dataset.users.UserNotFound;
 import delfos.common.parameters.ParameterListener;
 import delfos.common.parameters.ParameterOwnerAdapter;
 import delfos.common.parameters.ParameterOwnerType;
+import delfos.dataset.basic.item.ContentDataset;
+import delfos.dataset.basic.item.Item;
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
+import delfos.dataset.basic.rating.RatingsDataset;
+import delfos.dataset.basic.user.User;
+import delfos.dataset.loaders.given.DatasetLoaderGivenRatingsDataset;
+import delfos.dataset.storage.validationdatasets.ValidationDatasets;
 import delfos.experiment.SeedHolder;
+import delfos.experiment.validation.predictionvalidation.UserRecommendationRequest;
 import delfos.rs.RecommenderSystemAdapter;
+import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 /**
  * Interfaz que especifica los métodos que deberá tener una validación de predicciones. Esta clase se encarga de separar
@@ -67,6 +79,7 @@ public abstract class PredictionProtocol extends ParameterOwnerAdapter implement
      * Calcula la lista que define cuántas peticiones de recomendación se realizarán al sistema de recomendación y qué
      * items debe predecir en cada una de las mismas. Para ello se devuelve una lista de listas de idItems
      *
+     * @param <RatingType>
      * @param trainingDatasetLoader
      * @param testDatasetLoader
      * @param idUser Usuario para el que se calcula la lista de peticiones
@@ -84,6 +97,49 @@ public abstract class PredictionProtocol extends ParameterOwnerAdapter implement
             DatasetLoader<RatingType> testDatasetLoader,
             int idUser) throws UserNotFound {
         return getRecommendationRequests(trainingDatasetLoader, testDatasetLoader, idUser);
+    }
+
+    public <RatingType extends Rating> Collection<UserRecommendationRequest<RatingType>> getUserRecommendationRequests(
+            DatasetLoader<RatingType> originalDatasetLoader,
+            DatasetLoader<RatingType> trainingDatasetLoader,
+            DatasetLoader<RatingType> testDatasetLoader,
+            User user) throws UserNotFound {
+
+        List<Set<Integer>> recommendationRequests = getRecommendationRequests(trainingDatasetLoader, testDatasetLoader, user.getId());
+        List<Set<Integer>> ratingsToHide = getRatingsToHide(trainingDatasetLoader, testDatasetLoader, user.getId());
+
+        if (recommendationRequests.size() != ratingsToHide.size()) {
+            throw new IllegalStateException("recommendationRequests and ratingsToHide are not paired (distinct size)");
+        }
+
+        final ContentDataset contentDataset = originalDatasetLoader.getContentDataset();
+
+        return IntStream.range(0, recommendationRequests.size()).boxed().parallel()
+                .map(index -> {
+                    Set<Item> itemsToPredict = recommendationRequests.get(index).parallelStream()
+                            .map(idItem -> contentDataset.get(idItem))
+                            .collect(Collectors.toSet());
+
+                    Set<Integer> ratingsToHideThisIndex = ratingsToHide.get(index);
+
+                    Map<Integer, Set<Integer>> predictionRatings = new TreeMap<>();
+                    predictionRatings.put(user.getId(), ratingsToHideThisIndex);
+
+                    RatingsDataset<RatingType> predictionRatingsDataset = ValidationDatasets.getInstance()
+                            .createTrainingDataset(originalDatasetLoader.getRatingsDataset(), predictionRatings);
+
+                    DatasetLoader<RatingType> predictionDatasetLoader = new DatasetLoaderGivenRatingsDataset<>(
+                            originalDatasetLoader,
+                            predictionRatingsDataset);
+
+                    return new UserRecommendationRequest<RatingType>(
+                            predictionDatasetLoader,
+                            user,
+                            itemsToPredict
+                    );
+                })
+                .collect(Collectors.toList());
+
     }
 
     @Override

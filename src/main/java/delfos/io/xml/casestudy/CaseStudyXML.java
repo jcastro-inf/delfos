@@ -88,7 +88,7 @@ public class CaseStudyXML {
         Element executionsElement = new Element(EXECUTIONS_RESULTS_ELEMENT_NAME);
         Element executionElement;
         int numExecutions = caseStudy.getNumExecutions();
-        int numSplits = caseStudy.getNumberOfSplits();
+        int numSplits = caseStudy.getNumSplits();
         for (int execution = 0; execution < numExecutions; execution++) {
             executionElement = new Element("Execution");
             for (int split = 0; split < numSplits; split++) {
@@ -119,7 +119,7 @@ public class CaseStudyXML {
         return aggregatedResultsElement;
     }
 
-    public synchronized static void caseStudyToXMLFile(CaseStudy caseStudy, File file) {
+    public synchronized static <RecommendationModel extends Object, RatingType extends Rating> void caseStudyToXMLFile(CaseStudy caseStudy, File file) {
         if (!caseStudy.isFinished()) {
             throw new UnsupportedOperationException("No se ha ejecutado el caso de uso todavía");
         }
@@ -153,7 +153,7 @@ public class CaseStudyXML {
     public static final String SEED_ATTRIBUTE_NAME = "seed";
     public static final String NUM_EXEC_ATTRIBUTE_NAME = "numExec";
 
-    public static void saveCaseResults(CaseStudy caseStudy) {
+    public static <RecommendationModel extends Object, RatingType extends Rating> void saveCaseResults(CaseStudy caseStudy) {
         Date date = new Date();
         String dateBasedName = "aux";
         try {
@@ -204,7 +204,7 @@ public class CaseStudyXML {
                 relevanceCriteria);
     }
 
-    public static String getDefaultFileName(CaseStudy caseStudy) {
+    public static <RecommendationModel extends Object, RatingType extends Rating> String getDefaultFileName(CaseStudy caseStudy) {
         Date date = new Date();
         String dateBasedName = "aux";
         try {
@@ -223,7 +223,7 @@ public class CaseStudyXML {
         return f.getAbsolutePath();
     }
 
-    public synchronized static void caseStudyToXMLFile(CaseStudy caseStudy, String descriptiveName, File f) {
+    public synchronized static <RecommendationModel extends Object, RatingType extends Rating> void caseStudyToXMLFile(CaseStudy caseStudy, String descriptiveName, File f) {
         if (!caseStudy.isFinished()) {
             throw new UnsupportedOperationException("No se ha ejecutado el caso de uso todavía");
         }
@@ -251,11 +251,18 @@ public class CaseStudyXML {
         }
     }
 
-    public static void saveCaseDescription(CaseStudy caseStudy, String file) {
+    public static <RecommendationModel extends Object, RatingType extends Rating>
+            void saveCaseDescription(
+                    CaseStudy caseStudy,
+                    String file) {
+
         CaseStudyXML.caseStudyToXMLFile_onlyDescription(caseStudy, new File(file));
     }
 
-    public static void saveCaseResults(CaseStudy caseStudy, File file) {
+    public static <RecommendationModel extends Object, RatingType extends Rating>
+            void saveCaseResults(
+                    CaseStudy<RecommendationModel, RatingType> caseStudy,
+                    File file) {
 
         if (Constants.isPrintFullXML()) {
             caseStudyToXMLFile(caseStudy, "", FileUtilities.addSufix(file, "_FULL"));
@@ -265,7 +272,10 @@ public class CaseStudyXML {
         caseStudyToXMLFile_onlyAggregate(caseStudy, aggregateFileName);
     }
 
-    private static void caseStudyToXMLFile_onlyDescription(CaseStudy caseStudy, File file) {
+    private static <RecommendationModel extends Object, RatingType extends Rating>
+            void caseStudyToXMLFile_onlyDescription(
+                    CaseStudy caseStudy,
+                    File file) {
 
         if (caseStudy.isFinished()) {
             throw new IllegalArgumentException("Ya se ha ejecutado el caso de estudio!");
