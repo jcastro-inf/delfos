@@ -650,7 +650,7 @@ public class RecommendationWindow extends JFrame {
 
     private JPanel createRecommendationsCoveragePannel() {
         JPanel ret = new JPanel(new GridBagLayout());
-        ret.setBorder(BorderFactory.createTitledBorder("Recommendations statistics"));
+        ret.setBorder(BorderFactory.createTitledBorder("Recommendation statistics"));
 
         GridBagConstraints constraints = new GridBagConstraints();
         constraints.fill = GridBagConstraints.BOTH;
