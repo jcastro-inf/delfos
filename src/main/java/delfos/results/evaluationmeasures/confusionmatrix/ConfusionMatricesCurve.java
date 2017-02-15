@@ -76,7 +76,11 @@ public class ConfusionMatricesCurve {
                 Map<Integer, ? extends Rating> userRatings = testDataset.getUserRatingsRated(idUser);
                 for (Recommendation r : recommendationList) {
                     int idItem = r.getItem().getId();
-                    resultados.add(relevanceCriteria.isRelevant(userRatings.get(idItem).getRatingValue()));
+                    if (userRatings.containsKey(idItem)) {
+                        resultados.add(relevanceCriteria.isRelevant(userRatings.get(idItem).getRatingValue()));
+                    } else {
+                        resultados.add(false);
+                    }
                 }
             } catch (UserNotFound ex) {
                 ERROR_CODES.USER_NOT_FOUND.exit(ex);
@@ -120,11 +124,10 @@ public class ConfusionMatricesCurve {
      * @param listOfRecommendations Lista que representa si la recomendación i del sistema de recomendación es en
      * realidad relevante para el usuario (true) o no (false).
      *
-<<<<<<< HEAD
-=======
-     * @throws IllegalArgumentException Todas las recomendaciones son positivas o negativas, por lo que no se puede
-     * calcular la curva.
->>>>>>> version-evaluation-results
+     * <<<<<<< HEAD =======
+     * @throw
+     * s IllegalArgumentException Todas las recomendaciones son positivas o negativas, por lo que no se puede calcular
+     * la curva. >>>>>>> version-evaluation-results
      */
     public ConfusionMatricesCurve(List<Boolean> listOfRecommendations) {
         int falsePositive = 0;

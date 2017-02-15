@@ -117,12 +117,12 @@ public class NDCG extends EvaluationMeasure {
      * Compute the DCG of a list of items with respect to a value vector.
      *
      * @param recommendations
-     * @param values
+     * @param userRatings
      * @return
      */
     public static double computeDCG(
             List<Recommendation> recommendations,
-            Map<Integer, ? extends Rating> values) {
+            Map<Integer, ? extends Rating> userRatings) {
 
         final double base = 2;
         final double logBaseChange = Math.log(base);
@@ -134,7 +134,12 @@ public class NDCG extends EvaluationMeasure {
         while (iit.hasNext()) {
             final Recommendation recommendation = iit.next();
             final int idItem = recommendation.getItem().getId();
-            final double rating = values.get(idItem).getRatingValue().doubleValue();
+
+            if (!userRatings.containsKey(idItem)) {
+                continue;
+            }
+
+            final double rating = userRatings.get(idItem).getRatingValue().doubleValue();
             rank++;
 
             double discount;
