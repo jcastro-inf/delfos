@@ -21,6 +21,7 @@ import delfos.experiment.validation.predictionprotocol.GivenN;
 import delfos.experiment.validation.predictionprotocol.NoPredictionProtocol;
 import delfos.experiment.validation.predictionprotocol.PredictN;
 import delfos.experiment.validation.predictionprotocol.PredictionProtocol;
+import delfos.experiment.validation.predictionprotocol.RecommendationScopeAllItems;
 import delfos.experiment.validation.predictionprotocol.RecommendationScopeNewItems;
 
 /**
@@ -49,6 +50,7 @@ public class PredictionProtocolFactory extends Factory<PredictionProtocol> {
         instance.addClass(AllButOne.class);
 
         instance.addClass(RecommendationScopeNewItems.class);
+        instance.addClass(RecommendationScopeAllItems.class);
     }
 
     private PredictionProtocolFactory() {
