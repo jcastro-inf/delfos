@@ -27,7 +27,6 @@ import delfos.dataset.basic.rating.RelevanceCriteria;
 import delfos.experiment.ExperimentListener;
 import delfos.experiment.ExperimentProgress;
 import delfos.experiment.casestudy.CaseStudy;
-import delfos.experiment.casestudy.CaseStudy;
 import delfos.experiment.validation.predictionprotocol.PredictionProtocol;
 import delfos.experiment.validation.validationtechnique.ValidationTechnique;
 import delfos.factories.DatasetLoadersFactory;
@@ -46,7 +45,6 @@ import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
-import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
@@ -58,9 +56,6 @@ import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
@@ -104,13 +99,15 @@ public class SingleExperiment_TraditionalRecommender_Window extends JFrame imple
     private JLabel remainingTime;
     private JComboBox comboPredictionValidationTechniques;
     private JButton botonPredictionValidation;
-    private static final String WINDOW_WIDTH = "COLLABORATIVE_WINDOW_WIDTH";
-    private static final String WINDOW_HEIGHT = "COLLABORATIVE_WINDOW_HEIGHT";
 
     public SingleExperiment_TraditionalRecommender_Window(InitialFrame initialFrame) {
         super("Single User Recommender Systems Experimentation - " + ManagementFactory.getRuntimeMXBean().getName());
         initComponents();
 
+        configureWindow(initialFrame);
+    }
+
+    private void configureWindow(InitialFrame initialFrame) {
         this.addWindowListener(new ComportamientoSubVentanas(initialFrame, this));
 
         this.addComponentListener(new ComponentListener() {
@@ -209,49 +206,6 @@ public class SingleExperiment_TraditionalRecommender_Window extends JFrame imple
         constraints.gridheight = 1;
         constraints.insets = new Insets(3, 4, 3, 4);
         this.add(panelProgreso(), constraints);
-    }
-
-    private JMenuBar createMenuBar() {
-        JMenuBar menuBar;
-        JMenu importar, submenu;
-        JMenuItem menuItem;
-
-        menuBar = new JMenuBar();
-
-        importar = new JMenu("Importar");
-        importar.setMnemonic(KeyEvent.VK_I);
-        importar.getAccessibleContext().setAccessibleDescription("Accede a un .jar");
-        menuBar.add(importar);
-
-        //a group of JMenuItems
-        menuItem = new JMenuItem("Importar Sistema de Recomendación",
-                KeyEvent.VK_R);
-        //menuItem.setMnemonic(KeyEvent.VK_T); //used constructor instead
-//        menuItem.setAccelerator(KeyStroke.getKeyStroke(
-//                KeyEvent.VK_1, ActionEvent.ALT_MASK));
-//        menuItem.getAccessibleContext().setAccessibleDescription(
-//                "This doesn't really do anything");
-        importar.add(menuItem);
-
-        menuItem = new JMenuItem("Importar medida de similitud",
-                KeyEvent.VK_S);
-        //menuItem.setMnemonic(KeyEvent.VK_T); //used constructor instead
-//        menuItem.setAccelerator(KeyStroke.getKeyStroke(
-//                KeyEvent.VK_1, ActionEvent.ALT_MASK));
-//        menuItem.getAccessibleContext().setAccessibleDescription(
-//                "This doesn't really do anything");
-        importar.add(menuItem);
-
-        menuItem = new JMenuItem("Importar métricas de evaluación",
-                KeyEvent.VK_E);
-        //menuItem.setMnemonic(KeyEvent.VK_T); //used constructor instead
-//        menuItem.setAccelerator(KeyStroke.getKeyStroke(
-//                KeyEvent.VK_1, ActionEvent.ALT_MASK));
-//        menuItem.getAccessibleContext().setAccessibleDescription(
-//                "This doesn't really do anything");
-        importar.add(menuItem);
-
-        return menuBar;
     }
 
     private Component panelProgreso() {
