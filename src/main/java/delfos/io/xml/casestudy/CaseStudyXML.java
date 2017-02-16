@@ -268,6 +268,16 @@ public class CaseStudyXML {
             caseStudyToXMLFile(caseStudy, "", FileUtilities.addSufix(file, "_FULL"));
         }
 
+        if (file.isDirectory()) {
+            File directory = file;
+
+            FileUtilities.createDirectoryPathIfNotExists(directory);
+            String fileName = getCaseStudyFileName(caseStudy);
+            file = new File(directory.getPath() + File.separator + fileName + ".xml");
+        } else {
+            FileUtilities.createDirectoriesForFileIfNotExist(file);
+        }
+
         File aggregateFileName = FileUtilities.addSufix(file, "_AGGR");
         caseStudyToXMLFile_onlyAggregate(caseStudy, aggregateFileName);
     }
@@ -327,6 +337,8 @@ public class CaseStudyXML {
         casoDeUso.addContent(getAggregatedResultsElement(caseStudy));
 
         doc.addContent(casoDeUso);
+
+        FileUtilities.createDirectoriesForFileIfNotExist(file);
 
         XMLOutputter outputter = new XMLOutputter(Constants.getXMLFormat());
         try (FileWriter fileWriter = new FileWriter(file)) {
@@ -468,4 +480,9 @@ public class CaseStudyXML {
         return evaluationMeasuresResults;
     }
 
+    public static String getCaseStudyFileName(CaseStudy caseStudy) {
+        return caseStudy.getAlias()
+                + "_" + SeedHolder.SEED.getName() + "=" + caseStudy.getSeedValue()
+                + "_" + CaseStudy.NUM_EXECUTIONS.getName() + "=" + caseStudy.getNumExecutions();
+    }
 }

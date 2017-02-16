@@ -30,9 +30,9 @@ import java.util.Set;
  */
 public class UserRecommendationRequest<RatingType extends Rating> {
 
-    public final DatasetLoader<RatingType> predictionPhaseDatasetLoader;
-    public final User user;
-    public final Set<Item> itemsToPredict;
+    private final DatasetLoader<RatingType> predictionPhaseDatasetLoader;
+    private final User user;
+    private final Set<Item> itemsToPredict;
 
     public UserRecommendationRequest(
             DatasetLoader<RatingType> predictionPhaseDatasetLoader,
@@ -42,6 +42,18 @@ public class UserRecommendationRequest<RatingType extends Rating> {
         this.predictionPhaseDatasetLoader = predictionPhaseDatasetLoader;
         this.user = user;
         this.itemsToPredict = itemsToPredict;
+    }
+
+    public Set<Item> getItemsToPredict() {
+        return itemsToPredict;
+    }
+
+    public DatasetLoader<RatingType> getPredictionPhaseDatasetLoader() {
+        return predictionPhaseDatasetLoader;
+    }
+
+    public User getUser() {
+        return user;
     }
 
 }

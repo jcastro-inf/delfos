@@ -25,7 +25,7 @@ import delfos.dataset.basic.rating.RelevanceCriteria;
 import delfos.results.MeasureResult;
 import delfos.results.RecommendationResults;
 import delfos.rs.recommendation.Recommendation;
-import delfos.rs.recommendation.SingleUserRecommendations;
+import delfos.rs.recommendation.RecommendationsToUser;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -73,19 +73,22 @@ public class Coverage extends EvaluationMeasure {
     }
 
     @Override
-    public MeanIterative getUserResult(SingleUserRecommendations singleUserRecommendations, Map<Integer, ? extends Rating> userRated) {
-        MeanIterative userMean = new MeanIterative();
-        for (int idItem : userRated.keySet()) {
+    public MeasureResult getUserResult(
+            RecommendationsToUser recommendationsToUser,
+            Map<Integer, ? extends Rating> userRated) {
 
-            Set<Integer> setOfItems = Recommendation.getSetOfItems(singleUserRecommendations.getRecommendations());
+        MeanIterative userMean = new MeanIterative();
+        userRated.keySet().stream().forEach((idItem) -> {
+            Set<Integer> setOfItems = Recommendation
+                    .getSetOfItems(recommendationsToUser.getRecommendations());
 
             if (setOfItems.contains(idItem)) {
                 userMean.addValue(1);
             } else {
                 userMean.addValue(0);
             }
-        }
-        return userMean;
+        });
+        return new MeasureResult(this, userMean.getMean());
     }
 
     @Override

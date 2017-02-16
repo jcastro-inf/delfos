@@ -31,12 +31,9 @@ import java.util.function.Function;
  * Encapsulates the recommendation to a user.
  *
  * @author jcastro-inf ( https://github.com/jcastro-inf )
- *
- * @param <RecommendationModel>
- * @param <RatingType>
  */
-public class RecommendationFunction<RecommendationModel extends Object, RatingType extends Rating>
-        implements Function<RecommendationTaskInput<RecommendationModel, RatingType>, RecommendationTaskOutput> {
+public class RecommendationFunction
+        implements Function<RecommendationTaskInput, RecommendationTaskOutput> {
 
     private final ProgressChangedController recommendationProgress;
 
@@ -49,14 +46,12 @@ public class RecommendationFunction<RecommendationModel extends Object, RatingTy
     }
 
     @Override
-    public RecommendationTaskOutput apply(RecommendationTaskInput<RecommendationModel, RatingType> task) {
-
-        Object groupModel;
+    public RecommendationTaskOutput apply(RecommendationTaskInput task) {
 
         User user = task.getUser();
 
         final DatasetLoader<? extends Rating> datasetLoader = task.getDatasetLoader();
-        final RecommendationModel recommendationModel = task.getRecommendationModel();
+        final Object recommendationModel = task.getRecommendationModel();
         final Set<Item> itemsRequested = task.getItemsRequested();
 
         if (itemsRequested.isEmpty()) {
@@ -69,7 +64,6 @@ public class RecommendationFunction<RecommendationModel extends Object, RatingTy
         }
 
         RecommendationsToUser recommendations = null;
-        long buildTime = -1;
         long recommendationTime = -1;
 
         {

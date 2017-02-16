@@ -142,14 +142,14 @@ public class CaseStudy<RecommendationModel extends Object, RatingType extends Ra
     protected int _ejecucionActual;
     protected int _conjuntoActual;
     protected final RecommenderSystem<RecommendationModel> recommenderSystem;
-    protected Collection<EvaluationMeasure> evaluationMeasures;
+    protected final Collection<EvaluationMeasure> evaluationMeasures;
 
     private Map<Integer, Map<Integer, Map<EvaluationMeasure, MeasureResult>>> allLoopsResults = Collections
             .synchronizedMap(new HashMap<>());
 
     protected DatasetLoader<RatingType> datasetLoader;
     protected RelevanceCriteria relevanceCriteria;
-    private final PredictionProtocol predictionProtocolTechnique;
+    private final PredictionProtocol predictionProtocol;
     private final int numVueltas;
     private int loopCount = 0;
     private boolean errors = false;
@@ -208,7 +208,7 @@ public class CaseStudy<RecommendationModel extends Object, RatingType extends Ra
         this.datasetLoader = datasetLoader;
         registerInListeners();
 
-        this.predictionProtocolTechnique = predictionProtocol;
+        this.predictionProtocol = predictionProtocol;
 
         setAlias(recommenderSystem.getAlias());
     }
@@ -297,7 +297,7 @@ public class CaseStudy<RecommendationModel extends Object, RatingType extends Ra
 
                 Collection<Integer> thisDatasetUsers = testDatasetLoader.getRatingsDataset().allUsers();
                 final int numUsers = (int) thisDatasetUsers.parallelStream().map(idUser -> datasetLoader.getUsersDataset().get(idUser))
-                        .filter(user -> !predictionProtocolTechnique.getRecommendationRequests(trainingDatasetLoader, testDatasetLoader, user.getId()).isEmpty()).count();
+                        .filter(user -> !predictionProtocol.getRecommendationRequests(trainingDatasetLoader, testDatasetLoader, user.getId()).isEmpty()).count();
 
                 ProgressChangedController progressChangedController = new ProgressChangedController(
                         getAlias() + " --> Recommendation process",
@@ -307,11 +307,11 @@ public class CaseStudy<RecommendationModel extends Object, RatingType extends Ra
                         });
 
                 Map<Integer, Collection<Recommendation>> predictions = thisDatasetUsers.parallelStream().map(idUser -> datasetLoader.getUsersDataset().get(idUser))
-                        .filter(user -> !predictionProtocolTechnique.getRecommendationRequests(trainingDatasetLoader, testDatasetLoader, user.getId()).isEmpty())
+                        .filter(user -> !predictionProtocol.getRecommendationRequests(trainingDatasetLoader, testDatasetLoader, user.getId()).isEmpty())
                         .map(user -> {
-                            List<Set<Integer>> recommendationRequests = predictionProtocolTechnique
+                            List<Set<Integer>> recommendationRequests = predictionProtocol
                                     .getRecommendationRequests(trainingDatasetLoader, testDatasetLoader, user.getId());
-                            List<Set<Integer>> ratingsToHide = predictionProtocolTechnique
+                            List<Set<Integer>> ratingsToHide = predictionProtocol
                                     .getRatingsToHide(trainingDatasetLoader, testDatasetLoader, user.getId());
 
                             List<Recommendation> ret = IntStream.range(0, recommendationRequests.size())
@@ -468,11 +468,6 @@ public class CaseStudy<RecommendationModel extends Object, RatingType extends Ra
 
     public RecommenderSystem<RecommendationModel> getRecommenderSystem() {
         return recommenderSystem;
-    }
-
-    public void setEvaluationMeasures(Collection<EvaluationMeasure> evaluationMeasures) {
-        this.evaluationMeasures = new ArrayList<>(evaluationMeasures);
-        caseStudyPropertyChangedFireEvent();
     }
 
     public ValidationTechnique getValidationTechnique() {
@@ -704,8 +699,8 @@ public class CaseStudy<RecommendationModel extends Object, RatingType extends Ra
         validationTechnique.setSeedValue(seedValue);
         Global.showInfoMessage("Reset validationTechnique seed to " + validationTechnique.getSeedValue() + "\n");
 
-        predictionProtocolTechnique.setSeedValue(seedValue);
-        Global.showInfoMessage("Reset groupPredictionProtocol seed to " + predictionProtocolTechnique.getSeedValue() + "\n");
+        predictionProtocol.setSeedValue(seedValue);
+        Global.showInfoMessage("Reset predictionProtocol seed to " + predictionProtocol.getSeedValue() + "\n");
     }
 
     /**
@@ -760,7 +755,7 @@ public class CaseStudy<RecommendationModel extends Object, RatingType extends Ra
      * @return Protocolo de predicción aplicado.
      */
     public PredictionProtocol getPredictionProtocol() {
-        return predictionProtocolTechnique;
+        return predictionProtocol;
     }
 
     @Override
@@ -784,6 +779,8 @@ public class CaseStudy<RecommendationModel extends Object, RatingType extends Ra
     }
 
     public void executeNew() throws CannotLoadContentDataset, CannotLoadRatingsDataset, UserNotFound, ItemNotFound {
+        finished = false;
+
         final DatasetLoader<? extends Rating> originalDatasetLoader = getDatasetLoader();
         int numberOfExecutionSplits = getNumSplits() * getNumExecutions();
         setNumVueltas(numberOfExecutionSplits);
@@ -800,50 +797,46 @@ public class CaseStudy<RecommendationModel extends Object, RatingType extends Ra
             executionsStream = executionsStream.parallel();
         }
 
-        executionsStream
-                .flatMap(execution -> {
-                    Stream<Integer> splitsStream = IntStream.range(0, getNumSplits()).boxed();
+        executionsStream.flatMap(execution -> {
+            Stream<Integer> splitsStream = IntStream.range(0, getNumSplits()).boxed();
 
-                    if (Global.isParallelExecutionSplits()) {
-                        splitsStream = splitsStream.parallel();
-                    }
+            if (Global.isParallelExecutionSplits()) {
+                splitsStream = splitsStream.parallel();
+            }
 
-                    return splitsStream
-                            .map(split -> {
-                                return new ExecutionSplitConsumer(
-                                        execution,
-                                        split,
-                                        this
-                                );
+            return splitsStream
+                    .map(split -> {
+                        return new ExecutionSplitConsumer(
+                                execution,
+                                split,
+                                this
+                        );
 
-                            });
-                })
-                .forEach(executionSplit -> {
-                    ExecutionSplitDescriptor executionSplitDescriptor = executionSplit.getDescriptorAndResults();
+                    });
+        }).forEach(executionSplit -> {
+            ExecutionSplitDescriptor executionSplitDescriptor = executionSplit.getDescriptorAndResults();
 
-                    synchronized (allLoopsResults) {
-                        final int execution = executionSplitDescriptor.getExecution();
+            synchronized (allLoopsResults) {
+                final int execution = executionSplitDescriptor.getExecution();
 
-                        if (!allLoopsResults.containsKey(execution)) {
-                            allLoopsResults.put(execution, Collections.synchronizedMap(new HashMap<>()));
-                        }
+                if (!allLoopsResults.containsKey(execution)) {
+                    allLoopsResults.put(execution, Collections.synchronizedMap(new HashMap<>()));
+                }
 
-                        allLoopsResults.get(execution).put(executionSplitDescriptor.getSplit(), executionSplitDescriptor.getResults());
+                allLoopsResults.get(execution).put(executionSplitDescriptor.getSplit(), executionSplitDescriptor.getResults());
 
-                        List<Integer> finishedSplits = allLoopsResults.get(execution).keySet().stream().sorted().collect(Collectors.toList());
-                        List<Integer> allSplits = IntStream.range(0, getNumSplits()).boxed().sorted().collect(Collectors.toList());
+                List<Integer> finishedSplits = allLoopsResults.get(execution).keySet().stream().sorted().collect(Collectors.toList());
+                List<Integer> allSplits = IntStream.range(0, getNumSplits()).boxed().sorted().collect(Collectors.toList());
 
-                        if (finishedSplits.equals(allSplits)) {
-                            setResultsThisExecution(execution, allLoopsResults.get(execution));
-                        }
-                    }
+                if (finishedSplits.equals(allSplits)) {
+                    setResultsThisExecution(execution, allLoopsResults.get(execution));
+                }
+            }
 
-                    groupCaseStudyProgressChangedController.setTaskFinished();
-                });
+            groupCaseStudyProgressChangedController.setTaskFinished();
+        });
 
         setExperimentProgress("Finished execution, computing evaluation measures", 100, -1);
-
-        Set<EvaluationMeasure> evaluationMeasures = allLoopsResults.get(0).get(0).keySet();
 
         aggregateResults = evaluationMeasures.stream().parallel().collect(Collectors.toMap(Function.identity(),
                 groupEvaluationMeasure -> {
@@ -859,6 +852,13 @@ public class CaseStudy<RecommendationModel extends Object, RatingType extends Ra
 
                     return resultsAggregated;
                 }));
+
+        Global.showInfoMessage("Case study finished\n");
+        setRunning(false);
+        setFinished();
+        setErrors(false);
+
+        executionProgressFireEvent("Case study finished", 100, -1);
     }
 
     public long getLoopSeed(int execution, int split) {
@@ -870,7 +870,7 @@ public class CaseStudy<RecommendationModel extends Object, RatingType extends Ra
 
     protected void setSeedToSeedHolders(long seed) {
 
-        predictionProtocolTechnique.setSeedValue(seed);
+        predictionProtocol.setSeedValue(seed);
         validationTechnique.setSeedValue(seed);
 
     }
@@ -907,10 +907,7 @@ public class CaseStudy<RecommendationModel extends Object, RatingType extends Ra
                     .collect(Collectors.toMap(
                             entry -> entry.getKey(),
                             entry -> entry.getValue()
-                    )
-                    );
-
-            Set<EvaluationMeasure> evaluationMeasures = caseStudyCloned.allLoopsResults.get(0).get(0).keySet();
+                    ));
 
             caseStudyCloned.aggregateResults = evaluationMeasures.stream().parallel().collect(Collectors.toMap(Function.identity(),
                     evaluationMeasure -> {
@@ -927,10 +924,13 @@ public class CaseStudy<RecommendationModel extends Object, RatingType extends Ra
                         return resultsAggregated;
                     }));
 
+            caseStudyCloned.setFinished();
+
             CaseStudyXML.saveCaseResults(caseStudyCloned, resultsDirectory);
             CaseStudyExcel.saveCaseResults(caseStudyCloned, resultsDirectory);
 
         });
 
     }
+
 }

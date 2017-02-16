@@ -19,7 +19,7 @@ package delfos.results;
 import delfos.dataset.basic.user.User;
 import delfos.rs.recommendation.Recommendation;
 import delfos.rs.recommendation.Recommendations;
-import delfos.rs.recommendation.SingleUserRecommendations;
+import delfos.rs.recommendation.RecommendationsToUser;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -72,7 +72,7 @@ public class RecommendationResults {
         this.recommendationResults = new TreeMap<>();
     }
 
-    public RecommendationResults(List<SingleUserRecommendations> allRecommendations) {
+    public RecommendationResults(List<RecommendationsToUser> allRecommendations) {
 
         this.recommendationResults = new TreeMap<>();
         for (Recommendations recommendations : allRecommendations) {

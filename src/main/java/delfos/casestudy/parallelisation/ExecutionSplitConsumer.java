@@ -29,23 +29,17 @@ import delfos.dataset.basic.user.User;
 import delfos.dataset.storage.validationdatasets.PairOfTrainTestRatingsDataset;
 import delfos.experiment.casestudy.CaseStudy;
 import delfos.experiment.validation.predictionprotocol.PredictionProtocol;
-import delfos.experiment.validation.predictionvalidation.UserRecommendationRequest;
 import delfos.experiment.validation.validationtechnique.ValidationTechnique;
-import delfos.group.casestudy.parallelisation.SingleGroupRecommendationFunction;
-import delfos.group.casestudy.parallelisation.SingleGroupRecommendationTaskInput;
-import delfos.group.casestudy.parallelisation.SingleGroupRecommendationTaskOutput;
-import delfos.group.experiment.validation.predictionvalidation.GroupRecommendationRequest;
-import delfos.group.factories.GroupEvaluationMeasuresFactory;
+import delfos.factories.EvaluationMeasuresFactory;
 import delfos.group.groupsofusers.GroupOfUsers;
-import delfos.group.grs.recommendations.GroupRecommendations;
-import delfos.group.results.groupevaluationmeasures.GroupEvaluationMeasure;
-import delfos.group.results.groupevaluationmeasures.GroupEvaluationMeasureResult;
-import delfos.group.results.grouprecomendationresults.GroupRecommenderSystemResult;
+import delfos.results.MeasureResult;
+import delfos.results.evaluationmeasures.EvaluationMeasure;
+import delfos.results.recommendation.RecommenderSystemResult;
 import delfos.rs.RecommenderSystem;
+import delfos.rs.recommendation.RecommendationsToUser;
 import delfos.utils.algorithm.progress.ProgressChangedController;
 import delfos.utils.algorithm.progress.ProgressChangedListenerDefault;
 import java.text.DecimalFormat;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -56,10 +50,13 @@ import java.util.stream.Collectors;
 /**
  *
  * @author jcastro-inf ( https://github.com/jcastro-inf )
+ * @param <RecommendationModel>
+ * @param <RatingType>
  */
-public class ExecutionSplitConsumer<RecommendationModel extends Object, RatingType extends Rating> implements Comparable<ExecutionSplitConsumer> {
+public class ExecutionSplitConsumer<RecommendationModel extends Object, RatingType extends Rating>
+        implements Comparable<ExecutionSplitConsumer> {
 
-    private final CaseStudy caseStudy;
+    private final CaseStudy<RecommendationModel, RatingType> caseStudy;
     private final int execution;
     private final int split;
 
@@ -69,19 +66,17 @@ public class ExecutionSplitConsumer<RecommendationModel extends Object, RatingTy
             CaseStudy<RecommendationModel, RatingType> caseStudy
     ) {
         this.split = split;
-        this.caseStudy = (CaseStudy) caseStudy.clone();
+        this.caseStudy = (CaseStudy<RecommendationModel, RatingType>) caseStudy.clone();
         this.execution = execution;
 
     }
 
-    public Map<GroupEvaluationMeasure, GroupEvaluationMeasureResult> execute() {
+    public Map<EvaluationMeasure, MeasureResult> execute() {
 
-        final RecommenderSystem<RecommendationModel> groupRecommenderSystem = caseStudy.getRecommenderSystem();
+        final RecommenderSystem<RecommendationModel> recommenderSystem = caseStudy.getRecommenderSystem();
         final RelevanceCriteria relevanceCriteria = caseStudy.getRelevanceCriteria();
         final PredictionProtocol predictionProtocol = caseStudy.getPredictionProtocol();
         final DatasetLoader<RatingType> originalDatasetLoader = caseStudy.getDatasetLoader();
-
-        long loopSeed = caseStudy.getLoopSeed(execution, split);
 
         long loopSeedForValidation = caseStudy.getLoopSeed(execution, 0);
 
@@ -92,23 +87,21 @@ public class ExecutionSplitConsumer<RecommendationModel extends Object, RatingTy
         final PairOfTrainTestRatingsDataset thisExecutionSplitTrainingTestSet = validationTechnique
                 .shuffle(originalDatasetLoader)[split];
 
-        DatasetLoader<? extends Rating> trainDatasetLoader = thisExecutionSplitTrainingTestSet.getTrainingDatasetLoader();
+        DatasetLoader<RatingType> trainDatasetLoader = thisExecutionSplitTrainingTestSet.getTrainingDatasetLoader();
 
         String executionString = new DecimalFormat("00").format(execution);
 
         trainDatasetLoader.setAlias(trainDatasetLoader.getAlias() + "_execution=" + executionString);
 
-        DatasetLoader<? extends Rating> testDatasetLoader = thisExecutionSplitTrainingTestSet.getTestDatasetLoader();
+        DatasetLoader<RatingType> testDatasetLoader = thisExecutionSplitTrainingTestSet.getTestDatasetLoader();
         testDatasetLoader.setAlias(testDatasetLoader.getAlias() + "_execution=" + executionString);
 
-        Set<User> usersWithRatingsInTest = obtainUsersWithRatingsInTest(trainDatasetLoader, testDatasetLoader);
-
         final long recommendationModelBuildTime;
-        Object groupRecommendationModel;
+        RecommendationModel recommendationModel;
         {
             Chronometer buildTime = new Chronometer();
-            groupRecommendationModel = groupRecommenderSystem.buildRecommendationModel(trainDatasetLoader);
-            if (groupRecommendationModel == null) {
+            recommendationModel = recommenderSystem.buildRecommendationModel(trainDatasetLoader);
+            if (recommendationModel == null) {
                 throw new IllegalStateException("The RecommendationModel cannot be null");
             }
 
@@ -116,78 +109,87 @@ public class ExecutionSplitConsumer<RecommendationModel extends Object, RatingTy
             recommendationModelBuildTime = spent;
         }
 
-        List<SingleGroupRecommendationTaskInput> taskGroupRecommendationInput = new ArrayList<>(groups.size());
-        for (User user : usersWithRatingsInTest) {
-            final Collection<UserRecommendationRequest> groupRecommendationRequests = predictionProtocol
-                    .getGroupRecommendationRequests(trainDatasetLoader, testDatasetLoader, groupOfUsers);
-            for (GroupRecommendationRequest groupRecommendationRequest : groupRecommendationRequests) {
+        List<RecommendationTaskInput> recommendationTaskInputs = originalDatasetLoader.getUsersDataset().parallelStream()
+                .flatMap(user -> {
+                    return predictionProtocol.getUserRecommendationRequests(
+                            originalDatasetLoader,
+                            trainDatasetLoader,
+                            testDatasetLoader,
+                            user).stream();
+                })
+                .filter(userRecommendationRequest -> !userRecommendationRequest.getItemsToPredict().isEmpty())
+                .map(userRecommendationRequest -> {
+                    RecommendationTaskInput singleGroupRecommendationTaskInput = new RecommendationTaskInput(
+                            userRecommendationRequest.getUser(),
+                            recommenderSystem,
+                            userRecommendationRequest.getPredictionPhaseDatasetLoader(),
+                            recommendationModel,
+                            userRecommendationRequest.getItemsToPredict());
 
-                taskGroupRecommendationInput.add(new SingleGroupRecommendationTaskInput(
-                        groupRecommenderSystem,
-                        groupRecommendationRequest.predictionPhaseDatasetLoader,
-                        groupRecommendationModel,
-                        groupOfUsers,
-                        groupRecommendationRequest.itemsToPredict)
-                );
-            }
+                    return singleGroupRecommendationTaskInput;
+                })
+                .collect(Collectors.toList());
+
+        if (recommendationTaskInputs.isEmpty()) {
+            throw new IllegalStateException("Recommendation input tasks cannot be empty");
         }
 
-        taskGroupRecommendationInput.parallelStream().forEach(task -> {
+        recommendationTaskInputs.parallelStream().forEach(task -> {
 
-            Set<Item> groupRequests = task.getItemsRequested();
-            GroupOfUsers groupOfUsers = task.getGroupOfUsers();
+            Set<Item> requests = task.getItemsRequested();
+            User user = task.getUser();
 
-            if (groupRequests == null) {
-                throw new IllegalArgumentException("Group request for group '" + groupOfUsers.toString() + "' are null.");
+            if (requests == null) {
+                throw new IllegalArgumentException("Group request for group '" + user.toString() + "' are null.");
             }
-            if (groupRequests.isEmpty()) {
-                Global.showWarning("Group " + groupOfUsers.toString() + " has no requests in dataset " + task.getDatasetLoader().getAlias());
+
+            if (requests.isEmpty()) {
+                Global.showWarning("User " + user.toString() + " has no requests in dataset " + task.getDatasetLoader().getAlias());
             }
         });
 
         final ProgressChangedController progressChangedController = new ProgressChangedController(
                 "group recommendation",
-                taskGroupRecommendationInput.size(),
+                recommendationTaskInputs.size(),
                 new ProgressChangedListenerDefault(System.out, 10000));
 
-        List<SingleGroupRecommendationTaskOutput> taskGroupRecommendationOutput = taskGroupRecommendationInput
+        List<RecommendationTaskOutput> recommendationTaskOutputs = recommendationTaskInputs
                 .parallelStream()
-                .map(new SingleGroupRecommendationFunction(progressChangedController))
+                .map(new RecommendationFunction(progressChangedController))
                 .collect(Collectors.toList());
 
-        taskGroupRecommendationOutput.parallelStream().forEach(task -> {
+        recommendationTaskOutputs.parallelStream().forEach(task -> {
 
-            GroupOfUsers groupOfUsers = task.getGroup();
-            final GroupRecommendations groupRecommendations = task.getRecommendations();
+            User user = task.getUser();
+            RecommendationsToUser recommendationsToUser = task.getRecommendations();
 
-            if (groupRecommendations == null) {
-                throw new IllegalStateException("Group recommendations for group '" + groupOfUsers.toString() + "'" + caseStudy.getAlias() + " --> Cannot recommend to group a null recommendations.");
+            if (recommendationsToUser == null) {
+                throw new IllegalStateException("Recommendations for user '" + user.toString() + "'" + caseStudy.getAlias() + " --> Recommendations object is null.");
             }
 
-            if (groupRecommendations.getRecommendations() == null) {
-                throw new IllegalStateException("Group recommendations for group '" + groupOfUsers.toString() + "'" + caseStudy.getAlias() + " --> Cannot recommend to group a null recommendations.");
+            if (recommendationsToUser.getRecommendations() == null) {
+                throw new IllegalStateException("Recommendations for user '" + user.toString() + "'" + caseStudy.getAlias() + " --> Recommendation list is null.");
             }
 
-            if (groupRecommendations.getRecommendations().isEmpty()) {
-                Global.showWarning("Group recommendations for group '" + groupOfUsers.toString() + "'" + caseStudy.getAlias() + " --> Cannot have empty recommendations.");
+            if (recommendationsToUser.getRecommendations().isEmpty()) {
+                Global.showWarning("Recommendations for user'" + user.toString() + "'" + caseStudy.getAlias() + " --> Cannot have empty recommendations.");
             }
         });
 
-        GroupRecommenderSystemResult groupRecommendationResult
-                = new GroupRecommenderSystemResult(
-                        taskGroupRecommendationInput,
-                        taskGroupRecommendationOutput,
+        RecommenderSystemResult recommenderSystemResult
+                = new RecommenderSystemResult(
+                        recommendationTaskInputs,
+                        recommendationTaskOutputs,
                         caseStudy.getAlias(),
                         execution,
                         split,
                         recommendationModelBuildTime);
 
-        Map<GroupEvaluationMeasure, GroupEvaluationMeasureResult> resultsThisExecutionSplit = GroupEvaluationMeasuresFactory.getInstance().getAllClasses().parallelStream().collect(Collectors.toMap(Function.identity(),
-                groupEvaluationMeasure -> {
-                    return groupEvaluationMeasure.getMeasureResult(groupRecommendationResult,
+        Map<EvaluationMeasure, MeasureResult> resultsThisExecutionSplit = EvaluationMeasuresFactory.getInstance().getAllClasses().parallelStream().collect(Collectors.toMap(Function.identity(),
+                evaluationMeasure -> {
+                    return evaluationMeasure.getMeasureResult(recommenderSystemResult,
                             originalDatasetLoader,
                             relevanceCriteria, trainDatasetLoader, testDatasetLoader);
-
                 }));
 
         return resultsThisExecutionSplit;
@@ -238,9 +240,9 @@ public class ExecutionSplitConsumer<RecommendationModel extends Object, RatingTy
      */
     private Collection<GroupOfUsers> deleteGroupsWithoutValidationRatings(
             Collection<GroupOfUsers> groups,
-            DatasetLoader<? extends Rating> testDatasetLoader) {
+            DatasetLoader<RatingType> testDatasetLoader) {
 
-        final RatingsDataset<? extends Rating> ratingsDataset = testDatasetLoader.getRatingsDataset();
+        final RatingsDataset<RatingType> ratingsDataset = testDatasetLoader.getRatingsDataset();
 
         List<GroupOfUsers> groupsWithTestRatings = groups.parallelStream()
                 .filter(group -> {
@@ -265,9 +267,9 @@ public class ExecutionSplitConsumer<RecommendationModel extends Object, RatingTy
 
     }
 
-    private Set<User> obtainUsersWithRatingsInTest(DatasetLoader<? extends Rating> trainDatasetLoader, DatasetLoader<? extends Rating> testDatasetLoader) {
+    private Set<User> obtainUsersWithRatingsInTest(DatasetLoader<RatingType> trainDatasetLoader, DatasetLoader<RatingType> testDatasetLoader) {
 
-        RatingsDataset<? extends Rating> testRatingsDataset = testDatasetLoader.getRatingsDataset();
+        RatingsDataset<RatingType> testRatingsDataset = testDatasetLoader.getRatingsDataset();
 
         Set<User> usersWithRatingsInTest = trainDatasetLoader.getUsersDataset().parallelStream()
                 .filter(user -> {
@@ -282,6 +284,10 @@ public class ExecutionSplitConsumer<RecommendationModel extends Object, RatingTy
 
                 })
                 .collect(Collectors.toSet());
+
+        if (usersWithRatingsInTest.isEmpty()) {
+            return obtainUsersWithRatingsInTest(trainDatasetLoader, testDatasetLoader);
+        }
 
         return usersWithRatingsInTest;
     }

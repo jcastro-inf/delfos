@@ -36,8 +36,8 @@ import java.util.stream.Collectors;
  */
 public class RecommenderSystemResult<RecommendationModel extends Object, RatingType extends Rating> {
 
-    protected Map<User, RecommendationTaskInput<RecommendationModel, RatingType>> recommendationInputs;
-    protected Map<User, RecommendationTaskOutput> recommendationOutputs;
+    protected Map<User, RecommendationTaskInput<RecommendationModel, RatingType>> recommendationInputs_byUser;
+    protected Map<User, RecommendationTaskOutput> recommendationOutputs_byUser;
 
     private final String caseStudyAlias;
     private final int thisExecution;
@@ -46,22 +46,24 @@ public class RecommenderSystemResult<RecommendationModel extends Object, RatingT
     private final long modelBuildTime;
 
     public RecommenderSystemResult(
-            List<RecommendationTaskInput<RecommendationModel, RatingType>> singleGroupRecommendationInputs,
-            List<RecommendationTaskOutput> singleGroupRecommendationOutputs,
+            List<RecommendationTaskInput<RecommendationModel, RatingType>> recommendationTaskInputs,
+            List<RecommendationTaskOutput> recommendationTaskOutputs,
             String caseStudyAlias,
             int thisExecution,
             int thisSplit,
             long modelBuildTime
     ) {
 
-        validateSameGroups(singleGroupRecommendationInputs, singleGroupRecommendationOutputs);
+        validateSameUsers(recommendationTaskInputs, recommendationTaskOutputs);
 
-        this.recommendationInputs = singleGroupRecommendationInputs.parallelStream()
+        validateUniqueUsers(recommendationTaskInputs, recommendationTaskOutputs);
+
+        this.recommendationInputs_byUser = recommendationTaskInputs.parallelStream()
                 .collect(Collectors.toMap(
                         output -> output.getUser(),
                         output -> output));
 
-        this.recommendationOutputs = singleGroupRecommendationOutputs.parallelStream()
+        this.recommendationOutputs_byUser = recommendationTaskOutputs.parallelStream()
                 .collect(Collectors.toMap(
                         output -> output.getUser(),
                         output -> output));
@@ -76,56 +78,42 @@ public class RecommenderSystemResult<RecommendationModel extends Object, RatingT
      *
      * @return Número de grupos evaluados
      */
-    public int getNumGroups() {
-        return recommendationOutputs.size();
+    public int getNumUsers() {
+        return recommendationOutputs_byUser.size();
     }
 
-    private void validateSameGroups(List<RecommendationTaskInput<RecommendationModel, RatingType>> recommendationInputs, List<RecommendationTaskOutput> recommendationOutputs) {
-        Set<User> usersInput = recommendationInputs.stream()
-                .map(task -> task.getUser())
-                .collect(Collectors.toSet());
-
-        Set<User> usersOutput = recommendationOutputs.stream()
-                .map(task -> task.getUser())
-                .collect(Collectors.toSet());
-
-        boolean equals = usersInput.equals(usersOutput);
-
-        if (!equals) {
-
-            Set<User> inInputButNotInOutput = usersInput.stream().filter(user -> !usersOutput.contains(user)).collect(Collectors.toSet());
-            Set<User> inOutputButNotInInput = usersOutput.stream().filter(user -> !usersInput.contains(user)).collect(Collectors.toSet());
-
-            Global.showWarning("Groups found in Input But Not In Output: " + inInputButNotInOutput.toString());
-            Global.showWarning("Groups found in Output But Not In Input: " + inOutputButNotInInput.toString());
-
-            throw new IllegalArgumentException("Groups in the list of GRS input and in the GRS output are different!.");
-        }
+    /**
+     * Devuelve el número de grupos que han sido evaluados.
+     *
+     * @return Número de grupos evaluados
+     */
+    public int getNumOutputs() {
+        return recommendationOutputs_byUser.size();
     }
 
     public Collection<User> getGroupsOfUsers() {
-        return recommendationInputs.keySet().stream().collect(Collectors.toList());
+        return recommendationInputs_byUser.keySet().stream().collect(Collectors.toList());
     }
 
     public Collection<RecommendationTaskInput> inputsIterator() {
-        return recommendationInputs.values().stream().collect(Collectors.toList());
+        return recommendationInputs_byUser.values().stream().collect(Collectors.toList());
     }
 
     public Collection<RecommendationTaskOutput> outputsIterator() {
-        return recommendationOutputs.values().stream().collect(Collectors.toList());
+        return recommendationOutputs_byUser.values().stream().collect(Collectors.toList());
     }
 
     public RecommendationTaskInput getGroupInput(User user) {
-        if (recommendationInputs.containsKey(user)) {
-            return recommendationInputs.get(user);
+        if (recommendationInputs_byUser.containsKey(user)) {
+            return recommendationInputs_byUser.get(user);
         } else {
             throw new IllegalArgumentException("User '" + user.toString() + "' not in the input list");
         }
     }
 
     public RecommendationTaskOutput getGroupOutput(User user) {
-        if (recommendationOutputs.containsKey(user)) {
-            return recommendationOutputs.get(user);
+        if (recommendationOutputs_byUser.containsKey(user)) {
+            return recommendationOutputs_byUser.get(user);
         } else {
             throw new IllegalArgumentException("User '" + user.toString() + "' not in the output list");
         }
@@ -156,4 +144,50 @@ public class RecommenderSystemResult<RecommendationModel extends Object, RatingT
         return modelBuildTime;
     }
 
+    private void validateSameUsers(List<RecommendationTaskInput<RecommendationModel, RatingType>> recommendationInputs, List<RecommendationTaskOutput> recommendationOutputs) {
+        Set<User> usersInput = recommendationInputs.stream()
+                .map(task -> task.getUser())
+                .collect(Collectors.toSet());
+
+        Set<User> usersOutput = recommendationOutputs.stream()
+                .map(task -> task.getUser())
+                .collect(Collectors.toSet());
+
+        boolean equals = usersInput.equals(usersOutput);
+
+        if (!equals) {
+
+            Set<User> inInputButNotInOutput = usersInput.stream().filter(user -> !usersOutput.contains(user)).collect(Collectors.toSet());
+            Set<User> inOutputButNotInInput = usersOutput.stream().filter(user -> !usersInput.contains(user)).collect(Collectors.toSet());
+
+            Global.showWarning("Groups found in Input But Not In Output: " + inInputButNotInOutput.toString());
+            Global.showWarning("Groups found in Output But Not In Input: " + inOutputButNotInInput.toString());
+
+            throw new IllegalArgumentException("Groups in the list of GRS input and in the GRS output are different!.");
+        }
+    }
+
+    private void validateUniqueUsers(
+            List<RecommendationTaskInput<RecommendationModel, RatingType>> recommendationTaskInputs,
+            List<RecommendationTaskOutput> recommendationTaskOutputs) {
+        Map<User, List<RecommendationTaskInput<RecommendationModel, RatingType>>> inputs_byUser = recommendationTaskInputs.stream()
+                .collect(Collectors.groupingBy(input -> input.getUser()));
+
+        inputs_byUser.forEach((user, inputs) -> {
+            if (inputs.size() > 1) {
+                throw new IllegalStateException("Users with multiple inputs, need to merge them");
+            }
+
+        });
+
+        Map<User, List<RecommendationTaskOutput>> outputs_byUser = recommendationTaskOutputs.stream()
+                .collect(Collectors.groupingBy(input -> input.getUser()));
+
+        outputs_byUser.forEach((user, outputs) -> {
+            if (outputs.size() > 1) {
+                throw new IllegalStateException("Users with multiple inputs, need to merge them");
+            }
+
+        });
+    }
 }

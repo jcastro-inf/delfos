@@ -69,7 +69,7 @@ public abstract class RecommendationsFactory implements Serializable {
 
         switch (targetType) {
             case USER:
-                return new SingleUserRecommendations(User.parseIdTarget(idTarget), recommendations, recommendationComputationDetails);
+                return new RecommendationsToUser(User.parseIdTarget(idTarget), recommendations, recommendationComputationDetails);
             case GROUP:
                 return new GroupRecommendations(GroupOfUsers.parseIdTarget(idTarget), recommendations, recommendationComputationDetails);
             default:
@@ -85,8 +85,8 @@ public abstract class RecommendationsFactory implements Serializable {
         return createRecommendations(idTarget, recommendations, RecommendationComputationDetails.EMPTY_DETAILS);
     }
 
-    public static SingleUserRecommendations createRecommendations(User user, Collection<Recommendation> recommendations) {
-        return new SingleUserRecommendations(user, recommendations, RecommendationComputationDetails.EMPTY_DETAILS);
+    public static RecommendationsToUser createRecommendations(User user, Collection<Recommendation> recommendations) {
+        return new RecommendationsToUser(user, recommendations, RecommendationComputationDetails.EMPTY_DETAILS);
     }
 
     public static GroupRecommendations createRecommendations(GroupOfUsers groupOfUsers, Collection<Recommendation> recommendations) {

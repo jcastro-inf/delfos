@@ -17,6 +17,7 @@
 package delfos.io.excel.casestudy;
 
 import delfos.ERROR_CODES;
+import delfos.common.FileUtilities;
 import delfos.common.Global;
 import delfos.common.decimalnumbers.NumberRounder;
 import delfos.common.parameters.Parameter;
@@ -33,6 +34,7 @@ import delfos.experiment.validation.validationtechnique.ValidationTechnique;
 import delfos.group.io.excel.casestudy.GroupCaseStudyExcel.Combination;
 import static delfos.group.io.excel.casestudy.GroupCaseStudyExcel.obtainDifferentParameterInCollumn;
 import delfos.io.excel.parameterowner.ParameterOwnerExcel;
+import delfos.io.xml.casestudy.CaseStudyXML;
 import delfos.results.MeasureResult;
 import delfos.results.evaluationmeasures.EvaluationMeasure;
 import delfos.rs.RecommenderSystem;
@@ -262,6 +264,15 @@ public class CaseStudyExcel {
         if (!caseStudy.isFinished()) {
             throw new UnsupportedOperationException("No se ha ejecutado el caso de uso todavía");
         }
+        if (file.isDirectory()) {
+            File directory = file;
+
+            FileUtilities.createDirectoryPathIfNotExists(directory);
+            String fileName = CaseStudyXML.getCaseStudyFileName(caseStudy);
+            file = new File(directory.getPath() + File.separator + fileName + ".xml");
+        } else {
+            FileUtilities.createDirectoriesForFileIfNotExist(file);
+        }
 
         try {
             WorkbookSettings wbSettings = new WorkbookSettings();
@@ -273,7 +284,7 @@ public class CaseStudyExcel {
             try {
                 workbook = Workbook.createWorkbook(file, wbSettings);
             } catch (IOException ex) {
-                ERROR_CODES.CANNOT_WRITE_FILE.exit(new FileNotFoundException("Cannot access file " + file.getAbsolutePath() + "."));
+                ERROR_CODES.CANNOT_WRITE_FILE.exit(ex);
                 return;
             }
 
@@ -820,10 +831,13 @@ public class CaseStudyExcel {
     /**
      * Converts the parameter structure of the case study technique (RecommenderSystem) into a plain key-> value map.
      *
+     * @param <RecommendationModel>
+     * @param <RatingType>
      * @param caseStudy
      * @return
      */
-    public static <RecommendationModel extends Object, RatingType extends Rating> Map<String, Object> extractTechniqueParameters(CaseStudy caseStudy) {
+    public static <RecommendationModel extends Object, RatingType extends Rating>
+            Map<String, Object> extractTechniqueParameters(CaseStudy caseStudy) {
         Map<String, Object> techniqueParameters = new TreeMap<>();
 
         Map<String, Object> RecommenderSystemParameters = ParameterOwnerExcel

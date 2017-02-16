@@ -58,7 +58,8 @@ public class PairOfTrainTestRatingsDataset<RatingType extends Rating> extends Co
      */
     public PairOfTrainTestRatingsDataset(
             DatasetLoader<RatingType> originalDatasetLoader,
-            RatingsDataset<RatingType> train, RatingsDataset<RatingType> test,
+            RatingsDataset<RatingType> train,
+            RatingsDataset<RatingType> test,
             String generationExplanation
     ) throws CannotLoadRatingsDataset, CannotLoadContentDataset {
 

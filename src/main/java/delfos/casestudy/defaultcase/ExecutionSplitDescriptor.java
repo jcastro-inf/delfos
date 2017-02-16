@@ -16,6 +16,7 @@
  */
 package delfos.casestudy.defaultcase;
 
+import delfos.dataset.basic.rating.Rating;
 import delfos.experiment.casestudy.CaseStudy;
 import delfos.results.MeasureResult;
 import delfos.results.evaluationmeasures.EvaluationMeasure;
@@ -24,17 +25,19 @@ import java.util.Map;
 /**
  *
  * @author jcastro-inf ( https://github.com/jcastro-inf )
+ * @param <RecommendationModel>
+ * @param <RatingType>
  */
-public class ExecutionSplitDescriptor implements Comparable<ExecutionSplitDescriptor> {
+public class ExecutionSplitDescriptor<RecommendationModel extends Object, RatingType extends Rating> implements Comparable<ExecutionSplitDescriptor<RecommendationModel, RatingType>> {
 
-    private final CaseStudy caseStudy;
+    private final CaseStudy<RecommendationModel, RatingType> caseStudy;
     private final int execution;
     private final int split;
     private final Map<EvaluationMeasure, MeasureResult> results;
 
-    ExecutionSplitDescriptor(
+    public ExecutionSplitDescriptor(
             int execution,
-            int split, CaseStudy caseStudy,
+            int split, CaseStudy<RecommendationModel, RatingType> caseStudy,
             Map<EvaluationMeasure, MeasureResult> results) {
         this.split = split;
         this.caseStudy = (CaseStudy) caseStudy.clone();
@@ -50,7 +53,7 @@ public class ExecutionSplitDescriptor implements Comparable<ExecutionSplitDescri
         return split;
     }
 
-    public CaseStudy getCaseStudy() {
+    public CaseStudy<RecommendationModel, RatingType> getCaseStudy() {
         return caseStudy;
     }
 
@@ -59,7 +62,7 @@ public class ExecutionSplitDescriptor implements Comparable<ExecutionSplitDescri
     }
 
     @Override
-    public int compareTo(ExecutionSplitDescriptor o) {
+    public int compareTo(ExecutionSplitDescriptor<RecommendationModel, RatingType> o) {
         int thisExecution = this.getExecution();
         int otherExecution = o.getExecution();
 
