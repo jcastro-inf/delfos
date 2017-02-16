@@ -10,7 +10,7 @@ import delfos.dataset.basic.user.User;
 import delfos.dataset.generated.random.RandomDatasetLoader;
 import delfos.experiment.casestudy.CaseStudy;
 import delfos.experiment.casestudy.cluster.TuringPreparator;
-import delfos.experiment.casestudy.defaultcase.DefaultCaseStudy;
+import delfos.experiment.casestudy.CaseStudy;
 import delfos.experiment.validation.predictionprotocol.NoPredictionProtocol;
 import delfos.experiment.validation.predictionprotocol.PredictionProtocol;
 import delfos.experiment.validation.validationtechnique.CrossFoldValidation_Ratings;
@@ -127,7 +127,7 @@ public class KnnModelBasedCFRSTest {
                                 rs.setNeighborhoodSize(neighbourhoodSize);
                                 rs.setNeighborhoodSizeStore(neighbourhoodSizeStore);
 
-                                CaseStudy caseStudy = new DefaultCaseStudy(
+                                CaseStudy caseStudy = new CaseStudy(
                                         rs,
                                         rsCourseraDataset,
                                         validationTechnique,
@@ -179,7 +179,7 @@ public class KnnModelBasedCFRSTest {
                                 rs.setNeighborhoodSize(neighbourhoodSize);
                                 rs.setNeighborhoodSizeStore(neighbourhoodSizeStore);
 
-                                CaseStudy caseStudy = new DefaultCaseStudy(
+                                CaseStudy caseStudy = new CaseStudy(
                                         rs,
                                         ml100k,
                                         validationTechnique,

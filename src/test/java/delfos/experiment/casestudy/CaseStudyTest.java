@@ -1,5 +1,6 @@
-package delfos.experiment.casestudy.defaultcase;
+package delfos.experiment.casestudy;
 
+import delfos.experiment.casestudy.CaseStudy;
 import delfos.constants.DelfosTest;
 import delfos.dataset.basic.rating.RelevanceCriteria;
 import delfos.dataset.generated.random.RandomDatasetLoader;
@@ -18,9 +19,9 @@ import org.junit.Test;
  * @version 29-may-2014
  * @author jcastro-inf ( https://github.com/jcastro-inf )
  */
-public class DefaultCaseStudyTest extends DelfosTest {
+public class CaseStudyTest extends DelfosTest {
 
-    public DefaultCaseStudyTest() {
+    public CaseStudyTest() {
     }
 
     @BeforeClass
@@ -40,11 +41,11 @@ public class DefaultCaseStudyTest extends DelfosTest {
     }
 
     /**
-     * Test of execute method, of class DefaultCaseStudy.
+     * Test of execute method, of class CaseStudy.
      */
     @Test
     public void testExecute() {
-        DefaultCaseStudy instance = new DefaultCaseStudy(
+        CaseStudy instance = new CaseStudy(
                 new KnnMemoryBasedCFRS(),
                 new RandomDatasetLoader(),
                 new HoldOut_Ratings(),

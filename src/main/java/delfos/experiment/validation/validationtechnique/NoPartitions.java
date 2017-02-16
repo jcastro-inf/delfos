@@ -44,7 +44,10 @@ public class NoPartitions extends ValidationTechnique {
     @Override
     public <RatingType extends Rating> PairOfTrainTestRatingsDataset<RatingType>[] shuffle(DatasetLoader<RatingType> datasetLoader) throws CannotLoadContentDataset, CannotLoadRatingsDataset {
         PairOfTrainTestRatingsDataset<RatingType>[] ret = new PairOfTrainTestRatingsDataset[1];
-        ret[0] = new PairOfTrainTestRatingsDataset<>(datasetLoader, datasetLoader.getRatingsDataset(), datasetLoader.getRatingsDataset(),
+        ret[0] = new PairOfTrainTestRatingsDataset<>(
+                datasetLoader,
+                datasetLoader.getRatingsDataset(),
+                datasetLoader.getRatingsDataset(),
                 "_" + this.getClass().getSimpleName() + "_seed=" + getSeedValue());
         return ret;
     }

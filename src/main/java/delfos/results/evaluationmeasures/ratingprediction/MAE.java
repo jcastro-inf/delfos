@@ -28,7 +28,6 @@ import delfos.results.RecommendationResults;
 import delfos.results.evaluationmeasures.EvaluationMeasure;
 import delfos.rs.recommendation.Recommendation;
 import delfos.rs.recommendation.RecommendationsToUser;
-import delfos.rs.recommendation.SingleUserRecommendations;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
@@ -97,16 +96,19 @@ public class MAE extends EvaluationMeasure {
     }
 
     @Override
-    public MeanIterative getUserResult(SingleUserRecommendations singleUserRecommendations, Map<Integer, ? extends Rating> userRated) {
+    public MeasureResult getUserResult(
+            RecommendationsToUser recommendationsToUser,
+            Map<Integer, ? extends Rating> userRated) {
         MeanIterative userMean = new MeanIterative();
-        for (Recommendation recommendation : singleUserRecommendations.getRecommendations()) {
-            if (userRated.containsKey(recommendation.getIdItem())) {
-                double trueRating = userRated.get(recommendation.getIdItem()).getRatingValue().doubleValue();
-                double calculatedRating = recommendation.getPreference().doubleValue();
-                userMean.addValue(Math.abs(trueRating - calculatedRating));
-            }
-        }
-        return userMean;
+
+        recommendationsToUser.getRecommendations().stream()
+                .filter((recommendation) -> (userRated.containsKey(recommendation.getItem().getId())))
+                .forEach((recommendation) -> {
+                    double trueRating = userRated.get(recommendation.getItem().getId()).getRatingValue().doubleValue();
+                    double calculatedRating = recommendation.getPreference().doubleValue();
+                    userMean.addValue(Math.abs(trueRating - calculatedRating));
+                });
+        return new MeasureResult(this, userMean.getMean());
     }
 
     @Override

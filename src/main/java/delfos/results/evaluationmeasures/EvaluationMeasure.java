@@ -19,14 +19,18 @@ package delfos.results.evaluationmeasures;
 import delfos.common.parameters.ParameterOwnerAdapter;
 import delfos.common.parameters.ParameterOwnerType;
 import delfos.common.statisticalfuncions.MeanIterative;
+import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RatingsDataset;
 import delfos.dataset.basic.rating.RelevanceCriteria;
 import delfos.results.MeasureResult;
 import delfos.results.RecommendationResults;
-import delfos.rs.recommendation.SingleUserRecommendations;
+import delfos.results.recommendation.RecommenderSystemResult;
+import delfos.rs.recommendation.RecommendationsToUser;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import org.jdom2.Element;
 
 /**
@@ -54,7 +58,10 @@ public abstract class EvaluationMeasure extends ParameterOwnerAdapter implements
      *
      * @return Devuelve un objeto MeasureResult que almacena el valor de la métrica para cada ejecución
      */
-    public abstract MeasureResult getMeasureResult(RecommendationResults recommendationResults, RatingsDataset<? extends Rating> testDataset, RelevanceCriteria relevanceCriteria);
+    public abstract MeasureResult getMeasureResult(
+            RecommendationResults recommendationResults,
+            RatingsDataset<? extends Rating> testDataset,
+            RelevanceCriteria relevanceCriteria);
 
     /**
      * Devuelve true si la interpretación correcta de los valores de la medida supone que el sistema de recomendación
@@ -104,7 +111,7 @@ public abstract class EvaluationMeasure extends ParameterOwnerAdapter implements
         return ParameterOwnerType.EVALUATION_MESAURE;
     }
 
-    public Object getUserResult(SingleUserRecommendations singleUserRecommendations, Map<Integer, ? extends Rating> userRated) {
+    public MeasureResult getUserResult(RecommendationsToUser recommendationsToUser, Map<Integer, ? extends Rating> userRated) {
         throw new UnsupportedOperationException();
     }
 
@@ -112,6 +119,23 @@ public abstract class EvaluationMeasure extends ParameterOwnerAdapter implements
         String attributeValue = evaluationMeasureResultElement.getAttributeValue(VALUE_ATTRIBUTE_NAME);
         double measureValue = Double.parseDouble(attributeValue);
         return new MeasureResult(this, measureValue);
+    }
+
+    public <RecommendationModel extends Object, RatingType extends Rating> MeasureResult getMeasureResult(
+            RecommenderSystemResult<RecommendationModel, RatingType> recommenderSystemResult,
+            DatasetLoader<RatingType> originalDatasetLoader,
+            RelevanceCriteria relevanceCriteria,
+            DatasetLoader<RatingType> trainingDatasetLoader,
+            DatasetLoader<RatingType> testDatasetLoader) {
+        List<RecommendationsToUser> allRecommendations = recommenderSystemResult
+                .outputsIterator().stream()
+                .map(output -> output.getRecommendations())
+                .collect(Collectors.toList());
+
+        RecommendationResults recommendationResults = new RecommendationResults(allRecommendations);
+        RatingsDataset<RatingType> testDataset = testDatasetLoader.getRatingsDataset();
+
+        return getMeasureResult(recommendationResults, testDataset, relevanceCriteria);
     }
 
 }

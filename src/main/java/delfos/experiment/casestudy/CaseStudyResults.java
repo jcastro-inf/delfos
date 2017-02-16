@@ -38,11 +38,13 @@ import java.util.stream.Collectors;
  * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
  * @version 19-Noviembre-2013
+ * @param <RecommendationModel>
+ * @param <RatingType>
  */
-public class CaseStudyResults {
+public class CaseStudyResults<RecommendationModel extends Object, RatingType extends Rating> {
 
-    private final GenericRecommenderSystem recommenderSystem;
-    private final DatasetLoader<? extends Rating> datasetLoader;
+    private final GenericRecommenderSystem<RecommendationModel> recommenderSystem;
+    private final DatasetLoader<RatingType> datasetLoader;
     private final ValidationTechnique validationTechnique;
     private final PredictionProtocol predictionProtocol;
     private final Map<EvaluationMeasure, Double> evaluationMeasuresResults;
@@ -88,7 +90,7 @@ public class CaseStudyResults {
      *
      * @param caseStudy
      */
-    public CaseStudyResults(CaseStudy caseStudy) {
+    public CaseStudyResults(CaseStudy<RecommendationModel, RatingType> caseStudy) {
 
         this.caseStudy = caseStudy;
 
@@ -134,7 +136,7 @@ public class CaseStudyResults {
         return EvaluationMeasuresFactory.getInstance().getAllClasses();
     }
 
-    public DatasetLoader<? extends Rating> getDatasetLoader() {
+    public DatasetLoader<RatingType> getDatasetLoader() {
         return caseStudy.getDatasetLoader();
     }
 
@@ -158,7 +160,7 @@ public class CaseStudyResults {
         this.caseStudyAlias = caseStudyAlias;
     }
 
-    public CaseStudy getCaseStudy() {
+    public CaseStudy<RecommendationModel, RatingType> getCaseStudy() {
         return caseStudy;
     }
 

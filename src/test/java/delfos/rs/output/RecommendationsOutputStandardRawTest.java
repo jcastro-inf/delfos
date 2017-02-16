@@ -6,7 +6,7 @@ import delfos.rs.output.sort.SortBy;
 import delfos.rs.recommendation.Recommendation;
 import delfos.rs.recommendation.Recommendations;
 import delfos.rs.recommendation.RecommendationsFactory;
-import delfos.rs.recommendation.SingleUserRecommendations;
+import delfos.rs.recommendation.RecommendationsToUser;
 import java.util.LinkedList;
 import java.util.List;
 import org.junit.Test;
@@ -55,7 +55,7 @@ public class RecommendationsOutputStandardRawTest extends DelfosTest {
         recommendations.add(new Recommendation(28, 1.34));
         recommendations.add(new Recommendation(19, 2.98));
 
-        SingleUserRecommendations recommendationsToUser = RecommendationsFactory.createRecommendations(new User(idUser), recommendations);
+        RecommendationsToUser recommendationsToUser = RecommendationsFactory.createRecommendations(new User(idUser), recommendations);
         return recommendationsToUser;
     }
 

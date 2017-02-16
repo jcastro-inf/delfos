@@ -9,7 +9,7 @@ import delfos.dataset.basic.rating.RelevanceCriteria;
 import delfos.dataset.generated.random.RandomDatasetLoader;
 import delfos.experiment.casestudy.CaseStudy;
 import delfos.experiment.casestudy.cluster.TuringPreparator;
-import delfos.experiment.casestudy.defaultcase.DefaultCaseStudy;
+import delfos.experiment.casestudy.CaseStudy;
 import delfos.experiment.validation.predictionprotocol.AllButOne;
 import delfos.experiment.validation.predictionprotocol.PredictionProtocol;
 import delfos.experiment.validation.validationtechnique.NoPartitions;
@@ -60,7 +60,7 @@ public class OptimizationKnnMemoryBasedNWR {
 
         for (RecommenderSystem recommenderSystem : recommenderSystems) {
 
-            CaseStudy recommenderSystemCaseStudy = new DefaultCaseStudy(
+            CaseStudy recommenderSystemCaseStudy = new CaseStudy(
                     recommenderSystem,
                     datasetLoader,
                     validationTechniqueValue,

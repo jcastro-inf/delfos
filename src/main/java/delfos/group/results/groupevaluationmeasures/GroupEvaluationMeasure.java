@@ -22,7 +22,6 @@ import delfos.common.parameters.ParameterOwnerType;
 import delfos.common.statisticalfuncions.MeanIterative;
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
-import delfos.dataset.basic.rating.RatingsDataset;
 import delfos.dataset.basic.rating.RelevanceCriteria;
 import delfos.group.results.grouprecomendationresults.GroupRecommenderSystemResult;
 import delfos.results.MeasureResult;
@@ -35,67 +34,60 @@ import java.util.stream.Collectors;
 import org.jdom2.Element;
 
 /**
- * Interfaz que define los métodos de una métrica de evaluación de un sistema de
- * recomendación.
+ * Interfaz que define los métodos de una métrica de evaluación de un sistema de recomendación.
  *
  * @author jcastro-inf ( https://github.com/jcastro-inf )
  * @version 1.0 (28 Octubre 2012)
  */
 /**
- * Clase abstracta que define los métodos que se utilizarán para evaluar un
- * sistema de recomendación a grupos.
+ * Clase abstracta que define los métodos que se utilizarán para evaluar un sistema de recomendación a grupos.
  *
  * @author jcastro-inf ( https://github.com/jcastro-inf )
  */
 public abstract class GroupEvaluationMeasure extends ParameterOwnerAdapter implements Comparable<Object> {
 
     /**
-     * Nombre del atributo en que se almacena el valor de la medida de
-     * evaluación
+     * Nombre del atributo en que se almacena el valor de la medida de evaluación
      */
     public final static String VALUE = "value";
 
     /**
-     * Establece el resultado de una ejecución en base a las recomendaciones
-     * hechas y el conjunto de training
+     * Establece el resultado de una ejecución en base a las recomendaciones hechas y el conjunto de training
      *
-     * @param groupRecommenderSystemResult Vector de resultados de la ejecución
-     * en el que cada elemento es el resultado de la ejecución con una partición
-     * del conjunto
+     * @param groupRecommenderSystemResult Vector de resultados de la ejecución en el que cada elemento es el resultado
+     * de la ejecución con una partición del conjunto
      * @param originalDatasetLoader
-     * @param testDataset
      * @param relevanceCriteria
      * @param trainingDatasetLoader
      * @param testDatasetLoader
-     * @return Devuelve un objeto GroupEvaluationMeasureResult que almacena el
-     * valor de la métrica para cada ejecución
+     * @return Devuelve un objeto GroupEvaluationMeasureResult que almacena el valor de la métrica para cada ejecución
      */
     public abstract GroupEvaluationMeasureResult getMeasureResult(
-            GroupRecommenderSystemResult groupRecommenderSystemResult, DatasetLoader<? extends Rating> originalDatasetLoader, RelevanceCriteria relevanceCriteria, DatasetLoader<? extends Rating> trainingDatasetLoader, DatasetLoader<? extends Rating> testDatasetLoader);
+            GroupRecommenderSystemResult groupRecommenderSystemResult,
+            DatasetLoader<? extends Rating> originalDatasetLoader,
+            RelevanceCriteria relevanceCriteria,
+            DatasetLoader<? extends Rating> trainingDatasetLoader,
+            DatasetLoader<? extends Rating> testDatasetLoader);
 
     /**
-     * Devuelve true si la interpretación correcta de los valores de la medida
-     * supone que el sistema de recomendación asigna las preferencias como una
-     * predicción de la valoración que el usuario daría al producto
+     * Devuelve true si la interpretación correcta de los valores de la medida supone que el sistema de recomendación
+     * asigna las preferencias como una predicción de la valoración que el usuario daría al producto
      *
-     * @return true si necesita que el sistema de recomendación a evaluar
-     * prediga las valoraciones
+     * @return true si necesita que el sistema de recomendación a evaluar prediga las valoraciones
      */
     public abstract boolean usesRatingPrediction();
 
     /**
-     * Agrega varios resultados, correspondientes ejecuciones distintas, de esta
-     * medida de evaluación. Las clases que hereden de {@link EvaluationMeasure}
-     * deben sobreescribir este método si la agregación de la medida de
-     * evaluación es compleja.
+     * Agrega varios resultados, correspondientes ejecuciones distintas, de esta medida de evaluación. Las clases que
+     * hereden de {@link EvaluationMeasure} deben sobreescribir este método si la agregación de la medida de evaluación
+     * es compleja.
      *
-     * NOTA: Este método agrega los resultados haciendo la media aritmética de
-     * los valores devueltos por el método {@link MeasureResult#getValue() }
+     * NOTA: Este método agrega los resultados haciendo la media aritmética de los valores devueltos por el método {@link MeasureResult#getValue()
+     * }
      *
      * @param results Resultados que se desean agregar
      *
-     * @return Devuelve un objeto {@link MeasureResult} que encapsula el
-     * resultado agregado de las ejecuciones
+     * @return Devuelve un objeto {@link MeasureResult} que encapsula el resultado agregado de las ejecuciones
      */
     public final GroupEvaluationMeasureResult agregateResults(Collection<GroupEvaluationMeasureResult> results) {
 
@@ -108,12 +100,10 @@ public abstract class GroupEvaluationMeasure extends ParameterOwnerAdapter imple
             double value = mr.getValue();
             if (Double.isNaN(value)) {
                 Global.showWarning("The value for the measure " + this.getName() + " is NaN");
+            } else if (Double.isInfinite(value)) {
+                Global.showWarning("The value for the measure " + this.getName() + " is Infinite");
             } else {
-                if (Double.isInfinite(value)) {
-                    Global.showWarning("The value for the measure " + this.getName() + " is Infinite");
-                } else {
-                    mean.addValue(mr.getValue());
-                }
+                mean.addValue(mr.getValue());
             }
         }
 
@@ -148,9 +138,8 @@ public abstract class GroupEvaluationMeasure extends ParameterOwnerAdapter imple
     }
 
     /**
-     * This method returns the extended evaluation measure values. An example of
-     * these values are, in case of precision, the precision at different list
-     * sizes.
+     * This method returns the extended evaluation measure values. An example of these values are, in case of precision,
+     * the precision at different list sizes.
      *
      * @param measureResult Measure result which corresponds with this measure.
      * @return The list of extended performances and their values.

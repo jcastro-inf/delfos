@@ -14,9 +14,10 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package delfos.experiment.casestudy.defaultcase;
+package delfos.experiment.casestudy;
 
 import delfos.common.parallelwork.Task;
+import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RatingsDataset;
 import delfos.dataset.basic.rating.RelevanceCriteria;
@@ -33,11 +34,13 @@ import java.util.TreeMap;
  * @version 29-may-2014
  * @author jcastro-inf ( https://github.com/jcastro-inf )
  */
-public class DefaultCaseStudyEvaluationMeasures_Task extends Task {
+public class CaseStudyEvaluationMeasures_Task extends Task {
 
     protected final int ejecucion;
     protected final int particion;
 
+    protected DatasetLoader<? extends Rating> originalDataset;
+    protected RatingsDataset<? extends Rating> trainingSet;
     protected RatingsDataset<? extends Rating> testSet;
     protected Collection<EvaluationMeasure> evaluationMeasures;
     protected RelevanceCriteria relevanceCriteria;
@@ -48,17 +51,21 @@ public class DefaultCaseStudyEvaluationMeasures_Task extends Task {
      */
     protected Map<EvaluationMeasure, MeasureResult> executionsResult = Collections.synchronizedMap(new TreeMap<>());
 
-    public DefaultCaseStudyEvaluationMeasures_Task(
+    public CaseStudyEvaluationMeasures_Task(
             int ejecucion,
             int particion,
             RecommendationResults esr,
+            DatasetLoader<? extends Rating> originalDataset,
+            RatingsDataset<? extends Rating> trainingSet,
             RatingsDataset<? extends Rating> testSet,
             Collection<EvaluationMeasure> evaluationMeasures,
             RelevanceCriteria relevanceCriteria) {
+        this.ejecucion = ejecucion;
         this.particion = particion;
         this.recommendationResults = esr;
+        this.originalDataset = originalDataset;
+        this.trainingSet = trainingSet;
         this.testSet = testSet;
-        this.ejecucion = ejecucion;
         this.evaluationMeasures = evaluationMeasures;
         this.relevanceCriteria = relevanceCriteria;
     }
@@ -70,6 +77,18 @@ public class DefaultCaseStudyEvaluationMeasures_Task extends Task {
         stringBuilder.append("Exec: ").append(ejecucion).append("\tSplit: ").append(particion);
 
         return stringBuilder.toString();
+    }
+
+    public int getEjecucion() {
+        return ejecucion;
+    }
+
+    public int getParticion() {
+        return particion;
+    }
+
+    public Map<EvaluationMeasure, MeasureResult> getExecutionsResult() {
+        return executionsResult;
     }
 
 }
