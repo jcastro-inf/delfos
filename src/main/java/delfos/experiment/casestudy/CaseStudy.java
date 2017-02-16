@@ -16,7 +16,6 @@
  */
 package delfos.experiment.casestudy;
 
-import delfos.ERROR_CODES;
 import delfos.casestudy.defaultcase.ExecutionSplitDescriptor;
 import delfos.casestudy.parallelisation.ExecutionSplitConsumer;
 import delfos.common.Global;
@@ -26,7 +25,6 @@ import delfos.common.exceptions.dataset.CannotLoadTrustDataset;
 import delfos.common.exceptions.dataset.CannotLoadUsersDataset;
 import delfos.common.exceptions.dataset.items.ItemNotFound;
 import delfos.common.exceptions.dataset.users.UserNotFound;
-import delfos.common.parallelwork.notblocking.MultiThreadExecutionManager_NotBlocking;
 import delfos.common.parameters.Parameter;
 import delfos.common.parameters.ParameterListener;
 import delfos.common.parameters.ParameterOwnerType;
@@ -38,34 +36,24 @@ import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.loader.types.TrustDatasetLoader;
 import delfos.dataset.basic.loader.types.UsersDatasetLoader;
 import delfos.dataset.basic.rating.Rating;
-import delfos.dataset.basic.rating.RatingsDataset;
 import delfos.dataset.basic.rating.RelevanceCriteria;
-import delfos.dataset.loaders.given.DatasetLoaderGivenRatingsDataset;
-import delfos.dataset.storage.validationdatasets.PairOfTrainTestRatingsDataset;
-import delfos.dataset.storage.validationdatasets.ValidationDatasets;
 import delfos.experiment.ExperimentAdapter;
 import delfos.experiment.ExperimentListener;
 import delfos.experiment.SeedHolder;
 import static delfos.experiment.SeedHolder.SEED;
-import delfos.experiment.casestudy.parallel.SingleUserRecommendationTask;
-import delfos.experiment.casestudy.parallel.SingleUserRecommendationTaskExecutor;
 import delfos.experiment.validation.predictionprotocol.NoPredictionProtocol;
 import delfos.experiment.validation.predictionprotocol.PredictionProtocol;
 import delfos.experiment.validation.validationtechnique.CrossFoldValidation_Ratings;
 import delfos.experiment.validation.validationtechnique.NoPartitions;
 import delfos.experiment.validation.validationtechnique.ValidationTechnique;
-import delfos.experiment.validation.validationtechnique.ValidationTechniqueProgressListener;
 import delfos.factories.EvaluationMeasuresFactory;
 import delfos.io.excel.casestudy.CaseStudyExcel;
 import delfos.io.xml.casestudy.CaseStudyXML;
 import delfos.results.MeasureResult;
-import delfos.results.RecommendationResults;
 import delfos.results.evaluationmeasures.EvaluationMeasure;
 import delfos.rs.RecommendationModelBuildingProgressListener;
 import delfos.rs.RecommenderSystem;
 import delfos.rs.nonpersonalised.randomrecommender.RandomRecommender;
-import delfos.rs.recommendation.Recommendation;
-import delfos.rs.recommendation.RecommendationsToUser;
 import delfos.utils.algorithm.progress.ProgressChangedController;
 import java.io.File;
 import java.util.ArrayList;
@@ -78,8 +66,6 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.function.Function;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -228,191 +214,87 @@ public class CaseStudy<RecommendationModel extends Object, RatingType extends Ra
         setAlias(configuredDatasetLoader.getAlias());
     }
 
-    /**
-     * Realiza la ejecución del caso de uso.
-     *
-     * @throws CannotLoadContentDataset Si el dataset de contenido no sepuede recuperar.
-     * @throws CannotLoadRatingsDataset Si el dataset de valoraciones no se puede recuperar.
-     */
-    public void execute() throws CannotLoadRatingsDataset, CannotLoadContentDataset, CannotLoadUsersDataset {
-
+    public void execute() throws CannotLoadContentDataset, CannotLoadRatingsDataset, UserNotFound, ItemNotFound {
         finished = false;
 
-        /**
-         * Como estoy calculando medidas de evaluación, a esta hebra le pongo la prioridad mínima.
-         */
-        setRunning(true);
-        executionProgressFireEvent("Starting", 0, -1);
-        recommenderSystem.addRecommendationModelBuildingProgressListener(this);
+        final DatasetLoader<? extends Rating> originalDatasetLoader = getDatasetLoader();
+        int numberOfExecutionSplits = getNumSplits() * getNumExecutions();
+        setNumVueltas(numberOfExecutionSplits);
+        loadDataset(originalDatasetLoader);
 
-        ValidationTechniqueProgressListener validationListener = (String message, int percent) -> {
-            CaseStudy.this.executionProgressFireEvent(message, percent, -1);
-        };
-        validationTechnique.addListener(validationListener);
+        ProgressChangedController groupCaseStudyProgressChangedController = new ProgressChangedController(
+                getAlias(),
+                numberOfExecutionSplits,
+                this::setExperimentProgress);
 
-        loadDataset(datasetLoader);
+        Stream<Integer> executionsStream = IntStream.range(0, getNumExecutions()).boxed();
 
-        MultiThreadExecutionManager_NotBlocking<CaseStudyEvaluationMeasures_Task> multiThreadExecutionManagerEvaluationMeasures
-                = new MultiThreadExecutionManager_NotBlocking<>(
-                        "DefaultCaseStudy.computeEvaluationMeasures()",
-                        CaseStudyEvaluationMeasures_SingleTaskExecutor.class
-                );
-        multiThreadExecutionManagerEvaluationMeasures.runInBackground();
-
-        loopCount = 0;
-        for (_ejecucionActual = 0; _ejecucionActual < numExecutions; _ejecucionActual++) {
-//            this.recommenderProgressChanged("Realizando conjuntos train y test", 0);
-
-            setNextSeedToSeedHolders(getSeedValue() + loopCount);
-
-            Global.showInfoMessage(getAlias() + "validation.shuffle()\n");
-            executionProgressFireEvent(getAlias() + "Performing validation split", 0, -1);
-
-            PairOfTrainTestRatingsDataset<RatingType>[] pairsValidation = validationTechnique.shuffle(datasetLoader);
-
-            if (_ejecucionActual == 0) {
-                initStructures(numExecutions, pairsValidation.length);
-            }
-
-            Global.showInfoMessage(getAlias() + "validation.shuffle() -- > Finished\n");
-
-            for (_conjuntoActual = 0; _conjuntoActual < pairsValidation.length; _conjuntoActual++) {
-
-                setNextSeedToSeedHolders(getSeedValue() + loopCount);
-                final RecommendationResults recommendationResults = new RecommendationResults();
-
-                long initTime = System.currentTimeMillis();
-
-                executionProgressFireEvent(getAlias() + "Building recommendation model", 0, -1);
-                final Object model = recommenderSystem.buildRecommendationModel(pairsValidation[_conjuntoActual].getTrainingDatasetLoader());
-
-                final long modelBuildTime = System.currentTimeMillis() - initTime;
-                recommendationResults.setModelBuildTime(modelBuildTime);
-
-                Global.showInfoMessage("----------------------- End of Build ----------------------------------" + "\n");
-                this.executionProgressFireEvent(getAlias() + " --> Recommendation process", 50, -1);
-
-                final DatasetLoader<RatingType> trainingDatasetLoader = pairsValidation[_conjuntoActual].getTrainingDatasetLoader();
-                final DatasetLoader<RatingType> testDatasetLoader = pairsValidation[_conjuntoActual].getTestDatasetLoader();
-
-                Collection<Integer> thisDatasetUsers = testDatasetLoader.getRatingsDataset().allUsers();
-                final int numUsers = (int) thisDatasetUsers.parallelStream().map(idUser -> datasetLoader.getUsersDataset().get(idUser))
-                        .filter(user -> !predictionProtocol.getRecommendationRequests(trainingDatasetLoader, testDatasetLoader, user.getId()).isEmpty()).count();
-
-                ProgressChangedController progressChangedController = new ProgressChangedController(
-                        getAlias() + " --> Recommendation process",
-                        numUsers,
-                        (String task, int percent, long remainingTime) -> {
-                            executionProgressFireEvent(task, percent / 2 + 50, remainingTime);
-                        });
-
-                Map<Integer, Collection<Recommendation>> predictions = thisDatasetUsers.parallelStream().map(idUser -> datasetLoader.getUsersDataset().get(idUser))
-                        .filter(user -> !predictionProtocol.getRecommendationRequests(trainingDatasetLoader, testDatasetLoader, user.getId()).isEmpty())
-                        .map(user -> {
-                            List<Set<Integer>> recommendationRequests = predictionProtocol
-                                    .getRecommendationRequests(trainingDatasetLoader, testDatasetLoader, user.getId());
-                            List<Set<Integer>> ratingsToHide = predictionProtocol
-                                    .getRatingsToHide(trainingDatasetLoader, testDatasetLoader, user.getId());
-
-                            List<Recommendation> ret = IntStream.range(0, recommendationRequests.size())
-                                    .boxed()
-                                    .parallel()
-                                    .map(i -> {
-
-                                        Set<Integer> candidateItems = recommendationRequests.get(i);
-                                        Integer idUser = user.getId();
-                                        try {
-                                            Map<Integer, Set<Integer>> predictionRatings = new TreeMap<>();
-                                            predictionRatings.put(idUser, ratingsToHide.get(i));
-                                            RatingsDataset<Rating> predictionRatingsDataset = ValidationDatasets.getInstance().createTrainingDataset((RatingsDataset<Rating>) datasetLoader.getRatingsDataset(), predictionRatings);
-                                            DatasetLoader<Rating> predictionDatasetLoader = new DatasetLoaderGivenRatingsDataset<>(
-                                                    datasetLoader,
-                                                    predictionRatingsDataset);
-                                            return new SingleUserRecommendationTask(
-                                                    recommenderSystem,
-                                                    predictionDatasetLoader,
-                                                    model,
-                                                    idUser,
-                                                    candidateItems.stream().map(idItem -> datasetLoader.getContentDataset().get(idItem)).collect(Collectors.toSet())
-                                            );
-
-                                        } catch (UserNotFound ex) {
-                                            ERROR_CODES.USER_NOT_FOUND.exit(ex);
-                                            throw new IllegalStateException(ex);
-                                        } catch (ItemNotFound ex) {
-                                            ERROR_CODES.ITEM_NOT_FOUND.exit(ex);
-                                            throw new IllegalStateException(ex);
-                                        }
-                                    }).map(new SingleUserRecommendationTaskExecutor())
-                                    .map(recommendations2 -> recommendations2.getRecommendations())
-                                    .flatMap(recommendations2 -> recommendations2.stream())
-                                    .collect(Collectors.toList());
-                            progressChangedController.setTaskFinished();
-
-                            return new RecommendationsToUser(user, ret);
-                        }).collect(Collectors.toMap(
-                        recommendationsToUser -> recommendationsToUser.getUser().getId(),
-                        recommendationsToUser -> recommendationsToUser.getRecommendations()));
-
-                predictions.entrySet().stream().forEach((entry) -> {
-                    int idUser = entry.getKey();
-                    Collection<Recommendation> prediction = entry.getValue();
-                    recommendationResults.add(idUser, prediction);
-                });
-
-                multiThreadExecutionManagerEvaluationMeasures.addTask(new CaseStudyEvaluationMeasures_Task(
-                        _ejecucionActual,
-                        _conjuntoActual,
-                        recommendationResults,
-                        datasetLoader,
-                        trainingDatasetLoader.getRatingsDataset(),
-                        testDatasetLoader.getRatingsDataset(),
-                        evaluationMeasures,
-                        relevanceCriteria));
-
-                this.loopCount++;
-                loopCount++;
-            }
+        if (Global.isParallelExecutionSplits()) {
+            executionsStream = executionsStream.parallel();
         }
 
-        try {
-            multiThreadExecutionManagerEvaluationMeasures.waitUntilFinished();
-        } catch (InterruptedException ex) {
-            Logger.getLogger(CaseStudy.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        executionsStream.flatMap(execution -> {
+            Stream<Integer> splitsStream = IntStream.range(0, getNumSplits()).boxed();
 
-        multiThreadExecutionManagerEvaluationMeasures.getAllFinishedTasks().stream().forEach((task) -> {
+            if (Global.isParallelExecutionSplits()) {
+                splitsStream = splitsStream.parallel();
+            }
 
-            int execution = task.getEjecucion();
-            int split = task.getParticion();
-            final Map<EvaluationMeasure, MeasureResult> executionsResult1 = task.getExecutionsResult();
+            return splitsStream
+                    .map(split -> {
+                        return new ExecutionSplitConsumer(
+                                execution,
+                                split,
+                                this
+                        );
 
-            allLoopsResults.get(execution).put(split, executionsResult1);
+                    });
+        }).forEach(executionSplit -> {
+            ExecutionSplitDescriptor executionSplitDescriptor = executionSplit.getDescriptorAndResults();
+
+            synchronized (allLoopsResults) {
+                final int execution = executionSplitDescriptor.getExecution();
+
+                if (!allLoopsResults.containsKey(execution)) {
+                    allLoopsResults.put(execution, Collections.synchronizedMap(new HashMap<>()));
+                }
+
+                allLoopsResults.get(execution).put(executionSplitDescriptor.getSplit(), executionSplitDescriptor.getResults());
+
+                List<Integer> finishedSplits = allLoopsResults.get(execution).keySet().stream().sorted().collect(Collectors.toList());
+                List<Integer> allSplits = IntStream.range(0, getNumSplits()).boxed().sorted().collect(Collectors.toList());
+
+                if (finishedSplits.equals(allSplits)) {
+                    setResultsThisExecution(execution, allLoopsResults.get(execution));
+                }
+            }
+
+            groupCaseStudyProgressChangedController.setTaskFinished();
         });
 
-        aggregateResults = evaluationMeasures.parallelStream().collect(Collectors.toMap(Function.identity(), evaluationMeasure -> {
+        setExperimentProgress("Finished execution, computing evaluation measures", 100, -1);
 
-            List<MeasureResult> allResultsThisMeasure = allLoopsResults.values().stream().parallel()
+        aggregateResults = evaluationMeasures.stream().parallel().collect(Collectors.toMap(Function.identity(),
+                groupEvaluationMeasure -> {
+
+                    List<MeasureResult> allResultsThisMeasure
+                    = allLoopsResults.values().stream().parallel()
                     .flatMap(resultsForThisExecution -> resultsForThisExecution.values().stream())
-                    .map(resultExecutionSplit -> resultExecutionSplit.get(evaluationMeasure))
+                    .map(resultExecutionSplit -> resultExecutionSplit.get(groupEvaluationMeasure))
                     .collect(Collectors.toList());
 
-            MeasureResult agregateResults = evaluationMeasure.agregateResults(allResultsThisMeasure);
+                    MeasureResult resultsAggregated
+                    = groupEvaluationMeasure.agregateResults(allResultsThisMeasure);
 
-            return agregateResults;
-        }));
+                    return resultsAggregated;
+                }));
 
-        recommenderSystem.removeRecommendationModelBuildingProgressListener(this);
-        validationTechnique.removeListener(validationListener);
-
-        executionProgressFireEvent(getAlias() + " --> Recommendation process", 100, -1);
         Global.showInfoMessage("Case study finished\n");
         setRunning(false);
         setFinished();
         setErrors(false);
 
         executionProgressFireEvent("Case study finished", 100, -1);
-
     }
 
     public void loadDataset(DatasetLoader<? extends Rating> datasetLoader) throws CannotLoadContentDataset, CannotLoadTrustDataset, CannotLoadRatingsDataset, CannotLoadUsersDataset {
@@ -776,89 +658,6 @@ public class CaseStudy<RecommendationModel extends Object, RatingType extends Ra
                 allLoopsResults.get(execution).put(split, Collections.synchronizedMap(new TreeMap<>()));
             }
         }
-    }
-
-    public void executeNew() throws CannotLoadContentDataset, CannotLoadRatingsDataset, UserNotFound, ItemNotFound {
-        finished = false;
-
-        final DatasetLoader<? extends Rating> originalDatasetLoader = getDatasetLoader();
-        int numberOfExecutionSplits = getNumSplits() * getNumExecutions();
-        setNumVueltas(numberOfExecutionSplits);
-        loadDataset(originalDatasetLoader);
-
-        ProgressChangedController groupCaseStudyProgressChangedController = new ProgressChangedController(
-                getAlias(),
-                numberOfExecutionSplits,
-                this::setExperimentProgress);
-
-        Stream<Integer> executionsStream = IntStream.range(0, getNumExecutions()).boxed();
-
-        if (Global.isParallelExecutionSplits()) {
-            executionsStream = executionsStream.parallel();
-        }
-
-        executionsStream.flatMap(execution -> {
-            Stream<Integer> splitsStream = IntStream.range(0, getNumSplits()).boxed();
-
-            if (Global.isParallelExecutionSplits()) {
-                splitsStream = splitsStream.parallel();
-            }
-
-            return splitsStream
-                    .map(split -> {
-                        return new ExecutionSplitConsumer(
-                                execution,
-                                split,
-                                this
-                        );
-
-                    });
-        }).forEach(executionSplit -> {
-            ExecutionSplitDescriptor executionSplitDescriptor = executionSplit.getDescriptorAndResults();
-
-            synchronized (allLoopsResults) {
-                final int execution = executionSplitDescriptor.getExecution();
-
-                if (!allLoopsResults.containsKey(execution)) {
-                    allLoopsResults.put(execution, Collections.synchronizedMap(new HashMap<>()));
-                }
-
-                allLoopsResults.get(execution).put(executionSplitDescriptor.getSplit(), executionSplitDescriptor.getResults());
-
-                List<Integer> finishedSplits = allLoopsResults.get(execution).keySet().stream().sorted().collect(Collectors.toList());
-                List<Integer> allSplits = IntStream.range(0, getNumSplits()).boxed().sorted().collect(Collectors.toList());
-
-                if (finishedSplits.equals(allSplits)) {
-                    setResultsThisExecution(execution, allLoopsResults.get(execution));
-                }
-            }
-
-            groupCaseStudyProgressChangedController.setTaskFinished();
-        });
-
-        setExperimentProgress("Finished execution, computing evaluation measures", 100, -1);
-
-        aggregateResults = evaluationMeasures.stream().parallel().collect(Collectors.toMap(Function.identity(),
-                groupEvaluationMeasure -> {
-
-                    List<MeasureResult> allResultsThisMeasure
-                    = allLoopsResults.values().stream().parallel()
-                    .flatMap(resultsForThisExecution -> resultsForThisExecution.values().stream())
-                    .map(resultExecutionSplit -> resultExecutionSplit.get(groupEvaluationMeasure))
-                    .collect(Collectors.toList());
-
-                    MeasureResult resultsAggregated
-                    = groupEvaluationMeasure.agregateResults(allResultsThisMeasure);
-
-                    return resultsAggregated;
-                }));
-
-        Global.showInfoMessage("Case study finished\n");
-        setRunning(false);
-        setFinished();
-        setErrors(false);
-
-        executionProgressFireEvent("Case study finished", 100, -1);
     }
 
     public long getLoopSeed(int execution, int split) {

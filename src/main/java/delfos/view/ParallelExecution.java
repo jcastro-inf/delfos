@@ -26,9 +26,6 @@ import javax.swing.SwingWorker;
  * eventos.
  *
  * @author jcastro-inf ( https://github.com/jcastro-inf )
- *
- * @version 1.0 Unknown date
- * @version 1.1 20-Mar-2013
  */
 public class ParallelExecution extends SwingWorker<Void, Void> {
 
@@ -51,7 +48,7 @@ public class ParallelExecution extends SwingWorker<Void, Void> {
     public Void doInBackground() {
         Thread.currentThread().setName("Execute --> " + c.getAlias());
         try {
-            c.executeNew();
+            c.execute();
             return null;
         } catch (Throwable ex) {
             JOptionPane.showMessageDialog(frame, ex.getStackTrace(), ex.getMessage(), JOptionPane.ERROR_MESSAGE);
