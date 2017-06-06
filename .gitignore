@@ -23,3 +23,7 @@ hs_err_*
 
 *.csv
 *.dat
+
+
+.idea/
+*.iml
