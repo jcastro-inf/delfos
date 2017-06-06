@@ -68,18 +68,18 @@ public class HoldOut_Ratings extends ValidationTechnique {
         PairOfTrainTestRatingsDataset<RatingType>[] ret = new PairOfTrainTestRatingsDataset[1];
 
         //HoldOut initialization
-        Map<Integer, Set<Integer>> testSet = new TreeMap<>();
+        Map<Long, Set<Long>> testSet = new TreeMap<>();
         double testPercentValue = 1 - getTrainPercent();
 
         //composicion de los conjuntos de training y test
         int numUsers = datasetLoader.getRatingsDataset().allUsers().size();
         int usuActual = 1;
         RatingsDataset<? extends Rating> ratingsDataset = datasetLoader.getRatingsDataset();
-        for (int idUser : ratingsDataset.allUsers()) {
+        for (long idUser : ratingsDataset.allUsers()) {
             try {
                 //creo una lista con todos los idItem para ir quitando cuando se elige la partición en la que estará
-                Set<Integer> allItemsThisUser = new TreeSet<>(datasetLoader.getRatingsDataset().getUserRated(idUser));
-                Set<Integer> testItemsThisUser = new TreeSet<>();
+                Set<Long> allItemsThisUser = new TreeSet<>(datasetLoader.getRatingsDataset().getUserRated(idUser));
+                Set<Long> testItemsThisUser = new TreeSet<>();
 
                 long ratingsToRemove = Math.round(testPercentValue * datasetLoader.getRatingsDataset().getUserRated(idUser).size());
                 if (ratingsToRemove == 0) {
@@ -89,7 +89,7 @@ public class HoldOut_Ratings extends ValidationTechnique {
                 //sacando uno aleatoriamente y lo meto en la lista que toca
                 while (testItemsThisUser.size() < ratingsToRemove) {
                     int index = random.nextInt(allItemsThisUser.size());
-                    Integer idItem = (Integer) allItemsThisUser.toArray()[index];
+                    Long idItem = (Long) allItemsThisUser.toArray()[index];
                     allItemsThisUser.remove(idItem);
                     testItemsThisUser.add(idItem);
                 }

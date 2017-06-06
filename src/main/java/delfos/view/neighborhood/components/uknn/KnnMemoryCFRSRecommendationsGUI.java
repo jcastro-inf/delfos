@@ -216,7 +216,7 @@ public class KnnMemoryCFRSRecommendationsGUI implements RecommendationsGUI {
 
         this.targetUserInfo.setText("Target user has " + datasetLoader.getRatingsDataset().getUserRated(user.getId()).size() + " ratings");
 
-        Map<Integer, Number> recommendationsByItem = Recommendation.convertToMapOfNumbers(recommendations.getRecommendations());
+        Map<Long, Number> recommendationsByItem = Recommendation.convertToMapOfNumbers(recommendations.getRecommendations());
         List<Recommendation> recommendationsComplete = candidateItems.stream()
                 .map((item -> {
                     if (recommendationsByItem.containsKey(item.getId())) {
@@ -231,7 +231,7 @@ public class KnnMemoryCFRSRecommendationsGUI implements RecommendationsGUI {
 
         if (recommendations instanceof RecommendationsToUserWithNeighbors) {
             RecommendationsToUserWithNeighbors recommendationsWithNeighbors = (RecommendationsToUserWithNeighbors) recommendations;
-            Map<Integer, Neighbor> neighbors = recommendationsWithNeighbors.getNeighbors().stream()
+            Map<Long, Neighbor> neighbors = recommendationsWithNeighbors.getNeighbors().stream()
                     .collect(Collectors.toMap(
                             (neighbor -> neighbor.getIdNeighbor()),
                             Function.identity()));

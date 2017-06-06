@@ -199,10 +199,10 @@ public class Symeonidis2007FeatureWeightedTest extends DelfosTest {
         DatasetLoader<? extends Rating> datasetLoader = new DatasetLoaderSymeonidisMock();
         Symeonidis2007FeatureWeighted instance = new Symeonidis2007FeatureWeighted();
         Symeonidis2007Model model = instance.buildRecommendationModel(datasetLoader);
-        Set<Integer> candidateItems = new TreeSet<>();
-        candidateItems.add(1);
-        candidateItems.add(3);
-        candidateItems.add(5);
+        Set<Long> candidateItems = new TreeSet<>();
+        candidateItems.add(1l);
+        candidateItems.add(3l);
+        candidateItems.add(5l);
 
         //Step2: Execution
         List<Recommendation> sortedRecommendations = new ArrayList<>(instance.recommendToUser(datasetLoader, model, idUser, candidateItems));
@@ -210,9 +210,9 @@ public class Symeonidis2007FeatureWeightedTest extends DelfosTest {
 
         //Step3: Results check
         //Check the item order
-        assertEquals("The item recommended in the first place should be Item", 5, sortedRecommendations.get(0).getIdItem());
-        assertEquals("The item recommended in the second place should be Item", 3, sortedRecommendations.get(1).getIdItem());
-        assertEquals("The item recommended in the third place should be Item", 1, sortedRecommendations.get(2).getIdItem());
+        assertEquals("The item recommended in the first place should be Item", 5l, (long) sortedRecommendations.get(0).getIdItem());
+        assertEquals("The item recommended in the second place should be Item", 3l, (long) sortedRecommendations.get(1).getIdItem());
+        assertEquals("The item recommended in the third place should be Item", 1, (long) sortedRecommendations.get(2).getIdItem());
 
         //Check the item preference value
         assertEquals("For Item 5, preference value", 6, sortedRecommendations.get(0).getPreference().doubleValue(), DELTA);

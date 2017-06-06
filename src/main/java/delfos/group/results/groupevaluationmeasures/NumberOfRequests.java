@@ -32,9 +32,6 @@ import java.util.Set;
  * predicción que se hicieron al sistema por grupo.
  *
  * @author jcastro-inf ( https://github.com/jcastro-inf )
- *
- * @version 1.0 14-Mayo-2013
- * @see Coverage_ForGroups
  */
 public class NumberOfRequests extends GroupEvaluationMeasure {
 

@@ -68,14 +68,14 @@ public class AreaUnderRoc extends GroupEvaluationMeasure {
             Collection<Recommendation> groupRecommendations = groupOutput
                     .getRecommendations().getRecommendations();
 
-            Map<Integer, Map<Integer, Number>> membersRatings_byUser = DatasetUtilities.getMembersRatings_byUser(group, testDatasetLoader);
+            Map<Long, Map<Long, Number>> membersRatings_byUser = DatasetUtilities.getMembersRatings_byUser(group, testDatasetLoader);
 
             List<Boolean> recommendacionesGrupo = new ArrayList<>(groupRecommendations.size());
             for (Recommendation r : groupRecommendations) {
-                int idItem = r.getItem().getId();
+                long idItem = r.getItem().getId();
 
                 MeanIterative mean = new MeanIterative();
-                for (int idUser : group.getIdMembers()) {
+                for (long idUser : group.getIdMembers()) {
                     if (!membersRatings_byUser.containsKey(idUser)) {
                         Global.showError(new IllegalStateException("User '" + idUser + "' has no ratings"));
                     } else if (membersRatings_byUser.get(idUser).containsKey(idItem)) {

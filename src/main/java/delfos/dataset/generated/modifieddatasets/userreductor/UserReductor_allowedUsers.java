@@ -44,21 +44,21 @@ import java.util.TreeSet;
 public class UserReductor_allowedUsers<RatingType extends Rating> extends RatingsDatasetAdapter<RatingType> {
 
     private final RatingsDataset<RatingType> originalDataset;
-    private final Set<Integer> allowedUsers;
-    private TreeSet<Integer> allRatedItems;
+    private final Set<Long> allowedUsers;
+    private TreeSet<Long> allRatedItems;
 
-    public UserReductor_allowedUsers(RatingsDataset<RatingType> originalDataset, Set<Integer> allowedUsers) {
+    public UserReductor_allowedUsers(RatingsDataset<RatingType> originalDataset, Set<Long> allowedUsers) {
         super();
         this.originalDataset = originalDataset;
         this.allowedUsers = allowedUsers;
     }
 
-    private boolean isAllowed(int idUser) {
+    private boolean isAllowed(long idUser) {
         return allowedUsers.contains(idUser);
     }
 
     @Override
-    public RatingType getRating(int idUser, int idItem) throws UserNotFound, ItemNotFound {
+    public RatingType getRating(long idUser, long idItem) throws UserNotFound, ItemNotFound {
         if (isAllowed(idUser)) {
             return originalDataset.getRating(idUser, idItem);
         } else {
@@ -67,20 +67,20 @@ public class UserReductor_allowedUsers<RatingType extends Rating> extends Rating
     }
 
     @Override
-    public Set<Integer> allUsers() {
-        Set<Integer> ret = new TreeSet<>();
-        for (int idUser : allowedUsers) {
+    public Set<Long> allUsers() {
+        Set<Long> ret = new TreeSet<>();
+        for (long idUser : allowedUsers) {
             ret.add(idUser);
         }
         return ret;
     }
 
     @Override
-    public Set<Integer> allRatedItems() {
+    public Set<Long> allRatedItems() {
         if (this.allRatedItems == null || allRatedItems.isEmpty()) {
             allRatedItems = new TreeSet<>();
 
-            for (Integer idUser : allowedUsers) {
+            for (Long idUser : allowedUsers) {
                 try {
                     allRatedItems.addAll(originalDataset.getUserRated(idUser));
                 } catch (UserNotFound ex) {
@@ -94,7 +94,7 @@ public class UserReductor_allowedUsers<RatingType extends Rating> extends Rating
     }
 
     @Override
-    public Set<Integer> getUserRated(Integer idUser) throws UserNotFound {
+    public Set<Long> getUserRated(long idUser) throws UserNotFound {
         if (isAllowed(idUser)) {
             return originalDataset.getUserRated(idUser);
         } else {
@@ -103,10 +103,10 @@ public class UserReductor_allowedUsers<RatingType extends Rating> extends Rating
     }
 
     @Override
-    public Set<Integer> getItemRated(Integer idItem) throws ItemNotFound {
+    public Set<Long> getItemRated(long idItem) throws ItemNotFound {
 
-        Set<Integer> ret = new TreeSet<>();
-        for (int idUser : originalDataset.getItemRated(idItem)) {
+        Set<Long> ret = new TreeSet<>();
+        for (long idUser : originalDataset.getItemRated(idItem)) {
             if (isAllowed(idUser)) {
                 ret.add(idUser);
             }
@@ -115,7 +115,7 @@ public class UserReductor_allowedUsers<RatingType extends Rating> extends Rating
     }
 
     @Override
-    public Map<Integer, RatingType> getUserRatingsRated(Integer idUser) throws UserNotFound {
+    public Map<Long, RatingType> getUserRatingsRated(long idUser) throws UserNotFound {
         if (isAllowed(idUser)) {
             return originalDataset.getUserRatingsRated(idUser);
         } else {
@@ -124,10 +124,10 @@ public class UserReductor_allowedUsers<RatingType extends Rating> extends Rating
     }
 
     @Override
-    public Map<Integer, RatingType> getItemRatingsRated(Integer idItem) throws ItemNotFound {
-        Map<Integer, RatingType> ret = new TreeMap<>();
+    public Map<Long, RatingType> getItemRatingsRated(long idItem) throws ItemNotFound {
+        Map<Long, RatingType> ret = new TreeMap<>();
 
-        for (int idUser : getItemRated(idItem)) {
+        for (long idUser : getItemRated(idItem)) {
             try {
                 RatingType rating = originalDataset.getRating(idUser, idItem);
                 ret.put(idUser, rating);

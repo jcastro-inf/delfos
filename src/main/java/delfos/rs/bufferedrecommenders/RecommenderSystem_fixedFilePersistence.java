@@ -149,7 +149,7 @@ public class RecommenderSystem_fixedFilePersistence<RecommendationModel> extends
             String suffix = "_datasetLoader=" + datasetLoaderAlias + "_DLHash=" + ratingsDatasetHashCode;
 
             FilePersistence filePersistenceWithHashSuffix = getFilePersistence().copyWithSuffix(suffix);
-            Collection<Integer> allItems = new TreeSet<>();
+            Collection<Long> allItems = new TreeSet<>();
             if (datasetLoader instanceof ContentDatasetLoader) {
                 ContentDatasetLoader contentDatasetLoader = (ContentDatasetLoader) datasetLoader;
                 allItems.addAll(contentDatasetLoader.getContentDataset().allIDs());
@@ -193,7 +193,7 @@ public class RecommenderSystem_fixedFilePersistence<RecommendationModel> extends
     }
 
     @Override
-    public Collection<Recommendation> recommendToUser(DatasetLoader<? extends Rating> datasetLoader, RecommendationModel model, Integer idUser, java.util.Set<Integer> candidateItems) throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset, NotEnoughtUserInformation {
+    public Collection<Recommendation> recommendToUser(DatasetLoader<? extends Rating> datasetLoader, RecommendationModel model, long idUser, java.util.Set<Long> candidateItems) throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset, NotEnoughtUserInformation {
         Collection<Recommendation> recommendations;
 
         recommendations = getRecommenderSystem().recommendToUser(datasetLoader, model, idUser, candidateItems);
@@ -202,7 +202,6 @@ public class RecommenderSystem_fixedFilePersistence<RecommendationModel> extends
 
     /**
      * Devuelve el valor del parámetro
-     * {@link RecommenderSystem_fixedFilePersistence#groupRecommenderSystem}.
      *
      * @return the rs_withFilePersistence
      */

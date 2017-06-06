@@ -53,9 +53,9 @@ public class TrainingRatingsDataset_Memory<RatingType extends Rating> extends Ra
      * Crea un buffer para no tener que recalcular los conjuntos indizados por
      * item. Acelera la ejecución del metodo item item
      */
-    private final Map<Integer, Map<Integer, RatingType>> bufferItems = Collections.synchronizedMap(new TreeMap<Integer, Map<Integer, RatingType>>());
+    private final Map<Long, Map<Long, RatingType>> bufferItems = Collections.synchronizedMap(new TreeMap<Long, Map<Long, RatingType>>());
 
-    public TrainingRatingsDataset_Memory(RatingsDataset<RatingType> originalRatingsDataset, Map<Integer, Set<Integer>> testSet) throws UserNotFound, ItemNotFound {
+    public TrainingRatingsDataset_Memory(RatingsDataset<RatingType> originalRatingsDataset, Map<Long, Set<Long>> testSet) throws UserNotFound, ItemNotFound {
         super();
 
         checkParameters(originalRatingsDataset, testSet);
@@ -64,8 +64,8 @@ public class TrainingRatingsDataset_Memory<RatingType extends Rating> extends Ra
 
         List<RatingType> trainingRatings = new ArrayList<>();
         for (RatingType rating : originalRatingsDataset) {
-            final int idUser = rating.getIdUser();
-            final int idItem = rating.getIdItem();
+            final long idUser = rating.getIdUser();
+            final long idItem = rating.getIdItem();
             if (testSet.containsKey(idUser)) {
                 //El usuario está en test
                 if (testSet.get(idUser).contains(idItem)) {
@@ -83,15 +83,15 @@ public class TrainingRatingsDataset_Memory<RatingType extends Rating> extends Ra
         trainingRatingsDataset = new BothIndexRatingsDataset<>(trainingRatings);
     }
 
-    public final void checkParameters(RatingsDataset<RatingType> originalDatset, Map<Integer, Set<Integer>> testSet) throws ItemNotFound, UserNotFound, IllegalArgumentException {
-        for (int idUser : testSet.keySet()) {
-            for (int idItem : testSet.get(idUser)) {
+    public final void checkParameters(RatingsDataset<RatingType> originalDatset, Map<Long, Set<Long>> testSet) throws ItemNotFound, UserNotFound, IllegalArgumentException {
+        for (long idUser : testSet.keySet()) {
+            for (long idItem : testSet.get(idUser)) {
                 if (originalDatset.getRating(idUser, idItem) == null) {
-                    Collection<Integer> userRated = originalDatset.getUserRated(idUser);
+                    Collection<Long> userRated = originalDatset.getUserRated(idUser);
                     if (userRated.isEmpty()) {
                         Global.showWarning("User " + idUser + "hasn't rated any items.");
                     }
-                    Collection<Integer> itemRated = originalDatset.getItemRated(idItem);
+                    Collection<Long> itemRated = originalDatset.getItemRated(idItem);
                     if (itemRated.isEmpty()) {
                         Global.showWarning("Item " + idItem + "hasn't received any rating.");
                     }
@@ -102,37 +102,37 @@ public class TrainingRatingsDataset_Memory<RatingType extends Rating> extends Ra
     }
 
     @Override
-    public RatingType getRating(int idUser, int idItem) throws UserNotFound, ItemNotFound {
+    public RatingType getRating(long idUser, long idItem) throws UserNotFound, ItemNotFound {
         return trainingRatingsDataset.getRating(idUser, idItem);
     }
 
     @Override
-    public Set<Integer> allUsers() {
+    public Set<Long> allUsers() {
         return trainingRatingsDataset.allUsers();
     }
 
     @Override
-    public Set<Integer> allRatedItems() {
+    public Set<Long> allRatedItems() {
         return trainingRatingsDataset.allRatedItems();
     }
 
     @Override
-    public Set<Integer> getUserRated(Integer idUser) throws UserNotFound {
+    public Set<Long> getUserRated(long idUser) throws UserNotFound {
         return trainingRatingsDataset.getUserRated(idUser);
     }
 
     @Override
-    public Map<Integer, RatingType> getUserRatingsRated(Integer idUser) throws UserNotFound {
+    public Map<Long, RatingType> getUserRatingsRated(long idUser) throws UserNotFound {
         return trainingRatingsDataset.getUserRatingsRated(idUser);
     }
 
     @Override
-    public Set<Integer> getItemRated(Integer idItem) throws ItemNotFound {
+    public Set<Long> getItemRated(long idItem) throws ItemNotFound {
         return trainingRatingsDataset.getItemRated(idItem);
     }
 
     @Override
-    public Map<Integer, RatingType> getItemRatingsRated(Integer idItem) throws ItemNotFound {
+    public Map<Long, RatingType> getItemRatingsRated(long idItem) throws ItemNotFound {
         return trainingRatingsDataset.getItemRatingsRated(idItem);
     }
 

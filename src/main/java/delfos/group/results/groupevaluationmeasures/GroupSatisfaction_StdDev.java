@@ -69,7 +69,7 @@ public class GroupSatisfaction_StdDev extends GroupEvaluationMeasure {
             MeanIterative maeGrupo = new MeanIterative();
 
             /* Hago esta reordenación de los resultados para ganar eficiencia */
-            Map<Integer, Recommendation> recomendacionesAlGrupoReordenadas = new HashMap<>();
+            Map<Long, Recommendation> recomendacionesAlGrupoReordenadas = new HashMap<>();
             for (Recommendation recommendation : groupRecommendations) {
                 recomendacionesAlGrupoReordenadas.put(recommendation.getIdItem(), recommendation);
             }
@@ -77,11 +77,11 @@ public class GroupSatisfaction_StdDev extends GroupEvaluationMeasure {
             //Calculo las recomendaciones individuales de cada miembro del grupo
             List<Double> listaMaes = new LinkedList<>();
 
-            for (int idUser : groupOfUsers.getIdMembers()) {
+            for (long idUser : groupOfUsers.getIdMembers()) {
                 try {
                     MeanIterative maeActual = new MeanIterative();
-                    Map<Integer, ? extends Rating> userRated = testDatasetLoader.getRatingsDataset().getUserRatingsRated(idUser);
-                    for (int idItem : userRated.keySet()) {
+                    Map<Long, ? extends Rating> userRated = testDatasetLoader.getRatingsDataset().getUserRatingsRated(idUser);
+                    for (long idItem : userRated.keySet()) {
                         if (recomendacionesAlGrupoReordenadas.containsKey(idItem)) {
                             double prediccionGrupo = recomendacionesAlGrupoReordenadas.get(idItem).getPreference().doubleValue();
                             double prediccionIndividuo = userRated.get(idItem).getRatingValue().doubleValue();

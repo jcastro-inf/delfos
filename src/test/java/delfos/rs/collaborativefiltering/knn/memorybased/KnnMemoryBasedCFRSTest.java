@@ -168,12 +168,12 @@ public class KnnMemoryBasedCFRSTest extends DelfosTest {
 
             List<Neighbor> neighbors = KnnMemoryBasedCFRS.getNeighbors(datasetLoader, user, knnMemoryBasedCFRS);
 
-            Set<Integer> allUsers = usersDataset.parallelStream()
+            Set<Long> allUsers = usersDataset.parallelStream()
                     .map(itemInner -> itemInner.getId())
                     .filter(innerItem -> !innerItem.equals(user.getId()))
                     .collect(Collectors.toCollection(TreeSet::new));
 
-            Set<Integer> itemsSimilares = neighbors.parallelStream()
+            Set<Long> itemsSimilares = neighbors.parallelStream()
                     .map(neighbor -> neighbor.getIdNeighbor())
                     .collect(Collectors.toCollection(TreeSet::new));
 

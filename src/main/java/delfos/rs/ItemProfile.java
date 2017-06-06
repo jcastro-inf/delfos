@@ -33,5 +33,5 @@ public interface ItemProfile extends Serializable {
      *
      * @return Identificador del producto al que pertenece este perfil.
      */
-    public int getId();
+    public long getId();
 }

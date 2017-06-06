@@ -94,7 +94,7 @@ public class MovieLens1MillionContentDatasetToCSV implements ContentDatasetToCSV
 
         for (Item item : contentDataset) {
 
-            int idItem = item.getId();
+            long idItem = item.getId();
             StringBuilder linea = new StringBuilder();
 
             //Escribir el id y el nombre

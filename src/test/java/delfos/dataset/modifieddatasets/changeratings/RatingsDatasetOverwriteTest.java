@@ -87,8 +87,8 @@ public class RatingsDatasetOverwriteTest {
         RatingsDatasetOverwrite<Rating> instance
                 = RatingsDatasetOverwrite.createRatingsDataset(originalRatingsDataset, newRatings);
 
-        Set<Integer> expectedResult = new TreeSet<>(Arrays.asList(1, 2, 3));
-        Set<Integer> result = new TreeSet<>(instance.allUsers());
+        Set<Long> expectedResult = new TreeSet<>(Arrays.asList(1l, 2l, 3l));
+        Set<Long> result = new TreeSet<>(instance.allUsers());
 
         assertEquals(expectedResult, result);
     }
@@ -106,10 +106,10 @@ public class RatingsDatasetOverwriteTest {
         RatingsDatasetOverwrite<Rating> instance
                 = RatingsDatasetOverwrite.createRatingsDataset(originalRatingsDataset, newRatings);
 
-        Set<Integer> expectedResult = new TreeSet<>(Arrays.asList(
-                1, 11, 12, 13, 14, 15, 21, 22, 23, 24, 25));
+        Set<Long> expectedResult = new TreeSet<>(Arrays.asList(
+                1l, 11l, 12l, 13l, 14l, 15l, 21l, 22l, 23l, 24l, 25l));
 
-        Set<Integer> result = new TreeSet<>(instance.allRatedItems());
+        Set<Long> result = new TreeSet<>(instance.allRatedItems());
 
         assertEquals(expectedResult, result);
     }
@@ -125,8 +125,8 @@ public class RatingsDatasetOverwriteTest {
 
         RatingsDatasetOverwrite<Rating> instance = RatingsDatasetOverwrite.createRatingsDataset(originalRatingsDataset, newRatings);
 
-        Set<Integer> result = new TreeSet<>(instance.getUserRated(idUser));
-        Set<Integer> expectedResult = new TreeSet<>(Arrays.asList(1));
+        Set<Long> result = new TreeSet<>(instance.getUserRated(idUser));
+        Set<Long> expectedResult = new TreeSet<>(Arrays.asList(1l));
         assertEquals(expectedResult, result);
     }
 
@@ -141,8 +141,8 @@ public class RatingsDatasetOverwriteTest {
 
         RatingsDatasetOverwrite<Rating> instance = RatingsDatasetOverwrite.createRatingsDataset(originalRatingsDataset, newRatings);
 
-        Set<Integer> result = new TreeSet<>(instance.getItemRated(idItem));
-        Set<Integer> expectedResult = new TreeSet<>(Arrays.asList(3));
+        Set<Long> result = new TreeSet<>(instance.getItemRated(idItem));
+        Set<Long> expectedResult = new TreeSet<>(Arrays.asList(3l));
 
         assertEquals(expectedResult, result);
     }
@@ -158,9 +158,9 @@ public class RatingsDatasetOverwriteTest {
 
         RatingsDatasetOverwrite<Rating> instance = RatingsDatasetOverwrite.createRatingsDataset(originalRatingsDataset, newRatings);
 
-        Map<Integer, Rating> result = instance.getUserRatingsRated(idUser);
+        Map<Long, Rating> result = instance.getUserRatingsRated(idUser);
         Collection<Rating> expectedRatings = Arrays.asList(new Rating(3, 1, 5));
-        Map<Integer, Rating> expectedResult = new BothIndexRatingsDataset<>(expectedRatings).getUserRatingsRated(idUser);
+        Map<Long, Rating> expectedResult = new BothIndexRatingsDataset<>(expectedRatings).getUserRatingsRated(idUser);
 
         assertEquals(expectedResult, result);
     }
@@ -176,9 +176,9 @@ public class RatingsDatasetOverwriteTest {
 
         RatingsDatasetOverwrite<Rating> instance = RatingsDatasetOverwrite.createRatingsDataset(originalRatingsDataset, newRatings);
 
-        Map<Integer, Rating> result = instance.getItemRatingsRated(idItem);
+        Map<Long, Rating> result = instance.getItemRatingsRated(idItem);
         Collection<Rating> expectedRatings = Arrays.asList(new Rating(3, 1, 5));
-        Map<Integer, Rating> expectedResult = new BothIndexRatingsDataset<>(expectedRatings).getItemRatingsRated(idItem);
+        Map<Long, Rating> expectedResult = new BothIndexRatingsDataset<>(expectedRatings).getItemRatingsRated(idItem);
 
         assertEquals(expectedResult, result);
     }

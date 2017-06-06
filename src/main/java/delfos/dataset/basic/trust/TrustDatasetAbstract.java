@@ -35,17 +35,17 @@ import delfos.common.exceptions.dataset.users.UserNotFound;
  */
 public class TrustDatasetAbstract<TrustStatementType extends TrustStatement> implements TrustDataset<TrustStatementType> {
 
-    private final Map<Integer, Map<Integer, TrustStatementType>> trustsByUserWhoStates;
+    private final Map<Long, Map<Long, TrustStatementType>> trustsByUserWhoStates;
 
-    private final Set<Integer> allUsers;
+    private final Set<Long> allUsers;
 
     public TrustDatasetAbstract(Collection<? extends TrustStatementType> trustStatements) {
         this.allUsers = new TreeSet<>();
         this.trustsByUserWhoStates = new TreeMap<>();
 
         for (TrustStatementType trustStatement : trustStatements) {
-            int idUser = trustStatement.idUserSource;
-            int idNeighbor = trustStatement.idUserDestiny;
+            long idUser = trustStatement.idUserSource;
+            long idNeighbor = trustStatement.idUserDestiny;
 
             if (!trustsByUserWhoStates.containsKey(idUser)) {
                 trustsByUserWhoStates.put(idUser, new TreeMap<>());
@@ -60,12 +60,12 @@ public class TrustDatasetAbstract<TrustStatementType extends TrustStatement> imp
     }
 
     @Override
-    public Collection<TrustStatementType> getUserTrustStatements(int idUser) throws UserNotFound {
+    public Collection<TrustStatementType> getUserTrustStatements(long idUser) throws UserNotFound {
         return new ArrayList<TrustStatementType>(trustsByUserWhoStates.get(idUser).values());
     }
 
     @Override
-    public Collection<? extends Integer> allUsers() {
-        return new ArrayList<Integer>(allUsers);
+    public Collection<? extends Long> allUsers() {
+        return new ArrayList<Long>(allUsers);
     }
 }

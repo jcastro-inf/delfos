@@ -20,6 +20,9 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.stream.Collectors;
+import java.util.stream.LongStream;
+
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RatingsDataset;
 import delfos.dataset.basic.rating.domain.Domain;
@@ -32,8 +35,12 @@ import delfos.dataset.basic.rating.domain.Domain;
  */
 public class RandomRatingsDatasetFactory {
 
-    public static final Set<Integer> DEFAULT_USER_SET = Collections.unmodifiableSet(new TreeSet<>(Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20)));
-    public static final Set<Integer> DEFAULT_ITEM_SET = Collections.unmodifiableSet(new TreeSet<>(Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20)));
+    public static final Set<Long> DEFAULT_USER_SET = Collections.unmodifiableSet(LongStream
+            .rangeClosed(1,20).boxed().collect(Collectors.toSet()));
+
+    public static final Set<Long> DEFAULT_ITEM_SET = Collections.unmodifiableSet(LongStream
+            .rangeClosed(1,20).boxed().collect(Collectors.toSet()));
+
     public static final double DEFAULT_LOAD_FACTOR = 0.2;
 
     /**
@@ -42,9 +49,9 @@ public class RandomRatingsDatasetFactory {
      * @param numUsers numero de usuarios
      * @return conjunto de usuarios
      */
-    public static Set<Integer> createUserSet(int numUsers) {
-        TreeSet<Integer> users = new TreeSet<>();
-        for (int user = 1; user <= numUsers; user++) {
+    public static Set<Long> createUserSet(int numUsers) {
+        TreeSet<Long> users = new TreeSet<>();
+        for (long user = 1; user <= numUsers; user++) {
             users.add(user);
         }
         return users;
@@ -56,9 +63,9 @@ public class RandomRatingsDatasetFactory {
      * @param numItems numero de items
      * @return conjunto de items
      */
-    public static Set<Integer> createItemSet(int numItems) {
-        TreeSet<Integer> items = new TreeSet<>();
-        for (int item = 1; item <= numItems; item++) {
+    public static Set<Long> createItemSet(int numItems) {
+        TreeSet<Long> items = new TreeSet<>();
+        for (long item = 1; item <= numItems; item++) {
             items.add(item);
         }
         return items;
@@ -89,7 +96,7 @@ public class RandomRatingsDatasetFactory {
         return new RandomRatingsDataset(createUserSet(numUsers), createItemSet(numItems), loadFactor, ratingDomain, seed);
     }
 
-    public static RandomRatingsDataset createRatingsDatasetWithLoadFactor(Set<Integer> users, Set<Integer> items, double loadFactor, Domain ratingDomain, long seed) {
+    public static RandomRatingsDataset createRatingsDatasetWithLoadFactor(Set<Long> users, Set<Long> items, double loadFactor, Domain ratingDomain, long seed) {
         return new RandomRatingsDataset(users, items, loadFactor, ratingDomain, seed);
     }
 
@@ -97,7 +104,7 @@ public class RandomRatingsDatasetFactory {
         return new RandomRatingsDataset(createUserSet(numUsers), createItemSet(numItems), numRatingsPerUser, ratingDomain, seed);
     }
 
-    public static RandomRatingsDataset createRatingsDatasetWithNumUserRatings(Set<Integer> users, Set<Integer> items, int numRatingsPerUser, Domain ratingDomain, long seed) {
+    public static RandomRatingsDataset createRatingsDatasetWithNumUserRatings(Set<Long> users, Set<Long> items, int numRatingsPerUser, Domain ratingDomain, long seed) {
         return new RandomRatingsDataset(users, items, numRatingsPerUser, ratingDomain, seed);
     }
 

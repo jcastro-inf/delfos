@@ -50,7 +50,7 @@ public class NoPredictionProtocol extends GroupPredictionProtocol {
         setParameterValue(SEED, seed);
     }
 
-    private Set<Integer> getRatedItems(DatasetLoader<? extends Rating> datasetLoader, GroupOfUsers group) throws CannotLoadRatingsDataset, UserNotFound {
+    private Set<Long> getRatedItems(DatasetLoader<? extends Rating> datasetLoader, GroupOfUsers group) throws CannotLoadRatingsDataset, UserNotFound {
         return DatasetUtilities.getMembersRatings_byItem(group, datasetLoader).keySet();
     }
 

@@ -34,13 +34,9 @@ import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RatingsDataset;
 import delfos.rs.recommendation.Recommendation;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
+
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Random;
-import java.util.TreeMap;
 
 /**
  * Implementa el modelo de recomendación SVD al que añade la
@@ -88,12 +84,19 @@ public class SVDFoldingIn
     }
 
     @Override
-    public TryThisAtHomeSVDModel buildRecommendationModel(DatasetLoader<? extends Rating> datasetLoader) throws CannotLoadRatingsDataset, CannotLoadRatingsDataset, CannotLoadContentDataset {
+    public TryThisAtHomeSVDModel buildRecommendationModel(
+            DatasetLoader<? extends Rating> datasetLoader)
+            throws CannotLoadRatingsDataset, CannotLoadRatingsDataset, CannotLoadContentDataset {
         return super.buildRecommendationModel(datasetLoader);
     }
 
     @Override
-    public Collection<Recommendation> recommendToUser(DatasetLoader<? extends Rating> datasetLoader, TryThisAtHomeSVDModel model, Integer idUser, java.util.Set<Integer> candidateItems) throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset {
+    public Collection<Recommendation> recommendToUser(
+            DatasetLoader<? extends Rating> datasetLoader,
+            TryThisAtHomeSVDModel model,
+            long idUser,
+            Set<Long> candidateItems)
+            throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset {
 
         TryThisAtHomeSVDModel incrementedModel;
         if (model.getUsersIndex().containsKey(idUser)) {
@@ -106,7 +109,12 @@ public class SVDFoldingIn
     }
 
     @Override
-    public Number predictRating(DatasetLoader<? extends Rating> datasetLoader, TryThisAtHomeSVDModel model, int idUser, int idItem) throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset, NotEnoughtUserInformation {
+    public Number predictRating(
+            DatasetLoader<? extends Rating> datasetLoader,
+            TryThisAtHomeSVDModel model,
+            long idUser,
+            long idItem)
+            throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset, NotEnoughtUserInformation {
 
         TryThisAtHomeSVDModel incrementedModel;
         if (model.getUsersIndex().containsKey(idUser)) {
@@ -117,7 +125,11 @@ public class SVDFoldingIn
         return super.predictRating(datasetLoader, incrementedModel, idUser, idItem); //To change body of generated methods, choose Tools | Templates.
     }
 
-    public TryThisAtHomeSVDModel incrementModelWithUserRatings(TryThisAtHomeSVDModel oldModel, DatasetLoader<? extends Rating> datasetLoader, int idUser) throws CannotLoadRatingsDataset, UserNotFound, UserNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset {
+    public TryThisAtHomeSVDModel incrementModelWithUserRatings(
+            TryThisAtHomeSVDModel oldModel,
+            DatasetLoader<? extends Rating> datasetLoader,
+            long idUser)
+            throws UserNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset {
 
         final boolean normalize = isNormalised();
         final double lrate = ((Number) getParameterValue(INCREMENTED_MODEL_LEARNING_RATE)).doubleValue();
@@ -154,17 +166,17 @@ public class SVDFoldingIn
          */
         final TryThisAtHomeSVDModel newModel;
         {
-            final TreeMap<Integer, Integer> newUsersIndex = new TreeMap<>(oldModel.getUsersIndex());
+            final TreeMap<Long, Integer> newUsersIndex = new TreeMap<>(oldModel.getUsersIndex());
             newUsersIndex.put(idUser, thisUserIndex);
-            final TreeMap<Integer, Integer> newItemsIndex = new TreeMap<>(oldModel.getItemsIndex());
+            final TreeMap<Long, Integer> newItemsIndex = new TreeMap<>(oldModel.getItemsIndex());
 
             /*
              * Copio las características de los productos, tal cual.
              */
             final List<List<Double>> newItemsFeatures = oldModel.getAllItemFeatures();
-            for (Entry<Integer, Integer> entry : newItemsIndex.entrySet()) {
+            for (Entry<Long, Integer> entry : newItemsIndex.entrySet()) {
 
-                int _idItem = entry.getKey();
+                Long _idItem = entry.getKey();
                 int _idItemIndex = entry.getValue();
 
                 while (newItemsFeatures.size() <= _idItemIndex) {
@@ -179,8 +191,8 @@ public class SVDFoldingIn
              */
             final List<List<Double>> newUsersFeatures = new ArrayList<>();
 
-            for (Entry<Integer, Integer> entry : oldModel.getUsersIndex().entrySet()) {
-                int _idUser = entry.getKey();
+            for (Entry<Long, Integer> entry : oldModel.getUsersIndex().entrySet()) {
+                long _idUser = entry.getKey();
                 int _idUserIndex = entry.getValue();
 
                 //TODO: Esto está parcheado, hay que hacerlo de una forma más eficiente.
@@ -207,9 +219,9 @@ public class SVDFoldingIn
                 c.reset();
                 MeanIterative meanAbsoluteError = new MeanIterative();
 
-                Map<Integer, ? extends Rating> thisUserRatings = ratingsDataset.getUserRatingsRated(idUser);
+                Map<Long, ? extends Rating> thisUserRatings = ratingsDataset.getUserRatingsRated(idUser);
 
-                for (int idItem : thisUserRatings.keySet()) {
+                for (Long idItem : thisUserRatings.keySet()) {
                     Rating rating = thisUserRatings.get(idItem);
                     Integer indexItem = newModel.getItemsIndex().get(idItem);
                     Double predicted;

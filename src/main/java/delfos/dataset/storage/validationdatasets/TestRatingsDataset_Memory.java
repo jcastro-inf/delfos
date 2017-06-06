@@ -50,7 +50,7 @@ public class TestRatingsDataset_Memory<RatingType extends Rating> extends Rating
      */
     private final RatingsDataset<RatingType> originalRatingsDataset;
 
-    public TestRatingsDataset_Memory(RatingsDataset<RatingType> originalRatingsDataset, Map<Integer, Set<Integer>> testSet) throws UserNotFound, ItemNotFound {
+    public TestRatingsDataset_Memory(RatingsDataset<RatingType> originalRatingsDataset, Map<Long, Set<Long>> testSet) throws UserNotFound, ItemNotFound {
         super();
 
         checkParameters(testSet, originalRatingsDataset);
@@ -58,8 +58,8 @@ public class TestRatingsDataset_Memory<RatingType extends Rating> extends Rating
 
         List<RatingType> testRatings = new ArrayList<>();
         for (RatingType rating : originalRatingsDataset) {
-            final int idUser = rating.getIdUser();
-            final int idItem = rating.getIdItem();
+            final long idUser = rating.getIdUser();
+            final long idItem = rating.getIdItem();
             if (testSet.containsKey(idUser) && testSet.get(idUser).contains(idItem)) {
                 //Este rating no está en el testSet, se añade.
                 testRatings.add(rating);
@@ -72,9 +72,9 @@ public class TestRatingsDataset_Memory<RatingType extends Rating> extends Rating
         testRatingsDataset = new BothIndexRatingsDataset<>(testRatings);
     }
 
-    public final void checkParameters(Map<Integer, Set<Integer>> testSet, RatingsDataset<RatingType> originalDatset) throws UserNotFound, IllegalArgumentException, ItemNotFound {
-        for (int idUser : testSet.keySet()) {
-            for (int idItem : testSet.get(idUser)) {
+    public final void checkParameters(Map<Long, Set<Long>> testSet, RatingsDataset<RatingType> originalDatset) throws UserNotFound, IllegalArgumentException, ItemNotFound {
+        for (long idUser : testSet.keySet()) {
+            for (long idItem : testSet.get(idUser)) {
                 if (originalDatset.getRating(idUser, idItem) == null) {
                     throw new IllegalArgumentException("Specified rating isn't found in originalDataset");
                 }
@@ -83,37 +83,37 @@ public class TestRatingsDataset_Memory<RatingType extends Rating> extends Rating
     }
 
     @Override
-    public RatingType getRating(int idUser, int idItem) throws UserNotFound, ItemNotFound {
+    public RatingType getRating(long idUser, long idItem) throws UserNotFound, ItemNotFound {
         return testRatingsDataset.getRating(idUser, idItem);
     }
 
     @Override
-    public Set<Integer> allUsers() {
+    public Set<Long> allUsers() {
         return testRatingsDataset.allUsers();
     }
 
     @Override
-    public Set<Integer> allRatedItems() {
+    public Set<Long> allRatedItems() {
         return testRatingsDataset.allRatedItems();
     }
 
     @Override
-    public Set<Integer> getUserRated(Integer idUser) throws UserNotFound {
+    public Set<Long> getUserRated(long idUser) throws UserNotFound {
         return testRatingsDataset.getUserRated(idUser);
     }
 
     @Override
-    public Map<Integer, RatingType> getUserRatingsRated(Integer idUser) throws UserNotFound {
+    public Map<Long, RatingType> getUserRatingsRated(long idUser) throws UserNotFound {
         return testRatingsDataset.getUserRatingsRated(idUser);
     }
 
     @Override
-    public Set<Integer> getItemRated(Integer idItem) throws ItemNotFound {
+    public Set<Long> getItemRated(long idItem) throws ItemNotFound {
         return testRatingsDataset.getItemRated(idItem);
     }
 
     @Override
-    public Map<Integer, RatingType> getItemRatingsRated(Integer idItem) throws ItemNotFound {
+    public Map<Long, RatingType> getItemRatingsRated(long idItem) throws ItemNotFound {
         return testRatingsDataset.getItemRatingsRated(idItem);
     }
 

@@ -18,6 +18,8 @@ package delfos.rs.contentbased;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
+
 import delfos.common.exceptions.dataset.CannotLoadContentDataset;
 import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
 import delfos.common.exceptions.dataset.items.ItemNotFound;
@@ -80,15 +82,20 @@ public abstract class ContentBasedRecommender<RecommendationModel, UserProfile> 
      * @throws
      * delfos.common.exceptions.ratings.NotEnoughtUserInformation
      */
-    protected abstract UserProfile makeUserProfile(int idUser, DatasetLoader<? extends Rating> datasetLoader, RecommendationModel model) throws CannotLoadRatingsDataset, CannotLoadContentDataset, UserNotFound, NotEnoughtUserInformation;
+    protected abstract UserProfile makeUserProfile(long idUser, DatasetLoader<? extends Rating> datasetLoader, RecommendationModel model) throws CannotLoadRatingsDataset, CannotLoadContentDataset, UserNotFound, NotEnoughtUserInformation;
 
     @Override
-    public final Collection<Recommendation> recommendToUser(DatasetLoader<? extends Rating> datasetLoader, RecommendationModel model, Integer idUser, java.util.Set<Integer> candidateItems) throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset, NotEnoughtUserInformation {
+    public final Collection<Recommendation> recommendToUser(
+            DatasetLoader<? extends Rating> datasetLoader,
+            RecommendationModel model,
+            long idUser,
+            Set<Long> candidateItems)
+            throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset, NotEnoughtUserInformation {
         UserProfile makeUserProfile;
 
         makeUserProfile = makeUserProfile(idUser, datasetLoader, model);
         return recommendOnly(datasetLoader, model, makeUserProfile, candidateItems);
     }
 
-    protected abstract Collection<Recommendation> recommendOnly(DatasetLoader<? extends Rating> datasetLoader, RecommendationModel model, UserProfile userProfile, Collection<Integer> candidateItems) throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset;
+    protected abstract Collection<Recommendation> recommendOnly(DatasetLoader<? extends Rating> datasetLoader, RecommendationModel model, UserProfile userProfile, Collection<Long> candidateItems) throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset;
 }

@@ -76,7 +76,7 @@ public class ChangeableContentDatasetCSV extends CollectionOfEntitiesWithFeature
     }
 
     @Override
-    public Item get(int idItem) throws EntityNotFound {
+    public Item get(long idItem) throws EntityNotFound {
         if (entitiesById.containsKey(idItem)) {
             return entitiesById.get(idItem);
         } else {
@@ -100,17 +100,17 @@ public class ChangeableContentDatasetCSV extends CollectionOfEntitiesWithFeature
     }
 
     @Override
-    public Collection<Integer> allIDs() {
+    public Collection<Long> allIDs() {
         return super.allIDs();
     }
 
     @Override
-    public Collection<Integer> getAvailableItems() {
+    public Collection<Long> getAvailableItems() {
         return allIDs();
     }
 
     @Override
-    public void setItemAvailable(int idItem, boolean available) throws ItemNotFound {
+    public void setItemAvailable(long idItem, boolean available) throws ItemNotFound {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
@@ -120,7 +120,7 @@ public class ChangeableContentDatasetCSV extends CollectionOfEntitiesWithFeature
     }
 
     @Override
-    public Item getItem(int idItem) throws ItemNotFound {
+    public Item getItem(long idItem) throws ItemNotFound {
         try {
             return get(idItem);
         } catch (EntityNotFound ex) {

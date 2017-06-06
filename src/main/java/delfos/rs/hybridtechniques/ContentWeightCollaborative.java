@@ -16,12 +16,8 @@
  */
 package delfos.rs.hybridtechniques;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
+
 import delfos.common.aggregationoperators.AggregationOperator;
 import delfos.common.aggregationoperators.Mean;
 import delfos.common.aggregationoperators.TwoValuesAggregator;
@@ -102,7 +98,7 @@ public class ContentWeightCollaborative extends HybridRecommender<HybridRecommen
     }
 
     @Override
-    public Collection<Recommendation> recommendToUser(DatasetLoader<? extends Rating> datasetLoader, HybridRecommendationModel model, Integer idUser, java.util.Set<Integer> candidateItems) throws UserNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset, ItemNotFound, NotEnoughtUserInformation {
+    public Collection<Recommendation> recommendToUser(DatasetLoader<? extends Rating> datasetLoader, HybridRecommendationModel model, long idUser, Set<Long> candidateItems) throws UserNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset, ItemNotFound, NotEnoughtUserInformation {
 
         ContentBasedRecommender<Object, Object> contentBasedAlgorithm = (ContentBasedRecommender<Object, Object>) getParameterValue(CONTENT_BASED_TECHNIQUE);
         CollaborativeRecommender<Object> collaborativeFilteringTechnique = (CollaborativeRecommender<Object>) getParameterValue(COLLABORATIVE_TECHNIQUE);
@@ -136,10 +132,10 @@ public class ContentWeightCollaborative extends HybridRecommender<HybridRecommen
 
         class rank implements Comparable<rank> {
 
-            public rank(int idItem) {
+            public rank(long idItem) {
                 this.idItem = idItem;
             }
-            final int idItem;
+            final long idItem;
             double content = 0;
             double collaborative = 0;
             double valorCombinado = 0;
@@ -164,7 +160,7 @@ public class ContentWeightCollaborative extends HybridRecommender<HybridRecommen
         }
         TwoValuesAggregator aggregationOperator = (TwoValuesAggregator) getParameterValue(AGGREGATION_OPERATOR);
 
-        Map<Integer, rank> mapa = new TreeMap<>();
+        Map<Long, rank> mapa = new TreeMap<>();
         int i = 0;
         for (Recommendation r : l1) {
             rank ranking = new rank(r.getIdItem());

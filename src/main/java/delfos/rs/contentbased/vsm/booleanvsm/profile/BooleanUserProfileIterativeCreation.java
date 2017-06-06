@@ -27,15 +27,9 @@ import java.util.TreeSet;
 
 /**
  * Perfil de usuario utilizado por el sistema de recomendación basado en
- * contenido <code>{@link TfIdfCBRS}</code>
+ * contenido.
  *
  * @author jcastro-inf ( https://github.com/jcastro-inf )
- *
- * @version 1.0 (18 Octubre 2011)
- * @version 1.1 (21-Feb-2013) Convertido en objeto serializable. Eliminado el
- * atributo que almacenaba el dataset de contenido, ahora es necesario
- * especificarlo en el método {@link #getVectorProfile(delfos.Dataset.ContentDataset)
- * }.
  */
 public class BooleanUserProfileIterativeCreation implements BooleanUserProfile, Serializable {
 
@@ -57,7 +51,7 @@ public class BooleanUserProfileIterativeCreation implements BooleanUserProfile, 
     /**
      * Conjunto de productos que el usuario ha valorado.
      */
-    private Set<Integer> _valuedItems;
+    private Set<Long> _valuedItems;
     /**
      * Número de productos que el usuario ha valorado positivamente.
      */
@@ -207,7 +201,7 @@ public class BooleanUserProfileIterativeCreation implements BooleanUserProfile, 
     }
 
     @Override
-    public int getId() {
+    public long getId() {
         return _idUser;
     }
 

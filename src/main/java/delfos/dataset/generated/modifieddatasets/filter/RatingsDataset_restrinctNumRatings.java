@@ -49,7 +49,7 @@ public class RatingsDataset_restrinctNumRatings<RatingType extends Rating> exten
         int i = 1;
         while (true) {
 
-            int oldNumRatings = newDatasetLoader.getRatingsDataset().getNumRatings();
+            long oldNumRatings = newDatasetLoader.getRatingsDataset().getNumRatings();
 
             RatingsDataset_restrinctNumRatings<RatingType> newRatingsDataset = new RatingsDataset_restrinctNumRatings<>(
                     newDatasetLoader,
@@ -58,7 +58,7 @@ public class RatingsDataset_restrinctNumRatings<RatingType extends Rating> exten
 
             newDatasetLoader = new DatasetLoaderGivenRatingsDataset<>(newDatasetLoader, newRatingsDataset);
 
-            int newNumRatings = newDatasetLoader.getRatingsDataset().getNumRatings();
+            long newNumRatings = newDatasetLoader.getRatingsDataset().getNumRatings();
 
             if (newNumRatings == 0) {
                 throw new IllegalStateException(

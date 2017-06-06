@@ -22,6 +22,7 @@ import delfos.common.exceptions.dataset.CannotLoadContentDataset;
 import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
 import delfos.common.exceptions.dataset.items.ItemNotFound;
 import delfos.common.exceptions.dataset.users.UserNotFound;
+import delfos.common.exceptions.ratings.NotEnoughtUserInformation;
 import delfos.common.parameters.Parameter;
 import delfos.common.parameters.restriction.ParameterOwnerRestriction;
 import delfos.dataset.basic.item.Item;
@@ -139,8 +140,12 @@ public class SVDforGroup_ratingsAggregation extends GroupRecommenderSystemAdapte
 
     @Override
     public <RatingType extends Rating> GroupRecommendations recommendOnly(
-            DatasetLoader<RatingType> datasetLoader, TryThisAtHomeSVDModel RecommendationModel, GroupSVDModel groupModel, GroupOfUsers groupOfUsers, Set<Item> candidateItems)
-            throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset {
+            DatasetLoader<RatingType> datasetLoader,
+            TryThisAtHomeSVDModel RecommendationModel,
+            GroupSVDModel groupModel,
+            GroupOfUsers groupOfUsers,
+            Set<Item> candidateItems)
+            throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset, NotEnoughtUserInformation {
 
         int idUser = -1;
         if (datasetLoader.getRatingsDataset().allUsers().contains(idUser)) {
@@ -148,7 +153,8 @@ public class SVDforGroup_ratingsAggregation extends GroupRecommenderSystemAdapte
         }
 
         TryThisAtHomeSVDModel extendedModel = TryThisAtHomeSVDModel.addUser(RecommendationModel, idUser, groupModel.getGroupFeatures());
-        Collection<Recommendation> recommendToUser = singleUserSR.recommendToUser(datasetLoader, extendedModel, idUser,
+        Collection<Recommendation> recommendToUser = singleUserSR
+                .recommendToUser(datasetLoader, extendedModel, idUser,
                 candidateItems.stream()
                 .map(item -> item.getId()).collect(Collectors.toSet())
         );

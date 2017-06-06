@@ -20,47 +20,47 @@ import java.util.Set;
 class MockRatingsDataset implements RatingsDataset<Rating> {
 
     @Override
-    public Rating getRating(int idUser, int idItem) throws UserNotFound, ItemNotFound {
+    public Rating getRating(long idUser, long idItem) throws UserNotFound, ItemNotFound {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public Set<Integer> allUsers() {
+    public Set<Long> allUsers() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public Set<Integer> allRatedItems() {
+    public Set<Long> allRatedItems() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public Set<Integer> getUserRated(Integer idUser) throws UserNotFound {
+    public Set<Long> getUserRated(long idUser) throws UserNotFound {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public Set<Integer> getItemRated(Integer idItem) throws ItemNotFound {
+    public Set<Long> getItemRated(long idItem) throws ItemNotFound {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public Map<Integer, Rating> getUserRatingsRated(Integer idUser) throws UserNotFound {
+    public Map<Long, Rating> getUserRatingsRated(long idUser) throws UserNotFound {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public Map<Integer, Rating> getItemRatingsRated(Integer idItem) throws ItemNotFound {
+    public Map<Long, Rating> getItemRatingsRated(long idItem) throws ItemNotFound {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public double getMeanRatingItem(int idItem) throws ItemNotFound {
+    public double getMeanRatingItem(long idItem) throws ItemNotFound {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public double getMeanRatingUser(int idUser) throws UserNotFound {
+    public double getMeanRatingUser(long idUser) throws UserNotFound {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
@@ -70,27 +70,27 @@ class MockRatingsDataset implements RatingsDataset<Rating> {
     }
 
     @Override
-    public int getNumRatings() {
+    public long getNumRatings() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public int sizeOfUserRatings(int idUser) throws UserNotFound {
+    public long sizeOfUserRatings(long idUser) throws UserNotFound {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public int sizeOfItemRatings(int idItem) throws ItemNotFound {
+    public long sizeOfItemRatings(long idItem) throws ItemNotFound {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public boolean isRatedUser(int idUser) throws UserNotFound {
+    public boolean isRatedUser(long idUser) throws UserNotFound {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public boolean isRatedItem(int idItem) throws ItemNotFound {
+    public boolean isRatedItem(long idItem) throws ItemNotFound {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 

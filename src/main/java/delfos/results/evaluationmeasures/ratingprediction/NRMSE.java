@@ -52,13 +52,13 @@ public class NRMSE extends EvaluationMeasure {
 
         Domain originalDomain = testDataset.getRatingsDomain();
 
-        for (int idUser : testDataset.allUsers()) {
+        for (long idUser : testDataset.allUsers()) {
             Collection<Recommendation> recommendationList = recommendationResults.getRecommendationsForUser(idUser);
             if (recommendationList == null) {
                 continue;
             }
 
-            Map<Integer, Double> recommendations = DatasetUtilities
+            Map<Long, Double> recommendations = DatasetUtilities
                     .convertToMapOfRecommendations(new RecommendationsToUser(new User(idUser), recommendationList))
                     .entrySet()
                     .parallelStream()
@@ -69,7 +69,7 @@ public class NRMSE extends EvaluationMeasure {
                             entry -> entry.getValue().getPreference().doubleValue())
                     );
 
-            Map<Integer, Double> testRatings = testDataset
+            Map<Long, Double> testRatings = testDataset
                     .getUserRatingsRated(idUser)
                     .values()
                     .parallelStream()
@@ -80,7 +80,7 @@ public class NRMSE extends EvaluationMeasure {
                             rating -> rating.getRatingValue().doubleValue())
                     );
 
-            Set<Integer> commonItems = recommendations.keySet();
+            Set<Long> commonItems = recommendations.keySet();
             commonItems.retainAll(testRatings.keySet());
 
             commonItems.stream().forEach(idItem -> {

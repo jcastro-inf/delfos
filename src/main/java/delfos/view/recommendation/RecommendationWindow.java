@@ -322,7 +322,7 @@ public class RecommendationWindow extends JFrame {
     private void computeRecommendations() throws RuntimeException {
         try {
             RecommenderSystemAdapter<Object> recommenderSystem = (RecommenderSystemAdapter<Object>) SRSelector.getSelectedItem();
-            int idUser = ((Number) selectorUsuario.getSelectedItem()).intValue();
+            long idUser = ((Number) selectorUsuario.getSelectedItem()).longValue();
             DatasetLoader<? extends Rating> datasetLoader = (DatasetLoader) datasetSelector.getSelectedItem();
             RelevanceCriteria relevanceCriteria = new RelevanceCriteria((Number) spinerRelevancia.getValue());
             final ContentDataset contentDataset;
@@ -332,7 +332,7 @@ public class RecommendationWindow extends JFrame {
             } else {
                 throw new CannotLoadContentDataset("The dataset loader is not a ContentDatasetLoader, cannot apply a content-based ");
             }
-            Set<Integer> noValoradas = new TreeSet<>(contentDataset.allIDs());
+            Set<Long> noValoradas = new TreeSet<>(contentDataset.allIDs());
             noValoradas.removeAll(datasetLoader.getRatingsDataset().getUserRated(idUser));
 
             Collection<Recommendation> recommendations = recommenderSystem.recommendToUser(datasetLoader, recommendationModel, idUser, noValoradas);
@@ -461,7 +461,7 @@ public class RecommendationWindow extends JFrame {
         ((DatasetLoader) datasetSelector.getSelectedItem()).addParammeterListener(() -> {
             try {
                 try {
-                    selectorUsuario.setModel(new DefaultComboBoxModel<>(((DatasetLoader) datasetSelector.getSelectedItem()).getRatingsDataset().allUsers().toArray(new Integer[0])));
+                    selectorUsuario.setModel(new DefaultComboBoxModel<>(((DatasetLoader) datasetSelector.getSelectedItem()).getRatingsDataset().allUsers().toArray(new Long[0])));
                 } catch (CannotLoadRatingsDataset ex) {
                     ERROR_CODES.CANNOT_LOAD_RATINGS_DATASET.exit(ex);
                 }

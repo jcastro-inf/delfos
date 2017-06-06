@@ -56,11 +56,11 @@ public class RatingMaximization extends EvaluationMeasure {
         }
         double value = 0;
         int numRecommendations = 0;
-        for (int idUser : testDataset.allUsers()) {
+        for (long idUser : testDataset.allUsers()) {
 
             List<Recommendation> thisUserRecommendations = recommendationResults.getRecommendationsForUser(idUser);
             for (int i = 0; i < thisUserRecommendations.size(); i++) {
-                int idItem = thisUserRecommendations.get(i).getIdItem();
+                long idItem = thisUserRecommendations.get(i).getIdItem();
                 try {
                     value += testDataset.getRating(idUser, idItem).getRatingValue().doubleValue();
                     numRecommendations++;

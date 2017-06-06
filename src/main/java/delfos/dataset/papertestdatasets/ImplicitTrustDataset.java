@@ -48,30 +48,30 @@ public class ImplicitTrustDataset extends DatasetLoaderAbstract<Rating> {
     public RatingsDataset<Rating> getRatingsDataset() throws CannotLoadRatingsDataset {
 
         if (ratingsDataset == null) {
-            Map<Integer, Map<Integer, Number>> ratingsByUser = new TreeMap<>();
-            for (int i = 1; i <= 4; i++) {
+            Map<Long, Map<Long, Number>> ratingsByUser = new TreeMap<>();
+            for (long i = 1; i <= 4; i++) {
                 ratingsByUser.put(i, new TreeMap<>());
             }
 
             //User 1 ratings
-            ratingsByUser.get(1).put(2, 3);
-            ratingsByUser.get(1).put(3, 4);
-            ratingsByUser.get(1).put(6, 3);
+            ratingsByUser.get(1).put(2l, 3);
+            ratingsByUser.get(1).put(3l, 4);
+            ratingsByUser.get(1).put(6l, 3);
 
             //User 2 ratings
-            ratingsByUser.get(2).put(1, 4);
-            ratingsByUser.get(2).put(4, 2);
-            ratingsByUser.get(2).put(5, 4);
-            ratingsByUser.get(2).put(6, 3);
+            ratingsByUser.get(2).put(1l, 4);
+            ratingsByUser.get(2).put(4l, 2);
+            ratingsByUser.get(2).put(5l, 4);
+            ratingsByUser.get(2).put(6l, 3);
 
             //User 3 ratings
-            ratingsByUser.get(3).put(2, 5);
-            ratingsByUser.get(3).put(4, 4);
-            ratingsByUser.get(3).put(5, 4);
-            ratingsByUser.get(3).put(6, 2);
+            ratingsByUser.get(3).put(2l, 5);
+            ratingsByUser.get(3).put(4l, 4);
+            ratingsByUser.get(3).put(5l, 4);
+            ratingsByUser.get(3).put(6l, 2);
 
             //User 4 ratings
-            ratingsByUser.get(4).put(1, 2);
+            ratingsByUser.get(4).put(1l, 2);
 
             //Create ratings dataset
             ratingsDataset = new BothIndexRatingsDataset(DatasetOperations.convertNumberToRatings(ratingsByUser));

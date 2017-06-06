@@ -36,7 +36,7 @@ public class KnnModelBasedCFRSModel implements Serializable, Iterable<KnnModelIt
     /**
      * Perfiles de cada producto.
      */
-    private final Map<Integer, KnnModelItemProfile> itemsProfiles;
+    private final Map<Long, KnnModelItemProfile> itemsProfiles;
 
     /**
      * Se implementa el constructor por defecto para que el objeto sea
@@ -51,7 +51,7 @@ public class KnnModelBasedCFRSModel implements Serializable, Iterable<KnnModelIt
      *
      * @param itemsProfiles Perfiles del modelo de recomendación.
      */
-    public KnnModelBasedCFRSModel(Map<Integer, KnnModelItemProfile> itemsProfiles) {
+    public KnnModelBasedCFRSModel(Map<Long, KnnModelItemProfile> itemsProfiles) {
         this.itemsProfiles = itemsProfiles;
     }
 
@@ -61,7 +61,7 @@ public class KnnModelBasedCFRSModel implements Serializable, Iterable<KnnModelIt
      * @param idItem id del producto para el que se recupera el perfil.
      * @return Perfil del producto, null si no hay perfil para el mismo.
      */
-    public KnnModelItemProfile getItemProfile(int idItem) {
+    public KnnModelItemProfile getItemProfile(long idItem) {
         return itemsProfiles.get(idItem);
     }
 

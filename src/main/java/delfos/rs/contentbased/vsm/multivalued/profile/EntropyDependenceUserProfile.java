@@ -35,14 +35,9 @@ import java.util.TreeMap;
 
 /**
  * Perfil de usuario para sistemas de recomendación multivaluados con
- * ponderación de características, como {@link EntropyDependenceCBRS}.
- *
- * @see EntropyDependenceCBRS
+ * ponderación de características.
  *
  * @author jcastro-inf ( https://github.com/jcastro-inf )
- *
- * @version 1.0 (18 Octubre 2011)
- * @version 1.1 1 de Marzo de 2013
  */
 public class EntropyDependenceUserProfile extends BasicMultivaluedUserProfile {
 
@@ -155,13 +150,13 @@ public class EntropyDependenceUserProfile extends BasicMultivaluedUserProfile {
         }
     }
 
-    private static double cramer(Feature feature, int idUser, RatingsDataset<? extends Rating> rd, ContentDataset cd) throws UserNotFound, ItemNotFound {
+    private static double cramer(Feature feature, long idUser, RatingsDataset<? extends Rating> rd, ContentDataset cd) throws UserNotFound, ItemNotFound {
 
         //composición de las EEDD que ayuda en el cálculo
         DoubleIndex_MultipleOccurrences<String, String> di = new DoubleIndex_MultipleOccurrences<String, String>();
 
-        Map<Integer, ? extends Rating> userRatings = rd.getUserRatingsRated(idUser);
-        for (int idItem : userRatings.keySet()) {
+        Map<Long, ? extends Rating> userRatings = rd.getUserRatingsRated(idUser);
+        for (long idItem : userRatings.keySet()) {
             Item item;
             try {
                 item = cd.get(idItem);
@@ -200,15 +195,15 @@ public class EntropyDependenceUserProfile extends BasicMultivaluedUserProfile {
         }
     }
 
-    private static double pearson(Feature feature, int idUser, RatingsDataset<? extends Rating> rd, ContentDataset cd) throws UserNotFound, ItemNotFound {
+    private static double pearson(Feature feature, long idUser, RatingsDataset<? extends Rating> rd, ContentDataset cd) throws UserNotFound, ItemNotFound {
         double pearson;
 
         List<Number> valoresReales = new ArrayList<Number>();
         List<Number> puntuaciones = new ArrayList<Number>();
 
-        Map<Integer, ? extends Rating> userRatings = rd.getUserRatingsRated(idUser);
+        Map<Long, ? extends Rating> userRatings = rd.getUserRatingsRated(idUser);
 
-        for (int idItem : userRatings.keySet()) {
+        for (long idItem : userRatings.keySet()) {
             Item item;
             try {
                 item = cd.get(idItem);
@@ -220,8 +215,8 @@ public class EntropyDependenceUserProfile extends BasicMultivaluedUserProfile {
                 double valor;
                 if (value instanceof Double) {
                     valor = (Double) value;
-                } else if (value instanceof Integer) {
-                    valor = (Integer) value;
+                } else if (value instanceof Long) {
+                    valor = (Long) value;
                 } else {
                     throw new IllegalArgumentException("Feature type not supported.");
                 }

@@ -69,11 +69,11 @@ public class NDCG extends GroupEvaluationMeasure {
                 continue;
             }
 
-            for (int idUser : group) {
+            for (long idUser : group) {
 
                 List<Recommendation> idealRecommendations = new ArrayList<>();
                 List<Recommendation> recommendationsIntersectUserRatings = new ArrayList<>();
-                Map<Integer, ? extends Rating> userRatings;
+                Map<Long, ? extends Rating> userRatings;
                 try {
                     userRatings = testDatasetLoader.getRatingsDataset().getUserRatingsRated(idUser);
                 } catch (UserNotFound ex) {
@@ -83,7 +83,7 @@ public class NDCG extends GroupEvaluationMeasure {
 
                 for (Recommendation recommendation : groupRecommendations) {
                     Item item = recommendation.getItem();
-                    final Integer idItem = item.getId();
+                    final Long idItem = item.getId();
 
                     if (userRatings.containsKey(idItem)) {
                         idealRecommendations.add(new Recommendation(item, userRatings.get(idItem).getRatingValue()));

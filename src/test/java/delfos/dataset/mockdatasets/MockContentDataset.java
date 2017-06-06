@@ -25,7 +25,7 @@ import java.util.stream.Collectors;
  */
 public final class MockContentDataset implements ContentDataset {
 
-    private final Map<Integer, Item> items = new TreeMap<>();
+    private final Map<Long, Item> items = new TreeMap<>();
     private final FeatureGenerator featureGenerator = new FeatureGenerator();
     private final Feature featurePriceNumerical;
     private final Feature featureClassNominal;
@@ -36,13 +36,13 @@ public final class MockContentDataset implements ContentDataset {
      *
      * @param idItem
      */
-    private void checkItemNotExists(int idItem) {
+    private void checkItemNotExists(long idItem) {
         if (items.containsKey(idItem)) {
             throw new IllegalArgumentException("The item " + idItem + " already exists.");
         }
     }
 
-    private void checkItem(int idItem) throws ItemNotFound {
+    private void checkItem(long idItem) throws ItemNotFound {
         if (!items.containsKey(idItem)) {
             throw new ItemNotFound(idItem);
         }
@@ -217,7 +217,7 @@ public final class MockContentDataset implements ContentDataset {
     }
 
     @Override
-    public Item get(int idItem) throws EntityNotFound {
+    public Item get(long idItem) throws EntityNotFound {
         try {
             checkItem(idItem);
         } catch (ItemNotFound ex) {
@@ -232,23 +232,23 @@ public final class MockContentDataset implements ContentDataset {
     }
 
     @Override
-    public Collection<Integer> allIDs() {
+    public Collection<Long> allIDs() {
         return new ArrayList<>(items.keySet());
     }
 
     @Override
-    public Collection<Integer> getAvailableItems() {
+    public Collection<Long> getAvailableItems() {
         return allIDs();
     }
 
     @Override
-    public void setItemAvailable(int idItem, boolean available) throws ItemNotFound {
+    public void setItemAvailable(long idItem, boolean available) throws ItemNotFound {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
     public int compareTo(Object o) {
-        return new Integer(this.hashCode()).compareTo(o.hashCode());
+        return Integer.compare(this.hashCode(),o.hashCode());
     }
 
     @Override
@@ -336,7 +336,7 @@ public final class MockContentDataset implements ContentDataset {
     }
 
     @Override
-    public Map<Feature, Object> parseEntityFeaturesAndAddToExisting(int idEntity, Map<String, String> features) throws EntityNotFound {
+    public Map<Feature, Object> parseEntityFeaturesAndAddToExisting(long idEntity, Map<String, String> features) throws EntityNotFound {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
@@ -346,7 +346,7 @@ public final class MockContentDataset implements ContentDataset {
     }
 
     @Override
-    public Item getItem(int idItem) throws ItemNotFound {
+    public Item getItem(long idItem) throws ItemNotFound {
         try {
             return get(idItem);
         } catch (EntityNotFound ex) {

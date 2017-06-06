@@ -51,7 +51,7 @@ public class MIUFTest extends DelfosTest {
 
         TryThisAtHomeSVDModel svdModel = svdCache.buildRecommendationModel(ml100k);
 
-        final Map<Integer, Double> iuf_byItem = MIUF.getIUF_byItem(ml100k);
+        final Map<Long, Double> iuf_byItem = MIUF.getIUF_byItem(ml100k);
 
         User targetUser = new User(1);
         Set<Item> candidateItems = new OnlyNewItems().candidateItems(ml100k, targetUser);

@@ -111,7 +111,7 @@ public abstract class EvaluationMeasure extends ParameterOwnerAdapter implements
         return ParameterOwnerType.EVALUATION_MESAURE;
     }
 
-    public MeasureResult getUserResult(RecommendationsToUser recommendationsToUser, Map<Integer, ? extends Rating> userRated) {
+    public MeasureResult getUserResult(RecommendationsToUser recommendationsToUser, Map<Long, ? extends Rating> userRated) {
         throw new UnsupportedOperationException();
     }
 

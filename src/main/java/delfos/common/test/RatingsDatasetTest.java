@@ -46,32 +46,32 @@ public class RatingsDatasetTest {
         int errors = 0;
         try {
 
-            Map<Integer, Integer> numRatingsUsers_byIterator = new TreeMap<Integer, Integer>();
-            Map<Integer, Integer> numRatingsItems_byIterator = new TreeMap<Integer, Integer>();
+            Map<Long, Long> numRatingsUsers_byIterator = new TreeMap<Long, Long>();
+            Map<Long, Long> numRatingsItems_byIterator = new TreeMap<Long, Long>();
 
             for (Rating r : ratingsDataset) {
-                int idUser = r.getIdUser();
-                int idItem = r.getIdItem();
+                long idUser = r.getIdUser();
+                long idItem = r.getIdItem();
 
                 ratingsDataset.getRating(idUser, idItem);
 
                 if (numRatingsUsers_byIterator.containsKey(idUser)) {
                     numRatingsUsers_byIterator.put(idUser, numRatingsUsers_byIterator.get(idUser) + 1);
                 } else {
-                    numRatingsUsers_byIterator.put(idUser, 1);
+                    numRatingsUsers_byIterator.put(idUser, 1l);
                 }
 
                 if (numRatingsItems_byIterator.containsKey(idItem)) {
                     numRatingsItems_byIterator.put(idItem, numRatingsItems_byIterator.get(idItem) + 1);
                 } else {
-                    numRatingsItems_byIterator.put(idItem, 1);
+                    numRatingsItems_byIterator.put(idItem, 1l);
                 }
 
             }
 
-            for (int idUser : ratingsDataset.allUsers()) {
-                int numRatingsUser_byGetRatings = ratingsDataset.getUserRatingsRated(idUser).size();
-                int numRatingsUser_ByIterator = numRatingsUsers_byIterator.get(idUser);
+            for (long idUser : ratingsDataset.allUsers()) {
+                long numRatingsUser_byGetRatings = ratingsDataset.getUserRatingsRated(idUser).size();
+                long numRatingsUser_ByIterator = numRatingsUsers_byIterator.get(idUser);
 
                 if (numRatingsUser_byGetRatings != numRatingsUser_ByIterator) {
                     Global.showWarning("El usuario " + idUser + " tiene:\n"
@@ -81,12 +81,12 @@ public class RatingsDatasetTest {
                 }
             }
 
-            final Set<Integer> allRatedItems = new TreeSet<Integer>(ratingsDataset.allRatedItems());
+            final Set<Long> allRatedItems = new TreeSet<Long>(ratingsDataset.allRatedItems());
 
-            for (int idItem : allRatedItems) {
+            for (long idItem : allRatedItems) {
 
-                int numRatingsItem_byGetRatings = ratingsDataset.getItemRatingsRated(idItem).size();
-                int numRatingsItem_ByIterator = numRatingsItems_byIterator.get(idItem);
+                long numRatingsItem_byGetRatings = ratingsDataset.getItemRatingsRated(idItem).size();
+                long numRatingsItem_ByIterator = numRatingsItems_byIterator.get(idItem);
 
                 if (numRatingsItem_byGetRatings != numRatingsItem_ByIterator) {
                     Global.showWarning("El producto " + idItem + " tiene:\n"
@@ -101,10 +101,10 @@ public class RatingsDatasetTest {
                 errors++;
                 Global.showWarning("El conjunto de items valorados es distinto.");
 
-                Set<Integer> AMinusB = new TreeSet<Integer>(numRatingsItems_byIterator.keySet());
+                Set<Long> AMinusB = new TreeSet<Long>(numRatingsItems_byIterator.keySet());
                 AMinusB.removeAll(allRatedItems);
 
-                Set<Integer> BMinusA = new TreeSet<Integer>(allRatedItems);
+                Set<Long> BMinusA = new TreeSet<Long>(allRatedItems);
                 BMinusA.removeAll(numRatingsItems_byIterator.keySet());
 
                 if (!AMinusB.isEmpty()) {

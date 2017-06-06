@@ -40,11 +40,11 @@ public class ValidationDatasets {
         return instance;
     }
 
-    public <RatingType extends Rating> TrainingRatingsDataset<RatingType> createTrainingDataset(RatingsDataset<RatingType> ratingsDataset, Map<Integer, Set<Integer>> testSet) throws UserNotFound, ItemNotFound {
+    public <RatingType extends Rating> TrainingRatingsDataset<RatingType> createTrainingDataset(RatingsDataset<RatingType> ratingsDataset, Map<Long, Set<Long>> testSet) throws UserNotFound, ItemNotFound {
         return new TrainingRatingsDataset_CPU<>(ratingsDataset, testSet);
     }
 
-    public <RatingType extends Rating> TestRatingsDataset<RatingType> createTestDataset(RatingsDataset<RatingType> ratingsDataset, Map<Integer, Set<Integer>> testSet) throws UserNotFound, ItemNotFound {
+    public <RatingType extends Rating> TestRatingsDataset<RatingType> createTestDataset(RatingsDataset<RatingType> ratingsDataset, Map<Long, Set<Long>> testSet) throws UserNotFound, ItemNotFound {
         return new TestRatingsDataset_CPU<>(ratingsDataset, testSet);
     }
 

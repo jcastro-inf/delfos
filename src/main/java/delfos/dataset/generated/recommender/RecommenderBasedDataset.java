@@ -63,7 +63,7 @@ public class RecommenderBasedDataset extends RatingsDatasetAdapter<Rating> {
     }
 
     @Override
-    public Rating getRating(int idUser, int idItem) throws UserNotFound, ItemNotFound {
+    public Rating getRating(long idUser, long idItem) throws UserNotFound, ItemNotFound {
         try {
             Number ret = recommenderSystem.predictRating(datasetLoader, model, idUser, idItem);
             if (ret != null) {
@@ -80,29 +80,29 @@ public class RecommenderBasedDataset extends RatingsDatasetAdapter<Rating> {
     }
 
     @Override
-    public Set<Integer> allUsers() {
+    public Set<Long> allUsers() {
         return datasetLoader.getRatingsDataset().allUsers();
     }
 
     @Override
-    public Set<Integer> allRatedItems() {
+    public Set<Long> allRatedItems() {
         return datasetLoader.getRatingsDataset().allRatedItems();
     }
 
     @Override
-    public Set<Integer> getUserRated(Integer idUser) throws UserNotFound {
+    public Set<Long> getUserRated(long idUser) throws UserNotFound {
         return getUserRatingsRated(idUser).keySet();
     }
 
     @Override
-    public Set<Integer> getItemRated(Integer idItem) throws ItemNotFound {
+    public Set<Long> getItemRated(long idItem) throws ItemNotFound {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
-    public Map<Integer, Rating> getUserRatingsRated(Integer idUser) throws UserNotFound {
+    public Map<Long, Rating> getUserRatingsRated(long idUser) throws UserNotFound {
         try {
-            Map<Integer, Rating> ret = new TreeMap<>();
+            Map<Long, Rating> ret = new TreeMap<>();
             Collection<Recommendation> recommendations = recommenderSystem.recommendToUser(datasetLoader, model, idUser, allRatedItems());
 
             for (Recommendation r : recommendations) {
@@ -122,7 +122,7 @@ public class RecommenderBasedDataset extends RatingsDatasetAdapter<Rating> {
     }
 
     @Override
-    public Map<Integer, Rating> getItemRatingsRated(Integer idItem) throws ItemNotFound {
+    public Map<Long, Rating> getItemRatingsRated(long idItem) throws ItemNotFound {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 

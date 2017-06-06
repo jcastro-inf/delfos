@@ -45,7 +45,7 @@ import org.junit.Test;
  */
 public class TryThisAtHomeSVDTest extends DelfosTest {
 
-    private static final Integer[] users = {727, 38, 466, 232, 927, 915, 764, 382, 649, 645};
+    private static final Long[] users = {727l, 38l, 466l, 232l, 927l, 915l, 764l, 382l, 649l, 645l};
 
     public TryThisAtHomeSVDTest() {
     }
@@ -69,7 +69,7 @@ public class TryThisAtHomeSVDTest extends DelfosTest {
         final TryThisAtHomeSVDModel model = recommenderSystem.buildRecommendationModel(datasetLoader);
         final RecommendationCandidatesSelector candidates = new OnlyNewItems();
 
-        for (int idUser : users) {
+        for (long idUser : users) {
             Set<Item> candidateItems = candidates.candidateItems(datasetLoader, new User(idUser));
             Collection<Recommendation> recommendOnly = recommenderSystem.recommendToUser(datasetLoader, model, idUser,
                     candidateItems.stream().map(item -> item.getId()).collect(Collectors.toSet())
@@ -153,9 +153,9 @@ public class TryThisAtHomeSVDTest extends DelfosTest {
         TryThisAtHomeSVD tryThisAtHomeSVD = new TryThisAtHomeSVD(1, 400);
         TryThisAtHomeSVDModel tryThisAtHomeSVDModel = tryThisAtHomeSVD.buildRecommendationModel(datasetLoader);
 
-        Set<Integer> candidateItems = new TreeSet<>();
-        candidateItems.add(2);
-        candidateItems.add(4);
+        Set<Long> candidateItems = new TreeSet<>();
+        candidateItems.add(2l);
+        candidateItems.add(4l);
 
         Global.showln("Features learned USERS");
 
@@ -172,7 +172,7 @@ public class TryThisAtHomeSVDTest extends DelfosTest {
                     Global.showln("Item " + idItem + "--> " + tryThisAtHomeSVDModel.getItemFeatures(idItem));
                 });
 
-        Collection<Recommendation> recommendations = tryThisAtHomeSVD.recommendToUser(datasetLoader, tryThisAtHomeSVDModel, 3, candidateItems);
+        Collection<Recommendation> recommendations = tryThisAtHomeSVD.recommendToUser(datasetLoader, tryThisAtHomeSVDModel, 3l, candidateItems);
 
         List<Recommendation> sortedRecommendations = new ArrayList<>(recommendations);
         Collections.sort(sortedRecommendations);

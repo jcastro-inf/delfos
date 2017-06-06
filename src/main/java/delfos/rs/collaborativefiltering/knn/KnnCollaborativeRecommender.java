@@ -44,7 +44,7 @@ public abstract class KnnCollaborativeRecommender<RecommendationModel>
     public static final Parameter NEIGHBORHOOD_SIZE_STORE = new Parameter("Neighborhood_size_store", new IntegerParameter(1, 999999, 999999));
     /**
      * Parámetro para indicar la medida de similitud que el sistema de recomendación utiliza para el cálculo de los
-     * vecinos más cercanos. Si no se modifica, su valor por defecto es la suma ponderada ({@link CosineCoefficient})
+     * vecinos más cercanos. Si no se modifica, su valor por defecto es la suma ponderada.
      */
     public static final Parameter SIMILARITY_MEASURE = new Parameter(
             "SIMILARITY_MEASURE",
@@ -74,30 +74,22 @@ public abstract class KnnCollaborativeRecommender<RecommendationModel>
      * Indica si se imputa un valor por defecto a las valoraciones no conocidas de los usuarios. Esta mejora sirve para
      * poder calcular la similitud incluso cuando las valoraciones de los usuarios no se solapan, es decir, no han
      * valorado ningún producto en común. Por defecto no se aplica esta mejora.
-     *
-     * @see KnnMemoryBasedCFRS#defaultRatingValue
      */
     public static final Parameter DEFAULT_RATING = new Parameter("Default_rating", new BooleanParameter(false));
     /**
      * Indica el valor que se imputa a las valoraciones no conocidas en caso de que se haya activado la mejora de
      * valoración por defecto.
-     *
-     * @see KnnMemoryBasedCFRS#defaultRatingValue
      */
     public static final Parameter DEFAULT_RATING_VALUE = new Parameter("Default_rating_value", new IntegerParameter(1, 5, 3));
     /**
      * Parámetro que indica si se utiliza la mejora de factor de relevancia. Esta mejora modifica las similitudes de
      * manera que penaliza las similitudes calculadas con un número bajo de valoraciones en común. Por defecto no se
      * utiliza esta mejora.
-     *
-     * @see KnnModelBasedCFRS#relevanceFactorValue
      */
     public static final Parameter RELEVANCE_FACTOR = new Parameter("Relevance_factor", new BooleanParameter(true));
     /**
-     * Almacena el valor del factor de relevancia aplicado si el parámetro {@link KnnModelBasedCFRS#relevanceFactor}
+     * Almacena el valor del factor de relevancia aplicado si el parámetro relevanceFactor
      * indica que se debe usar factor de relevancia (true). El valor por defecto del factor de relevancia es 50.
-     *
-     * @see KnnModelBasedCFRS#relevanceFactor
      */
     public static final Parameter RELEVANCE_FACTOR_VALUE = new Parameter("Relevance_factor_value", new IntegerParameter(1, 9999, 20));
 

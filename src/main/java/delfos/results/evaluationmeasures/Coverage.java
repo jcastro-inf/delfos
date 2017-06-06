@@ -59,7 +59,7 @@ public class Coverage extends EvaluationMeasure {
                         .filter(Recommendation.NON_COVERAGE_FAILURES)
                         .collect(Collectors.toList());
 
-                Collection<Integer> itemsRatedByUser = testDataset.getUserRated(idUser);
+                Collection<Long> itemsRatedByUser = testDataset.getUserRated(idUser);
                 predicted.addAndGet(recommendationsNonCoverageFailures.size());
                 requested.addAndGet(itemsRatedByUser.size());
             } catch (UserNotFound ex) {
@@ -75,11 +75,11 @@ public class Coverage extends EvaluationMeasure {
     @Override
     public MeasureResult getUserResult(
             RecommendationsToUser recommendationsToUser,
-            Map<Integer, ? extends Rating> userRated) {
+            Map<Long, ? extends Rating> userRated) {
 
         MeanIterative userMean = new MeanIterative();
         userRated.keySet().stream().forEach((idItem) -> {
-            Set<Integer> setOfItems = Recommendation
+            Set<Long> setOfItems = Recommendation
                     .getSetOfItems(recommendationsToUser.getRecommendations());
 
             if (setOfItems.contains(idItem)) {

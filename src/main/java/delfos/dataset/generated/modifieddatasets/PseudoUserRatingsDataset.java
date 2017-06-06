@@ -46,15 +46,15 @@ public class PseudoUserRatingsDataset<RatingType extends Rating> extends Ratings
     private final RatingsDataset<RatingType> constructionOriginalDataset;
     private RatingsDataset<RatingType> workingDataset;
     private RatingsDataset<RatingType> pseudoRatings = new BothIndexRatingsDataset<>();
-    private int nextIdUser = -1;
-    private Set<Integer> ratedItems = null;
+    private long nextIdUser = -1;
+    private Set<Long> ratedItems = null;
     private boolean pseudoUserSetted = false;
-    private int idPseudoUser;
+    private long idPseudoUser;
 
     public PseudoUserRatingsDataset(
             RatingsDataset<? extends RatingType> ratingsDataset,
-            Map<Integer, RatingType> pseudoUserRatings,
-            Collection<Integer> forbiddenUsers) {
+            Map<Long, RatingType> pseudoUserRatings,
+            Collection<Long> forbiddenUsers) {
 
         super();
         constructionOriginalDataset = (RatingsDataset<RatingType>) ratingsDataset;
@@ -78,12 +78,12 @@ public class PseudoUserRatingsDataset<RatingType extends Rating> extends Ratings
             idPseudoUser++;
         }
 
-        Map<Integer, Map<Integer, RatingType>> ratingsToAdd = new TreeMap<>();
+        Map<Long, Map<Long, RatingType>> ratingsToAdd = new TreeMap<>();
         ratingsToAdd.put(idPseudoUser, pseudoUserRatings);
 
-        Set<Integer> allowedUsers = new TreeSet<>(workingDataset.allUsers());
+        Set<Long> allowedUsers = new TreeSet<>(workingDataset.allUsers());
 
-        for (int idUser : forbiddenUsers) {
+        for (long idUser : forbiddenUsers) {
             boolean removed = allowedUsers.remove(idUser);
             if (!removed) {
                 throw new IllegalStateException("The original dataset did not contain the user.");
@@ -97,16 +97,16 @@ public class PseudoUserRatingsDataset<RatingType extends Rating> extends Ratings
 
     }
 
-    public PseudoUserRatingsDataset(RatingsDataset<? extends RatingType> ratingsDataset, Map<Integer, RatingType> userRatings) {
+    public PseudoUserRatingsDataset(RatingsDataset<? extends RatingType> ratingsDataset, Map<Long, RatingType> userRatings) {
         this(ratingsDataset, userRatings, new TreeSet<>());
     }
 
-    public int getIdPseudoUser() {
+    public long getIdPseudoUser() {
         return idPseudoUser;
     }
 
     @Override
-    public RatingType getRating(int idUser, int idItem) throws UserNotFound, ItemNotFound {
+    public RatingType getRating(long idUser, long idItem) throws UserNotFound, ItemNotFound {
         if (pseudoRatings.allUsers().contains(idUser)) {
             return pseudoRatings.getRating(idUser, idItem);
         } else {
@@ -115,14 +115,14 @@ public class PseudoUserRatingsDataset<RatingType extends Rating> extends Ratings
     }
 
     @Override
-    public Set<Integer> allUsers() {
-        Set<Integer> allUsers = new TreeSet<>(workingDataset.allUsers());
+    public Set<Long> allUsers() {
+        Set<Long> allUsers = new TreeSet<>(workingDataset.allUsers());
         allUsers.addAll(pseudoRatings.allUsers());
         return allUsers;
     }
 
     @Override
-    public Set<Integer> allRatedItems() {
+    public Set<Long> allRatedItems() {
         if (ratedItems == null) {
             ratedItems = new TreeSet<>(workingDataset.allRatedItems());
             ratedItems.addAll(pseudoRatings.allRatedItems());
@@ -131,7 +131,7 @@ public class PseudoUserRatingsDataset<RatingType extends Rating> extends Ratings
     }
 
     @Override
-    public Set<Integer> getUserRated(Integer idUser) throws UserNotFound {
+    public Set<Long> getUserRated(long idUser) throws UserNotFound {
         if (pseudoRatings.allUsers().contains(idUser)) {
             return pseudoRatings.getUserRated(idUser);
         } else {
@@ -140,8 +140,8 @@ public class PseudoUserRatingsDataset<RatingType extends Rating> extends Ratings
     }
 
     @Override
-    public Set<Integer> getItemRated(Integer idItem) {
-        Set<Integer> ret = new TreeSet<>();
+    public Set<Long> getItemRated(long idItem) {
+        Set<Long> ret = new TreeSet<>();
         try {
             ret.addAll(pseudoRatings.getItemRated(idItem));
         } catch (ItemNotFound ex) {
@@ -156,7 +156,7 @@ public class PseudoUserRatingsDataset<RatingType extends Rating> extends Ratings
     }
 
     @Override
-    public Map<Integer, RatingType> getUserRatingsRated(Integer idUser) throws UserNotFound {
+    public Map<Long, RatingType> getUserRatingsRated(long idUser) throws UserNotFound {
         if (pseudoRatings.allUsers().contains(idUser)) {
             return pseudoRatings.getUserRatingsRated(idUser);
         } else {
@@ -165,8 +165,8 @@ public class PseudoUserRatingsDataset<RatingType extends Rating> extends Ratings
     }
 
     @Override
-    public Map<Integer, RatingType> getItemRatingsRated(Integer idItem) throws ItemNotFound {
-        Map<Integer, RatingType> ret = new TreeMap<>();
+    public Map<Long, RatingType> getItemRatingsRated(long idItem) throws ItemNotFound {
+        Map<Long, RatingType> ret = new TreeMap<>();
         try {
             ret.putAll(pseudoRatings.getItemRatingsRated(idItem));
         } catch (ItemNotFound ex) {
@@ -185,7 +185,7 @@ public class PseudoUserRatingsDataset<RatingType extends Rating> extends Ratings
         return workingDataset.getRatingsDomain();
     }
 
-    private int getNextIdUser() {
+    private long getNextIdUser() {
         return nextIdUser--;
     }
 }

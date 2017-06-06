@@ -41,14 +41,14 @@ public class Jaccard extends SimilarityMeasureAdapter implements CollaborativeSi
 
     public double similarity(DatasetLoader<? extends Rating> datasetLoader, User user1, User user2) throws UserNotFound, CannotLoadRatingsDataset {
 
-        Set<Integer> user1ratings = datasetLoader.getRatingsDataset().getUserRated(user1.getId());
-        Set<Integer> user2ratings = datasetLoader.getRatingsDataset().getUserRated(user2.getId());
+        Set<Long> user1ratings = datasetLoader.getRatingsDataset().getUserRated(user1.getId());
+        Set<Long> user2ratings = datasetLoader.getRatingsDataset().getUserRated(user2.getId());
 
-        Set<Integer> union = new TreeSet<>();
+        Set<Long> union = new TreeSet<>();
         union.addAll(user1ratings);
         union.addAll(user2ratings);
 
-        Set<Integer> intersection = user1ratings.parallelStream()
+        Set<Long> intersection = user1ratings.parallelStream()
                 .filter(idItem -> user2ratings.contains(idItem))
                 .collect(Collectors.toSet());
 
@@ -65,17 +65,17 @@ public class Jaccard extends SimilarityMeasureAdapter implements CollaborativeSi
 
         double ret = commonRatings.stream().findAny().map(commonRating -> {
 
-            int idUser1 = commonRating.getIdR1();
-            int idUser2 = commonRating.getIdR2();
+            long idUser1 = commonRating.getIdR1();
+            long idUser2 = commonRating.getIdR2();
 
-            Set<Integer> user1ratings = ratings.getUserRated(idUser1);
-            Set<Integer> user2ratings = ratings.getUserRated(idUser2);
+            Set<Long> user1ratings = ratings.getUserRated(idUser1);
+            Set<Long> user2ratings = ratings.getUserRated(idUser2);
 
-            Set<Integer> union = new TreeSet<>();
+            Set<Long> union = new TreeSet<>();
             union.addAll(user1ratings);
             union.addAll(user2ratings);
 
-            Set<Integer> intersection = user1ratings.parallelStream()
+            Set<Long> intersection = user1ratings.parallelStream()
                     .filter(idItem -> user2ratings.contains(idItem))
                     .collect(Collectors.toSet());
 

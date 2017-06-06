@@ -66,7 +66,7 @@ public class ConsensusOfIndividualRecommendationsToXML {
             User member = recommendationsToMember.getUser();
             Element thisMemberElement = new Element(MEMBER_ELEMENT_NAME);
             thisMemberElement.setAttribute(MEMBER_ELEMENT_NAME_ID_ATTRIBUTE_NAME,
-                    Integer.toString(member.getId()));
+                    Long.toString(member.getId()));
 
             List<Recommendation> sortedRecommendations = recommendationsToMember
                     .getRecommendations().stream()
@@ -77,7 +77,7 @@ public class ConsensusOfIndividualRecommendationsToXML {
             for (Recommendation r : sortedRecommendations) {
                 Element recommendation = new Element(RECOMMENDATION_ELEMENT_NAME);
                 recommendation.setAttribute(RECOMMENDATION_ELEMENT_ID_ITEM_ATTRIBUTE_NAME,
-                        Integer.toString(r.getItem().getId()));
+                        Long.toString(r.getItem().getId()));
 
                 double preferenceInDomain = datasetLoader.getRatingsDataset().getRatingsDomain().trimValueToDomain(r.getPreference()).doubleValue();
                 recommendation.setAttribute(RECOMMENDATION_ELEMENT_PREFERENCE_ATTRIBUTE_NAME, Double.toString(preferenceInDomain));
@@ -101,7 +101,7 @@ public class ConsensusOfIndividualRecommendationsToXML {
         for (Recommendation r : sortedGroupRecommendations) {
 
             Element recommendation = new Element(RECOMMENDATION_ELEMENT_NAME);
-            recommendation.setAttribute(RECOMMENDATION_ELEMENT_ID_ITEM_ATTRIBUTE_NAME, Integer.toString(r.getIdItem()));
+            recommendation.setAttribute(RECOMMENDATION_ELEMENT_ID_ITEM_ATTRIBUTE_NAME, Long.toString(r.getIdItem()));
             recommendation.setAttribute(RECOMMENDATION_ELEMENT_PREFERENCE_ATTRIBUTE_NAME, Double.toString(r.getPreference().doubleValue()));
             recommendation.setAttribute(RECOMMENDATION_ELEMENT_RANK_ATTRIBUTE_NAME, Integer.toString(rank));
             groupElement.addContent(recommendation);
@@ -133,21 +133,24 @@ public class ConsensusOfIndividualRecommendationsToXML {
     public static final String RECOMMENDATION_INPUT_ITEM_REQUEST_ELEMENT_NAME = "ItemRequested";
     public static final String RECOMMENDATION_INPUT_ITEM_REQUEST_ID_ITEM_ATTRIBUTE_NAME = "idItem";
 
-    public static <RatingType extends Rating> void writeRecommendationMembersRatingsXML(Map<Integer, Map<Integer, RatingType>> membersRatings, Collection<Integer> candidateItems, File groupPredictionRequestsFile) {
+    public static <RatingType extends Rating> void writeRecommendationMembersRatingsXML(
+            Map<Long, Map<Long, RatingType>> membersRatings,
+            Collection<Long> candidateItems,
+            File groupPredictionRequestsFile) {
 
         Element root = new Element(RECOMMENDATION_INPUT_ROOT_ELEMENT_NAME);
 
         Element membersRatingsElement = new Element(RECOMMENDATION_INPUT_MEMBERS_RATINGS_ELEMENT_NAME);
-        for (int idMember : membersRatings.keySet()) {
+        for (long idMember : membersRatings.keySet()) {
             Element thisMemberRatingsElement = new Element(RECOMMENDATION_INPUT_MEMBER_RATINGS_ELEMENT_NAME);
-            thisMemberRatingsElement.setAttribute(RECOMMENDATION_INPUT_MEMBER_RATINGS_ID_USER_ATTRIBUTE_NAME, Integer.toString(idMember));
+            thisMemberRatingsElement.setAttribute(RECOMMENDATION_INPUT_MEMBER_RATINGS_ID_USER_ATTRIBUTE_NAME, Long.toString(idMember));
 
-            Map<Integer, RatingType> memberRatings = membersRatings.get(idMember);
+            Map<Long, RatingType> memberRatings = membersRatings.get(idMember);
 
             for (RatingType memberRating : memberRatings.values()) {
                 Element ratingElement = new Element(RECOMMENDATION_INPUT_MEMBER_RATINGS_RATING_ELEMENT_NAME);
-                ratingElement.setAttribute(RECOMMENDATION_INPUT_MEMBER_RATINGS_ID_USER_ATTRIBUTE_NAME, Integer.toString(memberRating.getIdUser()));
-                ratingElement.setAttribute(RECOMMENDATION_INPUT_MEMBER_RATINGS_ID_ITEM_ATTRIBUTE_NAME, Integer.toString(memberRating.getIdItem()));
+                ratingElement.setAttribute(RECOMMENDATION_INPUT_MEMBER_RATINGS_ID_USER_ATTRIBUTE_NAME, Long.toString(memberRating.getIdUser()));
+                ratingElement.setAttribute(RECOMMENDATION_INPUT_MEMBER_RATINGS_ID_ITEM_ATTRIBUTE_NAME, Long.toString(memberRating.getIdItem()));
                 ratingElement.setAttribute(RECOMMENDATION_INPUT_MEMBER_RATINGS_RATING_VALUE_ATTRIBUTE_NAME, Double.toString(memberRating.getRatingValue().doubleValue()));
                 thisMemberRatingsElement.addContent(ratingElement);
             }
@@ -156,9 +159,9 @@ public class ConsensusOfIndividualRecommendationsToXML {
         root.addContent(membersRatingsElement);
 
         Element candidateItemsElement = new Element(RECOMMENDATION_INPUT_ID_ITEM_LIST_ELEMENT_NAME);
-        for (int idItemRequested : candidateItems) {
+        for (long idItemRequested : candidateItems) {
             Element itemRequestedElement = new Element(RECOMMENDATION_INPUT_ITEM_REQUEST_ELEMENT_NAME);
-            itemRequestedElement.setAttribute(RECOMMENDATION_INPUT_ITEM_REQUEST_ID_ITEM_ATTRIBUTE_NAME, Integer.toString(idItemRequested));
+            itemRequestedElement.setAttribute(RECOMMENDATION_INPUT_ITEM_REQUEST_ID_ITEM_ATTRIBUTE_NAME, Long.toString(idItemRequested));
             candidateItemsElement.addContent(itemRequestedElement);
         }
         root.addContent(candidateItemsElement);
@@ -200,7 +203,7 @@ public class ConsensusOfIndividualRecommendationsToXML {
         Collection<Recommendation> consensusRecommendations = new ArrayList<>();
 
         for (Element alternative : consensus.getChildren(CONSENSUS_OUTPUT_ALTERNATVE_ELEMENT_NAME)) {
-            int idItem = Integer.parseInt(alternative.getAttributeValue(CONSENSUS_OUTPUT_ALTERNATVE_ATTRIBUTE_ID_ITEM));
+            long idItem = new Long(alternative.getAttributeValue(CONSENSUS_OUTPUT_ALTERNATVE_ATTRIBUTE_ID_ITEM));
             double rank = Double.parseDouble(alternative.getAttributeValue(CONSENSUS_OUTPUT_ALTERNATVE_ATTRIBUTE_RANK));
 
             double preference = 1 / rank;

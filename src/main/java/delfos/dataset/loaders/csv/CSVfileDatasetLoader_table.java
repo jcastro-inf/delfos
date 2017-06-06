@@ -143,7 +143,7 @@ public class CSVfileDatasetLoader_table extends DatasetLoaderAbstract<Rating> im
                             continue;
                         }
 
-                        int idItem = items.get(j).getId();
+                        long idItem = items.get(j).getId();
                         int ratingValue = Integer.parseInt(ratingFromFile);
 
                         ratings.add(new Rating(idUser, idItem, ratingValue));

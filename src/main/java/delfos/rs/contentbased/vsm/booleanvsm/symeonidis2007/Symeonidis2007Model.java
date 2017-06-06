@@ -35,8 +35,8 @@ public class Symeonidis2007Model implements Serializable {
     private static final long serialVersionUID = -3387516993124229948L;
     private SparseVector<Long> allIUF;
     private final BooleanFeaturesTransformation booleanFeaturesTransformation;
-    private final TreeMap<Integer, Symeonidis2007UserProfile> userProfiles;
-    private final TreeMap<Integer, SparseVector<Long>> itemProfiles;
+    private final TreeMap<Long, Symeonidis2007UserProfile> userProfiles;
+    private final TreeMap<Long, SparseVector<Long>> itemProfiles;
 
     public Symeonidis2007Model(BooleanFeaturesTransformation booleanFeaturesTransformation) {
         this.userProfiles = new TreeMap<>();
@@ -56,7 +56,7 @@ public class Symeonidis2007Model implements Serializable {
         return allIUF.clone();
     }
 
-    void putItemProfile(int idItem, SparseVector<Long> itemProfile) {
+    void putItemProfile(long idItem, SparseVector<Long> itemProfile) {
         if (itemProfiles.containsKey(idItem)) {
             throw new IllegalArgumentException("The item " + idItem + " profile had already been assigned the model.");
         } else {
@@ -64,7 +64,7 @@ public class Symeonidis2007Model implements Serializable {
         }
     }
 
-    SparseVector<Long> getItemProfile(int idItem) {
+    SparseVector<Long> getItemProfile(long idItem) {
         if (itemProfiles.containsKey(idItem)) {
             return itemProfiles.get(idItem).clone();
         } else {
@@ -72,7 +72,7 @@ public class Symeonidis2007Model implements Serializable {
         }
     }
 
-    void putUserProfile(int idUser, Symeonidis2007UserProfile itemProfile) {
+    void putUserProfile(long idUser, Symeonidis2007UserProfile itemProfile) {
         if (userProfiles.containsKey(idUser)) {
             throw new IllegalArgumentException("The user " + idUser + " profile had already been assigned the model.");
         } else {

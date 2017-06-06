@@ -35,7 +35,7 @@ public interface MultivaluedUserProfile extends Serializable {
      *
      * @return Id del usuario.
      */
-    public int getId();
+    public long getId();
 
     /**
      * Devuelve las características definidas para este perfil de usuario.

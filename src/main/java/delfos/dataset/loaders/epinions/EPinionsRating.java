@@ -62,7 +62,7 @@ public class EPinionsRating extends Rating {
         status_HideRating = false;
     }
 
-    EPinionsRating(Integer MEMBER_ID, Integer OBJECT_ID, Number RATING, boolean STATUS, long CREATION, long LAST_MODIFIED, long VERTICAL_ID) {
+    EPinionsRating(long MEMBER_ID, long OBJECT_ID, Number RATING, boolean STATUS, long CREATION, long LAST_MODIFIED, long VERTICAL_ID) {
         super(MEMBER_ID, OBJECT_ID, RATING);
 
         status_HideRating = STATUS;

@@ -50,7 +50,7 @@ public abstract class SimilarityCombination extends SimilarityMeasureAdapter imp
     }
 
     @Override
-    public double similarity(DatasetLoader<? extends Rating> datasetLoader, int idUser1, int idUser2) {
+    public double similarity(DatasetLoader<? extends Rating> datasetLoader, long idUser1, long idUser2) {
         if (idUser1 == idUser2) {
             return 1;
         }

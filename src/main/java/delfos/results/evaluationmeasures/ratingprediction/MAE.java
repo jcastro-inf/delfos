@@ -49,13 +49,13 @@ public class MAE extends EvaluationMeasure {
 
         MeanIterative mean = new MeanIterative();
 
-        for (int idUser : recommendationResults.usersWithRecommendations()) {
+        for (long idUser : recommendationResults.usersWithRecommendations()) {
             Collection<Recommendation> recommendationList = recommendationResults.getRecommendationsForUser(idUser);
             if (recommendationList == null) {
                 continue;
             }
 
-            Map<Integer, Double> recommendations = DatasetUtilities
+            Map<Long, Double> recommendations = DatasetUtilities
                     .convertToMapOfRecommendations(new RecommendationsToUser(new User(idUser), recommendationList))
                     .entrySet()
                     .parallelStream()
@@ -66,7 +66,7 @@ public class MAE extends EvaluationMeasure {
                             entry -> entry.getValue().getPreference().doubleValue())
                     );
 
-            Map<Integer, Double> testRatings = testDataset
+            Map<Long, Double> testRatings = testDataset
                     .getUserRatingsRated(idUser)
                     .values()
                     .parallelStream()
@@ -77,7 +77,7 @@ public class MAE extends EvaluationMeasure {
                             rating -> rating.getRatingValue().doubleValue())
                     );
 
-            Set<Integer> commonItems = recommendations.keySet();
+            Set<Long> commonItems = recommendations.keySet();
             commonItems.retainAll(testRatings.keySet());
 
             commonItems.stream().forEach(idItem -> {
@@ -98,7 +98,7 @@ public class MAE extends EvaluationMeasure {
     @Override
     public MeasureResult getUserResult(
             RecommendationsToUser recommendationsToUser,
-            Map<Integer, ? extends Rating> userRated) {
+            Map<Long, ? extends Rating> userRated) {
         MeanIterative userMean = new MeanIterative();
 
         recommendationsToUser.getRecommendations().stream()

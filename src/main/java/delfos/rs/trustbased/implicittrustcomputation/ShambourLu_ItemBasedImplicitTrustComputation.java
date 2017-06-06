@@ -44,7 +44,7 @@ import java.util.TreeSet;
  * @author jcastro-inf ( https://github.com/jcastro-inf )
  * @version 1.0 29-Agosto-2013
  */
-public class ShambourLu_ItemBasedImplicitTrustComputation extends WeightedGraphCalculation<Integer> {
+public class ShambourLu_ItemBasedImplicitTrustComputation extends WeightedGraphCalculation<Long> {
 
     private static final long serialVersionUID = 1L;
 
@@ -59,7 +59,10 @@ public class ShambourLu_ItemBasedImplicitTrustComputation extends WeightedGraphC
      * @return
      */
     @Override
-    public WeightedGraph<Integer> computeTrustValues(DatasetLoader<? extends Rating> datasetLoader, Collection<Integer> items) throws CannotLoadRatingsDataset {
+    public WeightedGraph<Long> computeTrustValues(
+            DatasetLoader<? extends Rating> datasetLoader,
+            Collection<Long> items)
+            throws CannotLoadRatingsDataset {
         boolean printPartialResults;
 
         final RatingsDataset<? extends Rating> ratingsDataset = datasetLoader.getRatingsDataset();
@@ -70,15 +73,15 @@ public class ShambourLu_ItemBasedImplicitTrustComputation extends WeightedGraphC
             printPartialResults = false;
         }
 
-        Map<Integer, Map<Integer, Number>> MSD = new TreeMap<>();
-        Map<Integer, Map<Integer, Number>> UJaccard = new TreeMap<>();
+        Map<Long, Map<Long, Number>> MSD = new TreeMap<>();
+        Map<Long, Map<Long, Number>> UJaccard = new TreeMap<>();
 
         int i = 1;
-        for (int idItem : items) {
+        for (long idItem : items) {
             MSD.put(idItem, new TreeMap<>());
             UJaccard.put(idItem, new TreeMap<>());
 
-            Map<Integer, ? extends Rating> itemRatings;
+            Map<Long, ? extends Rating> itemRatings;
             try {
                 itemRatings = ratingsDataset.getItemRatingsRated(idItem);
             } catch (ItemNotFound ex) {
@@ -87,14 +90,14 @@ public class ShambourLu_ItemBasedImplicitTrustComputation extends WeightedGraphC
             }
 
             //Para cada vecino calculo el MSD
-            for (int idItemNeighbor : items) {
+            for (long idItemNeighbor : items) {
                 try {
                     double meanItem = ratingsDataset.getMeanRatingItem(idItem);
                     double meanItemNeighbour = ratingsDataset.getMeanRatingItem(idItemNeighbor);
 
-                    Map<Integer, ? extends Rating> itemNeighbourRatings = ratingsDataset.getItemRatingsRated(idItemNeighbor);
+                    Map<Long, ? extends Rating> itemNeighbourRatings = ratingsDataset.getItemRatingsRated(idItemNeighbor);
 
-                    Set<Integer> commonUsers = new TreeSet<>(itemRatings.keySet());
+                    Set<Long> commonUsers = new TreeSet<>(itemRatings.keySet());
                     commonUsers.retainAll(itemNeighbourRatings.keySet());
                     if (commonUsers.isEmpty()) {
                         continue;
@@ -110,7 +113,7 @@ public class ShambourLu_ItemBasedImplicitTrustComputation extends WeightedGraphC
 
                     {
                         int index = 0;
-                        for (int idUser : commonUsers) {
+                        for (long idUser : commonUsers) {
                             double rating = itemRatings.get(idUser).getRatingValue().doubleValue();
                             ratings[index] = rating;
                             double prediction = meanItem + itemNeighbourRatings.get(idUser).getRatingValue().doubleValue() - meanItemNeighbour;
@@ -174,11 +177,11 @@ public class ShambourLu_ItemBasedImplicitTrustComputation extends WeightedGraphC
             i++;
         }
 
-        TreeMap<Integer, Map<Integer, Number>> itemBasedTrust = new TreeMap<>();
-        for (int idItem : items) {
+        TreeMap<Long, Map<Long, Number>> itemBasedTrust = new TreeMap<>();
+        for (long idItem : items) {
             itemBasedTrust.put(idItem, new TreeMap<>());
 
-            for (int idItemNeighbour : items) {
+            for (long idItemNeighbour : items) {
 
                 if (!UJaccard.containsKey(idItem) || !UJaccard.get(idItem).containsKey(idItemNeighbour) || !MSD.containsKey(idItem) || !MSD.get(idItem).containsKey(idItemNeighbour)) {
                     continue;

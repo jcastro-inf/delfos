@@ -70,10 +70,10 @@ public class PredictionErrorHistogram extends EvaluationMeasure {
 
         HistogramNumbersSmart histogram = new HistogramNumbersSmart(binWidth);
 
-        for (int idUser : testDataset.allUsers()) {
+        for (long idUser : testDataset.allUsers()) {
             Collection<Recommendation> recommendationList = recommendationResults.getRecommendationsForUser(idUser);
 
-            Map<Integer, Double> recommendations = DatasetUtilities
+            Map<Long, Double> recommendations = DatasetUtilities
                     .convertToMapOfRecommendations(new RecommendationsToUser(new User(idUser), recommendationList))
                     .entrySet()
                     .parallelStream()
@@ -84,7 +84,7 @@ public class PredictionErrorHistogram extends EvaluationMeasure {
                             entry -> entry.getValue().getPreference().doubleValue())
                     );
 
-            Map<Integer, Double> testRatings = testDataset
+            Map<Long, Double> testRatings = testDataset
                     .getUserRatingsRated(idUser)
                     .values()
                     .parallelStream()
@@ -95,7 +95,7 @@ public class PredictionErrorHistogram extends EvaluationMeasure {
                             rating -> rating.getRatingValue().doubleValue())
                     );
 
-            Set<Integer> commonItems = recommendations.keySet();
+            Set<Long> commonItems = recommendations.keySet();
             commonItems.retainAll(testRatings.keySet());
 
             commonItems.stream().forEach(idItem -> {
@@ -120,7 +120,7 @@ public class PredictionErrorHistogram extends EvaluationMeasure {
 
             binElement.setAttribute(BIN_MIN_VALUE_ATTRIBUTE_NAME, Double.toString(histogram.getBin_minBound(indexBin)));
             binElement.setAttribute(BIN_MAX_VALUE_ATTRIBUTE_NAME, Double.toString(histogram.getBin_maxBound(indexBin)));
-            binElement.setAttribute(BIN_BIN_VALUE_ATTRIBUTE_NAME, Integer.toString(histogram.getBin_numValues(indexBin)));
+            binElement.setAttribute(BIN_BIN_VALUE_ATTRIBUTE_NAME, Long.toString(histogram.getBin_numValues(indexBin)));
 
             histogramElement.addContent(binElement);
         }

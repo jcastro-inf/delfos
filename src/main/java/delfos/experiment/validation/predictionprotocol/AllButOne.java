@@ -36,16 +36,16 @@ public class AllButOne extends PredictionProtocol {
     private static final long serialVersionUID = 1L;
 
     @Override
-    public <RatingType extends Rating> List<Set<Integer>> getRecommendationRequests(
+    public <RatingType extends Rating> List<Set<Long>> getRecommendationRequests(
             DatasetLoader<RatingType> trainingDatasetLoader,
             DatasetLoader<RatingType> testDatasetLoader,
-            int idUser) throws UserNotFound {
-        Collection<Integer> userRated = testDatasetLoader.getRatingsDataset().getUserRated(idUser);
+            long idUser) throws UserNotFound {
+        Collection<Long> userRated = testDatasetLoader.getRatingsDataset().getUserRated(idUser);
 
-        List<Set<Integer>> collectionOfSetsOfRequests = new LinkedList<>();
+        List<Set<Long>> collectionOfSetsOfRequests = new LinkedList<>();
 
-        for (int idItem : userRated) {
-            Set<Integer> oneRequestSet = new TreeSet<>();
+        for (long idItem : userRated) {
+            Set<Long> oneRequestSet = new TreeSet<>();
             oneRequestSet.add(idItem);
             collectionOfSetsOfRequests.add(oneRequestSet);
         }

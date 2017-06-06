@@ -36,7 +36,7 @@ import delfos.common.aggregationoperators.AggregationOperator;
 public class EntropyDependenceCBRSUserProfile implements MultivaluedUserProfile {
 
     private static final long serialVersionUID = 1L;
-    private final int _idUser;
+    private final long _idUser;
     private final Map<Feature, Map<Object, Number>> _nominalValues;
     private final Map<Feature, Number> _numericalValues;
     private final Map<Feature, Number> _weights;
@@ -48,7 +48,7 @@ public class EntropyDependenceCBRSUserProfile implements MultivaluedUserProfile 
         _weights = null;
     }
 
-    public EntropyDependenceCBRSUserProfile(int idUser,
+    public EntropyDependenceCBRSUserProfile(long idUser,
             Map<Feature, Map<Object, Number>> nominalFeatures,
             Map<Feature, Number> numericalFeatures,
             Map<Feature, Number> weights) {
@@ -73,7 +73,7 @@ public class EntropyDependenceCBRSUserProfile implements MultivaluedUserProfile 
     }
 
     @Override
-    public int getId() {
+    public long getId() {
         return _idUser;
     }
 

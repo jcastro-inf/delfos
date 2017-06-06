@@ -149,8 +149,8 @@ public class DAOKnnModelBasedDatabaseModel {
         makePermanent(databaseConection);
     }
 
-    public KnnModelBasedCFRSModel loadModel(DatabasePersistence databasePersistence, Collection<Integer> users, Collection<Integer> items) throws FailureInPersistence {
-        Map<Integer, KnnModelItemProfile> itemProfiles = new TreeMap<>();
+    public KnnModelBasedCFRSModel loadModel(DatabasePersistence databasePersistence, Collection<Long> users, Collection<Long> items) throws FailureInPersistence {
+        Map<Long, KnnModelItemProfile> itemProfiles = new TreeMap<>();
 
         DatabaseConection databaseConection;
         try {
@@ -162,8 +162,8 @@ public class DAOKnnModelBasedDatabaseModel {
             try (ResultSet rst = st.executeQuery(query)) {
                 while (rst.next()) {
 
-                    int idItem = rst.getInt("idItem");
-                    int idNeighbor = rst.getInt("idNeighbor");
+                    long idItem = rst.getLong("idItem");
+                    long idNeighbor = rst.getLong("idNeighbor");
                     double similarity = rst.getDouble("similarity");
 
                     if (!itemProfiles.containsKey(idItem)) {

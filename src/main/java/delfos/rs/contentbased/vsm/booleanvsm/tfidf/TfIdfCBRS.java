@@ -128,13 +128,13 @@ public class TfIdfCBRS extends ContentBasedRecommender<TfIdfCBRSModel, TfIdfCBRS
                 long idFeatureValue = booleanFeaturesTransformation.getFeatureIndex(feature, featureValue);
 
                 double count = 0;
-                for (int idUser : ratingDataset.allUsers()) {
+                for (long idUser : ratingDataset.allUsers()) {
 
                     try {
-                        Map<Integer, ? extends Rating> userRatingsRated = datasetLoader.getRatingsDataset().getUserRatingsRated(idUser);
-                        for (Map.Entry<Integer, ? extends Rating> entry : userRatingsRated.entrySet()) {
+                        Map<Long, ? extends Rating> userRatingsRated = datasetLoader.getRatingsDataset().getUserRatingsRated(idUser);
+                        for (Map.Entry<Long, ? extends Rating> entry : userRatingsRated.entrySet()) {
 
-                            int idItemRatedByUser = entry.getKey();
+                            long idItemRatedByUser = entry.getKey();
                             Rating rating = entry.getValue();
 
                             //Si el rating es negativo, este producto no cuenta.
@@ -186,7 +186,7 @@ public class TfIdfCBRS extends ContentBasedRecommender<TfIdfCBRSModel, TfIdfCBRS
     }
 
     @Override
-    public TfIdfCBRSUserProfile makeUserProfile(int idUser, DatasetLoader<? extends Rating> datasetLoader, TfIdfCBRSModel model) throws CannotLoadContentDataset, CannotLoadContentDataset, UserNotFound {
+    public TfIdfCBRSUserProfile makeUserProfile(long idUser, DatasetLoader<? extends Rating> datasetLoader, TfIdfCBRSModel model) throws CannotLoadContentDataset, CannotLoadContentDataset, UserNotFound {
         RelevanceCriteria relevanceCriteria = datasetLoader.getDefaultRelevanceCriteria();
 
         SparseVector<Long> userProfileValues = model.getBooleanFeaturesTransformation().newProfile();
@@ -197,8 +197,8 @@ public class TfIdfCBRS extends ContentBasedRecommender<TfIdfCBRSModel, TfIdfCBRS
         RatingsDataset<? extends Rating> ratingDataset = datasetLoader.getRatingsDataset();
         //Calculo del perfil
         userProfileValues.fill(0);
-        for (Map.Entry<Integer, ? extends Rating> entry : ratingDataset.getUserRatingsRated(idUser).entrySet()) {
-            int idItem = entry.getKey();
+        for (Map.Entry<Long, ? extends Rating> entry : ratingDataset.getUserRatingsRated(idUser).entrySet()) {
+            long idItem = entry.getKey();
             Rating rating = entry.getValue();
 
             if (relevanceCriteria.isRelevant(rating.getRatingValue())) {
@@ -252,12 +252,12 @@ public class TfIdfCBRS extends ContentBasedRecommender<TfIdfCBRSModel, TfIdfCBRS
     }
 
     @Override
-    protected Collection<Recommendation> recommendOnly(DatasetLoader<? extends Rating> datasetLoader, TfIdfCBRSModel model, TfIdfCBRSUserProfile userProfile, Collection<Integer> candidateItems) throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset {
+    protected Collection<Recommendation> recommendOnly(DatasetLoader<? extends Rating> datasetLoader, TfIdfCBRSModel model, TfIdfCBRSUserProfile userProfile, Collection<Long> candidateItems) throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset {
         Collection<Recommendation> ret = new ArrayList<>(candidateItems.size());
 
         WeightedSimilarityMeasure weightedSimilarity = getSimilarityMeasure();
 
-        for (int idItem : candidateItems) {
+        for (long idItem : candidateItems) {
             SparseVector itemProfile = model.get(idItem);
             List<Double> itemVector = model.getBooleanFeaturesTransformation().getDoubleVector(itemProfile);
 

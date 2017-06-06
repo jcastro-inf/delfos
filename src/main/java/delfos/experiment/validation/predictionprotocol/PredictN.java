@@ -67,33 +67,33 @@ public class PredictN extends PredictionProtocol {
     }
 
     @Override
-    public <RatingType extends Rating> List<Set<Integer>> getRecommendationRequests(
+    public <RatingType extends Rating> List<Set<Long>> getRecommendationRequests(
             DatasetLoader<RatingType> trainingDatasetLoader,
             DatasetLoader<RatingType> testDatasetLoader,
-            int idUser) throws UserNotFound {
+            long idUser) throws UserNotFound {
 
         Random random = new Random(getSeedValue());
-        Collection<Integer> userRated = new TreeSet<>(testDatasetLoader.getRatingsDataset().getUserRated(idUser));
-        Set<Integer> extraidos = new TreeSet<>();
+        Collection<Long> userRated = new TreeSet<>(testDatasetLoader.getRatingsDataset().getUserRated(idUser));
+        Set<Long> extraidos = new TreeSet<>();
         Number extraer = (Number) getParameterValue(PredictN.n);
 
         if (extraer.intValue() > userRated.size()) {
             //no se pueden extraer el número que se solicita, qué hacer?
             Global.showWarning("User " + idUser + " has not enough test rating to extract " + extraer + "\n");
 
-            List<Set<Integer>> ret = new ArrayList<>(extraidos.size());
-            Set<Integer> l = new TreeSet<>(userRated);
+            List<Set<Long>> ret = new ArrayList<>(extraidos.size());
+            Set<Long> l = new TreeSet<>(userRated);
             ret.add(l);
             return ret;
         } else {
             while (!userRated.isEmpty() && extraidos.size() != extraer.doubleValue()) {
                 int index = random.nextInt(userRated.size());
-                int idItem = userRated.toArray(new Integer[1])[index];
+                long idItem = userRated.toArray(new Long[1])[index];
                 userRated.remove(idItem);
                 extraidos.add(idItem);
             }
 
-            List<Set<Integer>> ret = new ArrayList<>(extraidos.size());
+            List<Set<Long>> ret = new ArrayList<>(extraidos.size());
             ret.add(extraidos);
             return ret;
         }

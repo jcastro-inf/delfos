@@ -58,7 +58,7 @@ public class PRSpace extends EvaluationMeasure {
         @Override
         public boolean test(Integer idUser) {
 
-            Map<Integer, ? extends Rating> userRatings = testDataset.getUserRatingsRated(idUser);
+            Map<Long, ? extends Rating> userRatings = testDataset.getUserRatingsRated(idUser);
             return recommendationResults
                     .getRecommendationsForUser(idUser).parallelStream()
                     .anyMatch(recommendation -> userRatings.containsKey(recommendation.getItem().getId()));

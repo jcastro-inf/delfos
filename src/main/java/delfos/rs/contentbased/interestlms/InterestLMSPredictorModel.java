@@ -41,8 +41,8 @@ public class InterestLMSPredictorModel implements Serializable {
     private static final long serialVersionUID = 1L;
     private final double learningModerator;
     private BooleanFeaturesTransformation transformation;
-    Map<Integer, Map<Feature, Map<Object, Double>>> predictors = new TreeMap<>();
-    Map<Integer, Double> userDefaultWeight = new TreeMap<>();
+    Map<Long, Map<Feature, Map<Object, Double>>> predictors = new TreeMap<>();
+    Map<Long, Double> userDefaultWeight = new TreeMap<>();
     private final DecimalDomain minusOneToOneDomain = new DecimalDomain(-1, 1);
     private final DecimalDomain ratingDatasetDomain;
 
@@ -69,7 +69,7 @@ public class InterestLMSPredictorModel implements Serializable {
 
     }
 
-    private void initUserPredictor(int idUser) {
+    private void initUserPredictor(long idUser) {
 
         double defaultValue = 0;
 
@@ -86,14 +86,14 @@ public class InterestLMSPredictorModel implements Serializable {
         predictors.put(idUser, userPredictor);
     }
 
-    protected double predict(int idUser, Item item) {
+    protected double predict(long idUser, Item item) {
 
         double prediction = predictMinusOneToOne(idUser, item);
         double predictionInDatasetRange = minusOneToOneDomain.convertToDecimalDomain(prediction, ratingDatasetDomain).doubleValue();
         return predictionInDatasetRange;
     }
 
-    private double predictMinusOneToOne(int idUser, Item item) {
+    private double predictMinusOneToOne(long idUser, Item item) {
         if (!userDefaultWeight.containsKey(idUser)) {
             initUserPredictor(idUser);
         }
@@ -116,7 +116,7 @@ public class InterestLMSPredictorModel implements Serializable {
 
     }
 
-    void enterFeedback(int idUser, Item item, double ratingInMinusOneToOneDomain) {
+    void enterFeedback(long idUser, Item item, double ratingInMinusOneToOneDomain) {
         final double predictionInMinusOneToOne = predictMinusOneToOne(idUser, item);
 
         final double factor = 1.0 / (item.getFeatures().size());

@@ -50,7 +50,7 @@ public class PredictUserItemBias extends CollaborativeRecommender<Object> {
     }
 
     @Override
-    public Collection<Recommendation> recommendToUser(DatasetLoader<? extends Rating> datasetLoader, Object model, Integer idUser, java.util.Set<Integer> candidateItems) throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset, NotEnoughtUserInformation {
+    public Collection<Recommendation> recommendToUser(DatasetLoader<? extends Rating> datasetLoader, Object model, long idUser, java.util.Set<Long> candidateItems) throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset, NotEnoughtUserInformation {
 
         Collection<Recommendation> recommendations = new ArrayList<>(candidateItems.size());
 
@@ -58,7 +58,7 @@ public class PredictUserItemBias extends CollaborativeRecommender<Object> {
         double generalBias = ((Number) model).doubleValue();
         double userBias = getUserBias(ratingsDataset, idUser);
 
-        for (int idItem : candidateItems) {
+        for (long idItem : candidateItems) {
             double itemBias = getItemBias(ratingsDataset, idUser);
             recommendations.add(new Recommendation(idItem, generalBias + userBias + itemBias));
         }
@@ -66,7 +66,7 @@ public class PredictUserItemBias extends CollaborativeRecommender<Object> {
         return recommendations;
     }
 
-    private double getUserBias(RatingsDataset ratingsDataset, Integer idUser) throws CannotLoadRatingsDataset {
+    private double getUserBias(RatingsDataset ratingsDataset, Long idUser) throws CannotLoadRatingsDataset {
         double userBias;
         try {
             userBias = ratingsDataset.getMeanRating() - ratingsDataset.getMeanRatingUser(idUser);
@@ -77,7 +77,7 @@ public class PredictUserItemBias extends CollaborativeRecommender<Object> {
         return userBias;
     }
 
-    private double getItemBias(RatingsDataset ratingsDataset, Integer idItem) throws CannotLoadRatingsDataset {
+    private double getItemBias(RatingsDataset ratingsDataset, Long idItem) throws CannotLoadRatingsDataset {
         double itemBias;
         try {
             itemBias = ratingsDataset.getMeanRating() - ratingsDataset.getMeanRatingItem(idItem);

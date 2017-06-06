@@ -45,7 +45,7 @@ public class MIUF extends GroupEvaluationMeasure {
 
     private final int listSizeOfMeasure;
 
-    public static final Map<Integer, Double> getIUF_byItem(DatasetLoader<? extends Rating> datasetLoader) {
+    public static final Map<Long, Double> getIUF_byItem(DatasetLoader<? extends Rating> datasetLoader) {
 
         return datasetLoader.getContentDataset()
                 .stream().parallel()
@@ -68,7 +68,7 @@ public class MIUF extends GroupEvaluationMeasure {
             meanByListSize = new ArrayList<>();
         }
 
-        public MeanByListSize(Recommendations recommendations, Map<Integer, Double> iuf_byItem) {
+        public MeanByListSize(Recommendations recommendations, Map<Long, Double> iuf_byItem) {
             List<Double> recommendationsIUF = recommendations.getRecommendations().stream()
                     .map(recommendation -> iuf_byItem.get(recommendation.getItem().getId()))
                     .collect(Collectors.toList());
@@ -162,7 +162,7 @@ public class MIUF extends GroupEvaluationMeasure {
             DatasetLoader<? extends Rating> trainingDatasetLoader,
             DatasetLoader<? extends Rating> testDatasetLoader) {
 
-        Map<Integer, Double> iuf_byItem = getIUF_byItem(originalDatasetLoader);
+        Map<Long, Double> iuf_byItem = getIUF_byItem(originalDatasetLoader);
 
         MeanByListSize ilsAllGroups = groupRecommenderSystemResult
                 .getGroupsOfUsers().parallelStream()

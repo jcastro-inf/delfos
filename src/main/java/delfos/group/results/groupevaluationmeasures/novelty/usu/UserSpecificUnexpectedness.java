@@ -62,7 +62,7 @@ public class UserSpecificUnexpectedness extends GroupEvaluationMeasure {
         public <RatingType extends Rating> MeanByListSize(
                 DatasetLoader<RatingType> datasetLoader,
                 Recommendations recommendations,
-                Map<Integer, ? extends Rating> memberRatings,
+                Map<Long, ? extends Rating> memberRatings,
                 int listSizeOfMeasure
         ) {
 
@@ -220,7 +220,7 @@ public class UserSpecificUnexpectedness extends GroupEvaluationMeasure {
                     Optional<MeanByListSize> userSpecificUnexpectedness_byMember = groupOfUsers.getMembers().stream()
                             .map((member) -> {
 
-                                Map<Integer, ? extends Rating> memberRatings = originalDatasetLoader.getRatingsDataset()
+                                Map<Long, ? extends Rating> memberRatings = originalDatasetLoader.getRatingsDataset()
                                         .getUserRatingsRated(member.getId());
 
                                 MeanByListSize meanByListSize = new MeanByListSize(

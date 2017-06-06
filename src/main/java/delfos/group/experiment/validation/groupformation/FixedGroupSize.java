@@ -73,7 +73,7 @@ public class FixedGroupSize extends GroupFormationTechnique {
 
         LinkedList<GroupOfUsers> grupos = new LinkedList<>();
         int groupSizeValue = (Integer) getParameterValue(groupSize);
-        ArrayList<Integer> usuarios;
+        ArrayList<Long> usuarios;
         int numGrupos = datasetLoader.getRatingsDataset().allUsers().size() / groupSizeValue;
         usuarios = new ArrayList<>(datasetLoader.getRatingsDataset().allUsers());
 
@@ -82,7 +82,7 @@ public class FixedGroupSize extends GroupFormationTechnique {
 
             Set<User> usersGrupoActual = new TreeSet<>();
             for (int i = 0; i < groupSizeValue; i++) {
-                int idUser = usuarios.remove(random.nextInt(usuarios.size()));
+                long idUser = usuarios.remove(random.nextInt(usuarios.size()));
 
                 User member = datasetLoader.getUsersDataset().get(idUser);
                 usersGrupoActual.add(member);

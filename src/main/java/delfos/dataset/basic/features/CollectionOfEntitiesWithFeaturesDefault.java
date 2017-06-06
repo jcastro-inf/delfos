@@ -51,7 +51,7 @@ public abstract class CollectionOfEntitiesWithFeaturesDefault<Entity extends Ent
     /**
      * Almacena las entidades de esta colección, indexadas por identificador.
      */
-    protected final Map<Integer, Entity> entitiesById = new TreeMap<>();
+    protected final Map<Long, Entity> entitiesById = new TreeMap<>();
     /*
      * Valores distintos de todas las características (incluidas las numéricas).
      */
@@ -121,7 +121,7 @@ public abstract class CollectionOfEntitiesWithFeaturesDefault<Entity extends Ent
     }
 
     @Override
-    public Map<Feature, Object> parseEntityFeaturesAndAddToExisting(int idEntity, Map<String, String> features) throws EntityNotFound {
+    public Map<Feature, Object> parseEntityFeaturesAndAddToExisting(long idEntity, Map<String, String> features) throws EntityNotFound {
         Entity entity = get(idEntity);
 
         Map<Feature, Object> ret = new TreeMap<>();
@@ -250,12 +250,12 @@ public abstract class CollectionOfEntitiesWithFeaturesDefault<Entity extends Ent
     }
 
     @Override
-    public Collection<Integer> allIDs() {
+    public Collection<Long> allIDs() {
         return new TreeSet<>(entitiesById.keySet());
     }
 
     @Override
-    public Entity get(int idItem) throws EntityNotFound {
+    public Entity get(long idItem) throws EntityNotFound {
         if (entitiesById.containsKey(idItem)) {
             return entitiesById.get(idItem);
         } else {

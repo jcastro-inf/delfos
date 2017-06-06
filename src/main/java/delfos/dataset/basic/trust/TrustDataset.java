@@ -28,8 +28,8 @@ import delfos.common.exceptions.dataset.users.UserNotFound;
  */
 public interface TrustDataset<TrustStatementType extends TrustStatement> {
 
-    Collection<? extends Integer> allUsers();
+    Collection<? extends Long> allUsers();
 
-    Collection<TrustStatementType> getUserTrustStatements(int idUser) throws UserNotFound;
+    Collection<TrustStatementType> getUserTrustStatements(long idUser) throws UserNotFound;
 
 }

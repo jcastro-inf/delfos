@@ -56,10 +56,9 @@ import java.util.List;
  * Sistema de recomendación basado en el filtrado colaborativo basado en usuarios, también denominado User-User o
  * filtrado colaborativo basado en memoria. Este sistema de recomendación no realiza un cálculo de perfil de usuarios o
  * productos, sino que en el momento de la predicción, calcula los k vecinos más cercanos al usuario activo, es decir,
- * los k ({@link KnnMemoryBasedCFRS#neighborhoodSize}) usuarios más similares
- * ({@link KnnMemoryBasedCFRS#similarityMeasure}). La predicción de la valoración de un producto i para un usuario u se
+ * los k usuarios más similares. La predicción de la valoración de un producto i para un usuario u se
  * realiza agregando las valoraciones de los vecinos del usuario u sobre el producto i, utilizando para ello una técnica
- * de predicción ({@link KnnMemoryBasedCFRS#predictionTechnique})
+ * de predicción.
  *
  * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
@@ -120,7 +119,7 @@ public class TrustModificationKnnMemory extends KnnCollaborativeRecommender<Obje
     }
 
     @Override
-    public Collection<Recommendation> recommendToUser(DatasetLoader<? extends Rating> datasetLoader, Object model, Integer idUser, java.util.Set<Integer> candidateItems) throws UserNotFound {
+    public Collection<Recommendation> recommendToUser(DatasetLoader<? extends Rating> datasetLoader, Object model, long idUser, java.util.Set<Long> candidateItems) throws UserNotFound {
 
         try {
             List<Neighbor> neighbors;
@@ -148,9 +147,9 @@ public class TrustModificationKnnMemory extends KnnCollaborativeRecommender<Obje
      */
     public Collection<Recommendation> recommendWithNeighbors(
             RatingsDataset<? extends Rating> ratingsDataset,
-            Integer idUser,
+            Long idUser,
             List<Neighbor> vecinos,
-            Collection<Integer> candidateItems)
+            Collection<Long> candidateItems)
             throws UserNotFound {
 
         PredictionTechnique predictionTechnique_ = (PredictionTechnique) getParameterValue(PREDICTION_TECHNIQUE);
@@ -172,7 +171,7 @@ public class TrustModificationKnnMemory extends KnnCollaborativeRecommender<Obje
             vecinosTransformados.add(new Neighbor(RecommendationEntity.USER, neighbor.getIdNeighbor(), trust));
         }
 
-        for (int idItem : candidateItems) {
+        for (long idItem : candidateItems) {
             Collection<MatchRating> match = new LinkedList<>();
 
             int numNeighborsUsed = 0;
@@ -203,7 +202,10 @@ public class TrustModificationKnnMemory extends KnnCollaborativeRecommender<Obje
     }
 
     @Override
-    public Object loadRecommendationModel(DatabasePersistence databasePersistence, Collection<Integer> users, Collection<Integer> items, DatasetLoader<? extends Rating> datasetLoader) throws FailureInPersistence {
+    public Object loadRecommendationModel(
+            DatabasePersistence databasePersistence,
+            Collection<Long> users,
+            Collection<Long> items, DatasetLoader<? extends Rating> datasetLoader) throws FailureInPersistence {
         return 1l;
     }
 

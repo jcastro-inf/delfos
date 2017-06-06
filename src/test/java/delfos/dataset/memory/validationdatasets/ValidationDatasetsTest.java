@@ -64,9 +64,9 @@ public class ValidationDatasetsTest extends DelfosTest {
         }
         BothIndexRatingsDataset<Rating> originalDataset = new BothIndexRatingsDataset<Rating>(ratings);
 
-        Map<Integer, Set<Integer>> testItems = new TreeMap<Integer, Set<Integer>>();
-        for (int idUser = 1; idUser <= 5; idUser++) {
-            testItems.put(idUser, new TreeSet<Integer>());
+        Map<Long, Set<Long>> testItems = new TreeMap<Long, Set<Long>>();
+        for (long idUser = 1; idUser <= 5; idUser++) {
+            testItems.put(idUser, new TreeSet<Long>());
             testItems.get(idUser).add(6 - idUser);
         }
 

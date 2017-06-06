@@ -106,7 +106,7 @@ public class RecommendationsDefaultGUI implements RecommendationsGUI {
 
         this.datasetLoader = datasetLoader;
 
-        Map<Integer, Number> recommendationsByItem = Recommendation.convertToMapOfNumbers(recommendations.getRecommendations());
+        Map<Long, Number> recommendationsByItem = Recommendation.convertToMapOfNumbers(recommendations.getRecommendations());
         List<Recommendation> recommendationsComplete = candidateItems.stream()
                 .map((item -> {
                     if (recommendationsByItem.containsKey(item.getId())) {

@@ -55,9 +55,9 @@ public class PositiveRatingPercent extends NonPersonalisedRecommender<Collection
 
         Collection<Recommendation> recommendationModel1 = new ArrayList<>(ratingsDataset.allRatedItems().size());
 
-        for (int idItem : ratingsDataset.allRatedItems()) {
+        for (long idItem : ratingsDataset.allRatedItems()) {
             try {
-                Map<Integer, ? extends Rating> itemRatings = ratingsDataset.getItemRatingsRated(idItem);
+                Map<Long, ? extends Rating> itemRatings = ratingsDataset.getItemRatingsRated(idItem);
 
                 double numRatings = 0;
                 double positiveRatings = 0;
@@ -87,7 +87,7 @@ public class PositiveRatingPercent extends NonPersonalisedRecommender<Collection
     }
 
     @Override
-    public Collection<Recommendation> recommendOnly(DatasetLoader<? extends Rating> datasetLoader, Collection<Recommendation> model, Collection<Integer> candidateItems)
+    public Collection<Recommendation> recommendOnly(DatasetLoader<? extends Rating> datasetLoader, Collection<Recommendation> model, Collection<Long> candidateItems)
             throws ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset {
         Collection<Recommendation> recommendations = new ArrayList<>();
         model.stream()

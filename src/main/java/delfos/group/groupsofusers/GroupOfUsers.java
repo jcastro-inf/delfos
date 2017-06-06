@@ -37,14 +37,14 @@ import java.util.stream.Collectors;
  *
  * @author jcastro-inf ( https://github.com/jcastro-inf )
  */
-public class GroupOfUsers implements Comparable<GroupOfUsers>, Iterable<Integer>, Serializable {
+public class GroupOfUsers implements Comparable<GroupOfUsers>, Iterable<Long>, Serializable {
 
     private static final long serialVersionUID = 24352466L;
     public static Comparator<GroupOfUsers> BY_MEMBERS_ID = (GroupOfUsers o1, GroupOfUsers o2) -> {
 
         if (o1.size() == o2.size()) {
-            List<Integer> thisMembers = o1.getIdMembers().stream().sorted().collect(Collectors.toList());
-            List<Integer> compareMembers = o2.getIdMembers().stream().sorted().collect(Collectors.toList());
+            List<Long> thisMembers = o1.getIdMembers().stream().sorted().collect(Collectors.toList());
+            List<Long> compareMembers = o2.getIdMembers().stream().sorted().collect(Collectors.toList());
 
             for (int i = 0; i < thisMembers.size(); i++) {
                 int compareTo = thisMembers.get(i).compareTo(compareMembers.get(i));
@@ -67,7 +67,7 @@ public class GroupOfUsers implements Comparable<GroupOfUsers>, Iterable<Integer>
     /**
      * Conjunto de usuarios que pertenecen al grupo
      */
-    private final Set<Integer> idMembers;
+    private final Set<Long> idMembers;
 
     private final Set<User> members;
 
@@ -77,7 +77,7 @@ public class GroupOfUsers implements Comparable<GroupOfUsers>, Iterable<Integer>
     }
 
     @Deprecated
-    public GroupOfUsers(Integer... _users) {
+    public GroupOfUsers(Long... _users) {
         idMembers = new TreeSet<>(Arrays.asList(_users));
         members = idMembers.stream()
                 .map(user -> new User(user))
@@ -103,7 +103,7 @@ public class GroupOfUsers implements Comparable<GroupOfUsers>, Iterable<Integer>
      * @param idUser Usuario que se desea añadir al grupo
      * @return
      */
-    public boolean addUser(int idUser) {
+    public boolean addUser(Long idUser) {
         boolean add = idMembers.add(idUser);
         if (!add) {
             Global.showWarning("User was already a group member");
@@ -111,8 +111,8 @@ public class GroupOfUsers implements Comparable<GroupOfUsers>, Iterable<Integer>
         return add;
     }
 
-    public boolean removeUser(int idUser) {
-        boolean remove = idMembers.remove((Integer) idUser);
+    public boolean removeUser(Long idUser) {
+        boolean remove = idMembers.remove((Long) idUser);
         if (!remove) {
             Global.showWarning("User not in group");
         }
@@ -124,7 +124,7 @@ public class GroupOfUsers implements Comparable<GroupOfUsers>, Iterable<Integer>
      *
      * @return conjunto de miembros
      */
-    public Collection<Integer> getIdMembers() {
+    public Collection<Long> getIdMembers() {
         return new ArrayList<>(idMembers);
     }
 
@@ -152,7 +152,7 @@ public class GroupOfUsers implements Comparable<GroupOfUsers>, Iterable<Integer>
      * @param idUser id del usuario que se desea comprobar
      * @return Devuelve true si el usuario pertenece al grupo
      */
-    public boolean contains(int idUser) {
+    public boolean contains(Long idUser) {
         return getIdMembers().contains(idUser);
     }
 
@@ -169,9 +169,9 @@ public class GroupOfUsers implements Comparable<GroupOfUsers>, Iterable<Integer>
     @Override
     public int hashCode() {
         int h = 0;
-        Iterator<Integer> i = getIdMembers().iterator();
+        Iterator<Long> i = getIdMembers().iterator();
         while (i.hasNext()) {
-            Integer obj = i.next();
+            Long obj = i.next();
             if (obj != null) {
                 h += obj.hashCode();
             }
@@ -180,7 +180,7 @@ public class GroupOfUsers implements Comparable<GroupOfUsers>, Iterable<Integer>
     }
 
     @Override
-    public Iterator<Integer> iterator() {
+    public Iterator<Long> iterator() {
         return getIdMembers().iterator();
     }
 
@@ -193,14 +193,14 @@ public class GroupOfUsers implements Comparable<GroupOfUsers>, Iterable<Integer>
     public static GroupOfUsers parseIdTarget(String idTarget) {
         if (idTarget.startsWith(GROUP_ID_TARGET_PREFIX)) {
             String collectionToString = idTarget.substring(idTarget.indexOf(GROUP_ID_TARGET_PREFIX));
-            Collection<Integer> groupMembers = extractGroupMembers(collectionToString);
-            return new GroupOfUsers(groupMembers.toArray(new Integer[0]));
+            Collection<Long> groupMembers = extractGroupMembers(collectionToString);
+            return new GroupOfUsers(groupMembers.toArray(new Long[0]));
         } else {
             throw new IllegalArgumentException("Not a group idTarget '" + idTarget + "'");
         }
     }
 
-    public static Collection<Integer> extractGroupMembers(String collectionToString) {
+    public static Collection<Long> extractGroupMembers(String collectionToString) {
         String collectionToStringWithoutBrackets = collectionToString
                 .replaceAll("\\[", "")
                 .replaceAll("\\]", "");
@@ -211,16 +211,16 @@ public class GroupOfUsers implements Comparable<GroupOfUsers>, Iterable<Integer>
 
         String[] members = collectionToStringWithoutBrackets.split(",");
 
-        LinkedList<Integer> ret = new LinkedList<>();
+        LinkedList<Long> ret = new LinkedList<>();
         for (String member : members) {
-            ret.add(Integer.parseInt(member));
+            ret.add(Long.parseLong(member));
         }
 
         return ret;
     }
 
-    public static String groupMembersToString(Collection<Integer> members) {
-        Iterator<Integer> it = members.iterator();
+    public static String groupMembersToString(Collection<Long> members) {
+        Iterator<Long> it = members.iterator();
         if (!it.hasNext()) {
             return "[]";
         }
@@ -228,8 +228,8 @@ public class GroupOfUsers implements Comparable<GroupOfUsers>, Iterable<Integer>
         StringBuilder sb = new StringBuilder();
         sb.append('[');
         for (;;) {
-            Integer idUser = it.next();
-            sb.append(Integer.toString(idUser));
+            Long idUser = it.next();
+            sb.append(Long.toString(idUser));
             if (!it.hasNext()) {
                 return sb.append(']').toString();
             }

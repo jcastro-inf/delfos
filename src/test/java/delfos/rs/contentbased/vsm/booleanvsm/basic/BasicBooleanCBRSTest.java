@@ -75,7 +75,7 @@ public class BasicBooleanCBRSTest extends DelfosTest {
         DatasetLoader<? extends Rating> datasetLoader = null;
         BasicBooleanCBRSModel model = null;
         SparseVector<Long> userProfile = null;
-        Collection<Integer> candidateItems = null;
+        Collection<Long> candidateItems = null;
         BasicBooleanCBRS instance = new BasicBooleanCBRS();
         Collection<Recommendation> expResult = null;
         Collection<Recommendation> result = instance.recommendOnly(datasetLoader, model, userProfile, candidateItems);

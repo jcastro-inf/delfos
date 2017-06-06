@@ -47,7 +47,7 @@ public class KnnModelItemProfile extends CollaborativeFilteringItemProfile imple
      * Se implementa el constructor por defecto para que el objeto sea
      * serializable.
      *
-     * @deprecated Instead of this, use constructor {@link KnnModelItemProfile#KnnModelItemProfile(int)
+     * @deprecated Instead of this, use constructor {@link KnnModelItemProfile#KnnModelItemProfile(long)}
      * }
      */
     protected KnnModelItemProfile() {
@@ -61,7 +61,7 @@ public class KnnModelItemProfile extends CollaborativeFilteringItemProfile imple
      *
      * @param idItem Producto al que se refiere este perfil.
      */
-    public KnnModelItemProfile(int idItem) {
+    public KnnModelItemProfile(long idItem) {
         super(idItem);
         this.neighborsSimilarity = new ArrayList<>();
     }
@@ -73,7 +73,7 @@ public class KnnModelItemProfile extends CollaborativeFilteringItemProfile imple
      * @param idItem Producto al que se refiere el perfil.
      * @param neighbors Vecinos del producto.
      */
-    public KnnModelItemProfile(int idItem, List<Neighbor> neighbors) {
+    public KnnModelItemProfile(long idItem, List<Neighbor> neighbors) {
         this(idItem);
         neighborsSimilarity.addAll(neighbors);
 
@@ -87,7 +87,9 @@ public class KnnModelItemProfile extends CollaborativeFilteringItemProfile imple
      * @param idItemNeighbor Producto vecino.
      * @param similarity Similitud del vecino.
      */
-    public void addItem(int idItemNeighbor, double similarity) {
+    public void addItem(
+            long idItemNeighbor,
+            double similarity) {
         neighborsSimilarity.add(new Neighbor(RecommendationEntity.ITEM, idItemNeighbor, similarity));
     }
 

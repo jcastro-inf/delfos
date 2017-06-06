@@ -82,7 +82,7 @@ public class RandomContentDataset extends ContentDatasetDefault {
 
         Random random = new Random(seed);
 
-        Collection<Integer> idItemSet = ratingsDataset.allRatedItems();
+        Collection<Long> idItemSet = ratingsDataset.allRatedItems();
 
         Feature[] features = new Feature[numNumericFeatures + numNominalFeatures];
 
@@ -92,9 +92,7 @@ public class RandomContentDataset extends ContentDatasetDefault {
             if (!featureGenerator.containsFeature(name)) {
                 featureGenerator.createFeature(name, FeatureType.Numerical);
             }
-
             features[i] = featureGenerator.searchFeature(name);
-
         }
 
         for (int i = 0; i < numNominalFeatures; i++) {
@@ -106,7 +104,7 @@ public class RandomContentDataset extends ContentDatasetDefault {
             features[numNumericFeatures + i] = featureGenerator.searchFeature(name);
         }
 
-        for (int idItem : idItemSet) {
+        for (long idItem : idItemSet) {
             Object[] values = new Object[features.length];
             for (int i = 0; i < features.length; i++) {
 

@@ -39,10 +39,10 @@ import java.util.TreeSet;
  */
 public class RecommendationResults {
 
-    private final Map<Integer, List<Recommendation>> recommendationResults;
+    private final Map<Long, List<Recommendation>> recommendationResults;
     private long modelBuildTime;
 
-    public Set<Integer> usersWithRecommendations() {
+    public Set<Long> usersWithRecommendations() {
         return new TreeSet<>(recommendationResults.keySet());
     }
 
@@ -53,7 +53,7 @@ public class RecommendationResults {
      * @param recommendations lista de recomendaciones que se le dan ordenadas por relevancia (similitud o valoración
      * predicha)
      */
-    public void add(int idUser, Collection<Recommendation> recommendations) {
+    public void add(long idUser, Collection<Recommendation> recommendations) {
 
         ArrayList<Recommendation> recommendationList = new ArrayList<>(recommendations);
         Collections.sort(recommendationList);
@@ -76,7 +76,7 @@ public class RecommendationResults {
 
         this.recommendationResults = new TreeMap<>();
         for (Recommendations recommendations : allRecommendations) {
-            Integer idUser = User.parseIdTarget(recommendations.getTargetIdentifier()).getId();
+            Long idUser = User.parseIdTarget(recommendations.getTargetIdentifier()).getId();
 
             add(idUser, recommendations.getRecommendations());
         }
@@ -104,7 +104,7 @@ public class RecommendationResults {
 
     }
 
-    public List<Recommendation> getRecommendationsForUser(int idUser) {
+    public List<Recommendation> getRecommendationsForUser(long idUser) {
         return recommendationResults.get(idUser);
     }
 
@@ -113,8 +113,8 @@ public class RecommendationResults {
     }
 
     public void clear() {
-        for (Iterator<Map.Entry<Integer, List<Recommendation>>> it = recommendationResults.entrySet().iterator(); it.hasNext();) {
-            Map.Entry<Integer, List<Recommendation>> list = it.next();
+        for (Iterator<Map.Entry<Long, List<Recommendation>>> it = recommendationResults.entrySet().iterator(); it.hasNext();) {
+            Map.Entry<Long, List<Recommendation>> list = it.next();
             list.getValue().clear();
             it.remove();
         }

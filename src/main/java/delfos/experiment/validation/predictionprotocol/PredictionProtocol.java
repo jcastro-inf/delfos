@@ -73,7 +73,7 @@ public abstract class PredictionProtocol extends ParameterOwnerAdapter implement
      * <code>recommendOnly(idUser,{2});</code> Este mecanismo se utiliza para la validación {@link GivenN} y
      * {@link AllButOne}.
      *
-     * NOTA: Antes de cada {@link RecommenderSystemAdapter#recommendOnly(java.lang.Integer, java.util.Collection) }
+     * NOTA: Antes de cada {@link RecommenderSystemAdapter#recommendOnly(java.lang.Long, java.util.Collection) }
      * hay que eliminar las valoraciones que se van a predecir
      *
      * Calcula la lista que define cuántas peticiones de recomendación se realizarán al sistema de recomendación y qué
@@ -87,15 +87,15 @@ public abstract class PredictionProtocol extends ParameterOwnerAdapter implement
      * colaborativo que realice recomendaciones para su validación
      * @throws UserNotFound Si el usuario idUser no se encuentra en el dataset original.
      */
-    public abstract <RatingType extends Rating> List<Set<Integer>> getRecommendationRequests(
+    public abstract <RatingType extends Rating> List<Set<Long>> getRecommendationRequests(
             DatasetLoader<RatingType> trainingDatasetLoader,
             DatasetLoader<RatingType> testDatasetLoader,
-            int idUser) throws UserNotFound;
+            long idUser) throws UserNotFound;
 
-    public <RatingType extends Rating> List<Set<Integer>> getRatingsToHide(
+    public <RatingType extends Rating> List<Set<Long>> getRatingsToHide(
             DatasetLoader<RatingType> trainingDatasetLoader,
             DatasetLoader<RatingType> testDatasetLoader,
-            int idUser) throws UserNotFound {
+            long idUser) throws UserNotFound {
         return getRecommendationRequests(trainingDatasetLoader, testDatasetLoader, idUser);
     }
 
@@ -105,8 +105,8 @@ public abstract class PredictionProtocol extends ParameterOwnerAdapter implement
             DatasetLoader<RatingType> testDatasetLoader,
             User user) throws UserNotFound {
 
-        List<Set<Integer>> recommendationRequests = getRecommendationRequests(trainingDatasetLoader, testDatasetLoader, user.getId());
-        List<Set<Integer>> ratingsToHide = getRatingsToHide(trainingDatasetLoader, testDatasetLoader, user.getId());
+        List<Set<Long>> recommendationRequests = getRecommendationRequests(trainingDatasetLoader, testDatasetLoader, user.getId());
+        List<Set<Long>> ratingsToHide = getRatingsToHide(trainingDatasetLoader, testDatasetLoader, user.getId());
 
         if (recommendationRequests.size() != ratingsToHide.size()) {
             throw new IllegalStateException("recommendationRequests and ratingsToHide are not paired (distinct size)");
@@ -120,9 +120,9 @@ public abstract class PredictionProtocol extends ParameterOwnerAdapter implement
                             .map(idItem -> contentDataset.get(idItem))
                             .collect(Collectors.toSet());
 
-                    Set<Integer> ratingsToHideThisIndex = ratingsToHide.get(index);
+                    Set<Long> ratingsToHideThisIndex = ratingsToHide.get(index);
 
-                    Map<Integer, Set<Integer>> predictionRatings = new TreeMap<>();
+                    Map<Long, Set<Long>> predictionRatings = new TreeMap<>();
                     predictionRatings.put(user.getId(), ratingsToHideThisIndex);
 
                     RatingsDataset<RatingType> predictionRatingsDataset = ValidationDatasets.getInstance()

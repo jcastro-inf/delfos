@@ -95,7 +95,7 @@ public class ChangeableMySQLUsersDataset implements ChangeableUsersDataset, Coll
         if (usersDataset.allIDs().contains(user.getId())) {
             //El dataset ya tenía el usuario, haciento cambio.
 
-            Map<Integer, User> users = new TreeMap<>();
+            Map<Long, User> users = new TreeMap<>();
 
             for (User user2 : usersDataset) {
                 users.put(user2.getId(), user2);
@@ -132,7 +132,7 @@ public class ChangeableMySQLUsersDataset implements ChangeableUsersDataset, Coll
     }
 
     @Override
-    public User get(int idUser) throws EntityNotFound {
+    public User get(long idUser) throws EntityNotFound {
         return usersDataset.get(idUser);
     }
 
@@ -246,12 +246,12 @@ public class ChangeableMySQLUsersDataset implements ChangeableUsersDataset, Coll
     }
 
     @Override
-    public Collection<Integer> allIDs() {
+    public Collection<Long> allIDs() {
         return usersDataset.allIDs();
     }
 
     @Override
-    public Map<Feature, Object> parseEntityFeaturesAndAddToExisting(int idEntity, Map<String, String> features) throws EntityNotFound {
+    public Map<Feature, Object> parseEntityFeaturesAndAddToExisting(long idEntity, Map<String, String> features) throws EntityNotFound {
         return usersDataset.parseEntityFeaturesAndAddToExisting(idEntity, features);
     }
 
@@ -373,7 +373,7 @@ public class ChangeableMySQLUsersDataset implements ChangeableUsersDataset, Coll
     }
 
     @Override
-    public User getUser(int idUser) throws UserNotFound {
+    public User getUser(long idUser) throws UserNotFound {
         try {
             return usersDataset.get(idUser);
         } catch (EntityNotFound ex) {

@@ -40,14 +40,13 @@ public class NumberOfRatings extends GroupMeasureAdapter {
     /**
      * Devuelve el grado con el que el grupo indicado es un clique.
      *
-     * @param trustNetwork Red de confianza.
      * @param group Grupo a comprobar.
      * @return Valor difuso con el que un grupo es un clique.
      */
     @Override
     public double getMeasure(DatasetLoader<? extends Rating> datasetLoader, GroupOfUsers group) throws CannotLoadRatingsDataset {
         int numRatings = 0;
-        for(int idUser:group){
+        for(long idUser:group){
             try {
                 numRatings += datasetLoader.getRatingsDataset().getUserRated(idUser).size();
             } catch (UserNotFound ex) {

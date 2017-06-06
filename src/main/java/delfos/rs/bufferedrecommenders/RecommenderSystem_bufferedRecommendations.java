@@ -122,7 +122,7 @@ public class RecommenderSystem_bufferedRecommendations extends RecommenderSystem
 
     @Override
     public RecommendationsToUser recommendToUser(DatasetLoader<? extends Rating> datasetLoader, Object recommendationModel, User user, Set<Item> candidateItems) {
-        Map<Integer, ? extends Rating> userRatings = datasetLoader.getRatingsDataset().getUserRatingsRated(user.getId());
+        Map<Long, ? extends Rating> userRatings = datasetLoader.getRatingsDataset().getUserRatingsRated(user.getId());
 
         int hashCodeOfRatings = userRatings.hashCode();
         String recommendationsFileName = getPersistenceDirectory().getAbsolutePath() + File.separator + "idUser_" + user.getId() + "_" + hashCodeOfRatings + DEFAULT_RECOMMENDATIONS_EXTENSION;
@@ -137,7 +137,7 @@ public class RecommenderSystem_bufferedRecommendations extends RecommenderSystem
         } else {
 
             try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(recommendationsFile))) {
-                Map<Integer, ? extends Rating> userRatings_file = (Map<Integer, ? extends Rating>) ois.readObject();
+                Map<Long, ? extends Rating> userRatings_file = (Map<Long, ? extends Rating>) ois.readObject();
                 if (userRatings_file.hashCode() != hashCodeOfRatings) {
                     Global.showWarning("The hash code in the name of loaded file (" + hashCodeOfRatings
                             + ") does not match the hash code of the ratings (" + userRatings_file.hashCode() + ")\n");
@@ -177,7 +177,7 @@ public class RecommenderSystem_bufferedRecommendations extends RecommenderSystem
         return recommendations;
     }
 
-    public RecommendationsToUser actuallyComputeTheRecommendaitonsAndSaveThem(DatasetLoader<? extends Rating> datasetLoader, Object recommendationModel, User user, Set<Item> candidateItems, File recommendationsFile, Map<Integer, ? extends Rating> userRatings) throws UnsupportedOperationException {
+    public RecommendationsToUser actuallyComputeTheRecommendaitonsAndSaveThem(DatasetLoader<? extends Rating> datasetLoader, Object recommendationModel, User user, Set<Item> candidateItems, File recommendationsFile, Map<Long, ? extends Rating> userRatings) throws UnsupportedOperationException {
         RecommendationsToUser recommendations = getRecommenderSystem().recommendToUser(datasetLoader, recommendationModel, user, candidateItems);
         try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(recommendationsFile))) {
             oos.writeObject(userRatings);
@@ -191,7 +191,7 @@ public class RecommenderSystem_bufferedRecommendations extends RecommenderSystem
     }
 
     @Override
-    public Collection<Recommendation> recommendToUser(DatasetLoader<? extends Rating> datasetLoader, Object model, Integer idUser, Set<Integer> candidateIdItems)
+    public Collection<Recommendation> recommendToUser(DatasetLoader<? extends Rating> datasetLoader, Object model, long idUser, Set<Long> candidateIdItems)
             throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset, NotEnoughtUserInformation {
 
         User user = datasetLoader.getUsersDataset().get(idUser);

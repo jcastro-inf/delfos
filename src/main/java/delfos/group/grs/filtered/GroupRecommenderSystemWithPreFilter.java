@@ -138,20 +138,20 @@ public class GroupRecommenderSystemWithPreFilter
             Object RecommendationModel,
             GroupOfUsers groupOfUsers)
             throws UserNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset, NotEnoughtUserInformation {
-        Map<Integer, Map<Integer, Rating>> filteredRatings = getGroupRatingsFilter().getFilteredRatings(datasetLoader.getRatingsDataset(), groupOfUsers);
+        Map<Long, Map<Long, Rating>> filteredRatings = getGroupRatingsFilter().getFilteredRatings(datasetLoader.getRatingsDataset(), groupOfUsers);
 
         checkFilteredRatings(datasetLoader, groupOfUsers, filteredRatings);
 
         //Construyo un dataset modificado para la construcción del modelo interno.
         PseudoUserRatingsDataset_manyPseudoUsers<Rating> modifiedDataset = new PseudoUserRatingsDataset_manyPseudoUsers<>(datasetLoader.getRatingsDataset());
 
-        Map<Integer, Integer> pseudoMembers = new TreeMap<>();
+        Map<Long, Long> pseudoMembers = new TreeMap<>();
 
-        for (int idUser : filteredRatings.keySet()) {
-            Map<Integer, Rating> thisUserFilteredRatings = filteredRatings.get(idUser);
+        for (long idUser : filteredRatings.keySet()) {
+            Map<Long, Rating> thisUserFilteredRatings = filteredRatings.get(idUser);
 
             //Genero un usuario para el miembro actual
-            int idPseudoUser = modifiedDataset.setPseudoUserRatings(
+            long idPseudoUser = modifiedDataset.setPseudoUserRatings(
                     thisUserFilteredRatings,
                     idUser);
             pseudoMembers.put(idPseudoUser, idUser);
@@ -172,10 +172,10 @@ public class GroupRecommenderSystemWithPreFilter
         return new GroupModelWithExplanation<>(new GroupModelRatingsPreFilter(filteredRatings, innerGRSGroupModel), new NestedExplanation<>("No explanation for '" + this.getName() + "' grs", explanation));
     }
 
-    public void checkFilteredRatings(DatasetLoader<? extends Rating> datasetLoader, GroupOfUsers groupOfUsers, Map<Integer, Map<Integer, Rating>> filteredRatings) {
-        Set<Integer> usersWithoutRatingsDueToFiltering = new TreeSet<>();
+    public void checkFilteredRatings(DatasetLoader<? extends Rating> datasetLoader, GroupOfUsers groupOfUsers, Map<Long, Map<Long, Rating>> filteredRatings) {
+        Set<Long> usersWithoutRatingsDueToFiltering = new TreeSet<>();
 
-        for (int idUser : groupOfUsers.getIdMembers()) {
+        for (long idUser : groupOfUsers.getIdMembers()) {
             if (!filteredRatings.containsKey(idUser) || filteredRatings.get(idUser).isEmpty()) {
                 usersWithoutRatingsDueToFiltering.add(idUser);
                 Global.showWarning("Users " + idUser + " has no ratings due to filter '" + getGroupRatingsFilter().getAlias() + "'.");
@@ -197,11 +197,11 @@ public class GroupRecommenderSystemWithPreFilter
         PseudoUserRatingsDataset_manyPseudoUsers<Rating> modifiedDataset
                 = new PseudoUserRatingsDataset_manyPseudoUsers<>(datasetLoader.getRatingsDataset());
 
-        Map<Integer, Integer> pseudoMembers = new TreeMap<>();
+        Map<Long, Long> pseudoMembers = new TreeMap<>();
 
-        for (int idUser : groupModelWithExplanation.getGroupModel().getRatings().keySet()) {
+        for (long idUser : groupModelWithExplanation.getGroupModel().getRatings().keySet()) {
             //Genero un usuario para el miembro actual
-            int idPseudoUser = modifiedDataset.setPseudoUserRatings(
+            long idPseudoUser = modifiedDataset.setPseudoUserRatings(
                     groupModelWithExplanation.getGroupModel().getRatings().get(idUser),
                     idUser);
             pseudoMembers.put(idPseudoUser, idUser);

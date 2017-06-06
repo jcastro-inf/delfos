@@ -77,14 +77,14 @@ public interface GenericRecommenderSystem<RecommendationModel>
 
     public RecommendationModel loadRecommendationModel(
             FilePersistence filePersistence,
-            Collection<Integer> users,
-            Collection<Integer> items)
+            Collection<Long> users,
+            Collection<Long> items)
             throws FailureInPersistence;
 
     public RecommendationModel loadRecommendationModel(
             DatabasePersistence databasePersistence,
-            Collection<Integer> users,
-            Collection<Integer> items,
+            Collection<Long> users,
+            Collection<Long> items,
             DatasetLoader<? extends Rating> datasetLoader)
             throws FailureInPersistence;
 

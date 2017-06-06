@@ -86,12 +86,12 @@ public class KnnModelBasedCFRSTest {
                     relevanceFactor
             );
 
-            Set<Integer> allItems = contentDataset.parallelStream()
+            Set<Long> allItems = contentDataset.parallelStream()
                     .map(itemInner -> itemInner.getId())
                     .filter(innerItem -> !innerItem.equals(item.getId()))
                     .collect(Collectors.toCollection(TreeSet::new));
 
-            Set<Integer> itemsSimilares = neighbors.parallelStream()
+            Set<Long> itemsSimilares = neighbors.parallelStream()
                     .map(neighbor -> neighbor.getIdNeighbor())
                     .collect(Collectors.toCollection(TreeSet::new));
 

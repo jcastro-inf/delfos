@@ -60,7 +60,7 @@ public class Rating implements Comparable<Rating>, Serializable, Cloneable {
      * @param rating Valor concreto de la valoración.
      */
     @Deprecated
-    public Rating(int idUser, int idItem, Number rating) {
+    public Rating(long idUser, long idItem, Number rating) {
         this.user = new User(idUser);
         this.item = new Item(idItem);
         this.ratingValue = rating;
@@ -127,14 +127,14 @@ public class Rating implements Comparable<Rating>, Serializable, Cloneable {
     /**
      * @return the idUser
      */
-    public int getIdUser() {
+    public long getIdUser() {
         return user.getId();
     }
 
     /**
      * @return the idItem
      */
-    public int getIdItem() {
+    public long getIdItem() {
         return item.getId();
     }
 

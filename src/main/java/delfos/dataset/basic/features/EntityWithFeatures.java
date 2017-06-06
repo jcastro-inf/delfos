@@ -16,6 +16,11 @@
  */
 package delfos.dataset.basic.features;
 
+import delfos.common.StringsOrderings;
+import delfos.dataset.basic.item.Item;
+
+import java.util.Comparator;
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -28,6 +33,16 @@ import java.util.Set;
  * @version 18-sep-2013
  */
 public interface EntityWithFeatures {
+
+    public static final Comparator<EntityWithFeatures> BY_ID =
+            (EntityWithFeatures entity1, EntityWithFeatures entity2) ->
+                    Long.compare(entity1.getId(), entity2.getId());
+
+    public static final Comparator<EntityWithFeatures> BY_NAME =
+            (EntityWithFeatures entity1, EntityWithFeatures entity2) -> {
+                return StringsOrderings.getNaturalComparator()
+                        .compare(entity1.getName(),entity2.getName());
+    };
 
     /**
      * Devuelve el valor que la entidad tiene para una característica dado
@@ -52,7 +67,7 @@ public interface EntityWithFeatures {
      *
      * @return identificador de la entidad
      */
-    public Integer getId();
+    public long getId();
 
     /**
      * Devuelve el nombre de la entidad.
@@ -63,4 +78,5 @@ public interface EntityWithFeatures {
 
     @Override
     public String toString();
+
 }

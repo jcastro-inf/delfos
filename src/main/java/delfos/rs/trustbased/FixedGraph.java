@@ -92,7 +92,7 @@ public class FixedGraph<Node> extends WeightedGraphCalculation<Node> {
     }
 
     @Override
-    public WeightedGraph<Node> computeTrustValues(DatasetLoader<? extends Rating> datasetLoader, Collection<Integer> users) throws CannotLoadRatingsDataset {
+    public WeightedGraph<Node> computeTrustValues(DatasetLoader<? extends Rating> datasetLoader, Collection<Long> users) throws CannotLoadRatingsDataset {
         synchronized (models) {
             if (!models.containsKey(datasetLoader)) {
 

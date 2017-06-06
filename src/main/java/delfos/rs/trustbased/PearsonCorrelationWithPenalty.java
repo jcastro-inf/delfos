@@ -40,7 +40,7 @@ import delfos.group.casestudy.definedcases.jrs2014.PearsonWithPenalty;
  * @author jcastro-inf ( https://github.com/jcastro-inf )
  * @version 1.0 19-Julio-2013
  */
-public class PearsonCorrelationWithPenalty extends WeightedGraphCalculation<Integer> {
+public class PearsonCorrelationWithPenalty extends WeightedGraphCalculation<Long> {
 
     private static final long serialVersionUID = -3387516993124229948L;
 
@@ -57,18 +57,18 @@ public class PearsonCorrelationWithPenalty extends WeightedGraphCalculation<Inte
     }
 
     @Override
-    public WeightedGraph<Integer> computeTrustValues(DatasetLoader<? extends Rating> datasetLoader, Collection<Integer> users) throws CannotLoadRatingsDataset {
+    public WeightedGraph<Long> computeTrustValues(DatasetLoader<? extends Rating> datasetLoader, Collection<Long> users) throws CannotLoadRatingsDataset {
         boolean printPartialResults;
 
         final RatingsDataset<? extends Rating> ratingsDataset = datasetLoader.getRatingsDataset();
 
-        Map<Integer, Map<Integer, Number>> pccMatrix = new TreeMap<Integer, Map<Integer, Number>>();
+        Map<Long, Map<Long, Number>> pccMatrix = new TreeMap<Long, Map<Long, Number>>();
 
         PearsonWithPenalty pairwisePcc = new PearsonWithPenalty((Integer) getParameterValue(PENALTY));
 
-        for (Integer idUser : users) {
+        for (Long idUser : users) {
 
-            pccMatrix.put(idUser, new TreeMap<Integer, Number>());
+            pccMatrix.put(idUser, new TreeMap<Long, Number>());
         }
 
         JaccardForUsers jaccardForUsers = new JaccardForUsers();
@@ -79,8 +79,8 @@ public class PearsonCorrelationWithPenalty extends WeightedGraphCalculation<Inte
         Chronometer c = new Chronometer();
         MeanIterative meanTimePerLoop = new MeanIterative();
 
-        for (Integer idUser1 : users) {
-            for (Integer idUser2 : users) {
+        for (Long idUser1 : users) {
+            for (Long idUser2 : users) {
                 if (!pccMatrix.get(idUser1).containsKey(idUser2)) {
                     c.reset();
                     double similarity;
@@ -106,7 +106,7 @@ public class PearsonCorrelationWithPenalty extends WeightedGraphCalculation<Inte
                 thisLoop++;
             }
         }
-        WeightedGraph<Integer> pccGraph = new WeightedGraph<Integer>(pccMatrix);
+        WeightedGraph<Long> pccGraph = new WeightedGraph<Long>(pccMatrix);
 
         return pccGraph;
     }

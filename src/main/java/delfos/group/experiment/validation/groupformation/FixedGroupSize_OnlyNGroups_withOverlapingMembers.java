@@ -82,19 +82,19 @@ public class FixedGroupSize_OnlyNGroups_withOverlapingMembers extends GroupForma
         Random random = new Random(getSeedValue());
         List<GroupOfUsers> groupsGenerated = new ArrayList<>(numGroups);
 
-        final List<Integer> usersAllowedSorted = usersAllowed.parallelStream()
+        final List<Long> usersAllowedSorted = usersAllowed.parallelStream()
                 .map(user -> user.getId())
                 .sorted()
                 .collect(Collectors.toList());
 
-        List<Integer> users = new ArrayList<>(usersAllowedSorted);
+        List<Long> users = new ArrayList<>(usersAllowedSorted);
 
         int indexGrupoActual = 0;
         while (groupsGenerated.size() < numGroups) {
 
             Set<User> usersGrupoActual = new TreeSet<>();
             while (usersGrupoActual.size() < groupSizeValue) {
-                int idUser = users.remove(random.nextInt(users.size()));
+                Long idUser = users.remove(random.nextInt(users.size()));
                 User user = datasetLoader.getUsersDataset().get(idUser);
                 usersGrupoActual.add(user);
 

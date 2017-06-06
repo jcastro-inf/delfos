@@ -74,13 +74,13 @@ public class PrecisionCollaborative extends EvaluationMeasure {
         final AtomicInteger falseNegative = new AtomicInteger(0);
         final AtomicInteger trueNegative = new AtomicInteger(0);
 
-        for (int idUser : testDataset.allUsers()) {
+        for (long idUser : testDataset.allUsers()) {
             Collection<Recommendation> recommendationList = recommendationResults.getRecommendationsForUser(idUser);
             if (recommendationList == null) {
                 continue;
             }
 
-            Map<Integer, Double> testRatings = testDataset
+            Map<Long, Double> testRatings = testDataset
                     .getUserRatingsRated(idUser)
                     .values()
                     .parallelStream()
@@ -92,7 +92,7 @@ public class PrecisionCollaborative extends EvaluationMeasure {
                     );
 
             recommendationList.parallelStream().forEach(recommendation -> {
-                final Integer idItem = recommendation.getItem().getId();
+                final Long idItem = recommendation.getItem().getId();
 
                 boolean isInTestSet = testRatings.containsKey(idItem);
 

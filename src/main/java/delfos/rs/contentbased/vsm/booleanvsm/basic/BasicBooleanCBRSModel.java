@@ -27,7 +27,7 @@ import java.util.TreeMap;
  *
  * @version 09-oct-2013
  */
-public class BasicBooleanCBRSModel extends TreeMap<Integer, SparseVector<Long>> {
+public class BasicBooleanCBRSModel extends TreeMap<Long, SparseVector<Long>> {
 
     private static final long serialVersionUID = 1L;
     protected BooleanFeaturesTransformation booleanFeaturesTransformation;

@@ -88,7 +88,7 @@ public class HalfLifeUtility extends EvaluationMeasure {
         final double alpha = ((Number) getParameterValue(ALPHA)).doubleValue();
         final double neutralRating = ((Number) getParameterValue(NEUTRAL_RATING)).doubleValue();
 
-        for (int idUser : testDataset.allUsers()) {
+        for (long idUser : testDataset.allUsers()) {
 
             List<Recommendation> recommendationList = recommendationResults.getRecommendationsForUser(idUser);
 
@@ -98,12 +98,12 @@ public class HalfLifeUtility extends EvaluationMeasure {
             double sum = 0;
 
             try {
-                Map<Integer, ? extends Rating> userRatings = testDataset.getUserRatingsRated(idUser);
+                Map<Long, ? extends Rating> userRatings = testDataset.getUserRatingsRated(idUser);
 
                 int j = 1;
 
                 for (Recommendation recommendation : recommendationList) {
-                    int idItem = recommendation.getItem().getId();
+                    long idItem = recommendation.getItem().getId();
 
                     double prediction = recommendation.getPreference().doubleValue();
                     double rating = userRatings.containsKey(idItem)

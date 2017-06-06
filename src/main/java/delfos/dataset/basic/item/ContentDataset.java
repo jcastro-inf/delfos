@@ -39,7 +39,7 @@ public interface ContentDataset extends Comparable<Object>, CollectionOfEntities
      * @throws delfos.common.exceptions.dataset.entity.EntityNotFound
      */
     @Override
-    public Item get(int idItem) throws EntityNotFound;
+    public Item get(long idItem) throws EntityNotFound;
 
     /**
      * Devuelve el objeto que almacena el contenido del item que se consulta
@@ -48,7 +48,7 @@ public interface ContentDataset extends Comparable<Object>, CollectionOfEntities
      * @return objeto que que almacena el contenido del item
      * @throws delfos.common.exceptions.dataset.items.ItemNotFound
      */
-    public Item getItem(int idItem) throws ItemNotFound;
+    public Item getItem(long idItem) throws ItemNotFound;
 
     /**
      * Devuelve el número de productos que hay actualmente en el dataset
@@ -64,7 +64,7 @@ public interface ContentDataset extends Comparable<Object>, CollectionOfEntities
      *
      * @return Colección con todos los id de los items.
      */
-    public Collection<Integer> allIDs();
+    public Collection<Long> allIDs();
 
     /**
      * Devuelve el conjunto de productos que pueden ser recomendados en el
@@ -75,7 +75,7 @@ public interface ContentDataset extends Comparable<Object>, CollectionOfEntities
      *
      * @return
      */
-    public Collection<Integer> getAvailableItems();
+    public Collection<Long> getAvailableItems();
 
     /**
      * Establece el producto indicado como producto disponible. Una vez se llama
@@ -86,5 +86,5 @@ public interface ContentDataset extends Comparable<Object>, CollectionOfEntities
      * @param available True si el producto está disponible, false si no lo
      * esta.
      */
-    public void setItemAvailable(int idItem, boolean available) throws ItemNotFound;
+    public void setItemAvailable(long idItem, boolean available) throws ItemNotFound;
 }

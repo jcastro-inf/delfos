@@ -152,16 +152,16 @@ public class OutliersRatingsFilter extends GroupRatingsFilter {
     }
 
     @Override
-    public Map<Integer, Map<Integer, Number>> getFilteredRatings(Map<Integer, Map<Integer, Number>> originalSet) {
+    public Map<Long, Map<Long, Number>> getFilteredRatings(Map<Long, Map<Long, Number>> originalSet) {
         int totalRatingsGrupo = 0;
 
         ArrayList<DifferenceRatings> ratingsToErase = new ArrayList<>();
 
-        for (int idUser : originalSet.keySet()) {
-            Collection<Integer> otherUsers = new TreeSet<>(originalSet.keySet());
+        for (long idUser : originalSet.keySet()) {
+            Collection<Long> otherUsers = new TreeSet<>(originalSet.keySet());
             otherUsers.remove(idUser);
 
-            for (int idItem : originalSet.get(idUser).keySet()) {
+            for (long idItem : originalSet.get(idUser).keySet()) {
 
                 Number userRating = originalSet.get(idUser).get(idItem);
                 if (userRating == null) {
@@ -169,7 +169,7 @@ public class OutliersRatingsFilter extends GroupRatingsFilter {
                 }
 
                 MeanIterative mean = new MeanIterative();
-                for (int idMember : otherUsers) {
+                for (long idMember : otherUsers) {
                     if (originalSet.get(idMember).containsKey(idItem)) {
                         Number rating = originalSet.get(idMember).get(idItem);
                         if (rating == null) {
@@ -186,7 +186,7 @@ public class OutliersRatingsFilter extends GroupRatingsFilter {
 
         {
             if (isKeepingAtLeastOneRating()) {
-                Set<Integer> itemAppeared = new TreeSet<>();
+                Set<Long> itemAppeared = new TreeSet<>();
                 for (ListIterator<DifferenceRatings> it = ratingsToErase.listIterator(ratingsToErase.size()); it.hasPrevious();) {
                     DifferenceRatings differenceRatings = it.previous();
 
@@ -207,7 +207,7 @@ public class OutliersRatingsFilter extends GroupRatingsFilter {
         int borrarMax = (int) (ratingsToErase.size() * getPercentageMaxFilteredOut());
         int eliminados = 0;
 
-        Map<Integer, Map<Integer, Number>> ratingsToReturn = new TreeMap<>();
+        Map<Long, Map<Long, Number>> ratingsToReturn = new TreeMap<>();
         originalSet.keySet().stream().forEach((idUser) -> {
             ratingsToReturn.put(idUser, new TreeMap<>());
         });
@@ -215,8 +215,8 @@ public class OutliersRatingsFilter extends GroupRatingsFilter {
         while (!ratingsToErase.isEmpty()) {
             DifferenceRatings difference = ratingsToErase.remove(ratingsToErase.size() - 1);
 
-            int idUser = difference.idUser;
-            int idItem = difference.idItem;
+            long idUser = difference.idUser;
+            long idItem = difference.idItem;
 
             if (difference.deletable && !Double.isNaN(difference.diff)) {
                 //Es posible borrarlo, ver el resto de condiciones.
@@ -257,8 +257,8 @@ public class OutliersRatingsFilter extends GroupRatingsFilter {
 
     private class DifferenceRatings implements Comparable<DifferenceRatings> {
 
-        public final int idUser;
-        public final int idItem;
+        public final long idUser;
+        public final long idItem;
         public final double diff;
         public final Number originalRating;
         /**
@@ -268,7 +268,7 @@ public class OutliersRatingsFilter extends GroupRatingsFilter {
          */
         public Boolean deletable = null;
 
-        public DifferenceRatings(int idUser, int idItem, double diff, Number originalRating) {
+        public DifferenceRatings(long idUser, long idItem, double diff, Number originalRating) {
             this.idUser = idUser;
             this.idItem = idItem;
             this.diff = diff;

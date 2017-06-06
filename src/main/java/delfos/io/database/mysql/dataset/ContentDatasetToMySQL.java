@@ -88,7 +88,7 @@ public class ContentDatasetToMySQL {
         }
 
         for (Item item : contentDataset) {
-            int idItem = item.getId();
+            long idItem = item.getId();
             StringBuilder insert = new StringBuilder();
             insert.append(beginingOfInsert);
 

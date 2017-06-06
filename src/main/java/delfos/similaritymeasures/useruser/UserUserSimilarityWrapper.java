@@ -60,12 +60,12 @@ public class UserUserSimilarityWrapper extends SimilarityMeasureAdapter implemen
     }
 
     @Override
-    public double similarity(DatasetLoader<? extends Rating> datasetLoader, int idUser1, int idUser2) {
+    public double similarity(DatasetLoader<? extends Rating> datasetLoader, long idUser1, long idUser2) {
 
-        Map<Integer, ? extends Rating> user1Ratings = datasetLoader.getRatingsDataset().getUserRatingsRated(idUser1);
-        Map<Integer, ? extends Rating> user2Ratings = datasetLoader.getRatingsDataset().getUserRatingsRated(idUser2);
+        Map<Long, ? extends Rating> user1Ratings = datasetLoader.getRatingsDataset().getUserRatingsRated(idUser1);
+        Map<Long, ? extends Rating> user2Ratings = datasetLoader.getRatingsDataset().getUserRatingsRated(idUser2);
 
-        Set<Integer> commonItems = new TreeSet<>(user1Ratings.keySet());
+        Set<Long> commonItems = new TreeSet<>(user1Ratings.keySet());
         commonItems.retainAll(user2Ratings.keySet());
 
         List<Double> v1 = new ArrayList<>();

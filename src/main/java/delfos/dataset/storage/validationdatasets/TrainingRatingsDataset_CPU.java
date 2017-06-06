@@ -45,27 +45,27 @@ public class TrainingRatingsDataset_CPU<RatingType extends Rating>
         extends RatingsDatasetAdapter<RatingType>
         implements TrainingRatingsDataset<RatingType> {
 
-    private final Map<Integer, Set<Integer>> testRatings_byUser;
+    private final Map<Long, Set<Long>> testRatings_byUser;
     private final RatingsDataset<RatingType> originalDataset;
-    private Set<Integer> allRatedItems;
+    private Set<Long> allRatedItems;
     /**
      * Crea un buffer para no tener que recalcular los conjuntos indizados por item. Acelera la ejecución del metodo
      * item item
      */
-    private final Map<Integer, Map<Integer, RatingType>> bufferItems = Collections.synchronizedMap(new TreeMap<Integer, Map<Integer, RatingType>>());
+    private final Map<Long, Map<Long, RatingType>> bufferItems = Collections.synchronizedMap(new TreeMap<Long, Map<Long, RatingType>>());
 
-    public TrainingRatingsDataset_CPU(RatingsDataset<RatingType> originalDataset, Map<Integer, Set<Integer>> testSet) throws UserNotFound, ItemNotFound {
+    public TrainingRatingsDataset_CPU(RatingsDataset<RatingType> originalDataset, Map<Long, Set<Long>> testSet) throws UserNotFound, ItemNotFound {
         super();
         this.originalDataset = originalDataset;
         this.testRatings_byUser = testSet;
-        for (int idUser : testSet.keySet()) {
-            for (int idItem : testSet.get(idUser)) {
+        for (long idUser : testSet.keySet()) {
+            for (long idItem : testSet.get(idUser)) {
                 if (originalDataset.getRating(idUser, idItem) == null) {
-                    Collection<Integer> userRated = originalDataset.getUserRated(idUser);
+                    Collection<Long> userRated = originalDataset.getUserRated(idUser);
                     if (userRated.isEmpty()) {
                         Global.showWarning("User " + idUser + "hasn't rated any items.");
                     }
-                    Collection<Integer> itemRated = originalDataset.getItemRated(idItem);
+                    Collection<Long> itemRated = originalDataset.getItemRated(idItem);
                     if (itemRated.isEmpty()) {
                         Global.showWarning("Item " + idItem + "hasn't received any rating.");
                     }
@@ -76,7 +76,7 @@ public class TrainingRatingsDataset_CPU<RatingType extends Rating>
     }
 
     @Override
-    public RatingType getRating(int idUser, int idItem) throws UserNotFound, ItemNotFound {
+    public RatingType getRating(long idUser, long idItem) throws UserNotFound, ItemNotFound {
         if (testRatings_byUser.containsKey(idUser) && testRatings_byUser.get(idUser).contains(idItem)) {
             return null;
         } else {
@@ -85,12 +85,12 @@ public class TrainingRatingsDataset_CPU<RatingType extends Rating>
     }
 
     @Override
-    public Set<Integer> allUsers() {
+    public Set<Long> allUsers() {
         return originalDataset.allUsers();
     }
 
     @Override
-    public synchronized Set<Integer> allRatedItems() {
+    public synchronized Set<Long> allRatedItems() {
         if (this.allRatedItems == null) {
             allRatedItems = this.allUsers().parallelStream()
                     .flatMap(user -> this.getUserRated(user).parallelStream())
@@ -103,8 +103,8 @@ public class TrainingRatingsDataset_CPU<RatingType extends Rating>
     }
 
     @Override
-    public Set<Integer> getUserRated(Integer idUser) throws UserNotFound {
-        Set<Integer> ret = new TreeSet<>(originalDataset.getUserRated(idUser));
+    public Set<Long> getUserRated(long idUser) throws UserNotFound {
+        Set<Long> ret = new TreeSet<>(originalDataset.getUserRated(idUser));
         if (testRatings_byUser.containsKey(idUser)) {
             ret.removeAll(testRatings_byUser.get(idUser));
         }
@@ -112,13 +112,13 @@ public class TrainingRatingsDataset_CPU<RatingType extends Rating>
     }
 
     @Override
-    public Map<Integer, RatingType> getUserRatingsRated(Integer idUser) throws UserNotFound {
+    public Map<Long, RatingType> getUserRatingsRated(long idUser) throws UserNotFound {
 
-        TreeMap<Integer, RatingType> ret = new TreeMap<>(originalDataset.getUserRatingsRated(idUser));
+        TreeMap<Long, RatingType> ret = new TreeMap<>(originalDataset.getUserRatingsRated(idUser));
 
         if (testRatings_byUser.containsKey(idUser)) {
-            final Set<Integer> ratingsInTestSet = testRatings_byUser.get(idUser);
-            for (int idItem : ratingsInTestSet) {
+            final Set<Long> ratingsInTestSet = testRatings_byUser.get(idUser);
+            for (long idItem : ratingsInTestSet) {
                 ret.remove(idItem);
             }
         }
@@ -127,19 +127,19 @@ public class TrainingRatingsDataset_CPU<RatingType extends Rating>
     }
 
     @Override
-    public Set<Integer> getItemRated(Integer idItem) throws ItemNotFound {
+    public Set<Long> getItemRated(long idItem) throws ItemNotFound {
         return getItemRatingsRated(idItem).keySet();
     }
 
     @Override
-    public Map<Integer, RatingType> getItemRatingsRated(Integer idItem) throws ItemNotFound {
+    public Map<Long, RatingType> getItemRatingsRated(long idItem) throws ItemNotFound {
         if (bufferItems.containsKey(idItem)) {
             return bufferItems.get(idItem);
         } else {
 
-            Map<Integer, RatingType> ret = new TreeMap<>();
-            Map<Integer, RatingType> itemRatingsRated = originalDataset.getItemRatingsRated(idItem);
-            for (Integer idUser : itemRatingsRated.keySet()) {
+            Map<Long, RatingType> ret = new TreeMap<>();
+            Map<Long, RatingType> itemRatingsRated = originalDataset.getItemRatingsRated(idItem);
+            for (Long idUser : itemRatingsRated.keySet()) {
 
                 if (testRatings_byUser.containsKey(idUser) && testRatings_byUser.get(idUser).contains(idItem)) {
                     //está en el test

@@ -38,34 +38,34 @@ public class RecommendationScopeNewItems extends PredictionProtocol {
     public static final long serialVersionUID = 1L;
 
     @Override
-    public <RatingType extends Rating> List<Set<Integer>> getRecommendationRequests(
+    public <RatingType extends Rating> List<Set<Long>> getRecommendationRequests(
             DatasetLoader<RatingType> trainingDatasetLoader,
             DatasetLoader<RatingType> testDatasetLoader,
-            int idUser)
+            long idUser)
             throws UserNotFound {
 
-        Set<Integer> userRatedItems = trainingDatasetLoader.getRatingsDataset().getUserRated(idUser);
+        Set<Long> userRatedItems = trainingDatasetLoader.getRatingsDataset().getUserRated(idUser);
 
-        Set<Integer> itemsNotRated = trainingDatasetLoader.getContentDataset()
+        Set<Long> itemsNotRated = trainingDatasetLoader.getContentDataset()
                 .allIDs()
                 .parallelStream()
                 .filter(idItem -> !userRatedItems.contains(idItem))
                 .collect(Collectors.toSet());
 
-        List<Set<Integer>> recommendationRequests = new ArrayList<>();
+        List<Set<Long>> recommendationRequests = new ArrayList<>();
         recommendationRequests.add(itemsNotRated);
 
         return recommendationRequests;
     }
 
     @Override
-    public <RatingType extends Rating> List<Set<Integer>> getRatingsToHide(
+    public <RatingType extends Rating> List<Set<Long>> getRatingsToHide(
             DatasetLoader<RatingType> trainingDatasetLoader,
             DatasetLoader<RatingType> testDatasetLoader,
-            int idUser)
+            long idUser)
             throws UserNotFound {
 
-        List<Set<Integer>> ratingsToHide = new ArrayList<>();
+        List<Set<Long>> ratingsToHide = new ArrayList<>();
         ratingsToHide.add(Collections.EMPTY_SET);
         return ratingsToHide;
 

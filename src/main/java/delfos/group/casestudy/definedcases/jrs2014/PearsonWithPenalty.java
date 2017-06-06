@@ -49,21 +49,20 @@ public class PearsonWithPenalty implements PairwiseUserTrust {
      * @param idUser1
      * @param idUser2
      * @return
-     * @throws delfos.common.Exceptions.Dataset.Users.UserNotFound
      */
     @Override
-    public double getTrust(DatasetLoader<? extends Rating> datasetLoader, int idUser1, int idUser2) throws UserNotFound, CouldNotComputeTrust {
+    public double getTrust(DatasetLoader<? extends Rating> datasetLoader, long idUser1, long idUser2) throws UserNotFound, CouldNotComputeTrust {
 
-        Map<Integer, ? extends Rating> user1ratings = datasetLoader.getRatingsDataset().getUserRatingsRated(idUser1);
-        Map<Integer, ? extends Rating> user2ratings = datasetLoader.getRatingsDataset().getUserRatingsRated(idUser2);
+        Map<Long, ? extends Rating> user1ratings = datasetLoader.getRatingsDataset().getUserRatingsRated(idUser1);
+        Map<Long, ? extends Rating> user2ratings = datasetLoader.getRatingsDataset().getUserRatingsRated(idUser2);
 
-        Set<Integer> commonItems = new TreeSet<Integer>(user1ratings.keySet());
+        Set<Long> commonItems = new TreeSet<Long>(user1ratings.keySet());
         commonItems.retainAll(user2ratings.keySet());
 
         PearsonCorrelationCoefficient pcc = new PearsonCorrelationCoefficient();
         ArrayList<Double> user1 = new ArrayList<Double>(commonItems.size());
         ArrayList<Double> user2 = new ArrayList<Double>(commonItems.size());
-        for (int idItem : commonItems) {
+        for (Long idItem : commonItems) {
             user1.add(user1ratings.get(idItem).getRatingValue().doubleValue());
             user2.add(user2ratings.get(idItem).getRatingValue().doubleValue());
         }

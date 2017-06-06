@@ -34,9 +34,9 @@ public class MultivaluedUserProfilesModel implements Serializable {
     /**
      * Almacena los perfiles de usuario.
      */
-    private final Map<Integer, MultivaluedUserProfile> userProfiles;
+    private final Map<Long, MultivaluedUserProfile> userProfiles;
 
-    public MultivaluedUserProfilesModel(Map<Integer, MultivaluedUserProfile> userProfiles) {
+    public MultivaluedUserProfilesModel(Map<Long, MultivaluedUserProfile> userProfiles) {
         this.userProfiles = userProfiles;
     }
 
@@ -45,7 +45,7 @@ public class MultivaluedUserProfilesModel implements Serializable {
      *
      * @return Perfiles de usuario.
      */
-    public Map<Integer, MultivaluedUserProfile> getUserProfiles() {
+    public Map<Long, MultivaluedUserProfile> getUserProfiles() {
         return Collections.unmodifiableMap(userProfiles);
     }
 }

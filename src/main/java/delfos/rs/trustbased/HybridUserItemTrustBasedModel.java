@@ -26,7 +26,6 @@ import delfos.rs.collaborativefiltering.profile.Neighbor;
 
 /**
  * Modelo de recomendación del sistema de recomendación
- * {@link HybridUserItemTrustBased_asPaperSays}.
  *
  * @author Jorge
  * @version 1.0 27-Mayo-2013
@@ -40,31 +39,31 @@ public class HybridUserItemTrustBasedModel implements Serializable {
     public static class UserBasedTrustModuleModel implements Serializable {
 
         private static final long serialVersionUID = -3387516993124229948L;
-        private TreeMap<Integer, Set<Neighbor>> usersNeighbours;
-        private TreeMap<Integer, Number> usersReputation;
-        private WeightedGraph<Integer> usersTrust;
+        private TreeMap<Long, Set<Neighbor>> usersNeighbours;
+        private TreeMap<Long, Number> usersReputation;
+        private WeightedGraph<Long> usersTrust;
 
-        public UserBasedTrustModuleModel(TreeMap<Integer, Set<Neighbor>> usersNeighbours, TreeMap<Integer, Number> usersReputation, TreeMap<Integer, Map<Integer, Number>> usersTrust) {
+        public UserBasedTrustModuleModel(TreeMap<Long, Set<Neighbor>> usersNeighbours, TreeMap<Long, Number> usersReputation, TreeMap<Long, Map<Long, Number>> usersTrust) {
             this.usersNeighbours = usersNeighbours;
             this.usersReputation = usersReputation;
-            this.usersTrust = new WeightedGraph<Integer>(usersTrust);
+            this.usersTrust = new WeightedGraph<Long>(usersTrust);
         }
 
-        UserBasedTrustModuleModel(TreeMap<Integer, Set<Neighbor>> usersNeighbours, TreeMap<Integer, Number> usersReputation, WeightedGraph<Integer> usersTrust) {
+        UserBasedTrustModuleModel(TreeMap<Long, Set<Neighbor>> usersNeighbours, TreeMap<Long, Number> usersReputation, WeightedGraph<Long> usersTrust) {
             this.usersNeighbours = usersNeighbours;
             this.usersReputation = usersReputation;
             this.usersTrust = usersTrust;
         }
 
-        public TreeMap<Integer, Set<Neighbor>> getUsersNeighbours() {
+        public TreeMap<Long, Set<Neighbor>> getUsersNeighbours() {
             return usersNeighbours;
         }
 
-        public TreeMap<Integer, Number> getUsersReputation() {
+        public TreeMap<Long, Number> getUsersReputation() {
             return usersReputation;
         }
 
-        public WeightedGraph<Integer> getUsersTrust() {
+        public WeightedGraph<Long> getUsersTrust() {
             return usersTrust;
         }
     }
@@ -72,31 +71,31 @@ public class HybridUserItemTrustBasedModel implements Serializable {
     public static class ItemBasedTrustModuleModel implements Serializable {
 
         static final long serialVersionUID = -3387516993124229948L;
-        private Map<Integer, Map<Integer, Number>> itemsReputation;
-        private Map<Integer, Collection<Neighbor>> itemsNeighbours;
-        private WeightedGraph<Integer> itemsTrust;
+        private Map<Long, Map<Long, Number>> itemsReputation;
+        private Map<Long, Collection<Neighbor>> itemsNeighbours;
+        private WeightedGraph<Long> itemsTrust;
 
-        public ItemBasedTrustModuleModel(TreeMap<Integer, Map<Integer, Number>> itemsTrust, TreeMap<Integer, Map<Integer, Number>> itemsReputation, TreeMap<Integer, Collection<Neighbor>> itemsNeighbours) {
+        public ItemBasedTrustModuleModel(TreeMap<Long, Map<Long, Number>> itemsTrust, TreeMap<Long, Map<Long, Number>> itemsReputation, TreeMap<Long, Collection<Neighbor>> itemsNeighbours) {
             this.itemsReputation = itemsReputation;
             this.itemsNeighbours = itemsNeighbours;
-            this.itemsTrust = new WeightedGraph<Integer>(itemsTrust);
+            this.itemsTrust = new WeightedGraph<Long>(itemsTrust);
         }
 
-        public ItemBasedTrustModuleModel(WeightedGraph<Integer> itemBasedTrust, Map<Integer, Map<Integer, Number>> itemsReputation, TreeMap<Integer, Collection<Neighbor>> itemsNeighbours) {
+        public ItemBasedTrustModuleModel(WeightedGraph<Long> itemBasedTrust, Map<Long, Map<Long, Number>> itemsReputation, TreeMap<Long, Collection<Neighbor>> itemsNeighbours) {
             this.itemsReputation = itemsReputation;
             this.itemsNeighbours = itemsNeighbours;
             this.itemsTrust = itemBasedTrust;
         }
 
-        public Map<Integer, Collection<Neighbor>> getItemsNeighbours() {
+        public Map<Long, Collection<Neighbor>> getItemsNeighbours() {
             return Collections.unmodifiableMap(itemsNeighbours);
         }
 
-        public Map<Integer, Map<Integer, Number>> getItemsReputation() {
+        public Map<Long, Map<Long, Number>> getItemsReputation() {
             return Collections.unmodifiableMap(itemsReputation);
         }
 
-        public WeightedGraph<Integer> getItemsTrust() {
+        public WeightedGraph<Long> getItemsTrust() {
             return itemsTrust;
         }
     }

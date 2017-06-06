@@ -30,11 +30,11 @@ public class OutliersItemsStandardDeviationTopPercentFilterTest {
         RatingsDataset<? extends Rating> ratingsDataset = datasetLoader.getRatingsDataset();
         OutliersItemsStandardDeviationTopPercentFilter instance = new OutliersItemsStandardDeviationTopPercentFilter();
 
-        GroupOfUsers group = new GroupOfUsers(1, 2, 3, 4, 5);
+        GroupOfUsers group = new GroupOfUsers(1l, 2l, 3l, 4l, 5l);
         //Fetch dataset.
-        Map<Integer, Map<Integer, ? extends Rating>> groupRatings = new TreeMap<>();
-        TreeSet<Integer> items = new TreeSet<>();
-        for (int idUser : group) {
+        Map<Long, Map<Long, ? extends Rating>> groupRatings = new TreeMap<>();
+        TreeSet<Long> items = new TreeSet<>();
+        for (long idUser : group) {
             try {
                 groupRatings.put(idUser, ratingsDataset.getUserRatingsRated(idUser));
                 items.addAll(groupRatings.get(idUser).keySet());
@@ -42,7 +42,7 @@ public class OutliersItemsStandardDeviationTopPercentFilterTest {
                 ERROR_CODES.USER_NOT_FOUND.exit(ex);
             }
         }
-        Map<Integer, Map<Integer, Rating>> filteredRatings = instance.getFilteredRatings(ratingsDataset, group);
+        Map<Long, Map<Long, Rating>> filteredRatings = instance.getFilteredRatings(ratingsDataset, group);
         assertNotNull(filteredRatings);
     }
 }

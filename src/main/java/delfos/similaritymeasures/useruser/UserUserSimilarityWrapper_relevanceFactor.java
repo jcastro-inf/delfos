@@ -35,10 +35,8 @@ import java.util.TreeSet;
 public class UserUserSimilarityWrapper_relevanceFactor extends SimilarityMeasureAdapter implements UserUserSimilarity {
 
     /**
-     * Almacena el valor del factor de relevancia aplicado si el parámetro {@link KnnModelBasedCFRS#relevanceFactor}
+     * Almacena el valor del factor de relevancia aplicado si el parámetro relevanceFactor
      * indica que se debe usar factor de relevancia (true). El valor por defecto del factor de relevancia es 50.
-     *
-     * @see KnnModelBasedCFRS#relevanceFactor
      */
     public static final Parameter RELEVANCE_FACTOR_VALUE = new Parameter("Relevance_factor_value", new IntegerParameter(1, 9999, 20));
 
@@ -77,16 +75,16 @@ public class UserUserSimilarityWrapper_relevanceFactor extends SimilarityMeasure
     }
 
     @Override
-    public double similarity(DatasetLoader<? extends Rating> datasetLoader, int idUser1, int idUser2) {
+    public double similarity(DatasetLoader<? extends Rating> datasetLoader, long idUser1, long idUser2) {
 
         if (idUser1 == idUser2) {
             return 1;
         }
 
-        Map<Integer, ? extends Rating> user1Ratings = datasetLoader.getRatingsDataset().getUserRatingsRated(idUser1);
-        Map<Integer, ? extends Rating> user2Ratings = datasetLoader.getRatingsDataset().getUserRatingsRated(idUser2);
+        Map<Long, ? extends Rating> user1Ratings = datasetLoader.getRatingsDataset().getUserRatingsRated(idUser1);
+        Map<Long, ? extends Rating> user2Ratings = datasetLoader.getRatingsDataset().getUserRatingsRated(idUser2);
 
-        Set<Integer> commonItems = new TreeSet<>(user1Ratings.keySet());
+        Set<Long> commonItems = new TreeSet<>(user1Ratings.keySet());
         commonItems.retainAll(user2Ratings.keySet());
 
         double similarity = basicSimilarityMeasure.similarity(datasetLoader, idUser1, idUser2);

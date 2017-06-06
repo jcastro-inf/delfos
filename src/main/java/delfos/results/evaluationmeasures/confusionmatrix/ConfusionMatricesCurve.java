@@ -38,13 +38,6 @@ import java.util.concurrent.atomic.AtomicInteger;
  *
  * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
- * @version 1.0 Unknown date
- * @version 1.1 (Anterior a verano del 2012)
- * @version 2.0 (11-01-2013)
- * @version 2.01 (14-01-2013) Cambiada la forma en que se construye la curva.
- * @version 2.1 (14-01-2013) Eliminados los métodos deprecated (addPoint) y añadida construcción mediante matrices de
- * confusión y lista de booleanos.
- *
  */
 public class ConfusionMatricesCurve {
 
@@ -61,21 +54,21 @@ public class ConfusionMatricesCurve {
 
     public static ConfusionMatricesCurve getConfusionMatricesCurve(RatingsDataset<? extends Rating> testDataset, RecommendationResults recommendationResults, RelevanceCriteria relevanceCriteria) throws RuntimeException {
         int maxLength = 0;
-        for (int idUser : testDataset.allUsers()) {
+        for (long idUser : testDataset.allUsers()) {
             Collection<Recommendation> lr = recommendationResults.getRecommendationsForUser(idUser);
             if (lr.size() > maxLength) {
                 maxLength = lr.size();
             }
         }
-        Map<Integer, ConfusionMatricesCurve> allUsersCurves = new TreeMap<>();
+        Map<Long, ConfusionMatricesCurve> allUsersCurves = new TreeMap<>();
         AtomicInteger usersWithoutMatrix = new AtomicInteger(0);
-        for (int idUser : testDataset.allUsers()) {
+        for (long idUser : testDataset.allUsers()) {
             List<Boolean> resultados = new ArrayList<>(recommendationResults.usersWithRecommendations().size());
             Collection<Recommendation> recommendationList = recommendationResults.getRecommendationsForUser(idUser);
             try {
-                Map<Integer, ? extends Rating> userRatings = testDataset.getUserRatingsRated(idUser);
+                Map<Long, ? extends Rating> userRatings = testDataset.getUserRatingsRated(idUser);
                 for (Recommendation r : recommendationList) {
-                    int idItem = r.getItem().getId();
+                    long idItem = r.getItem().getId();
                     if (userRatings.containsKey(idItem)) {
                         resultados.add(relevanceCriteria.isRelevant(userRatings.get(idItem).getRatingValue()));
                     } else {

@@ -47,8 +47,8 @@ import java.util.stream.Collectors;
  */
 public class BothIndexRatingsDataset<RatingType extends Rating> extends RatingsDatasetAdapter<RatingType> {
 
-    protected Map<Integer, Map<Integer, RatingType>> userIndex = new TreeMap<>();
-    protected Map<Integer, Map<Integer, RatingType>> itemIndex = new TreeMap<>();
+    protected Map<Long, Map<Long, RatingType>> userIndex = new TreeMap<>();
+    protected Map<Long, Map<Long, RatingType>> itemIndex = new TreeMap<>();
     protected int numRatings = 0;
 
     /**
@@ -65,10 +65,10 @@ public class BothIndexRatingsDataset<RatingType extends Rating> extends RatingsD
      * @param ratingsDataset
      */
     public BothIndexRatingsDataset(RatingsDataset<? extends RatingType> ratingsDataset) {
-        for (int idUser : ratingsDataset.allUsers()) {
+        for (Long idUser : ratingsDataset.allUsers()) {
             try {
-                Map<Integer, ? extends RatingType> userRatingsRated = ratingsDataset.getUserRatingsRated(idUser);
-                for (int idItem : userRatingsRated.keySet()) {
+                Map<Long, ? extends RatingType> userRatingsRated = ratingsDataset.getUserRatingsRated(idUser);
+                for (Long idItem : userRatingsRated.keySet()) {
                     RatingType rating = userRatingsRated.get(idItem);
                     addOneRating(rating);
                 }
@@ -84,9 +84,9 @@ public class BothIndexRatingsDataset<RatingType extends Rating> extends RatingsD
      *
      * @param ratingsIndexedByUser Valoraciones de todos los usuarios.
      */
-    public BothIndexRatingsDataset(Map<Integer, Map<Integer, RatingType>> ratingsIndexedByUser) {
-        for (int idUser : ratingsIndexedByUser.keySet()) {
-            for (int idItem : ratingsIndexedByUser.get(idUser).keySet()) {
+    public BothIndexRatingsDataset(Map<Long, Map<Long, RatingType>> ratingsIndexedByUser) {
+        for (Long idUser : ratingsIndexedByUser.keySet()) {
+            for (Long idItem : ratingsIndexedByUser.get(idUser).keySet()) {
                 RatingType rating = ratingsIndexedByUser.get(idUser).get(idItem);
                 addOneRating(rating);
             }
@@ -99,15 +99,15 @@ public class BothIndexRatingsDataset<RatingType extends Rating> extends RatingsD
      * @param ratingsDataset dataset de origen
      * @param ratingsIndexedByUser valoraciones que se añaden.
      */
-    public BothIndexRatingsDataset(RatingsDataset<RatingType> ratingsDataset, Map<Integer, Map<Integer, RatingType>> ratingsIndexedByUser) {
+    public BothIndexRatingsDataset(RatingsDataset<RatingType> ratingsDataset, Map<Long, Map<Long, RatingType>> ratingsIndexedByUser) {
 
         checkDatasetsAreDisjointInUsers(ratingsDataset, ratingsIndexedByUser);
 
         try {
-            for (int idUser : ratingsDataset.allUsers()) {
+            for (Long idUser : ratingsDataset.allUsers()) {
                 try {
-                    Map<Integer, RatingType> userRatingsRated = ratingsDataset.getUserRatingsRated(idUser);
-                    for (int idItem : userRatingsRated.keySet()) {
+                    Map<Long, RatingType> userRatingsRated = ratingsDataset.getUserRatingsRated(idUser);
+                    for (Long idItem : userRatingsRated.keySet()) {
                         Rating rating = userRatingsRated.get(idItem);
                         addOneRating((RatingType) rating);
                     }
@@ -116,8 +116,8 @@ public class BothIndexRatingsDataset<RatingType extends Rating> extends RatingsD
                 }
             }
 
-            for (int idUser : ratingsIndexedByUser.keySet()) {
-                for (int idItem : ratingsIndexedByUser.get(idUser).keySet()) {
+            for (Long idUser : ratingsIndexedByUser.keySet()) {
+                for (Long idItem : ratingsIndexedByUser.get(idUser).keySet()) {
 
                     RatingType rating = ratingsIndexedByUser.get(idUser).get(idItem);
                     addOneRating((RatingType) rating.clone());
@@ -130,8 +130,8 @@ public class BothIndexRatingsDataset<RatingType extends Rating> extends RatingsD
 
     }
 
-    private void checkDatasetsAreDisjointInUsers(RatingsDataset<RatingType> ratingsDataset, Map<Integer, Map<Integer, RatingType>> ratingsIndexedByUser) throws IllegalArgumentException {
-        Set<Integer> intersection = new TreeSet<>(ratingsDataset.allUsers());
+    private void checkDatasetsAreDisjointInUsers(RatingsDataset<RatingType> ratingsDataset, Map<Long, Map<Long, RatingType>> ratingsIndexedByUser) throws IllegalArgumentException {
+        Set<Long> intersection = new TreeSet<>(ratingsDataset.allUsers());
         intersection.retainAll(ratingsIndexedByUser.keySet());
         if (!intersection.isEmpty()) {
             throw new IllegalArgumentException("The datasets share users: " + intersection);
@@ -139,9 +139,9 @@ public class BothIndexRatingsDataset<RatingType extends Rating> extends RatingsD
     }
 
     public BothIndexRatingsDataset(RatingsDataset<RatingType> ratingsDataset, Iterable<RatingType> ratings) {
-        for (int idUser : ratingsDataset.allUsers()) {
+        for (Long idUser : ratingsDataset.allUsers()) {
             try {
-                Map<Integer, RatingType> userRatingsRated = ratingsDataset.getUserRatingsRated(idUser);
+                Map<Long, RatingType> userRatingsRated = ratingsDataset.getUserRatingsRated(idUser);
                 userRatingsRated.keySet().stream().map((idItem) -> userRatingsRated.get(idItem)).forEach((rating) -> {
                     addOneRating(rating);
                 });
@@ -158,7 +158,7 @@ public class BothIndexRatingsDataset<RatingType extends Rating> extends RatingsD
     public BothIndexRatingsDataset(Collection<RatingType> ratings) {
         checkUniqueRatings(ratings);
 
-        Map<Integer, Map<Integer, RatingType>> ratingsByUser = ratings.parallelStream()
+        Map<Long, Map<Long, RatingType>> ratingsByUser = ratings.parallelStream()
                 .collect(Collectors.groupingBy(rating -> rating.getUser(), Collectors.toList()))
                 .entrySet().parallelStream()
                 .filter(userRatingsEntry -> !userRatingsEntry.getValue().isEmpty())
@@ -172,7 +172,7 @@ public class BothIndexRatingsDataset<RatingType extends Rating> extends RatingsD
 
         userIndex = ratingsByUser;
 
-        Map<Integer, Map<Integer, RatingType>> ratingsByItem = ratings.parallelStream()
+        Map<Long, Map<Long, RatingType>> ratingsByItem = ratings.parallelStream()
                 .collect(Collectors.groupingBy(rating -> rating.getItem(), Collectors.toList()))
                 .entrySet().parallelStream()
                 .filter(itemRatingsEntry -> !itemRatingsEntry.getValue().isEmpty())
@@ -216,7 +216,7 @@ public class BothIndexRatingsDataset<RatingType extends Rating> extends RatingsD
     }
 
     @Override
-    public RatingType getRating(int idUser, int idItem) {
+    public RatingType getRating(long idUser, long idItem) {
 
         if (userIndex.containsKey(idUser) && userIndex.get(idUser).containsKey(idItem)) {
             RatingType rating = userIndex.get(idUser).get(idItem);
@@ -227,8 +227,8 @@ public class BothIndexRatingsDataset<RatingType extends Rating> extends RatingsD
     }
 
     protected final void addOneRating(RatingType rating) {
-        final int idUser = rating.getIdUser();
-        final int idItem = rating.getIdItem();
+        final long idUser = rating.getIdUser();
+        final long idItem = rating.getIdItem();
 
         //Añado el producto a la lista de productos.
         if (!itemIndex.containsKey(idItem)) {
@@ -259,17 +259,17 @@ public class BothIndexRatingsDataset<RatingType extends Rating> extends RatingsD
     }
 
     @Override
-    public Set<Integer> allUsers() {
+    public Set<Long> allUsers() {
         return new TreeSet<>(userIndex.keySet());
     }
 
     @Override
-    public Set<Integer> allRatedItems() {
+    public Set<Long> allRatedItems() {
         return new TreeSet<>(itemIndex.keySet());
     }
 
     @Override
-    public Set<Integer> getUserRated(Integer idUser) {
+    public Set<Long> getUserRated(long idUser) {
         if (userIndex.containsKey(idUser)) {
             return Collections.unmodifiableSet(getUserRatingsRated(idUser).keySet());
         } else {
@@ -278,7 +278,7 @@ public class BothIndexRatingsDataset<RatingType extends Rating> extends RatingsD
     }
 
     @Override
-    public Set<Integer> getItemRated(Integer idItem) {
+    public Set<Long> getItemRated(long idItem) {
         if (itemIndex.containsKey(idItem)) {
             return Collections.unmodifiableSet(getItemRatingsRated(idItem).keySet());
         } else {
@@ -287,9 +287,9 @@ public class BothIndexRatingsDataset<RatingType extends Rating> extends RatingsD
     }
 
     @Override
-    public Map<Integer, RatingType> getUserRatingsRated(Integer idUser) {
+    public Map<Long, RatingType> getUserRatingsRated(long idUser) {
         if (userIndex.containsKey(idUser)) {
-            Map<Integer, RatingType> ret = userIndex.get(idUser);
+            Map<Long, RatingType> ret = userIndex.get(idUser);
             return Collections.unmodifiableMap(ret);
         } else {
             return Collections.EMPTY_MAP;
@@ -297,9 +297,9 @@ public class BothIndexRatingsDataset<RatingType extends Rating> extends RatingsD
     }
 
     @Override
-    public Map<Integer, RatingType> getItemRatingsRated(Integer idItem) {
+    public Map<Long, RatingType> getItemRatingsRated(long idItem) {
         if (itemIndex.containsKey(idItem)) {
-            Map<Integer, RatingType> ret = itemIndex.get(idItem);
+            Map<Long, RatingType> ret = itemIndex.get(idItem);
             return Collections.unmodifiableMap(ret);
         } else {
             return Collections.EMPTY_MAP;
@@ -328,7 +328,7 @@ public class BothIndexRatingsDataset<RatingType extends Rating> extends RatingsD
     }
 
     @Override
-    public boolean isRatedItem(int idItem) {
+    public boolean isRatedItem(long idItem) {
         if (itemIndex.containsKey(idItem)) {
             return itemIndex.get(idItem).isEmpty();
         } else {
@@ -337,7 +337,7 @@ public class BothIndexRatingsDataset<RatingType extends Rating> extends RatingsD
     }
 
     @Override
-    public boolean isRatedUser(int idUser) {
+    public boolean isRatedUser(long idUser) {
         if (userIndex.containsKey(idUser)) {
             return userIndex.get(idUser).isEmpty();
         } else {
@@ -346,7 +346,7 @@ public class BothIndexRatingsDataset<RatingType extends Rating> extends RatingsD
     }
 
     @Override
-    public int getNumRatings() {
+    public long getNumRatings() {
         return numRatings;
     }
 

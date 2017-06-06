@@ -54,7 +54,7 @@ public class RandomRecommendationModel<Key> implements Serializable {
         generadores = Collections.synchronizedMap(new TreeMap<Key, Random>());
     }
 
-    public double predict(Key key, int idItem) {
+    public double predict(Key key, long idItem) {
 
         double prediction = getRandomDouble(key) * (maxRating - minRating) + minRating;
         return prediction;

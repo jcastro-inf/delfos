@@ -68,20 +68,20 @@ public class GivenN extends PredictionProtocol {
      *
      * @param idUser
      * @return Lista de listas con los elementos que se predicen. Cada lista representa una petición de recomendaciones,
-     * es decir, una llamada a {@link RecommenderSystemAdapter#recommendOnly(java.lang.Integer, java.util.Collection) }
+     * es decir, una llamada a {@link RecommenderSystemAdapter#recommendOnly(java.lang.Long, java.util.Collection) }
      * en la que la colección que se pasan son los elementos de la lista.
      * @throws UserNotFound
      */
     @Override
-    public <RatingType extends Rating> List<Set<Integer>> getRecommendationRequests(
+    public <RatingType extends Rating> List<Set<Long>> getRecommendationRequests(
             DatasetLoader<RatingType> trainingDatasetLoader,
             DatasetLoader<RatingType> testDatasetLoader,
-            int idUser) throws UserNotFound {
+            long idUser) throws UserNotFound {
 
         Random random = new Random(getSeedValue());
-        Integer[] itemsRated = testDatasetLoader.getRatingsDataset().getUserRatingsRated(idUser).keySet().toArray(new Integer[0]);
+        Long[] itemsRated = testDatasetLoader.getRatingsDataset().getUserRatingsRated(idUser).keySet().toArray(new Long[0]);
         int nValue = (Integer) getParameterValue(n);
-        Set<Integer> dadosN = new TreeSet<>();
+        Set<Long> dadosN = new TreeSet<>();
 
         if (nValue > itemsRated.length) {
             Global.showWarning("Cannot apply " + GivenN.class.getName() + "\n");
@@ -92,14 +92,14 @@ public class GivenN extends PredictionProtocol {
             dadosN.add(itemsRated[random.nextInt(itemsRated.length)]);
         }
 
-        Set<Integer> predecir = new TreeSet<>();
-        for (int idItem : itemsRated) {
+        Set<Long> predecir = new TreeSet<>();
+        for (long idItem : itemsRated) {
             if (!dadosN.contains(idItem)) {
                 predecir.add(idItem);
             }
         }
 
-        List<Set<Integer>> ret = new ArrayList<>(predecir.size());
+        List<Set<Long>> ret = new ArrayList<>(predecir.size());
         ret.add(predecir);
         return ret;
     }

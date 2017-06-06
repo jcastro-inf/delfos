@@ -37,13 +37,9 @@ import java.util.TreeMap;
  * producto, si lo ha valorado.
  *
  * <p>
- * Es una extensión de la medida de evaluación {@link delfos.Results.EvaluationMeasures.RatingPrediction.NMAE} para
- * recomendaciones individuales.
+ * Es una extensión de la medida de evaluación NMAE para recomendaciones individuales.
  *
  * @author jcastro-inf ( https://github.com/jcastro-inf )
- *
- * @version 19-Febrero-2014
- * @see delfos.Results.EvaluationMeasures.RatingPrediction.NMAE
  */
 public class NMAE extends GroupEvaluationMeasure {
 
@@ -58,8 +54,8 @@ public class NMAE extends GroupEvaluationMeasure {
         for (GroupOfUsers group : groupRecommenderSystemResult.getGroupsOfUsers()) {
             Collection<Recommendation> groupRecommendations = groupRecommenderSystemResult.getGroupOutput(group).getRecommendations().getRecommendations();
 
-            Map<Integer, Map<Integer, ? extends Rating>> groupTrueRatings = new TreeMap<>();
-            for (int idUser : group.getIdMembers()) {
+            Map<Long, Map<Long, ? extends Rating>> groupTrueRatings = new TreeMap<>();
+            for (long idUser : group.getIdMembers()) {
                 try {
                     groupTrueRatings.put(idUser, testDatasetLoader.getRatingsDataset().getUserRatingsRated(idUser));
                 } catch (UserNotFound ex) {
@@ -71,8 +67,8 @@ public class NMAE extends GroupEvaluationMeasure {
                 if (Double.isNaN(recommendation.getPreference().doubleValue())) {
                     continue;
                 }
-                int idItem = recommendation.getIdItem();
-                for (int idUser : group.getIdMembers()) {
+                long idItem = recommendation.getIdItem();
+                for (long idUser : group.getIdMembers()) {
                     if (groupTrueRatings.get(idUser).containsKey(idItem)) {
                         double trueRating = groupTrueRatings.get(idUser).get(idItem).getRatingValue().doubleValue();
                         double predictedRating = recommendation.getPreference().doubleValue();

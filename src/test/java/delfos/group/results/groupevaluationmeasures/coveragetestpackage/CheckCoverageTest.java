@@ -65,7 +65,7 @@ public class CheckCoverageTest {
         datasetLoader = new CSVfileDatasetLoader("datasets" + File.separator + "SSII - ratings9.csv", "datasets" + File.separator + "SSII - peliculas.csv");
 
         GroupOfUsers[] groups = new GroupOfUsers[1];
-        groups[0] = new GroupOfUsers(1774684, 1887988, 2394147);
+        groups[0] = new GroupOfUsers(1774684l, 1887988l, 2394147l);
         groupFormationTechnique = new GivenGroups(groups);
         GroupRecommenderSystem_fixedFilePersistence grs = new GroupRecommenderSystem_fixedFilePersistence(
                 new AggregationOfIndividualRatings(

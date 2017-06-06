@@ -38,7 +38,7 @@ public interface ChangeableRatingsDataset<RatingType extends Rating> extends Rat
      * @param idItem Producto valorado.
      * @param rating Valor de la valoración.
      */
-    public void addRating(int idUser, int idItem, RatingType rating);
+    public void addRating(long idUser, long idItem, RatingType rating);
 
     /**
      * Elimina una valoración dada del dataset de valoraciones. En las
@@ -51,7 +51,7 @@ public interface ChangeableRatingsDataset<RatingType extends Rating> extends Rat
      * @throws IllegalArgumentException Si el rating a eliminar no existía en el
      * dataset.
      */
-    public void removeRating(int idUser, int idItem);
+    public void removeRating(long idUser, long idItem);
 
     /**
      * Ordena que los datos sean guardados en el método persistente

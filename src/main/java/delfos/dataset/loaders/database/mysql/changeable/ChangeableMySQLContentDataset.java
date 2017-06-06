@@ -116,7 +116,7 @@ public class ChangeableMySQLContentDataset implements ChangeableContentDataset, 
         if (contentDataset.allIDs().contains(item.getId())) {
             //El dataset ya tenía el producto, haciento cambio.
 
-            Map<Integer, Item> items = contentDataset.stream()
+            Map<Long, Item> items = contentDataset.stream()
                     .collect(Collectors.toMap(
                                     (itemInner -> itemInner.getId()),
                                     (itemInner -> itemInner)));
@@ -152,7 +152,7 @@ public class ChangeableMySQLContentDataset implements ChangeableContentDataset, 
     }
 
     @Override
-    public Item get(int idItem) throws EntityNotFound {
+    public Item get(long idItem) throws EntityNotFound {
         return contentDataset.get(idItem);
     }
 
@@ -236,17 +236,17 @@ public class ChangeableMySQLContentDataset implements ChangeableContentDataset, 
     }
 
     @Override
-    public Collection<Integer> allIDs() {
+    public Collection<Long> allIDs() {
         return contentDataset.allIDs();
     }
 
     @Override
-    public Collection<Integer> getAvailableItems() {
+    public Collection<Long> getAvailableItems() {
         return contentDataset.getAvailableItems();
     }
 
     @Override
-    public void setItemAvailable(int idItem, boolean available) throws ItemNotFound {
+    public void setItemAvailable(long idItem, boolean available) throws ItemNotFound {
         contentDataset.setItemAvailable(idItem, available);
     }
 
@@ -291,7 +291,7 @@ public class ChangeableMySQLContentDataset implements ChangeableContentDataset, 
     }
 
     @Override
-    public Map<Feature, Object> parseEntityFeaturesAndAddToExisting(int idEntity, Map<String, String> features) throws EntityNotFound {
+    public Map<Feature, Object> parseEntityFeaturesAndAddToExisting(long idEntity, Map<String, String> features) throws EntityNotFound {
         return contentDataset.parseEntityFeaturesAndAddToExisting(idEntity, features);
     }
 
@@ -391,10 +391,10 @@ public class ChangeableMySQLContentDataset implements ChangeableContentDataset, 
 
             ResultSet selectItemResult = statement.executeQuery(selectItems.toString());
 
-            Set<Integer> availables = new TreeSet<>();
+            Set<Long> availables = new TreeSet<>();
 
             while (selectItemResult.next()) {
-                int idItem = selectItemResult.getInt(productsTable_ItemIDField);
+                long idItem = selectItemResult.getLong(productsTable_ItemIDField);
                 String name = selectItemResult.getString(productsTable_NameField);
                 boolean available = selectItemResult.getBoolean(productsTable_AvailabilityField);
                 if (available) {
@@ -444,7 +444,7 @@ public class ChangeableMySQLContentDataset implements ChangeableContentDataset, 
     }
 
     @Override
-    public Item getItem(int idItem) throws ItemNotFound {
+    public Item getItem(long idItem) throws ItemNotFound {
         try {
             return get(idItem);
         } catch (EntityNotFound ex) {

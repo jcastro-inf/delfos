@@ -37,11 +37,6 @@ import delfos.dataset.basic.features.Feature;
  * el número asignado al mismo.
  *
  * @author jcastro-inf ( https://github.com/jcastro-inf )
- *
- * @version 1.0 Unknown date
- * @version 1.1 (21-Feb-2013) Convertido en objeto serializable. Eliminado el
- * atributo que almacenaba el dataset de contenido, ahora es necesario
- * especificarlo en el método {@link #getVectorProfile(delfos.Dataset.ContentDataset)
  * }.
  */
 public class BooleanUserProfileStatic implements BooleanUserProfile, Serializable {
@@ -130,7 +125,7 @@ public class BooleanUserProfileStatic implements BooleanUserProfile, Serializabl
     }
 
     @Override
-    public int getId() {
+    public long getId() {
         return _idUser;
     }
 

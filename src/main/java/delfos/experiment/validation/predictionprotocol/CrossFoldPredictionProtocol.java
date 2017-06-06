@@ -49,20 +49,20 @@ public class CrossFoldPredictionProtocol extends PredictionProtocol {
     }
 
     @Override
-    public <RatingType extends Rating> List<Set<Integer>> getRecommendationRequests(
+    public <RatingType extends Rating> List<Set<Long>> getRecommendationRequests(
             DatasetLoader<RatingType> trainingDatasetLoader,
             DatasetLoader<RatingType> testDatasetLoader,
-            int idUser) throws UserNotFound {
+            long idUser) throws UserNotFound {
 
         Random random = new Random(getSeedValue());
-        ArrayList<Set<Integer>> ret = new ArrayList<>();
-        Set<Integer> items = new TreeSet<>(testDatasetLoader.getRatingsDataset().getUserRated(idUser));
+        ArrayList<Set<Long>> ret = new ArrayList<>();
+        Set<Long> items = new TreeSet<>(testDatasetLoader.getRatingsDataset().getUserRated(idUser));
         for (int i = 0; i < getNumPartitions(); i++) {
             ret.add(new TreeSet<>());
         }
         int n = 0;
         while (!items.isEmpty()) {
-            int idItem = items.toArray(new Integer[0])[random.nextInt(items.size())];
+            long idItem = items.toArray(new Long[0])[random.nextInt(items.size())];
             items.remove(idItem);
             int partition = n % getNumPartitions();
             ret.get(partition).add(idItem);
@@ -72,6 +72,6 @@ public class CrossFoldPredictionProtocol extends PredictionProtocol {
     }
 
     protected int getNumPartitions() {
-        return (Integer) getParameterValue(numFolds);
+        return (int) getParameterValue(numFolds);
     }
 }

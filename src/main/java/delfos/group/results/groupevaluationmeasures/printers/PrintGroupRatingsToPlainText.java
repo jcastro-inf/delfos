@@ -73,21 +73,21 @@ public class PrintGroupRatingsToPlainText extends GroupEvaluationMeasureInformat
             if (!groupRecommendation.isEmpty() && groupRecommendation.iterator().next() instanceof RecommendationWithNeighbors) {
                 RecommendationWithNeighbors recommendationWithNeighbors = (RecommendationWithNeighbors) groupRecommendation.iterator().next();
                 neighbors = recommendationWithNeighbors.getNeighbors().stream().collect(Collectors.toList());
-                Collections.sort(neighbors, (Neighbor o1, Neighbor o2) -> Integer.compare(o1.getIdNeighbor(), o2.getIdNeighbor()));
+                Collections.sort(neighbors, (Neighbor o1, Neighbor o2) -> Long.compare(o1.getIdNeighbor(), o2.getIdNeighbor()));
             }
 
             if (groupRecommendation.isEmpty()) {
                 str.append("No recommendations for group ").append(groupOfUsers).append("\n");
             } else {
-                Set<Integer> items = Recommendation.getSetOfItems(groupRecommendation);
-                Map<Integer, Map<Integer, Number>> datasetToShow = new TreeMap<>();
-                datasetToShow.put(8888, Recommendation.convertToMapOfNumbers_onlyRankPreference(groupRecommendation));
+                Set<Long> items = Recommendation.getSetOfItems(groupRecommendation);
+                Map<Long, Map<Long, Number>> datasetToShow = new TreeMap<>();
+                datasetToShow.put(8888l, Recommendation.convertToMapOfNumbers_onlyRankPreference(groupRecommendation));
                 groupOfUsers
                         .getIdMembers().stream().forEach((idMember) -> {
-                            Map<Integer, Number> thisMemberRatings = new TreeMap<>();
+                            Map<Long, Number> thisMemberRatings = new TreeMap<>();
 
                             try {
-                                Map<Integer, ? extends Rating> memberRatings = testDatasetLoader.getRatingsDataset().getUserRatingsRated(idMember);
+                                Map<Long, ? extends Rating> memberRatings = testDatasetLoader.getRatingsDataset().getUserRatingsRated(idMember);
 
                                 memberRatings.values().stream()
                                         .filter((rating) -> (items.contains(rating.getIdItem())))

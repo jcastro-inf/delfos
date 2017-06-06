@@ -33,7 +33,7 @@ public class RecommendationsTest {
         {
             double preference = randomGenerator.nextDouble();
             for (int i = 1; i <= 16; i++) {
-                int idItem = items.toArray(new Integer[0])[randomGenerator.nextInt(items.size())];
+                long idItem = items.toArray(new Integer[0])[randomGenerator.nextInt(items.size())];
                 items.remove(idItem);
                 recommendations.add(new Recommendation(idItem, preference));
             }
@@ -42,7 +42,7 @@ public class RecommendationsTest {
         //Add some more random recommendations
         {
             for (int i = 1; i <= 17; i++) {
-                int idItem = items.toArray(new Integer[0])[randomGenerator.nextInt(items.size())];
+                long idItem = items.toArray(new Integer[0])[randomGenerator.nextInt(items.size())];
                 double preference = randomGenerator.nextDouble();
                 items.remove(idItem);
                 recommendations.add(new Recommendation(idItem, preference));

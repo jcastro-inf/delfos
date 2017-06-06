@@ -84,9 +84,9 @@ public class GroupRecommender_TestValidationProtocols extends GroupRecommenderSy
         }
 
         //Compruebo si en el dataset actual se tienen las valoraciones a predecir
-        for (int idUser : groupOfUsers.getIdMembers()) {
+        for (long idUser : groupOfUsers.getIdMembers()) {
             boolean error = false;
-            Collection<Integer> userRated = datasetLoader.getRatingsDataset().getUserRated(idUser);
+            Collection<Long> userRated = datasetLoader.getRatingsDataset().getUserRated(idUser);
             for (Item item : candidateItems) {
                 if (userRated.contains(item.getId())) {
                     Global.showWarning("El producto a predecir está en el dataset!!!!");
@@ -102,9 +102,9 @@ public class GroupRecommender_TestValidationProtocols extends GroupRecommenderSy
         }
 
         //Compruebo si en el dataset de construcción del modelo del grupo estaba la valoración
-        for (int idUser : groupOfUsers.getIdMembers()) {
+        for (long idUser : groupOfUsers.getIdMembers()) {
             boolean error = false;
-            Collection<Integer> userRated = datasetsEnConstruccionModeloGrupo.get(groupOfUsers).getUserRated(idUser);
+            Collection<Long> userRated = datasetsEnConstruccionModeloGrupo.get(groupOfUsers).getUserRated(idUser);
             for (Item item : candidateItems) {
                 if (userRated.contains(item.getId())) {
                     Global.showWarning("El dataset de construcción del modelo de este grupo contiene el rating a predecir!!!!");
@@ -120,9 +120,9 @@ public class GroupRecommender_TestValidationProtocols extends GroupRecommenderSy
         }
 
         //Compruebo si en el dataset de construcción del modelo general estaba la valoración
-        for (int idUser : groupOfUsers.getIdMembers()) {
+        for (long idUser : groupOfUsers.getIdMembers()) {
             boolean error = false;
-            Collection<Integer> userRated = datasetEnBuild.getUserRated(idUser);
+            Collection<Long> userRated = datasetEnBuild.getUserRated(idUser);
             for (Item item : candidateItems) {
                 if (userRated.contains(item.getId())) {
                     Global.showWarning("El dataset de construcción del modelo general contiene el rating a predecir!!!!");

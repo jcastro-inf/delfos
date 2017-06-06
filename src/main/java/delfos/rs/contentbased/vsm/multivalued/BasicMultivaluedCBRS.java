@@ -84,22 +84,22 @@ public class BasicMultivaluedCBRS extends ContentBasedRecommender<MultivaluedUse
         }
         final RelevanceCriteria relevanceCriteria = datasetLoader.getDefaultRelevanceCriteria();
 
-        Collection<Integer> allUsers = ratingsDataset.allUsers();
+        Collection<Long> allUsers = ratingsDataset.allUsers();
 
         fireBuildingProgressChangedEvent("Profile creation", 0, -1);
 
-        Map<Integer, MultivaluedUserProfile> userProfiles = new TreeMap<>();
+        Map<Long, MultivaluedUserProfile> userProfiles = new TreeMap<>();
 
         //Creando los perfiles
         AggregationOperator condensationFormula_ = (AggregationOperator) getParameterValue(AGGREGATION_OPERATOR);
         int i = 0;
-        for (int idUser : allUsers) {
+        for (long idUser : allUsers) {
             try {
                 BasicMultivaluedUserProfile profile = new BasicMultivaluedUserProfile(idUser);
-                Map<Integer, ? extends Rating> userRated = ratingsDataset.getUserRatingsRated(idUser);
+                Map<Long, ? extends Rating> userRated = ratingsDataset.getUserRatingsRated(idUser);
                 Set<Item> items = new LinkedHashSet<>();
                 //Calculo del perfil
-                for (int idItem : userRated.keySet()) {
+                for (long idItem : userRated.keySet()) {
                     try {
                         if (relevanceCriteria.isRelevant(userRated.get(idItem).getRatingValue())) {
                             Item item = contentDataset.get(idItem);
@@ -129,7 +129,7 @@ public class BasicMultivaluedCBRS extends ContentBasedRecommender<MultivaluedUse
     }
 
     @Override
-    public MultivaluedUserProfile makeUserProfile(int idUser, DatasetLoader<? extends Rating> datasetLoader, MultivaluedUserProfilesModel model) throws CannotLoadContentDataset, CannotLoadContentDataset, UserNotFound {
+    public MultivaluedUserProfile makeUserProfile(long idUser, DatasetLoader<? extends Rating> datasetLoader, MultivaluedUserProfilesModel model) throws CannotLoadContentDataset, CannotLoadContentDataset, UserNotFound {
 
         RatingsDataset<? extends Rating> ratingsDataset = datasetLoader.getRatingsDataset();
         final ContentDataset contentDataset;
@@ -145,10 +145,10 @@ public class BasicMultivaluedCBRS extends ContentBasedRecommender<MultivaluedUse
 
         BasicMultivaluedUserProfile profile = new BasicMultivaluedUserProfile(idUser);
 
-        Map<Integer, ? extends Rating> userRated = ratingsDataset.getUserRatingsRated(idUser);
+        Map<Long, ? extends Rating> userRated = ratingsDataset.getUserRatingsRated(idUser);
         Set<Item> items = new LinkedHashSet<>();
         //Calculo del perfil
-        for (int idItem : userRated.keySet()) {
+        for (long idItem : userRated.keySet()) {
             try {
                 if (relevanceCriteria.isRelevant(userRated.get(idItem).getRatingValue())) {
                     Item item = contentDataset.get(idItem);
@@ -168,7 +168,7 @@ public class BasicMultivaluedCBRS extends ContentBasedRecommender<MultivaluedUse
     }
 
     @Override
-    protected Collection<Recommendation> recommendOnly(DatasetLoader<? extends Rating> datasetLoader, MultivaluedUserProfilesModel model, MultivaluedUserProfile userProfile, Collection<Integer> candidateItems) throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset {
+    protected Collection<Recommendation> recommendOnly(DatasetLoader<? extends Rating> datasetLoader, MultivaluedUserProfilesModel model, MultivaluedUserProfile userProfile, Collection<Long> candidateItems) throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset {
         final ContentDataset contentDataset;
         if (datasetLoader instanceof ContentDatasetLoader) {
             ContentDatasetLoader contentDatasetLoader = (ContentDatasetLoader) datasetLoader;
@@ -180,7 +180,7 @@ public class BasicMultivaluedCBRS extends ContentBasedRecommender<MultivaluedUse
 
         Collection<Recommendation> recomendaciones = new ArrayList<>();
 
-        for (int idItem : candidateItems) {
+        for (long idItem : candidateItems) {
             try {
                 Item item = contentDataset.get(idItem);
                 //Extraer v1 y v2 del perfil del usuario y del perfil del item

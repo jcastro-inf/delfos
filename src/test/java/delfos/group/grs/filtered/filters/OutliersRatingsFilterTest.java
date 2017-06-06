@@ -38,11 +38,11 @@ public class OutliersRatingsFilterTest extends DelfosTest {
         RatingsDataset<? extends Rating> ratingsDataset = datasetLoader.getRatingsDataset();
         OutliersRatingsFilter instance = new OutliersRatingsFilter();
 
-        GroupOfUsers group = new GroupOfUsers(1, 2, 5);
+        GroupOfUsers group = new GroupOfUsers(1l, 2l, 5l);
         //Fetch dataset.
-        Map<Integer, Map<Integer, ? extends Rating>> groupRatings = new TreeMap<>();
-        TreeSet<Integer> items = new TreeSet<>();
-        for (int idUser : group) {
+        Map<Long, Map<Long, ? extends Rating>> groupRatings = new TreeMap<>();
+        TreeSet<Long> items = new TreeSet<>();
+        for (long idUser : group) {
             try {
                 groupRatings.put(idUser, ratingsDataset.getUserRatingsRated(idUser));
                 items.addAll(groupRatings.get(idUser).keySet());
@@ -51,7 +51,7 @@ public class OutliersRatingsFilterTest extends DelfosTest {
             }
         }
 
-        Map<Integer, Map<Integer, Rating>> filteredRatings = instance.getFilteredRatings(ratingsDataset, group);
+        Map<Long, Map<Long, Rating>> filteredRatings = instance.getFilteredRatings(ratingsDataset, group);
         assertNotNull(filteredRatings);
     }
 
@@ -70,18 +70,18 @@ public class OutliersRatingsFilterTest extends DelfosTest {
 
         for (int i = 0; i < 5; i++) {
             //Random generation of group.
-            Set<Integer> members = new TreeSet<>();
+            Set<Long> members = new TreeSet<>();
 
             while (members.size() < 4) {
-                Integer[] users = ratingsDataset.allUsers().toArray(new Integer[0]);
+                Long[] users = ratingsDataset.allUsers().toArray(new Long[0]);
                 members.add(users[random.nextInt(users.length)]);
             }
 
-            GroupOfUsers group = new GroupOfUsers(members.toArray(new Integer[0]));
+            GroupOfUsers group = new GroupOfUsers(members.toArray(new Long[0]));
             //Fetch dataset.
-            Map<Integer, Map<Integer, ? extends Rating>> groupRatings = new TreeMap<>();
-            TreeSet<Integer> items = new TreeSet<>();
-            for (int idUser : group) {
+            Map<Long, Map<Long, ? extends Rating>> groupRatings = new TreeMap<>();
+            TreeSet<Long> items = new TreeSet<>();
+            for (long idUser : group) {
                 try {
                     groupRatings.put(idUser, ratingsDataset.getUserRatingsRated(idUser));
                     items.addAll(groupRatings.get(idUser).keySet());
@@ -90,7 +90,7 @@ public class OutliersRatingsFilterTest extends DelfosTest {
                 }
             }
 
-            Map<Integer, Map<Integer, Rating>> filteredRatings = instance.getFilteredRatings(ratingsDataset, group);
+            Map<Long, Map<Long, Rating>> filteredRatings = instance.getFilteredRatings(ratingsDataset, group);
             assertNotNull(filteredRatings);
         }
     }

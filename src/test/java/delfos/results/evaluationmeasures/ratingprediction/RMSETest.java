@@ -56,11 +56,11 @@ public class RMSETest {
         RelevanceCriteria relevanceCriteria = new RelevanceCriteria(4);
         RecommendationResults recommendationResults = new RecommendationResults();
         int i = 0;
-        for (int idUser : testDataset.allUsers()) {
+        for (long idUser : testDataset.allUsers()) {
             try {
                 ArrayList<Recommendation> recommendations = new ArrayList<>();
-                for (Map.Entry<Integer, ? extends Rating> entry : testDataset.getUserRatingsRated(idUser).entrySet()) {
-                    final int idItem = entry.getKey();
+                for (Map.Entry<Long, ? extends Rating> entry : testDataset.getUserRatingsRated(idUser).entrySet()) {
+                    final long idItem = entry.getKey();
                     final Rating rating = entry.getValue();
 
                     final double prediction;
@@ -97,11 +97,11 @@ public class RMSETest {
         RelevanceCriteria relevanceCriteria = new RelevanceCriteria(4);
         RecommendationResults recommendationResults = new RecommendationResults();
         int i = 0;
-        for (int idUser : testDataset.allUsers()) {
+        for (long idUser : testDataset.allUsers()) {
             try {
                 ArrayList<Recommendation> recommendations = new ArrayList<>();
-                for (Map.Entry<Integer, ? extends Rating> entry : testDataset.getUserRatingsRated(idUser).entrySet()) {
-                    final int idItem = entry.getKey();
+                for (Map.Entry<Long, ? extends Rating> entry : testDataset.getUserRatingsRated(idUser).entrySet()) {
+                    final long idItem = entry.getKey();
                     final Rating rating = entry.getValue();
 
                     final double prediction;
@@ -137,11 +137,11 @@ public class RMSETest {
         RatingsDataset<? extends Rating> testDataset = new RatingsDatasetMock();
         RelevanceCriteria relevanceCriteria = new RelevanceCriteria(4);
         RecommendationResults recommendationResults = new RecommendationResults();
-        for (int idUser : testDataset.allUsers()) {
+        for (long idUser : testDataset.allUsers()) {
             try {
                 ArrayList<Recommendation> recommendations = new ArrayList<>();
-                for (Map.Entry<Integer, ? extends Rating> entry : testDataset.getUserRatingsRated(idUser).entrySet()) {
-                    final int idItem = entry.getKey();
+                for (Map.Entry<Long, ? extends Rating> entry : testDataset.getUserRatingsRated(idUser).entrySet()) {
+                    final long idItem = entry.getKey();
                     final Rating rating = entry.getValue();
 
                     final double prediction = rating.getRatingValue().doubleValue();
@@ -175,9 +175,9 @@ public class RMSETest {
         int idUser = 1;
 
         ArrayList<Recommendation> recommendations = new ArrayList<>();
-        recommendations.add(new Recommendation(10, 4));
-        recommendations.add(new Recommendation(12, 5));
-        recommendations.add(new Recommendation(13, 2));
+        recommendations.add(new Recommendation(10l, 4));
+        recommendations.add(new Recommendation(12l, 5));
+        recommendations.add(new Recommendation(13l, 2));
 
         Collections.sort(recommendations);
         recommendationResults.add(idUser, recommendations);

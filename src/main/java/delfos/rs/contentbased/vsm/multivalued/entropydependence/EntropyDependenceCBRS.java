@@ -120,7 +120,7 @@ public class EntropyDependenceCBRS extends ContentBasedRecommender<EntropyDepend
             throw new CannotLoadContentDataset("The dataset loader is not a ContentDatasetLoader, cannot apply a content-based ");
         }
 
-        Map<Integer, EntropyDependenceCBRSItemProfile> itemProfiles = new TreeMap<>();
+        Map<Long, EntropyDependenceCBRSItemProfile> itemProfiles = new TreeMap<>();
 
         //construyo la eedd de soporte para calcular la entropia
         Map<Feature, MultiSet<Object>> frecuencias = new TreeMap<>();
@@ -187,7 +187,7 @@ public class EntropyDependenceCBRS extends ContentBasedRecommender<EntropyDepend
     }
 
     @Override
-    public EntropyDependenceCBRSUserProfile makeUserProfile(int idUser, DatasetLoader<? extends Rating> datasetLoader, EntropyDependenceCBRSModel model) throws CannotLoadContentDataset, CannotLoadContentDataset, UserNotFound, CannotLoadRatingsDataset, NotEnoughtUserInformation {
+    public EntropyDependenceCBRSUserProfile makeUserProfile(long idUser, DatasetLoader<? extends Rating> datasetLoader, EntropyDependenceCBRSModel model) throws CannotLoadContentDataset, CannotLoadContentDataset, UserNotFound, CannotLoadRatingsDataset, NotEnoughtUserInformation {
 
         final RatingsDataset<? extends Rating> ratingsDataset = datasetLoader.getRatingsDataset();
         final ContentDataset contentDataset;
@@ -205,7 +205,7 @@ public class EntropyDependenceCBRS extends ContentBasedRecommender<EntropyDepend
 
         AggregationOperator condensationFormula_ = (AggregationOperator) getParameterValue(AGGREGATION_OPERATOR);
 
-        Map<Integer, ? extends Rating> userRated = ratingsDataset.getUserRatingsRated(idUser);
+        Map<Long, ? extends Rating> userRated = ratingsDataset.getUserRatingsRated(idUser);
         if (userRated.isEmpty()) {
             throw new NotEnoughtUserInformation("User " + idUser + " has no rated items.");
         }
@@ -215,7 +215,7 @@ public class EntropyDependenceCBRS extends ContentBasedRecommender<EntropyDepend
             final Map<Feature, Collection<Number>> _numericalValuesMeans = new TreeMap<>();
 
             //Calculo del perfil
-            for (int idItem : userRated.keySet()) {
+            for (long idItem : userRated.keySet()) {
                 if (relevanceCriteria.isRelevant(userRated.get(idItem))) {
                     try {
                         Item item = contentDataset.get(idItem);
@@ -334,7 +334,7 @@ public class EntropyDependenceCBRS extends ContentBasedRecommender<EntropyDepend
     }
 
     @Override
-    protected Collection<Recommendation> recommendOnly(DatasetLoader<? extends Rating> datasetLoader, EntropyDependenceCBRSModel model, EntropyDependenceCBRSUserProfile userProfile, Collection<Integer> candidateItems) throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset {
+    protected Collection<Recommendation> recommendOnly(DatasetLoader<? extends Rating> datasetLoader, EntropyDependenceCBRSModel model, EntropyDependenceCBRSUserProfile userProfile, Collection<Long> candidateItems) throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset {
         final ContentDataset contentDataset;
         if (datasetLoader instanceof ContentDatasetLoader) {
             ContentDatasetLoader contentDatasetLoader = (ContentDatasetLoader) datasetLoader;
@@ -346,7 +346,7 @@ public class EntropyDependenceCBRS extends ContentBasedRecommender<EntropyDepend
         WeightedSimilarityMeasure similarity = (WeightedSimilarityMeasure) getParameterValue(SIMILARITY_MEASURE);
         Collection<Recommendation> recomendaciones = new ArrayList<>();
 
-        for (int idItem : candidateItems) {
+        for (long idItem : candidateItems) {
             Item item;
             try {
                 item = contentDataset.get(idItem);
@@ -424,7 +424,7 @@ public class EntropyDependenceCBRS extends ContentBasedRecommender<EntropyDepend
     }
 
     @Override
-    public EntropyDependenceCBRSModel loadRecommendationModel(DatabasePersistence databasePersistence, Collection<Integer> users, Collection<Integer> items, DatasetLoader<? extends Rating> datasetLoader) throws FailureInPersistence {
+    public EntropyDependenceCBRSModel loadRecommendationModel(DatabasePersistence databasePersistence, Collection<Long> users, Collection<Long> items, DatasetLoader<? extends Rating> datasetLoader) throws FailureInPersistence {
         DAOEntropyDependenceCBRSModel dao = new DAOEntropyDependenceCBRSModel();
         return dao.loadModel(databasePersistence, users, items);
     }

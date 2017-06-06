@@ -158,7 +158,7 @@ public class CentralityWeightedAggregationGRS extends GroupRecommenderSystemAdap
             SingleRecommendationModel RecommendationModel,
             GroupOfUsers groupOfUsers)
             throws UserNotFound, CannotLoadRatingsDataset {
-        Map<Integer, Number> groupRatings = getGroupRatings(datasetLoader, groupOfUsers, getSocialNetworkCalculator());
+        Map<Long, Number> groupRatings = getGroupRatings(datasetLoader, groupOfUsers, getSocialNetworkCalculator());
 
         return new GroupModelPseudoUser(groupOfUsers, groupRatings);
     }
@@ -175,7 +175,7 @@ public class CentralityWeightedAggregationGRS extends GroupRecommenderSystemAdap
                 datasetLoader.getRatingsDataset(),
                 DatasetUtilities.getUserMap_Rating(-1, groupModel.getRatings()),
                 groupOfUsers.getIdMembers());
-        int idGroup = ratingsDataset_withPseudoUser.getIdPseudoUser();
+        long idGroup = ratingsDataset_withPseudoUser.getIdPseudoUser();
 
         Collection<Recommendation> groupRecom;
 
@@ -208,13 +208,13 @@ public class CentralityWeightedAggregationGRS extends GroupRecommenderSystemAdap
         return (Boolean) getParameterValue(NORMALISE_SOCIAL_NETWORK_CONNECTIONS);
     }
 
-    public CentralityConceptDefinition<Integer> getCentralityConceptDefinition() {
-        return (CentralityConceptDefinition<Integer>) getParameterValue(CENTRALITY_CONCEPT);
+    public CentralityConceptDefinition<Long> getCentralityConceptDefinition() {
+        return (CentralityConceptDefinition<Long>) getParameterValue(CENTRALITY_CONCEPT);
     }
 
-    public Map<Integer, Number> getGroupRatings(DatasetLoader<? extends Rating> datasetLoader, GroupOfUsers groupOfUsers, WeightedGraphCalculation userTrustGenerator) throws UserNotFound, CannotLoadRatingsDataset {
+    public Map<Long, Number> getGroupRatings(DatasetLoader<? extends Rating> datasetLoader, GroupOfUsers groupOfUsers, WeightedGraphCalculation userTrustGenerator) throws UserNotFound, CannotLoadRatingsDataset {
         // Generate group social network.
-        WeightedGraph<Integer> userTrust = userTrustGenerator.computeTrustValues(datasetLoader, groupOfUsers.getIdMembers());
+        WeightedGraph<Long> userTrust = userTrustGenerator.computeTrustValues(datasetLoader, groupOfUsers.getIdMembers());
 
         if (isNormaliseSocialNetworkConnections()) {
             userTrust = WeightedGraphNormaliser.normalise(userTrust);
@@ -225,28 +225,28 @@ public class CentralityWeightedAggregationGRS extends GroupRecommenderSystemAdap
         }
 
         // Compute centrality of each member
-        Map<Integer, Double> centrality = new TreeMap<>();
-        CentralityConceptDefinition<Integer> centralityConceptDefinition = getCentralityConceptDefinition();
+        Map<Long, Double> centrality = new TreeMap<>();
+        CentralityConceptDefinition<Long> centralityConceptDefinition = getCentralityConceptDefinition();
 
-        for (int idMember : groupOfUsers) {
+        for (long idMember : groupOfUsers) {
             double centralityOfUser = centralityConceptDefinition.centrality(userTrust, idMember);
             centrality.put(idMember, centralityOfUser);
         }
 
         // Generate groupProfile.
-        Map<Integer, Number> groupRatings = new TreeMap<>();
+        Map<Long, Number> groupRatings = new TreeMap<>();
         {
             WeightedAggregationOperator aggregationOperator = new WeightedSumAggregation();
-            Map<Integer, Map<Integer, ? extends Rating>> groupMembersRatings = new TreeMap<>();
-            Set<Integer> itemsRatedByGroup = new TreeSet<>();
-            for (int idUser : groupOfUsers.getIdMembers()) {
+            Map<Long, Map<Long, ? extends Rating>> groupMembersRatings = new TreeMap<>();
+            Set<Long> itemsRatedByGroup = new TreeSet<>();
+            for (long idUser : groupOfUsers.getIdMembers()) {
                 groupMembersRatings.put(idUser, datasetLoader.getRatingsDataset().getUserRatingsRated(idUser));
                 itemsRatedByGroup.addAll(groupMembersRatings.get(idUser).keySet());
             }
-            for (int idItem : itemsRatedByGroup) {
+            for (long idItem : itemsRatedByGroup) {
                 List<Double> ratingsValues = new ArrayList<>(groupOfUsers.size());
                 List<Double> memberWeights = new ArrayList<>(groupOfUsers.size());
-                for (int idMember : groupOfUsers) {
+                for (long idMember : groupOfUsers) {
                     Rating rating = groupMembersRatings.get(idMember).get(idItem);
                     if (rating != null) {
                         ratingsValues.add(rating.getRatingValue().doubleValue());

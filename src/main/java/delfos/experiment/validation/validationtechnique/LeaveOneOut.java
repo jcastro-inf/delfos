@@ -34,9 +34,6 @@ import java.util.TreeSet;
  *
  * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
- * @version 1.0 (19 Octubre 2011)
- * @version 1.1 21-02-2013 Adecuación a la implementación de {@link SeedHolder}
- * @version 1.1 19-04-2013 Corrección del código para que implemente el algoritmo All-but-one.
  */
 public class LeaveOneOut extends ValidationTechnique {
 
@@ -53,7 +50,7 @@ public class LeaveOneOut extends ValidationTechnique {
     @Override
     public <RatingType extends Rating> PairOfTrainTestRatingsDataset<RatingType>[] shuffle(DatasetLoader<RatingType> datasetLoader) throws CannotLoadRatingsDataset, CannotLoadContentDataset {
 
-        int numRatings = datasetLoader.getRatingsDataset().getNumRatings();
+        int numRatings = (int) datasetLoader.getRatingsDataset().getNumRatings();
 
         PairOfTrainTestRatingsDataset<RatingType>[] ret = new PairOfTrainTestRatingsDataset[numRatings];
         RatingsDataset<RatingType> ratingsDataset = datasetLoader.getRatingsDataset();
@@ -61,7 +58,7 @@ public class LeaveOneOut extends ValidationTechnique {
         int split = 0;
         for (Rating rating : ratingsDataset) {
 
-            Map<Integer, Set<Integer>> conjuntoTest = new TreeMap<>();
+            Map<Long, Set<Long>> conjuntoTest = new TreeMap<>();
             conjuntoTest.put(rating.getIdUser(), new TreeSet<>());
             conjuntoTest.get(rating.getIdUser()).add(rating.getIdItem());
 

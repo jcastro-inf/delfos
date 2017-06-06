@@ -63,12 +63,12 @@ public class OutliersItemsStandardDeviationThresholdFilter extends GroupRatingsF
     }
 
     @Override
-    public Map<Integer, Map<Integer, Number>> getFilteredRatings(Map<Integer, Map<Integer, Number>> ratingsByUser) {
+    public Map<Long, Map<Long, Number>> getFilteredRatings(Map<Long, Map<Long, Number>> ratingsByUser) {
         final double threshold = ((Number) getParameterValue(THRESHOLD)).doubleValue();
 
         List<ItemValuePair> itemsSortedByStandardDeviation = new ArrayList<>();
 
-        Map<Integer, Map<Integer, Number>> ratingsByItem = DatasetUtilities.transformIndexedByUsersToIndexedByItems_Map(ratingsByUser);
+        Map<Long, Map<Long, Number>> ratingsByItem = DatasetUtilities.transformIndexedByUsersToIndexedByItems_Map(ratingsByUser);
 
         if (ratingsByItem.size() == 1) {
             throw new IllegalArgumentException("The number of items rated by the group is 1, cannot filter items.");
@@ -90,29 +90,29 @@ public class OutliersItemsStandardDeviationThresholdFilter extends GroupRatingsF
             Global.showInfoMessage("Sorted\t" + itemsSortedByStandardDeviation + "\n");
         }
 
-        List<Integer> itemsRemaining = new ArrayList<>();
+        List<Long> itemsRemaining = new ArrayList<>();
 
         itemsSortedByStandardDeviation.stream().filter((itemValuePair) -> (itemValuePair.value <= threshold)).forEach((itemValuePair) -> {
             itemsRemaining.add(itemValuePair.idItem);
         });
 
-        Map<Integer, Map<Integer, Number>> filteredRatingsByItem = new TreeMap<>();
+        Map<Long, Map<Long, Number>> filteredRatingsByItem = new TreeMap<>();
 
         itemsRemaining.stream().forEach((idItem) -> {
             filteredRatingsByItem.put(idItem, new TreeMap<>(ratingsByItem.get(idItem)));
         });
 
-        Map<Integer, Map<Integer, Number>> filteredRatingsByUser
+        Map<Long, Map<Long, Number>> filteredRatingsByUser
                 = DatasetUtilities.transformIndexedByItemToIndexedByUser_Map(filteredRatingsByItem);
         return filteredRatingsByUser;
     }
 
     private class ItemValuePair implements Comparable<ItemValuePair> {
 
-        public final int idItem;
+        public final long idItem;
         public final double value;
 
-        public ItemValuePair(int idItem, double value) {
+        public ItemValuePair(long idItem, double value) {
             this.idItem = idItem;
             this.value = value;
         }

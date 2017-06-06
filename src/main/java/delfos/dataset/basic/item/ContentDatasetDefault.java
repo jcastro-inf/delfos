@@ -65,7 +65,7 @@ public class ContentDatasetDefault extends CollectionOfEntitiesWithFeaturesDefau
     }
 
     @Override
-    public Collection<Integer> allIDs() {
+    public Collection<Long> allIDs() {
         return this.stream().map(item -> item.getId()).collect(Collectors.toList());
     }
 
@@ -77,17 +77,17 @@ public class ContentDatasetDefault extends CollectionOfEntitiesWithFeaturesDefau
      * @return
      */
     @Override
-    public Collection<Integer> getAvailableItems() {
+    public Collection<Long> getAvailableItems() {
         if (availableProducts == null) {
             return allIDs();
         } else {
             return Collections.unmodifiableCollection(availableProducts);
         }
     }
-    protected Collection<Integer> availableProducts = null;
+    protected Collection<Long> availableProducts = null;
 
     @Override
-    public void setItemAvailable(int idItem, boolean available) throws ItemNotFound {
+    public void setItemAvailable(long idItem, boolean available) throws ItemNotFound {
         if (!allIDs().contains(idItem)) {
             throw new ItemNotFound(idItem);
         }
@@ -144,7 +144,7 @@ public class ContentDatasetDefault extends CollectionOfEntitiesWithFeaturesDefau
     }
 
     @Override
-    public Item getItem(int idItem) throws ItemNotFound {
+    public Item getItem(long idItem) throws ItemNotFound {
         try {
             return get(idItem);
         } catch (EntityNotFound ex) {
@@ -166,7 +166,7 @@ public class ContentDatasetDefault extends CollectionOfEntitiesWithFeaturesDefau
     public static <RatingType extends Rating> int hashCode(ContentDataset contentDataset) {
         HashCodeBuilder hashCodeBuilder = new HashCodeBuilder(37, 11);
 
-        List<Integer> itemsSorted = contentDataset.allIDs().stream()
+        List<Long> itemsSorted = contentDataset.allIDs().stream()
                 .sorted()
                 .collect(Collectors.toList());
 
@@ -174,7 +174,7 @@ public class ContentDatasetDefault extends CollectionOfEntitiesWithFeaturesDefau
                 .sorted(Feature.BY_ID)
                 .collect(Collectors.toList());
 
-        for (int idItem : itemsSorted) {
+        for (Long idItem : itemsSorted) {
             Item item = contentDataset.get(idItem);
 
             hashCodeBuilder.append(idItem);

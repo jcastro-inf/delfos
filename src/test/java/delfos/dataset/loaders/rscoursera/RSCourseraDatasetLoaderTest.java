@@ -155,7 +155,7 @@ public class RSCourseraDatasetLoaderTest extends DelfosTest {
 
         HistogramNumbersSmart histogramNumbersSmart = new HistogramNumbersSmart(1);
 
-        Set<Integer> allUsers = rsCourseraDatasetLoader.getRatingsDataset().allUsers();
+        Set<Long> allUsers = rsCourseraDatasetLoader.getRatingsDataset().allUsers();
 
         allUsers.stream().forEach(user -> {
 

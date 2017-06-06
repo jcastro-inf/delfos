@@ -38,8 +38,7 @@ import java.util.stream.Collectors;
  * Se utiliza, por ejemplo, para almacenar que el usuario u54 y el usuario u98 valoraron el producto i46 con una
  * valoración de 3 y 5 respectivamente. En este caso, {@link CommonRating#getCommonEntity() } indicara que es un
  * producto y {@link CommonRating#getRatingEntity() } indicará que es un usuario. El método {@link CommonRating#getIdR1()
- * } devuelve 54 y el método {@link CommonRating#getIdR3()
- * } devuelve 98.
+ * } devuelve 54 y el método {@link CommonRating#getIdR2()} devuelve 98.
  *
  * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
@@ -50,7 +49,7 @@ import java.util.stream.Collectors;
 public class CommonRating {
 
     public static final Comparator<CommonRating> BY_ID_COMMON_ASC
-            = (CommonRating o1, CommonRating o2) -> Integer.compare(o1.idCommon, o2.idCommon);
+            = (CommonRating o1, CommonRating o2) -> Long.compare(o1.idCommon, o2.idCommon);
 
     public static final Comparator<CommonRating> BY_ID_COMMON_DESC
             = BY_ID_COMMON_ASC.reversed();
@@ -65,13 +64,13 @@ public class CommonRating {
      */
     public static Collection<CommonRating> intersection(DatasetLoader<? extends Rating> datasetLoader, User user1, User user2) {
 
-        final Map<Integer, ? extends Rating> itemsRatedUser1 = datasetLoader.getRatingsDataset()
+        final Map<Long, ? extends Rating> itemsRatedUser1 = datasetLoader.getRatingsDataset()
                 .getUserRatingsRated(user1.getId());
 
-        final Map<Integer, ? extends Rating> itemsRatedUser2 = datasetLoader.getRatingsDataset()
+        final Map<Long, ? extends Rating> itemsRatedUser2 = datasetLoader.getRatingsDataset()
                 .getUserRatingsRated(user2.getId());
 
-        Set<Integer> intersection = new TreeSet<>();
+        Set<Long> intersection = new TreeSet<>();
         intersection.addAll(itemsRatedUser1.keySet());
         intersection.retainAll(itemsRatedUser2.keySet());
 
@@ -106,10 +105,10 @@ public class CommonRating {
     }
 
     public static Collection<CommonRating> intersection(DatasetLoader<? extends Rating> datasetLoader, Item item1, Item item2) {
-        final Map<Integer, ? extends Rating> ratingsOverItem1 = datasetLoader.getRatingsDataset()
+        final Map<Long, ? extends Rating> ratingsOverItem1 = datasetLoader.getRatingsDataset()
                 .getItemRatingsRated(item1.getId());
 
-        final Map<Integer, ? extends Rating> ratingsOverItem2 = datasetLoader.getRatingsDataset()
+        final Map<Long, ? extends Rating> ratingsOverItem2 = datasetLoader.getRatingsDataset()
                 .getItemRatingsRated(item2.getId());
 
         Set<User> intersection
@@ -145,11 +144,11 @@ public class CommonRating {
      */
     private final RecommendationEntity commonEntity;
     private final RecommendationEntity ratingEntity;
-    private final int idCommon;
+    private final long idCommon;
     private final double rating1;
     private final double rating2;
-    private final int idR1;
-    private final int idR2;
+    private final long idR1;
+    private final long idR2;
     private Double weight = null;
 
     /**
@@ -186,7 +185,10 @@ public class CommonRating {
      * @param rating1 Valoración 1.
      * @param rating2 Valoración 2.
      */
-    public CommonRating(RecommendationEntity commonEntity, int idCommon, RecommendationEntity ratingEntity, int idR1, int idR2, double rating1, double rating2) {
+    public CommonRating(RecommendationEntity commonEntity,
+                        long idCommon, RecommendationEntity ratingEntity,
+                        long idR1,
+                        long idR2, double rating1, double rating2) {
         this.commonEntity = commonEntity;
         this.ratingEntity = ratingEntity;
         this.idCommon = idCommon;
@@ -211,7 +213,7 @@ public class CommonRating {
      *
      * @return ID de la entidad en común.
      */
-    public int getIdCommon() {
+    public long getIdCommon() {
         return idCommon;
     }
 
@@ -221,7 +223,7 @@ public class CommonRating {
      *
      * @return ID de la entidad de valoración 1.
      */
-    public int getIdR1() {
+    public long getIdR1() {
         return idR1;
     }
 
@@ -231,7 +233,7 @@ public class CommonRating {
      *
      * @return ID de la entidad de valoración 2.
      */
-    public int getIdR2() {
+    public long getIdR2() {
         return idR2;
     }
 

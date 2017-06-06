@@ -32,14 +32,14 @@ public abstract class CollaborativeFilteringItemProfile implements Serializable 
     /**
      * Id del producto al que se refiere este perfil.
      */
-    protected final int idItem;
+    protected final long idItem;
 
     /**
      * Devuelve el Id del producto al que se refiere el perfil.
      *
      * @return Id del producto al que se refiere el perfil.
      */
-    public int getIdItem() {
+    public long getIdItem() {
         return idItem;
     }
 
@@ -48,7 +48,7 @@ public abstract class CollaborativeFilteringItemProfile implements Serializable 
      *
      * @param idItem Producto al que se refiere este perfil.
      */
-    public CollaborativeFilteringItemProfile(int idItem) {
+    public CollaborativeFilteringItemProfile(long idItem) {
         this.idItem = idItem;
     }
 }

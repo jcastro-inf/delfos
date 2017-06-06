@@ -29,7 +29,7 @@ import delfos.dataset.basic.features.Feature;
  *
  * @version 14-oct-2013
  */
-public class EntropyDependenceCBRSModel extends TreeMap<Integer, EntropyDependenceCBRSItemProfile> implements Serializable {
+public class EntropyDependenceCBRSModel extends TreeMap<Long, EntropyDependenceCBRSItemProfile> implements Serializable {
 
     private static final long serialVersionUID = 1L;
     /**
@@ -37,7 +37,7 @@ public class EntropyDependenceCBRSModel extends TreeMap<Integer, EntropyDependen
      */
     private final Map<Feature, Number> _weights;
 
-    public EntropyDependenceCBRSModel(Map<Integer, EntropyDependenceCBRSItemProfile> items, Map<Feature, Number> weights) {
+    public EntropyDependenceCBRSModel(Map<Long, EntropyDependenceCBRSItemProfile> items, Map<Feature, Number> weights) {
         super(items);
         this._weights = weights;
     }

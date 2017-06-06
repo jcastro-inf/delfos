@@ -39,7 +39,7 @@ public class PredictUserItemBiasTest {
         DatasetLoader<? extends Rating> datasetLoader = ConfiguredDatasetsFactory.getInstance().getDatasetLoader("ml-100k");
 
         User user = new User(45);
-        Set<Integer> candidateItems = datasetLoader.getRatingsDataset().allRatedItems();
+        Set<Long> candidateItems = datasetLoader.getRatingsDataset().allRatedItems();
         PredictUserItemBias bias = new PredictUserItemBias();
 
         Object model = bias.buildRecommendationModel(datasetLoader);
@@ -68,12 +68,12 @@ public class PredictUserItemBiasTest {
         HistogramNumbersSmart histogramCoverage = new HistogramNumbersSmart(0, 1, 0.05);
 
         List<RecommendationsToUser> allRecommendations = new ArrayList<>(datasetLoader.getRatingsDataset().allUsers().size());
-        for (int idUser : datasetLoader.getRatingsDataset().allUsers()) {
+        for (long idUser : datasetLoader.getRatingsDataset().allUsers()) {
             User user = new User(idUser);
             Collection<Recommendation> recommendations = bias.recommendToUser(datasetLoader, model, idUser, datasetLoader.getRatingsDataset().getUserRated(idUser));
             final RecommendationsToUser singleUserRecommendations = new RecommendationsToUser(new User(idUser), recommendations);
             allRecommendations.add(singleUserRecommendations);
-            final Map<Integer, ? extends Rating> userRatingsRated = datasetLoader.getRatingsDataset().getUserRatingsRated(user.getId());
+            final Map<Long, ? extends Rating> userRatingsRated = datasetLoader.getRatingsDataset().getUserRatingsRated(user.getId());
 
             MeasureResult userMAE = new MAE().getUserResult(singleUserRecommendations, userRatingsRated);
             MeasureResult userCoverage = new Coverage().getUserResult(singleUserRecommendations, userRatingsRated);

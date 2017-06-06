@@ -42,12 +42,12 @@ public class DatasetOperations {
      * @param b
      * @return
      */
-    public static <RatingType> Map<Integer, Map<Integer, RatingType>> minus(Map<Integer, Map<Integer, RatingType>> a, Map<Integer, Map<Integer, RatingType>> b) {
+    public static <RatingType> Map<Long, Map<Long, RatingType>> minus(Map<Long, Map<Long, RatingType>> a, Map<Long, Map<Long, RatingType>> b) {
 
-        Map<Integer, Map<Integer, RatingType>> ret = new TreeMap<>();
+        Map<Long, Map<Long, RatingType>> ret = new TreeMap<>();
         {
             //Users only on set b:
-            Set<Integer> onlyInA = new TreeSet<>(a.keySet());
+            Set<Long> onlyInA = new TreeSet<>(a.keySet());
             onlyInA.removeAll(b.keySet());
 
             onlyInA.stream().forEach((idUser) -> {
@@ -57,11 +57,11 @@ public class DatasetOperations {
 
         {
             //Users on both
-            Set<Integer> usersCommon = new TreeSet<>(a.keySet());
+            Set<Long> usersCommon = new TreeSet<>(a.keySet());
             usersCommon.retainAll(b.keySet());
 
             usersCommon.stream().forEach((idUser) -> {
-                TreeMap<Integer, RatingType> ratingsOnlyInA = new TreeMap<>(a.get(idUser));
+                TreeMap<Long, RatingType> ratingsOnlyInA = new TreeMap<>(a.get(idUser));
                 b.get(idUser).keySet().stream().forEach((idItem) -> {
                     ratingsOnlyInA.remove(idItem);
                 });
@@ -73,49 +73,49 @@ public class DatasetOperations {
         return ret;
     }
 
-    public static Map<Integer, Rating> convertNumberToRatings_singleUser(int idUser, Map<Integer, Number> ratings) {
-        TreeMap<Integer, Rating> ret = new TreeMap<>();
+    public static Map<Long, Rating> convertNumberToRatings_singleUser(long idUser, Map<Long, Number> ratings) {
+        TreeMap<Long, Rating> ret = new TreeMap<>();
 
         ratings.entrySet().stream().forEach((entry) -> {
-            int idItem = entry.getKey();
+            long idItem = entry.getKey();
             Number ratingValue = entry.getValue();
             ret.put(idItem, new Rating(idUser, idItem, ratingValue));
         });
         return ret;
     }
 
-    public static Map<Integer, Map<Integer, Rating>> convertNumberToRatings(Map<Integer, Map<Integer, Number>> rating_number) {
-        Map<Integer, Map<Integer, Rating>> rating_rating = new TreeMap<>();
+    public static Map<Long, Map<Long, Rating>> convertNumberToRatings(Map<Long, Map<Long, Number>> rating_number) {
+        Map<Long, Map<Long, Rating>> rating_rating = new TreeMap<>();
         rating_number.keySet().stream().forEach((idUser) -> {
             rating_rating.put(idUser, convertNumberToRatings_singleUser(idUser, rating_number.get(idUser)));
         });
         return rating_rating;
     }
 
-    public static Map<Integer, Number> convertRatingsToNumber_singleUser(int idUser, Map<Integer, ? extends Rating> ratings) {
-        TreeMap<Integer, Number> ret = new TreeMap<>();
+    public static Map<Long, Number> convertRatingsToNumber_singleUser(long idUser, Map<Long, ? extends Rating> ratings) {
+        TreeMap<Long, Number> ret = new TreeMap<>();
 
         ratings.entrySet().stream().forEach((entry) -> {
-            int idItem = entry.getKey();
+            long idItem = entry.getKey();
             Rating rating = entry.getValue();
             ret.put(idItem, rating.getRatingValue());
         });
         return ret;
     }
 
-    public static Map<Integer, Map<Integer, Number>> convertRatingsToNumber(Map<Integer, Map<Integer, ? extends Rating>> rating_rating) {
+    public static Map<Long, Map<Long, Number>> convertRatingsToNumber(Map<Long, Map<Long, ? extends Rating>> rating_rating) {
 
-        Map<Integer, Map<Integer, Number>> rating_number = new TreeMap<>();
+        Map<Long, Map<Long, Number>> rating_number = new TreeMap<>();
         rating_rating.keySet().stream().forEach((idUser) -> {
             rating_number.put(idUser, convertRatingsToNumber_singleUser(idUser, rating_rating.get(idUser)));
         });
         return rating_number;
     }
 
-    public static <RatingType extends Rating> Map<Integer, Map<Integer, RatingType>> selectRatings(RatingsDataset<RatingType> ratingsDataset, Collection<Integer> users) throws UserNotFound {
-        Map<Integer, Map<Integer, RatingType>> selectedRatings = new TreeMap<>();
+    public static <RatingType extends Rating> Map<Long, Map<Long, RatingType>> selectRatings(RatingsDataset<RatingType> ratingsDataset, Collection<Long> users) throws UserNotFound {
+        Map<Long, Map<Long, RatingType>> selectedRatings = new TreeMap<>();
 
-        for (int idUser : users) {
+        for (long idUser : users) {
             selectedRatings.put(idUser, new TreeMap<>(ratingsDataset.getUserRatingsRated(idUser)));
         }
 

@@ -116,7 +116,7 @@ public class DemographicSimilarity extends SimilarityMeasureAdapter implements U
     }
 
     @Override
-    public double similarity(DatasetLoader<? extends Rating> datasetLoader, int idUser1, int idUser2) {
+    public double similarity(DatasetLoader<? extends Rating> datasetLoader, long idUser1, long idUser2) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 

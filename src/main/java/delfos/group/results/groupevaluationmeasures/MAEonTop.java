@@ -33,8 +33,6 @@ import java.util.stream.Collectors;
 
 /**
  * Prediction error on the top five items for the group.
- *
- * @see delfos.Results.EvaluationMeasures.RatingPrediction.MAE
  */
 public abstract class MAEonTop extends GroupEvaluationMeasure {
 
@@ -46,7 +44,7 @@ public abstract class MAEonTop extends GroupEvaluationMeasure {
 
         MeanIterative maeGeneral = new MeanIterative();
         TreeMap<GroupOfUsers, MeanIterative> maeGroups = new TreeMap<>();
-        TreeMap<Integer, MeanIterative> maeAllMembers = new TreeMap<>();
+        TreeMap<Long, MeanIterative> maeAllMembers = new TreeMap<>();
 
         for (GroupOfUsers groupOfUsers : groupRecommenderSystemResult.getGroupsOfUsers()) {
             Collection<Recommendation> groupRecommendations = groupRecommenderSystemResult
@@ -62,12 +60,12 @@ public abstract class MAEonTop extends GroupEvaluationMeasure {
                     .collect(Collectors.toList());
 
             MeanIterative maeGroup = new MeanIterative();
-            Map<Integer, MeanIterative> maeMembers = new TreeMap<>();
+            Map<Long, MeanIterative> maeMembers = new TreeMap<>();
             for (User member : groupOfUsers.getMembers()) {
                 maeMembers.put(member.getId(), new MeanIterative());
             }
 
-            Map<Integer, Map<Integer, ? extends Rating>> groupTrueRatings = new TreeMap<>();
+            Map<Long, Map<Long, ? extends Rating>> groupTrueRatings = new TreeMap<>();
 
             groupOfUsers.getIdMembers().stream().forEach((idUser) -> {
                 try {
@@ -81,8 +79,8 @@ public abstract class MAEonTop extends GroupEvaluationMeasure {
                 if (Double.isNaN(recommendation.getPreference().doubleValue())) {
                     continue;
                 }
-                int idItem = recommendation.getIdItem();
-                for (int idUser : groupOfUsers.getIdMembers()) {
+                long idItem = recommendation.getIdItem();
+                for (long idUser : groupOfUsers.getIdMembers()) {
                     if (groupTrueRatings.get(idUser).containsKey(idItem)) {
                         double trueRating = groupTrueRatings.get(idUser).get(idItem).getRatingValue().doubleValue();
                         double predicted = recommendation.getPreference().doubleValue();

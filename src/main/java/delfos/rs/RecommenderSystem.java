@@ -70,8 +70,8 @@ public interface RecommenderSystem<RecommendationModel>
     public Collection<Recommendation> recommendToUser(
             DatasetLoader<? extends Rating> dataset,
             RecommendationModel model,
-            Integer idUser,
-            Set<Integer> candidateItems)
+            long idUser,
+            Set<Long> candidateItems)
             throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset, NotEnoughtUserInformation;
 
     /**

@@ -67,7 +67,7 @@ public class DAOMeanRatingProfile implements RecommendationModelDatabasePersiste
     }
 
     @Override
-    public MeanRatingRSModel loadModel(DatabasePersistence databasePersistence, Collection<Integer> users, Collection<Integer> items, DatasetLoader<? extends Rating> datasetLoader) throws FailureInPersistence {
+    public MeanRatingRSModel loadModel(DatabasePersistence databasePersistence, Collection<Long> users, Collection<Long> items, DatasetLoader<? extends Rating> datasetLoader) throws FailureInPersistence {
         try (Statement statement = databasePersistence.getConection().doConnection().createStatement()) {
 
             List<MeanRating> profiles = new LinkedList<>();

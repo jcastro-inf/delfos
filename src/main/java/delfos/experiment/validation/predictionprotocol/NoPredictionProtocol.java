@@ -43,13 +43,13 @@ public class NoPredictionProtocol extends PredictionProtocol {
     public static final long serialVersionUID = 1L;
 
     @Override
-    public <RatingType extends Rating> List<Set<Integer>> getRecommendationRequests(
+    public <RatingType extends Rating> List<Set<Long>> getRecommendationRequests(
             DatasetLoader<RatingType> trainingDatasetLoader,
             DatasetLoader<RatingType> testDatasetLoader,
-            int idUser) throws UserNotFound {
-        List<Set<Integer>> listOfRequests = new ArrayList<>(1);
+            long idUser) throws UserNotFound {
+        List<Set<Long>> listOfRequests = new ArrayList<>(1);
 
-        Set<Integer> userRated = new TreeSet<>(testDatasetLoader.getRatingsDataset().getUserRated(idUser));
+        Set<Long> userRated = new TreeSet<>(testDatasetLoader.getRatingsDataset().getUserRated(idUser));
 
         listOfRequests.add(userRated);
 
@@ -57,13 +57,13 @@ public class NoPredictionProtocol extends PredictionProtocol {
     }
 
     @Override
-    public <RatingType extends Rating> List<Set<Integer>> getRatingsToHide(
+    public <RatingType extends Rating> List<Set<Long>> getRatingsToHide(
             DatasetLoader<RatingType> trainingDatasetLoader,
             DatasetLoader<RatingType> testDatasetLoader,
-            int idUser) throws UserNotFound {
+            long idUser) throws UserNotFound {
         return getRecommendationRequests(trainingDatasetLoader, testDatasetLoader, idUser)
                 .stream()
-                .map(object -> new TreeSet<Integer>())
+                .map(object -> new TreeSet<Long>())
                 .collect(Collectors.toList());
     }
 

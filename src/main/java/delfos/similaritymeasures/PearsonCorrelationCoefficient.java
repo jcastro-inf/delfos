@@ -56,7 +56,6 @@ public class PearsonCorrelationCoefficient extends WeightedSimilarityMeasureAdap
     /**
      * Devuelve el PCC de las listas de valores. El valor está entre -1 y 1. Si
      * las listas están vacías, lanza una excepción
-     * {@link CouldNotComputeSimilarity}.
      *
      * @param v1
      * @param v2
@@ -192,7 +191,7 @@ public class PearsonCorrelationCoefficient extends WeightedSimilarityMeasureAdap
     }
 
     @Override
-    public double similarity(DatasetLoader<? extends Rating> datasetLoader, int idUser1, int idUser2) {
+    public double similarity(DatasetLoader<? extends Rating> datasetLoader, long idUser1, long idUser2) {
         User user1 = datasetLoader.getUsersDataset().get(idUser1);
         User user2 = datasetLoader.getUsersDataset().get(idUser2);
 

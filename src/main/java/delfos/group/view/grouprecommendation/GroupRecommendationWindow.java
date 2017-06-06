@@ -67,7 +67,7 @@ public class GroupRecommendationWindow extends JFrame {
 
         Random r = new Random(System.currentTimeMillis());
         RatingsDataset<? extends Rating> ratingsDataset = datasetLoader.getRatingsDataset();
-        Integer[] allUsers = ratingsDataset.allUsers().toArray(new Integer[0]);
+        Long[] allUsers = ratingsDataset.allUsers().toArray(new Long[0]);
         while (groupOfUsers.size() < 4) {
             groupOfUsers.addUser(allUsers[r.nextInt(allUsers.length)]);
         }

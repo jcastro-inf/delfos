@@ -50,8 +50,8 @@ public class CosineAsymmetric extends SimilarityMeasureAdapter implements Collab
 
         double ret = commonRatings.stream().findAny().map(commonRating -> {
 
-            int idUser1 = commonRating.getIdR1();
-            int idUser2 = commonRating.getIdR2();
+            long idUser1 = commonRating.getIdR1();
+            long idUser2 = commonRating.getIdR2();
 
             double user1size = ratings.getUserRatingsRated(idUser1).size();
             double user2size = ratings.getUserRatingsRated(idUser2).size();
@@ -84,7 +84,7 @@ public class CosineAsymmetric extends SimilarityMeasureAdapter implements Collab
     }
 
     @Override
-    public double similarity(DatasetLoader<? extends Rating> datasetLoader, int idUser1, int idUser2) {
+    public double similarity(DatasetLoader<? extends Rating> datasetLoader, long idUser1, long idUser2) {
         User user1 = datasetLoader.getUsersDataset().get(idUser1);
         User user2 = datasetLoader.getUsersDataset().get(idUser2);
 

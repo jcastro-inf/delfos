@@ -88,18 +88,18 @@ public class Recommendation implements Comparable<Recommendation>, Serializable 
      * @param recommendations
      * @return
      */
-    public static Set<Integer> getSetOfItems(Collection<Recommendation> recommendations) {
+    public static Set<Long> getSetOfItems(Collection<Recommendation> recommendations) {
         return recommendations.parallelStream()
                 .map((recommendation) -> recommendation.getIdItem())
                 .collect(Collectors.toSet());
     }
 
-    public static Map<Integer, Number> convertToMapOfNumbers(Collection<Recommendation> recommendations) {
+    public static Map<Long, Number> convertToMapOfNumbers(Collection<Recommendation> recommendations) {
 
-        Map<Integer, Number> map = new TreeMap<>();
+        Map<Long, Number> map = new TreeMap<>();
 
         for (Recommendation recommendation : recommendations) {
-            final int idItem = recommendation.getIdItem();
+            final Long idItem = recommendation.getIdItem();
             final Number preference = recommendation.preference;
 
             if (map.containsKey(idItem)) {
@@ -112,15 +112,15 @@ public class Recommendation implements Comparable<Recommendation>, Serializable 
 
     }
 
-    public static Map<Integer, Number> convertToMapOfNumbers_onlyRankPreference(Collection<Recommendation> recommendations) {
-        Map<Integer, Number> map = new TreeMap<>();
+    public static Map<Long, Number> convertToMapOfNumbers_onlyRankPreference(Collection<Recommendation> recommendations) {
+        Map<Long, Number> map = new TreeMap<>();
 
         final double size = recommendations.size();
 
         int i = 0;
         for (Recommendation recommendation : recommendations) {
 
-            final int idItem = recommendation.getIdItem();
+            final Long idItem = recommendation.getIdItem();
             final Number preference = (size - i) / size;
 
             if (map.containsKey(idItem)) {
@@ -150,7 +150,7 @@ public class Recommendation implements Comparable<Recommendation>, Serializable 
      * al item para el usuario al que se recomienda
      */
     @Deprecated
-    public Recommendation(Integer idItem, Number preference) {
+    public Recommendation(Long idItem, Number preference) {
         if (idItem == null) {
             throw new IllegalArgumentException("Item cannot be null");
         } else if (preference == null) {
@@ -178,7 +178,7 @@ public class Recommendation implements Comparable<Recommendation>, Serializable 
      * @return id del item que se recomienda
      */
     @Deprecated
-    public int getIdItem() {
+    public Long getIdItem() {
         return item.getId();
     }
 
@@ -220,7 +220,7 @@ public class Recommendation implements Comparable<Recommendation>, Serializable 
     @Override
     public int hashCode() {
         int hash = 3;
-        hash = 37 * hash + this.getIdItem();
+        hash = 37 * hash + this.getIdItem().hashCode();
         hash = 37 * hash + (this.preference != null ? this.preference.hashCode() : 0);
         return hash;
     }

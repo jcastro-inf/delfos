@@ -28,10 +28,8 @@ import delfos.dataset.basic.rating.RatingsDataset;
 import delfos.dataset.basic.user.UsersDataset;
 import delfos.dataset.storage.memory.BothIndexRatingsDataset;
 import delfos.rs.recommendation.Recommendation;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Map;
-import java.util.TreeMap;
+
+import java.util.*;
 
 /**
  * Sistema de recomendación para comprobar que las particiones de entrenamiento/evaluación se realizan correctamente.
@@ -99,10 +97,14 @@ public class Recommender_DatasetProperties extends CollaborativeRecommender<Numb
     }
 
     @Override
-    public Collection<Recommendation> recommendToUser(DatasetLoader<? extends Rating> datasetLoader, Number model, Integer idUser, java.util.Set<Integer> candidateItems) throws UserNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset {
+    public Collection<Recommendation> recommendToUser(
+            DatasetLoader<? extends Rating> datasetLoader,
+            Number model,
+            long idUser,
+            Set<Long> candidateItems) throws UserNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset {
 
-        Map<Integer, Rating> userRatingsInRecommendation = new TreeMap<>();
-        Map<Integer, Rating> userRatingsInTraining = new TreeMap<>();
+        Map<Long, Rating> userRatingsInRecommendation = new TreeMap<>();
+        Map<Long, Rating> userRatingsInTraining = new TreeMap<>();
 
         RatingsDataset<? extends Rating> ratingsDataset = datasetLoader.getRatingsDataset();
 
@@ -115,7 +117,7 @@ public class Recommender_DatasetProperties extends CollaborativeRecommender<Numb
         }
         userRatingsInRecommendation.putAll(ratingsDataset.getUserRatingsRated(idUser));
 
-        for (int idItem : candidateItems) {
+        for (long idItem : candidateItems) {
 
             boolean errors = false;
             boolean error1 = false;
@@ -141,9 +143,9 @@ public class Recommender_DatasetProperties extends CollaborativeRecommender<Numb
         return getRecommendationList(model, candidateItems);
     }
 
-    private Collection<Recommendation> getRecommendationList(Number model, Collection<Integer> candidateItems) {
+    private Collection<Recommendation> getRecommendationList(Number model, Collection<Long> candidateItems) {
         Collection<Recommendation> ret = new ArrayList<>(candidateItems.size());
-        for (int idItem : candidateItems) {
+        for (long idItem : candidateItems) {
             ret.add(new Recommendation(idItem, model));
         }
         return ret;

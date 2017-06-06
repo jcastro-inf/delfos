@@ -46,7 +46,7 @@ public class BooleanItemProfileStatic implements BooleanItemProfile, Serializabl
     /**
      * Id del usuario al que se refiere este perfil.
      */
-    private final int _idUser;
+    private final long _idUser;
     /**
      * Valor del perfil para cada valor de cada característica.
      */
@@ -111,7 +111,7 @@ public class BooleanItemProfileStatic implements BooleanItemProfile, Serializabl
     }
 
     @Override
-    public int getId() {
+    public long getId() {
         return _idUser;
     }
 

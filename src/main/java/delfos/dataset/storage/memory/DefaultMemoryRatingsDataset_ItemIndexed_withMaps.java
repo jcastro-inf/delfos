@@ -39,8 +39,8 @@ import java.util.TreeSet;
  */
 public class DefaultMemoryRatingsDataset_ItemIndexed_withMaps<RatingType extends Rating> extends RatingsDatasetAdapter<RatingType> {
 
-    private final TreeSet<Integer> users;
-    private final TreeMap<Integer, TreeMap<Integer, RatingType>> ratings_byItem;
+    private final TreeSet<Long> users;
+    private final TreeMap<Long, TreeMap<Long, RatingType>> ratings_byItem;
     private DecimalDomain rc = null;
 
     /**
@@ -61,7 +61,7 @@ public class DefaultMemoryRatingsDataset_ItemIndexed_withMaps<RatingType extends
     }
 
     @Override
-    public RatingType getRating(int idUser, int idItem) {
+    public RatingType getRating(long idUser, long idItem) {
         RatingType ret = null;
         if (ratings_byItem.containsKey(idItem) && ratings_byItem.get(idItem).containsKey(idUser)) {
             ret = ratings_byItem.get(idItem).get(idUser);
@@ -70,7 +70,7 @@ public class DefaultMemoryRatingsDataset_ItemIndexed_withMaps<RatingType extends
         return ret;
     }
 
-    private void addRating(int idUser, int idItem, RatingType rating) {
+    private void addRating(long idUser, long idItem, RatingType rating) {
 
         if (rc == null) {
             rc = new DecimalDomain(rating.getRatingValue().doubleValue(), rating.getRatingValue().doubleValue());
@@ -94,18 +94,18 @@ public class DefaultMemoryRatingsDataset_ItemIndexed_withMaps<RatingType extends
     }
 
     @Override
-    public Set<Integer> allUsers() {
+    public Set<Long> allUsers() {
         return Collections.unmodifiableSet(users);
     }
 
     @Override
-    public Set<Integer> allRatedItems() {
+    public Set<Long> allRatedItems() {
         return ratings_byItem.keySet();
     }
     private boolean getUserRatingsWarningMessageShown = false;
 
     @Override
-    public Set<Integer> getUserRated(Integer idUser) {
+    public Set<Long> getUserRated(long idUser) {
         if (!getUserRatingsWarningMessageShown) {
             RatingDatasetEfficiencyException ratingDatasetEfficiencyException = new RatingDatasetEfficiencyException(this.getClass().getSimpleName() + ": Using an inefficient method:[getItemRated(Integer idItem):Collection<Integer>]");
             Global.showWarning(ratingDatasetEfficiencyException);
@@ -115,7 +115,7 @@ public class DefaultMemoryRatingsDataset_ItemIndexed_withMaps<RatingType extends
     }
 
     @Override
-    public Set<Integer> getItemRated(Integer idItem) {
+    public Set<Long> getItemRated(long idItem) {
         if (ratings_byItem.containsKey(idItem)) {
             return Collections.unmodifiableSet(ratings_byItem.get(idItem).keySet());
         } else {
@@ -125,13 +125,13 @@ public class DefaultMemoryRatingsDataset_ItemIndexed_withMaps<RatingType extends
     private boolean getUserRatingsRatedWarningMessageShown = false;
 
     @Override
-    public Map<Integer, RatingType> getUserRatingsRated(Integer idUser) {
+    public Map<Long, RatingType> getUserRatingsRated(long idUser) {
         if (!getUserRatingsRatedWarningMessageShown) {
             RatingDatasetEfficiencyException ratingDatasetEfficiencyException = new RatingDatasetEfficiencyException(this.getClass().getSimpleName() + ": Using an inefficient method:[getItemRatingsRated(Integer idItem):Map<Integer, Byte>]");
             Global.showWarning(ratingDatasetEfficiencyException);
             getUserRatingsRatedWarningMessageShown = true;
         }
-        Map<Integer, RatingType> ret = new TreeMap<>();
+        Map<Long, RatingType> ret = new TreeMap<>();
         ratings_byItem.keySet().stream().filter((idItem) -> (ratings_byItem.get(idItem).containsKey(idUser))).forEach((idItem) -> {
             ret.put(idItem, ratings_byItem.get(idItem).get(idUser));
         });
@@ -139,7 +139,7 @@ public class DefaultMemoryRatingsDataset_ItemIndexed_withMaps<RatingType extends
     }
 
     @Override
-    public Map<Integer, RatingType> getItemRatingsRated(Integer idItem) {
+    public Map<Long, RatingType> getItemRatingsRated(long idItem) {
         if (ratings_byItem.containsKey(idItem)) {
             return ratings_byItem.get(idItem);
         } else {

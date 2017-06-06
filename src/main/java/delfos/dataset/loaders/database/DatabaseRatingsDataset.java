@@ -47,16 +47,16 @@ public class DatabaseRatingsDataset extends RatingsDatasetAdapter {
     }
 
     @Override
-    public Rating getRating(int idUser, int idItem) {
+    public Rating getRating(long idUser, long idItem) {
 
-        Integer ret = null;
+        Number ret = null;
         String query = "SELECT idUser,idItem,rating FROM ratings where idUser = " + idUser + " and idItem = " + idItem + ";";
         try (
                 Statement statement = conexion.doConnection().createStatement();
                 ResultSet rst = statement.executeQuery(query)) {
 
             while (rst.next()) {
-                ret = rst.getInt("rating");
+                ret = rst.getDouble("rating");
             }
         } catch (SQLException ex) {
             connectionError(ex);
@@ -70,8 +70,8 @@ public class DatabaseRatingsDataset extends RatingsDatasetAdapter {
     }
 
     @Override
-    public Set<Integer> allUsers() {
-        Set<Integer> ret = new TreeSet<>();
+    public Set<Long> allUsers() {
+        Set<Long> ret = new TreeSet<>();
         String query = "select distinct idUser from ratings;";
         try (
                 Statement statement = conexion.doConnection().createStatement();
@@ -79,7 +79,7 @@ public class DatabaseRatingsDataset extends RatingsDatasetAdapter {
 
             int i = 0;
             while (rst.next()) {
-                int idUser = rst.getInt("idUser");
+                long idUser = rst.getLong("idUser");
                 ret.add(idUser);
                 i++;
             }
@@ -93,15 +93,15 @@ public class DatabaseRatingsDataset extends RatingsDatasetAdapter {
     }
 
     @Override
-    public Set<Integer> allRatedItems() {
-        Set<Integer> items = new TreeSet<>();
+    public Set<Long> allRatedItems() {
+        Set<Long> items = new TreeSet<>();
         String query = "SELECT distinct idItem FROM ratings;";
 
         try (
                 Statement statement = conexion.doConnection().createStatement();
                 ResultSet rst = statement.executeQuery(query)) {
             while (rst.next()) {
-                int idUser = rst.getInt("idItem");
+                long idUser = rst.getLong("idItem");
                 items.add(idUser);
             }
             rst.close();
@@ -113,15 +113,15 @@ public class DatabaseRatingsDataset extends RatingsDatasetAdapter {
     }
 
     @Override
-    public Set<Integer> getUserRated(Integer idUser) {
-        Set<Integer> valuedItems = new TreeSet<>();
+    public Set<Long> getUserRated(long idUser) {
+        Set<Long> valuedItems = new TreeSet<>();
         String query = "SELECT idItem FROM ratings WHERE idUser = " + idUser + ";";
         try (
                 Statement statement = conexion.doConnection().createStatement();
                 ResultSet rst = statement.executeQuery(query)) {
 
             while (rst.next()) {
-                int idItem = rst.getInt("idItem");
+                long idItem = rst.getLong("idItem");
                 valuedItems.add(idItem);
             }
             rst.close();
@@ -133,9 +133,9 @@ public class DatabaseRatingsDataset extends RatingsDatasetAdapter {
     }
 
     @Override
-    public Map<Integer, Rating> getUserRatingsRated(Integer idUser) {
+    public Map<Long, Rating> getUserRatingsRated(long idUser) {
 
-        Map<Integer, Rating> valuedItems = new TreeMap<>();
+        Map<Long, Rating> valuedItems = new TreeMap<>();
 
         String query = "SELECT idItem,rating FROM ratings WHERE idUser = " + idUser + ";";
         try (
@@ -143,7 +143,7 @@ public class DatabaseRatingsDataset extends RatingsDatasetAdapter {
                 ResultSet rst = statement.executeQuery(query)) {
 
             while (rst.next()) {
-                int idItem = rst.getInt("idItem");
+                long idItem = rst.getLong("idItem");
                 double rating = rst.getDouble("rating");
                 valuedItems.put(idItem, new Rating(idUser, idItem, rating));
             }
@@ -156,8 +156,8 @@ public class DatabaseRatingsDataset extends RatingsDatasetAdapter {
     }
 
     @Override
-    public Set<Integer> getItemRated(Integer idItem) {
-        Set<Integer> users = new TreeSet<>();
+    public Set<Long> getItemRated(long idItem) {
+        Set<Long> users = new TreeSet<>();
 
         String query = "SELECT idUser FROM ratings WHERE idItem = " + idItem + ";";
         try (
@@ -165,7 +165,7 @@ public class DatabaseRatingsDataset extends RatingsDatasetAdapter {
                 ResultSet rst = statement.executeQuery(query)) {
 
             while (rst.next()) {
-                int idUser = rst.getInt("idUser");
+                long idUser = rst.getLong("idUser");
                 users.add(idUser);
             }
             rst.close();
@@ -177,9 +177,9 @@ public class DatabaseRatingsDataset extends RatingsDatasetAdapter {
     }
 
     @Override
-    public Map<Integer, Rating> getItemRatingsRated(Integer idItem) {
+    public Map<Long, Rating> getItemRatingsRated(long idItem) {
 
-        Map<Integer, Rating> usersRatings = new TreeMap<>();
+        Map<Long, Rating> usersRatings = new TreeMap<>();
 
         String query = "SELECT idUser,rating FROM ratings WHERE idItem = " + idItem + ";";
         try (
@@ -187,7 +187,7 @@ public class DatabaseRatingsDataset extends RatingsDatasetAdapter {
                 ResultSet rst = statement.executeQuery(query)) {
 
             while (rst.next()) {
-                int idUser = rst.getInt("idUser");
+                long idUser = rst.getLong("idUser");
                 double rating = rst.getDouble("rating");
                 usersRatings.put(idUser, new Rating(idUser, idItem, rating));
             }

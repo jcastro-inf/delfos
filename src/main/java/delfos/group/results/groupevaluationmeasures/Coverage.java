@@ -27,13 +27,9 @@ import delfos.rs.recommendation.Recommendation;
  * Medida de evaluación para calcular la cobertura del sistema de recomendación evaluado.
  *
  * <p>
- * Es una extensión de la medida de evaluación {@link delfos.Results.EvaluationMeasures.Coverage} para recomendaciones
- * individuales.
+ * Es una extensión de la medida de evaluación Coverage para recomendaciones individuales.
  *
  * @author jcastro-inf ( https://github.com/jcastro-inf )
- *
- * @version 1.0 (26-01-2013)
- * @see delfos.Results.EvaluationMeasures.RatingPrediction.MAE_ForGroups
  */
 public class Coverage extends GroupEvaluationMeasure {
 

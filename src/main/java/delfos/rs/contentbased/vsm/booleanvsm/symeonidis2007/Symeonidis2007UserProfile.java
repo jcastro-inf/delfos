@@ -39,7 +39,7 @@ public class Symeonidis2007UserProfile implements BooleanUserProfile {
     /**
      * Id del usuario al que se refiere este perfil.
      */
-    private final int _idUser;
+    private final long _idUser;
     /**
      * Valor del perfil para cada valor de cada característica.
      */
@@ -53,7 +53,7 @@ public class Symeonidis2007UserProfile implements BooleanUserProfile {
      * @param userProfileValues Valor que el perfil de usuario tiene para cada
      * una de los características posibles en el dataset de contenido.
      */
-    public Symeonidis2007UserProfile(int idUser, Map<Feature, Map<Object, Double>> userProfileValues) {
+    public Symeonidis2007UserProfile(long idUser, Map<Feature, Map<Object, Double>> userProfileValues) {
         this._idUser = idUser;
         this._values = userProfileValues;
     }
@@ -88,7 +88,7 @@ public class Symeonidis2007UserProfile implements BooleanUserProfile {
     }
 
     @Override
-    public int getId() {
+    public long getId() {
         return _idUser;
     }
 

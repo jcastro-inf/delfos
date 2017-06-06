@@ -50,15 +50,11 @@ import java.util.stream.Collectors;
  * Sistema de recomendación basado en el filtrado colaborativo basado en usuarios, también denominado User-User o
  * filtrado colaborativo basado en memoria. Este sistema de recomendación no realiza un cálculo de perfil de usuarios o
  * productos, sino que en el momento de la predicción, calcula los k vecinos más cercanos al usuario activo, es decir,
- * los k ({@link KnnMemoryBasedCFRS#neighborhoodSize}) usuarios más similares
- * ({@link KnnMemoryBasedCFRS#similarityMeasure}). La predicción de la valoración de un producto i para un usuario u se
+ * los k usuarios más similares. La predicción de la valoración de un producto i para un usuario u se
  * realiza agregando las valoraciones de los vecinos del usuario u sobre el producto i, utilizando para ello una técnica
- * de predicción ({@link KnnMemoryBasedCFRS#predictionTechnique})
+ * de predicción.
  *
  * @author jcastro-inf ( https://github.com/jcastro-inf )
- *
- * @version 1.0 Unknown date
- * @version 1.1 27-02-2013
  */
 public class KnnMemoryBasedCFRS extends KnnCollaborativeRecommender<KnnMemoryModel> {
 
@@ -180,7 +176,7 @@ public class KnnMemoryBasedCFRS extends KnnCollaborativeRecommender<KnnMemoryMod
 
         //Predicción de la valoración
         Collection<Recommendation> recommendations = new LinkedList<>();
-        Map<Integer, Map<Integer, ? extends Rating>> ratingsVecinos = neighborsWithPositiveSimilarityAndSelected
+        Map<Long, Map<Long, ? extends Rating>> ratingsVecinos = neighborsWithPositiveSimilarityAndSelected
                 .parallelStream()
                 .collect(Collectors.toMap(
                         (neighbor -> neighbor.getIdNeighbor()),
@@ -210,7 +206,7 @@ public class KnnMemoryBasedCFRS extends KnnCollaborativeRecommender<KnnMemoryMod
     }
 
     @Override
-    public KnnMemoryModel loadRecommendationModel(DatabasePersistence databasePersistence, Collection<Integer> users, Collection<Integer> items, DatasetLoader<? extends Rating> datasetLoader) throws FailureInPersistence {
+    public KnnMemoryModel loadRecommendationModel(DatabasePersistence databasePersistence, Collection<Long> users, Collection<Long> items, DatasetLoader<? extends Rating> datasetLoader) throws FailureInPersistence {
         return new KnnMemoryModel();
     }
 
@@ -219,7 +215,7 @@ public class KnnMemoryBasedCFRS extends KnnCollaborativeRecommender<KnnMemoryMod
         //No hay modelo que guardar.
     }
 
-    private static void printNeighborhood(int idUser, List<Neighbor> ret) {
+    private static void printNeighborhood(long idUser, List<Neighbor> ret) {
         StringBuilder message = new StringBuilder();
 
         message.append("=========================================================\n");
@@ -239,8 +235,8 @@ public class KnnMemoryBasedCFRS extends KnnCollaborativeRecommender<KnnMemoryMod
     public Collection<Recommendation> recommendToUser(
             DatasetLoader<? extends Rating> datasetLoader,
             KnnMemoryModel model,
-            Integer idUser,
-            Set<Integer> candidateItems) throws UserNotFound {
+            long idUser,
+            Set<Long> candidateItems) throws UserNotFound {
 
         PredictionTechnique predictionTechnique = (PredictionTechnique) getParameterValue(PREDICTION_TECHNIQUE);
         int neighborhoodSize = (Integer) getParameterValue(NEIGHBORHOOD_SIZE);
@@ -276,10 +272,10 @@ public class KnnMemoryBasedCFRS extends KnnCollaborativeRecommender<KnnMemoryMod
      */
     public static Collection<Recommendation> recommendWithNeighbors(
             DatasetLoader<? extends Rating> datasetLoader,
-            Integer idUser,
+            Long idUser,
             List<Neighbor> _neighborhood,
             int neighborhoodSize,
-            Collection<Integer> candidateIdItems,
+            Collection<Long> candidateIdItems,
             PredictionTechnique predictionTechnique)
             throws UserNotFound {
 
@@ -304,7 +300,7 @@ public class KnnMemoryBasedCFRS extends KnnCollaborativeRecommender<KnnMemoryMod
             Collection<MatchRating> match = new ArrayList<>();
             int numNeighborsUsed = 0;
             try {
-                Map<Integer, ? extends Rating> itemRatingsRated = ratingsDataset.getItemRatingsRated(item.getId());
+                Map<Long, ? extends Rating> itemRatingsRated = ratingsDataset.getItemRatingsRated(item.getId());
                 for (Neighbor neighbor : neighborhood) {
 
                     Rating rating = itemRatingsRated.get(neighbor.getIdNeighbor());

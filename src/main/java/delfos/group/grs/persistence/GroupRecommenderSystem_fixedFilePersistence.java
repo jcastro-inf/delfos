@@ -139,7 +139,7 @@ public class GroupRecommenderSystem_fixedFilePersistence extends GroupRecommende
         synchronized (exMut) {
             if (RecommendationModel == null) {
 
-                Set<Integer> allItems = datasetLoader.getContentDataset().stream()
+                Set<Long> allItems = datasetLoader.getContentDataset().stream()
                         .map(item -> item.getId())
                         .collect(Collectors.toSet());
 
@@ -189,7 +189,6 @@ public class GroupRecommenderSystem_fixedFilePersistence extends GroupRecommende
 
     /**
      * Devuelve el valor del parámetro
-     * {@link RecommenderSystem_fixedFilePersistence#groupRecommenderSystem}.
      *
      * @return the rs_withFilePersistence
      */

@@ -64,7 +64,7 @@ public class AggregationOfIndividualRatingsTest extends DelfosTest {
         grs.addRecommendationModelBuildingProgressListener(new RecommenderSystemBuildingProgressListener_default(System.out, 5000));
         SingleRecommendationModel recommendationModel = grs.buildRecommendationModel(datasetLoader);
 
-        Set<Integer> notRatedID = new TreeSet<>(ratingsDataset.allRatedItems());
+        Set<Long> notRatedID = new TreeSet<>(ratingsDataset.allRatedItems());
 
         notRatedID.removeAll(ratingsDataset.getUserRated(15743));
         notRatedID.removeAll(ratingsDataset.getUserRated(24357));
@@ -93,7 +93,7 @@ public class AggregationOfIndividualRatingsTest extends DelfosTest {
 
         {
             // 4697 -> 4.300307
-            int idItem = 4697;
+            long idItem = 4697;
             Item item = datasetLoader.getContentDataset().get(idItem);
 
             Set<Item> candidateItems = Arrays.asList(item).stream().collect(Collectors.toSet());
@@ -106,7 +106,7 @@ public class AggregationOfIndividualRatingsTest extends DelfosTest {
                     candidateItems).getRecommendations();
 
             Assert.assertEquals(1, predictionList.size());
-            Assert.assertEquals(idItem, predictionList.iterator().next().getIdItem());
+            Assert.assertEquals(idItem, (long) predictionList.iterator().next().getIdItem());
             Assert.assertEquals(prediction, predictionList.iterator().next().getPreference().doubleValue(), 0.0001);
         }
 
@@ -124,7 +124,7 @@ public class AggregationOfIndividualRatingsTest extends DelfosTest {
                     candidateItems).getRecommendations();
 
             Assert.assertEquals(1, predictionList.size());
-            Assert.assertEquals(idItem, predictionList.iterator().next().getIdItem());
+            Assert.assertEquals(idItem, (long) predictionList.iterator().next().getIdItem());
             Assert.assertEquals(prediction, predictionList.iterator().next().getPreference().doubleValue(), 0.0001);
         }
     }

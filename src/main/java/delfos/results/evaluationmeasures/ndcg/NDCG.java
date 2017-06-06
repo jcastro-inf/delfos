@@ -60,7 +60,7 @@ public class NDCG extends EvaluationMeasure {
 
         List<Double> ndcgPerUser = new ArrayList<>();
 
-        for (int idUser : testDataset.allUsers()) {
+        for (long idUser : testDataset.allUsers()) {
             try {
 
                 List<Recommendation> recommendations = recommendationResults.getRecommendationsForUser(idUser);
@@ -68,7 +68,7 @@ public class NDCG extends EvaluationMeasure {
                     continue;
                 }
 
-                Map<Integer, Rating> userRatings = (Map<Integer, Rating>) testDataset.getUserRatingsRated(idUser);
+                Map<Long, Rating> userRatings = (Map<Long, Rating>) testDataset.getUserRatingsRated(idUser);
 
                 List<Recommendation> idealRecommendations = userRatings
                         .values().parallelStream()
@@ -122,7 +122,7 @@ public class NDCG extends EvaluationMeasure {
      */
     public static double computeDCG(
             List<Recommendation> recommendations,
-            Map<Integer, ? extends Rating> userRatings) {
+            Map<Long, ? extends Rating> userRatings) {
 
         double gain = 0;
         int rank = 0;
@@ -130,7 +130,7 @@ public class NDCG extends EvaluationMeasure {
         Iterator<Recommendation> iit = recommendations.iterator();
         while (iit.hasNext()) {
             final Recommendation recommendation = iit.next();
-            final int idItem = recommendation.getItem().getId();
+            final long idItem = recommendation.getItem().getId();
 
             if (!userRatings.containsKey(idItem)) {
                 continue;

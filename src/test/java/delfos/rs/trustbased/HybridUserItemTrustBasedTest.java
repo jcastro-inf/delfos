@@ -41,12 +41,12 @@ public class HybridUserItemTrustBasedTest extends DelfosTest {
 
         HybridUserItemTrustBasedModel model = recommenderSystem.buildRecommendationModel(datasetLoader);
 
-        Map<Integer, Map<Integer, Number>> finalPredictions = new TreeMap<>();
+        Map<Long, Map<Long, Number>> finalPredictions = new TreeMap<>();
 
         RatingsDataset<? extends Rating> ratingsDataset = datasetLoader.getRatingsDataset();
 
-        for (int idUser : ratingsDataset.allUsers()) {
-            Set<Integer> items = new TreeSet<>(datasetLoader.getRatingsDataset().allRatedItems());
+        for (long idUser : ratingsDataset.allUsers()) {
+            Set<Long> items = new TreeSet<>(datasetLoader.getRatingsDataset().allRatedItems());
 
             items.removeAll(datasetLoader.getRatingsDataset().getUserRated(idUser));
 

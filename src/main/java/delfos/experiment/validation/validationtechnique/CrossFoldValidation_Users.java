@@ -66,30 +66,30 @@ public class CrossFoldValidation_Users extends ValidationTechnique {
 
         PairOfTrainTestRatingsDataset[] ret = new PairOfTrainTestRatingsDataset[numSplits];
 
-        List<Integer> setUsers = new ArrayList<>(datasetLoader.getRatingsDataset().allUsers());
-        Collection<Integer>[] usersTest = (Collection<Integer>[]) new Collection[numSplits];
+        List<Long> setUsers = new ArrayList<>(datasetLoader.getRatingsDataset().allUsers());
+        Collection<Long>[] usersTest = (Collection<Long>[]) new Collection[numSplits];
         for (int i = 0; i < numSplits; i++) {
             usersTest[i] = new TreeSet<>();
         }
         while (!setUsers.isEmpty()) {
             int index = 0;
             while (!setUsers.isEmpty() && index < numSplits) {
-                int idUser = setUsers.remove(randomGenerator.nextInt(setUsers.size()));
+                long idUser = setUsers.remove(randomGenerator.nextInt(setUsers.size()));
                 usersTest[index].add(idUser);
                 index++;
             }
 
         }
-        for (Iterator<Integer> it = setUsers.listIterator(); it.hasNext();) {
-            Integer integer = it.next();
+        for (Iterator<Long> it = setUsers.listIterator(); it.hasNext();) {
+            Long integer = it.next();
             usersTest[randomGenerator.nextInt(numSplits)].add(integer);
         }
 
-        Set<Integer> allItems = new TreeSet<>(datasetLoader.getRatingsDataset().allRatedItems());
+        Set<Long> allItems = new TreeSet<>(datasetLoader.getRatingsDataset().allRatedItems());
 
         Global.showInfoMessage("Original dataset #users " + datasetLoader.getRatingsDataset().allUsers().size() + "\n");
         for (int idPartition = 0; idPartition < numSplits; idPartition++) {
-            Set<Integer> usuariosEnTraining = new TreeSet<>(datasetLoader.getRatingsDataset().allUsers());
+            Set<Long> usuariosEnTraining = new TreeSet<>(datasetLoader.getRatingsDataset().allUsers());
             usuariosEnTraining.removeAll(usersTest[idPartition]);
 
             SelectionDataset training = new SelectionDataset(datasetLoader.getRatingsDataset());

@@ -92,7 +92,7 @@ public class DefaultUsersDatasetToCSV implements UsersDatasetToCSV {
 
         for (User user : usersDataset) {
 
-            int idUser = user.getId();
+            Long idUser = user.getId();
 
             StringBuilder linea = new StringBuilder();
 

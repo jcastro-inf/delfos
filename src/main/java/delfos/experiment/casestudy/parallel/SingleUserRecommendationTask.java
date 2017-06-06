@@ -32,12 +32,12 @@ import java.util.Set;
 public class SingleUserRecommendationTask extends Task {
 
     private final Object model;
-    private final int idUser;
+    private final long idUser;
     private final DatasetLoader<? extends Rating> datasetLoader;
     private final Set<Item> candidateItems;
     private final RecommenderSystem<? extends Object> recommenderSystem;
 
-    public SingleUserRecommendationTask(RecommenderSystem<? extends Object> recommenderSystem, DatasetLoader<? extends Rating> datasetLoader, Object model, int idUser, Set<Item> candidateItems) {
+    public SingleUserRecommendationTask(RecommenderSystem<? extends Object> recommenderSystem, DatasetLoader<? extends Rating> datasetLoader, Object model, long idUser, Set<Item> candidateItems) {
         this.model = model;
         this.idUser = idUser;
         this.recommenderSystem = recommenderSystem;
@@ -76,7 +76,7 @@ public class SingleUserRecommendationTask extends Task {
         return model;
     }
 
-    public int getIdUser() {
+    public long getIdUser() {
         return idUser;
     }
 }

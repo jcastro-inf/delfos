@@ -99,7 +99,7 @@ public class ALSRecommender extends CollaborativeRecommender<MatrixFactorization
 
             Map<User, List<Double>> trainedUserVectors = datasetLoader.getUsersDataset().parallelStream().collect(Collectors.toMap(user -> user,
                     (User user) -> {
-                        Map<Integer, ? extends Rating> userRatings = datasetLoader.getRatingsDataset().getUserRatingsRated(user.getId());
+                        Map<Long, ? extends Rating> userRatings = datasetLoader.getRatingsDataset().getUserRatingsRated(user.getId());
 
                         ObjectiveFunction objectiveFunction = new ObjectiveFunction((double[] pu) -> {
                             List<Double> userVector = Arrays.stream(pu).boxed().collect(Collectors.toList());
@@ -163,7 +163,7 @@ public class ALSRecommender extends CollaborativeRecommender<MatrixFactorization
 
             Map<Item, List<Double>> trainedItemVectors = datasetLoader.getContentDataset().parallelStream().collect(Collectors.toMap(item -> item,
                     item -> {
-                        Map<Integer, ? extends Rating> itemRatings = datasetLoader.getRatingsDataset().getItemRatingsRated(item.getId());
+                        Map<Long, ? extends Rating> itemRatings = datasetLoader.getRatingsDataset().getItemRatingsRated(item.getId());
 
                         ObjectiveFunction objectiveFunction = new ObjectiveFunction((double[] pu) -> {
                             List<Double> itemVector = Arrays.stream(pu).boxed().collect(Collectors.toList());

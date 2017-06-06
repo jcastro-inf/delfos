@@ -36,8 +36,8 @@ public class Bias implements Serializable {
     private static final long serialVersionUID = 108L;
 
     private final double generalBias;
-    private final Map<Integer, Double> usersBias;
-    private final Map<Integer, Double> itemsBias;
+    private final Map<Long, Double> usersBias;
+    private final Map<Long, Double> itemsBias;
 
     public Bias(double generalBias,
             Map<User, Double> usersBias,
@@ -87,7 +87,7 @@ public class Bias implements Serializable {
         return unbiasedValue;
     }
 
-    public double restoreBias(int idUser, int idItem, double unbiased) {
+    public double restoreBias(long idUser, long idItem, double unbiased) {
         double userBias = usersBias.get(idUser);
         double itemBias = itemsBias.get(idItem);
         double unbiasedValue = unbiased

@@ -123,7 +123,7 @@ public class CosineCoefficient extends WeightedSimilarityMeasureAdapter implemen
     }
 
     @Override
-    public double similarity(DatasetLoader<? extends Rating> datasetLoader, int idUser1, int idUser2) {
+    public double similarity(DatasetLoader<? extends Rating> datasetLoader, long idUser1, long idUser2) {
         User user1 = datasetLoader.getUsersDataset().get(idUser1);
         User user2 = datasetLoader.getUsersDataset().get(idUser2);
 

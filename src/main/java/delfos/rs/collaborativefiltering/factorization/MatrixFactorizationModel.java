@@ -34,8 +34,8 @@ public class MatrixFactorizationModel implements Serializable {
 
     private static final long serialVersionUID = 108L;
 
-    private final Map<Integer, List<Double>> userFeatures;
-    private final Map<Integer, List<Double>> itemFeatures;
+    private final Map<Long, List<Double>> userFeatures;
+    private final Map<Long, List<Double>> itemFeatures;
     private final Bias bias;
 
     public MatrixFactorizationModel(Map<User, List<Double>> userFeatures, Map<Item, List<Double>> itemFeatures, Bias bias) {

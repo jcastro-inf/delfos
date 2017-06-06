@@ -47,7 +47,7 @@ public class SingleUserRecommendation extends CaseUseModeWithSubManagers {
      */
     public static final String TARGET_USER = "-u";
 
-    public static void recommendToUser(String configFile, Integer idUser) {
+    public static void recommendToUser(String configFile, long idUser) {
         Recommend.recommendToUser(configFile, idUser);
     }
 

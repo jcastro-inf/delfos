@@ -39,11 +39,8 @@ import delfos.rs.persistence.FailureInPersistence;
 import delfos.rs.recommendation.Recommendation;
 import delfos.similaritymeasures.CollaborativeSimilarityMeasure;
 import delfos.utils.algorithm.progress.ProgressChangedController;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -115,20 +112,23 @@ public class KnnModelBasedCFRS
             return new KnnModelItemProfile(item.getId(), thisItemNeighbors);
         }).collect(Collectors.toList());
 
-        Map<Integer, KnnModelItemProfile> itemModels_byItem = allItemModels.parallelStream().collect(Collectors.toMap(itemModel -> itemModel.getIdItem(), itemModel -> itemModel));
+        Map<Long, KnnModelItemProfile> itemModels_byItem = allItemModels.parallelStream().collect(Collectors.toMap(itemModel -> itemModel.getIdItem(), itemModel -> itemModel));
 
         return new KnnModelBasedCFRSModel(itemModels_byItem);
     }
 
     @Override
     public Collection<Recommendation> recommendToUser(
-            DatasetLoader<? extends Rating> datasetLoader, KnnModelBasedCFRSModel model, Integer idUser, java.util.Set<Integer> candidateItems)
+            DatasetLoader<? extends Rating> datasetLoader,
+            KnnModelBasedCFRSModel model,
+            long idUser,
+            Set<Long> candidateItems)
             throws UserNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset, ItemNotFound {
 
         PredictionTechnique prediction = (PredictionTechnique) getParameterValue(KnnModelBasedCFRS.PREDICTION_TECHNIQUE);
 
         Collection<Recommendation> recommendationList = new LinkedList<>();
-        Map<Integer, ? extends Rating> userRated = datasetLoader.getRatingsDataset().getUserRatingsRated(idUser);
+        Map<Long, ? extends Rating> userRated = datasetLoader.getRatingsDataset().getUserRatingsRated(idUser);
         if (userRated.isEmpty()) {
             return Collections.EMPTY_LIST;
         }
@@ -138,7 +138,7 @@ public class KnnModelBasedCFRS
         final ContentDataset contentDataset = datasetLoader.getContentDataset();
 
         int itemsWithProfile = 0;
-        for (int idItem : candidateItems) {
+        for (long idItem : candidateItems) {
             Item item = contentDataset.get(idItem);
 
             List<MatchRating> matchRatings = new LinkedList<>();
@@ -151,7 +151,7 @@ public class KnnModelBasedCFRS
             itemsWithProfile++;
 
             for (Neighbor neighbor : profile.getAllNeighbors()) {
-                int idItemNeighbor = neighbor.getIdNeighbor();
+                long idItemNeighbor = neighbor.getIdNeighbor();
                 double similarity = neighbor.getSimilarity();
                 Rating rating = userRated.get(idItemNeighbor);
                 if (rating != null) {
@@ -228,7 +228,7 @@ public class KnnModelBasedCFRS
     }
 
     @Override
-    public KnnModelBasedCFRSModel loadRecommendationModel(DatabasePersistence databasePersistence, Collection<Integer> users, Collection<Integer> items, DatasetLoader<? extends Rating> datasetLoader) throws FailureInPersistence {
+    public KnnModelBasedCFRSModel loadRecommendationModel(DatabasePersistence databasePersistence, Collection<Long> users, Collection<Long> items, DatasetLoader<? extends Rating> datasetLoader) throws FailureInPersistence {
         DAOKnnModelBasedDatabaseModel dao = new DAOKnnModelBasedDatabaseModel();
         return dao.loadModel(databasePersistence, users, items);
     }

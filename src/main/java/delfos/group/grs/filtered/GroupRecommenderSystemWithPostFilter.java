@@ -150,7 +150,7 @@ public class GroupRecommenderSystemWithPostFilter extends GroupRecommenderSystem
     public <RatingType extends Rating> GroupRecommendations recommendOnly(
             DatasetLoader<RatingType> datasetLoader, SingleRecommendationModel RecommendationModel, GroupOfUsers groupModel, GroupOfUsers groupOfUsers, Set<Item> candidateItems) throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset {
 
-        Map<Integer, Map<Integer, Number>> listsWithoutFilter = groupOfUsers.getMembers()
+        Map<Long, Map<Long, Number>> listsWithoutFilter = groupOfUsers.getMembers()
                 .parallelStream()
                 .map(member -> new SingleUserRecommendationTask(getRecommenderSystem(), datasetLoader, RecommendationModel, member.getId(), candidateItems))
                 .map(new SingleUserRecommendationTaskExecutor())
@@ -164,43 +164,43 @@ public class GroupRecommenderSystemWithPostFilter extends GroupRecommenderSystem
 
                         }));
 
-        Map<Integer, Map<Integer, Number>> filteredLists = filterLists(getFilter(), listsWithoutFilter);
+        Map<Long, Map<Long, Number>> filteredLists = filterLists(getFilter(), listsWithoutFilter);
 
         Collection<Recommendation> ret = aggregateLists(getAggregationOperator(), filteredLists);
 
         {
             //Muestro las listas individuales y agregadas, para depuración.
-            Map<Integer, Map<Integer, Number>> all = new TreeMap<>();
+            Map<Long, Map<Long, Number>> all = new TreeMap<>();
             all.putAll(listsWithoutFilter);
 
-            Map<Integer, Number> aggregateListNotFiltered = new TreeMap<>();
+            Map<Long, Number> aggregateListNotFiltered = new TreeMap<>();
             Collection<Recommendation> retNoFilter = aggregateLists(getAggregationOperator(), listsWithoutFilter);
             retNoFilter.stream().forEach((r) -> {
                 aggregateListNotFiltered.put(r.getIdItem(), r.getPreference());
             });
-            all.put(88888888, aggregateListNotFiltered);
+            all.put(88888888l, aggregateListNotFiltered);
 
-            Map<Integer, Number> aggregateListFiltered = new TreeMap<>();
+            Map<Long, Number> aggregateListFiltered = new TreeMap<>();
             ret.stream().forEach((r) -> {
                 aggregateListFiltered.put(r.getIdItem(), r.getPreference());
             });
-            all.put(99999999, aggregateListFiltered);
+            all.put(99999999l, aggregateListFiltered);
         }
 
         return new GroupRecommendations(groupOfUsers, ret);
     }
 
-    public static Map<Integer, Map<Integer, Number>> filterLists(GroupRatingsFilter filter, Map<Integer, Map<Integer, Number>> toFilter) {
-        Map<Integer, Map<Integer, Number>> filtered = filter.getFilteredRatings(toFilter);
+    public static Map<Long, Map<Long, Number>> filterLists(GroupRatingsFilter filter, Map<Long, Map<Long, Number>> toFilter) {
+        Map<Long, Map<Long, Number>> filtered = filter.getFilteredRatings(toFilter);
         return filtered;
     }
 
-    public static Collection<Recommendation> aggregateLists(AggregationOperator aggregationOperator, Map<Integer, Map<Integer, Number>> groupUtilityList) {
+    public static Collection<Recommendation> aggregateLists(AggregationOperator aggregationOperator, Map<Long, Map<Long, Number>> groupUtilityList) {
 
         //Reordeno las predicciones.
-        Map<Integer, Collection<Number>> prediction_byItem = new TreeMap<>();
-        for (int idUser : groupUtilityList.keySet()) {
-            for (int idItem : groupUtilityList.get(idUser).keySet()) {
+        Map<Long, Collection<Number>> prediction_byItem = new TreeMap<>();
+        for (long idUser : groupUtilityList.keySet()) {
+            for (long idItem : groupUtilityList.get(idUser).keySet()) {
                 Number preference = groupUtilityList.get(idUser).get(idItem);
 
                 if (!prediction_byItem.containsKey(idItem)) {
@@ -213,7 +213,7 @@ public class GroupRecommenderSystemWithPostFilter extends GroupRecommenderSystem
 
         //agrego las predicciones de cada item.
         ArrayList<Recommendation> ret = new ArrayList<>();
-        for (int idItem : prediction_byItem.keySet()) {
+        for (long  idItem : prediction_byItem.keySet()) {
             Collection<Number> predictionsThisItem = prediction_byItem.get(idItem);
 
             if (prediction_byItem.isEmpty()) {

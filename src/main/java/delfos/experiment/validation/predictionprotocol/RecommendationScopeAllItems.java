@@ -38,31 +38,31 @@ public class RecommendationScopeAllItems extends PredictionProtocol {
     public static final long serialVersionUID = 1L;
 
     @Override
-    public <RatingType extends Rating> List<Set<Integer>> getRecommendationRequests(
+    public <RatingType extends Rating> List<Set<Long>> getRecommendationRequests(
             DatasetLoader<RatingType> trainingDatasetLoader,
             DatasetLoader<RatingType> testDatasetLoader,
-            int idUser)
+            long idUser)
             throws UserNotFound {
 
-        Set<Integer> allItems = trainingDatasetLoader.getContentDataset()
+        Set<Long> allItems = trainingDatasetLoader.getContentDataset()
                 .allIDs()
                 .parallelStream()
                 .collect(Collectors.toSet());
 
-        List<Set<Integer>> recommendationRequests = new ArrayList<>();
+        List<Set<Long>> recommendationRequests = new ArrayList<>();
         recommendationRequests.add(allItems);
 
         return recommendationRequests;
     }
 
     @Override
-    public <RatingType extends Rating> List<Set<Integer>> getRatingsToHide(
+    public <RatingType extends Rating> List<Set<Long>> getRatingsToHide(
             DatasetLoader<RatingType> trainingDatasetLoader,
             DatasetLoader<RatingType> testDatasetLoader,
-            int idUser)
+            long idUser)
             throws UserNotFound {
 
-        List<Set<Integer>> ratingsToHide = new ArrayList<>();
+        List<Set<Long>> ratingsToHide = new ArrayList<>();
         ratingsToHide.add(Collections.EMPTY_SET);
         return ratingsToHide;
 

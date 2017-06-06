@@ -51,7 +51,7 @@ public class NDCGTest {
 
         User user = datasetLoader.getUsersDataset().get(1);
 
-        Map<Integer, ? extends Rating> userRatingsByItemId = datasetLoader.getRatingsDataset().getUserRatingsRated(user.getId());
+        Map<Long, ? extends Rating> userRatingsByItemId = datasetLoader.getRatingsDataset().getUserRatingsRated(user.getId());
         Map<Item, Rating> collect = userRatingsByItemId.values().stream().collect(Collectors.toMap(r -> r.getItem(), r -> r));
 
         List<Rating> sortedRatings = collect.values().stream().sorted(Rating.SORT_BY_RATING_DESC).collect(Collectors.toList());
@@ -98,7 +98,7 @@ public class NDCGTest {
 
         User user = datasetLoader.getUsersDataset().get(1);
 
-        Map<Integer, ? extends Rating> userRatingsByItemId = datasetLoader.getRatingsDataset().getUserRatingsRated(user.getId());
+        Map<Long, ? extends Rating> userRatingsByItemId = datasetLoader.getRatingsDataset().getUserRatingsRated(user.getId());
 
         List<Recommendation> recommendations = Arrays.asList(
                 new Recommendation(datasetLoader.getContentDataset().getItem(229), 4.8),
@@ -137,7 +137,7 @@ public class NDCGTest {
 
         User user = datasetLoader.getUsersDataset().get(1);
 
-        Map<Integer, ? extends Rating> userRatingsByItemId = datasetLoader.getRatingsDataset().getUserRatingsRated(user.getId());
+        Map<Long, ? extends Rating> userRatingsByItemId = datasetLoader.getRatingsDataset().getUserRatingsRated(user.getId());
 
         List<Recommendation> recommendations = Arrays.asList(
                 new Recommendation(datasetLoader.getContentDataset().getItem(124), 4.8),
@@ -176,7 +176,7 @@ public class NDCGTest {
 
         User user = datasetLoader.getUsersDataset().get(1);
 
-        Map<Integer, ? extends Rating> userRatingsByItemId = datasetLoader.getRatingsDataset().getUserRatingsRated(user.getId());
+        Map<Long, ? extends Rating> userRatingsByItemId = datasetLoader.getRatingsDataset().getUserRatingsRated(user.getId());
 
         List<Recommendation> recommendations = Arrays.asList(
                 new Recommendation(datasetLoader.getContentDataset().getItem(124), 4.8),

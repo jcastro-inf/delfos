@@ -25,21 +25,21 @@ package delfos.dataset.basic.trust;
  */
 public class TrustStatement {
 
-    int idUserSource;
-    int idUserDestiny;
+    long idUserSource;
+    long idUserDestiny;
     double trustValue;
 
-    public TrustStatement(int idUserSource, int idUserDestiny, double trustValue) {
+    public TrustStatement(long idUserSource, long idUserDestiny, double trustValue) {
         this.idUserSource = idUserSource;
         this.idUserDestiny = idUserDestiny;
         this.trustValue = trustValue;
     }
 
-    public int getIdUserDestiny() {
+    public long getIdUserDestiny() {
         return idUserDestiny;
     }
 
-    public int getIdUserSource() {
+    public long getIdUserSource() {
         return idUserSource;
     }
 

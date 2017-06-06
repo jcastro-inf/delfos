@@ -74,22 +74,22 @@ public class HoldOut_Users extends ValidationTechnique {
         Random random = new Random(getSeedValue());
         PairOfTrainTestRatingsDataset[] ret = new PairOfTrainTestRatingsDataset[1];
 
-        List<Integer> users = new ArrayList<>(datasetLoader.getRatingsDataset().allUsers());
+        List<Long> users = new ArrayList<>(datasetLoader.getRatingsDataset().allUsers());
 
         int numUserInTest = (users.size() * (100 - getTrainPercentValue())) / 100;
-        Set<Integer> usersInTest = new TreeSet<>();
+        Set<Long> usersInTest = new TreeSet<>();
 
         while (usersInTest.size() < numUserInTest && !users.isEmpty()) {
             int index = random.nextInt(users.size());
-            int idUser = users.remove(index);
+            long idUser = users.remove(index);
             usersInTest.add(idUser);
         }
 
-        Set<Integer> allItems = new TreeSet<>(datasetLoader.getRatingsDataset().allRatedItems());
+        Set<Long> allItems = new TreeSet<>(datasetLoader.getRatingsDataset().allRatedItems());
 
         Global.showInfoMessage("Original dataset #users " + datasetLoader.getRatingsDataset().allUsers().size() + "\n");
 
-        Set<Integer> usuariosEnTraining = new TreeSet<>(datasetLoader.getRatingsDataset().allUsers());
+        Set<Long> usuariosEnTraining = new TreeSet<>(datasetLoader.getRatingsDataset().allUsers());
         usuariosEnTraining.removeAll(usersInTest);
 
         SelectionDataset training = new SelectionDataset(datasetLoader.getRatingsDataset());

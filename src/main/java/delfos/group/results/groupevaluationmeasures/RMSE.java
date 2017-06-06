@@ -35,13 +35,10 @@ import java.util.TreeMap;
  * si lo ha valorado.
  *
  * <p>
- * Es una extensión de la medida de evaluación {@link delfos.Results.EvaluationMeasures.RatingPrediction.RMSE} para
+ * Es una extensión de la medida de evaluación RMSE para
  * recomendaciones individuales.
  *
  * @author jcastro-inf ( https://github.com/jcastro-inf )
- *
- * @version 1.0 (22-01-2013)
- * @see delfos.Results.EvaluationMeasures.RatingPrediction.MAE_ForGroups
  */
 public class RMSE extends GroupEvaluationMeasure {
 
@@ -54,8 +51,8 @@ public class RMSE extends GroupEvaluationMeasure {
         for (GroupOfUsers group : groupRecommenderSystemResult.getGroupsOfUsers()) {
             GroupRecommendations groupRecommendations = groupRecommenderSystemResult.getGroupOutput(group).getRecommendations();
 
-            Map<Integer, Map<Integer, ? extends Rating>> groupTrueRatings = new TreeMap<>();
-            for (int idUser : group.getIdMembers()) {
+            Map<Long, Map<Long, ? extends Rating>> groupTrueRatings = new TreeMap<>();
+            for (long idUser : group.getIdMembers()) {
                 try {
                     groupTrueRatings.put(idUser, testDatasetLoader.getRatingsDataset().getUserRatingsRated(idUser));
                 } catch (UserNotFound ex) {
@@ -67,8 +64,8 @@ public class RMSE extends GroupEvaluationMeasure {
                 if (Double.isNaN(recommendation.getPreference().doubleValue())) {
                     continue;
                 }
-                int idItem = recommendation.getIdItem();
-                for (int idUser : group.getIdMembers()) {
+                long idItem = recommendation.getIdItem();
+                for (long idUser : group.getIdMembers()) {
                     if (groupTrueRatings.get(idUser).containsKey(idItem)) {
                         double trueRating = groupTrueRatings.get(idUser).get(idItem).getRatingValue().doubleValue();
                         double predicted = recommendation.getPreference().doubleValue();

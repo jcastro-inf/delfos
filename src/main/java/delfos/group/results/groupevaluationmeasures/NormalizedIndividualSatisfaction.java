@@ -84,26 +84,26 @@ public class NormalizedIndividualSatisfaction extends GroupEvaluationMeasure {
 
             Element groupElement = new Element("Group");
 
-            Map<Integer, Number> predicciones = new TreeMap<>();
+            Map<Long, Number> predicciones = new TreeMap<>();
             groupRecommendations.stream().forEach((r) -> {
                 predicciones.put(r.getIdItem(), r.getPreference());
             });
 
             MeanIterative groupNIS = new MeanIterative();
-            for (int idUser : groupOfUsers) {
+            for (long idUser : groupOfUsers) {
                 Element userElement = new Element("User");
-                userElement.setAttribute("idUser", Integer.toString(idUser));
+                userElement.setAttribute("idUser", Long.toString(idUser));
 
                 try {
 
-                    Map<Integer, ? extends Rating> userRated = testDatasetLoader.getRatingsDataset().getUserRatingsRated(idUser);
+                    Map<Long, ? extends Rating> userRated = testDatasetLoader.getRatingsDataset().getUserRatingsRated(idUser);
 
                     double denominador = 0;
                     double numerador = 0;
 
                     List<Recommendation> recomendacionesAlGrupoParaUser = new ArrayList<>(predicciones.size());
                     List<Recommendation> recomendacionesOptimasAlUser = new ArrayList<>(userRated.size());
-                    for (int idItem : userRated.keySet()) {
+                    for (long idItem : userRated.keySet()) {
                         recomendacionesOptimasAlUser.add(new Recommendation(idItem, userRated.get(idItem).getRatingValue()));
                     }
 

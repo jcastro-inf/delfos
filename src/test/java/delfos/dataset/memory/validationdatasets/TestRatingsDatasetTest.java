@@ -78,11 +78,11 @@ public class TestRatingsDatasetTest extends DelfosTest {
 
         Global.showln(DatasetPrinter.printCompactRatingTable(ratingsDataset));
 
-        Map<Integer, Set<Integer>> testRatings = new TreeMap<>();
-        Set<Integer> listaItems = new TreeSet<>();
-        listaItems.add(1);
-        listaItems.add(2);
-        testRatings.put(3, listaItems);
+        Map<Long, Set<Long>> testRatings = new TreeMap<>();
+        Set<Long> listaItems = new TreeSet<>();
+        listaItems.add(1l);
+        listaItems.add(2l);
+        testRatings.put(3l, listaItems);
 
         TestRatingsDataset testRatingsDataset = ValidationDatasets.getInstance().createTestDataset(ratingsDataset, testRatings);
 
@@ -115,12 +115,12 @@ public class TestRatingsDatasetTest extends DelfosTest {
 
         Assert.assertEquals("Original dataset doesn't have 25 ratings", 25, originalDataset.getNumRatings());
 
-        Map<Integer, Set<Integer>> testSet = new TreeMap<>();
-        testSet.put(1, new TreeSet<>());
-        testSet.put(3, new TreeSet<>());
-        testSet.get(1).add(1);
-        testSet.get(1).add(5);
-        testSet.get(3).add(3);
+        Map<Long, Set<Long>> testSet = new TreeMap<>();
+        testSet.put(1l, new TreeSet<>());
+        testSet.put(3l, new TreeSet<>());
+        testSet.get(1l).add(1l);
+        testSet.get(1l).add(5l);
+        testSet.get(3l).add(3l);
 
         TestRatingsDataset testRatingsDataset = ValidationDatasets.getInstance().createTestDataset(originalDataset, testSet);
         Assert.assertEquals("Test set doesn't have 3 ratings", 3, testRatingsDataset.getNumRatings());
@@ -149,12 +149,12 @@ public class TestRatingsDatasetTest extends DelfosTest {
             Assert.assertEquals(25, originalDatasetSize_accordingToIterator);
         }
 
-        Map<Integer, Set<Integer>> testSet = new TreeMap<>();
-        testSet.put(1, new TreeSet<>());
-        testSet.put(3, new TreeSet<>());
-        testSet.get(1).add(1);
-        testSet.get(1).add(5);
-        testSet.get(3).add(3);
+        Map<Long, Set<Long>> testSet = new TreeMap<>();
+        testSet.put(1l, new TreeSet<>());
+        testSet.put(3l, new TreeSet<>());
+        testSet.get(1l).add(1l);
+        testSet.get(1l).add(5l);
+        testSet.get(3l).add(3l);
 
         TestRatingsDataset<Rating> testRatingsDataset = ValidationDatasets.getInstance().createTestDataset(originalDataset, testSet);
         {
@@ -175,11 +175,11 @@ public class TestRatingsDatasetTest extends DelfosTest {
 
         int numRatings_usingMet = 0;
         int numRatings_usingIte = 0;
-        final int numRatings_usingGet = originalDataset.getNumRatings();
+        final long numRatings_usingGet = originalDataset.getNumRatings();
 
-        for (int idUser : originalDataset.allUsers()) {
+        for (long idUser : originalDataset.allUsers()) {
             try {
-                for (int idItem : originalDataset.getUserRated(idUser)) {
+                for (long idItem : originalDataset.getUserRated(idUser)) {
                     numRatings_usingMet++;
                 }
             } catch (UserNotFound ex) {
@@ -187,7 +187,7 @@ public class TestRatingsDatasetTest extends DelfosTest {
             }
         }
 
-        ArrayList<Rating> ratings = new ArrayList<>(originalDataset.getNumRatings());
+        ArrayList<Rating> ratings = new ArrayList<>((int) originalDataset.getNumRatings());
         for (Rating r : originalDataset) {
             ratings.add(r);
             numRatings_usingIte++;
@@ -203,23 +203,21 @@ public class TestRatingsDatasetTest extends DelfosTest {
                 ratings.size(),
                 originalDataset.getNumRatings());
 
-        Map<Integer, Set<Integer>> testRatings = new TreeMap<>();
+        Map<Long, Set<Long>> testRatings = new TreeMap<>();
 
-        Collection<Integer> allUsers = originalDataset.allUsers();
+        Collection<Long> allUsers = originalDataset.allUsers();
         int numTestRatings = 0;
         while (numTestRatings < 5) {
-            int idUser = (Integer) allUsers.toArray()[random.nextInt(allUsers.size())];
+            long idUser = (Long) allUsers.toArray()[random.nextInt(allUsers.size())];
             if (!testRatings.containsKey(idUser)) {
-
                 testRatings.put(idUser, new TreeSet<>());
-
             }
-            Set<Integer> notInTrain = new TreeSet<>(originalDataset.getUserRated(idUser));
+            Set<Long> notInTrain = new TreeSet<>(originalDataset.getUserRated(idUser));
             notInTrain.removeAll(testRatings.get(idUser));
             if (notInTrain.isEmpty()) {
                 allUsers.remove(idUser);
             } else {
-                int idItem = (Integer) notInTrain.toArray()[random.nextInt(notInTrain.size())];
+                long idItem = (Long) notInTrain.toArray()[random.nextInt(notInTrain.size())];
 
                 testRatings.get(idUser).add(idItem);
                 numTestRatings++;
@@ -227,15 +225,15 @@ public class TestRatingsDatasetTest extends DelfosTest {
         }
 
         TestRatingsDataset<? extends Rating> testRatingsDataset = ValidationDatasets.getInstance().createTestDataset(originalDataset, testRatings);
-        int testRatings_get = testRatingsDataset.getNumRatings();
+        long testRatings_get = testRatingsDataset.getNumRatings();
         int testRatings_ite = 0;
         int testRatings_met = 0;
         for (Rating r : testRatingsDataset) {
             testRatings_ite++;
         }
 
-        for (int idUser : testRatingsDataset.allUsers()) {
-            for (int idItem : testRatingsDataset.getUserRated(idUser)) {
+        for (long idUser : testRatingsDataset.allUsers()) {
+            for (long idItem : testRatingsDataset.getUserRated(idUser)) {
                 testRatings_met++;
             }
         }
@@ -252,23 +250,23 @@ public class TestRatingsDatasetTest extends DelfosTest {
         //Dataset Completo
         RatingsDataset<? extends Rating> originalDataset = RandomRatingsDatasetFactory.createRatingsDatasetWithLoadFactor(50, 50, 0.5);
 
-        Map<Integer, Set<Integer>> testRatings = new TreeMap<>();
+        Map<Long, Set<Long>> testRatings = new TreeMap<>();
 
-        Collection<Integer> allUsers = originalDataset.allUsers();
+        Collection<Long> allUsers = originalDataset.allUsers();
         int numTestRatings = 0;
         while (numTestRatings < 5) {
-            int idUser = (Integer) allUsers.toArray()[random.nextInt(allUsers.size())];
+            long idUser = (Long) allUsers.toArray()[random.nextInt(allUsers.size())];
             if (!testRatings.containsKey(idUser)) {
 
                 testRatings.put(idUser, new TreeSet<>());
 
             }
-            Set<Integer> notInTrain = new TreeSet<>(originalDataset.getUserRated(idUser));
+            Set<Long> notInTrain = new TreeSet<>(originalDataset.getUserRated(idUser));
             notInTrain.removeAll(testRatings.get(idUser));
             if (notInTrain.isEmpty()) {
                 allUsers.remove(idUser);
             } else {
-                int idItem = (Integer) notInTrain.toArray()[random.nextInt(notInTrain.size())];
+                long idItem = (Long) notInTrain.toArray()[random.nextInt(notInTrain.size())];
 
                 testRatings.get(idUser).add(idItem);
                 numTestRatings++;

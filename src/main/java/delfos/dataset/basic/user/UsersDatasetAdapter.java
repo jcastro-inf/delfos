@@ -35,7 +35,9 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
  *
  * @version 24-jul-2013
  */
-public class UsersDatasetAdapter extends CollectionOfEntitiesWithFeaturesDefault<User> implements UsersDataset {
+public class UsersDatasetAdapter
+        extends CollectionOfEntitiesWithFeaturesDefault<User>
+        implements UsersDataset {
 
     public UsersDatasetAdapter() {
     }
@@ -45,7 +47,7 @@ public class UsersDatasetAdapter extends CollectionOfEntitiesWithFeaturesDefault
     }
 
     @Override
-    public User getUser(int idUser) throws UserNotFound {
+    public User getUser(long idUser) throws UserNotFound {
         if (entitiesById.containsKey(idUser)) {
             return entitiesById.get(idUser);
         } else {
@@ -64,7 +66,7 @@ public class UsersDatasetAdapter extends CollectionOfEntitiesWithFeaturesDefault
     }
 
     @Override
-    public User get(int idUser) throws EntityNotFound {
+    public User get(long idUser) throws EntityNotFound {
         if (entitiesById.containsKey(idUser)) {
             return entitiesById.get(idUser);
         } else {
@@ -94,13 +96,13 @@ public class UsersDatasetAdapter extends CollectionOfEntitiesWithFeaturesDefault
     public static <RatingType extends Rating> int hashCode(UsersDataset usersDataset) {
         HashCodeBuilder hashCodeBuilder = new HashCodeBuilder(37, 11);
 
-        List<Integer> usersSorted = usersDataset.allIDs().stream().sorted().collect(Collectors.toList());
+        List<Long> usersSorted = usersDataset.allIDs().stream().sorted().collect(Collectors.toList());
 
         List<Feature> features = Arrays.asList(usersDataset.getFeatures()).stream()
                 .sorted(Feature.BY_ID)
                 .collect(Collectors.toList());
 
-        for (int idUser : usersSorted) {
+        for (long idUser : usersSorted) {
             User user = usersDataset.get(idUser);
 
             hashCodeBuilder.append(idUser);

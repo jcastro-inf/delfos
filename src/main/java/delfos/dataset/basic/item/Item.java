@@ -38,27 +38,16 @@ public class Item implements Comparable<Item>, EntityWithFeatures, Serializable 
 
     private static final long serialVersionUID = 3034;
 
-    public static final Comparator<Item> BY_ID = (Item item1, Item item2) -> Integer.compare(item1.getId(), item2.getId());
-    public static final Comparator<Item> BY_NAME = (Item item1, Item item2) -> {
-        int nameComparison = item1.getName().compareTo(item2.getName());
-
-        if (nameComparison != 0) {
-            return nameComparison;
-        } else {
-            return BY_ID.compare(item1, item2);
-        }
-    };
-
-    private final int idItem;
-    private final String name;
+    private final long idItem;
     private final Map<Feature, Object> featuresValues = new TreeMap<>();
+    private final String name;
 
     /**
      * Crea un producto sin características. Se crea con nombre "Item [idItem]".
      *
      * @param idItem Id del producto que se crea.
      */
-    public Item(int idItem) {
+    public Item(long idItem) {
         this(idItem, "Item " + idItem, new Feature[0], new Object[0]);
     }
 
@@ -68,7 +57,7 @@ public class Item implements Comparable<Item>, EntityWithFeatures, Serializable 
      * @param idItem Id del producto que se crea.
      * @param name
      */
-    public Item(int idItem, String name) {
+    public Item(long idItem, String name) {
         this.idItem = idItem;
         this.name = name;
     }
@@ -81,7 +70,7 @@ public class Item implements Comparable<Item>, EntityWithFeatures, Serializable 
      * @param featureValues Mapa de (característica,valor). El tipo de la
      * característica se infiere según si el valor
      */
-    public Item(int idItem, String name, Map<Feature, Object> featureValues) {
+    public Item(long idItem, String name, Map<Feature, Object> featureValues) {
         this(idItem, name);
 
         this.featuresValues.putAll(featureValues);
@@ -97,7 +86,7 @@ public class Item implements Comparable<Item>, EntityWithFeatures, Serializable 
      * @param values vector de valores correspondientes a las características en
      * el vector <code>features</code>
      */
-    public Item(int idItem, String name, Feature[] features, Object[] values) {
+    public Item(long idItem, String name, Feature[] features, Object[] values) {
         this.idItem = idItem;
         this.name = name;
 
@@ -130,7 +119,7 @@ public class Item implements Comparable<Item>, EntityWithFeatures, Serializable 
      * @param latitude Latitud del producto.
      * @param longitude Longitud del producto.
      */
-    public Item(int idItem, String name, Feature[] features, Object[] values, double latitude, double longitude) {
+    public Item(long idItem, String name, Feature[] features, Object[] values, double latitude, double longitude) {
         this.idItem = idItem;
         this.name = name;
 
@@ -179,7 +168,7 @@ public class Item implements Comparable<Item>, EntityWithFeatures, Serializable 
      * @return identificador del producto
      */
     @Override
-    public Integer getId() {
+    public long getId() {
         return idItem;
     }
 
@@ -224,9 +213,8 @@ public class Item implements Comparable<Item>, EntityWithFeatures, Serializable 
     @Override
     public int hashCode() {
         int hash = 5;
-        hash = 71 * hash + this.idItem;
-        hash = 71 * hash + Objects.hashCode(this.name);
+        hash = 71 * hash + Long.hashCode(this.getId());
+        hash = 71 * hash + Objects.hashCode(this.getName());
         return hash;
     }
-
 }

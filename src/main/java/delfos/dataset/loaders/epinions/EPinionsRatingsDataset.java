@@ -49,7 +49,7 @@ public class EPinionsRatingsDataset implements RatingsDataset<EPinionsRating> {
     private final BothIndexRatingsDataset<EPinionsRating> ratingsDataset_overItems;
     private final BothIndexRatingsDataset<EPinionsRating> ratingsDataset_overAuthors;
 
-    private final DoubleMapping<Long, Integer> usersIndex = new DoubleMapping<>();
+    private final DoubleMapping<Long, Long> usersIndex = new DoubleMapping<>();
 
     /**
      * Carga el fichero de valoraciones del dataset EPinions indicado.
@@ -98,7 +98,7 @@ public class EPinionsRatingsDataset implements RatingsDataset<EPinionsRating> {
 
             MEMBER_ID = new Long(columns[1]);
             if (!usersIndex.containsType1Value(MEMBER_ID)) {
-                usersIndex.add(MEMBER_ID, usersIndex.size());
+                usersIndex.add(MEMBER_ID, (long) usersIndex.size());
             }
 
             {
@@ -149,13 +149,13 @@ public class EPinionsRatingsDataset implements RatingsDataset<EPinionsRating> {
             }
 
             if (TYPE.equals("Item")) {
-                int idUser = usersIndex.typeOneToTypeTwo(MEMBER_ID);
+                long idUser = usersIndex.typeOneToTypeTwo(MEMBER_ID);
 
                 if (!epinionsContentDataset.getProductsIndex().containsType1Value(OBJECT_ID)) {
                     Global.showWarning("The item " + OBJECT_ID + " is not defined in the items set. ¿is in authors? " + epinionsContentDataset.getProductsIndex().containsType1Value(OBJECT_ID) + " ¿is in subjects? " + epinionsContentDataset.getSubjectsIndex().containsType1Value(OBJECT_ID) + " ¿Is in users? " + usersIndex.containsType1Value(OBJECT_ID));
 
                 } else {
-                    Integer idItem = epinionsContentDataset.getProductsIndex().typeOneToTypeTwo(OBJECT_ID);
+                    long idItem = epinionsContentDataset.getProductsIndex().typeOneToTypeTwo(OBJECT_ID);
                     EPinionsRating ePinionsRating = new EPinionsRating(idUser, idItem, RATING, STATUS, CREATION, LAST_MODIFIED, VERTICAL_ID);
                     ratings_overItems.add(ePinionsRating);
                 }
@@ -164,8 +164,8 @@ public class EPinionsRatingsDataset implements RatingsDataset<EPinionsRating> {
                 if (!epinionsContentDataset.getAuthorsIndex().containsType1Value(OBJECT_ID)) {
                     Global.showWarning("The author " + OBJECT_ID + " is not defined in the authors index. ¿is in items? " + epinionsContentDataset.getProductsIndex().containsType1Value(OBJECT_ID) + " ¿is in subjects? " + epinionsContentDataset.getSubjectsIndex().containsType1Value(OBJECT_ID));
                 } else {
-                    int idUser = usersIndex.typeOneToTypeTwo(MEMBER_ID);
-                    int idAuthor = epinionsContentDataset.getAuthorsIndex().typeOneToTypeTwo(OBJECT_ID);
+                    long idUser = usersIndex.typeOneToTypeTwo(MEMBER_ID);
+                    long idAuthor = epinionsContentDataset.getAuthorsIndex().typeOneToTypeTwo(OBJECT_ID);
                     EPinionsRating ePinionsRating = new EPinionsRating(idUser, idAuthor, RATING, STATUS, CREATION, LAST_MODIFIED, VERTICAL_ID);
                     ratings_overAuthors.add(ePinionsRating);
                 }
@@ -189,47 +189,47 @@ public class EPinionsRatingsDataset implements RatingsDataset<EPinionsRating> {
     }
 
     @Override
-    public EPinionsRating getRating(int idUser, int idItem) throws UserNotFound, ItemNotFound {
+    public EPinionsRating getRating(long idUser, long idItem) throws UserNotFound, ItemNotFound {
         return ratingsDataset_overItems.getRating(idUser, idItem);
     }
 
     @Override
-    public Set<Integer> allUsers() {
+    public Set<Long> allUsers() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public Set<Integer> allRatedItems() {
+    public Set<Long> allRatedItems() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public Set<Integer> getUserRated(Integer idUser) throws UserNotFound {
+    public Set<Long> getUserRated(long idUser) throws UserNotFound {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public Set<Integer> getItemRated(Integer idItem) throws ItemNotFound {
+    public Set<Long> getItemRated(long idItem) throws ItemNotFound {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public Map<Integer, EPinionsRating> getUserRatingsRated(Integer idUser) throws UserNotFound {
+    public Map<Long, EPinionsRating> getUserRatingsRated(long idUser) throws UserNotFound {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public Map<Integer, EPinionsRating> getItemRatingsRated(Integer idItem) throws ItemNotFound {
+    public Map<Long, EPinionsRating> getItemRatingsRated(long idItem) throws ItemNotFound {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public double getMeanRatingItem(int idItem) throws ItemNotFound {
+    public double getMeanRatingItem(long idItem) throws ItemNotFound {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public double getMeanRatingUser(int idUser) throws UserNotFound {
+    public double getMeanRatingUser(long idUser) throws UserNotFound {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
@@ -239,27 +239,27 @@ public class EPinionsRatingsDataset implements RatingsDataset<EPinionsRating> {
     }
 
     @Override
-    public int getNumRatings() {
+    public long getNumRatings() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public int sizeOfUserRatings(int idUser) throws UserNotFound {
+    public long sizeOfUserRatings(long idUser) throws UserNotFound {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public int sizeOfItemRatings(int idItem) throws ItemNotFound {
+    public long sizeOfItemRatings(long idItem) throws ItemNotFound {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public boolean isRatedUser(int idUser) throws UserNotFound {
+    public boolean isRatedUser(long idUser) throws UserNotFound {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public boolean isRatedItem(int idItem) throws ItemNotFound {
+    public boolean isRatedItem(long idItem) throws ItemNotFound {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
@@ -273,7 +273,7 @@ public class EPinionsRatingsDataset implements RatingsDataset<EPinionsRating> {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
-    public DoubleMapping<Long, Integer> getUsersIndex() {
+    public DoubleMapping<Long, Long> getUsersIndex() {
         return usersIndex;
     }
 }
