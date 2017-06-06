@@ -87,11 +87,24 @@ public class CaseStudyExcel {
 
     public static final String ALL_EXPERIMENTS_SHEET_NAME = "AllExperiments";
 
+    public static final String CASE_DEFINITION_SHEET_NAME = "CaseDefinition";
+
+    public static final String EXECUTIONS_SHEET_NAME = "Executions";
+
+    public static final String EXECUTIONS_SHEET_ID_LOOP_COLUMN_NAME = "#";
+    public static final String EXECUTIONS_SHEET_EXECUTION_COLUMN_NAME = "Execution";
+    public static final String EXECUTIONS_SHEET_SPLIT_COLUMN_NAME = "Split";
+    public static final String EXECUTIONS_SHEET_BUILD_TIME_COLUMN_NAME = "BuildTime";
+    public static final String EXECUTIONS_SHEET_RECOMMENDATION_TIME_COLUMN_NAME = "RecommendationTime";
+
+    public static final String AGGREGATE_RESULTS_SHEET_NAME = "AggregateResults";
+    public static final String ALL_CASES_AGGREGATE_RESULTS_HASH_COLUMN_NAME = "hash";
+    public static final String ALL_CASES_AGGREGATE_RESULTS_HASH_DATA_VALIDATION_COLUMN_NAME = "hashDataValidation";
+    public static final String ALL_CASES_AGGREGATE_RESULTS_HASH_TECHNIQUE_COLUMN_NAME = "hashTechnique";
+
     public static final String AGGREGATE_RESULTS_EXCEL_DEFAULT_FILE_NAME = "aggregateResults.xls";
     public static final String EXPERIMENT_NAME_COLUMN_NAME = "ExperimentName";
     public static final String DATASET_LOADER_COLUMN_NAME = "DatasetLoader";
-
-    public static final String AGGREGATE_RESULTS_SHEET_NAME = "AggregateResults";
 
     private static WritableCellFormat titleFormat;
     private static WritableCellFormat defaultFormat;
@@ -101,7 +114,7 @@ public class CaseStudyExcel {
 
     public static final int EXPERIMENT_NAME_COLUMN = 0;
     public static final int DATASET_LOADER_ALIAS_COLUMN = 1;
-    public static final int _EVALUATION_MEASURES_OFFSET = 2;
+    public static final int EVALUATION_MEASURES_OFFSET = 2;
 
     public static final String NAN_CELL_STRING = "NaN";
 
@@ -293,7 +306,7 @@ public class CaseStudyExcel {
             createCaseDefinitionSheet(caseStudy, caseDefinitionSheet);
             autoSizeColumns(caseDefinitionSheet);
 
-            WritableSheet executionsSheet = workbook.createSheet("Executions", 1);
+            WritableSheet executionsSheet = workbook.createSheet(EXECUTIONS_SHEET_NAME, 1);
             createLabel(executionsSheet);
             createExecutionsSheet(caseStudy, executionsSheet);
             autoSizeColumns(executionsSheet);
@@ -310,7 +323,6 @@ public class CaseStudyExcel {
             ERROR_CODES.CANNOT_WRITE_FILE.exit(ex);
         }
     }
-    public static final String CASE_DEFINITION_SHEET_NAME = "CaseDefinition";
 
     private static void createCaseDefinitionSheet(CaseStudy caseStudy, WritableSheet sheet) throws WriteException {
 
@@ -459,9 +471,9 @@ public class CaseStudyExcel {
         final int splitColumn = 2;
 
         //Escribo los titulos de las columnas.
-        addTitleText(sheet, vueltaColumn, row, "#");
-        addTitleText(sheet, executionColumn, row, "Execution");
-        addTitleText(sheet, splitColumn, row, "Split");
+        addTitleText(sheet, vueltaColumn, row, EXECUTIONS_SHEET_ID_LOOP_COLUMN_NAME);
+        addTitleText(sheet, executionColumn, row, EXECUTIONS_SHEET_EXECUTION_COLUMN_NAME);
+        addTitleText(sheet, splitColumn, row, EXECUTIONS_SHEET_SPLIT_COLUMN_NAME);
 
         Map<String, Integer> indexOfMeasures = new TreeMap<>();
         Map<String, EvaluationMeasure> metricsByName = new TreeMap<>();
@@ -473,8 +485,8 @@ public class CaseStudyExcel {
                 metricsByName.put(evaluationMeasure.getName(), evaluationMeasure);
 
             }
-            indexOfMeasures.put("BuildTime", i++);
-            indexOfMeasures.put("RecommendationTime", i++);
+            indexOfMeasures.put(EXECUTIONS_SHEET_BUILD_TIME_COLUMN_NAME, i++);
+            indexOfMeasures.put(EXECUTIONS_SHEET_RECOMMENDATION_TIME_COLUMN_NAME, i++);
         }
 
         for (Map.Entry<String, Integer> entry : indexOfMeasures.entrySet()) {
@@ -539,8 +551,8 @@ public class CaseStudyExcel {
 
                 metricsByName.put(EvaluationMeasure.getName(), EvaluationMeasure);
             }
-            indexOfMeasures.put("BuildTime", i++);
-            indexOfMeasures.put("RecommendationTime", i++);
+            indexOfMeasures.put(EXECUTIONS_SHEET_BUILD_TIME_COLUMN_NAME, i++);
+            indexOfMeasures.put(EXECUTIONS_SHEET_RECOMMENDATION_TIME_COLUMN_NAME, i++);
         }
 
         for (Map.Entry<String, Integer> entry : indexOfMeasures.entrySet()) {
@@ -693,7 +705,7 @@ public class CaseStudyExcel {
             column++;
 
             //General hash
-            addTitleText(allCasesAggregateResults, column, titlesRow, "hash");
+            addTitleText(allCasesAggregateResults, column, titlesRow, ALL_CASES_AGGREGATE_RESULTS_HASH_COLUMN_NAME);
             for (int index = 0; index < caseStudyResultss.size(); index++) {
                 int row = index + 1;
                 setCellIntegerNumber(allCasesAggregateResults, column, row, caseStudyResultss.get(index).getCaseStudy().hashCode());
@@ -701,7 +713,7 @@ public class CaseStudyExcel {
             column++;
 
             //dataValidation hash
-            addTitleText(allCasesAggregateResults, column, titlesRow, "hashDataValidation");
+            addTitleText(allCasesAggregateResults, column, titlesRow, ALL_CASES_AGGREGATE_RESULTS_HASH_DATA_VALIDATION_COLUMN_NAME);
             for (int index = 0; index < caseStudyResultss.size(); index++) {
                 int row = index + 1;
                 setCellIntegerNumber(allCasesAggregateResults, column, row, caseStudyResultss.get(index).getCaseStudy().hashDataValidation());
@@ -725,7 +737,7 @@ public class CaseStudyExcel {
             }
 
             //technique hash
-            addTitleText(allCasesAggregateResults, column, titlesRow, "hashTechnique");
+            addTitleText(allCasesAggregateResults, column, titlesRow, ALL_CASES_AGGREGATE_RESULTS_HASH_TECHNIQUE_COLUMN_NAME);
             for (int index = 0; index < caseStudyResultss.size(); index++) {
                 int row = index + 1;
                 setCellIntegerNumber(allCasesAggregateResults, column, row, caseStudyResultss.get(index).getCaseStudy().hashTechnique());
@@ -776,6 +788,8 @@ public class CaseStudyExcel {
      * Converts the parameter structure of the case study definition (dataset,Formation and validations) into a plain
      * key-> value map.
      *
+     * @param <RecommendationModel>
+     * @param <RatingType>
      * @param caseStudy
      * @return
      */

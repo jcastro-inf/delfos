@@ -34,6 +34,7 @@ import delfos.group.grs.GroupRecommenderSystem;
 import delfos.group.io.xml.casestudy.GroupCaseStudyXML;
 import delfos.group.results.groupevaluationmeasures.GroupEvaluationMeasure;
 import delfos.group.results.groupevaluationmeasures.GroupEvaluationMeasureResult;
+import delfos.group.results.groupevaluationmeasures.GroupResultWithExecutionSplit;
 import delfos.io.excel.casestudy.CaseStudyExcel;
 import delfos.io.excel.parameterowner.ParameterOwnerExcel;
 import delfos.main.managers.experiment.join.xml.GroupCaseStudyResult;
@@ -90,6 +91,20 @@ public class GroupCaseStudyExcel {
     public static final String AGGREGATE_RESULTS_EXCEL_DEFAULT_FILE_NAME = CaseStudyExcel.AGGREGATE_RESULTS_EXCEL_DEFAULT_FILE_NAME;
     public static final String ALL_EXPERIMENTS_SHEET_NAME = CaseStudyExcel.ALL_EXPERIMENTS_SHEET_NAME;
     public static final String CASE_DEFINITION_SHEET_NAME = CaseStudyExcel.CASE_DEFINITION_SHEET_NAME;
+
+    public static final String CASE_DEFINITION_SHEET = CaseStudyExcel.CASE_DEFINITION_SHEET_NAME;
+    public static final String EXECUTIONS_SHEET_NAME = CaseStudyExcel.EXECUTIONS_SHEET_NAME;
+    public static final String AGGREGATE_RESULTS_SHEET_NAME = CaseStudyExcel.AGGREGATE_RESULTS_SHEET_NAME;
+
+    public static final String EXECUTIONS_SHEET_ID_LOOP_COLUMN_NAME = "#";
+    public static final String EXECUTIONS_SHEET_EXECUTION_COLUMN_NAME = "Execution";
+    public static final String EXECUTIONS_SHEET_SPLIT_COLUMN_NAME = "Split";
+    public static final String EXECUTIONS_SHEET_BUILD_TIME_COLUMN_NAME = "BuildTime";
+    public static final String EXECUTIONS_SHEET_RECOMMENDATION_TIME_COLUMN_NAME = "RecommendationTime";
+
+    public static final String ALL_CASES_AGGREGATE_RESULTS_HASH_COLUMN_NAME = "hash";
+    public static final String ALL_CASES_AGGREGATE_RESULTS_HASH_DATA_VALIDATION_COLUMN_NAME = "hashDataValidation";
+    public static final String ALL_CASES_AGGREGATE_RESULTS_HASH_TECHNIQUE_COLUMN_NAME = "hashTechnique";
 
     public static final String EXPERIMENT_NAME_COLUMN_NAME = CaseStudyExcel.EXPERIMENT_NAME_COLUMN_NAME;
     public static final String DATASET_LOADER_COLUMN_NAME = CaseStudyExcel.DATASET_LOADER_COLUMN_NAME;
@@ -169,7 +184,7 @@ public class GroupCaseStudyExcel {
                 TreeMap<String, Double> valoresDeMetricas = new TreeMap<>();
                 Workbook workbook = Workbook.getWorkbook(inputFile);
 
-                Sheet aggregateResults = workbook.getSheet(AGGREGATE_RESULTS);
+                Sheet aggregateResults = workbook.getSheet(AGGREGATE_RESULTS_SHEET_NAME);
 
                 if (aggregateResults != null) {
 
@@ -326,15 +341,15 @@ public class GroupCaseStudyExcel {
 
             workbook = Workbook.createWorkbook(file, wbSettings);
 
-            WritableSheet caseDefinitionSheet = workbook.createSheet("CaseDefinition", 0);
+            WritableSheet caseDefinitionSheet = workbook.createSheet(CASE_DEFINITION_SHEET, 0);
             createCaseDefinitionSheet(caseStudyGroup, caseDefinitionSheet);
             autoSizeColumns(caseDefinitionSheet);
 
-            WritableSheet executionsSheet = workbook.createSheet("Executions", 1);
+            WritableSheet executionsSheet = workbook.createSheet(EXECUTIONS_SHEET_NAME, 1);
             createExecutionsSheet(caseStudyGroup, executionsSheet);
             autoSizeColumns(executionsSheet);
 
-            WritableSheet aggregateResultsSheet = workbook.createSheet(AGGREGATE_RESULTS, 2);
+            WritableSheet aggregateResultsSheet = workbook.createSheet(AGGREGATE_RESULTS_SHEET_NAME, 2);
             createAggregateResultsSheet(caseStudyGroup, aggregateResultsSheet);
             autoSizeColumns(aggregateResultsSheet);
 
@@ -347,7 +362,6 @@ public class GroupCaseStudyExcel {
             ERROR_CODES.CANNOT_WRITE_FILE.exit(ex);
         }
     }
-    public static final String AGGREGATE_RESULTS = "AggregateResults";
 
     private static void createCaseDefinitionSheet(GroupCaseStudy caseStudyGroup, WritableSheet sheet) throws WriteException {
 
@@ -756,7 +770,7 @@ public class GroupCaseStudyExcel {
             column++;
 
             //General hash
-            addTitleText(allCasesAggregateResults, column, titlesRow, "hash");
+            addTitleText(allCasesAggregateResults, column, titlesRow, ALL_CASES_AGGREGATE_RESULTS_HASH_COLUMN_NAME);
             for (int index = 0; index < groupCaseStudyResults.size(); index++) {
                 int row = index + 1;
                 setCellIntegerNumber(allCasesAggregateResults, column, row, groupCaseStudyResults.get(index).getGroupCaseStudy().hashCode());
@@ -764,7 +778,7 @@ public class GroupCaseStudyExcel {
             column++;
 
             //dataValidation hash
-            addTitleText(allCasesAggregateResults, column, titlesRow, "hashDataValidation");
+            addTitleText(allCasesAggregateResults, column, titlesRow, ALL_CASES_AGGREGATE_RESULTS_HASH_DATA_VALIDATION_COLUMN_NAME);
             for (int index = 0; index < groupCaseStudyResults.size(); index++) {
                 int row = index + 1;
                 setCellIntegerNumber(allCasesAggregateResults, column, row, groupCaseStudyResults.get(index).getGroupCaseStudy().hashDataValidation());
@@ -788,7 +802,7 @@ public class GroupCaseStudyExcel {
             }
 
             //technique hash
-            addTitleText(allCasesAggregateResults, column, titlesRow, "hashTechnique");
+            addTitleText(allCasesAggregateResults, column, titlesRow, ALL_CASES_AGGREGATE_RESULTS_HASH_TECHNIQUE_COLUMN_NAME);
             for (int index = 0; index < groupCaseStudyResults.size(); index++) {
                 int row = index + 1;
                 setCellIntegerNumber(allCasesAggregateResults, column, row, groupCaseStudyResults.get(index).getGroupCaseStudy().hashTechnique());
@@ -1272,6 +1286,20 @@ public class GroupCaseStudyExcel {
         }
     }
 
+    private static Cell findHeaderCell(Sheet executionsSheet, String cellContent) {
+        Cell[] columns = executionsSheet.getRow(1);
+        List<Cell> matchedCells = Arrays.asList(columns).stream().filter(cell -> cell.getContents().equals(cellContent)).collect(Collectors.toList());
+
+        if (matchedCells.isEmpty()) {
+            throw new IllegalStateException("Header cell '" + cellContent + "' not found.");
+        } else if (matchedCells.size() >= 2) {
+            throw new IllegalStateException("More than one header cell matched for '" + cellContent + "'.");
+        } else {
+            Cell evaluationMeasureCell = matchedCells.get(0);
+            return evaluationMeasureCell;
+        }
+    }
+
     public static class Combination implements Comparable<Combination> {
 
         public Set<ParameterChain> row;
@@ -1357,4 +1385,52 @@ public class GroupCaseStudyExcel {
 
     }
 
+    public static List<GroupResultWithExecutionSplit> getGroupEvaluationMeasureExecutionSplitFromXLS(
+            File file,
+            GroupEvaluationMeasure groupEvaluationMeasure)
+            throws BiffException, IOException {
+
+        WorkbookSettings workbookSettings = new WorkbookSettings();
+        workbookSettings.setRationalization(false);
+
+        Workbook workbook = Workbook.getWorkbook(file, workbookSettings);
+
+        List<Sheet> sheets = Arrays.asList(workbook.getSheets());
+
+        Sheet executionsSheet = sheets.stream()
+                .filter(sheet -> sheet.getName().equals(EXECUTIONS_SHEET_NAME))
+                .findAny().get();
+
+        Cell executionColumn = findHeaderCell(executionsSheet, EXECUTIONS_SHEET_EXECUTION_COLUMN_NAME);
+        Cell splitColumn = findHeaderCell(executionsSheet, EXECUTIONS_SHEET_SPLIT_COLUMN_NAME);
+        Cell evaluationMeasureColumn = findHeaderCell(executionsSheet, groupEvaluationMeasure.getName());
+
+        List<GroupResultWithExecutionSplit> results = new ArrayList<>();
+
+        for (int row = 1; row < executionsSheet.getRows(); row++) {
+            final String executionString = executionsSheet.getCell(executionColumn.getColumn(), row).getContents();
+            final String splitString = executionsSheet.getCell(splitColumn.getColumn(), row).getContents();
+            final String measureResultString = executionsSheet.getCell(evaluationMeasureColumn.getColumn(), row).getContents();
+
+            int execution = Integer.parseInt(executionString);
+            int split = Integer.parseInt(splitString);
+            double measureResult = Double.parseDouble(measureResultString);
+
+            GroupEvaluationMeasureResult result = new GroupEvaluationMeasureResult(groupEvaluationMeasure, measureResult);
+
+            GroupResultWithExecutionSplit groupResultWithExecutionSplit = new GroupResultWithExecutionSplit(execution, split, result);
+            results.add(groupResultWithExecutionSplit);
+        }
+
+        List<GroupResultWithExecutionSplit> resultsSorted = results.stream()
+                .sorted(GroupResultWithExecutionSplit.BY_EXECUTION_SPLIT)
+                .collect(Collectors.toList());
+
+        System.out.println("Values in file " + file.getName());
+        resultsSorted.forEach(result -> {
+            System.out.println("Result exec: " + result.getExecution() + "\t\tsplit: " + result.getSplit() + "\t\tval: " + result.getResult().getValue());
+        });
+
+        return results;
+    }
 }
