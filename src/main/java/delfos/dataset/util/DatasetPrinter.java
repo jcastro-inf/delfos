@@ -28,6 +28,8 @@ import delfos.dataset.basic.user.User;
 import delfos.dataset.storage.memory.BothIndexRatingsDataset;
 import delfos.group.groupsofusers.GroupOfUsers;
 import delfos.rs.collaborativefiltering.profile.Neighbor;
+import delfos.rs.recommendation.Recommendation;
+import delfos.rs.recommendation.RecommendationsToUser;
 import delfos.rs.trustbased.WeightedGraph;
 import dnl.utils.text.table.TextTable;
 import java.io.ByteArrayOutputStream;
@@ -439,4 +441,84 @@ public class DatasetPrinter {
 
         return str.toString();
     }
+
+    /**
+     * Obtains a CSV of the recommendations sorted by preference with the test ratings
+     *
+     * @param <RatingType>
+     * @param datasetLoader
+     * @param user
+     * @param recommendationsToUser
+     * @return
+     */
+    public static <RatingType extends Rating>
+            String printRecommendationsWithRatings(
+                    DatasetLoader<RatingType> datasetLoader,
+                    User user,
+                    RecommendationsToUser recommendationsToUser) {
+
+        Set<Item> items = datasetLoader.getContentDataset()
+                .stream().collect(Collectors.toSet());
+
+        Map<Integer, Double> recommendations = DatasetUtilities
+                .convertToMapOfRecommendations(recommendationsToUser)
+                .entrySet()
+                .parallelStream()
+                .filter(entry -> !Double.isNaN(entry.getValue().getPreference().doubleValue()))
+                .filter(entry -> !Double.isInfinite(entry.getValue().getPreference().doubleValue()))
+                .collect(Collectors.toMap(
+                        entry -> entry.getKey().getId(),
+                        entry -> entry.getValue().getPreference().doubleValue())
+                );
+
+        Map<Integer, Double> testRatings = datasetLoader.getRatingsDataset()
+                .getUserRatingsRated(user.getId())
+                .values()
+                .parallelStream()
+                .filter(rating -> !Double.isNaN(rating.getRatingValue().doubleValue()))
+                .filter(rating -> !Double.isInfinite(rating.getRatingValue().doubleValue()))
+                .collect(Collectors.toMap(
+                        rating -> rating.getItem().getId(),
+                        rating -> rating.getRatingValue().doubleValue())
+                );
+
+        List<Item> sortedItems = items.stream()
+                .filter(item -> testRatings.containsKey(item.getId()) || recommendations.containsKey(item.getId()))
+                .map(item -> {
+
+                    double prediction = recommendations.containsKey(item.getId())
+                            ? recommendations.get(item.getId())
+                            : Double.NaN;
+
+                    return new Recommendation(item, prediction);
+                })
+                .sorted(Recommendation.BY_PREFERENCE_DESC)
+                .map(recommendation -> recommendation.getItem())
+                .collect(Collectors.toList());
+
+        StringBuilder str = new StringBuilder();
+
+        str.append("item\tname\tprediction\trating\n");
+
+        sortedItems.forEach(item -> {
+
+            double rating = testRatings.containsKey(item.getId())
+                    ? testRatings.get(item.getId())
+                    : Double.NaN;
+            double prediction = recommendations.containsKey(item.getId())
+                    ? recommendations.get(item.getId())
+                    : Double.NaN;
+
+            str
+                    .append(item.getId()).append("\t")
+                    .append(item.getName()).append("\t")
+                    .append(prediction).append("\t")
+                    .append(rating).append("\n");
+
+        });
+
+        return str.toString();
+
+    }
+
 }
