@@ -124,9 +124,6 @@ public class NDCG extends EvaluationMeasure {
             List<Recommendation> recommendations,
             Map<Integer, ? extends Rating> userRatings) {
 
-        final double base = 2;
-        final double logBaseChange = Math.log(base);
-
         double gain = 0;
         int rank = 0;
 
@@ -147,7 +144,7 @@ public class NDCG extends EvaluationMeasure {
             if (rank < base) {
                 discount = 1;
             } else {
-                discount = logBaseChange / Math.log(rank);
+                discount = 1 / log2(rank);
             }
 
             double increment = rating * discount;
@@ -156,6 +153,14 @@ public class NDCG extends EvaluationMeasure {
         }
 
         return gain;
+    }
+
+    private static final int base = 2;
+    private static final double logBaseChange = Math.log(base);
+
+    public static double log2(int rank) {
+        double log2OfRank = Math.log(rank) / logBaseChange;
+        return log2OfRank;
     }
 
 }
