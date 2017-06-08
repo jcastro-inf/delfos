@@ -30,7 +30,7 @@ import java.util.*;
  *
  * @version 24-jul-2013
  */
-public class User implements Comparable<User>, EntityWithFeatures, Serializable {
+public class    User implements Comparable<User>, EntityWithFeatures, Serializable {
 
     public static User ANONYMOUS_USER = new User(0, "User_Anonymous");
 
@@ -192,7 +192,7 @@ public class User implements Comparable<User>, EntityWithFeatures, Serializable 
             }
 
             String idUser = idTarget.replace(USER_ID_TARGET_PREFIX, "");
-            long idUserInt = Integer.parseInt(idUser);
+            long idUserInt = new Long(idUser);
             return new User(idUserInt);
         } else {
             throw new IllegalArgumentException("Not a user idTarget '" + idTarget + "'");
