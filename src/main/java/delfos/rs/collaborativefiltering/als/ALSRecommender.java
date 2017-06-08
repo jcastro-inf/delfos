@@ -29,11 +29,8 @@ import delfos.rs.collaborativefiltering.factorization.MatrixFactorizationModel;
 import delfos.rs.recommendation.Recommendation;
 import delfos.rs.recommendation.RecommendationsToUser;
 import delfos.utils.algorithm.progress.ProgressChangedController;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-import java.util.Set;
+
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import org.apache.commons.math4.optim.InitialGuess;
@@ -161,7 +158,20 @@ public class ALSRecommender extends CollaborativeRecommender<MatrixFactorization
                     this::fireBuildingProgressChangedEvent
             );
 
-            Map<Item, List<Double>> trainedItemVectors = datasetLoader.getContentDataset().parallelStream().collect(Collectors.toMap(item -> item,
+            Collection<Item> itemsWithRatings = datasetLoader.getContentDataset().parallelStream()
+                    .filter(item -> {
+                        try {
+                            datasetLoader
+                                    .getRatingsDataset().getItemRated(item.getId());
+                            return true;
+                        }catch(Exception e){
+                            return false;
+                        }
+                    })
+                    .collect(Collectors.toList());
+
+            Map<Item, List<Double>> trainedItemVectors =
+                    itemsWithRatings.parallelStream().collect(Collectors.toMap(item -> item,
                     item -> {
                         Map<Long, ? extends Rating> itemRatings = datasetLoader.getRatingsDataset().getItemRatingsRated(item.getId());
 
