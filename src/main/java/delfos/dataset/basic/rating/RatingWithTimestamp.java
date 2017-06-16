@@ -125,4 +125,30 @@ public class RatingWithTimestamp extends Rating {
         return "(u=" + getIdUser() + " i=" + getIdItem() + " r=" + ratingString + " t=" + timestampString + ")";
     }
 
+    @Override
+    public RatingWithTimestamp copyWithItem(Item item) {
+        return new RatingWithTimestamp(
+                this.getUser(),
+                item,
+                this.getRatingValue(),
+                this.getTimestamp());
+    }
+
+    @Override
+    public Rating copyWithUser(User user) {
+        return new RatingWithTimestamp(
+                user,
+                this.getItem(),
+                this.getRatingValue(),
+                this.getTimestamp());
+    }
+
+    @Override
+    public Rating copyWithRatingValue(Number ratingValue) {
+        return new RatingWithTimestamp(
+                this.getUser(),
+                this.getItem(),
+                ratingValue ,
+                this.getTimestamp());
+    }
 }
