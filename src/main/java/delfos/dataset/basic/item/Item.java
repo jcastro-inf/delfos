@@ -189,7 +189,13 @@ public class Item implements Comparable<Item>, EntityWithFeatures, Serializable 
 
     @Override
     public int compareTo(Item otherItem) {
-        return BY_NAME.compare(this, otherItem);
+        int compareByName =  BY_NAME.compare(this, otherItem);
+
+        if(compareByName == 0) {
+            return BY_ID.compare(this, otherItem);
+        } else {
+            return compareByName;
+        }
     }
 
     @Override
