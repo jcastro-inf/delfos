@@ -156,7 +156,7 @@ public class ExecutionSplitConsumer implements Comparable<ExecutionSplitConsumer
         });
 
         final ProgressChangedController progressChangedController = new ProgressChangedController(
-                "group recommendation",
+                groupCaseStudy.getAlias(),
                 taskGroupRecommendationInput.size(),
                 new ProgressChangedListenerDefault(System.out, 10000));
 

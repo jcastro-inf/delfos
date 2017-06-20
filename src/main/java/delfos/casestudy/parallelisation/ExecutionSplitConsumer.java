@@ -149,7 +149,7 @@ public class ExecutionSplitConsumer<RecommendationModel extends Object, RatingTy
         });
 
         final ProgressChangedController progressChangedController = new ProgressChangedController(
-                "group recommendation",
+                caseStudy.getAlias(),
                 recommendationTaskInputs.size(),
                 new ProgressChangedListenerDefault(System.out, 10000));
 
