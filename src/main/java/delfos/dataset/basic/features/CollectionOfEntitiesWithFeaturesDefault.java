@@ -20,15 +20,8 @@ import delfos.common.LockedIterator;
 import delfos.common.exceptions.dataset.entity.EntityNotFound;
 import delfos.dataset.basic.item.Item;
 import delfos.dataset.basic.user.User;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeMap;
-import java.util.TreeSet;
+
+import java.util.*;
 
 /**
  * Clase que define el comportamiento común de una colección de
@@ -51,7 +44,7 @@ public abstract class CollectionOfEntitiesWithFeaturesDefault<Entity extends Ent
     /**
      * Almacena las entidades de esta colección, indexadas por identificador.
      */
-    protected final Map<Long, Entity> entitiesById = new TreeMap<>();
+    protected final Map<Long, Entity> entitiesById = new HashMap<>();
     /*
      * Valores distintos de todas las características (incluidas las numéricas).
      */
