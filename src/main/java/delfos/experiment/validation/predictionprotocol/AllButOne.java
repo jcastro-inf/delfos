@@ -17,8 +17,11 @@
 package delfos.experiment.validation.predictionprotocol;
 
 import delfos.common.exceptions.dataset.users.UserNotFound;
+import delfos.dataset.basic.item.Item;
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
+import delfos.dataset.basic.user.User;
+
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
@@ -36,17 +39,17 @@ public class AllButOne extends PredictionProtocol {
     private static final long serialVersionUID = 1L;
 
     @Override
-    public <RatingType extends Rating> List<Set<Long>> getRecommendationRequests(
+    public <RatingType extends Rating> List<Set<Item>> getRecommendationRequests(
             DatasetLoader<RatingType> trainingDatasetLoader,
             DatasetLoader<RatingType> testDatasetLoader,
-            long idUser) throws UserNotFound {
-        Collection<Long> userRated = testDatasetLoader.getRatingsDataset().getUserRated(idUser);
+            User user) throws UserNotFound {
+        Collection<RatingType> userRatings= testDatasetLoader.getRatingsDataset().getUserRatingsRated(user.getId()).values();
 
-        List<Set<Long>> collectionOfSetsOfRequests = new LinkedList<>();
+        List<Set<Item>> collectionOfSetsOfRequests = new LinkedList<>();
 
-        for (long idItem : userRated) {
-            Set<Long> oneRequestSet = new TreeSet<>();
-            oneRequestSet.add(idItem);
+        for (RatingType rating : userRatings) {
+            Set<Item> oneRequestSet = new TreeSet<>();
+            oneRequestSet.add(rating.getItem());
             collectionOfSetsOfRequests.add(oneRequestSet);
         }
 

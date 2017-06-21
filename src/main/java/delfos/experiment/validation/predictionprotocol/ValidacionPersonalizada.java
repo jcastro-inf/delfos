@@ -20,8 +20,11 @@ import delfos.common.exceptions.dataset.users.UserNotFound;
 import delfos.common.parameters.Parameter;
 import delfos.common.parameters.restriction.DoubleParameter;
 import delfos.common.parameters.restriction.IntegerParameter;
+import delfos.dataset.basic.item.Item;
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
+import delfos.dataset.basic.user.User;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -81,10 +84,10 @@ public class ValidacionPersonalizada extends PredictionProtocol {
     }
 
     @Override
-    public <RatingType extends Rating> List<Set<Long>> getRecommendationRequests(
+    public <RatingType extends Rating> List<Set<Item>> getRecommendationRequests(
             DatasetLoader<RatingType> trainingDatasetLoader,
             DatasetLoader<RatingType> testDatasetLoader,
-            long idUser) throws UserNotFound {
+            User user) throws UserNotFound {
         Random random = new Random(getSeedValue());
 
         double userPercentValue = (Double) getParameterValue(userPercent);
@@ -94,13 +97,13 @@ public class ValidacionPersonalizada extends PredictionProtocol {
         int minRatingsValue = (Integer) getParameterValue(minRatings);
         double ratingsToPredictPercentValue = (Double) getParameterValue(ratingsToPredictPercent);
 
-        Long[] itemsRated = testDatasetLoader.getRatingsDataset().getUserRatingsRated(idUser).keySet().toArray(new Long[0]);
+        Item[] itemsRated = testDatasetLoader.getRatingsDataset().getUserRatingsRated(user.getId()).values().toArray(new Item[0]);
         int extraer = (int) (itemsRated.length * (1 - ratingsToPredictPercentValue));
         if (extraer < minRatingsValue) {
             extraer = minRatingsValue;
         }
 
-        Set<Long> extraidos = new TreeSet<>();
+        Set<Item> extraidos = new TreeSet<>();
         if (extraer > itemsRated.length) {
             return new ArrayList<>();
         }
@@ -110,7 +113,7 @@ public class ValidacionPersonalizada extends PredictionProtocol {
             extraidos.add(itemsRated[index]);
         }
 
-        List<Set<Long>> ret = new ArrayList<>(extraidos.size());
+        List<Set<Item>> ret = new ArrayList<>(extraidos.size());
         ret.add(extraidos);
         return ret;
     }

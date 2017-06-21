@@ -20,8 +20,10 @@ import delfos.common.Global;
 import delfos.common.exceptions.dataset.users.UserNotFound;
 import delfos.common.parameters.Parameter;
 import delfos.common.parameters.restriction.IntegerParameter;
+import delfos.dataset.basic.item.Item;
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
+import delfos.dataset.basic.user.User;
 import delfos.rs.RecommenderSystemAdapter;
 import java.util.ArrayList;
 import java.util.List;
@@ -66,40 +68,40 @@ public class GivenN extends PredictionProtocol {
      * resultados, se deben extraer del dataset de valoraciones que el sistema de recomendación usa todas las
      * valoraciones que se van a predecir.
      *
-     * @param idUser
+     * @param user
      * @return Lista de listas con los elementos que se predicen. Cada lista representa una petición de recomendaciones,
-     * es decir, una llamada a {@link RecommenderSystemAdapter#recommendOnly(java.lang.Long, java.util.Collection) }
+     * es decir, una llamada a la predicción
      * en la que la colección que se pasan son los elementos de la lista.
      * @throws UserNotFound
      */
     @Override
-    public <RatingType extends Rating> List<Set<Long>> getRecommendationRequests(
+    public <RatingType extends Rating> List<Set<Item>> getRecommendationRequests(
             DatasetLoader<RatingType> trainingDatasetLoader,
             DatasetLoader<RatingType> testDatasetLoader,
-            long idUser) throws UserNotFound {
+            User user) throws UserNotFound {
 
         Random random = new Random(getSeedValue());
-        Long[] itemsRated = testDatasetLoader.getRatingsDataset().getUserRatingsRated(idUser).keySet().toArray(new Long[0]);
+        Item[] itemsRated = testDatasetLoader.getRatingsDataset().getUserRatingsRated(user.getId()).values().toArray(new Item[0]);
         int nValue = (Integer) getParameterValue(n);
-        Set<Long> dadosN = new TreeSet<>();
+        Set<Item> dadosN = new TreeSet<>();
 
         if (nValue > itemsRated.length) {
             Global.showWarning("Cannot apply " + GivenN.class.getName() + "\n");
-            Global.showWarning("cause: user '" + idUser + "' have less than " + nValue + " ratings");
+            Global.showWarning("cause: user '" + user.getId() + "' have less than " + nValue + " ratings");
         }
 
         while (dadosN.size() < nValue) {
             dadosN.add(itemsRated[random.nextInt(itemsRated.length)]);
         }
 
-        Set<Long> predecir = new TreeSet<>();
-        for (long idItem : itemsRated) {
-            if (!dadosN.contains(idItem)) {
-                predecir.add(idItem);
+        Set<Item> predecir = new TreeSet<>();
+        for (Item item : itemsRated) {
+            if (!dadosN.contains(item)) {
+                predecir.add(item);
             }
         }
 
-        List<Set<Long>> ret = new ArrayList<>(predecir.size());
+        List<Set<Item>> ret = new ArrayList<>(predecir.size());
         ret.add(predecir);
         return ret;
     }

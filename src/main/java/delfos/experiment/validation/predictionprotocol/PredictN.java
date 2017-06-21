@@ -20,14 +20,18 @@ import delfos.common.Global;
 import delfos.common.exceptions.dataset.users.UserNotFound;
 import delfos.common.parameters.Parameter;
 import delfos.common.parameters.restriction.IntegerParameter;
+import delfos.dataset.basic.item.Item;
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
+import delfos.dataset.basic.user.User;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.stream.Collectors;
 
 /**
  * Implementa la validación de predicción que realiza una validación que predice N valoraciones de cada usuario. Por lo
@@ -67,33 +71,34 @@ public class PredictN extends PredictionProtocol {
     }
 
     @Override
-    public <RatingType extends Rating> List<Set<Long>> getRecommendationRequests(
+    public <RatingType extends Rating> List<Set<Item>> getRecommendationRequests(
             DatasetLoader<RatingType> trainingDatasetLoader,
             DatasetLoader<RatingType> testDatasetLoader,
-            long idUser) throws UserNotFound {
+            User user) throws UserNotFound {
 
         Random random = new Random(getSeedValue());
-        Collection<Long> userRated = new TreeSet<>(testDatasetLoader.getRatingsDataset().getUserRated(idUser));
-        Set<Long> extraidos = new TreeSet<>();
+        Collection<Item> userRated = new TreeSet<>(testDatasetLoader.getRatingsDataset().getUserRatingsRated(user.getId())
+        .values().stream().map(rating -> rating.getItem()).collect(Collectors.toSet()));
+        Set<Item> extraidos = new TreeSet<>();
         Number extraer = (Number) getParameterValue(PredictN.n);
 
         if (extraer.intValue() > userRated.size()) {
             //no se pueden extraer el número que se solicita, qué hacer?
-            Global.showWarning("User " + idUser + " has not enough test rating to extract " + extraer + "\n");
+            Global.showWarning("User " + user.getId() + " has not enough test rating to extract " + extraer + "\n");
 
-            List<Set<Long>> ret = new ArrayList<>(extraidos.size());
-            Set<Long> l = new TreeSet<>(userRated);
+            List<Set<Item>> ret = new ArrayList<>(extraidos.size());
+            Set<Item> l = new TreeSet<>(userRated);
             ret.add(l);
             return ret;
         } else {
             while (!userRated.isEmpty() && extraidos.size() != extraer.doubleValue()) {
                 int index = random.nextInt(userRated.size());
-                long idItem = userRated.toArray(new Long[1])[index];
-                userRated.remove(idItem);
-                extraidos.add(idItem);
+                Item item = userRated.toArray(new Item[1])[index];
+                userRated.remove(item);
+                extraidos.add(item);
             }
 
-            List<Set<Long>> ret = new ArrayList<>(extraidos.size());
+            List<Set<Item>> ret = new ArrayList<>(extraidos.size());
             ret.add(extraidos);
             return ret;
         }

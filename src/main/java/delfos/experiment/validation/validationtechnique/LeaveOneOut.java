@@ -18,9 +18,11 @@ package delfos.experiment.validation.validationtechnique;
 
 import delfos.common.exceptions.dataset.CannotLoadContentDataset;
 import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
+import delfos.dataset.basic.item.Item;
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RatingsDataset;
+import delfos.dataset.basic.user.User;
 import delfos.dataset.storage.validationdatasets.PairOfTrainTestRatingsDataset;
 import delfos.dataset.storage.validationdatasets.ValidationDatasets;
 import java.util.Map;
@@ -58,9 +60,9 @@ public class LeaveOneOut extends ValidationTechnique {
         int split = 0;
         for (Rating rating : ratingsDataset) {
 
-            Map<Long, Set<Long>> conjuntoTest = new TreeMap<>();
-            conjuntoTest.put(rating.getIdUser(), new TreeSet<>());
-            conjuntoTest.get(rating.getIdUser()).add(rating.getIdItem());
+            Map<User, Set<Item>> conjuntoTest = new TreeMap<>();
+            conjuntoTest.put(rating.getUser(), new TreeSet<>());
+            conjuntoTest.get(rating.getIdUser()).add(rating.getItem());
 
             ret[split] = new PairOfTrainTestRatingsDataset<>(
                     datasetLoader,

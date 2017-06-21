@@ -20,10 +20,13 @@ import delfos.ERROR_CODES;
 import delfos.common.Global;
 import delfos.common.exceptions.dataset.items.ItemNotFound;
 import delfos.common.exceptions.dataset.users.UserNotFound;
+import delfos.dataset.basic.item.Item;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RatingsDataset;
 import delfos.dataset.basic.rating.RatingsDatasetAdapter;
 import delfos.dataset.basic.rating.domain.Domain;
+import delfos.dataset.basic.user.User;
+
 import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
@@ -46,7 +49,7 @@ public class TestRatingsDataset_CPU<RatingType extends Rating> extends RatingsDa
     /**
      * Valoraciones de test. Son las valoraciones que son accesibles.
      */
-    private final Map<Long, Set<Long>> testRatings_byUser;
+    private final Map<User, Set<Item>> testRatings_byUser;
     /**
      * Dataset original que contiene el conjunto de datos completo.
      */
@@ -54,16 +57,16 @@ public class TestRatingsDataset_CPU<RatingType extends Rating> extends RatingsDa
     /**
      * Buffer para almacenar el conjunto de productos valorados.
      */
-    private Set<Long> allRatedItems;
+    private Set<Item> allRatedItems;
 
-    public TestRatingsDataset_CPU(RatingsDataset<RatingType> originalDatset, Map<Long, Set<Long>> testSet) throws UserNotFound, ItemNotFound {
+    public TestRatingsDataset_CPU(RatingsDataset<RatingType> originalDatset, Map<User, Set<Item>> testSet) throws UserNotFound, ItemNotFound {
         super();
         this.originalDataset = originalDatset;
 
         this.testRatings_byUser = testSet;
-        for (long idUser : testSet.keySet()) {
-            for (long idItem : testSet.get(idUser)) {
-                if (originalDatset.getRating(idUser, idItem) == null) {
+        for (User user : testSet.keySet()) {
+            for (Item item : testSet.get(user)) {
+                if (originalDatset.getRating(user.getId(),item.getId()) == null) {
                     throw new IllegalArgumentException("Specified rating isn't found in originalDataset");
                 }
             }
@@ -81,7 +84,7 @@ public class TestRatingsDataset_CPU<RatingType extends Rating> extends RatingsDa
 
     @Override
     public Set<Long> allUsers() {
-        return testRatings_byUser.keySet();
+        return testRatings_byUser.keySet().stream().map(user-> user.getId()).collect(Collectors.toSet());
     }
 
     @Override
@@ -89,19 +92,19 @@ public class TestRatingsDataset_CPU<RatingType extends Rating> extends RatingsDa
         if (this.allRatedItems == null) {
             allRatedItems = new TreeSet<>();
 
-            for (Long idUser : testRatings_byUser.keySet()) {
-                allRatedItems.addAll(testRatings_byUser.get(idUser));
+            for (User user: testRatings_byUser.keySet()) {
+                allRatedItems.addAll(testRatings_byUser.get(user));
             }
         }
 
-        return Collections.unmodifiableSet(allRatedItems);
+        return Collections.unmodifiableSet(allRatedItems.stream().map(item-> item.getId()).collect(Collectors.toSet()));
     }
 
     @Override
     public Set<Long> getUserRated(long idUser) throws UserNotFound {
         if (testRatings_byUser.containsKey(idUser)) {
             Set<Long> ret = new TreeSet<>();
-            ret.addAll(testRatings_byUser.get(idUser));
+            ret.addAll(testRatings_byUser.get(idUser).stream().map(user-> user.getId()).collect(Collectors.toSet()));
             return ret;
         } else {
             throw new UserNotFound(idUser);
@@ -128,10 +131,10 @@ public class TestRatingsDataset_CPU<RatingType extends Rating> extends RatingsDa
 
         Map<Long, RatingType> userRatingsRated = testRatings_byUser.get(idUser).parallelStream()
                 .collect(Collectors.toMap(
-                        idItem -> idItem,
-                        idItem -> {
+                        item -> item.getId(),
+                        item -> {
                             try {
-                                return originalDataset.getRating(idUser, idItem);
+                                return originalDataset.getRating(idUser, item.getId());
                             } catch (ItemNotFound ex) {
                                 Global.showError(ex);
                                 ERROR_CODES.ITEM_NOT_FOUND.exit(ex);
@@ -151,8 +154,8 @@ public class TestRatingsDataset_CPU<RatingType extends Rating> extends RatingsDa
                 .keySet().stream()
                 .filter(
                         (idUser) -> (testRatings_byUser.get(idUser).contains(idItem)))
-                .forEach((idUser) -> {
-                    ret.add(idUser);
+                .forEach((user) -> {
+                    ret.add(user.getId());
                 });
         return ret;
     }
@@ -161,10 +164,10 @@ public class TestRatingsDataset_CPU<RatingType extends Rating> extends RatingsDa
     public Map<Long, RatingType> getItemRatingsRated(long idItem) throws ItemNotFound {
         Map<Long, RatingType> ret = new TreeMap<>();
 
-        for (long idUser : testRatings_byUser.keySet()) {
-            if (testRatings_byUser.get(idUser).contains(idItem)) {
+        for (User user  : testRatings_byUser.keySet()) {
+            if (testRatings_byUser.get(user).contains(idItem)) {
                 try {
-                    ret.put(idUser, originalDataset.getRating(idUser, idItem));
+                    ret.put(user.getId(), originalDataset.getRating(user.getId(), idItem));
                 } catch (UserNotFound ex) {
                     Global.showError(ex);
                     ERROR_CODES.USER_NOT_FOUND.exit(ex);

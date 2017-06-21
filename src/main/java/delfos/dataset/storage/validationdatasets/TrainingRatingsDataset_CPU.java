@@ -19,10 +19,13 @@ package delfos.dataset.storage.validationdatasets;
 import delfos.common.Global;
 import delfos.common.exceptions.dataset.items.ItemNotFound;
 import delfos.common.exceptions.dataset.users.UserNotFound;
+import delfos.dataset.basic.item.Item;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RatingsDataset;
 import delfos.dataset.basic.rating.RatingsDatasetAdapter;
 import delfos.dataset.basic.rating.domain.Domain;
+import delfos.dataset.basic.user.User;
+
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
@@ -45,7 +48,7 @@ public class TrainingRatingsDataset_CPU<RatingType extends Rating>
         extends RatingsDatasetAdapter<RatingType>
         implements TrainingRatingsDataset<RatingType> {
 
-    private final Map<Long, Set<Long>> testRatings_byUser;
+    private final Map<User, Set<Item>> testRatings_byUser;
     private final RatingsDataset<RatingType> originalDataset;
     private Set<Long> allRatedItems;
     /**
@@ -54,22 +57,22 @@ public class TrainingRatingsDataset_CPU<RatingType extends Rating>
      */
     private final Map<Long, Map<Long, RatingType>> bufferItems = Collections.synchronizedMap(new TreeMap<Long, Map<Long, RatingType>>());
 
-    public TrainingRatingsDataset_CPU(RatingsDataset<RatingType> originalDataset, Map<Long, Set<Long>> testSet) throws UserNotFound, ItemNotFound {
+    public TrainingRatingsDataset_CPU(RatingsDataset<RatingType> originalDataset, Map<User, Set<Item>> testSet) throws UserNotFound, ItemNotFound {
         super();
         this.originalDataset = originalDataset;
         this.testRatings_byUser = testSet;
-        for (long idUser : testSet.keySet()) {
-            for (long idItem : testSet.get(idUser)) {
-                if (originalDataset.getRating(idUser, idItem) == null) {
-                    Collection<Long> userRated = originalDataset.getUserRated(idUser);
+        for (User user : testSet.keySet()) {
+            for (Item item : testSet.get(user)) {
+                if (originalDataset.getRating(user.getId(), item.getId()) == null) {
+                    Map<Long, RatingType> userRated = originalDataset.getUserRatingsRated(user.getId());
                     if (userRated.isEmpty()) {
-                        Global.showWarning("User " + idUser + "hasn't rated any items.");
+                        Global.showWarning("User " + user + "hasn't rated any items.");
                     }
-                    Collection<Long> itemRated = originalDataset.getItemRated(idItem);
+                    Map<Long, RatingType> itemRated = originalDataset.getItemRatingsRated(item.getId());
                     if (itemRated.isEmpty()) {
-                        Global.showWarning("Item " + idItem + "hasn't received any rating.");
+                        Global.showWarning("Item " + item + "hasn't received any rating.");
                     }
-                    throw new IllegalArgumentException("Specified rating (idUser=" + idUser + ",idItem=" + idItem + ") not found in originalDataset");
+                    throw new IllegalArgumentException("Specified rating (idUser=" + user.getId() + ",idItem=" + item.getId() + ") not found in originalDataset");
                 }
             }
         }
@@ -117,9 +120,9 @@ public class TrainingRatingsDataset_CPU<RatingType extends Rating>
         TreeMap<Long, RatingType> ret = new TreeMap<>(originalDataset.getUserRatingsRated(idUser));
 
         if (testRatings_byUser.containsKey(idUser)) {
-            final Set<Long> ratingsInTestSet = testRatings_byUser.get(idUser);
-            for (long idItem : ratingsInTestSet) {
-                ret.remove(idItem);
+            final Set<Item> ratingsInTestSet = testRatings_byUser.get(idUser);
+            for (Item item : ratingsInTestSet) {
+                ret.remove(item.getId());
             }
         }
 

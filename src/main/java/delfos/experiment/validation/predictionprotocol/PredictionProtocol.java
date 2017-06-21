@@ -73,8 +73,7 @@ public abstract class PredictionProtocol extends ParameterOwnerAdapter implement
      * <code>recommendOnly(idUser,{2});</code> Este mecanismo se utiliza para la validación {@link GivenN} y
      * {@link AllButOne}.
      *
-     * NOTA: Antes de cada {@link RecommenderSystemAdapter#recommendOnly(java.lang.Long, java.util.Collection) }
-     * hay que eliminar las valoraciones que se van a predecir
+     * NOTA: Antes de cada predicción hay que eliminar las valoraciones que se van a predecir
      *
      * Calcula la lista que define cuántas peticiones de recomendación se realizarán al sistema de recomendación y qué
      * items debe predecir en cada una de las mismas. Para ello se devuelve una lista de listas de idItems
@@ -82,21 +81,21 @@ public abstract class PredictionProtocol extends ParameterOwnerAdapter implement
      * @param <RatingType>
      * @param trainingDatasetLoader
      * @param testDatasetLoader
-     * @param idUser Usuario para el que se calcula la lista de peticiones
+     * @param user Usuario para el que se calcula la lista de peticiones
      * @return Lista que define cuántas peticiones y con qué items se debe solicitar al sistema de recomendación
      * colaborativo que realice recomendaciones para su validación
      * @throws UserNotFound Si el usuario idUser no se encuentra en el dataset original.
      */
-    public abstract <RatingType extends Rating> List<Set<Long>> getRecommendationRequests(
+    public abstract <RatingType extends Rating> List<Set<Item>> getRecommendationRequests(
             DatasetLoader<RatingType> trainingDatasetLoader,
             DatasetLoader<RatingType> testDatasetLoader,
-            long idUser) throws UserNotFound;
+            User user) throws UserNotFound;
 
-    public <RatingType extends Rating> List<Set<Long>> getRatingsToHide(
+    public <RatingType extends Rating> List<Set<Item>> getRatingsToHide(
             DatasetLoader<RatingType> trainingDatasetLoader,
             DatasetLoader<RatingType> testDatasetLoader,
-            long idUser) throws UserNotFound {
-        return getRecommendationRequests(trainingDatasetLoader, testDatasetLoader, idUser);
+            User user) throws UserNotFound {
+        return getRecommendationRequests(trainingDatasetLoader, testDatasetLoader, user);
     }
 
     public <RatingType extends Rating> Collection<UserRecommendationRequest<RatingType>> getUserRecommendationRequests(
@@ -105,8 +104,8 @@ public abstract class PredictionProtocol extends ParameterOwnerAdapter implement
             DatasetLoader<RatingType> testDatasetLoader,
             User user) throws UserNotFound {
 
-        List<Set<Long>> recommendationRequests = getRecommendationRequests(trainingDatasetLoader, testDatasetLoader, user.getId());
-        List<Set<Long>> ratingsToHide = getRatingsToHide(trainingDatasetLoader, testDatasetLoader, user.getId());
+        List<Set<Item>> recommendationRequests = getRecommendationRequests(trainingDatasetLoader, testDatasetLoader, user);
+        List<Set<Item>> ratingsToHide = getRatingsToHide(trainingDatasetLoader, testDatasetLoader, user);
 
         if (recommendationRequests.size() != ratingsToHide.size()) {
             throw new IllegalStateException("recommendationRequests and ratingsToHide are not paired (distinct size)");
@@ -116,14 +115,12 @@ public abstract class PredictionProtocol extends ParameterOwnerAdapter implement
 
         return IntStream.range(0, recommendationRequests.size()).boxed().parallel()
                 .map(index -> {
-                    Set<Item> itemsToPredict = recommendationRequests.get(index).parallelStream()
-                            .map(idItem -> contentDataset.get(idItem))
-                            .collect(Collectors.toSet());
+                    Set<Item> itemsToPredict = recommendationRequests.get(index);
 
-                    Set<Long> ratingsToHideThisIndex = ratingsToHide.get(index);
+                    Set<Item> ratingsToHideThisIndex = ratingsToHide.get(index);
 
-                    Map<Long, Set<Long>> predictionRatings = new TreeMap<>();
-                    predictionRatings.put(user.getId(), ratingsToHideThisIndex);
+                    Map<User, Set<Item>> predictionRatings = new TreeMap<>();
+                    predictionRatings.put(user, ratingsToHideThisIndex);
 
                     RatingsDataset<RatingType> predictionRatingsDataset = ValidationDatasets.getInstance()
                             .createTrainingDataset(originalDatasetLoader.getRatingsDataset(), predictionRatings);

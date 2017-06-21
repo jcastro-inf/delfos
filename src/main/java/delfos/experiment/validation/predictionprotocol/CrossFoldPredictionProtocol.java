@@ -19,13 +19,17 @@ package delfos.experiment.validation.predictionprotocol;
 import delfos.common.exceptions.dataset.users.UserNotFound;
 import delfos.common.parameters.Parameter;
 import delfos.common.parameters.restriction.IntegerParameter;
+import delfos.dataset.basic.item.Item;
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
+import delfos.dataset.basic.user.User;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.stream.Collectors;
 
 /**
  * Esta técnica aplica la validación cruzada para la predicción de valoraciones.
@@ -49,23 +53,26 @@ public class CrossFoldPredictionProtocol extends PredictionProtocol {
     }
 
     @Override
-    public <RatingType extends Rating> List<Set<Long>> getRecommendationRequests(
+    public <RatingType extends Rating> List<Set<Item>> getRecommendationRequests(
             DatasetLoader<RatingType> trainingDatasetLoader,
             DatasetLoader<RatingType> testDatasetLoader,
-            long idUser) throws UserNotFound {
+            User user) throws UserNotFound {
 
         Random random = new Random(getSeedValue());
-        ArrayList<Set<Long>> ret = new ArrayList<>();
-        Set<Long> items = new TreeSet<>(testDatasetLoader.getRatingsDataset().getUserRated(idUser));
+        ArrayList<Set<Item>> ret = new ArrayList<>();
+        Set<Item> items = new TreeSet<>(
+                testDatasetLoader.getRatingsDataset().getUserRatingsRated(user.getId())
+        .values().stream().map(rating -> rating.getItem()).collect(Collectors.toSet())
+        );
         for (int i = 0; i < getNumPartitions(); i++) {
             ret.add(new TreeSet<>());
         }
         int n = 0;
         while (!items.isEmpty()) {
-            long idItem = items.toArray(new Long[0])[random.nextInt(items.size())];
-            items.remove(idItem);
+            Item item = items.toArray(new Item[0])[random.nextInt(items.size())];
+            items.remove(item.getId());
             int partition = n % getNumPartitions();
-            ret.get(partition).add(idItem);
+            ret.get(partition).add(item);
             n++;
         }
         return ret;

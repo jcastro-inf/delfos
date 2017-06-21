@@ -24,6 +24,7 @@ import delfos.common.exceptions.dataset.items.ItemNotFound;
 import delfos.common.exceptions.dataset.users.UserNotFound;
 import delfos.common.parameters.Parameter;
 import delfos.common.parameters.restriction.IntegerParameter;
+import delfos.dataset.basic.item.Item;
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.user.User;
@@ -80,7 +81,7 @@ public class CrossFoldValidation_Ratings extends ValidationTechnique {
         PairOfTrainTestRatingsDataset[] ret = new PairOfTrainTestRatingsDataset[numSplit];
 
         //cross validationDatasets initialization
-        Map<Integer, Map<Long, Set<Long>>> todosConjuntosTest = IntStream.range(0, numSplit).boxed()
+        Map<Integer, Map<User, Set<Item>>> todosConjuntosTest = IntStream.range(0, numSplit).boxed()
                 .collect(Collectors.toMap(Function.identity(), i -> new HashMap<>()));
 
         Map<Integer, List<RatingType>> ratingsPartition = getUsersInTestSet(datasetLoader)
@@ -134,15 +135,15 @@ public class CrossFoldValidation_Ratings extends ValidationTechnique {
             Map<User, List<RatingType>> collect = partitionData.getValue().parallelStream()
                     .collect(Collectors.groupingBy(rating -> rating.getUser()));
 
-            Map<Long, Set<Long>> trainingSet = collect.entrySet().parallelStream().collect(Collectors.toMap(
+            Map<User, Set<Item>> trainingSet = collect.entrySet().parallelStream().collect(Collectors.toMap(
                     userTestSetEntry -> {
                         User user = userTestSetEntry.getKey();
-                        return user.getId();
+                        return user;
                     },
-                    entry -> {
-                        List<RatingType> ratingsInTestSet = entry.getValue();
-                        Set<Long> idItem_testSet = ratingsInTestSet.stream()
-                        .map(rating -> rating.getItem().getId())
+                    userTestSetEntry -> {
+                        List<RatingType> ratingsInTestSet = userTestSetEntry.getValue();
+                        Set<Item> idItem_testSet = ratingsInTestSet.stream()
+                        .map(rating -> rating.getItem())
                         .collect(Collectors.toSet());
 
                         return idItem_testSet;

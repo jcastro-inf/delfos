@@ -17,8 +17,11 @@
 package delfos.experiment.validation.predictionprotocol;
 
 import delfos.common.exceptions.dataset.users.UserNotFound;
+import delfos.dataset.basic.item.Item;
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
+import delfos.dataset.basic.user.User;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -38,31 +41,30 @@ public class RecommendationScopeAllItems extends PredictionProtocol {
     public static final long serialVersionUID = 1L;
 
     @Override
-    public <RatingType extends Rating> List<Set<Long>> getRecommendationRequests(
+    public <RatingType extends Rating> List<Set<Item>> getRecommendationRequests(
             DatasetLoader<RatingType> trainingDatasetLoader,
             DatasetLoader<RatingType> testDatasetLoader,
-            long idUser)
+            User user)
             throws UserNotFound {
 
-        Set<Long> allItems = trainingDatasetLoader.getContentDataset()
-                .allIDs()
+        Set<Item> allItems = trainingDatasetLoader.getContentDataset()
                 .parallelStream()
                 .collect(Collectors.toSet());
 
-        List<Set<Long>> recommendationRequests = new ArrayList<>();
+        List<Set<Item>> recommendationRequests = new ArrayList<>();
         recommendationRequests.add(allItems);
 
         return recommendationRequests;
     }
 
     @Override
-    public <RatingType extends Rating> List<Set<Long>> getRatingsToHide(
+    public <RatingType extends Rating> List<Set<Item>> getRatingsToHide(
             DatasetLoader<RatingType> trainingDatasetLoader,
             DatasetLoader<RatingType> testDatasetLoader,
-            long idUser)
+            User user)
             throws UserNotFound {
 
-        List<Set<Long>> ratingsToHide = new ArrayList<>();
+        List<Set<Item>> ratingsToHide = new ArrayList<>();
         ratingsToHide.add(Collections.EMPTY_SET);
         return ratingsToHide;
 
