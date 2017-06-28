@@ -18,7 +18,9 @@ package delfos.io.xml.parameterowner;
 
 import delfos.common.parameters.Parameter;
 import delfos.common.parameters.ParameterOwner;
+import delfos.common.parameters.ParameterOwnerNotFoundException;
 import delfos.common.parameters.ParameterOwnerType;
+import delfos.common.parameters.restriction.ParameterOwnerDoesNotHaveParameter;
 import delfos.io.xml.parameterowner.parameter.ParameterXML;
 import org.jdom2.Element;
 
@@ -50,10 +52,8 @@ public class ParameterOwnerXML {
         ParameterOwnerType parameterOwnerType = ParameterOwnerType.valueOf(typeName);
 
         ParameterOwner parameterOwner = parameterOwnerType.createObjectFromClassName(className);
-
         if (parameterOwner == null) {
-            System.out.println("ParameterOwner is null");
-            parameterOwner = parameterOwnerType.createObjectFromClassName(className);
+            throw new ParameterOwnerNotFoundException(className);
         }
 
         for (Element parameterElement : parameterOwnerElement.getChildren(ParameterXML.PARAMETER_ELEMENT_NAME)) {
@@ -68,7 +68,7 @@ public class ParameterOwnerXML {
 
                 parameterOwner.setParameterValue(parameter, parameterValue);
             } else {
-                System.out.println("Parameter is null");
+                throw new ParameterOwnerDoesNotHaveParameter(parameterOwner,parameterName);
             }
         }
         return parameterOwner;
