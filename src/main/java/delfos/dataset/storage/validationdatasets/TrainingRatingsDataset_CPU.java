@@ -20,18 +20,14 @@ import delfos.common.Global;
 import delfos.common.exceptions.dataset.items.ItemNotFound;
 import delfos.common.exceptions.dataset.users.UserNotFound;
 import delfos.dataset.basic.item.Item;
+import delfos.dataset.basic.rating.IteratorRatingsDataset;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RatingsDataset;
 import delfos.dataset.basic.rating.RatingsDatasetAdapter;
 import delfos.dataset.basic.rating.domain.Domain;
 import delfos.dataset.basic.user.User;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeMap;
-import java.util.TreeSet;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -49,6 +45,9 @@ public class TrainingRatingsDataset_CPU<RatingType extends Rating>
         implements TrainingRatingsDataset<RatingType> {
 
     private final Map<User, Set<Item>> testRatings_byUser;
+
+    private final Map<Long, User > userById;
+    private final Map<Long, Item> itemById;
     private final RatingsDataset<RatingType> originalDataset;
     private Set<Long> allRatedItems;
     /**
@@ -61,6 +60,14 @@ public class TrainingRatingsDataset_CPU<RatingType extends Rating>
         super();
         this.originalDataset = originalDataset;
         this.testRatings_byUser = testSet;
+        userById = new HashMap<>() ;
+        itemById = new HashMap<>();
+
+        for(RatingType rating : originalDataset){
+            userById.put(rating.getUser().getId(), rating.getUser());
+            itemById.put(rating.getItem().getId(),rating.getItem());
+        }
+
         for (User user : testSet.keySet()) {
             for (Item item : testSet.get(user)) {
                 if (originalDataset.getRating(user.getId(), item.getId()) == null) {
@@ -80,7 +87,9 @@ public class TrainingRatingsDataset_CPU<RatingType extends Rating>
 
     @Override
     public RatingType getRating(long idUser, long idItem) throws UserNotFound, ItemNotFound {
-        if (testRatings_byUser.containsKey(idUser) && testRatings_byUser.get(idUser).contains(idItem)) {
+        User user = userById.get(idUser);
+        Item item = itemById.get(idItem);
+        if (testRatings_byUser.containsKey(user) && testRatings_byUser.get(user).contains(item)) {
             return null;
         } else {
             return originalDataset.getRating(idUser, idItem);
@@ -108,19 +117,22 @@ public class TrainingRatingsDataset_CPU<RatingType extends Rating>
     @Override
     public Set<Long> getUserRated(long idUser) throws UserNotFound {
         Set<Long> ret = new TreeSet<>(originalDataset.getUserRated(idUser));
-        if (testRatings_byUser.containsKey(idUser)) {
-            ret.removeAll(testRatings_byUser.get(idUser));
+
+        User user = userById.get(idUser);
+        if (userById.containsKey(idUser) && testRatings_byUser.containsKey(user)) {
+            Set<Long> itemIds = testRatings_byUser.get(user).stream().map(item -> item.getId()).collect(Collectors.toSet());
+            ret.removeAll(itemIds);
         }
         return ret;
     }
 
     @Override
     public Map<Long, RatingType> getUserRatingsRated(long idUser) throws UserNotFound {
-
+        User user = userById.get(idUser);
         TreeMap<Long, RatingType> ret = new TreeMap<>(originalDataset.getUserRatingsRated(idUser));
 
-        if (testRatings_byUser.containsKey(idUser)) {
-            final Set<Item> ratingsInTestSet = testRatings_byUser.get(idUser);
+        if (userById.containsKey(idUser) && testRatings_byUser.containsKey(user)) {
+            final Set<Item> ratingsInTestSet = testRatings_byUser.get(user);
             for (Item item : ratingsInTestSet) {
                 ret.remove(item.getId());
             }
@@ -136,6 +148,8 @@ public class TrainingRatingsDataset_CPU<RatingType extends Rating>
 
     @Override
     public Map<Long, RatingType> getItemRatingsRated(long idItem) throws ItemNotFound {
+        Item item = itemById.get(idItem);
+
         if (bufferItems.containsKey(idItem)) {
             return bufferItems.get(idItem);
         } else {
@@ -143,8 +157,8 @@ public class TrainingRatingsDataset_CPU<RatingType extends Rating>
             Map<Long, RatingType> ret = new TreeMap<>();
             Map<Long, RatingType> itemRatingsRated = originalDataset.getItemRatingsRated(idItem);
             for (Long idUser : itemRatingsRated.keySet()) {
-
-                if (testRatings_byUser.containsKey(idUser) && testRatings_byUser.get(idUser).contains(idItem)) {
+                User user = userById.get(idUser);
+                if (testRatings_byUser.containsKey(user) && testRatings_byUser.get(user).contains(item)) {
                     //está en el test
                 } else {
                     //está en el train

@@ -27,11 +27,7 @@ import delfos.dataset.basic.rating.RatingsDatasetAdapter;
 import delfos.dataset.basic.rating.domain.Domain;
 import delfos.dataset.basic.user.User;
 
-import java.util.Collections;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeMap;
-import java.util.TreeSet;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -50,6 +46,9 @@ public class TestRatingsDataset_CPU<RatingType extends Rating> extends RatingsDa
      * Valoraciones de test. Son las valoraciones que son accesibles.
      */
     private final Map<User, Set<Item>> testRatings_byUser;
+
+    private final Map<Long, User > userById;
+    private final Map<Long, Item> itemById;
     /**
      * Dataset original que contiene el conjunto de datos completo.
      */
@@ -64,6 +63,13 @@ public class TestRatingsDataset_CPU<RatingType extends Rating> extends RatingsDa
         this.originalDataset = originalDatset;
 
         this.testRatings_byUser = testSet;
+        userById = new HashMap<>() ;
+        itemById = new HashMap<>();
+
+        for(RatingType rating : originalDataset){
+            userById.put(rating.getUser().getId(), rating.getUser());
+            itemById.put(rating.getItem().getId(),rating.getItem());
+        }
         for (User user : testSet.keySet()) {
             for (Item item : testSet.get(user)) {
                 if (originalDatset.getRating(user.getId(),item.getId()) == null) {
@@ -75,7 +81,9 @@ public class TestRatingsDataset_CPU<RatingType extends Rating> extends RatingsDa
 
     @Override
     public RatingType getRating(long idUser, long idItem) throws UserNotFound, ItemNotFound {
-        if (testRatings_byUser.containsKey(idUser) && testRatings_byUser.get(idUser).contains(idItem)) {
+        User user = userById.get(idUser);
+        Item item = itemById.get(idItem);
+        if (testRatings_byUser.containsKey(user) && testRatings_byUser.get(user).contains(item)) {
             return originalDataset.getRating(idUser, idItem);
         } else {
             return null;
@@ -102,9 +110,10 @@ public class TestRatingsDataset_CPU<RatingType extends Rating> extends RatingsDa
 
     @Override
     public Set<Long> getUserRated(long idUser) throws UserNotFound {
-        if (testRatings_byUser.containsKey(idUser)) {
+        User user  = userById.get(idUser);
+        if (testRatings_byUser.containsKey(user)) {
             Set<Long> ret = new TreeSet<>();
-            ret.addAll(testRatings_byUser.get(idUser).stream().map(user-> user.getId()).collect(Collectors.toSet()));
+            ret.addAll(testRatings_byUser.get(user).stream().map(item-> item.getId()).collect(Collectors.toSet()));
             return ret;
         } else {
             throw new UserNotFound(idUser);
@@ -115,7 +124,8 @@ public class TestRatingsDataset_CPU<RatingType extends Rating> extends RatingsDa
 
     @Override
     public Map<Long, RatingType> getUserRatingsRated(long idUser) throws UserNotFound {
-        if (!testRatings_byUser.containsKey(idUser)) {
+        User user = userById.get(idUser);
+        if (!testRatings_byUser.containsKey(user)) {
             synchronized (usersWarned) {
                 if (!usersWarned.contains(idUser)) {
                     usersWarned.add(idUser);
@@ -129,7 +139,7 @@ public class TestRatingsDataset_CPU<RatingType extends Rating> extends RatingsDa
             return Collections.EMPTY_MAP;
         }
 
-        Map<Long, RatingType> userRatingsRated = testRatings_byUser.get(idUser).parallelStream()
+        Map<Long, RatingType> userRatingsRated = testRatings_byUser.get(user).parallelStream()
                 .collect(Collectors.toMap(
                         item -> item.getId(),
                         item -> {
@@ -153,7 +163,10 @@ public class TestRatingsDataset_CPU<RatingType extends Rating> extends RatingsDa
         testRatings_byUser
                 .keySet().stream()
                 .filter(
-                        (idUser) -> (testRatings_byUser.get(idUser).contains(idItem)))
+                        (user) -> {
+                            Item item = itemById.get(idItem);
+                            return testRatings_byUser.get(user).contains(item);
+                        })
                 .forEach((user) -> {
                     ret.add(user.getId());
                 });
@@ -164,8 +177,9 @@ public class TestRatingsDataset_CPU<RatingType extends Rating> extends RatingsDa
     public Map<Long, RatingType> getItemRatingsRated(long idItem) throws ItemNotFound {
         Map<Long, RatingType> ret = new TreeMap<>();
 
+        Item item  = itemById.get(idItem);
         for (User user  : testRatings_byUser.keySet()) {
-            if (testRatings_byUser.get(user).contains(idItem)) {
+            if (testRatings_byUser.get(user).contains(item)) {
                 try {
                     ret.put(user.getId(), originalDataset.getRating(user.getId(), idItem));
                 } catch (UserNotFound ex) {
