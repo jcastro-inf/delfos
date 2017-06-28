@@ -149,8 +149,12 @@ public class KnnModelBasedCFRS
             }
 
             itemsWithProfile++;
+            Collection<Neighbor> neighbors = profile.getAllNeighbors().stream()
+                    .filter(neighbor -> !Double.isNaN(neighbor.getSimilarity()))
+                    .filter(neighbor -> neighbor.getSimilarity()> 0)
+                    .collect(Collectors.toList());
 
-            for (Neighbor neighbor : profile.getAllNeighbors()) {
+            for (Neighbor neighbor : neighbors) {
                 long idItemNeighbor = neighbor.getIdNeighbor();
                 double similarity = neighbor.getSimilarity();
                 Rating rating = userRated.get(idItemNeighbor);
