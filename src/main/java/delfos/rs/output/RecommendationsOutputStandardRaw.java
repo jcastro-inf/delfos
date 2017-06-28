@@ -98,4 +98,22 @@ public class RecommendationsOutputStandardRaw extends RecommendationsOutputMetho
             Global.showln("\t" + r.getItem().getId() + "," + r.getItem().getName() + "," + prediction);
         }
     }
+
+    public RecommendationsOutputStandardRaw setShowSortedByPreference(){
+        setParameterValue(SORT_BY,SortBy.SORT_BY_PREFERENCE);
+
+        return this;
+    }
+
+    public RecommendationsOutputStandardRaw setTopN(int n){
+        setParameterValue(NUMBER_OF_RECOMMENDATIONS, n);
+
+        return this;
+    }
+
+    public RecommendationsOutputStandardRaw unsetTopN(){
+        setParameterValue(NUMBER_OF_RECOMMENDATIONS,0);
+        return this;
+    }
 }
+
