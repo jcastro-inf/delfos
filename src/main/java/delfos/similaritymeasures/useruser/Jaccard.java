@@ -25,10 +25,12 @@ import delfos.dataset.basic.rating.RatingsDataset;
 import delfos.dataset.basic.user.User;
 import delfos.rs.RecommenderSystemAdapter;
 import delfos.rs.collaborativefiltering.knn.CommonRating;
+import delfos.rs.collaborativefiltering.knn.RecommendationEntity;
 import delfos.rs.collaborativefiltering.knn.memorybased.KnnMemoryBasedCFRS;
 import delfos.similaritymeasures.CollaborativeSimilarityMeasure;
 import delfos.similaritymeasures.SimilarityMeasureAdapter;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
@@ -62,31 +64,38 @@ public class Jaccard extends SimilarityMeasureAdapter implements CollaborativeSi
     @Override
     public double similarity(Collection<CommonRating> commonRatings, RatingsDataset<? extends Rating> ratings) throws CouldNotComputeSimilarity {
         double intersectionSize = commonRatings.size();
+        if(intersectionSize==0)
+            return Double.NaN;
 
-        double ret = commonRatings.stream().findAny().map(commonRating -> {
+        RecommendationEntity ratingEntity = commonRatings.stream().findAny().map(commonRating -> commonRating.getRatingEntity()).orElse(null);
 
-            long idUser1 = commonRating.getIdR1();
-            long idUser2 = commonRating.getIdR2();
+        long entity1 = commonRatings.stream().findAny().map(cr-> cr.getIdR1()).orElse(-1l);
+        long entity2 = commonRatings.stream().findAny().map(cr-> cr.getIdR2()).orElse(-1l);
 
-            Set<Long> user1ratings = ratings.getUserRated(idUser1);
-            Set<Long> user2ratings = ratings.getUserRated(idUser2);
+        Set<Long> intersection= new HashSet<>();
+        Set<Long> union =new HashSet<>();
+        switch (ratingEntity){
+            case ITEM:
+                intersection.addAll(ratings.getItemRated(entity1));
+                intersection.retainAll(ratings.getItemRated(entity2));
+                union.addAll(ratings.getItemRated(entity1));
+                union.addAll(ratings.getItemRated(entity2));
+                break;
+            case USER:
+                intersection.addAll(ratings.getUserRated(entity1));
+                intersection.retainAll(ratings.getUserRated(entity2));
+                union.addAll(ratings.getUserRated(entity1));
+                union.addAll(ratings.getUserRated(entity2));
+                break;
+            default:
+                throw new IllegalStateException();
+        }
 
-            Set<Long> union = new TreeSet<>();
-            union.addAll(user1ratings);
-            union.addAll(user2ratings);
+        double numerator = intersection.size();
+        double denominator = union.size();
+        double jaccard = numerator / denominator;
 
-            Set<Long> intersection = user1ratings.parallelStream()
-                    .filter(idItem -> user2ratings.contains(idItem))
-                    .collect(Collectors.toSet());
-
-            double numerator = intersection.size();
-            double denominator = union.size();
-            double jaccard = numerator / denominator;
-
-            return jaccard;
-        }).orElse(0.0);
-
-        return ret;
+        return jaccard;
     }
 
     @Override
