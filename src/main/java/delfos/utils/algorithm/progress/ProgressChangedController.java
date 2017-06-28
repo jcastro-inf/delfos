@@ -53,7 +53,7 @@ public final class ProgressChangedController {
      * Notify another task finished and triggers the progress changed event.
      *
      */
-    public void setTaskFinished() {
+    public synchronized void setTaskFinished() {
         this.tasksCompleted.incrementAndGet();
         fireProgressChanged();
     }
@@ -99,9 +99,16 @@ public final class ProgressChangedController {
 
         long remainingTime = remainingTasks * timePerTask;
 
+
+        String message = remainingTasks!= 0 ?
+                taskName:
+                taskName+" completed in "+ chronometer.printTotalElapsed();
+
         listeners.stream().forEach((listener) -> {
-            listener.progressChanged(taskName, percent, remainingTime);
+            listener.progressChanged(message, percent, remainingTime);
         });
+
+
     }
 
 }
