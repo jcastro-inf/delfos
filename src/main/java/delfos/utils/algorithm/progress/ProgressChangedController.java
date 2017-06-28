@@ -77,6 +77,10 @@ public final class ProgressChangedController {
 
         listeners.add(listener);
         listener.progressChanged(taskName, percent, remainingTime);
+
+        if(tasksCompletedNow == numTasks){
+            listener.progressChanged(taskName + " completed in "+chronometer.printTotalElapsed(), 100, -1);
+        }
     }
 
     private void fireProgressChanged() {
