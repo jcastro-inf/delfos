@@ -112,13 +112,13 @@ public class UserSpecificUnexpectedness extends GroupEvaluationMeasure {
                                 .collect(Collectors.toList());
 
                         MeanIterative meanIterative = new MeanIterative(usus);
-                        addILS(meanIterative.getMean(), listSize);
+                        addUSU(meanIterative.getMean(), listSize);
 
                     });
 
         }
 
-        public void addILS(double value, int listSize) {
+        public void addUSU(double value, int listSize) {
 
             synchronized (meanByListSize) {
                 while (meanByListSize.size() < listSize) {
@@ -131,12 +131,12 @@ public class UserSpecificUnexpectedness extends GroupEvaluationMeasure {
             }
         }
 
-        public double getILS(int listSize) {
+        public double getUSU(int listSize) {
             int index = listSize - 1;
             return meanByListSize.get(index).getMean();
         }
 
-        private MeanIterative getMeanILS(int listSize) {
+        private MeanIterative getMeanUSU(int listSize) {
             int index = listSize - 1;
             return meanByListSize.get(index);
         }
@@ -162,13 +162,13 @@ public class UserSpecificUnexpectedness extends GroupEvaluationMeasure {
             for (int listSize = 1; listSize <= this.meanByListSize.size(); listSize++) {
                 str
                         .append("lenght= ").append(listSize).append(" \t\t")
-                        .append("MIUF= ").append(getILS(listSize)).append("\n");
+                        .append("MIUF= ").append(getUSU(listSize)).append("\n");
             }
 
             return str.toString();
         }
 
-        public static final BinaryOperator<MeanByListSize> ILS_JOINER = (MeanByListSize t, MeanByListSize u) -> {
+        public static final BinaryOperator<MeanByListSize> USU_JOINER = (MeanByListSize t, MeanByListSize u) -> {
             MeanByListSize ret = new MeanByListSize();
 
             int maxSize = Math.max(t.meanByListSize.size(), u.meanByListSize.size());
@@ -180,13 +180,13 @@ public class UserSpecificUnexpectedness extends GroupEvaluationMeasure {
             for (int listSize = 1; listSize <= maxSize; listSize++) {
 
                 if (t.contains(listSize)) {
-                    MeanIterative meanIterativeA = t.getMeanILS(listSize);
-                    ret.getMeanILS(listSize).addMean(meanIterativeA);
+                    MeanIterative meanIterativeA = t.getMeanUSU(listSize);
+                    ret.getMeanUSU(listSize).addMean(meanIterativeA);
                 }
 
                 if (u.contains(listSize)) {
-                    MeanIterative meanIterativeB = u.getMeanILS(listSize);
-                    ret.getMeanILS(listSize).addMean(meanIterativeB);
+                    MeanIterative meanIterativeB = u.getMeanUSU(listSize);
+                    ret.getMeanUSU(listSize).addMean(meanIterativeB);
                 }
             }
             return ret;
@@ -201,7 +201,7 @@ public class UserSpecificUnexpectedness extends GroupEvaluationMeasure {
             DatasetLoader<? extends Rating> trainingDatasetLoader,
             DatasetLoader<? extends Rating> testDatasetLoader) {
 
-        MeanByListSize ilsAllGroups = groupRecommenderSystemResult
+        MeanByListSize usuAllGroups = groupRecommenderSystemResult
                 .getGroupsOfUsers().parallelStream()
                 .filter(groupOfUsers -> {
                     SingleGroupRecommendationTaskOutput singleGroupRecommendationTaskOutput = groupRecommenderSystemResult
@@ -232,18 +232,18 @@ public class UserSpecificUnexpectedness extends GroupEvaluationMeasure {
                                 return meanByListSize;
 
                             })
-                            .reduce(MeanByListSize.ILS_JOINER);
+                            .reduce(MeanByListSize.USU_JOINER);
 
                     return userSpecificUnexpectedness_byMember.get();
                 })
-                .reduce(MeanByListSize.ILS_JOINER)
+                .reduce(MeanByListSize.USU_JOINER)
                 .get();
 
         double measureValue;
-        if (ilsAllGroups.size() >= this.listSizeOfMeasure) {
-            measureValue = ilsAllGroups.getILS(this.listSizeOfMeasure);
+        if (usuAllGroups.size() >= this.listSizeOfMeasure) {
+            measureValue = usuAllGroups.getUSU(this.listSizeOfMeasure);
         } else {
-            measureValue = ilsAllGroups.getILS(ilsAllGroups.size());
+            measureValue = usuAllGroups.getUSU(usuAllGroups.size());
         }
 
         return new GroupEvaluationMeasureResult(this, measureValue);
