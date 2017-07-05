@@ -249,8 +249,8 @@ public class DatasetPrinter {
         return printCompactRatingTable(new BothIndexRatingsDataset<>(ratings), new ArrayList<>(users), new ArrayList<>(items));
     }
 
-    public static String printCompactRatingTable(Collection<Rating> ratings) {
-        return printCompactRatingTable(new BothIndexRatingsDataset<Rating>(ratings));
+    public static <RatingType extends Rating> String printCompactRatingTable(Collection<RatingType> ratings) {
+        return printCompactRatingTable(new BothIndexRatingsDataset<RatingType>(ratings));
     }
 
     public static String printCompactRatingTable(Map<Long, Map<Long, Number>> ratings, Collection<Long> users, Collection<Long> items) {
@@ -521,4 +521,32 @@ public class DatasetPrinter {
 
     }
 
+    public static String printItemItem(Map<Item, Map<Item, Double>> itemItemSimilarities) {
+        StringBuilder str = new StringBuilder();
+        Set<Item> items = itemItemSimilarities.keySet();
+
+        Set<Item> rowItems = itemItemSimilarities.keySet();
+        Set<Item> columnItems =itemItemSimilarities.values().stream().flatMap(map -> map.keySet().stream()).collect(Collectors.toSet());
+
+        if(!rowItems.equals(columnItems)){
+            throw new IllegalStateException("Row and columns have different items");
+        }
+
+        str.append("i\\i\t");
+        items.stream().forEach(item -> str.append(item.getName()).append("\t"));
+        str.replace(str.length()-1,str.length(),"\n");
+
+
+        items.forEach(item -> {
+            str.append(item.getName()).append("\t");
+
+            Map<Item, Double> thisItemSimilarities = itemItemSimilarities.get(item);
+            items.stream().forEach(item2-> str.append(thisItemSimilarities.get(item2)).append("\t"));
+
+            str.replace(str.length()-1,str.length(),"\n");
+        });
+
+
+        return str.toString();
+    }
 }
