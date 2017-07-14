@@ -32,23 +32,30 @@ import delfos.group.results.grouprecomendationresults.GroupRecommenderSystemResu
 import delfos.rs.RecommenderSystem;
 import delfos.rs.RecommenderSystemBuildingProgressListener_default;
 import delfos.rs.bufferedrecommenders.RecommenderSystem_cacheRecommendationModel;
+import delfos.rs.collaborativefiltering.knn.CommonRating;
 import delfos.rs.collaborativefiltering.svd.TryThisAtHomeSVD;
 import delfos.rs.collaborativefiltering.svd.TryThisAtHomeSVDModel;
 import delfos.rs.recommendation.Recommendation;
 import delfos.similaritymeasures.CosineCoefficient;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 import java.util.function.BinaryOperator;
 import java.util.stream.Collectors;
+import java.util.stream.DoubleStream;
+
+import delfos.similaritymeasures.PearsonCorrelationCoefficient;
 import org.jdom2.Element;
 
 /**
  * Evaluation metric that computes the similarity of the items recommended. This measure is intended to capture the
  * diversity of the recommender. A lower value means that the recommender generates more diverse recommendations.
  *
- * @author jcastro-inf ( https://github.com/jcastro-inf )
+ * Measures the Average Intra-List Distance (Recommender Systems Handbook, 2nd edition, 26.3.2).
  *
+ * @author jcastro-inf ( https://github.com/jcastro-inf )
  */
 public class IntraListSimilarity extends GroupEvaluationMeasure {
 
@@ -316,5 +323,26 @@ public class IntraListSimilarity extends GroupEvaluationMeasure {
 
         return ilsXMLElement;
 
+    }
+
+    public static double getILS(DatasetLoader<? extends  Rating> datasetLoader,Set<Item> recommendations) {
+        PearsonCorrelationCoefficient pcc = new PearsonCorrelationCoefficient();
+
+        List<Double> similarities = recommendations.stream().flatMapToDouble(item1 -> {
+            DoubleStream thisItemSimilarities = recommendations.stream()
+                    .filter(item2 -> item1.getId() < item2.getId())
+                    .mapToDouble(item2 -> {
+                        Collection<CommonRating> commonRating = CommonRating.intersection(datasetLoader, item1, item2);
+
+                        double similarity = pcc.similarity(datasetLoader, item1, item2);
+                        similarity = (similarity + 1) / 2.0;
+                        similarity = commonRating.size() >= 20 ? similarity : similarity * commonRating.size() / 20.0;
+                        return similarity;
+                    }).filter(value -> !Double.isNaN(value));
+            return thisItemSimilarities;
+        }).boxed().collect(Collectors.toList());
+
+        double ils = similarities.stream().mapToDouble(d-> d).average().getAsDouble();
+        return ils;
     }
 }

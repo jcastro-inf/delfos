@@ -17,6 +17,7 @@
 package delfos.group.results.groupevaluationmeasures.novelty.usu;
 
 import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
+import delfos.configureddatasets.ConfiguredDatasetsFactory;
 import delfos.constants.DelfosTest;
 import delfos.dataset.basic.item.Item;
 import delfos.dataset.basic.loader.types.CompleteDatasetLoaderAbstract;
@@ -24,6 +25,7 @@ import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RatingsDataset;
 import delfos.dataset.basic.rating.RelevanceCriteria;
+import delfos.dataset.util.DatasetPrinter;
 import delfos.group.casestudy.parallelisation.SingleGroupRecommendationTaskInput;
 import delfos.group.casestudy.parallelisation.SingleGroupRecommendationTaskOutput;
 import delfos.group.groupsofusers.GroupOfUsers;
@@ -32,12 +34,14 @@ import delfos.group.results.groupevaluationmeasures.GroupEvaluationMeasureResult
 import delfos.group.results.groupevaluationmeasures.MAETest;
 import delfos.group.results.groupevaluationmeasures.RatingsDatasetMock;
 import delfos.group.results.grouprecomendationresults.GroupRecommenderSystemResult;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
+
+import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import static org.junit.Assert.assertEquals;
+
+import delfos.rs.collaborativefiltering.knn.CommonRating;
+import delfos.similaritymeasures.PearsonCorrelationCoefficient;
 import org.junit.Test;
 
 /**
@@ -49,7 +53,6 @@ public class UserSpecificUnexpectednessTest extends DelfosTest {
     public UserSpecificUnexpectednessTest() {
     }
 
-    @Test
     public void test() {
         //Phase 1: Preparation
         final RatingsDataset<Rating> testDataset = new RatingsDatasetMock();
@@ -101,5 +104,66 @@ public class UserSpecificUnexpectednessTest extends DelfosTest {
         double delta = 0.001f;
         assertEquals(expResult, groupMaeResult.getValue(), delta);
 
+    }
+
+    @Test
+    public void testPrinPairwiseMatrix(){
+
+        DatasetLoader<? extends Rating> ml100k = ConfiguredDatasetsFactory.getInstance().getDatasetLoader("ml-100k");
+
+        List<Item> items = ml100k.getContentDataset().stream().limit(10).collect(Collectors.toList());
+
+
+        PearsonCorrelationCoefficient pcc = new PearsonCorrelationCoefficient();
+        Map<Item,Map<Item,Double>> itemItemSimilarities = items.parallelStream()
+                .collect(Collectors.toMap(
+                        Function.identity(),
+                        item -> {
+                            Map<Item, Double> thisItemSimilarities = items.parallelStream().collect(Collectors.toMap(Function.identity(), item2 -> {
+                                Collection<CommonRating> commonRating = CommonRating.intersection(ml100k, item, item2);
+                                
+                                double similarity = pcc.similarity(ml100k, item, item2);
+
+                                similarity = (similarity + 1) / 2.0;
+                                similarity = commonRating.size() >= 20? similarity: similarity* commonRating.size()/20.0;
+
+                                return similarity;
+                            }));
+                            return thisItemSimilarities;
+                        })
+                );
+
+        System.out.println(DatasetPrinter.printItemItem(itemItemSimilarities));
+    }
+
+    @Test
+    public void testUSUforUser1(){
+
+        DatasetLoader<? extends  Rating> ml100k = ConfiguredDatasetsFactory.getInstance().getDatasetLoader("ml-100k");
+
+
+        Item item1 = ml100k.getContentDataset().get(8);
+        Item item2 = ml100k.getContentDataset().get(1);
+        Item item3 = ml100k.getContentDataset().get(5);
+        Item item4 = ml100k.getContentDataset().get(6);
+        Item item5 = ml100k.getContentDataset().get(10);
+        Item item6 = ml100k.getContentDataset().get(2);
+        Item item7 = ml100k.getContentDataset().get(7);
+        Item item8 = ml100k.getContentDataset().get(4);
+        Item item9 = ml100k.getContentDataset().get(3);
+        Item item10 = ml100k.getContentDataset().get(9);
+
+        Set<Item> user1Rated = Arrays.asList(item1,item2).stream().collect(Collectors.toSet());
+        Set<Item> user1Recom = Arrays.asList(item3,item4,item5).stream().collect(Collectors.toSet());
+
+
+        Set<Item> user2Rated = Arrays.asList(item2,item3, item4).stream().collect(Collectors.toSet());
+        Set<Item> user2Recom = Arrays.asList(item1,item5).stream().collect(Collectors.toSet());
+
+        double usu1 = UserSpecificUnexpectedness.getUSU(ml100k,user1Rated, user1Recom);
+        double usu2 = UserSpecificUnexpectedness.getUSU(ml100k,user2Rated, user2Recom);
+
+        System.out.println("User 1 usu: "+usu1);
+        System.out.println("User 2 usu: "+usu2);
     }
 }

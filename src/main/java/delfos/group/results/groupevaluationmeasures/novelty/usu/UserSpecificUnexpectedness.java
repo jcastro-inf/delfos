@@ -31,18 +31,15 @@ import delfos.rs.collaborativefiltering.knn.CommonRating;
 import delfos.rs.recommendation.Recommendation;
 import delfos.rs.recommendation.Recommendations;
 import delfos.similaritymeasures.PearsonCorrelationCoefficient;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+
+import java.util.*;
 import java.util.function.BinaryOperator;
 import java.util.stream.Collectors;
+import java.util.stream.DoubleStream;
 import java.util.stream.IntStream;
 
 /**
- * Measures the Global Long-Tail Novelty (see Recommender Systems Handbook, 26.3.3). It is calculated using the
+ * Measures the Global Long-Tail Novelty (see Recommender Systems Handbook, 2nd edition, 26.3.4). It is calculated using the
  * probability of items being known by users.
  *
  * @author jcastro-inf ( https://github.com/jcastro-inf )
@@ -74,8 +71,10 @@ public class UserSpecificUnexpectedness extends GroupEvaluationMeasure {
 
             PearsonCorrelationCoefficient pcc = new PearsonCorrelationCoefficient();
 
+            int numRecommendations = recommendationsSorted.size();
+
             List<List<Double>> recommendationsUSU = IntStream
-                    .range(0, recommendations.getRecommendations().size()).boxed()
+                    .range(0, numRecommendations).boxed()
                     .map(listSize -> {
 
                         Recommendation recommendation = recommendationsSorted.get(listSize);
@@ -108,7 +107,6 @@ public class UserSpecificUnexpectedness extends GroupEvaluationMeasure {
                         List<Double> usus = recommendationsUSU.subList(0, listSize + 1)
                                 .parallelStream()
                                 .flatMap(listForSize -> listForSize.parallelStream())
-                                .map(value -> value)
                                 .collect(Collectors.toList());
 
                         MeanIterative meanIterative = new MeanIterative(usus);
@@ -263,4 +261,31 @@ public class UserSpecificUnexpectedness extends GroupEvaluationMeasure {
         return true;
     }
 
+    public static double getUSU(DatasetLoader<? extends Rating> datasetLoader, Set<Item> userRated, Set<Item> recommended){
+        PearsonCorrelationCoefficient pcc = new PearsonCorrelationCoefficient();
+
+        if(userRated.stream().anyMatch(item -> recommended.contains(item))){
+            throw new IllegalArgumentException("Item sets must be disjoint");
+        }
+
+        DoubleStream doubleStream = userRated.stream().flatMapToDouble(item1 -> {
+            DoubleStream ds = recommended.stream().mapToDouble(item2 -> {
+
+                Collection<CommonRating> commonRating = CommonRating.intersection(datasetLoader,item1,item2);
+
+                double similarity = pcc.similarity(datasetLoader, item1, item2);
+                similarity = (similarity + 1) / 2.0;
+
+                similarity = commonRating.size() >= 20? similarity: similarity* commonRating.size()/20.0;
+
+                return similarity;
+            }).filter(value -> !Double.isNaN(value));
+            return ds;
+        });
+
+        List<Double> similarities = doubleStream.boxed().collect(Collectors.toList());
+
+        double usu = similarities.stream().mapToDouble(d->d).average().getAsDouble();
+        return usu;
+    }
 }
