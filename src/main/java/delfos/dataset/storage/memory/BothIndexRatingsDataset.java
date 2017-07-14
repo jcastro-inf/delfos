@@ -18,6 +18,7 @@ package delfos.dataset.storage.memory;
 
 import delfos.ERROR_CODES;
 import delfos.common.exceptions.dataset.users.UserNotFound;
+import delfos.dataset.basic.item.Item;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RatingsDataset;
 import delfos.dataset.basic.rating.RatingsDatasetAdapter;
@@ -156,6 +157,8 @@ public class BothIndexRatingsDataset<RatingType extends Rating> extends RatingsD
     }
 
     public BothIndexRatingsDataset(Collection<RatingType> ratings) {
+        checkUniqueIdUsers(ratings);
+        checkUniqueIdItems(ratings);
         checkUniqueRatings(ratings);
 
         Map<Long, Map<Long, RatingType>> ratingsByUser = ratings.parallelStream()
@@ -187,6 +190,30 @@ public class BothIndexRatingsDataset<RatingType extends Rating> extends RatingsD
         itemIndex = ratingsByItem;
 
         numRatings = ratings.size();
+    }
+
+    private void checkUniqueIdUsers(Collection<RatingType> ratings) {
+        Map<Long, List<User>> usersById= ratings.stream().map(rating -> rating.getUser()).collect(Collectors.groupingBy(
+                user -> user.getId()));
+
+        for (Map.Entry<Long, List<User>> entry : usersById.entrySet()) {
+            Set<User> distinctUsers = entry.getValue().stream().collect(Collectors.toSet());
+            if(distinctUsers.size()>1){
+                throw new IllegalArgumentException("Multiple users with the same id, (noticed at user with id="+entry.getKey());
+            }
+        }
+    }
+
+    private void checkUniqueIdItems(Collection<RatingType> ratings) {
+        Map<Long, List<Item>> itemsById= ratings.stream().map(rating -> rating.getItem()).collect(Collectors.groupingBy(
+                item -> item.getId()));
+
+        for (Map.Entry<Long, List<Item>> entry : itemsById.entrySet()) {
+            Set<Item> distinctItems = entry.getValue().stream().collect(Collectors.toSet());
+            if(distinctItems.size()>1){
+                throw new IllegalArgumentException("Multiple items with the same id, (noticed at item with id="+entry.getKey());
+            }
+        }
     }
 
     private void checkUniqueRatings(Collection<RatingType> ratings) {
