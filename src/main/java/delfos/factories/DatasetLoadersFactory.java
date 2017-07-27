@@ -56,19 +56,19 @@ public class DatasetLoadersFactory extends Factory<DatasetLoader> {
         instance.addClass(MySQLDatabaseDatasetLoader_Default.class);
         instance.addClass(ImplicitTrustDataset.class);
 
-        //Datasets modificables
+        //Modifiable datasets
         instance.addClass(ChangeableCSVFileDatasetLoader.class);
         instance.addClass(ChangeableMySQLDatasetLoader.class);
 
-        //Datasets de MovieLens
+        //MovieLens datasets
         instance.addClass(MovieLens100k.class);
         instance.addClass(MovieLens1Million.class);
 
-        //Datasets de EPinions
+        //EPinions datasets
         instance.addClass(EPinionsDatasetLoader.class);
         instance.addClass(EPinionsTrustlet.class);
 
-        //Dataset de BookCrossing
+        //BookCrossing datasets
         instance.addClass(BookCrossingDatasetLoader.class);
 
         //Configured datasets
@@ -77,8 +77,8 @@ public class DatasetLoadersFactory extends Factory<DatasetLoader> {
         //Datasets from filtering other datasets
         instance.addClass(DatasetLoader_restrictNumRatings.class);
 
+        //Netflix datasets
         instance.addClass(RSCourseraDatasetLoader.class);
-
     }
 
     private DatasetLoadersFactory() {
