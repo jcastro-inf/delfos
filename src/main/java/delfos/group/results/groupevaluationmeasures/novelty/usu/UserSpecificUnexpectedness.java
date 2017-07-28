@@ -16,13 +16,16 @@
  */
 package delfos.group.results.groupevaluationmeasures.novelty.usu;
 
+import delfos.common.Global;
 import delfos.common.statisticalfuncions.MeanIterative;
 import delfos.dataset.basic.item.Item;
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RelevanceCriteria;
+import delfos.dataset.basic.user.User;
 import delfos.group.casestudy.parallelisation.SingleGroupRecommendationTaskInput;
 import delfos.group.casestudy.parallelisation.SingleGroupRecommendationTaskOutput;
+import delfos.group.groupsofusers.GroupOfUsers;
 import delfos.group.grs.recommendations.GroupRecommendations;
 import delfos.group.results.groupevaluationmeasures.GroupEvaluationMeasure;
 import delfos.group.results.groupevaluationmeasures.GroupEvaluationMeasureResult;
@@ -37,6 +40,7 @@ import java.util.function.BinaryOperator;
 import java.util.stream.Collectors;
 import java.util.stream.DoubleStream;
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 /**
  * Measures the Global Long-Tail Novelty (see Recommender Systems Handbook, 2nd edition, 26.3.4). It is calculated using the
@@ -190,9 +194,55 @@ public class UserSpecificUnexpectedness extends GroupEvaluationMeasure {
             return ret;
         };
     }
-
     @Override
     public GroupEvaluationMeasureResult getMeasureResult(
+            GroupRecommenderSystemResult groupRecommenderSystemResult,
+            DatasetLoader<? extends Rating> originalDatasetLoader,
+            RelevanceCriteria relevanceCriteria,
+            DatasetLoader<? extends Rating> trainingDatasetLoader,
+            DatasetLoader<? extends Rating> testDatasetLoader) {
+
+            Map<GroupOfUsers,Double> usuByGroup = groupRecommenderSystemResult.getGroupsOfUsers().parallelStream().collect(Collectors.toMap(
+
+                    group->group,
+                    group -> {
+
+                        SingleGroupRecommendationTaskInput input = groupRecommenderSystemResult.getGroupInput(group);
+                        SingleGroupRecommendationTaskOutput output = groupRecommenderSystemResult.getGroupOutput(group);
+
+                        Collection<Recommendation> recommendations = output.getRecommendations().getRecommendations();
+
+                        Set<Item> itemsRecommended = recommendations.parallelStream()
+                                .filter(Recommendation.NON_COVERAGE_FAILURES)
+                                .sorted(Recommendation.BY_PREFERENCE_DESC)
+                                .limit(listSizeOfMeasure)
+                                .map(r -> r.getItem())
+                                .collect(Collectors.toSet());
+
+                        Map<User, Double> usuByMember = group.getMembers().stream().collect(Collectors.toMap(member-> member, member -> {
+
+                            Set<Item> ratedItems = trainingDatasetLoader.getRatingsDataset()
+                                    .getUserRatingsRated(member.getId())
+                                    .values().stream()
+                                    .map(rating -> rating.getItem())
+                                    .collect(Collectors.toSet());
+
+                            double usu = getUSU(originalDatasetLoader, ratedItems, itemsRecommended);
+
+                            return usu;
+                        }));
+
+                        double groupUsu = usuByMember.values().stream().mapToDouble(d -> d).average().getAsDouble();
+                        return groupUsu;
+                    }));
+
+
+            double usu = usuByGroup.values().stream().mapToDouble(v-> v).average().getAsDouble();
+            return new GroupEvaluationMeasureResult(this,usu);
+
+    }
+
+    public GroupEvaluationMeasureResult getMeasureResultOld(
             GroupRecommenderSystemResult groupRecommenderSystemResult,
             DatasetLoader<? extends Rating> originalDatasetLoader,
             RelevanceCriteria relevanceCriteria,
@@ -253,7 +303,6 @@ public class UserSpecificUnexpectedness extends GroupEvaluationMeasure {
 
     protected UserSpecificUnexpectedness(int listSizeOfMeasure) {
         this.listSizeOfMeasure = listSizeOfMeasure;
-
     }
 
     @Override
@@ -262,30 +311,35 @@ public class UserSpecificUnexpectedness extends GroupEvaluationMeasure {
     }
 
     public static double getUSU(DatasetLoader<? extends Rating> datasetLoader, Set<Item> userRated, Set<Item> recommended){
-        PearsonCorrelationCoefficient pcc = new PearsonCorrelationCoefficient();
+        //validateRecommendationsAreNotRated(userRated, recommended);
 
-        if(userRated.stream().anyMatch(item -> recommended.contains(item))){
-            throw new IllegalArgumentException("Item sets must be disjoint");
-        }
+        PearsonCorrelationCoefficient pcc = new PearsonCorrelationCoefficient();
 
         DoubleStream doubleStream = userRated.stream().flatMapToDouble(item1 -> {
             DoubleStream ds = recommended.stream().mapToDouble(item2 -> {
-
                 Collection<CommonRating> commonRating = CommonRating.intersection(datasetLoader,item1,item2);
-
                 double similarity = pcc.similarity(datasetLoader, item1, item2);
                 similarity = (similarity + 1) / 2.0;
-
                 similarity = commonRating.size() >= 20? similarity: similarity* commonRating.size()/20.0;
-
                 return similarity;
-            }).filter(value -> !Double.isNaN(value));
+            });
             return ds;
         });
 
         List<Double> similarities = doubleStream.boxed().collect(Collectors.toList());
 
-        double usu = similarities.stream().mapToDouble(d->d).average().getAsDouble();
+        similarities = similarities.stream()
+                .filter(value -> !Double.isNaN(value))
+                .collect(Collectors.toList());
+
+        double usu = similarities.stream().mapToDouble(d->d).average().orElse(Double.NaN);
         return usu;
+    }
+
+    private static void validateRecommendationsAreNotRated(Set<Item> userRated, Set<Item> recommended) {
+        if(userRated.stream().anyMatch(item -> recommended.contains(item))){
+            List<Item> itemsRated = userRated.stream().filter(item -> recommended.contains(item)).sorted(Item.BY_ID).collect(Collectors.toList());
+            Global.showWarning("Some recommendations were already rated previously: '"+itemsRated+"'");
+        }
     }
 }
