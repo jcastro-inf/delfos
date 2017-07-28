@@ -76,10 +76,6 @@ public class RecommenderSystem_fixedFilePersistence<RecommenderSystemModel> exte
     public static final Parameter recommenderSystem = new Parameter(
             "recommenderSystem",
             new RecommenderSystemParameterRestriction(new KnnModelBasedCFRS(), RecommenderSystem.class));
-    /**
-     * Objeto para realizar la exclusión mútua en la generación del dataset.
-     */
-    private final Object exMut = this;
 
     public RecommenderSystem_fixedFilePersistence() {
         super();
@@ -122,8 +118,6 @@ public class RecommenderSystem_fixedFilePersistence<RecommenderSystemModel> exte
     @Override
     public RecommenderSystemModel build(DatasetLoader<? extends Rating> datasetLoader) throws CannotLoadRatingsDataset, CannotLoadContentDataset, CannotLoadUsersDataset {
 
-        synchronized (exMut) {
-
             RecommenderSystemModel model;
 
             int ratingsDatasetHashCode = datasetLoader.getRatingsDataset().hashCode();
@@ -150,16 +144,18 @@ public class RecommenderSystem_fixedFilePersistence<RecommenderSystemModel> exte
             } catch (FailureInPersistence ex) {
                 RecommenderSystemBuildingProgressListener listener = this::fireBuildingProgressChangedEvent;
 
-                Global.showWarning("Recommendation model not found: " + filePersistenceWithHashSuffix.getCompleteFileName() + "\n");
-                Global.showWarning("REASON");
-                Global.showWarning(ex);
-                Global.showWarning("\tThe recommender system model needs to be constructed.\n");
+                Global.showWarning("Recommendation model not found: " + filePersistenceWithHashSuffix.getCompleteFileName());
+                //Global.showWarning("REASON");
+                //Global.showWarning(ex);
+                Global.showWarning("\tThe recommender system model needs to be constructed.");
                 getRecommenderSystem().addBuildingProgressListener(listener);
                 try {
                     RecommenderSystemModel computedModel = (RecommenderSystemModel) getRecommenderSystem().build(datasetLoader);
                     model = computedModel;
                     getRecommenderSystem().saveModel(filePersistenceWithHashSuffix, computedModel);
                 } catch (FailureInPersistence ex1) {
+                    Global.showWarning("REASON");
+                    Global.showWarning(ex);
                     ERROR_CODES.FAILURE_IN_PERSISTENCE.exit(ex1);
                     model = null;
                 }
@@ -167,7 +163,6 @@ public class RecommenderSystem_fixedFilePersistence<RecommenderSystemModel> exte
             }
 
             return (RecommenderSystemModel) model;
-        }
     }
 
     @Override

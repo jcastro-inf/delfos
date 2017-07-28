@@ -9,6 +9,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.stream.Collectors;
+
 import delfos.common.Global;
 import delfos.common.exceptions.CouldNotComputeSimilarity;
 import delfos.common.exceptions.CouldNotPredictRating;
@@ -117,30 +119,26 @@ public class KnnModelBased_NWR
             tasks.add(new KnnModelBasedCBRSTask(idItem, this, ratingsDataset));
         });
 
-        MultiThreadExecutionManager<KnnModelBasedCBRSTask> executionManager = new MultiThreadExecutionManager<>(
-                "Profile creation",
-                tasks,
-                SingleItemProfileGeneration.class);
-
-        executionManager.addExecutionProgressListener((String proceso, int percent, long remainingMiliSeconds) -> {
-            fireBuildingProgressChangedEvent(proceso, percent, remainingMiliSeconds);
-        });
-        executionManager.run();
+        SingleItemProfileGeneration generate = new SingleItemProfileGeneration();
 
         int neighborhoodSize_store = (Integer) getParameterValue(NEIGHBORHOOD_SIZE_STORE);
+        Map<Integer, KnnModelItemProfile> itemsProfiles = allRatedItems.parallelStream().map(idItem -> {
+            KnnModelBasedCBRSTask task = new KnnModelBasedCBRSTask(
+                    idItem,
+                    this,
+                    ratingsDataset
+            );
+    
+            generate.executeSingleTask(task);
 
-        Map<Integer, KnnModelItemProfile> itemsProfiles = new TreeMap<>();
-        executionManager.getAllFinishedTasks().stream().forEach((finishedTasks) -> {
-            List<Neighbor> neighbors = finishedTasks.getNeighbors();
-
-            //TODO: Recortar la lista si ésta es muy grande...
+            List<Neighbor> neighbors = task.getNeighbors();
             neighbors = neighbors.subList(0, Math.min(neighbors.size(), neighborhoodSize_store));
-            itemsProfiles.put(finishedTasks.idItem, new KnnModelItemProfile(finishedTasks.getIdItem(), neighbors));
-        });
+
+            return new KnnModelItemProfile(idItem, neighbors);
+        }).collect(Collectors.toMap(itemModel -> itemModel.getIdItem(), itemModel -> itemModel));
 
         fireBuildingProgressChangedEvent("Finished profile creation", 100, -1);
         return new KnnModelBasedCFRSModel(itemsProfiles);
-
     }
 
     @Override
@@ -221,50 +219,53 @@ public class KnnModelBased_NWR
         boolean isRelevanceFactorApplied = (Boolean) getParameterValue(RELEVANCE_FACTOR);
         int relevanceFactorIntValue = (Integer) getParameterValue(RELEVANCE_FACTOR_VALUE);
 
-        List<Neighbor> itemsSimilares = new ArrayList<>();
         Map<Integer, ? extends Rating> itemRatingsRated = ratingsDataset.getItemRatingsRated(idItem);
 
         Collection<Integer> allItems = ratingsDataset.allRatedItems();
-        for (int idItemNeighbor : allItems) {
-            if (idItem != idItemNeighbor) {
-                try {
-                    Map<Integer, ? extends Rating> neighborRated = ratingsDataset.getItemRatingsRated(idItemNeighbor);
-                    Set<Integer> intersection = new HashSet<>(itemRatingsRated.keySet());
-                    intersection.retainAll(neighborRated.keySet());
-                    if (intersection.isEmpty()) {
-                        continue;
-                    }
-                    List<CommonRating> common = new LinkedList<>();
-                    for (int idUser : intersection) {
-                        common.add(new CommonRating(
-                                RecommendationEntity.USER,
-                                idUser,
-                                RecommendationEntity.ITEM,
-                                idItem,
-                                idItemNeighbor,
-                                itemRatingsRated.get(idUser).ratingValue.floatValue(),
-                                neighborRated.get(idUser).ratingValue.floatValue()));
-                    }
 
-                    float similarity;
+
+        List<Neighbor> itemsSimilares = allItems.parallelStream()
+                .filter(idItemNeighbor -> idItemNeighbor != idItem)
+                .map(idItemNeighbor ->{
+
                     try {
-                        similarity = similarityMeasureValue.similarity(common, ratingsDataset);
-                        if (similarity > 0) {
-                            if (isRelevanceFactorApplied && common.size() < relevanceFactorIntValue) {
-                                similarity = (similarity * (common.size() / (float) relevanceFactorIntValue));
-                            }
-                            itemsSimilares.add(new Neighbor(RecommendationEntity.ITEM, idItemNeighbor, similarity));
+                        Map<Integer, ? extends Rating> neighborRated = ratingsDataset.getItemRatingsRated(idItemNeighbor);
+                        Set<Integer> intersection = new HashSet<>(itemRatingsRated.keySet());
+                        intersection.retainAll(neighborRated.keySet());
+                        if (intersection.isEmpty()) {
+                            return new Neighbor(RecommendationEntity.ITEM, idItemNeighbor, Float.NaN);
                         }
-                    } catch (CouldNotComputeSimilarity ex) {
+                        List<CommonRating> common = new LinkedList<>();
+                        for (int idUser : intersection) {
+                            common.add(new CommonRating(
+                                    RecommendationEntity.USER,
+                                    idUser,
+                                    RecommendationEntity.ITEM,
+                                    idItem,
+                                    idItemNeighbor,
+                                    itemRatingsRated.get(idUser).ratingValue.floatValue(),
+                                    neighborRated.get(idUser).ratingValue.floatValue()));
+                        }
+
+                        float similarity;
+                        try {
+                            similarity = similarityMeasureValue.similarity(common, ratingsDataset);
+                            if (similarity > 0) {
+                                if (isRelevanceFactorApplied && common.size() < relevanceFactorIntValue) {
+                                    similarity = (similarity * (common.size() / (float) relevanceFactorIntValue));
+                                }
+                                return new Neighbor(RecommendationEntity.ITEM, idItemNeighbor, similarity);
+                            }
+                        } catch (CouldNotComputeSimilarity ex) {
+                        }
+                    } catch (ItemNotFound ex) {
+                        Global.showWarning("Item " + idItemNeighbor + " has no ratings.");
                     }
-                } catch (ItemNotFound ex) {
-                    Global.showWarning("Item " + idItemNeighbor + " has no ratings.");
-                }
-            }
-        }
+                    return new Neighbor(RecommendationEntity.ITEM, idItemNeighbor, Float.NaN);
+        }).collect(Collectors.toList());
 
         //Ordenar la lista y extraer los n mas similares
-        Collections.sort(itemsSimilares);
+        Collections.sort(itemsSimilares,Neighbor.BY_SIMILARITY_DESC);
         return itemsSimilares;
     }
 

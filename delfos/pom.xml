@@ -4,7 +4,7 @@
 
     <groupId>es.sinbad2.jcastro</groupId>
     <artifactId>delfos</artifactId>
-    <version>1.2.20150217</version>
+    <version>1.0.0</version>
     <packaging>jar</packaging>
 
     <name>delfos</name>
