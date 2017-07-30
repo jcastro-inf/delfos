@@ -6,10 +6,14 @@ import delfos.common.Global;
 import delfos.common.parallelwork.Parallelisation.Worker;
 import delfos.common.statisticalfuncions.MeanIterative;
 import delfos.experiment.casestudy.ExecutionProgressListener;
+
+import java.lang.reflect.InvocationTargetException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 /**
  * Paraleliza un proceso de manera que se puede ajustar dinámicamente el número
@@ -22,10 +26,10 @@ import java.util.List;
  */
 public class MultiThreadExecutionManager<TaskType extends Task> implements Runnable, ThreadOwner {
 
+    private final Collection<TaskType> listOfTasks;
     private int threadInitNumber = 0;
 
     private final String taskName;
-    private final ListOfTasks<TaskType> listOfTasks;
     private final Class<? extends SingleTaskExecute<TaskType>> singleTaskExecuteClass;
     private final List<Worker> workers = Collections.synchronizedList(new LinkedList<Worker>());
     private final List<ExecutionProgressListener> listeners = new LinkedList<>();
@@ -54,7 +58,7 @@ public class MultiThreadExecutionManager<TaskType extends Task> implements Runna
             Collection<TaskType> listOfTasks,
             Class<? extends SingleTaskExecute<TaskType>> singleTaskExecuteClass) {
         this.taskName = taskName;
-        this.listOfTasks = new ListOfTasks<>(listOfTasks);
+        this.listOfTasks = listOfTasks;
         this.singleTaskExecuteClass = singleTaskExecuteClass;
 
         this.parentThread = Thread.currentThread();
@@ -82,7 +86,7 @@ public class MultiThreadExecutionManager<TaskType extends Task> implements Runna
     }
 
     public Collection<TaskType> getAllFinishedTasks() {
-        return listOfTasks.getAllFinishedTasks();
+        return listOfTasks;
     }
 
     @Override
@@ -97,56 +101,8 @@ public class MultiThreadExecutionManager<TaskType extends Task> implements Runna
     private void erroneousTask(TaskType task) {
         error = true;
     }
-
-    class WorkerDefault extends Worker {
-
-        MultiThreadExecutionManager<TaskType> parentMultiThread;
-
-        private WorkerDefault(String taskName, MultiThreadExecutionManager<TaskType> parentMultiThread) throws NoMoreSlots, InterruptedException {
-            super(parentMultiThread, taskName);
-            this.parentMultiThread = parentMultiThread;
-        }
-
-        @Override
-        protected void work() {
-
-            SingleTaskExecute<TaskType> singleTaskExecute = null;
-            try {
-                singleTaskExecute = singleTaskExecuteClass.newInstance();
-            } catch (InstantiationException ex) {
-                ERROR_CODES.UNDEFINED_ERROR.exit(ex);
-            } catch (IllegalAccessException ex) {
-                Global.showError(new IllegalAccessError("Cannot create an instance of " + singleTaskExecuteClass + ", check access modifiers for default constuctor."));
-                ERROR_CODES.UNDEFINED_ERROR.exit(ex);
-            }
-
-            Collection<TaskType> tasksAssigned = listOfTasks.getNextWork();
-
-            Chronometer c = new Chronometer();
-            while (tasksAssigned != null) {
-                for (TaskType task : tasksAssigned) {
-                    c.reset();
-                    try {
-                        singleTaskExecute.executeSingleTask(task);
-                    } catch (Throwable ex) {
-
-                        parentMultiThread.erroneousTask(task);
-                        runningThread.interrupt();
-                        Global.showWarning("TaskType failed '" + task.toString() + "'.");
-                        ERROR_CODES.TASK_EXECUTION_FAILED.exit(ex);
-                    }
-                    long timeElapsed = c.getTotalElapsed();
-                    timePerTask.addValue(timeElapsed);
-                    fireTaskFinished(task);
-                }
-
-                listOfTasks.setWorkFinished(tasksAssigned);
-                tasksAssigned = listOfTasks.getNextWork();
-                fireExecutionProgressChanged();
-            }
-
-        }
-    }
+    
+    public AtomicInteger sizeOfFinished = new AtomicInteger(0);
 
     @Override
     public void run() {
@@ -156,37 +112,28 @@ public class MultiThreadExecutionManager<TaskType extends Task> implements Runna
         Parallelisation.Worker worker;
         timeRunning.reset();
 
-        //TODO: En cuanto entro aquí, ya no me comporto como un worker, sino como un worker requester (libero una hebra)
-        Parallelisation.iAmWorkerCreator();
-
-        do {
-            try {
-                try {
-                    worker = new WorkerDefault(taskName + "_" + nextThreadNum(), this);
-                    worker.start();
-                    workers.add(worker);
-                } catch (NoMoreSlots ex) {
-                    Parallelisation.waitUntilFreeSlots();
-                }
-            } catch (InterruptedException ex) {
-                //Esta hebra ha sido interrumpida, hay que parar.
-                checkInterrupted();
-            }
-
-        } while (listOfTasks.sizeOfToDo() != 0);
-
+        SingleTaskExecute<TaskType> singleTaskExecute =null;
         try {
-            listOfTasks.waitUntilFinished();
-        } catch (InterruptedException ex) {
-            checkInterrupted();
+            singleTaskExecute = singleTaskExecuteClass.getConstructor().newInstance();
+        } catch (InstantiationException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (InvocationTargetException e) {
+            e.printStackTrace();
+        } catch (NoSuchMethodException e) {
+            e.printStackTrace();
         }
-
-        try {
-            //TODO: Vuelvo a comportarme como un worker (Vuelvo a reservar una hebra).
-            Parallelisation.iAmNotAWorkerCreator();
-        } catch (InterruptedException ex) {
-            checkInterrupted();
+        
+        if(singleTaskExecute == null){
+            throw new IllegalStateException("Cannot create a "+singleTaskExecuteClass.getName());
         }
+        SingleTaskExecute<TaskType> finalSingleTaskExecute = singleTaskExecute;
+        listOfTasks.parallelStream().map(task -> {
+            finalSingleTaskExecute.executeSingleTask(task);
+            sizeOfFinished.incrementAndGet();
+            return task;
+        }).collect(Collectors.toList());
     }
 
     private void checkInterrupted() {
@@ -200,19 +147,19 @@ public class MultiThreadExecutionManager<TaskType extends Task> implements Runna
     }
 
     private int getPercentCompleted() {
-        float percent = (listOfTasks.sizeOfFinished() * 100.0f) / listOfTasks.sizeOfAll();
+        float percent = (sizeOfFinished.get() * 100.0f) / listOfTasks.size();
         return (int) percent;
     }
 
     private long getRemainingTime() {
 
         //Si no ha terminado ninguna tarea no puedo predecir el tiempo restante.
-        if (listOfTasks.sizeOfFinished() == 0) {
+        if (sizeOfFinished.get() == 0) {
             return -1;
         }
 
-        long _timePerTask = timeRunning.getTotalElapsed() / listOfTasks.sizeOfFinished();
-        long remainingTime = _timePerTask * listOfTasks.sizeOfUnfinished();
+        long _timePerTask = timeRunning.getTotalElapsed() / sizeOfFinished.get();
+        long remainingTime = _timePerTask * (listOfTasks.size() - sizeOfFinished.get());
         return remainingTime;
     }
 }

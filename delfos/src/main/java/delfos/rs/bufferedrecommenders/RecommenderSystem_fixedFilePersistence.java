@@ -115,6 +115,7 @@ public class RecommenderSystem_fixedFilePersistence<RecommenderSystemModel> exte
         getRecommenderSystem().addBuildingProgressListener(this::fireBuildingProgressChangedEvent);
     }
 
+    public static final Object exMut = new Integer(1);
     @Override
     public RecommenderSystemModel build(DatasetLoader<? extends Rating> datasetLoader) throws CannotLoadRatingsDataset, CannotLoadContentDataset, CannotLoadUsersDataset {
 
@@ -163,6 +164,7 @@ public class RecommenderSystem_fixedFilePersistence<RecommenderSystemModel> exte
             }
 
             return (RecommenderSystemModel) model;
+
     }
 
     @Override
