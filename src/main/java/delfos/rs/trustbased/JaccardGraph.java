@@ -37,7 +37,7 @@ import java.util.stream.Collectors;
  * @author jcastro-inf ( https://github.com/jcastro-inf )
  * @version 1.0 19-Julio-2013
  */
-public class JaccardGraph extends WeightedGraphCalculation<Integer> {
+public class JaccardGraph extends WeightedGraphCalculation<Long> {
 
     private static final long serialVersionUID = -3387516993124229948L;
 
@@ -45,7 +45,7 @@ public class JaccardGraph extends WeightedGraphCalculation<Integer> {
     }
 
     @Override
-    public WeightedGraph<Integer> computeTrustValues(DatasetLoader<? extends Rating> datasetLoader, Collection<Integer> users) throws CannotLoadRatingsDataset {
+    public WeightedGraph<Long> computeTrustValues(DatasetLoader<? extends Rating> datasetLoader, Collection<Long> users) throws CannotLoadRatingsDataset {
         boolean printPartialResults;
 
         final RatingsDataset<? extends Rating> ratingsDataset = datasetLoader.getRatingsDataset();
@@ -55,7 +55,7 @@ public class JaccardGraph extends WeightedGraphCalculation<Integer> {
             printPartialResults = false;
         }
 
-        Map<Integer, Map<Integer, Number>> UJaccard = users.parallelStream().collect(Collectors.toMap(user -> user, user -> new TreeMap<>()));
+        Map<Long, Map<Long, Number>> UJaccard = users.parallelStream().collect(Collectors.toMap(user -> user, user -> new TreeMap<>()));
 
         JaccardForUsers jaccardForUsers = new JaccardForUsers();
 
@@ -65,8 +65,8 @@ public class JaccardGraph extends WeightedGraphCalculation<Integer> {
         Chronometer c = new Chronometer();
         MeanIterative meanTimePerLoop = new MeanIterative();
 
-        for (Integer idUser1 : users) {
-            for (Integer idUser2 : users) {
+        for (Long idUser1 : users) {
+            for (Long idUser2 : users) {
                 if (!UJaccard.get(idUser1).containsKey(idUser2)) {
                     c.reset();
                     double similarity;
@@ -86,7 +86,7 @@ public class JaccardGraph extends WeightedGraphCalculation<Integer> {
                 thisLoop++;
             }
         }
-        WeightedGraph<Integer> jaccardGraph = new WeightedGraph<>(UJaccard);
+        WeightedGraph<Long> jaccardGraph = new WeightedGraph<>(UJaccard);
 
         return jaccardGraph;
     }

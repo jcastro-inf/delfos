@@ -71,10 +71,11 @@ public abstract class RecommenderSystemAdapter<RecommendationModel>
 
     @Override
     public RecommendationsToUser recommendToUser(
-            DatasetLoader<? extends Rating> dataset, RecommendationModel recommendationModel, User user, Set<Item> candidateItems) {
+            DatasetLoader<? extends Rating> dataset,
+            RecommendationModel recommendationModel, User user, Set<Item> candidateItems) {
 
         try {
-            TreeSet<Integer> itemSet = candidateItems.parallelStream()
+            TreeSet<Long> itemSet = candidateItems.parallelStream()
                     .map((item) -> item.getId())
                     .collect(Collectors.toCollection(TreeSet::new));
 
@@ -98,7 +99,9 @@ public abstract class RecommenderSystemAdapter<RecommendationModel>
 
     @Deprecated
     @Override
-    public Collection<Recommendation> recommendToUser(DatasetLoader<? extends Rating> dataset, RecommendationModel model, Integer idUser, Set<Integer> idItems) throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset, NotEnoughtUserInformation {
+    public Collection<Recommendation> recommendToUser(DatasetLoader<? extends Rating> dataset,
+                                                      RecommendationModel model,
+                                                      long idUser, Set<Long> idItems) throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset, NotEnoughtUserInformation {
 
         Set<Item> candidateItems = idItems.stream()
                 .filter((idItem) -> idItems.contains(idItem))

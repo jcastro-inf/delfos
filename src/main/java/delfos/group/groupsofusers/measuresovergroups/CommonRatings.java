@@ -69,12 +69,12 @@ public class CommonRatings extends GroupMeasureAdapter {
     public double getMeasure(DatasetLoader<? extends Rating> datasetLoader, GroupOfUsers group) throws CannotLoadRatingsDataset {
 
         RatingsDataset<? extends Rating> ratingsDataset = datasetLoader.getRatingsDataset();
-        Map<Integer, Integer> numMembersRated = new TreeMap<Integer, Integer>();
-        for (int idUser : group) {
+        Map<Long, Long> numMembersRated = new TreeMap<Long, Long>();
+        for (long idUser : group) {
             try {
-                for (int idItem : ratingsDataset.getUserRated(idUser)) {
+                for (long idItem : ratingsDataset.getUserRated(idUser)) {
                     if (!numMembersRated.containsKey(idItem)) {
-                        numMembersRated.put(idItem, 0);
+                        numMembersRated.put(idItem, 0l);
                     }
                     numMembersRated.put(idItem, numMembersRated.get(idItem) + 1);
                 }
@@ -84,8 +84,8 @@ public class CommonRatings extends GroupMeasureAdapter {
         }
 
         double value = 0;
-        for (int idItem : numMembersRated.keySet()) {
-            int numMembers = numMembersRated.get(idItem);
+        for (long idItem : numMembersRated.keySet()) {
+            long numMembers = numMembersRated.get(idItem);
             if (numMembers >= getNumCommon()) {
                 value++;
             }

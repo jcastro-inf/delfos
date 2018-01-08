@@ -16,19 +16,20 @@
  */
 package delfos.rs.collaborativefiltering.knn.modelbased;
 
+import delfos.common.Global;
 import delfos.common.exceptions.CouldNotPredictRating;
 import delfos.common.exceptions.dataset.CannotLoadContentDataset;
 import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
 import delfos.common.exceptions.dataset.items.ItemNotFound;
 import delfos.common.exceptions.dataset.users.UserNotFound;
-import delfos.common.parameters.Parameter;
-import delfos.common.parameters.restriction.IntegerParameter;
+import delfos.dataset.basic.item.ContentDataset;
 import delfos.dataset.basic.item.Item;
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
 import delfos.rs.collaborativefiltering.CollaborativeRecommender;
 import delfos.rs.collaborativefiltering.knn.CommonRating;
 import delfos.rs.collaborativefiltering.knn.KnnCollaborativeRecommender;
+import static delfos.rs.collaborativefiltering.knn.KnnCollaborativeRecommender.NEIGHBORHOOD_SIZE;
 import delfos.rs.collaborativefiltering.knn.MatchRating;
 import delfos.rs.collaborativefiltering.knn.RecommendationEntity;
 import delfos.rs.collaborativefiltering.predictiontechniques.PredictionTechnique;
@@ -38,25 +39,17 @@ import delfos.rs.persistence.FailureInPersistence;
 import delfos.rs.recommendation.Recommendation;
 import delfos.similaritymeasures.CollaborativeSimilarityMeasure;
 import delfos.utils.algorithm.progress.ProgressChangedController;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
- * Sistema de recomendación basado en el filtrado colaborativo basado en
- * productos, también denominado Item-Item o filtrado colaborativo basado en
- * modelo. Este sistema de recomendación calcula un perfil de cada producto. El
- * perfil consta de los k vecinos más cercanos, es decir, los k
- * ({@link KnnModelBasedCFRS#NEIGHBORHOOD_SIZE}) productos más similares
- * ({@link KnnModelBasedCFRS#SIMILARITY_MEASURE}). La predicción de la
- * valoración de un producto i para un usuario u se realiza agregando las
- * valoraciones del usuario u sobre los productos vecinos del producto i,
- * utilizando para ello una técnica de predicción
- * ({@link KnnModelBasedCFRS#PREDICTION_TECHNIQUE})
+ * Sistema de recomendación basado en el filtrado colaborativo basado en productos, también denominado Item-Item o
+ * filtrado colaborativo basado en modelo. Este sistema de recomendación calcula un perfil de cada producto. El perfil
+ * consta de los k vecinos más cercanos, es decir, los k ({@link KnnModelBasedCFRS#NEIGHBORHOOD_SIZE}) productos más
+ * similares ({@link KnnModelBasedCFRS#SIMILARITY_MEASURE}). La predicción de la valoración de un producto i para un
+ * usuario u se realiza agregando las valoraciones del usuario u sobre los productos vecinos del producto i, utilizando
+ * para ello una técnica de predicción ({@link KnnModelBasedCFRS#PREDICTION_TECHNIQUE})
  *
  * @author jcastro-inf ( https://github.com/jcastro-inf )
  */
@@ -66,17 +59,9 @@ public class KnnModelBasedCFRS
     private static final long serialVersionUID = 1L;
 
     /**
-     * Parámetro para almacenar el número de vecinos que se almacenan en el
-     * perfil de cada producto. Si no se modifica, su valor por defecto es 20
-     */
-    public static final Parameter NEIGHBORHOOD_SIZE_STORE = new Parameter(
-            "Neighborhood_size_store",
-            new IntegerParameter(1, 9999, 1000));
-
-    /**
-     * Constructor por defecto que llama al constructor por defecto de la clase
-     * padre directa {@link CollaborativeRecommender}. También asigna la suma
-     * ponderada como técnica de predicción a utilizar por defecto
+     * Constructor por defecto que llama al constructor por defecto de la clase padre directa
+     * {@link CollaborativeRecommender}. También asigna la suma ponderada como técnica de predicción a utilizar por
+     * defecto
      */
     public KnnModelBasedCFRS() {
         super();
@@ -127,24 +112,35 @@ public class KnnModelBasedCFRS
             return new KnnModelItemProfile(item.getId(), thisItemNeighbors);
         }).collect(Collectors.toList());
 
-        Map<Integer, KnnModelItemProfile> itemModels_byItem = allItemModels.parallelStream().collect(Collectors.toMap(itemModel -> itemModel.getIdItem(), itemModel -> itemModel));
+        Map<Long, KnnModelItemProfile> itemModels_byItem = allItemModels.parallelStream().collect(Collectors.toMap(itemModel -> itemModel.getIdItem(), itemModel -> itemModel));
 
         return new KnnModelBasedCFRSModel(itemModels_byItem);
     }
 
     @Override
     public Collection<Recommendation> recommendToUser(
-            DatasetLoader<? extends Rating> datasetLoader, KnnModelBasedCFRSModel model, Integer idUser, Set<Integer> candidateItems)
+            DatasetLoader<? extends Rating> datasetLoader,
+            KnnModelBasedCFRSModel model,
+            long idUser,
+            Set<Long> candidateItems)
             throws UserNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset, ItemNotFound {
 
         PredictionTechnique prediction = (PredictionTechnique) getParameterValue(KnnModelBasedCFRS.PREDICTION_TECHNIQUE);
 
+        Collection<Recommendation> recommendationList = new LinkedList<>();
+        Map<Long, ? extends Rating> userRated = datasetLoader.getRatingsDataset().getUserRatingsRated(idUser);
+        if (userRated.isEmpty()) {
+            return Collections.EMPTY_LIST;
+        }
+
         int neighborhoodSize = (Integer) getParameterValue(NEIGHBORHOOD_SIZE);
 
-        List<Recommendation> recommendationList = Collections.synchronizedList(new LinkedList<>());
-        Map<Integer, ? extends Rating> targetUserRatings = datasetLoader.getRatingsDataset().getUserRatingsRated(idUser);
+        final ContentDataset contentDataset = datasetLoader.getContentDataset();
 
-        for (int idItem : candidateItems) {
+        int itemsWithProfile = 0;
+        for (long idItem : candidateItems) {
+            Item item = contentDataset.get(idItem);
+
             List<MatchRating> matchRatings = new LinkedList<>();
             KnnModelItemProfile profile = model.getItemProfile(idItem);
 
@@ -152,43 +148,49 @@ public class KnnModelBasedCFRS
                 continue;
             }
 
-            List<Neighbor> selectedNeighbors = profile.getAllNeighbors().stream()
-                    .filter(neighbor -> neighbor.getSimilarity() > 0)
-                    .filter(neighbor -> Double.isFinite(neighbor.getSimilarity()))
-                    .filter(neighbor -> !Double.isNaN(neighbor.getSimilarity())).collect(Collectors.toList());
+            itemsWithProfile++;
+            Collection<Neighbor> neighbors = profile.getAllNeighbors().stream()
+                    .filter(neighbor -> !Double.isNaN(neighbor.getSimilarity()))
+                    .filter(neighbor -> neighbor.getSimilarity()> 0)
+                    .collect(Collectors.toList());
 
-            selectedNeighbors = selectedNeighbors
-                    .subList(0, Math.min(selectedNeighbors.size(), neighborhoodSize));
-
-            for (Neighbor itemNeighbor : selectedNeighbors) {
-                double similarity = itemNeighbor.getSimilarity();
-                Rating rating = targetUserRatings.get(itemNeighbor.getIdNeighbor());
+            for (Neighbor neighbor : neighbors) {
+                long idItemNeighbor = neighbor.getIdNeighbor();
+                double similarity = neighbor.getSimilarity();
+                Rating rating = userRated.get(idItemNeighbor);
                 if (rating != null) {
-                    matchRatings.add(new MatchRating(RecommendationEntity.USER, idUser, itemNeighbor.getIdNeighbor(), rating.getRatingValue(), similarity));
+                    matchRatings.add(new MatchRating(RecommendationEntity.USER, idUser, idItemNeighbor, rating, similarity));
+                    if (Global.isVerboseAnnoying()) {
+                        Global.showInfoMessage(idItemNeighbor + "\the prediction is\t" + rating + "\n");
+                    }
+                }
+
+                if (matchRatings.size() >= neighborhoodSize) {
+                    break;
                 }
             }
 
-            Double predictedRating;
-            try {
-                predictedRating = prediction.predictRating(idUser, idItem, matchRatings, datasetLoader.getRatingsDataset());
-            } catch (CouldNotPredictRating ex) {
-                predictedRating = Double.NaN;
+            if (!matchRatings.isEmpty()) {
+                Double predictedRating;
+                try {
+                    predictedRating = prediction.predictRating(idUser, idItem, matchRatings, datasetLoader.getRatingsDataset());
+                    recommendationList.add(new Recommendation(item, predictedRating));
+                } catch (UserNotFound | ItemNotFound ex) {
+                    throw new IllegalArgumentException(ex);
+                } catch (CouldNotPredictRating ex) {
+                }
             }
-
-            recommendationList.add(new Recommendation(idItem, predictedRating));
 
         }
         return recommendationList;
     }
 
     /**
-     * Computes the list of neighbors for the given item, sorted by similarity
-     * DESC.
+     * Computes the list of neighbors for the given item, sorted by similarity DESC.
      * <p>
      * <p>
-     * This method must return a Neighbor object for each item in the dataset.
-     * For the neighbors that is not possible to compute a similarity,
-     * {@link Double#NaN} similarity is assigned.
+     * This method must return a Neighbor object for each item in the dataset. For the neighbors that is not possible to
+     * compute a similarity, {@link Double#NaN} similarity is assigned.
      * <p>
      * <p>
      * The neighbors will be selected in the prediction step.
@@ -197,8 +199,7 @@ public class KnnModelBasedCFRS
      * @param item1 Target item, for which the neighbors are computed.
      * @param similarityMeasure
      * @param relevanceFactorValue
-     * @return A list wit a Neighbor object for each item in the dataset, sorted
-     * by similarity desc.
+     * @return A list wit a Neighbor object for each item in the dataset, sorted by similarity desc.
      */
     public static List<Neighbor> getNeighbors(
             DatasetLoader<? extends Rating> datasetLoader,
@@ -231,7 +232,7 @@ public class KnnModelBasedCFRS
     }
 
     @Override
-    public KnnModelBasedCFRSModel loadRecommendationModel(DatabasePersistence databasePersistence, Collection<Integer> users, Collection<Integer> items, DatasetLoader<? extends Rating> datasetLoader) throws FailureInPersistence {
+    public KnnModelBasedCFRSModel loadRecommendationModel(DatabasePersistence databasePersistence, Collection<Long> users, Collection<Long> items, DatasetLoader<? extends Rating> datasetLoader) throws FailureInPersistence {
         DAOKnnModelBasedDatabaseModel dao = new DAOKnnModelBasedDatabaseModel();
         return dao.loadModel(databasePersistence, users, items);
     }
@@ -242,7 +243,4 @@ public class KnnModelBasedCFRS
         dao.saveModel(databasePersistence, model);
     }
 
-    public final int getNeighborhoodSizeStore() {
-        return (Integer) getParameterValue(NEIGHBORHOOD_SIZE_STORE);
-    }
 }

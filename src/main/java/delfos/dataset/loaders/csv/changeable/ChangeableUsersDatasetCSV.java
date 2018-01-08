@@ -101,7 +101,7 @@ public class ChangeableUsersDatasetCSV extends CollectionOfEntitiesWithFeaturesD
     }
 
     @Override
-    public User getUser(int idUser) throws UserNotFound {
+    public User getUser(long idUser) throws UserNotFound {
         try {
             return get(idUser);
         } catch (EntityNotFound ex) {
@@ -120,7 +120,7 @@ public class ChangeableUsersDatasetCSV extends CollectionOfEntitiesWithFeaturesD
     }
 
     @Override
-    public User get(int idUser) throws EntityNotFound {
+    public User get(long idUser) throws EntityNotFound {
         if (entitiesById.containsKey(idUser)) {
             return entitiesById.get(idUser);
         } else {

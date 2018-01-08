@@ -51,7 +51,7 @@ public class MatchRating {
      * la similitud de usuarios, de items, etc.)
      */
     @Deprecated
-    public MatchRating(RecommendationEntity entity, int idUser, int idItem, Number rating, double weight) {
+    public MatchRating(RecommendationEntity entity, long idUser, long idItem, Number rating, double weight) {
         this.entity = entity;
         this.user = new User(idUser);
         this.item = new Item(idItem);
@@ -70,7 +70,7 @@ public class MatchRating {
      * la similitud de usuarios, de items, etc.)
      */
     @Deprecated
-    public MatchRating(RecommendationEntity entity, int idUser, int idItem, Rating rating, double weight) {
+    public MatchRating(RecommendationEntity entity, long idUser, long idItem, Rating rating, double weight) {
         this.entity = entity;
         this.user = new User(idUser);
         this.item = new Item(idItem);
@@ -91,7 +91,7 @@ public class MatchRating {
      *
      * @return ID del producto.
      */
-    public int getIdItem() {
+    public long getIdItem() {
         return item.getId();
     }
 
@@ -100,7 +100,7 @@ public class MatchRating {
      *
      * @return ID del usuario.
      */
-    public int getIdUser() {
+    public long getIdUser() {
         return user.getId();
     }
 

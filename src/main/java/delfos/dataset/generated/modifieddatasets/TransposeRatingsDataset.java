@@ -48,7 +48,7 @@ public class TransposeRatingsDataset<RatingType extends Rating> extends RatingsD
     }
 
     @Override
-    public RatingType getRating(int idUser, int idItem) throws UserNotFound, ItemNotFound {
+    public RatingType getRating(long idUser, long idItem) throws UserNotFound, ItemNotFound {
         try {
             return originalDataset.getRating(idItem, idUser);
         } catch (UserNotFound ex) {
@@ -59,17 +59,17 @@ public class TransposeRatingsDataset<RatingType extends Rating> extends RatingsD
     }
 
     @Override
-    public Set<Integer> allUsers() {
+    public Set<Long> allUsers() {
         return originalDataset.allRatedItems();
     }
 
     @Override
-    public Set<Integer> allRatedItems() {
+    public Set<Long> allRatedItems() {
         return originalDataset.allUsers();
     }
 
     @Override
-    public Set<Integer> getUserRated(Integer idUser) throws UserNotFound {
+    public Set<Long> getUserRated(long idUser) throws UserNotFound {
         try {
             return originalDataset.getItemRated(idUser);
         } catch (ItemNotFound ex) {
@@ -78,7 +78,7 @@ public class TransposeRatingsDataset<RatingType extends Rating> extends RatingsD
     }
 
     @Override
-    public Set<Integer> getItemRated(Integer idItem) throws ItemNotFound {
+    public Set<Long> getItemRated(long idItem) throws ItemNotFound {
         try {
             return originalDataset.getUserRated(idItem);
         } catch (UserNotFound ex) {
@@ -87,7 +87,7 @@ public class TransposeRatingsDataset<RatingType extends Rating> extends RatingsD
     }
 
     @Override
-    public Map<Integer, RatingType> getUserRatingsRated(Integer idUser) throws UserNotFound {
+    public Map<Long, RatingType> getUserRatingsRated(long idUser) throws UserNotFound {
         try {
             return originalDataset.getItemRatingsRated(idUser);
         } catch (ItemNotFound ex) {
@@ -96,7 +96,7 @@ public class TransposeRatingsDataset<RatingType extends Rating> extends RatingsD
     }
 
     @Override
-    public Map<Integer, RatingType> getItemRatingsRated(Integer idItem) throws ItemNotFound {
+    public Map<Long, RatingType> getItemRatingsRated(long idItem) throws ItemNotFound {
         try {
             return originalDataset.getUserRatingsRated(idItem);
         } catch (UserNotFound ex) {
@@ -110,7 +110,7 @@ public class TransposeRatingsDataset<RatingType extends Rating> extends RatingsD
     }
 
     @Override
-    public int getNumRatings() {
+    public long getNumRatings() {
         return originalDataset.getNumRatings();
     }
 }

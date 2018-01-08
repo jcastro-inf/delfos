@@ -16,10 +16,7 @@
  */
 package delfos.dataset.basic.rating;
 
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Clase para iterar de forma genérica sobre un dataset de valoraciones.
@@ -32,7 +29,7 @@ import java.util.Map;
 public class IteratorRatingsDataset<RatingType extends Rating> implements Iterator<RatingType> {
 
     private RatingType _next;
-    private final List<Integer> _users;
+    private final List<Long> _users;
     private final List<RatingType> _ratings;
     private final RatingsDataset<RatingType> _ratingsDataset;
     private final Object exMut;
@@ -82,21 +79,31 @@ public class IteratorRatingsDataset<RatingType extends Rating> implements Iterat
                 _next = null;
             } else {
                 //Hay mas usuarios, cargar sus ratings.
-                int idUser = _users.remove(0);
+                long idUser = _users.remove(0);
 
-                Map<Integer, RatingType> userRatingsRated = _ratingsDataset.getUserRatingsRated(idUser);
+                Map<Long, RatingType> userRatingsRated = _ratingsDataset.getUserRatingsRated(idUser);
 
                 while (userRatingsRated.isEmpty()) {
-                    idUser = _users.remove(0);
-                    userRatingsRated = _ratingsDataset.getUserRatingsRated(idUser);
+
+                    if (_users.isEmpty()) {
+                       userRatingsRated = null;
+                       break;
+                    } else {
+                        idUser = _users.remove(0);
+                        userRatingsRated = _ratingsDataset.getUserRatingsRated(idUser);
+                    }
                 }
 
-                for (Map.Entry<Integer, RatingType> entry : userRatingsRated.entrySet()) {
-                    _ratings.add(entry.getValue());
-                }
+                if(userRatingsRated==null){
+                    _next = null;
+                }else{
+                    for (Map.Entry<Long, RatingType> entry : userRatingsRated.entrySet()) {
+                        _ratings.add(entry.getValue());
+                    }
 
-                //Lista cargada, preparar el siguiente rating.
-                _next = _ratings.remove(0);
+                    //Lista cargada, preparar el siguiente rating.
+                    _next = _ratings.remove(0);
+                }
             }
         } else {
             //La lista de ratings no está vacía, preparar siguiente rating

@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -27,7 +27,6 @@ import delfos.dataset.basic.rating.RelevanceCriteria;
 import delfos.experiment.ExperimentListener;
 import delfos.experiment.ExperimentProgress;
 import delfos.experiment.casestudy.CaseStudy;
-import delfos.experiment.casestudy.defaultcase.DefaultCaseStudy;
 import delfos.experiment.validation.predictionprotocol.PredictionProtocol;
 import delfos.experiment.validation.validationtechnique.ValidationTechnique;
 import delfos.factories.DatasetLoadersFactory;
@@ -46,7 +45,6 @@ import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
-import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
@@ -58,9 +56,6 @@ import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
@@ -71,11 +66,9 @@ import javax.swing.SwingConstants;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 /**
- * Clase que encapsula el funcionamiento de la interfaz destinada a la
- * realización de ejecuciones de evaluación con algoritmos de recomendación
- * colaborativos, es decir, algoritmos que predicen la valoración que el usuario
- * daría a un item no valorado basándose en las valoraciones del resto de
- * usuarios.
+ * Clase que encapsula el funcionamiento de la interfaz destinada a la realización de ejecuciones de evaluación con
+ * algoritmos de recomendación colaborativos, es decir, algoritmos que predicen la valoración que el usuario daría a un
+ * item no valorado basándose en las valoraciones del resto de usuarios.
  *
  * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
@@ -106,13 +99,15 @@ public class SingleExperiment_TraditionalRecommender_Window extends JFrame imple
     private JLabel remainingTime;
     private JComboBox comboPredictionValidationTechniques;
     private JButton botonPredictionValidation;
-    private static final String anchoVentana = "COLLABORATIVE_WINDOW_WIDTH";
-    private static final String altoVentana = "COLLABORATIVE_WINDOW_HEIGHT";
 
     public SingleExperiment_TraditionalRecommender_Window(InitialFrame initialFrame) {
-        super("Collaborative filtering Recommender System Test Environment - " + ManagementFactory.getRuntimeMXBean().getName());
+        super("Single User Recommender Systems Experimentation - " + ManagementFactory.getRuntimeMXBean().getName());
         initComponents();
 
+        configureWindow(initialFrame);
+    }
+
+    private void configureWindow(InitialFrame initialFrame) {
         this.addWindowListener(new ComportamientoSubVentanas(initialFrame, this));
 
         this.addComponentListener(new ComponentListener() {
@@ -211,49 +206,6 @@ public class SingleExperiment_TraditionalRecommender_Window extends JFrame imple
         constraints.gridheight = 1;
         constraints.insets = new Insets(3, 4, 3, 4);
         this.add(panelProgreso(), constraints);
-    }
-
-    private JMenuBar createMenuBar() {
-        JMenuBar menuBar;
-        JMenu importar, submenu;
-        JMenuItem menuItem;
-
-        menuBar = new JMenuBar();
-
-        importar = new JMenu("Importar");
-        importar.setMnemonic(KeyEvent.VK_I);
-        importar.getAccessibleContext().setAccessibleDescription("Accede a un .jar");
-        menuBar.add(importar);
-
-        //a group of JMenuItems
-        menuItem = new JMenuItem("Importar Sistema de Recomendación",
-                KeyEvent.VK_R);
-        //menuItem.setMnemonic(KeyEvent.VK_T); //used constructor instead
-//        menuItem.setAccelerator(KeyStroke.getKeyStroke(
-//                KeyEvent.VK_1, ActionEvent.ALT_MASK));
-//        menuItem.getAccessibleContext().setAccessibleDescription(
-//                "This doesn't really do anything");
-        importar.add(menuItem);
-
-        menuItem = new JMenuItem("Importar medida de similitud",
-                KeyEvent.VK_S);
-        //menuItem.setMnemonic(KeyEvent.VK_T); //used constructor instead
-//        menuItem.setAccelerator(KeyStroke.getKeyStroke(
-//                KeyEvent.VK_1, ActionEvent.ALT_MASK));
-//        menuItem.getAccessibleContext().setAccessibleDescription(
-//                "This doesn't really do anything");
-        importar.add(menuItem);
-
-        menuItem = new JMenuItem("Importar métricas de evaluación",
-                KeyEvent.VK_E);
-        //menuItem.setMnemonic(KeyEvent.VK_T); //used constructor instead
-//        menuItem.setAccelerator(KeyStroke.getKeyStroke(
-//                KeyEvent.VK_1, ActionEvent.ALT_MASK));
-//        menuItem.getAccessibleContext().setAccessibleDescription(
-//                "This doesn't really do anything");
-        importar.add(menuItem);
-
-        return menuBar;
     }
 
     private Component panelProgreso() {
@@ -356,7 +308,7 @@ public class SingleExperiment_TraditionalRecommender_Window extends JFrame imple
 
             PredictionProtocol pvt = (PredictionProtocol) comboPredictionValidationTechniques.getSelectedItem();
 
-            caseStudy = new DefaultCaseStudy(cbrs, mdc, validation, pvt, rc, ems, n);
+            caseStudy = new CaseStudy(cbrs, mdc, validation, pvt, rc, ems, n);
             if (parallelExecution != null) {
                 parallelExecution.cancel(true);
             }
@@ -393,36 +345,36 @@ public class SingleExperiment_TraditionalRecommender_Window extends JFrame imple
         ret.add(guardarResultado, constraints);
 
         this.guardarResultado.addActionListener((ActionEvent e) -> {
-                    JFileChooser chooser = new JFileChooser();
-                    chooser.setDialogTitle("Save result to XML");
-                    chooser.setCurrentDirectory(SwingGUIScope.getInstance().getCurrentDirectory());
+            JFileChooser chooser = new JFileChooser();
+            chooser.setDialogTitle("Save result to XML");
+            chooser.setCurrentDirectory(SwingGUIScope.getInstance().getCurrentDirectory());
 
-                    String[] extensions = {CaseStudyXML.RESULT_EXTENSION};
-                    chooser.setFileFilter(new FileNameExtensionFilter("Extensible Markup Language", extensions));
+            String[] extensions = {CaseStudyXML.RESULT_EXTENSION};
+            chooser.setFileFilter(new FileNameExtensionFilter("Extensible Markup Language", extensions));
 
-                    boolean ok = false;
-                    while (!ok) {
-                        int opcion = chooser.showSaveDialog(SingleExperiment_TraditionalRecommender_Window.this);
-                        if (opcion == JFileChooser.APPROVE_OPTION) {
-                            File selected = chooser.getSelectedFile();
-                            String nombre = selected.getAbsolutePath();
-                            SwingGUIScope.getInstance().setCurrentDirectory(selected);
+            boolean ok = false;
+            while (!ok) {
+                int opcion = chooser.showSaveDialog(SingleExperiment_TraditionalRecommender_Window.this);
+                if (opcion == JFileChooser.APPROVE_OPTION) {
+                    File selected = chooser.getSelectedFile();
+                    String nombre = selected.getAbsolutePath();
+                    SwingGUIScope.getInstance().setCurrentDirectory(selected);
 
-                            if (!nombre.toLowerCase().endsWith("." + CaseStudyXML.RESULT_EXTENSION)) {
-                                // Add correct extension
-                                nombre += "." + CaseStudyXML.RESULT_EXTENSION;
-                            }
-                            File tmp = new File(nombre);
-                            if (!tmp.exists() || JOptionPane.showConfirmDialog(SingleExperiment_TraditionalRecommender_Window.this, "File " + nombre + " already exists. Do you want to replace it?",
-                                    "Confirm", JOptionPane.YES_NO_OPTION, 3) == JOptionPane.YES_OPTION) {
-                                CaseStudyXML.caseStudyToXMLFile(caseStudy, tmp);
-                                ok = true;
-                            }
-                        } else {
-                            ok = true;
-                        }
+                    if (!nombre.toLowerCase().endsWith("." + CaseStudyXML.RESULT_EXTENSION)) {
+                        // Add correct extension
+                        nombre += "." + CaseStudyXML.RESULT_EXTENSION;
                     }
-                });
+                    File tmp = new File(nombre);
+                    if (!tmp.exists() || JOptionPane.showConfirmDialog(SingleExperiment_TraditionalRecommender_Window.this, "File " + nombre + " already exists. Do you want to replace it?",
+                            "Confirm", JOptionPane.YES_NO_OPTION, 3) == JOptionPane.YES_OPTION) {
+                        CaseStudyXML.caseStudyToXMLFile(caseStudy, tmp);
+                        ok = true;
+                    }
+                } else {
+                    ok = true;
+                }
+            }
+        });
 
         return ret;
     }
@@ -760,21 +712,19 @@ public class SingleExperiment_TraditionalRecommender_Window extends JFrame imple
             this.remainingTime.setVisible(true);
             this.previousPercent = executionProgressPercent;
             this.previousProceso = executionProgressTask;
-        } else {
-            if (previousProceso.equals(executionProgressTask) && previousPercent == executionProgressPercent) {
-                if (chrono.getPartialElapsed() > 5000) {
-                    this.remainingTime.setText(DateCollapse.collapse(executionProgressRemainingTime));
-                    this.remainingTime.setVisible(true);
-                    chrono.reset();
-                }
-            } else {
-                this.previousPercent = executionProgressPercent;
-                this.previousProceso = executionProgressTask;
-                this.remainingTime.setVisible(false);
+        } else if (previousProceso.equals(executionProgressTask) && previousPercent == executionProgressPercent) {
+            if (chrono.getPartialElapsed() > 5000) {
                 this.remainingTime.setText(DateCollapse.collapse(executionProgressRemainingTime));
                 this.remainingTime.setVisible(true);
                 chrono.reset();
             }
+        } else {
+            this.previousPercent = executionProgressPercent;
+            this.previousProceso = executionProgressTask;
+            this.remainingTime.setVisible(false);
+            this.remainingTime.setText(DateCollapse.collapse(executionProgressRemainingTime));
+            this.remainingTime.setVisible(true);
+            chrono.reset();
         }
 
         if (algorithmExperiment.isFinished()) {

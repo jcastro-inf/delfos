@@ -125,11 +125,11 @@ public abstract class GroupPredictionProtocol extends ParameterOwnerAdapter impl
      * solicitar al sistema de recomendación colaborativo que realice
      * recomendaciones para su validación.
      * @throws delfos.common.exceptions.dataset.users.UserNotFound
-     *
-     * @see RemoveRatingsDatasets
      */
     public abstract Collection<GroupRecommendationRequest> getGroupRecommendationRequests(
-            DatasetLoader<? extends Rating> trainDatasetLoader, DatasetLoader<? extends Rating> testDatasetLoader, GroupOfUsers group)
+            DatasetLoader<? extends Rating> trainDatasetLoader,
+            DatasetLoader<? extends Rating> testDatasetLoader,
+            GroupOfUsers group)
             throws CannotLoadRatingsDataset, UserNotFound;
 
     @Override

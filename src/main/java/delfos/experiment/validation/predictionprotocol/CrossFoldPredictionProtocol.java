@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -19,13 +19,17 @@ package delfos.experiment.validation.predictionprotocol;
 import delfos.common.exceptions.dataset.users.UserNotFound;
 import delfos.common.parameters.Parameter;
 import delfos.common.parameters.restriction.IntegerParameter;
+import delfos.dataset.basic.item.Item;
+import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
-import delfos.dataset.basic.rating.RatingsDataset;
+import delfos.dataset.basic.user.User;
+
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.List;
 import java.util.Random;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.stream.Collectors;
 
 /**
  * Esta técnica aplica la validación cruzada para la predicción de valoraciones.
@@ -49,25 +53,32 @@ public class CrossFoldPredictionProtocol extends PredictionProtocol {
     }
 
     @Override
-    public Collection<Set<Integer>> getRecommendationRequests(RatingsDataset<? extends Rating> testRatingsDataset, int idUser) throws UserNotFound {
+    public <RatingType extends Rating> List<Set<Item>> getRecommendationRequests(
+            DatasetLoader<RatingType> trainingDatasetLoader,
+            DatasetLoader<RatingType> testDatasetLoader,
+            User user) throws UserNotFound {
+
         Random random = new Random(getSeedValue());
-        ArrayList<Set<Integer>> ret = new ArrayList<>();
-        Set<Integer> items = new TreeSet<>(testRatingsDataset.getUserRated(idUser));
+        ArrayList<Set<Item>> ret = new ArrayList<>();
+        Set<Item> items = new TreeSet<>(
+                testDatasetLoader.getRatingsDataset().getUserRatingsRated(user.getId())
+        .values().stream().map(rating -> rating.getItem()).collect(Collectors.toSet())
+        );
         for (int i = 0; i < getNumPartitions(); i++) {
             ret.add(new TreeSet<>());
         }
         int n = 0;
         while (!items.isEmpty()) {
-            int idItem = items.toArray(new Integer[0])[random.nextInt(items.size())];
-            items.remove(idItem);
+            Item item = items.toArray(new Item[0])[random.nextInt(items.size())];
+            items.remove(item.getId());
             int partition = n % getNumPartitions();
-            ret.get(partition).add(idItem);
+            ret.get(partition).add(item);
             n++;
         }
         return ret;
     }
 
     protected int getNumPartitions() {
-        return (Integer) getParameterValue(numFolds);
+        return (int) getParameterValue(numFolds);
     }
 }

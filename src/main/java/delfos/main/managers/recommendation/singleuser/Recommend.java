@@ -55,7 +55,7 @@ public class Recommend extends CaseUseSubManager {
         return Holder.INSTANCE;
     }
 
-    public static void recommendToUser(String configurationFile, Integer idUser) {
+    public static void recommendToUser(String configurationFile, long idUser) {
 
         RecommenderSystemConfiguration rsc
                 = RecommenderSystemConfigurationFileParser.loadConfigFile(configurationFile);
@@ -124,7 +124,7 @@ public class Recommend extends CaseUseSubManager {
         return idUser;
     }
 
-    public static void recommendToUser(RecommenderSystemConfiguration rsc, int idUser) {
+    public static void recommendToUser(RecommenderSystemConfiguration rsc, long idUser) {
         RecommendationsToUser recommendToUser = recommendToUser(rsc, rsc.datasetLoader.getUsersDataset().getUser(idUser));
         rsc.recommdendationsOutputMethod.writeRecommendations(recommendToUser);
     }

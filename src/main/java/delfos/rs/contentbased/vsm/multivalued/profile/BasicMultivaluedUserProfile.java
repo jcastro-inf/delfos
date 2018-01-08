@@ -49,7 +49,7 @@ public class BasicMultivaluedUserProfile implements MultivaluedUserProfile {
     /**
      * Id del usuario al que se refiere el perfil.
      */
-    protected final int _idUser;
+    protected final long _idUser;
 
     /**
      * Construye un perfil de usuario vacío, al que posteriormente se deben
@@ -57,7 +57,7 @@ public class BasicMultivaluedUserProfile implements MultivaluedUserProfile {
      *
      * @param idUser Id del usuario al que se refiere el perfil.
      */
-    public BasicMultivaluedUserProfile(int idUser) {
+    public BasicMultivaluedUserProfile(long idUser) {
         this._idUser = idUser;
         _nominalValues = new TreeMap<>();
         _numericalValues = new TreeMap<>();
@@ -71,7 +71,7 @@ public class BasicMultivaluedUserProfile implements MultivaluedUserProfile {
      * nominal.
      * @param valuesNumerical Valor para cada característica numérica.
      */
-    public BasicMultivaluedUserProfile(int idUser, Map<Feature, Map<Object, Double>> valuesNominal, Map<Feature, Double> valuesNumerical) {
+    public BasicMultivaluedUserProfile(long idUser, Map<Feature, Map<Object, Double>> valuesNominal, Map<Feature, Double> valuesNumerical) {
         this(idUser);
         this._nominalValues = valuesNominal;
         this._numericalValues = valuesNumerical;
@@ -236,7 +236,7 @@ public class BasicMultivaluedUserProfile implements MultivaluedUserProfile {
      * @return Id del usuario.
      */
     @Override
-    public final int getId() {
+    public final long getId() {
         return _idUser;
     }
 

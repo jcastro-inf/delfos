@@ -76,7 +76,7 @@ public class GroupRecommendationManager {
 
         int topN;
         if (consoleParameters.isParameterDefined(TOP_N_VALUE)) {
-            topN = Integer.parseInt(consoleParameters.getValue(TOP_N_VALUE));
+            topN = new Integer(consoleParameters.getValue(TOP_N_VALUE));
         } else {
             topN = 4;
             Global.showInfoMessage("Using default value for topN: '" + topN + "'\n");
@@ -152,16 +152,16 @@ public class GroupRecommendationManager {
 
                 Global.showInfoMessage("Group of users " + list + "\n");
 
-                List<Integer> groupMembers = new ArrayList<>();
+                List<Long> groupMembers = new ArrayList<>();
                 for (String idUser : list) {
-                    groupMembers.add(Integer.parseInt(idUser));
+                    groupMembers.add(new Long(idUser));
                 }
 
-                group = new GroupOfUsers(groupMembers.toArray(new Integer[0]));
+                group = new GroupOfUsers(groupMembers.toArray(new Long[0]));
             }
 
-            Collection<Integer> users;
-            Collection<Integer> items;
+            Collection<Long> users;
+            Collection<Long> items;
 
             if (grsc.datasetLoader instanceof ContentDatasetLoader) {
                 ContentDatasetLoader contentDatasetLoader = (ContentDatasetLoader) datasetLoader;
@@ -181,13 +181,13 @@ public class GroupRecommendationManager {
             Global.showInfoMessage("\tUsers:   " + users.size() + "\n");
             Global.showInfoMessage("\tItems:   " + items.size() + "\n");
             Global.showInfoMessage("\tRatings: " + grsc.datasetLoader.getRatingsDataset().getNumRatings() + "\n");
-            Set<Integer> _candidateItems = new TreeSet<>();
+            Set<Long> _candidateItems = new TreeSet<>();
             _candidateItems.addAll(items);
 
-            for (int idMember : group) {
+            for (long idMember : group) {
                 _candidateItems.removeAll(datasetLoader.getRatingsDataset().getUserRated(idMember));
             }
-            Set<Integer> candidateItems = Collections.unmodifiableSet(_candidateItems);
+            Set<Long> candidateItems = Collections.unmodifiableSet(_candidateItems);
 
             Object recommendationModel_grs = groupRecommenderSystem.loadRecommendationModel(
                     grsFilePersistence,
@@ -207,7 +207,7 @@ public class GroupRecommendationManager {
 
             List<SingleUserRecommendationTask> tareas = new LinkedList<>();
 
-            for (int idUser : group) {
+            for (long idUser : group) {
                 tareas.add(new SingleUserRecommendationTask(
                         recommenderSystem,
                         datasetLoader,
@@ -217,7 +217,7 @@ public class GroupRecommendationManager {
                                 .get(idItem)).collect(Collectors.toSet())));
             }
 
-            Map<Integer, Collection<Recommendation>> singleUserRecommendations
+            Map<Long, Collection<Recommendation>> singleUserRecommendations
                     = group.getIdMembers().parallelStream().map(idUser -> new SingleUserRecommendationTask(
                                     recommenderSystem,
                                     datasetLoader,
@@ -233,13 +233,13 @@ public class GroupRecommendationManager {
 
             {
                 //Miro las predichas para todos.
-                Set<Integer> idItem_recommended = new TreeSet<>();
+                Set<Long> idItem_recommended = new TreeSet<>();
                 for (Recommendation r : groupRecommendations.getRecommendations()) {
                     idItem_recommended.add(r.getItem().getId());
                 }
 
-                for (int idMember : singleUserRecommendations.keySet()) {
-                    Set<Integer> thisUserIdItem_recommended = new TreeSet<>();
+                for (long idMember : singleUserRecommendations.keySet()) {
+                    Set<Long> thisUserIdItem_recommended = new TreeSet<>();
                     singleUserRecommendations.get(idMember).stream().forEach((r) -> {
                         thisUserIdItem_recommended.add(r.getItem().getId());
                     });
@@ -255,7 +255,7 @@ public class GroupRecommendationManager {
                     }
                 }
 
-                for (int idMember : singleUserRecommendations.keySet()) {
+                for (long idMember : singleUserRecommendations.keySet()) {
                     singleUserRecommendations.put(idMember, new LinkedList<>(singleUserRecommendations.get(idMember)));
 
                     for (Iterator<Recommendation> it = singleUserRecommendations.get(idMember).iterator(); it.hasNext();) {
@@ -277,14 +277,14 @@ public class GroupRecommendationManager {
                 groupRecommendations = new GroupRecommendations(group, selection, groupRecommendations.getRecommendationComputationDetails());
 
                 //Miro las predichas para el grupo.
-                Set<Integer> topNforGroup = new TreeSet<>();
+                Set<Long> topNforGroup = new TreeSet<>();
                 for (Recommendation r : groupRecommendations.getRecommendations()) {
                     topNforGroup.add(r.getItem().getId());
                 }
 
                 topNforGroup = Collections.unmodifiableSet(topNforGroup);
 
-                for (int idMember : singleUserRecommendations.keySet()) {
+                for (long idMember : singleUserRecommendations.keySet()) {
                     singleUserRecommendations.put(idMember, new LinkedList<>(singleUserRecommendations.get(idMember)));
 
                     for (Iterator<Recommendation> it = singleUserRecommendations.get(idMember).iterator(); it.hasNext();) {
@@ -324,11 +324,11 @@ public class GroupRecommendationManager {
     public static final String RECOMMENDATION_ELEMENT_ID_ITEM_ATTRIBUTE_NAME = "idItem";
     public static final String RECOMMENDATION_ELEMENT_PREFERENCE_ATTRIBUTE_NAME = "preference";
 
-    private static void writeXML(Collection<Recommendation> groupRecommendations, Map<Integer, Collection<Recommendation>> singleUserRecommendations, File outputFile) {
+    private static void writeXML(Collection<Recommendation> groupRecommendations, Map<Long, Collection<Recommendation>> singleUserRecommendations, File outputFile) {
 
         Element root = new Element(CASE_ROOT_ELEMENT_NAME);
 
-        Set<Integer> itemsIntersection = new TreeSet<>();
+        Set<Long> itemsIntersection = new TreeSet<>();
 
         //Miro los items recomendados para el grupo
         for (Recommendation r : groupRecommendations) {
@@ -336,8 +336,8 @@ public class GroupRecommendationManager {
         }
 
         //Elimino los que no aparecen recomendades para los miembros
-        for (int idMember : singleUserRecommendations.keySet()) {
-            Set<Integer> thisMemberItems = new TreeSet<>();
+        for (long idMember : singleUserRecommendations.keySet()) {
+            Set<Long> thisMemberItems = new TreeSet<>();
             singleUserRecommendations.get(idMember).stream().forEach((r) -> {
                 thisMemberItems.add(r.getItem().getId());
             });
@@ -346,13 +346,13 @@ public class GroupRecommendationManager {
 
         itemsIntersection = Collections.unmodifiableSet(itemsIntersection);
 
-        for (int idMember : singleUserRecommendations.keySet()) {
+        for (long idMember : singleUserRecommendations.keySet()) {
             Element thisMemberElement = new Element(MEMBER_ELEMENT_NAME);
-            thisMemberElement.setAttribute(MEMBER_ELEMENT_NAMEID_ATTRIBUTE_NAME, Integer.toString(idMember));
+            thisMemberElement.setAttribute(MEMBER_ELEMENT_NAMEID_ATTRIBUTE_NAME, Long.toString(idMember));
             for (Recommendation r : singleUserRecommendations.get(idMember)) {
                 if (itemsIntersection.contains(r.getItem().getId())) {
                     Element recommendation = new Element(RECOMMENDATION_ELEMENT_NAME);
-                    recommendation.setAttribute(RECOMMENDATION_ELEMENT_ID_ITEM_ATTRIBUTE_NAME, Integer.toString(r.getItem().getId()));
+                    recommendation.setAttribute(RECOMMENDATION_ELEMENT_ID_ITEM_ATTRIBUTE_NAME, Long.toString(r.getItem().getId()));
                     recommendation.setAttribute(RECOMMENDATION_ELEMENT_PREFERENCE_ATTRIBUTE_NAME, Double.toString(r.getPreference().doubleValue()));
                     thisMemberElement.addContent(recommendation);
                 }
@@ -364,7 +364,7 @@ public class GroupRecommendationManager {
 
         StringBuilder str = new StringBuilder();
 
-        Integer[] idMembers = singleUserRecommendations.keySet().toArray(new Integer[0]);
+        Long[] idMembers = singleUserRecommendations.keySet().toArray(new Long[0]);
 
         str.append(idMembers[0]);
         for (int i = 1; i < idMembers.length; i++) {
@@ -376,7 +376,7 @@ public class GroupRecommendationManager {
         for (Recommendation r : groupRecommendations) {
             if (itemsIntersection.contains(r.getItem().getId())) {
                 Element recommendation = new Element(RECOMMENDATION_ELEMENT_NAME);
-                recommendation.setAttribute(RECOMMENDATION_ELEMENT_ID_ITEM_ATTRIBUTE_NAME, Integer.toString(r.getItem().getId()));
+                recommendation.setAttribute(RECOMMENDATION_ELEMENT_ID_ITEM_ATTRIBUTE_NAME, Long.toString(r.getItem().getId()));
                 recommendation.setAttribute(RECOMMENDATION_ELEMENT_PREFERENCE_ATTRIBUTE_NAME, Double.toString(r.getPreference().doubleValue()));
                 groupElement.addContent(recommendation);
             }

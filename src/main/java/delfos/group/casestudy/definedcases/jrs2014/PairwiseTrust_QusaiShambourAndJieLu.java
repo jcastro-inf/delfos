@@ -39,10 +39,9 @@ public class PairwiseTrust_QusaiShambourAndJieLu implements PairwiseUserTrust {
      * @param idUser1
      * @param idUser2
      * @return
-     * @throws delfos.common.Exceptions.Dataset.Users.UserNotFound
      */
     @Override
-    public double getTrust(DatasetLoader<? extends Rating> datasetLoader, int idUser1, int idUser2) throws UserNotFound {
+    public double getTrust(DatasetLoader<? extends Rating> datasetLoader, long idUser1, long idUser2) throws UserNotFound {
         double MSD;
         double Jaccard;
 
@@ -50,10 +49,10 @@ public class PairwiseTrust_QusaiShambourAndJieLu implements PairwiseUserTrust {
             double meanUser = datasetLoader.getRatingsDataset().getMeanRatingUser(idUser1);
             double meanUserNeighbour = datasetLoader.getRatingsDataset().getMeanRatingUser(idUser2);
 
-            Map<Integer, ? extends Rating> userRatings = datasetLoader.getRatingsDataset().getUserRatingsRated(idUser1);
-            Map<Integer, ? extends Rating> userNeighbourRatings = datasetLoader.getRatingsDataset().getUserRatingsRated(idUser2);
+            Map<Long, ? extends Rating> userRatings = datasetLoader.getRatingsDataset().getUserRatingsRated(idUser1);
+            Map<Long, ? extends Rating> userNeighbourRatings = datasetLoader.getRatingsDataset().getUserRatingsRated(idUser2);
 
-            Set<Integer> commonItems = new TreeSet<Integer>(userRatings.keySet());
+            Set<Long> commonItems = new TreeSet<Long>(userRatings.keySet());
             commonItems.retainAll(userNeighbourRatings.keySet());
 
             double[] ratings = new double[commonItems.size()];
@@ -67,7 +66,7 @@ public class PairwiseTrust_QusaiShambourAndJieLu implements PairwiseUserTrust {
 
             {
                 int index = 0;
-                for (int idItem : commonItems) {
+                for (long idItem : commonItems) {
                     double rating = userRatings.get(idItem).getRatingValue().doubleValue();
                     ratings[index] = rating;
                     double prediction = meanUser + userNeighbourRatings.get(idItem).getRatingValue().doubleValue() - meanUserNeighbour;

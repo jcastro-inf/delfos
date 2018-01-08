@@ -34,5 +34,5 @@ public interface UserProfile extends Serializable {
      *
      * @return Id del usuario al que pertenece el perfil
      */
-    public int getId();
+    public long getId();
 }

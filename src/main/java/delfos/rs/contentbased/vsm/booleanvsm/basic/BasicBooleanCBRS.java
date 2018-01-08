@@ -117,7 +117,7 @@ public class BasicBooleanCBRS extends ContentBasedRecommender<BasicBooleanCBRSMo
     protected Collection<Recommendation> recommendOnly(DatasetLoader<? extends Rating> datasetLoader,
             BasicBooleanCBRSModel model,
             SparseVector<Long> userProfile,
-            Collection<Integer> candidateItems)
+            Collection<Long> candidateItems)
             throws UserNotFound, ItemNotFound,
             CannotLoadRatingsDataset, CannotLoadContentDataset {
         if (model == null) {
@@ -128,7 +128,7 @@ public class BasicBooleanCBRS extends ContentBasedRecommender<BasicBooleanCBRSMo
         Collection<Recommendation> recomendaciones = new ArrayList<>();
 
         List<Double> userVectorProfile = model.booleanFeaturesTransformation.getDoubleVector(userProfile);
-        for (int idItem : candidateItems) {
+        for (long idItem : candidateItems) {
             List<Double> itemVectorProfile = model.getBooleanFeaturesTransformation().getDoubleVector(model.get(idItem));
             double sim;
             try {
@@ -143,17 +143,21 @@ public class BasicBooleanCBRS extends ContentBasedRecommender<BasicBooleanCBRSMo
     }
 
     @Override
-    protected SparseVector<Long> makeUserProfile(int idUser, DatasetLoader<? extends Rating> datasetLoader, BasicBooleanCBRSModel model) throws CannotLoadRatingsDataset, CannotLoadContentDataset, UserNotFound {
+    protected SparseVector<Long> makeUserProfile(
+            long idUser,
+            DatasetLoader<? extends Rating> datasetLoader,
+            BasicBooleanCBRSModel model)
+            throws CannotLoadRatingsDataset, CannotLoadContentDataset, UserNotFound {
 
         final RatingsDataset<? extends Rating> ratingsDataset = datasetLoader.getRatingsDataset();
 
         SparseVector<Long> userProfile = model.getBooleanFeaturesTransformation().newProfile();
 
-        Map<Integer, ? extends Rating> userRatingsRated = ratingsDataset.getUserRatingsRated(idUser);
+        Map<Long, ? extends Rating> userRatingsRated = ratingsDataset.getUserRatingsRated(idUser);
 
         //Calculo del perfil
-        for (Map.Entry<Integer, ? extends Rating> entry : userRatingsRated.entrySet()) {
-            int idItem = entry.getKey();
+        for (Map.Entry<Long, ? extends Rating> entry : userRatingsRated.entrySet()) {
+            long idItem = entry.getKey();
             Rating rating = entry.getValue();
             SparseVector<Long> itemProfile = model.get(idItem);
             if (datasetLoader.getDefaultRelevanceCriteria().isRelevant(rating)) {

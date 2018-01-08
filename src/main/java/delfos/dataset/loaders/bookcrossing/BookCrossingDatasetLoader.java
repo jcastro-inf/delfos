@@ -54,6 +54,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 
 /**
@@ -211,7 +212,7 @@ public class BookCrossingDatasetLoader extends DatasetLoaderAbstract<Rating> {
         Feature[] features = {locationFeature, ageFeature};
 
         while (reader.readRecord()) {
-            int userId = new Integer(reader.get("User-ID"));
+            long userId = new Long(reader.get("User-ID"));
 
             String location = reader.get("Location").equals("NULL") ? null : reader.get("Location");
             Integer age = reader.get("Age").equals("NULL") ? null : new Integer(reader.get("Age"));
@@ -317,7 +318,7 @@ public class BookCrossingDatasetLoader extends DatasetLoaderAbstract<Rating> {
                 item -> item.getFeatureValue(isbnFeature).toString(),
                 user -> user));
 
-        AtomicInteger nextIdItem = new AtomicInteger(itemsByISBN.values().stream().mapToInt(item -> item.getId()).max().getAsInt() + 1);
+        AtomicLong nextIdItem = new AtomicLong(itemsByISBN.values().stream().mapToLong(item -> item.getId()).max().getAsLong() + 1);
         Feature[] isbnFeatures = {isbnFeature};
 
         Map<String, Item> additionalItems = new HashMap<>();
@@ -365,7 +366,7 @@ public class BookCrossingDatasetLoader extends DatasetLoaderAbstract<Rating> {
         c.reset();
         int i = 0;
 
-        Map<Integer, User> usersIndex = usersDataset.stream().collect(Collectors.toMap(
+        Map<Long, User> usersIndex = usersDataset.stream().collect(Collectors.toMap(
                 user -> user.getId(),
                 user -> user));
 
@@ -381,9 +382,9 @@ public class BookCrossingDatasetLoader extends DatasetLoaderAbstract<Rating> {
         while (reader.readRecord()) {
 
             String isbn = reader.get("ISBN");
-            int idUser = new Integer(reader.get("User-ID"));
+            long idUser = new Long(reader.get("User-ID"));
 
-            int ratingValue = new Integer(reader.get("Book-Rating"));
+            Double ratingValue = new Double(reader.get("Book-Rating"));
 
             if (ratingValue == 0 && !isConsiderImplicitRatings) {
 

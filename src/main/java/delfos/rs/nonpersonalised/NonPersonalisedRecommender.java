@@ -37,11 +37,17 @@ import java.util.Collection;
  */
 public abstract class NonPersonalisedRecommender<RecommendationModel> extends GenericRecommenderSystemAdapter<RecommendationModel> {
 
-    public final Collection<Recommendation> recommendOnly(DatasetLoader<? extends Rating> datasetLoader, RecommendationModel model, Integer idUser, Collection<Integer> candidateItems) throws ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset {
+    public final Collection<Recommendation> recommendOnly(
+            DatasetLoader<? extends Rating> datasetLoader, RecommendationModel model,
+            long idUser, Collection<Long> candidateItems)
+            throws ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset {
         return recommendOnly(datasetLoader, model, candidateItems);
     }
 
-    public abstract Collection<Recommendation> recommendOnly(DatasetLoader<? extends Rating> datasetLoader, RecommendationModel model, Collection<Integer> candidateItems) throws ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset;
+    public abstract Collection<Recommendation> recommendOnly(
+            DatasetLoader<? extends Rating> datasetLoader,
+            RecommendationModel model,
+            Collection<Long> candidateItems) throws ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset;
 
     @Override
     public ParameterOwnerType getParameterOwnerType() {

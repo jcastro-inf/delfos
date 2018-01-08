@@ -99,9 +99,9 @@ public class GivenGroups extends GroupFormationTechnique {
             String group = matcher.group();
             group = group.substring(1, group.length() - 1);
 
-            Collection<Integer> idMembers = new LinkedList<>();
-            Arrays.asList(group.split(",")).stream().forEach((idMember) -> idMembers.add(Integer.parseInt(idMember)));
-            ret.add(new GroupOfUsers(idMembers.toArray(new Integer[0])));
+            Collection<Long> idMembers = new LinkedList<>();
+            Arrays.asList(group.split(",")).stream().forEach((idMember) -> idMembers.add(Long.parseLong(idMember)));
+            ret.add(new GroupOfUsers(idMembers.toArray(new Long[0])));
         }
 
         return ret;

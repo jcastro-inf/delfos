@@ -30,13 +30,17 @@ import delfos.dataset.basic.rating.RatingsDataset;
  */
 public class TareaPropagarConfianzaEntreUsuarios {
 
-    public final int idSourceUser;
-    public final int idTargetUser;
-    public final Map<Integer, Map<Integer, Number>> usersTrust;
+    public final long idSourceUser;
+    public final long idTargetUser;
+    public final Map<Long, Map<Long, Number>> usersTrust;
     public final RatingsDataset<? extends Rating> ratingsDataset;
     private Double propagatedTrust = null;
 
-    public TareaPropagarConfianzaEntreUsuarios(int idSourceUser, int idTargetUser, Map<Integer, Map<Integer, Number>> usersTrust, RatingsDataset<? extends Rating> ratingsDataset) {
+    public TareaPropagarConfianzaEntreUsuarios(
+            long idSourceUser,
+            long idTargetUser,
+            Map<Long, Map<Long, Number>> usersTrust,
+            RatingsDataset<? extends Rating> ratingsDataset) {
         this.idSourceUser = idSourceUser;
         this.idTargetUser = idTargetUser;
         this.usersTrust = usersTrust;

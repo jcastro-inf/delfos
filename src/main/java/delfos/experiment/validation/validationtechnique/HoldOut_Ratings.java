@@ -23,9 +23,11 @@ import delfos.common.exceptions.dataset.items.ItemNotFound;
 import delfos.common.exceptions.dataset.users.UserNotFound;
 import delfos.common.parameters.Parameter;
 import delfos.common.parameters.restriction.DoubleParameter;
+import delfos.dataset.basic.item.Item;
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RatingsDataset;
+import delfos.dataset.basic.user.User;
 import delfos.dataset.storage.validationdatasets.PairOfTrainTestRatingsDataset;
 import delfos.dataset.storage.validationdatasets.ValidationDatasets;
 import java.util.Map;
@@ -33,6 +35,8 @@ import java.util.Random;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 /**
  * Clase que implementa el método de partición de datasets Hold Out por ratings.
@@ -63,23 +67,29 @@ public class HoldOut_Ratings extends ValidationTechnique {
     }
 
     @Override
-    public <RatingType extends Rating> PairOfTrainTestRatingsDataset[] shuffle(DatasetLoader<RatingType> datasetLoader) throws CannotLoadRatingsDataset, CannotLoadContentDataset {
+    public <RatingType extends Rating> PairOfTrainTestRatingsDataset<RatingType>[] shuffle(DatasetLoader<RatingType> datasetLoader) throws CannotLoadRatingsDataset, CannotLoadContentDataset {
         Random random = new Random(getSeedValue());
-        PairOfTrainTestRatingsDataset[] ret = new PairOfTrainTestRatingsDataset[1];
+        PairOfTrainTestRatingsDataset<RatingType>[] ret = new PairOfTrainTestRatingsDataset[1];
 
         //HoldOut initialization
-        Map<Integer, Set<Integer>> testSet = new TreeMap<>();
+        Map<User, Set<Item>> testSet = new TreeMap<>();
         double testPercentValue = 1 - getTrainPercent();
 
         //composicion de los conjuntos de training y test
         int numUsers = datasetLoader.getRatingsDataset().allUsers().size();
         int usuActual = 1;
         RatingsDataset<? extends Rating> ratingsDataset = datasetLoader.getRatingsDataset();
-        for (int idUser : ratingsDataset.allUsers()) {
+        for (long idUser : ratingsDataset.allUsers()) {
+            User user = datasetLoader.getUsersDataset().getUser(idUser);
             try {
                 //creo una lista con todos los idItem para ir quitando cuando se elige la partición en la que estará
-                Set<Integer> allItemsThisUser = new TreeSet<>(datasetLoader.getRatingsDataset().getUserRated(idUser));
-                Set<Integer> testItemsThisUser = new TreeSet<>();
+                Set<Item> allItemsThisUser = new TreeSet<>(
+                        datasetLoader.getRatingsDataset()
+                                .getUserRatingsRated(idUser)
+                                .values().stream()
+                                .map(rating-> rating.getItem())
+                                .collect(Collectors.toSet()));
+                Set<Item> testItemsThisUser = new TreeSet<>();
 
                 long ratingsToRemove = Math.round(testPercentValue * datasetLoader.getRatingsDataset().getUserRated(idUser).size());
                 if (ratingsToRemove == 0) {
@@ -87,16 +97,16 @@ public class HoldOut_Ratings extends ValidationTechnique {
                 }
                 //Realizo la elección de la particion a la que pertenece cada item
                 //sacando uno aleatoriamente y lo meto en la lista que toca
-                while (testItemsThisUser.size() < ratingsToRemove) {
+                while (testItemsThisUser.size() < ratingsToRemove && !allItemsThisUser.isEmpty()) {
                     int index = random.nextInt(allItemsThisUser.size());
-                    Integer idItem = (Integer) allItemsThisUser.toArray()[index];
+                    Item idItem = (Item) allItemsThisUser.toArray()[index];
                     allItemsThisUser.remove(idItem);
                     testItemsThisUser.add(idItem);
                 }
 
                 //compongo los conjuntos de validación completos de cada ejecución
                 if (!testItemsThisUser.isEmpty()) {
-                    testSet.put(idUser, testItemsThisUser);
+                    testSet.put(user, testItemsThisUser);
                 }
             } catch (UserNotFound ex) {
                 ERROR_CODES.USER_NOT_FOUND.exit(ex);
@@ -105,7 +115,7 @@ public class HoldOut_Ratings extends ValidationTechnique {
         }
 
         try {
-            ret[0] = new PairOfTrainTestRatingsDataset(
+            ret[0] = new PairOfTrainTestRatingsDataset<>(
                     datasetLoader,
                     ValidationDatasets.getInstance().createTrainingDataset(datasetLoader.getRatingsDataset(), testSet),
                     ValidationDatasets.getInstance().createTestDataset(datasetLoader.getRatingsDataset(), testSet),

@@ -52,11 +52,11 @@ public class RatingsDatasetDiff {
 
     private static Map<Object, Map<Object, String>> diff_byUser(RatingsDataset<? extends Rating> oldDataset, RatingsDataset<? extends Rating> newDataset) throws RuntimeException {
         Map<Object, Map<Object, String>> diffMatrix = new TreeMap<>();
-        TreeSet<Integer> unionOfUsers = new TreeSet<>();
+        TreeSet<Long> unionOfUsers = new TreeSet<>();
         unionOfUsers.addAll(oldDataset.allUsers());
         unionOfUsers.addAll(newDataset.allUsers());
         //Cuales hay en oldRatingsDataset que no estén en newRatingsDataset:
-        for (int idUser : unionOfUsers) {
+        for (long idUser : unionOfUsers) {
 
             try {
                 TreeMap<Object, String> diffThisUser = new TreeMap<>();
@@ -79,7 +79,7 @@ public class RatingsDatasetDiff {
     }
 
     public static String printDiffHistogram(RatingsDataset<? extends Rating> oldDataset, RatingsDataset<? extends Rating> newDataset) {
-        Map<String, Integer> diffHistogram = diffHistogram(oldDataset, newDataset);
+        Map<String, Long> diffHistogram = diffHistogram(oldDataset, newDataset);
 
         StringBuilder s = new StringBuilder();
 
@@ -93,14 +93,14 @@ public class RatingsDatasetDiff {
         return s.toString();
     }
 
-    public static Map<String, Integer> diffHistogram(RatingsDataset<? extends Rating> oldDataset, RatingsDataset<? extends Rating> newDataset) {
-        Map<String, Integer> diffHistogram = new TreeMap<>();
+    public static Map<String, Long> diffHistogram(RatingsDataset<? extends Rating> oldDataset, RatingsDataset<? extends Rating> newDataset) {
+        Map<String, Long> diffHistogram = new TreeMap<>();
 
-        diffHistogram.put(MARK_RATING_ADDED, 0);
-        diffHistogram.put(MARK_RATING_DELETED, 0);
+        diffHistogram.put(MARK_RATING_ADDED, 0l);
+        diffHistogram.put(MARK_RATING_DELETED, 0l);
 
         for (String diffMarkModified : RatingValueModificationMarker.generateDefaultMarkers(MARK_RATING_VALUE_MODIFIED_UP, MARK_RATING_VALUE_MODIFIED_STAYS, MARK_RATING_VALUE_MODIFIED_DOWN, MARK_RATING_VALUE_MODIFIED_RANGE_WIDTH)) {
-            diffHistogram.put(diffMarkModified, 0);
+            diffHistogram.put(diffMarkModified, 0l);
         }
 
         Map<Object, Map<Object, String>> diff_byUser = diff_byUser(oldDataset, newDataset);
@@ -115,12 +115,15 @@ public class RatingsDatasetDiff {
         return diffHistogram;
     }
 
-    private static Map<Object, String> userDeleted(RatingsDataset<? extends Rating> oldRatingsDataset, RatingsDataset<? extends Rating> newRatingsDataset, int idUser) throws UserNotFound {
+    private static Map<Object, String> userDeleted(
+            RatingsDataset<? extends Rating> oldRatingsDataset,
+            RatingsDataset<? extends Rating> newRatingsDataset,
+            long idUser) throws UserNotFound {
 
         if (oldRatingsDataset.allUsers().contains(idUser) && !newRatingsDataset.allUsers().contains(idUser)) {
             TreeMap<Object, String> diffThisUser = new TreeMap<>();
 
-            for (int idItemRatedInOneButNotInTwo : oldRatingsDataset.getUserRated(idUser)) {
+            for (long idItemRatedInOneButNotInTwo : oldRatingsDataset.getUserRated(idUser)) {
                 diffThisUser.put(idItemRatedInOneButNotInTwo, MARK_RATING_DELETED);
             }
             return diffThisUser;
@@ -129,10 +132,13 @@ public class RatingsDatasetDiff {
         }
     }
 
-    private static Map<? extends Object, ? extends String> userAdded(RatingsDataset<? extends Rating> oldRatingsDataset, RatingsDataset<? extends Rating> newRatingsDataset, int idUser) throws UserNotFound {
+    private static Map<? extends Object, ? extends String> userAdded(
+            RatingsDataset<? extends Rating> oldRatingsDataset,
+            RatingsDataset<? extends Rating> newRatingsDataset,
+            long idUser) throws UserNotFound {
         if (!oldRatingsDataset.allUsers().contains(idUser) && newRatingsDataset.allUsers().contains(idUser)) {
             TreeMap<Object, String> diffThisUser = new TreeMap<>();
-            for (int idItemRatedInOneButNotInTwo : newRatingsDataset.getUserRated(idUser)) {
+            for (long idItemRatedInOneButNotInTwo : newRatingsDataset.getUserRated(idUser)) {
                 diffThisUser.put(idItemRatedInOneButNotInTwo, MARK_RATING_ADDED);
             }
             return diffThisUser;
@@ -141,12 +147,15 @@ public class RatingsDatasetDiff {
         }
     }
 
-    private static Map<? extends Object, ? extends String> userRatingsDeleted(RatingsDataset<? extends Rating> oldRatingsDataset, RatingsDataset<? extends Rating> newRatingsDataset, int idUser) throws UserNotFound {
+    private static Map<? extends Object, ? extends String> userRatingsDeleted(
+            RatingsDataset<? extends Rating> oldRatingsDataset,
+            RatingsDataset<? extends Rating> newRatingsDataset,
+            long idUser) throws UserNotFound {
         if (oldRatingsDataset.allUsers().contains(idUser) && newRatingsDataset.allUsers().contains(idUser)) {
 
             TreeMap<Object, String> diffThisUser = new TreeMap<>();
 
-            TreeSet<Integer> ratingsDeleted = new TreeSet<>();
+            TreeSet<Long> ratingsDeleted = new TreeSet<>();
 
             ratingsDeleted.addAll(oldRatingsDataset.getUserRated(idUser));
             ratingsDeleted.removeAll(newRatingsDataset.getUserRated(idUser));
@@ -162,12 +171,15 @@ public class RatingsDatasetDiff {
         }
     }
 
-    private static Map<? extends Object, ? extends String> userRatingsAdded(RatingsDataset<? extends Rating> oldRatingsDataset, RatingsDataset<? extends Rating> newRatingsDataset, int idUser) throws UserNotFound {
+    private static Map<? extends Object, ? extends String> userRatingsAdded(
+            RatingsDataset<? extends Rating> oldRatingsDataset,
+            RatingsDataset<? extends Rating> newRatingsDataset,
+            long idUser) throws UserNotFound {
         if (oldRatingsDataset.allUsers().contains(idUser) && newRatingsDataset.allUsers().contains(idUser)) {
 
             TreeMap<Object, String> diffThisUser = new TreeMap<>();
 
-            TreeSet<Integer> itemsAdded = new TreeSet<>();
+            TreeSet<Long> itemsAdded = new TreeSet<>();
 
             itemsAdded.addAll(newRatingsDataset.getUserRated(idUser));
             itemsAdded.removeAll(oldRatingsDataset.getUserRated(idUser));
@@ -183,7 +195,10 @@ public class RatingsDatasetDiff {
         }
     }
 
-    private static Map<? extends Object, ? extends String> userRatingsModified(RatingsDataset<? extends Rating> oldRatingsDataset, RatingsDataset<? extends Rating> newRatingsDataset, int idUser) throws UserNotFound {
+    private static Map<? extends Object, ? extends String> userRatingsModified(
+            RatingsDataset<? extends Rating> oldRatingsDataset,
+            RatingsDataset<? extends Rating> newRatingsDataset,
+            long idUser) throws UserNotFound {
         if (oldRatingsDataset.allUsers().contains(idUser) && newRatingsDataset.allUsers().contains(idUser)) {
 
             TreeMap<Object, String> diffThisUser = new TreeMap<>();
@@ -191,10 +206,10 @@ public class RatingsDatasetDiff {
             RatingValueModificationMarker ratingValueModificationMarkers = new RatingValueModificationMarker(oldRatingsDataset.getRatingsDomain(),
                     RatingValueModificationMarker.generateDefaultMarkers(MARK_RATING_VALUE_MODIFIED_UP, MARK_RATING_VALUE_MODIFIED_STAYS, MARK_RATING_VALUE_MODIFIED_DOWN, MARK_RATING_VALUE_MODIFIED_RANGE_WIDTH));
 
-            Map<Integer, ? extends Rating> userRatingsRated1 = oldRatingsDataset.getUserRatingsRated(idUser);
-            Map<Integer, ? extends Rating> userRatingsRated2 = newRatingsDataset.getUserRatingsRated(idUser);
+            Map<Long, ? extends Rating> userRatingsRated1 = oldRatingsDataset.getUserRatingsRated(idUser);
+            Map<Long, ? extends Rating> userRatingsRated2 = newRatingsDataset.getUserRatingsRated(idUser);
 
-            Set<Integer> userRatedIntersection = new TreeSet<>();
+            Set<Long> userRatedIntersection = new TreeSet<>();
 
             userRatedIntersection.addAll(userRatingsRated1.keySet());
             userRatedIntersection.retainAll(userRatingsRated2.keySet());
@@ -226,12 +241,12 @@ public class RatingsDatasetDiff {
             return false;
         }
 
-        for (Integer user : r1.allUsers()) {
+        for (Long user : r1.allUsers()) {
             try {
-                Map<Integer, ? extends Rating> userRatingsRated_r1 = r1.getUserRatingsRated(user);
+                Map<Long, ? extends Rating> userRatingsRated_r1 = r1.getUserRatingsRated(user);
 
                 try {
-                    Map<Integer, ? extends Rating> userRatingsRated_r2 = r2.getUserRatingsRated(user);
+                    Map<Long, ? extends Rating> userRatingsRated_r2 = r2.getUserRatingsRated(user);
                     if (differentUserRatings(userRatingsRated_r1, userRatingsRated_r2)) {
                         return false;
                     }
@@ -248,11 +263,11 @@ public class RatingsDatasetDiff {
         return true;
     }
 
-    private static boolean differentUserRatings(Map<Integer, ? extends Rating> userRatingsRated_r1, Map<Integer, ? extends Rating> userRatingsRated_r2) {
+    private static boolean differentUserRatings(Map<Long, ? extends Rating> userRatingsRated_r1, Map<Long, ? extends Rating> userRatingsRated_r2) {
         if (!userRatingsRated_r1.keySet().equals(userRatingsRated_r2.keySet())) {
             return true;
         }
-        for (Integer idItem : userRatingsRated_r1.keySet()) {
+        for (Long idItem : userRatingsRated_r1.keySet()) {
             Rating rating_r1 = userRatingsRated_r1.get(idItem);
             Rating rating_r2 = userRatingsRated_r2.get(idItem);
             double value_r1 = rating_r1.getRatingValue().doubleValue();

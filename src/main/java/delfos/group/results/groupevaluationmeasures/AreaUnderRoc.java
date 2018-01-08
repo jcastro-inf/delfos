@@ -16,13 +16,12 @@
  */
 package delfos.group.results.groupevaluationmeasures;
 
-import delfos.ERROR_CODES;
 import delfos.common.Global;
-import delfos.common.exceptions.dataset.users.UserNotFound;
 import delfos.common.statisticalfuncions.MeanIterative;
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RelevanceCriteria;
+import delfos.dataset.util.DatasetUtilities;
 import delfos.group.casestudy.parallelisation.SingleGroupRecommendationTaskOutput;
 import delfos.group.groupsofusers.GroupOfUsers;
 import delfos.group.results.grouprecomendationresults.GroupRecommenderSystemResult;
@@ -31,9 +30,11 @@ import delfos.results.evaluationmeasures.roccurve.AreaUnderROC;
 import delfos.rs.recommendation.Recommendation;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Medida de evaluación para sistemas de recomendación a grupos que calcula la curva ROC (Receiver Operator
@@ -58,28 +59,28 @@ public class AreaUnderRoc extends GroupEvaluationMeasure {
     public GroupEvaluationMeasureResult getMeasureResult(
             GroupRecommenderSystemResult groupRecommenderSystemResult, DatasetLoader<? extends Rating> originalDatasetLoader, RelevanceCriteria relevanceCriteria, DatasetLoader<? extends Rating> trainingDatasetLoader, DatasetLoader<? extends Rating> testDatasetLoader) {
 
-        Map<GroupOfUsers, ConfusionMatricesCurve> prCurves = new TreeMap<>();
+        Map<GroupOfUsers, ConfusionMatricesCurve> prCurves = Collections.synchronizedMap(new TreeMap<>());
 
-        int gruposSinMatriz = 0;
+        AtomicInteger gruposSinMatriz = new AtomicInteger(0);
         for (SingleGroupRecommendationTaskOutput groupOutput : groupRecommenderSystemResult.outputsIterator()) {
 
             GroupOfUsers group = groupOutput.getGroup();
             Collection<Recommendation> groupRecommendations = groupOutput
                     .getRecommendations().getRecommendations();
 
+            Map<Long, Map<Long, Number>> membersRatings_byUser = DatasetUtilities.getMembersRatings_byUser(group, testDatasetLoader);
+
             List<Boolean> recommendacionesGrupo = new ArrayList<>(groupRecommendations.size());
             for (Recommendation r : groupRecommendations) {
-                int idItem = r.getItem().getId();
+                long idItem = r.getItem().getId();
 
                 MeanIterative mean = new MeanIterative();
-                for (int idUser : group.getIdMembers()) {
-                    try {
-                        Map<Integer, ? extends Rating> userRatings = testDatasetLoader.getRatingsDataset().getUserRatingsRated(idUser);
-                        if (userRatings.containsKey(idItem)) {
-                            mean.addValue(testDatasetLoader.getRatingsDataset().getUserRatingsRated(idUser).get(idItem).getRatingValue().doubleValue());
-                        }
-                    } catch (UserNotFound ex) {
-                        ERROR_CODES.USER_NOT_FOUND.exit(ex);
+                for (long idUser : group.getIdMembers()) {
+                    if (!membersRatings_byUser.containsKey(idUser)) {
+                        Global.showError(new IllegalStateException("User '" + idUser + "' has no ratings"));
+                    } else if (membersRatings_byUser.get(idUser).containsKey(idItem)) {
+                        Number rating = membersRatings_byUser.get(idUser).get(idItem);
+                        mean.addValue(rating.doubleValue());
                     }
                 }
                 recommendacionesGrupo.add(relevanceCriteria.isRelevant(mean.getMean()));
@@ -88,7 +89,7 @@ public class AreaUnderRoc extends GroupEvaluationMeasure {
             try {
                 prCurves.put(group, new ConfusionMatricesCurve(recommendacionesGrupo));
             } catch (IllegalArgumentException iae) {
-                gruposSinMatriz++;
+                gruposSinMatriz.incrementAndGet();
             }
         }
 
@@ -101,7 +102,7 @@ public class AreaUnderRoc extends GroupEvaluationMeasure {
             areaUnderRoc = Double.NaN;
         }
 
-        if (gruposSinMatriz != 0) {
+        if (gruposSinMatriz.get() != 0) {
             if (Global.isInfoPrinted()) {
                 Global.showWarning("Grupos sin Matriz en " + AreaUnderRoc.class + " --> " + gruposSinMatriz);
             }

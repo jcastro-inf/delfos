@@ -40,8 +40,8 @@ import java.util.stream.Collectors;
  */
 public class SelectionDataset<RatingType extends Rating> extends RatingsDatasetAdapter<RatingType> {
 
-    private Collection<Integer> allowedUsers = Collections.EMPTY_SET;
-    private Collection<Integer> allowedItems = Collections.EMPTY_SET;
+    private Collection<Long> allowedUsers = Collections.EMPTY_SET;
+    private Collection<Long> allowedItems = Collections.EMPTY_SET;
     private RatingsDataset<RatingType> originalDataset;
 
     public SelectionDataset(RatingsDataset<RatingType> ratingsDataset) {
@@ -53,9 +53,9 @@ public class SelectionDataset<RatingType extends Rating> extends RatingsDatasetA
         this.originalDataset = originalDataset;
     }
 
-    public void setAllowedItems(Collection<Integer> allowedItems) {
+    public void setAllowedItems(Collection<Long> allowedItems) {
         //Comprobar si el conjunto de productos existe en el dataset
-        List<Integer> notInOriginal = allowedItems.parallelStream()
+        List<Long> notInOriginal = allowedItems.parallelStream()
                 .filter(allowedItem -> !originalDataset.allRatedItems().contains(allowedItem))
                 .sorted().collect(Collectors.toList());
 
@@ -66,9 +66,9 @@ public class SelectionDataset<RatingType extends Rating> extends RatingsDatasetA
         this.allowedItems = allowedItems.parallelStream().collect(Collectors.toSet());
     }
 
-    public void setAllowedUsers(Collection<Integer> allowedUsers) {
+    public void setAllowedUsers(Collection<Long> allowedUsers) {
         //Comprobar si el conjunto de usuarios existe en el dataset
-        List<Integer> notInOriginal = allowedUsers.parallelStream()
+        List<Long> notInOriginal = allowedUsers.parallelStream()
                 .filter(allowedItem -> !originalDataset.allUsers().contains(allowedItem))
                 .sorted().collect(Collectors.toList());
 
@@ -80,7 +80,7 @@ public class SelectionDataset<RatingType extends Rating> extends RatingsDatasetA
     }
 
     @Override
-    public RatingType getRating(int idUser, int idItem) throws UserNotFound, ItemNotFound {
+    public RatingType getRating(long idUser, long idItem) throws UserNotFound, ItemNotFound {
         if (!allowedUsers.contains(idUser)) {
             throw new UserNotFound(idUser);
         }
@@ -91,8 +91,8 @@ public class SelectionDataset<RatingType extends Rating> extends RatingsDatasetA
     }
 
     @Override
-    public Set<Integer> allUsers() {
-        Set<Integer> ratedUsers = allowedUsers
+    public Set<Long> allUsers() {
+        Set<Long> ratedUsers = allowedUsers
                 .parallelStream()
                 .filter((idUser) -> !getUserRated(idUser).isEmpty()).
                 collect(Collectors.toSet());
@@ -100,8 +100,8 @@ public class SelectionDataset<RatingType extends Rating> extends RatingsDatasetA
     }
 
     @Override
-    public Set<Integer> allRatedItems() {
-        Set<Integer> ratedItems = allowedItems
+    public Set<Long> allRatedItems() {
+        Set<Long> ratedItems = allowedItems
                 .parallelStream()
                 .filter(idItem -> isRatedItem(idItem))
                 .collect(Collectors.toSet());
@@ -109,11 +109,11 @@ public class SelectionDataset<RatingType extends Rating> extends RatingsDatasetA
     }
 
     @Override
-    public Set<Integer> getUserRated(Integer idUser) throws UserNotFound {
+    public Set<Long> getUserRated(long idUser) throws UserNotFound {
         if (!allowedUsers.contains(idUser)) {
             throw new UserNotFound(idUser);
         }
-        Set<Integer> userRated = originalDataset.getUserRated(idUser).parallelStream()
+        Set<Long> userRated = originalDataset.getUserRated(idUser).parallelStream()
                 .filter(item -> allowedItems.contains(item))
                 .collect(Collectors.toSet());
 
@@ -122,12 +122,12 @@ public class SelectionDataset<RatingType extends Rating> extends RatingsDatasetA
     }
 
     @Override
-    public Map<Integer, RatingType> getUserRatingsRated(Integer idUser) throws UserNotFound {
+    public Map<Long, RatingType> getUserRatingsRated(long idUser) throws UserNotFound {
         if (!allowedUsers.contains(idUser)) {
             throw new UserNotFound(idUser);
         }
 
-        Map<Integer, RatingType> userRatingsRated = originalDataset.getUserRatingsRated(idUser).values()
+        Map<Long, RatingType> userRatingsRated = originalDataset.getUserRatingsRated(idUser).values()
                 .parallelStream()
                 .filter(rating -> allowedItems.contains(rating.getItem().getId()))
                 .collect(Collectors.toMap(
@@ -139,22 +139,22 @@ public class SelectionDataset<RatingType extends Rating> extends RatingsDatasetA
     }
 
     @Override
-    public Set<Integer> getItemRated(Integer idItem) throws ItemNotFound {
+    public Set<Long> getItemRated(long idItem) throws ItemNotFound {
         if (!allowedItems.contains(idItem)) {
             throw new ItemNotFound(idItem);
         }
-        Set<Integer> itemRatingsRated = originalDataset.getItemRated(idItem).parallelStream()
+        Set<Long> itemRatingsRated = originalDataset.getItemRated(idItem).parallelStream()
                 .filter(user -> allowedUsers.contains(user))
                 .collect(Collectors.toSet());
         return itemRatingsRated;
     }
 
     @Override
-    public Map<Integer, RatingType> getItemRatingsRated(Integer idItem) throws ItemNotFound {
+    public Map<Long, RatingType> getItemRatingsRated(long idItem) throws ItemNotFound {
         if (!allowedItems.contains(idItem)) {
             throw new ItemNotFound(idItem);
         }
-        Map<Integer, RatingType> itemRatingsRated = originalDataset.getItemRatingsRated(idItem).values().parallelStream()
+        Map<Long, RatingType> itemRatingsRated = originalDataset.getItemRatingsRated(idItem).values().parallelStream()
                 .filter(rating -> allowedUsers.contains(rating.getUser().getId()))
                 .collect(Collectors.toMap(
                         rating -> rating.getUser().getId(),
@@ -170,9 +170,9 @@ public class SelectionDataset<RatingType extends Rating> extends RatingsDatasetA
     }
 
     @Override
-    public int getNumRatings() {
-        int size = 0;
-        for (int idUser : allowedUsers) {
+    public long getNumRatings() {
+        long size = 0;
+        for (long idUser : allowedUsers) {
             try {
                 size += getUserRated(idUser).size();
             } catch (UserNotFound ex) {

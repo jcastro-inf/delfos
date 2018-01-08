@@ -61,12 +61,12 @@ public final class KnnMemoryNeighborCalculator implements Function<KnnMemoryNeig
         boolean relevanceFactor_ = (Boolean) rs.getParameterValue(KnnCollaborativeRecommender.RELEVANCE_FACTOR);
         int relevanceFactorValue_ = (Integer) rs.getParameterValue(KnnCollaborativeRecommender.RELEVANCE_FACTOR_VALUE);
 
-        Map<Integer, ? extends Rating> activeUserRated = datasetLoader.getRatingsDataset()
+        Map<Long, ? extends Rating> activeUserRated = datasetLoader.getRatingsDataset()
                 .getUserRatingsRated(user.getId());
-        Map<Integer, ? extends Rating> neighborRatings = datasetLoader.getRatingsDataset()
+        Map<Long, ? extends Rating> neighborRatings = datasetLoader.getRatingsDataset()
                 .getUserRatingsRated(neighbor.getId());
 
-        Set<Integer> intersectionSet = new TreeSet<>(activeUserRated.keySet());
+        Set<Long> intersectionSet = new TreeSet<>(activeUserRated.keySet());
         intersectionSet.retainAll(neighborRatings.keySet());
 
         Collection<CommonRating> common;
@@ -110,11 +110,11 @@ public final class KnnMemoryNeighborCalculator implements Function<KnnMemoryNeig
         return new Neighbor(RecommendationEntity.USER, neighbor, sim);
     }
 
-    private Collection<CommonRating> getCommonRatingUnion(DatasetLoader<? extends Rating> datasetLoader, KnnCollaborativeRecommender rs, User user, Map<Integer, ? extends Rating> activeUserRated, User neighbor, Map<Integer, ? extends Rating> neighborRatings) {
+    private Collection<CommonRating> getCommonRatingUnion(DatasetLoader<? extends Rating> datasetLoader, KnnCollaborativeRecommender rs, User user, Map<Long, ? extends Rating> activeUserRated, User neighbor, Map<Long, ? extends Rating> neighborRatings) {
 
         byte defaultRatingValue = ((Integer) rs.getParameterValue(KnnCollaborativeRecommender.DEFAULT_RATING_VALUE)).byteValue();
 
-        Set<Integer> union = new TreeSet<>(activeUserRated.keySet());
+        Set<Long> union = new TreeSet<>(activeUserRated.keySet());
 
         union.addAll(neighborRatings.keySet());
         if (union.isEmpty()) {
@@ -122,7 +122,7 @@ public final class KnnMemoryNeighborCalculator implements Function<KnnMemoryNeig
         }
 
         Collection<CommonRating> common = new ArrayList<>();
-        for (int idItem : union) {
+        for (long idItem : union) {
             Rating r1 = activeUserRated.get(idItem);
             Rating r2 = neighborRatings.get(idItem);
 

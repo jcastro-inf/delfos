@@ -36,10 +36,7 @@ public interface PairwiseUserTrust {
      * @param idUser1
      * @param idUser2
      * @return
-     * @throws delfos.common.Exceptions.Dataset.Users.UserNotFound
-     * @throws
-     * delfos.group.CaseStudy.DefinedCases.JRS2014.CouldNotComputeTrust
      */
-    double getTrust(DatasetLoader<? extends Rating> datasetLoader, int idUser1, int idUser2) throws UserNotFound, CouldNotComputeTrust;
+    double getTrust(DatasetLoader<? extends Rating> datasetLoader, long idUser1, long idUser2) throws UserNotFound, CouldNotComputeTrust;
 
 }

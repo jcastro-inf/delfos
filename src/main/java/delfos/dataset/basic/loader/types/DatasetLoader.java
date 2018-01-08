@@ -26,9 +26,8 @@ import delfos.dataset.basic.rating.RatingsDataset;
 import delfos.dataset.basic.user.UsersDataset;
 
 /**
- * Interfaz que define los métodos de un objeto encargado de cargar conjuntos de
- * datos. Obligatoriamente, todos los {@link DatasetLoader} deben cargar al
- * menos un dataset de valoraciones, que se hará a través del método
+ * Interfaz que define los métodos de un objeto encargado de cargar conjuntos de datos. Obligatoriamente, todos los
+ * {@link DatasetLoader} deben cargar al menos un dataset de valoraciones, que se hará a través del método
  * {@link RatingsDatasetLoader#getRatingsDataset()}.
  *
  * @author jcastro-inf ( https://github.com/jcastro-inf )

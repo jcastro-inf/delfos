@@ -20,6 +20,7 @@ import delfos.common.exceptions.dataset.users.UserNotFound;
 import delfos.dataset.basic.item.Item;
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
+import delfos.dataset.basic.rating.RatingsDataset;
 import delfos.dataset.basic.user.User;
 import delfos.group.groupsofusers.GroupOfUsers;
 import java.util.Set;
@@ -34,17 +35,20 @@ public class OnlyNewItems extends RecommendationCandidatesSelector {
 
     @Override
     public Set<Item> candidateItems(DatasetLoader<? extends Rating> datasetLoader, User user) throws UserNotFound {
+        final RatingsDataset<? extends Rating> ratingsDataset = datasetLoader.getRatingsDataset();
+
         return datasetLoader.getContentDataset().stream()
-                .filter(item -> !datasetLoader.getRatingsDataset().getUserRated(user.getId()).contains(item.getId()))
+                .filter(item -> !ratingsDataset.getUserRated(user.getId()).contains(item.getId()))
                 .collect(Collectors.toSet());
     }
 
     @Override
     public Set<Item> candidateItems(DatasetLoader<? extends Rating> datasetLoader, GroupOfUsers groupOfUsers) throws UserNotFound {
+        final RatingsDataset<? extends Rating> ratingsDataset = datasetLoader.getRatingsDataset();
         return datasetLoader.getContentDataset().stream()
                 .filter(item
                         -> !groupOfUsers.getMembers().stream()
-                        .map(member -> datasetLoader.getRatingsDataset().getUserRated(member.getId()))
+                        .map(member -> ratingsDataset.getUserRated(member.getId()))
                         .flatMap(ratings -> ratings.stream())
                         .collect(Collectors.toSet())
                         .contains(item.getId()))

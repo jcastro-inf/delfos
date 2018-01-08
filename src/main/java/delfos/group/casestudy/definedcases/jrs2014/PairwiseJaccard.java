@@ -39,19 +39,18 @@ public class PairwiseJaccard implements PairwiseUserTrust {
      * @param idUser1
      * @param idUser2
      * @return
-     * @throws delfos.common.Exceptions.Dataset.Users.UserNotFound
      */
     @Override
-    public double getTrust(DatasetLoader<? extends Rating> datasetLoader, int idUser1, int idUser2) throws UserNotFound {
+    public double getTrust(DatasetLoader<? extends Rating> datasetLoader, long idUser1, long idUser2) throws UserNotFound {
 
         double Jaccard;
 
         {
 
-            Map<Integer, ? extends Rating> userRatings = datasetLoader.getRatingsDataset().getUserRatingsRated(idUser1);
-            Map<Integer, ? extends Rating> userNeighbourRatings = datasetLoader.getRatingsDataset().getUserRatingsRated(idUser2);
+            Map<Long, ? extends Rating> userRatings = datasetLoader.getRatingsDataset().getUserRatingsRated(idUser1);
+            Map<Long, ? extends Rating> userNeighbourRatings = datasetLoader.getRatingsDataset().getUserRatingsRated(idUser2);
 
-            Set<Integer> commonItems = new TreeSet<Integer>(userRatings.keySet());
+            Set<Long> commonItems = new TreeSet<Long>(userRatings.keySet());
             commonItems.retainAll(userNeighbourRatings.keySet());
 
             //Calculo el Jaccard

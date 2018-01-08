@@ -33,7 +33,7 @@ import java.util.Set;
  */
 public interface CollectionOfEntitiesWithFeatures<Entity extends EntityWithFeatures> extends Iterable<Entity>, Collection<Entity> {
 
-    public Entity get(int idEntity) throws EntityNotFound;
+    public Entity get(long idEntity) throws EntityNotFound;
 
     /**
      * Devuelve todas las posibles características que un objeto del dataset
@@ -94,9 +94,9 @@ public interface CollectionOfEntitiesWithFeatures<Entity extends EntityWithFeatu
 
     public Map<Feature, Object> parseEntityFeatures(Map<String, String> features);
 
-    public Collection<Integer> allIDs();
+    public Collection<Long> allIDs();
 
-    public Map<Feature, Object> parseEntityFeaturesAndAddToExisting(int idEntity, Map<String, String> features) throws EntityNotFound;
+    public Map<Feature, Object> parseEntityFeaturesAndAddToExisting(long idEntity, Map<String, String> features) throws EntityNotFound;
 
     @Override
     public default boolean isEmpty() {

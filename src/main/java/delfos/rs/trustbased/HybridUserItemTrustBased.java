@@ -80,11 +80,15 @@ public class HybridUserItemTrustBased extends CollaborativeRecommender<HybridUse
     }
 
     @Override
-    public Collection<Recommendation> recommendToUser(DatasetLoader<? extends Rating> datasetLoader, HybridUserItemTrustBasedModel model, Integer idUser, java.util.Set<Integer> candidateItems) throws UserNotFound, CannotLoadRatingsDataset {
+    public Collection<Recommendation> recommendToUser(
+            DatasetLoader<? extends Rating> datasetLoader,
+            HybridUserItemTrustBasedModel model, long idUser,
+            Set<Long> candidateItems)
+            throws UserNotFound, CannotLoadRatingsDataset {
 
         Collection<Recommendation> ret = new ArrayList<>(candidateItems.size());
 
-        for (int idItem : candidateItems) {
+        for (long idItem : candidateItems) {
             try {
                 Number userPrediction = userPrediction(datasetLoader.getRatingsDataset(), model.getUserBasedTrustModuleModel(), idUser, idItem);
                 Number itemPrediction = itemPrediction(datasetLoader.getRatingsDataset(), model.getItemBasedTrustModuleModel(), idUser, idItem);
@@ -155,29 +159,29 @@ public class HybridUserItemTrustBased extends CollaborativeRecommender<HybridUse
                     event.getRemainingTime());
         });
 
-        WeightedGraph<Integer> usersTrust = implicitTrustComputation.computeTrustValues(datasetLoader, datasetLoader.getRatingsDataset().allUsers());
+        WeightedGraph<Long> usersTrust = implicitTrustComputation.computeTrustValues(datasetLoader, datasetLoader.getRatingsDataset().allUsers());
 
         RatingsDataset<? extends Rating> ratingsDataset = datasetLoader.getRatingsDataset();
 
-        List<Integer> users = new ArrayList<>(ratingsDataset.allUsers());
-        List<Integer> items = new ArrayList<>(ratingsDataset.allRatedItems());
+        List<Long> users = new ArrayList<>(ratingsDataset.allUsers());
+        List<Long> items = new ArrayList<>(ratingsDataset.allRatedItems());
 
-        Map<Integer, Map<Integer, Number>> MSD = new TreeMap<>();
-        Map<Integer, Map<Integer, Number>> UJaccard = new TreeMap<>();
+        Map<Long, Map<Long, Number>> MSD = new TreeMap<>();
+        Map<Long, Map<Long, Number>> UJaccard = new TreeMap<>();
 
         Global.showInfoMessage("============================================================================= \n");
         Global.showInfoMessage("UT-Step 2: User reputation computation.\n");
         Global.showInfoMessage("============================================================================= \n");
 
-        TreeMap<Integer, Number> usersReputation = new TreeMap<>();
+        TreeMap<Long, Number> usersReputation = new TreeMap<>();
 
         {
             int i = 0;
 
-            for (int idUser : users) {
+            for (long idUser : users) {
                 double sumaConfianza = 0;
                 int numAdjacentes = 0;
-                for (int idUserAdyacente : users) {
+                for (long idUserAdyacente : users) {
                     if (idUser == idUserAdyacente) {
                         continue;
                     }
@@ -200,14 +204,14 @@ public class HybridUserItemTrustBased extends CollaborativeRecommender<HybridUse
         Global.showInfoMessage("UT-Step 3: Neighbour selection.\n");
         Global.showInfoMessage("============================================================================= \n");
 
-        TreeMap<Integer, Set<Neighbor>> usersNeighbours = new TreeMap<>();
+        TreeMap<Long, Set<Neighbor>> usersNeighbours = new TreeMap<>();
         {
             int i = 0;
 
-            for (int idUser : users) {
+            for (Long idUser : users) {
                 List<Neighbor> neighborsOfUser = new ArrayList<>(usersTrust.allNodes().size());
 
-                for (int idUserNeighbour : usersTrust.allNodes()) {
+                for (Long idUserNeighbour : usersTrust.allNodes()) {
 
                     //Un usuario no es su propio vecino.
                     if (idUser == idUserNeighbour) {
@@ -238,32 +242,32 @@ public class HybridUserItemTrustBased extends CollaborativeRecommender<HybridUse
             HybridUserItemTrustBased.this.fireBuildingProgressChangedEvent(event.getTask(), event.getPercent(), event.getRemainingTime());
         });
 
-        WeightedGraph<Integer> itemBasedTrust = implicitTrustComputation.computeTrustValues(datasetLoader, datasetLoader.getRatingsDataset().allRatedItems());
+        WeightedGraph<Long> itemBasedTrust = implicitTrustComputation.computeTrustValues(datasetLoader, datasetLoader.getRatingsDataset().allRatedItems());
         RatingsDataset<? extends Rating> ratingsDataset = datasetLoader.getRatingsDataset();
 
-        List<Integer> users = new ArrayList<>(ratingsDataset.allUsers());
-        List<Integer> items = new ArrayList<>(ratingsDataset.allRatedItems());
+        List<Long> users = new ArrayList<>(ratingsDataset.allUsers());
+        List<Long> items = new ArrayList<>(ratingsDataset.allRatedItems());
 
         Global.showInfoMessage("============================================================================= \n");
         Global.showInfoMessage("IT-Step 2: Item reputation computation.\n");
         Global.showInfoMessage("============================================================================= \n");
 
-        Map<Integer, Map<Integer, Number>> itemReputation = new TreeMap<>();
+        Map<Long, Map<Long, Number>> itemReputation = new TreeMap<>();
 
         {
             int i = 0;
 
-            for (int idUser : users) {
+            for (long idUser : users) {
                 itemReputation.put(idUser, new TreeMap<>());
 
                 try {
-                    Map<Integer, ? extends Rating> userRatings = ratingsDataset.getUserRatingsRated(idUser);
+                    Map<Long, ? extends Rating> userRatings = ratingsDataset.getUserRatingsRated(idUser);
 
-                    for (int idItem : userRatings.keySet()) {
+                    for (long idItem : userRatings.keySet()) {
                         double numerador = 0;
                         double denominador = 0;
 
-                        for (int idItemAdjacenteOrigen : userRatings.keySet()) {
+                        for (long idItemAdjacenteOrigen : userRatings.keySet()) {
                             if (idItem == idItemAdjacenteOrigen) {
                                 continue;
                             }
@@ -293,14 +297,14 @@ public class HybridUserItemTrustBased extends CollaborativeRecommender<HybridUse
         Global.showInfoMessage("IT-Step 3: Item neighbour selection.\n");
         Global.showInfoMessage("============================================================================= \n");
 
-        TreeMap<Integer, Collection<Neighbor>> itemsNeighbours = new TreeMap<>();
+        TreeMap<Long, Collection<Neighbor>> itemsNeighbours = new TreeMap<>();
 
         {
             int i = 0;
-            for (int idItem : itemBasedTrust.allNodes()) {
+            for (long idItem : itemBasedTrust.allNodes()) {
                 List<Neighbor> neighborsOfItem = new ArrayList<>(itemBasedTrust.allNodes().size());
 
-                for (int idItemNeighbour : itemBasedTrust.allNodes()) {
+                for (long idItemNeighbour : itemBasedTrust.allNodes()) {
 
                     //Un producto no es su propio vecino.
                     if (idItem == idItemNeighbour) {
@@ -324,9 +328,13 @@ public class HybridUserItemTrustBased extends CollaborativeRecommender<HybridUse
         return new HybridUserItemTrustBasedModel.ItemBasedTrustModuleModel(itemBasedTrust, itemReputation, itemsNeighbours);
     }
 
-    public Number itemPrediction(RatingsDataset<? extends Rating> ratingsDataset, HybridUserItemTrustBasedModel.ItemBasedTrustModuleModel itemBasedTrustModuleModel, int idUser, int idItem) throws UserNotFound, ItemNotFound {
+    public Number itemPrediction(
+            RatingsDataset<? extends Rating> ratingsDataset,
+            HybridUserItemTrustBasedModel.ItemBasedTrustModuleModel itemBasedTrustModuleModel,
+            long idUser,
+            long idItem) throws UserNotFound, ItemNotFound {
 
-        Map<Integer, ? extends Rating> userRatings = ratingsDataset.getUserRatingsRated(idUser);
+        Map<Long, ? extends Rating> userRatings = ratingsDataset.getUserRatingsRated(idUser);
         double mediaItem = ratingsDataset.getMeanRatingItem(idItem);
 
         Global.showln("USER " + idUser + " ITEM " + idItem + " (Item prediction)");
@@ -336,7 +344,7 @@ public class HybridUserItemTrustBased extends CollaborativeRecommender<HybridUse
         int numVecinosUsados = 0;
 
         Collection<Neighbor> thisItemNeighbors = itemBasedTrustModuleModel.getItemsNeighbours().get(idItem);
-        for (int idItemNeighbor : ratingsDataset.allRatedItems()) {
+        for (Long idItemNeighbor : ratingsDataset.allRatedItems()) {
 
             if (numVecinosUsados > getItemNeighborhoodSize()) {
                 if (Global.isVerboseAnnoying()) {
@@ -393,20 +401,25 @@ public class HybridUserItemTrustBased extends CollaborativeRecommender<HybridUse
         }
     }
 
-    public Number userPrediction(RatingsDataset<? extends Rating> ratingsDataset, HybridUserItemTrustBasedModel.UserBasedTrustModuleModel userBasedTrustModuleModel, int idUser, int idItem) throws UserNotFound {
+    public Number userPrediction(
+            RatingsDataset<? extends Rating> ratingsDataset,
+            HybridUserItemTrustBasedModel.UserBasedTrustModuleModel userBasedTrustModuleModel,
+            long idUser,
+            long idItem)
+            throws UserNotFound {
 
         double userMeanRating = ratingsDataset.getMeanRatingUser(idUser);
 
         double numerador = 0;
         double denominador = 0;
-        TreeMap<Integer, Set<Neighbor>> usersNeighbours = userBasedTrustModuleModel.getUsersNeighbours();
-        TreeMap<Integer, Number> usersReputation = userBasedTrustModuleModel.getUsersReputation();
-        WeightedGraph<Integer> usersTrust = userBasedTrustModuleModel.getUsersTrust();
+        TreeMap<Long, Set<Neighbor>> usersNeighbours = userBasedTrustModuleModel.getUsersNeighbours();
+        TreeMap<Long, Number> usersReputation = userBasedTrustModuleModel.getUsersReputation();
+        WeightedGraph<Long> usersTrust = userBasedTrustModuleModel.getUsersTrust();
 
         for (Neighbor userNeighbor : usersNeighbours.get(idUser)) {
             double neighbourMeanRating;
-            int idUserNeighbour = userNeighbor.getIdNeighbor();
-            Map<Integer, ? extends Rating> neighbourRatings;
+            long idUserNeighbour = userNeighbor.getIdNeighbor();
+            Map<Long, ? extends Rating> neighbourRatings;
             try {
                 neighbourRatings = ratingsDataset.getUserRatingsRated(idUserNeighbour);
 

@@ -49,7 +49,7 @@ public class AllButOne extends GroupPredictionProtocol {
         super();
     }
 
-    private Collection<Integer> getRatedItems(DatasetLoader<? extends Rating> datasetLoader, GroupOfUsers group) throws CannotLoadRatingsDataset, UserNotFound {
+    private Collection<Long> getRatedItems(DatasetLoader<? extends Rating> datasetLoader, GroupOfUsers group) throws CannotLoadRatingsDataset, UserNotFound {
         return DatasetUtilities.getMembersRatings_byItem(group, datasetLoader).keySet();
     }
 
@@ -57,24 +57,24 @@ public class AllButOne extends GroupPredictionProtocol {
     public Collection<GroupRecommendationRequest> getGroupRecommendationRequests(
             DatasetLoader<? extends Rating> trainDatasetLoader, DatasetLoader<? extends Rating> testDatasetLoader, GroupOfUsers group) throws CannotLoadRatingsDataset, UserNotFound {
 
-        Collection<Integer> ratedItems = getRatedItems(testDatasetLoader, group);
+        Collection<Long> ratedItems = getRatedItems(testDatasetLoader, group);
 
         ArrayList<GroupRecommendationRequest> groupRecommendationRequests = new ArrayList<>(ratedItems.size());
 
-        for (int idItem : ratedItems) {
+        for (long idItem : ratedItems) {
 
             //Añado todos los rating en test del grupo, excepto los ratings de este item, ya que será el item que se pida predecir.
-            Map<Integer, Map<Integer, Number>> membersRatings_byItem = DatasetUtilities.getMembersRatings_byItem(group, testDatasetLoader);
+            Map<Long, Map<Long, Number>> membersRatings_byItem = DatasetUtilities.getMembersRatings_byItem(group, testDatasetLoader);
             membersRatings_byItem.remove(idItem);
 
-            Map<Integer, Map<Integer, Number>> predictionMembersRatings_byUser = DatasetUtilities.transformIndexedByItemToIndexedByUser_Map(membersRatings_byItem);
-            Map<Integer, Map<Integer, Rating>> predictionMembersRatings_byUser_Rating = DatasetUtilities.getMapOfMaps_Rating(predictionMembersRatings_byUser);
+            Map<Long, Map<Long, Number>> predictionMembersRatings_byUser = DatasetUtilities.transformIndexedByItemToIndexedByUser_Map(membersRatings_byItem);
+            Map<Long, Map<Long, Rating>> predictionMembersRatings_byUser_Rating = DatasetUtilities.getMapOfMaps_Rating(predictionMembersRatings_byUser);
 
             DatasetLoader<Rating> predictionPhaseDatasetLoader
                     = new DatasetLoaderGivenRatingsDataset<>(trainDatasetLoader,
                             RatingsDatasetOverwrite.createRatingsDataset((RatingsDataset<Rating>) trainDatasetLoader.getRatingsDataset(), predictionMembersRatings_byUser_Rating));
 
-            Set<Integer> itemsToPredict = new TreeSet<>(Arrays.asList(idItem));
+            Set<Long> itemsToPredict = new TreeSet<>(Arrays.asList(idItem));
             groupRecommendationRequests.add(new GroupRecommendationRequest(group, predictionPhaseDatasetLoader,
                     itemsToPredict.stream().map(idItem2 -> trainDatasetLoader.getContentDataset().get(idItem2)).collect(Collectors.toSet())
             ));

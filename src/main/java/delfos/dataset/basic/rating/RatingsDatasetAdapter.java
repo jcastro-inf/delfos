@@ -44,11 +44,11 @@ public abstract class RatingsDatasetAdapter<RatingType extends Rating> implement
     /**
      * Buffer para almacenar la valoración media de cada usuario.
      */
-    protected final Map<Integer, Double> mediaUsers = Collections.synchronizedMap(new TreeMap<Integer, Double>());
+    protected final Map<Long, Double> mediaUsers = Collections.synchronizedMap(new TreeMap<Long, Double>());
     /**
      * Buffer para almacenar la valoración media de cada producto.
      */
-    protected final Map<Integer, Double> mediaItems = Collections.synchronizedMap(new TreeMap<Integer, Double>());
+    protected final Map<Long, Double> mediaItems = Collections.synchronizedMap(new TreeMap<Long, Double>());
 
     /**
      * Devuelve la valoración que un usuario ha hecho sobre un item determinado
@@ -60,7 +60,7 @@ public abstract class RatingsDatasetAdapter<RatingType extends Rating> implement
      * @throws delfos.common.exceptions.dataset.items.ItemNotFound
      */
     @Override
-    public abstract RatingType getRating(int idUser, int idItem) throws UserNotFound, ItemNotFound;
+    public abstract RatingType getRating(long idUser, long idItem) throws UserNotFound, ItemNotFound;
 
     /**
      * Obtiene el conjunto de los id de todos los usuarios que tienen valoraciones en el dataset
@@ -68,7 +68,7 @@ public abstract class RatingsDatasetAdapter<RatingType extends Rating> implement
      * @return Conjunto de id de usuarios
      */
     @Override
-    public abstract Set<Integer> allUsers();
+    public abstract Set<Long> allUsers();
 
     /**
      * Implementación por defecto del método que devuelve todos los items del dataset. En datasets con un gran número de
@@ -78,7 +78,7 @@ public abstract class RatingsDatasetAdapter<RatingType extends Rating> implement
      * @return Conjunto con los id de los items que han sido valorados
      */
     @Override
-    public abstract Set<Integer> allRatedItems();
+    public abstract Set<Long> allRatedItems();
 
     /**
      * Devuelve las peliculas valoradas por un usuario
@@ -88,7 +88,7 @@ public abstract class RatingsDatasetAdapter<RatingType extends Rating> implement
      * @throws delfos.common.exceptions.dataset.users.UserNotFound
      */
     @Override
-    public abstract Set<Integer> getUserRated(Integer idUser) throws UserNotFound;
+    public abstract Set<Long> getUserRated(long idUser) throws UserNotFound;
 
     /**
      * Devuelve los usuarios que han valorado el item
@@ -98,7 +98,7 @@ public abstract class RatingsDatasetAdapter<RatingType extends Rating> implement
      * @throws delfos.common.exceptions.dataset.items.ItemNotFound
      */
     @Override
-    public abstract Set<Integer> getItemRated(Integer idItem) throws ItemNotFound;
+    public abstract Set<Long> getItemRated(long idItem) throws ItemNotFound;
 
     /**
      * Devuelve las peliculas valoradas por un usuario
@@ -108,7 +108,7 @@ public abstract class RatingsDatasetAdapter<RatingType extends Rating> implement
      * @throws delfos.common.exceptions.dataset.users.UserNotFound
      */
     @Override
-    public abstract Map<Integer, RatingType> getUserRatingsRated(Integer idUser) throws UserNotFound;
+    public abstract Map<Long, RatingType> getUserRatingsRated(long idUser) throws UserNotFound;
 
     /**
      * Devuelve los usuarios que han valorado un item y su valoracion concreta
@@ -118,7 +118,7 @@ public abstract class RatingsDatasetAdapter<RatingType extends Rating> implement
      * @throws delfos.common.exceptions.dataset.items.ItemNotFound
      */
     @Override
-    public abstract Map<Integer, RatingType> getItemRatingsRated(Integer idItem) throws ItemNotFound;
+    public abstract Map<Long, RatingType> getItemRatingsRated(long idItem) throws ItemNotFound;
 
     /**
      * Devuelve el ratingValue medio del producto cuyo id se especifica
@@ -128,11 +128,11 @@ public abstract class RatingsDatasetAdapter<RatingType extends Rating> implement
      * @throws delfos.common.exceptions.dataset.items.ItemNotFound
      */
     @Override
-    public double getMeanRatingItem(int idItem) throws ItemNotFound {
+    public double getMeanRatingItem(long idItem) throws ItemNotFound {
 
         synchronized (mediaItems) {
             if (!mediaItems.containsKey(idItem)) {
-                Map<Integer, RatingType> actualRatings = getItemRatingsRated(idItem);
+                Map<Long, RatingType> actualRatings = getItemRatingsRated(idItem);
                 double media = 0;
                 for (RatingType rating : actualRatings.values()) {
                     media += rating.getRatingValue().doubleValue() / actualRatings.size();
@@ -156,9 +156,9 @@ public abstract class RatingsDatasetAdapter<RatingType extends Rating> implement
      * @throws UserNotFound Si el usuario no existe.
      */
     @Override
-    public double getMeanRatingUser(int idUser) throws UserNotFound {
+    public double getMeanRatingUser(long idUser) throws UserNotFound {
         if (!mediaUsers.containsKey(idUser)) {
-            Map<Integer, RatingType> actualRatings = getUserRatingsRated(idUser);
+            Map<Long, RatingType> actualRatings = getUserRatingsRated(idUser);
             double media = 0;
             for (RatingType rating : actualRatings.values()) {
                 media += rating.getRatingValue().doubleValue() / actualRatings.size();
@@ -177,15 +177,15 @@ public abstract class RatingsDatasetAdapter<RatingType extends Rating> implement
 
     /**
      * Devuelve el número de valoraciones totales que tiene almacenado el dataset <br> NOTA: Por defecto se calcula
-     * sumando el método {@link RatingsDataset#sizeOfUserRatings(int)} por lo que puede ser necesario sobreescribir el
+     * sumando el método {@link RatingsDataset#sizeOfUserRatings(long)} por lo que puede ser necesario sobreescribir el
      * método para una implementación más eficiente.
      *
      * @return Número de valoraciones que todos los usuarios han hecho sobre los productos.
      */
     @Override
-    public int getNumRatings() {
-        int size = 0;
-        for (int idUser : allUsers()) {
+    public long getNumRatings() {
+        long size = 0;
+        for (long idUser : allUsers()) {
             try {
                 size += sizeOfUserRatings(idUser);
             } catch (UserNotFound ex) {
@@ -205,7 +205,7 @@ public abstract class RatingsDatasetAdapter<RatingType extends Rating> implement
      * @throws UserNotFound Si el usuario no existe.
      */
     @Override
-    public int sizeOfUserRatings(int idUser) throws UserNotFound {
+    public long sizeOfUserRatings(long idUser) throws UserNotFound {
         return getUserRated(idUser).size();
     }
 
@@ -218,7 +218,7 @@ public abstract class RatingsDatasetAdapter<RatingType extends Rating> implement
      * @throws ItemNotFound Si el producto no existe.
      */
     @Override
-    public int sizeOfItemRatings(int idItem) throws ItemNotFound {
+    public long sizeOfItemRatings(long idItem) throws ItemNotFound {
         return getItemRated(idItem).size();
     }
 
@@ -230,7 +230,7 @@ public abstract class RatingsDatasetAdapter<RatingType extends Rating> implement
      * @throws UserNotFound Si no se encuentra el usuario especificado.
      */
     @Override
-    public boolean isRatedUser(int idUser) throws UserNotFound {
+    public boolean isRatedUser(long idUser) throws UserNotFound {
         return sizeOfUserRatings(idUser) != 0;
     }
 
@@ -242,7 +242,7 @@ public abstract class RatingsDatasetAdapter<RatingType extends Rating> implement
      * @throws ItemNotFound Si no se encuentra el producto especificado.
      */
     @Override
-    public boolean isRatedItem(int idItem) throws ItemNotFound {
+    public boolean isRatedItem(long idItem) throws ItemNotFound {
         return sizeOfItemRatings(idItem) != 0;
     }
 
@@ -289,26 +289,26 @@ public abstract class RatingsDatasetAdapter<RatingType extends Rating> implement
         if (obj instanceof RatingsDataset) {
             RatingsDataset<? extends Rating> otherRatingsDataset = (RatingsDataset) obj;
 
-            Set<Integer> thisAllUsers = new TreeSet<>(this.allUsers());
-            Set<Integer> otherAllUsers = new TreeSet<>(otherRatingsDataset.allUsers());
+            Set<Long> thisAllUsers = new TreeSet<>(this.allUsers());
+            Set<Long> otherAllUsers = new TreeSet<>(otherRatingsDataset.allUsers());
 
             if (!thisAllUsers.equals(otherAllUsers)) {
                 return false;
             }
 
-            for (int idUser : thisAllUsers) {
+            for (long idUser : thisAllUsers) {
                 try {
-                    Map<Integer, ? extends Rating> thisUserRatingsRated = this.getUserRatingsRated(idUser);
-                    Map<Integer, ? extends Rating> otherUserRatingsRated = otherRatingsDataset.getUserRatingsRated(idUser);
+                    Map<Long, ? extends Rating> thisUserRatingsRated = this.getUserRatingsRated(idUser);
+                    Map<Long, ? extends Rating> otherUserRatingsRated = otherRatingsDataset.getUserRatingsRated(idUser);
 
-                    Set<Integer> thisDatasetItemsRated = new TreeSet<>(thisUserRatingsRated.keySet());
-                    Set<Integer> otherDatasetItemsRated = new TreeSet<>(otherUserRatingsRated.keySet());
+                    Set<Long> thisDatasetItemsRated = new TreeSet<>(thisUserRatingsRated.keySet());
+                    Set<Long> otherDatasetItemsRated = new TreeSet<>(otherUserRatingsRated.keySet());
 
                     if (!thisDatasetItemsRated.equals(otherDatasetItemsRated)) {
                         return false;
                     }
 
-                    for (int item : thisDatasetItemsRated) {
+                    for (long item : thisDatasetItemsRated) {
                         Rating thisRating = thisUserRatingsRated.get(item);
                         Rating otherRating = otherUserRatingsRated.get(item);
 
@@ -339,19 +339,19 @@ public abstract class RatingsDatasetAdapter<RatingType extends Rating> implement
     public static <RatingType extends Rating> int hashCode(RatingsDataset<RatingType> ratingsDataset) {
         HashCodeBuilder hashCodeBuilder = new HashCodeBuilder(37, 11);
 
-        List<Integer> usersSorted = ratingsDataset.allUsers().stream().collect(Collectors.toList());
-        usersSorted.sort((i1, i2) -> Integer.compare(i1, i2));
+        List<Long> usersSorted = ratingsDataset.allUsers().stream().collect(Collectors.toList());
+        usersSorted.sort((i1, i2) -> Long.compare(i1, i2));
 
-        List<Integer> itemsSorted = ratingsDataset.allRatedItems().stream().collect(Collectors.toList());
-        itemsSorted.sort((i1, i2) -> Integer.compare(i1, i2));
+        List<Long> itemsSorted = ratingsDataset.allRatedItems().stream().collect(Collectors.toList());
+        itemsSorted.sort((i1, i2) -> Long.compare(i1, i2));
 
-        for (int idUser : usersSorted) {
+        for (long idUser : usersSorted) {
             hashCodeBuilder.append(idUser);
             try {
-                Map<Integer, RatingType> userRatingsRated = ratingsDataset.getUserRatingsRated(idUser);
+                Map<Long, RatingType> userRatingsRated = ratingsDataset.getUserRatingsRated(idUser);
 
-                List<Integer> thisUserItemsSorted = userRatingsRated.keySet().stream().sorted((i1, i2) -> Integer.compare(i1, i2)).collect(Collectors.toList());
-                for (Integer idItem : thisUserItemsSorted) {
+                List<Long> thisUserItemsSorted = userRatingsRated.keySet().stream().sorted((i1, i2) -> Long.compare(i1, i2)).collect(Collectors.toList());
+                for (Long idItem : thisUserItemsSorted) {
                     RatingType rating = userRatingsRated.get(idItem);
                     double ratingValue = rating.getRatingValue().doubleValue();
                     hashCodeBuilder.append(idItem);

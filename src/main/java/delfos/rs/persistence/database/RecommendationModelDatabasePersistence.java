@@ -32,7 +32,15 @@ import java.util.Collection;
  */
 public interface RecommendationModelDatabasePersistence<RecommendationModel> {
 
-    public RecommendationModel loadModel(DatabasePersistence databasePersistence, Collection<Integer> users, Collection<Integer> items, DatasetLoader<? extends Rating> datasetLoader) throws FailureInPersistence;
+    public RecommendationModel loadModel(
+            DatabasePersistence databasePersistence,
+            Collection<Long> users,
+            Collection<Long> items,
+            DatasetLoader<? extends Rating> datasetLoader)
+            throws FailureInPersistence;
 
-    public void saveModel(DatabasePersistence databasePersistence, RecommendationModel model) throws FailureInPersistence;
+    public void saveModel(
+            DatabasePersistence databasePersistence,
+            RecommendationModel model)
+            throws FailureInPersistence;
 }

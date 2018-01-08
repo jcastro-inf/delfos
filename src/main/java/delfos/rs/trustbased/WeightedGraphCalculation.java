@@ -45,7 +45,7 @@ public abstract class WeightedGraphCalculation<Node> extends AlgorithmWithExecut
      */
     public abstract WeightedGraph<Node> computeTrustValues(
             DatasetLoader<? extends Rating> datasetLoader,
-            Collection<Integer> users) throws CannotLoadRatingsDataset;
+            Collection<Long> users) throws CannotLoadRatingsDataset;
 
     /**
      * Calcula el grafo difuso del dataset indicado como parámetro, tomando

@@ -26,9 +26,7 @@ import delfos.rs.collaborativefiltering.CollaborativeRecommender;
 import delfos.rs.collaborativefiltering.Recommender_DatasetProperties;
 import delfos.rs.collaborativefiltering.als.ALSRecommender;
 import delfos.rs.collaborativefiltering.knn.memorybased.KnnMemoryBasedCFRS;
-import delfos.rs.collaborativefiltering.knn.memorybased.nwr.KnnMemoryBasedNWR;
 import delfos.rs.collaborativefiltering.knn.modelbased.KnnModelBasedCFRS;
-import delfos.rs.collaborativefiltering.knn.modelbased.nwr.KnnModelBased_NWR;
 import delfos.rs.collaborativefiltering.svd.SVDFoldingIn;
 import delfos.rs.collaborativefiltering.svd.TryThisAtHomeSVD;
 import delfos.rs.contentbased.ContentBasedRecommender;
@@ -95,12 +93,6 @@ public class RecommenderSystemsFactory extends Factory<GenericRecommenderSystem>
         instance.addClass(KnnModelBasedCFRS.class);
         instance.addClass(TryThisAtHomeSVD.class);
         instance.addClass(ALSRecommender.class);
-
-        instance.addClass(KnnMemoryBasedNWR.class);
-        //instance.addClass_oldName(KnnMemoryBasedNWR.class, "KnnMemoryBasedCFRS_NeighborsWithRatings");
-
-        instance.addClass(KnnModelBased_NWR.class);
-        //instance.addClass_oldName(KnnModelBased_NWR.class, "KnnModelBasedCFRS_NeighborsWithRatings");
 
         //Sistemas basados en contenido
         instance.addClass(BasicBooleanCBRS.class);

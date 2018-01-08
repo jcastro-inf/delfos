@@ -21,10 +21,7 @@ import delfos.dataset.basic.features.EntityWithFeatures;
 import static delfos.dataset.basic.features.EntityWithFeaturesDefault.checkFeatureAndFeatureValuesArrays;
 import delfos.dataset.basic.features.Feature;
 import java.io.Serializable;
-import java.util.Comparator;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeMap;
+import java.util.*;
 
 /**
  * Objeto que representa a un usuario del sistema de recomendación.
@@ -33,14 +30,11 @@ import java.util.TreeMap;
  *
  * @version 24-jul-2013
  */
-public class User implements Comparable<User>, EntityWithFeatures, Serializable {
+public class    User implements Comparable<User>, EntityWithFeatures, Serializable {
 
     public static User ANONYMOUS_USER = new User(0, "User_Anonymous");
 
-    public static Comparator<? super User> BY_ID = (user1, user2) -> user1.getId().compareTo(user2.getId());
-    public static Comparator<? super User> BY_NAME = (user1, user2) -> StringsOrderings.getNaturalComparator().compare(user1.getName(), user2.getName());
-
-    private final int idUser;
+    private final long idUser;
     private final Map<Feature, Object> featuresValues = new TreeMap<>();
     private final String name;
 
@@ -49,7 +43,7 @@ public class User implements Comparable<User>, EntityWithFeatures, Serializable 
      *
      * @param idUser Id del usuario que se crea.
      */
-    public User(int idUser) {
+    public User(long idUser) {
         this(idUser, "User " + idUser);
     }
 
@@ -59,7 +53,7 @@ public class User implements Comparable<User>, EntityWithFeatures, Serializable 
      * @param idUser Id del usuario que se crea.
      * @param name
      */
-    public User(int idUser, String name) {
+    public User(long idUser, String name) {
         this.idUser = idUser;
         this.name = name;
     }
@@ -71,7 +65,7 @@ public class User implements Comparable<User>, EntityWithFeatures, Serializable 
      * @param name
      * @param featureValues Mapa de (característica,valor). El tipo de la característica se infiere según si el valor
      */
-    public User(int idUser, String name, Map<Feature, Object> featureValues) {
+    public User(long idUser, String name, Map<Feature, Object> featureValues) {
         this(idUser, name);
 
         for (Map.Entry<Feature, Object> entry : featureValues.entrySet()) {
@@ -101,7 +95,7 @@ public class User implements Comparable<User>, EntityWithFeatures, Serializable 
      * @param features características relevantes del usuario
      * @param values vector de valores correspondientes a las características en el vector <code>features</code>
      */
-    public User(int idUser, String name, Feature[] features, Object[] values) {
+    public User(long idUser, String name, Feature[] features, Object[] values) {
         this(idUser, name);
 
         checkFeatureAndFeatureValuesArrays(features, values);
@@ -153,7 +147,7 @@ public class User implements Comparable<User>, EntityWithFeatures, Serializable 
      * @return identificador del usuario
      */
     @Override
-    public Integer getId() {
+    public long getId() {
         return idUser;
     }
 
@@ -169,7 +163,7 @@ public class User implements Comparable<User>, EntityWithFeatures, Serializable 
 
     @Override
     public String toString() {
-        return getId().toString();
+        return Long.toString(getId());
     }
 
     @Override
@@ -186,7 +180,7 @@ public class User implements Comparable<User>, EntityWithFeatures, Serializable 
     }
     public static final String USER_ID_TARGET_PREFIX = "User_";
 
-    public static String getTargetId(int idUser) {
+    public static String getTargetId(long idUser) {
         return new User(idUser).getTargetId();
     }
 
@@ -198,10 +192,18 @@ public class User implements Comparable<User>, EntityWithFeatures, Serializable 
             }
 
             String idUser = idTarget.replace(USER_ID_TARGET_PREFIX, "");
-            int idUserInt = Integer.parseInt(idUser);
+            long idUserInt = new Long(idUser);
             return new User(idUserInt);
         } else {
             throw new IllegalArgumentException("Not a user idTarget '" + idTarget + "'");
         }
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 5;
+        hash = 71 * hash + Long.hashCode(this.getId());
+        hash = 71 * hash + Objects.hashCode(this.getName());
+        return hash;
     }
 }

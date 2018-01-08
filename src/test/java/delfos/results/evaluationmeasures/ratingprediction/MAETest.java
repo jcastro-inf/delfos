@@ -58,10 +58,10 @@ public class MAETest {
         RelevanceCriteria relevanceCriteria = new RelevanceCriteria(4);
         RecommendationResults recommendationResults = new RecommendationResults();
         int i = 0;
-        for (int idUser : testDataset.allUsers()) {
+        for (long idUser : testDataset.allUsers()) {
             ArrayList<Recommendation> recommendations = new ArrayList<>();
-            for (Map.Entry<Integer, ? extends Rating> entry : testDataset.getUserRatingsRated(idUser).entrySet()) {
-                final int idItem = entry.getKey();
+            for (Map.Entry<Long, ? extends Rating> entry : testDataset.getUserRatingsRated(idUser).entrySet()) {
+                final long idItem = entry.getKey();
                 final Rating rating = entry.getValue();
 
                 double prediction;
@@ -102,10 +102,10 @@ public class MAETest {
         RatingsDataset<? extends Rating> testDataset = new RatingsDatasetMock();
         RelevanceCriteria relevanceCriteria = new RelevanceCriteria(4);
         RecommendationResults recommendationResults = new RecommendationResults();
-        for (int idUser : testDataset.allUsers()) {
+        for (long idUser : testDataset.allUsers()) {
             ArrayList<Recommendation> recommendations = new ArrayList<>();
-            for (Map.Entry<Integer, ? extends Rating> entry : testDataset.getUserRatingsRated(idUser).entrySet()) {
-                final int idItem = entry.getKey();
+            for (Map.Entry<Long, ? extends Rating> entry : testDataset.getUserRatingsRated(idUser).entrySet()) {
+                final long idItem = entry.getKey();
                 final Rating rating = entry.getValue();
 
                 final double prediction = rating.getRatingValue().doubleValue();

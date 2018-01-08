@@ -26,9 +26,11 @@ import delfos.dataset.basic.item.ContentDataset;
 import delfos.dataset.basic.loader.types.ContentDatasetLoader;
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.loader.types.DatasetLoaderAbstract;
+import delfos.dataset.basic.loader.types.TagsDatasetLoader;
 import delfos.dataset.basic.loader.types.UsersDatasetLoader;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RatingsDataset;
+import delfos.dataset.basic.tags.TagsDataset;
 import delfos.dataset.basic.user.UsersDataset;
 
 /**
@@ -36,7 +38,8 @@ import delfos.dataset.basic.user.UsersDataset;
  * @version 22-abr-2014
  * @author jcastro-inf ( https://github.com/jcastro-inf )
  */
-public class ConfiguredDatasetLoader extends DatasetLoaderAbstract<Rating> implements ContentDatasetLoader, UsersDatasetLoader {
+public class ConfiguredDatasetLoader extends DatasetLoaderAbstract<Rating>
+        implements ContentDatasetLoader, UsersDatasetLoader, TagsDatasetLoader {
 
     public static final Parameter CONFIGURED_DATASET_NAME = new Parameter("CONFIGURED_DATASET_NAME", new ObjectParameter(ConfiguredDatasetsFactory.getInstance().keySet(), "ml-100k"));
 
@@ -109,6 +112,15 @@ public class ConfiguredDatasetLoader extends DatasetLoaderAbstract<Rating> imple
         } else {
             return super.isSameClass(parameterOwner); //To change body of generated methods, choose Tools | Templates.
         }
+    }
+
+    @Override
+    public TagsDataset getTagsDataset() {
+        if (!(getDatasetLoader() instanceof TagsDatasetLoader)) {
+            String name = getConfiguredDatasetName();
+            throw new IllegalArgumentException("The dataset loader " + name + " is not a tags dataset loader");
+        }
+        return ((TagsDatasetLoader) getDatasetLoader()).getTagsDataset();
     }
 
 }

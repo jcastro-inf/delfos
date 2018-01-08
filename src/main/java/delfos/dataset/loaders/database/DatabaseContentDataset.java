@@ -45,9 +45,6 @@ import java.util.stream.Collectors;
  * de los datos en la base de datos mysql del conocido conjunto Movilens
  *
  * @author jcastro-inf ( https://github.com/jcastro-inf )
- *
- * @version 1.0 Unknow date
- * @version 1.1 (21-01-2013) Ahora implementa de {@link RatingsDatasetAdapter}
  */
 public class DatabaseContentDataset implements ContentDataset {
 
@@ -73,7 +70,7 @@ public class DatabaseContentDataset implements ContentDataset {
     }
 
     @Override
-    public Item get(int idItem) throws ItemNotFound {
+    public Item get(long idItem) throws ItemNotFound {
         Object[] values = new Object[4];
         Item i = null;
 
@@ -150,8 +147,8 @@ public class DatabaseContentDataset implements ContentDataset {
     }
 
     @Override
-    public Collection<Integer> allIDs() {
-        Set<Integer> items = new TreeSet<>();
+    public Collection<Long> allIDs() {
+        Set<Long> items = new TreeSet<>();
 
         String query = "SELECT idItem FROM movies;";
         try (
@@ -159,7 +156,7 @@ public class DatabaseContentDataset implements ContentDataset {
                 ResultSet rst = statement.executeQuery(query)) {
 
             while (rst.next()) {
-                int idItem = rst.getInt("idItem");
+                long idItem = rst.getInt("idItem");
                 items.add(idItem);
             }
         } catch (SQLException ex) {
@@ -179,12 +176,12 @@ public class DatabaseContentDataset implements ContentDataset {
     }
 
     @Override
-    public Collection<Integer> getAvailableItems() {
+    public Collection<Long> getAvailableItems() {
         return allIDs();
     }
 
     @Override
-    public void setItemAvailable(int idItem, boolean available) throws ItemNotFound {
+    public void setItemAvailable(long idItem, boolean available) throws ItemNotFound {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
@@ -224,12 +221,12 @@ public class DatabaseContentDataset implements ContentDataset {
     }
 
     @Override
-    public Map<Feature, Object> parseEntityFeaturesAndAddToExisting(int idEntity, Map<String, String> features) throws EntityNotFound {
+    public Map<Feature, Object> parseEntityFeaturesAndAddToExisting(long idEntity, Map<String, String> features) throws EntityNotFound {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public Item getItem(int idItem) throws ItemNotFound {
+    public Item getItem(long idItem) throws ItemNotFound {
         return get(idItem);
     }
 

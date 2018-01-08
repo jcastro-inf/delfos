@@ -74,7 +74,7 @@ public class RecommendationsWithNeighborToXML {
     private static Element getNeighborElement(Neighbor neighbor, int rank) {
         Element neighborElement = new Element("neighbor");
 
-        neighborElement.setAttribute(ID_NEIGHBOR_TTRIBUTE_NAME, Integer.toString(neighbor.getIdNeighbor()));
+        neighborElement.setAttribute(ID_NEIGHBOR_TTRIBUTE_NAME, Long.toString(neighbor.getIdNeighbor()));
         neighborElement.setAttribute(SIMILARITY_ATTRIBUTE_NAME, Double.toString(neighbor.getSimilarity()));
         neighborElement.setAttribute(RANK_ATTRIBUTE_NAME, Integer.toString(rank));
 

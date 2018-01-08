@@ -51,8 +51,8 @@ public class NetflixDatabaseRatingsDataset extends RatingsDatasetAdapter {
     }
 
     @Override
-    public Rating getRating(int idUser, int idItem) {
-        Integer ret = null;
+    public Rating getRating(long idUser, long idItem) {
+        Double ret = null;
         try {
 
             String query = "SELECT userID,puntuacion,itemID FROM netflix_ratings where userID = " + idUser + " and itemID = " + idItem + ";";
@@ -60,7 +60,7 @@ public class NetflixDatabaseRatingsDataset extends RatingsDatasetAdapter {
                     Statement statement = conexion.doConnection().createStatement();
                     ResultSet rst = statement.executeQuery(query)) {
                 while (rst.next()) {
-                    ret = rst.getInt("puntuacion");
+                    ret = rst.getDouble("puntuacion");
                 }
             }
         } catch (SQLException ex) {
@@ -75,8 +75,8 @@ public class NetflixDatabaseRatingsDataset extends RatingsDatasetAdapter {
     }
 
     @Override
-    public Set<Integer> allUsers() {
-        Set<Integer> ret = new TreeSet<>();
+    public Set<Long> allUsers() {
+        Set<Long> ret = new TreeSet<>();
         try {
 
             String query = "select distinct userID from netflix_ratings;";
@@ -86,7 +86,7 @@ public class NetflixDatabaseRatingsDataset extends RatingsDatasetAdapter {
 
                 int i = 0;
                 while (rst.next()) {
-                    int idUser = rst.getInt("userID");
+                    long idUser = rst.getLong("userID");
                     ret.add(idUser);
                     i++;
                 }
@@ -100,8 +100,8 @@ public class NetflixDatabaseRatingsDataset extends RatingsDatasetAdapter {
     }
 
     @Override
-    public Set<Integer> allRatedItems() {
-        Set<Integer> items = new TreeSet<>();
+    public Set<Long> allRatedItems() {
+        Set<Long> items = new TreeSet<>();
         try {
 
             String query = "SELECT distinct itemID FROM netflix_ratings;";
@@ -109,7 +109,7 @@ public class NetflixDatabaseRatingsDataset extends RatingsDatasetAdapter {
                     Statement statement = conexion.doConnection().createStatement();
                     ResultSet rst = statement.executeQuery(query)) {
                 while (rst.next()) {
-                    int idUser = rst.getInt("itemID");
+                    long idUser = rst.getLong("itemID");
                     items.add(idUser);
                 }
             }
@@ -121,8 +121,8 @@ public class NetflixDatabaseRatingsDataset extends RatingsDatasetAdapter {
     }
 
     @Override
-    public Set<Integer> getUserRated(Integer idUser) {
-        Set<Integer> valuedItems = new TreeSet<>();
+    public Set<Long> getUserRated(long idUser) {
+        Set<Long> valuedItems = new TreeSet<>();
         try {
 
             String query = "SELECT itemID FROM netflix_ratings WHERE userID = " + idUser + ";";
@@ -130,7 +130,7 @@ public class NetflixDatabaseRatingsDataset extends RatingsDatasetAdapter {
                     Statement statement = conexion.doConnection().createStatement();
                     ResultSet rst = statement.executeQuery(query)) {
                 while (rst.next()) {
-                    int idItem = rst.getInt("itemID");
+                    long idItem = rst.getLong("itemID");
                     valuedItems.add(idItem);
                 }
             }
@@ -142,9 +142,9 @@ public class NetflixDatabaseRatingsDataset extends RatingsDatasetAdapter {
     }
 
     @Override
-    public Map<Integer, Rating> getUserRatingsRated(Integer idUser) {
+    public Map<Long, Rating> getUserRatingsRated(long idUser) {
 
-        Map<Integer, Rating> valuedItems = new TreeMap<>();
+        Map<Long, Rating> valuedItems = new TreeMap<>();
         try {
 
             String query = "SELECT itemID,puntuacion FROM netflix_ratings WHERE userID = " + idUser + ";";
@@ -152,7 +152,7 @@ public class NetflixDatabaseRatingsDataset extends RatingsDatasetAdapter {
                     Statement statement = conexion.doConnection().createStatement();
                     ResultSet rst = statement.executeQuery(query)) {
                 while (rst.next()) {
-                    int idItem = rst.getInt("itemID");
+                    long idItem = rst.getLong("itemID");
                     byte rating = rst.getByte("puntuacion");
                     valuedItems.put(idItem, new Rating(idUser, idItem, rating));
                 }
@@ -165,8 +165,8 @@ public class NetflixDatabaseRatingsDataset extends RatingsDatasetAdapter {
     }
 
     @Override
-    public Set<Integer> getItemRated(Integer idItem) {
-        Set<Integer> users = new TreeSet<>();
+    public Set<Long> getItemRated(long idItem) {
+        Set<Long> users = new TreeSet<>();
         try {
 
             String query = "SELECT userID FROM netflix_ratings WHERE itemID = " + idItem + ";";
@@ -174,7 +174,7 @@ public class NetflixDatabaseRatingsDataset extends RatingsDatasetAdapter {
                     Statement statement = conexion.doConnection().createStatement();
                     ResultSet rst = statement.executeQuery(query)) {
                 while (rst.next()) {
-                    int idUser = rst.getInt("userID");
+                    long idUser = rst.getLong("userID");
                     users.add(idUser);
                 }
             }
@@ -186,9 +186,9 @@ public class NetflixDatabaseRatingsDataset extends RatingsDatasetAdapter {
     }
 
     @Override
-    public Map<Integer, Rating> getItemRatingsRated(Integer idItem) {
+    public Map<Long, Rating> getItemRatingsRated(long idItem) {
 
-        Map<Integer, Rating> usersRatings = new TreeMap<>();
+        Map<Long, Rating> usersRatings = new TreeMap<>();
         try {
 
             String query = "SELECT userID,puntuacion FROM netflix_ratings WHERE itemID = " + idItem + ";";
@@ -196,7 +196,7 @@ public class NetflixDatabaseRatingsDataset extends RatingsDatasetAdapter {
                     Statement statement = conexion.doConnection().createStatement();
                     ResultSet rst = statement.executeQuery(query)) {
                 while (rst.next()) {
-                    int idUser = rst.getInt("userID");
+                    long idUser = rst.getLong("userID");
                     byte rating = rst.getByte("puntuacion");
                     usersRatings.put(idUser, new Rating(idUser, idItem, rating));
                 }

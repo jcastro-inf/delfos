@@ -42,7 +42,7 @@ public class ItemAverageAdjustment extends PredictionTechnique {
     private static final long serialVersionUID = 1L;
 
     @Override
-    public double predictRating(int idUser, int idItem, Collection<MatchRating> ratings, RatingsDataset<? extends Rating> rd) throws CouldNotPredictRating, ItemNotFound, UserNotFound {
+    public double predictRating(long idUser, long idItem, Collection<MatchRating> ratings, RatingsDataset<? extends Rating> rd) throws CouldNotPredictRating, ItemNotFound, UserNotFound {
         double prediccion;
 
         double numerador = 0;

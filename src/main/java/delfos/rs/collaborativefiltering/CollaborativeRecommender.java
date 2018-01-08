@@ -109,7 +109,8 @@ public abstract class CollaborativeRecommender<RecommendationModel>
      * @throws ItemNotFound Si no se encuenta el producto en los datasets.
      * @throws delfos.common.exceptions.ratings.NotEnoughtUserInformation
      */
-    public Number predictRating(DatasetLoader<? extends Rating> datasetLoader, RecommendationModel model, int idUser, int idItem)
+    public Number predictRating(DatasetLoader<? extends Rating> datasetLoader,
+                                RecommendationModel model, long idUser, long idItem)
             throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset, NotEnoughtUserInformation {
         if (Global.isVerboseAnnoying()) {
             Global.showInfoMessage("Predicting rating of user " + idUser + " over item " + idItem + "\n");
@@ -122,7 +123,7 @@ public abstract class CollaborativeRecommender<RecommendationModel>
             }
         }
 
-        TreeSet<Integer> items = new TreeSet<>();
+        TreeSet<Long> items = new TreeSet<>();
         items.add(idItem);
 
         Collection<Recommendation> recommendOnly = recommendToUser(datasetLoader, model, idUser, items);

@@ -52,7 +52,7 @@ public class MAETest {
 
         RelevanceCriteria relevanceCriteria = new RelevanceCriteria(4);
 
-        GroupOfUsers groupOfUsers = new GroupOfUsers(1, 2);
+        GroupOfUsers groupOfUsers = new GroupOfUsers(1l, 2l);
         Set<Item> groupRequests = Arrays.asList(new Item(12), new Item(13)).stream().collect(Collectors.toSet());
 
         List<SingleGroupRecommendationTaskInput> singleGroupRecommendationInputs = Arrays.asList(

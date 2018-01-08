@@ -193,7 +193,7 @@ public class KnnModelCFRSRecommendationsGUI implements RecommendationsGUI {
             return;
         }
         knnModelBasedCFRSModel = (KnnModelBasedCFRSModel) recommendationModel;
-        Map<Integer, Number> recommendationsByItem = Recommendation.convertToMapOfNumbers(recommendations.getRecommendations());
+        Map<Long, Number> recommendationsByItem = Recommendation.convertToMapOfNumbers(recommendations.getRecommendations());
         List<Recommendation> recommendationsComplete = candidateItems.stream()
                 .map((item -> {
                     if (recommendationsByItem.containsKey(item.getId())) {
@@ -248,7 +248,7 @@ public class KnnModelCFRSRecommendationsGUI implements RecommendationsGUI {
                 }
                 KnnModelBasedCFRSModel itemModel = (KnnModelBasedCFRSModel) recommendationsExplainedWindow.getRecommendationModelHolder().getRecommendationModel();
 
-                Map<Integer, Neighbor> neighborsByItem = contentDataset.stream().
+                Map<Long, Neighbor> neighborsByItem = contentDataset.stream().
                         collect(
                                 Collectors.toMap(
                                         item -> item.getId(),

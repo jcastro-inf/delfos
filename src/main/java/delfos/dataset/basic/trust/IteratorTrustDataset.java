@@ -32,7 +32,7 @@ import delfos.common.exceptions.dataset.users.UserNotFound;
 public class IteratorTrustDataset<TrustStatementType extends TrustStatement> implements Iterator<TrustStatementType> {
 
     private TrustStatementType _next;
-    private final LinkedList<Integer> _users;
+    private final LinkedList<Long> _users;
     private final LinkedList<TrustStatementType> _trusts;
     private final TrustDatasetAbstract<TrustStatementType> _trustDataset;
     private final Object exMut = 0;
@@ -43,7 +43,7 @@ public class IteratorTrustDataset<TrustStatementType extends TrustStatement> imp
      * @param trustDataset
      */
     public IteratorTrustDataset(TrustDatasetAbstract<TrustStatementType> trustDataset) {
-        _users = new LinkedList<Integer>(trustDataset.allUsers());
+        _users = new LinkedList<Long>(trustDataset.allUsers());
         _trustDataset = trustDataset;
         _trusts = new LinkedList<TrustStatementType>();
         loadNextRating();
@@ -81,7 +81,7 @@ public class IteratorTrustDataset<TrustStatementType extends TrustStatement> imp
                 _next = null;
             } else {
                 //Hay mas usuarios, cargar sus ratings.
-                int idUser = _users.remove(0);
+                long idUser = _users.remove(0);
                 try {
                     for (TrustStatementType trustStatement : _trustDataset.getUserTrustStatements(idUser)) {
                         _trusts.add(trustStatement);

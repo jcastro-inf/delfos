@@ -28,6 +28,7 @@ import delfos.rs.collaborativefiltering.CollaborativeRecommender;
 import delfos.rs.recommendation.Recommendation;
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.Set;
 
 /**
  * Sistema de recomendación que realiza la recomendación de manera aleatoria. No
@@ -41,7 +42,7 @@ import java.util.LinkedList;
  * @version 1.0 Unknown date
  * @version 1.1 (28 de Febrero de 2013)
  */
-public class RandomRecommender extends CollaborativeRecommender<RandomRecommendationModel<Integer>> implements SeedHolder {
+public class RandomRecommender extends CollaborativeRecommender<RandomRecommendationModel<Long>> implements SeedHolder {
 
     private static final long serialVersionUID = 1L;
 
@@ -57,7 +58,7 @@ public class RandomRecommender extends CollaborativeRecommender<RandomRecommenda
     }
 
     @Override
-    public RandomRecommendationModel<Integer> buildRecommendationModel(DatasetLoader<? extends Rating> datasetLoader) throws CannotLoadRatingsDataset {
+    public RandomRecommendationModel<Long> buildRecommendationModel(DatasetLoader<? extends Rating> datasetLoader) throws CannotLoadRatingsDataset {
 
         Global.showln("Dataset Alias: " + datasetLoader.getAlias());
         Global.showln("#Ratings: \t" + datasetLoader.getRatingsDataset().getNumRatings());
@@ -77,11 +78,16 @@ public class RandomRecommender extends CollaborativeRecommender<RandomRecommenda
     }
 
     @Override
-    public Collection<Recommendation> recommendToUser(DatasetLoader<? extends Rating> datasetLoader, RandomRecommendationModel<Integer> model, Integer idUser, java.util.Set<Integer> candidateItems) throws UserNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset {
+    public Collection<Recommendation> recommendToUser(
+            DatasetLoader<? extends Rating> datasetLoader,
+            RandomRecommendationModel<Long> model,
+            long idUser,
+            Set<Long> candidateItems)
+            throws UserNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset {
         LinkedList<Recommendation> recom = new LinkedList<>();
 
         int i = 0;
-        for (int idItem : candidateItems) {
+        for (long idItem : candidateItems) {
             recom.add(new Recommendation(idItem, model.predict(idUser, idItem)));
             i++;
         }
@@ -90,8 +96,7 @@ public class RandomRecommender extends CollaborativeRecommender<RandomRecommenda
 
     /**
      * Realiza las inicializaciones de este sistema de recomendación, añadiendo
-     * un listener para cambios en el valor de la semilla y llamando a
-     * {@link RandomRecommender#resetRandomValues()}.
+     * un listener para cambios en el valor de la semilla y llamando a resetRandomValues.
      */
     private void init() {
         oldSeed = (Long) getParameterValue(SEED);

@@ -31,14 +31,14 @@ import delfos.common.exceptions.dataset.entity.EntityNotFound;
 public class ItemNotFound extends EntityNotFound {
 
     private static final long serialVersionUID = 1L;
-    public final int idItem;
+    public final long idItem;
 
     /**
      * Crea la excepción con el mensaje indicado.
      *
      * @param msg Mensaje a mostrar.
      */
-    public ItemNotFound(int idItem, String msg) {
+    public ItemNotFound(long idItem, String msg) {
         super(Item.class, idItem, msg);
         this.idItem = idItem;
     }
@@ -48,12 +48,12 @@ public class ItemNotFound extends EntityNotFound {
      *
      * @param idItem Id del producto no encontrado.
      */
-    public ItemNotFound(int idItem) {
+    public ItemNotFound(long idItem) {
         super(Item.class, idItem, "Item '" + idItem + "' not found");
         this.idItem = idItem;
     }
 
-    public ItemNotFound(int idItem, Throwable cause) {
+    public ItemNotFound(long idItem, Throwable cause) {
 
         super(Item.class, idItem, cause, "Item '" + idItem + "' not found");
         this.idItem = idItem;

@@ -155,9 +155,9 @@ public class DAOTryThisAtHomeDatabaseModel implements RecommendationModelDatabas
             {
                 //Guardo los usuarios
                 List<List<Double>> userProfiles = model.getAllUserFeatures();
-                Map<Integer, Integer> usersIndex = model.getUsersIndex();
+                Map<Long, Integer> usersIndex = model.getUsersIndex();
 
-                for (int idUser : usersIndex.keySet()) {
+                for (Long idUser : usersIndex.keySet()) {
                     int userIndex = usersIndex.get(idUser);
 
                     List<Double> features = userProfiles.get(userIndex);
@@ -187,9 +187,9 @@ public class DAOTryThisAtHomeDatabaseModel implements RecommendationModelDatabas
             {
                 //Guardo los productos
                 List<List<Double>> itemProfiles = model.getAllItemFeatures();
-                Map<Integer, Integer> itemsIndex = model.getItemsIndex();
+                Map<Long, Integer> itemsIndex = model.getItemsIndex();
 
-                for (int idItem : itemsIndex.keySet()) {
+                for (Long idItem : itemsIndex.keySet()) {
                     int itemIndex = itemsIndex.get(idItem);
                     List<Double> features = itemProfiles.get(itemIndex);
                     StringBuilder sentence = new StringBuilder();
@@ -221,7 +221,12 @@ public class DAOTryThisAtHomeDatabaseModel implements RecommendationModelDatabas
     }
 
     @Override
-    public TryThisAtHomeSVDModel loadModel(DatabasePersistence databasePersistence, Collection<Integer> users, Collection<Integer> items, DatasetLoader<? extends Rating> datasetLoader) throws FailureInPersistence {
+    public TryThisAtHomeSVDModel loadModel(
+            DatabasePersistence databasePersistence,
+            Collection<Long> users, 
+            Collection<Long> items,
+            DatasetLoader<? extends Rating> datasetLoader) 
+            throws FailureInPersistence {
 
         try {
             final String prefix = databasePersistence.getPrefix();
@@ -277,7 +282,7 @@ public class DAOTryThisAtHomeDatabaseModel implements RecommendationModelDatabas
             }
 
             List<List<Double>> usersFeatures = new ArrayList<>(numUsers);
-            TreeMap<Integer, Integer> usersIndex = new TreeMap<>();
+            TreeMap<Long, Integer> usersIndex = new TreeMap<>();
 
             {
                 StringBuilder sentence = new StringBuilder();
@@ -291,7 +296,7 @@ public class DAOTryThisAtHomeDatabaseModel implements RecommendationModelDatabas
                         ResultSet rstUsers = statement.executeQuery(sentence.toString())) {
 
                     while (rstUsers.next()) {
-                        int idUser = rstUsers.getInt("idUser");
+                        long idUser = rstUsers.getLong("idUser");
                         int idFeature = rstUsers.getInt("idFeature");
                         double featureValue = rstUsers.getDouble("value");
 
@@ -312,7 +317,7 @@ public class DAOTryThisAtHomeDatabaseModel implements RecommendationModelDatabas
             }
 
             List<List<Double>> itemsFeatures = new ArrayList<>(numItems);
-            TreeMap<Integer, Integer> itemsIndex = new TreeMap<>();
+            TreeMap<Long, Integer> itemsIndex = new TreeMap<>();
 
             {
                 StringBuilder sentence = new StringBuilder();
@@ -325,7 +330,7 @@ public class DAOTryThisAtHomeDatabaseModel implements RecommendationModelDatabas
                         ResultSet rstItems = statement.executeQuery(sentence.toString());) {
 
                     while (rstItems.next()) {
-                        int idItem = rstItems.getInt("idItem");
+                        long idItem = rstItems.getLong("idItem");
                         int idFeature = rstItems.getInt("idFeature");
                         double featureValue = rstItems.getDouble("value");
 

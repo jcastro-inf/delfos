@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -33,11 +33,9 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Medida de evaluación para calcular la probabilidad de que un usuario vea un
- * ítem bueno en una lista de tamaño alfa, considerando que la probabilidad
- * decrece a medida que el usuario está más abajo en la lista. Alfa es la mitad
- * de la vida de la lista, es decir, el número de items que el usuario ve a una
- * probabilidad del 50%. (Breese et. al 1998).
+ * Medida de evaluación para calcular la probabilidad de que un usuario vea un ítem bueno en una lista de tamaño alfa,
+ * considerando que la probabilidad decrece a medida que el usuario está más abajo en la lista. Alfa es la mitad de la
+ * vida de la lista, es decir, el número de items que el usuario ve a una probabilidad del 50%. (Breese et. al 1998).
  *
  * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
@@ -90,38 +88,43 @@ public class HalfLifeUtility extends EvaluationMeasure {
         final double alpha = ((Number) getParameterValue(ALPHA)).doubleValue();
         final double neutralRating = ((Number) getParameterValue(NEUTRAL_RATING)).doubleValue();
 
-        for (int idUser : testDataset.allUsers()) {
+        for (long idUser : testDataset.allUsers()) {
 
             List<Recommendation> recommendationList = recommendationResults.getRecommendationsForUser(idUser);
 
-            if (!recommendationList.isEmpty()) {
-                double sum = 0;
-
-                try {
-                    Map<Integer, ? extends Rating> userRatings = testDataset.getUserRatingsRated(idUser);
-
-                    int j = 1;
-
-                    for (Recommendation recommendation : recommendationList) {
-
-                        double prediction = recommendation.getPreference().doubleValue();
-                        double rating = userRatings.get(recommendation.getIdItem()).getRatingValue().doubleValue();
-
-                        double numerator = rating - neutralRating;
-                        double denominator = Math.pow(2, (j - 1) / (alpha - 1));
-
-                        double thisLoopSum = Math.max(0, numerator) / denominator;
-
-                        sum += thisLoopSum;
-
-                        j++;
-                    }
-
-                    mean.addValue(sum);
-                } catch (UserNotFound ex) {
-                    ERROR_CODES.USER_NOT_FOUND.exit(ex);
-                }
+            if (recommendationList.isEmpty()) {
+                continue;
             }
+            double sum = 0;
+
+            try {
+                Map<Long, ? extends Rating> userRatings = testDataset.getUserRatingsRated(idUser);
+
+                int j = 1;
+
+                for (Recommendation recommendation : recommendationList) {
+                    long idItem = recommendation.getItem().getId();
+
+                    double prediction = recommendation.getPreference().doubleValue();
+                    double rating = userRatings.containsKey(idItem)
+                            ? userRatings.get(idItem).getRatingValue().doubleValue()
+                            : neutralRating;
+
+                    double numerator = rating - neutralRating;
+                    double denominator = Math.pow(2, (j - 1) / (alpha - 1));
+
+                    double thisLoopSum = Math.max(0, numerator) / denominator;
+
+                    sum += thisLoopSum;
+
+                    j++;
+                }
+
+                mean.addValue(sum);
+            } catch (UserNotFound ex) {
+                ERROR_CODES.USER_NOT_FOUND.exit(ex);
+            }
+
         }
 
         return new MeasureResult(this, (double) mean.getMean());

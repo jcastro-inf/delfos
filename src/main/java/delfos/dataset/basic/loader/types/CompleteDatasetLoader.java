@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -25,5 +25,9 @@ import delfos.dataset.basic.rating.Rating;
  * @version 26-nov-2013
  * @param <RatingType>
  */
-public interface CompleteDatasetLoader<RatingType extends Rating> extends DatasetLoader<RatingType>, ContentDatasetLoader, UsersDatasetLoader, TaggingDatasetLoader, TrustDatasetLoader {
+public interface CompleteDatasetLoader<RatingType extends Rating> extends DatasetLoader<RatingType>,
+        ContentDatasetLoader,
+        UsersDatasetLoader,
+        TrustDatasetLoader,
+        TagsDatasetLoader {
 }

@@ -13,6 +13,9 @@ import delfos.dataset.util.RatingsDatasetDiff;
 import java.util.Arrays;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.stream.Collectors;
+import java.util.stream.LongStream;
+
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -53,8 +56,9 @@ public class RandomRatingsDatasetTest {
 
     @Test
     public void testCreateRatingsDatasetWithNumUserRatingsAndSeed() {
-        Set<Integer> users = new TreeSet<>(Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9));
-        Set<Integer> items = new TreeSet<>(Arrays.asList(901, 902, 903, 904, 905, 906, 907, 908, 909, 910));
+        Set<Long> users = LongStream.rangeClosed(1,9).boxed().collect(Collectors.toSet());
+        Set<Long> items = LongStream.rangeClosed(901,910).boxed().collect(Collectors.toSet());
+
         int numRatingsPerUser = 7;
 
         long seed = 1L;
@@ -74,8 +78,9 @@ public class RandomRatingsDatasetTest {
 
     @Test
     public void testDatasetWithAGivenRatingDistribution() {
-        Set<Integer> users = new TreeSet<>(Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9));
-        Set<Integer> items = new TreeSet<>(Arrays.asList(901, 902, 903, 904, 905, 906, 907, 908, 909, 910));
+        Set<Long> users = LongStream.rangeClosed(1,9).boxed().collect(Collectors.toSet());
+        Set<Long> items = LongStream.rangeClosed(901,910).boxed().collect(Collectors.toSet());
+
         double loadFactor = 0.5;
         Domain ratingDomain = new IntegerDomainWithProbabilities(Arrays.asList(
                 new IntegerDomainWithProbabilities.ValueWithProbability(1, 06110),

@@ -190,10 +190,10 @@ public class AggregationOfIndividualRatings
             Function<Collection<RatingType>, Optional<RatingType>> ratingsAggregator,
             GroupOfUsers groupOfUsers) throws UserNotFound, CannotLoadRatingsDataset {
         //Generate groupProfile:
-        Map<Integer, List<RatingType>> groupRatingsList = new TreeMap<>();
+        Map<Long, List<RatingType>> groupRatingsList = new TreeMap<>();
 
-        for (int idUser : groupOfUsers.getIdMembers()) {
-            Map<Integer, RatingType> userRatingsRated = datasetLoader.getRatingsDataset().getUserRatingsRated(idUser);
+        for (long idUser : groupOfUsers.getIdMembers()) {
+            Map<Long, RatingType> userRatingsRated = datasetLoader.getRatingsDataset().getUserRatingsRated(idUser);
             userRatingsRated.keySet().stream().map((idItem) -> {
                 if (!groupRatingsList.containsKey(idItem)) {
                     groupRatingsList.put(idItem, new LinkedList<>());

@@ -22,7 +22,7 @@ import java.util.stream.Collectors;
  */
 public class MockUsersDataset implements UsersDataset {
 
-    private final Map<Integer, User> users = new TreeMap<>();
+    private final Map<Long, User> users = new TreeMap<>();
     private final FeatureGenerator featureGenerator = new FeatureGenerator();
 
     private void checkItemNotExists(int idUser) {
@@ -38,7 +38,7 @@ public class MockUsersDataset implements UsersDataset {
     }
 
     @Override
-    public User getUser(int idUser) throws UserNotFound {
+    public User getUser(long idUser) throws UserNotFound {
         try {
             return get(idUser);
         } catch (EntityNotFound ex) {
@@ -53,7 +53,7 @@ public class MockUsersDataset implements UsersDataset {
     }
 
     @Override
-    public User get(int idUser) throws EntityNotFound {
+    public User get(long idUser) throws EntityNotFound {
         if (users.containsKey(idUser)) {
             return users.get(idUser);
         } else {
@@ -102,12 +102,12 @@ public class MockUsersDataset implements UsersDataset {
     }
 
     @Override
-    public Collection<Integer> allIDs() {
+    public Collection<Long> allIDs() {
         return new TreeSet<>(users.keySet());
     }
 
     @Override
-    public Map<Feature, Object> parseEntityFeaturesAndAddToExisting(int idEntity, Map<String, String> features) throws EntityNotFound {
+    public Map<Feature, Object> parseEntityFeaturesAndAddToExisting(long idEntity, Map<String, String> features) throws EntityNotFound {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 

@@ -100,15 +100,15 @@ public class GroupRecommendationsWithMembersRecommendations extends GroupRecomme
     }
 
     private static void checkMembersAreInGroup(GroupRecommendations groupRecommendations, Recommendations[] membersRecommendations) {
-        final Set<Integer> membersRecommendationsGroupMembers = new TreeSet<>();
+        final Set<Long> membersRecommendationsGroupMembers = new TreeSet<>();
         Arrays.asList(membersRecommendations)
                 .stream()
                 .forEach((memberRecommendations) -> {
-                    Integer idMember = User.parseIdTarget(memberRecommendations.getTargetIdentifier()).getId();
+                    Long idMember = User.parseIdTarget(memberRecommendations.getTargetIdentifier()).getId();
                     membersRecommendationsGroupMembers.add(idMember);
                 });
 
-        Set<Integer> expectedGroupMembers = new TreeSet<>(groupRecommendations.getGroupOfUsers().getIdMembers());
+        Set<Long> expectedGroupMembers = new TreeSet<>(groupRecommendations.getGroupOfUsers().getIdMembers());
 
         if (!expectedGroupMembers.equals(membersRecommendationsGroupMembers)) {
             throw new IllegalArgumentException(

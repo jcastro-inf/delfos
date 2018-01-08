@@ -23,12 +23,17 @@ import delfos.dataset.basic.rating.RatingsDataset;
 import delfos.dataset.basic.rating.RelevanceCriteria;
 import delfos.dataset.basic.rating.domain.DecimalDomain;
 import delfos.dataset.basic.rating.domain.Domain;
+import delfos.dataset.basic.user.User;
+import delfos.dataset.util.DatasetUtilities;
 import delfos.results.MeasureResult;
 import delfos.results.RecommendationResults;
 import delfos.results.evaluationmeasures.EvaluationMeasure;
 import delfos.rs.recommendation.Recommendation;
-import java.util.List;
+import delfos.rs.recommendation.RecommendationsToUser;
+import java.util.Collection;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Implementa NRMSE.
@@ -47,36 +52,51 @@ public class NRMSE extends EvaluationMeasure {
 
         Domain originalDomain = testDataset.getRatingsDomain();
 
-        for (int idUser : testDataset.allUsers()) {
-            List<Recommendation> recommendations = recommendationResults.getRecommendationsForUser(idUser);
-
-            if (recommendations == null) {
+        for (long idUser : testDataset.allUsers()) {
+            Collection<Recommendation> recommendationList = recommendationResults.getRecommendationsForUser(idUser);
+            if (recommendationList == null) {
                 continue;
             }
 
-            Map<Integer, ? extends Rating> userRated = testDataset.getUserRatingsRated(idUser);
+            Map<Long, Double> recommendations = DatasetUtilities
+                    .convertToMapOfRecommendations(new RecommendationsToUser(new User(idUser), recommendationList))
+                    .entrySet()
+                    .parallelStream()
+                    .filter(entry -> !Double.isNaN(entry.getValue().getPreference().doubleValue()))
+                    .filter(entry -> !Double.isInfinite(entry.getValue().getPreference().doubleValue()))
+                    .collect(Collectors.toMap(
+                            entry -> entry.getKey().getId(),
+                            entry -> entry.getValue().getPreference().doubleValue())
+                    );
 
-            for (Recommendation recommendation : recommendations) {
-                Number trueRating = userRated.get(recommendation.getIdItem()).getRatingValue();
-                Number predictedRating = recommendation.getPreference();
+            Map<Long, Double> testRatings = testDataset
+                    .getUserRatingsRated(idUser)
+                    .values()
+                    .parallelStream()
+                    .filter(rating -> !Double.isNaN(rating.getRatingValue().doubleValue()))
+                    .filter(rating -> !Double.isInfinite(rating.getRatingValue().doubleValue()))
+                    .collect(Collectors.toMap(
+                            rating -> rating.getItem().getId(),
+                            rating -> rating.getRatingValue().doubleValue())
+                    );
 
-                if (trueRating != null
-                        && !Double.isNaN(trueRating.doubleValue())
-                        && !Double.isInfinite(trueRating.doubleValue())
-                        && predictedRating != null
-                        && !Double.isNaN(predictedRating.doubleValue())
-                        && !Double.isInfinite(predictedRating.doubleValue())) {
+            Set<Long> commonItems = recommendations.keySet();
+            commonItems.retainAll(testRatings.keySet());
 
-                    double trueRatingNormalised = originalDomain.convertToDecimalDomain(trueRating, DecimalDomain.ZERO_TO_ONE).doubleValue();
-                    double predictedNormalised = originalDomain.convertToDecimalDomain(predictedRating, DecimalDomain.ZERO_TO_ONE).doubleValue();
+            commonItems.stream().forEach(idItem -> {
+                Double predictedRating = recommendations.get(idItem);
+                Double trueRating = testRatings.get(idItem);
 
-                    mean.addValue(Math.pow(trueRatingNormalised - predictedNormalised, 2));
-                }
-            }
+                double trueRatingNormalised = originalDomain.convertToDecimalDomain(trueRating, DecimalDomain.ZERO_TO_ONE).doubleValue();
+                double predictedNormalised = originalDomain.convertToDecimalDomain(predictedRating, DecimalDomain.ZERO_TO_ONE).doubleValue();
+
+                mean.addValue(Math.pow(Math.abs(trueRatingNormalised - predictedNormalised), 2));
+
+            });
 
         }
         if (mean.getNumValues() == 0) {
-            Global.showWarning("Cannot compute 'MAE' since the RS did not predicted any recommendation!!");
+            Global.showWarning("Cannot compute NRMSE since the RS did not predicted any item with a rating in the test set.");
         }
 
         return new MeasureResult(this, (double) Math.sqrt(mean.getMean()));

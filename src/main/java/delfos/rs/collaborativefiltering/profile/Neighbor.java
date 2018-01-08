@@ -38,7 +38,7 @@ public class Neighbor implements Comparable<Neighbor>, Serializable {
 
     private static final long serialVersionUID = 106L;
 
-    public static final Comparator<Neighbor> BY_ID = (Neighbor o1, Neighbor o2) -> Integer.compare(o1.getIdNeighbor(), o2.getIdNeighbor());
+    public static final Comparator<Neighbor> BY_ID = (Neighbor o1, Neighbor o2) -> Long.compare(o1.getIdNeighbor(), o2.getIdNeighbor());
     public static final Comparator<Neighbor> BY_SIMILARITY_ASC = (Neighbor o1, Neighbor o2) -> {
         if (Double.isNaN(o1.similarity) && Double.isNaN(o2.similarity)) {
             return BY_ID.compare(o1, o2);
@@ -66,12 +66,12 @@ public class Neighbor implements Comparable<Neighbor>, Serializable {
         }
     };
 
-    public static Map<Integer, Double> getNeighborsMap(List<Neighbor> neighbors) {
-        Map<Integer, Double> ret = new TreeMap<>();
+    public static Map<Long, Double> getNeighborsMap(List<Neighbor> neighbors) {
+        Map<Long, Double> ret = new TreeMap<>();
 
         neighbors.stream().forEach((n) -> {
             Double similarity = (double) n.similarity;
-            Integer idNeighbor = n.idNeighbor;
+            Long idNeighbor = n.idNeighbor;
             ret.put(idNeighbor, similarity);
         });
 
@@ -85,7 +85,7 @@ public class Neighbor implements Comparable<Neighbor>, Serializable {
     /**
      * ID del vecino.
      */
-    private final int idNeighbor;
+    private final long idNeighbor;
     private EntityWithFeatures neighbor;
     /**
      * Similitud con el objeto del que es vecino.
@@ -107,13 +107,19 @@ public class Neighbor implements Comparable<Neighbor>, Serializable {
      * @param similarity peso del vecino
      */
     @Deprecated
-    public Neighbor(RecommendationEntity entity, int idNeighbor, double similarity) {
+    public Neighbor(
+            RecommendationEntity entity,
+            long idNeighbor,
+            double similarity) {
         this.recommendationEntity = entity;
         this.idNeighbor = idNeighbor;
         this.similarity = (double) similarity;
     }
 
-    public Neighbor(RecommendationEntity recommendationEntity, EntityWithFeatures neighbor, double similarity) {
+    public Neighbor(
+            RecommendationEntity recommendationEntity,
+            EntityWithFeatures neighbor,
+            double similarity) {
         this.recommendationEntity = recommendationEntity;
         this.idNeighbor = neighbor.getId();
         this.neighbor = neighbor;
@@ -125,7 +131,7 @@ public class Neighbor implements Comparable<Neighbor>, Serializable {
      *
      * @return Id de este vecino.
      */
-    public int getIdNeighbor() {
+    public long getIdNeighbor() {
         return idNeighbor;
     }
 
@@ -163,7 +169,7 @@ public class Neighbor implements Comparable<Neighbor>, Serializable {
     public int hashCode() {
         int hash = 3;
         hash = 97 * hash + (this.recommendationEntity != null ? this.recommendationEntity.hashCode() : 0);
-        hash = 97 * hash + this.idNeighbor;
+        hash = 97 * hash + Long.hashCode(this.idNeighbor);
         hash = 97 * hash + Double.hashCode(this.similarity);
         return hash;
     }

@@ -43,7 +43,7 @@ import delfos.group.grs.cww.centrality.definitions.AritmethicMeanConnectionWeigh
 import delfos.group.grs.recommendations.GroupRecommendations;
 import delfos.rs.RecommendationModelBuildingProgressListener;
 import delfos.rs.RecommenderSystem;
-import delfos.rs.collaborativefiltering.knn.memorybased.nwr.KnnMemoryBasedNWR;
+import delfos.rs.collaborativefiltering.knn.memorybased.KnnMemoryBasedCFRS;
 import delfos.rs.recommendation.Recommendation;
 import delfos.rs.trustbased.StrongTermOverConnections;
 import delfos.rs.trustbased.WeightedGraph;
@@ -60,8 +60,8 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 
 /**
- * Sistema de recomendación a grupos de usuarios que agrega las valoraciones de
- * los miembros teniendo en cuenta la centralidad de los mismos.
+ * Sistema de recomendación a grupos de usuarios que agrega las valoraciones de los miembros teniendo en cuenta la
+ * centralidad de los mismos.
  *
  * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
@@ -73,13 +73,13 @@ public class CentralityWeightedAggregationGRS extends GroupRecommenderSystemAdap
 
     public static final Parameter SINGLE_USER_RECOMMENDER = new Parameter(
             "SINGLE_USER_RECOMMENDER",
-            new RecommenderSystemParameterRestriction(new KnnMemoryBasedNWR(), RecommenderSystem.class),
+            new RecommenderSystemParameterRestriction(new KnnMemoryBasedCFRS(), RecommenderSystem.class),
             "Especifica el sistema de recomendación single user que se extiende "
             + "para ser usaso en recomendación a grupos.");
 
     /**
-     * Especifica el método de cálculo de la red social del grupo. Debe ser un
-     * objeto de tipo {@link WeightedGraphCalculation}.
+     * Especifica el método de cálculo de la red social del grupo. Debe ser un objeto de tipo
+     * {@link WeightedGraphCalculation}.
      */
     public static final Parameter SOCIAL_NETWORK_CALCULATOR = new Parameter(
             "SOCIAL_NETWORK_CALCULATOR",
@@ -94,8 +94,7 @@ public class CentralityWeightedAggregationGRS extends GroupRecommenderSystemAdap
     public static final Parameter NORMALISE_SOCIAL_NETWORK_CONNECTIONS = new Parameter("NORMALISE_SOCIAL_NETWORK_CONNECTIONS", new BooleanParameter(Boolean.FALSE));
 
     /**
-     * "Especifica el sistema de recomendación single user que se extiende para
-     * ser usado en recomendación a grupos.
+     * "Especifica el sistema de recomendación single user que se extiende para ser usado en recomendación a grupos.
      */
     public CentralityWeightedAggregationGRS() {
         super();
@@ -159,7 +158,7 @@ public class CentralityWeightedAggregationGRS extends GroupRecommenderSystemAdap
             SingleRecommendationModel RecommendationModel,
             GroupOfUsers groupOfUsers)
             throws UserNotFound, CannotLoadRatingsDataset {
-        Map<Integer, Number> groupRatings = getGroupRatings(datasetLoader, groupOfUsers, getSocialNetworkCalculator());
+        Map<Long, Number> groupRatings = getGroupRatings(datasetLoader, groupOfUsers, getSocialNetworkCalculator());
 
         return new GroupModelPseudoUser(groupOfUsers, groupRatings);
     }
@@ -176,7 +175,7 @@ public class CentralityWeightedAggregationGRS extends GroupRecommenderSystemAdap
                 datasetLoader.getRatingsDataset(),
                 DatasetUtilities.getUserMap_Rating(-1, groupModel.getRatings()),
                 groupOfUsers.getIdMembers());
-        int idGroup = ratingsDataset_withPseudoUser.getIdPseudoUser();
+        long idGroup = ratingsDataset_withPseudoUser.getIdPseudoUser();
 
         Collection<Recommendation> groupRecom;
 
@@ -209,13 +208,13 @@ public class CentralityWeightedAggregationGRS extends GroupRecommenderSystemAdap
         return (Boolean) getParameterValue(NORMALISE_SOCIAL_NETWORK_CONNECTIONS);
     }
 
-    public CentralityConceptDefinition<Integer> getCentralityConceptDefinition() {
-        return (CentralityConceptDefinition<Integer>) getParameterValue(CENTRALITY_CONCEPT);
+    public CentralityConceptDefinition<Long> getCentralityConceptDefinition() {
+        return (CentralityConceptDefinition<Long>) getParameterValue(CENTRALITY_CONCEPT);
     }
 
-    public Map<Integer, Number> getGroupRatings(DatasetLoader<? extends Rating> datasetLoader, GroupOfUsers groupOfUsers, WeightedGraphCalculation userTrustGenerator) throws UserNotFound, CannotLoadRatingsDataset {
+    public Map<Long, Number> getGroupRatings(DatasetLoader<? extends Rating> datasetLoader, GroupOfUsers groupOfUsers, WeightedGraphCalculation userTrustGenerator) throws UserNotFound, CannotLoadRatingsDataset {
         // Generate group social network.
-        WeightedGraph<Integer> userTrust = userTrustGenerator.computeTrustValues(datasetLoader, groupOfUsers.getIdMembers());
+        WeightedGraph<Long> userTrust = userTrustGenerator.computeTrustValues(datasetLoader, groupOfUsers.getIdMembers());
 
         if (isNormaliseSocialNetworkConnections()) {
             userTrust = WeightedGraphNormaliser.normalise(userTrust);
@@ -226,28 +225,28 @@ public class CentralityWeightedAggregationGRS extends GroupRecommenderSystemAdap
         }
 
         // Compute centrality of each member
-        Map<Integer, Double> centrality = new TreeMap<>();
-        CentralityConceptDefinition<Integer> centralityConceptDefinition = getCentralityConceptDefinition();
+        Map<Long, Double> centrality = new TreeMap<>();
+        CentralityConceptDefinition<Long> centralityConceptDefinition = getCentralityConceptDefinition();
 
-        for (int idMember : groupOfUsers) {
+        for (long idMember : groupOfUsers) {
             double centralityOfUser = centralityConceptDefinition.centrality(userTrust, idMember);
             centrality.put(idMember, centralityOfUser);
         }
 
         // Generate groupProfile.
-        Map<Integer, Number> groupRatings = new TreeMap<>();
+        Map<Long, Number> groupRatings = new TreeMap<>();
         {
             WeightedAggregationOperator aggregationOperator = new WeightedSumAggregation();
-            Map<Integer, Map<Integer, ? extends Rating>> groupMembersRatings = new TreeMap<>();
-            Set<Integer> itemsRatedByGroup = new TreeSet<>();
-            for (int idUser : groupOfUsers.getIdMembers()) {
+            Map<Long, Map<Long, ? extends Rating>> groupMembersRatings = new TreeMap<>();
+            Set<Long> itemsRatedByGroup = new TreeSet<>();
+            for (long idUser : groupOfUsers.getIdMembers()) {
                 groupMembersRatings.put(idUser, datasetLoader.getRatingsDataset().getUserRatingsRated(idUser));
                 itemsRatedByGroup.addAll(groupMembersRatings.get(idUser).keySet());
             }
-            for (int idItem : itemsRatedByGroup) {
+            for (long idItem : itemsRatedByGroup) {
                 List<Double> ratingsValues = new ArrayList<>(groupOfUsers.size());
                 List<Double> memberWeights = new ArrayList<>(groupOfUsers.size());
-                for (int idMember : groupOfUsers) {
+                for (long idMember : groupOfUsers) {
                     Rating rating = groupMembersRatings.get(idMember).get(idItem);
                     if (rating != null) {
                         ratingsValues.add(rating.getRatingValue().doubleValue());

@@ -79,7 +79,7 @@ public class RandomSelection extends GroupRecommendationsSelector implements See
         long seedValue = getSeedValue();
 
         int userHashSum = users.stream()
-                .mapToInt(user -> user.getId().hashCode())
+                .mapToInt(user -> Long.hashCode(user.getId()))
                 .sum();
 
         seedValue += userHashSum;

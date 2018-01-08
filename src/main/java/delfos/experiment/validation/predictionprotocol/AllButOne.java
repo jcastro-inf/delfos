@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -17,17 +17,20 @@
 package delfos.experiment.validation.predictionprotocol;
 
 import delfos.common.exceptions.dataset.users.UserNotFound;
+import delfos.dataset.basic.item.Item;
+import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
-import delfos.dataset.basic.rating.RatingsDataset;
+import delfos.dataset.basic.user.User;
+
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
 /**
- * Esta técnica realiza la composición de recomendaciones de manera que se
- * utilizan todos los ratings del usuario en la predicción excepto el que se
- * desea predecir.
+ * Esta técnica realiza la composición de recomendaciones de manera que se utilizan todos los ratings del usuario en la
+ * predicción excepto el que se desea predecir.
  *
  * @author jcastro-inf ( https://github.com/jcastro-inf )
  */
@@ -36,14 +39,17 @@ public class AllButOne extends PredictionProtocol {
     private static final long serialVersionUID = 1L;
 
     @Override
-    public Collection<Set<Integer>> getRecommendationRequests(RatingsDataset<? extends Rating> testRatingsDataset, int idUser) throws UserNotFound {
-        Collection<Integer> userRated = testRatingsDataset.getUserRated(idUser);
+    public <RatingType extends Rating> List<Set<Item>> getRecommendationRequests(
+            DatasetLoader<RatingType> trainingDatasetLoader,
+            DatasetLoader<RatingType> testDatasetLoader,
+            User user) throws UserNotFound {
+        Collection<RatingType> userRatings= testDatasetLoader.getRatingsDataset().getUserRatingsRated(user.getId()).values();
 
-        Collection<Set<Integer>> collectionOfSetsOfRequests = new LinkedList<>();
+        List<Set<Item>> collectionOfSetsOfRequests = new LinkedList<>();
 
-        for (int idItem : userRated) {
-            Set<Integer> oneRequestSet = new TreeSet<>();
-            oneRequestSet.add(idItem);
+        for (RatingType rating : userRatings) {
+            Set<Item> oneRequestSet = new TreeSet<>();
+            oneRequestSet.add(rating.getItem());
             collectionOfSetsOfRequests.add(oneRequestSet);
         }
 

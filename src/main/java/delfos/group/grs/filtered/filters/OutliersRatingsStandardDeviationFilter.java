@@ -43,21 +43,21 @@ public class OutliersRatingsStandardDeviationFilter extends GroupRatingsFilter {
     }
 
     @Override
-    public Map<Integer, Map<Integer, Number>> getFilteredRatings(Map<Integer, Map<Integer, Number>> ratingsByUser) {
+    public Map<Long, Map<Long, Number>> getFilteredRatings(Map<Long, Map<Long, Number>> ratingsByUser) {
 
-        Map<Integer, Map<Integer, Number>> ratingsByItem = DatasetUtilities.transformIndexedByUsersToIndexedByItems_Map(ratingsByUser);
+        Map<Long, Map<Long, Number>> ratingsByItem = DatasetUtilities.transformIndexedByUsersToIndexedByItems_Map(ratingsByUser);
 
-        Map<Integer, Map<Integer, Number>> filteredRatingsByItem = new TreeMap<>();
+        Map<Long, Map<Long, Number>> filteredRatingsByItem = new TreeMap<>();
 
-        for (int idItem : ratingsByItem.keySet()) {
+        for (long idItem : ratingsByItem.keySet()) {
 
             double standardDeviation = new StandardDeviation(ratingsByItem.get(idItem).values()).getStandardDeviation();
             double mean = new MeanIterative(ratingsByItem.get(idItem).values()).getMean();
 
             filteredRatingsByItem.put(idItem, new TreeMap<>());
 
-            for (Map.Entry<Integer, Number> entry : ratingsByItem.get(idItem).entrySet()) {
-                int idUser = entry.getKey();
+            for (Map.Entry<Long, Number> entry : ratingsByItem.get(idItem).entrySet()) {
+                long idUser = entry.getKey();
                 Number rating = entry.getValue();
 
                 if (valueInNormalDistribution(mean, standardDeviation, rating.doubleValue())) {
@@ -66,7 +66,7 @@ public class OutliersRatingsStandardDeviationFilter extends GroupRatingsFilter {
             }
         }
 
-        Map<Integer, Map<Integer, Number>> filteredRatingsByUser
+        Map<Long, Map<Long, Number>> filteredRatingsByUser
                 = DatasetUtilities.transformIndexedByItemToIndexedByUser_Map(filteredRatingsByItem);
         return filteredRatingsByUser;
     }

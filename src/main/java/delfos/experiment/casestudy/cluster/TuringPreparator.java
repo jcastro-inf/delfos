@@ -25,13 +25,14 @@ import delfos.common.parameters.chain.ParameterChain;
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
 import delfos.experiment.casestudy.CaseStudy;
-import delfos.experiment.casestudy.defaultcase.DefaultCaseStudy;
+import delfos.experiment.casestudy.CaseStudy;
 import delfos.group.casestudy.defaultcase.GroupCaseStudy;
 import delfos.group.io.xml.casestudy.GroupCaseStudyXML;
 import delfos.io.xml.casestudy.CaseStudyXML;
 import delfos.main.Main;
 import delfos.main.managers.experiment.ExecuteGroupXML;
 import delfos.main.managers.experiment.ExecuteXML;
+import delfos.rs.nonpersonalised.randomrecommender.RandomRecommender;
 import java.io.File;
 import java.lang.management.ManagementFactory;
 import java.util.Arrays;
@@ -96,7 +97,8 @@ public class TuringPreparator implements ExperimentPreparator {
 
             //generateDatasetFile
             {
-                CaseStudy datasetLoaderCaseStudy = new DefaultCaseStudy(
+                CaseStudy datasetLoaderCaseStudy = new CaseStudy(
+                        new RandomRecommender(),
                         datasetLoader
                 );
 
@@ -142,7 +144,7 @@ public class TuringPreparator implements ExperimentPreparator {
     }
 
     public void executeAllExperimentsInDirectory(File directory) {
-        List<File> experimentsToBeExecuted = Arrays.asList(directory.listFiles());
+        List<File> experimentsToBeExecuted = listFiles(directory);
 
         Collections.shuffle(experimentsToBeExecuted, getRandomToShuffleExperiments());
 
@@ -167,7 +169,7 @@ public class TuringPreparator implements ExperimentPreparator {
     }
 
     public void executeAllExperimentsInDirectory(File directory, int numExec) {
-        List<File> experimentsToBeExecuted = Arrays.asList(directory.listFiles());
+        List<File> experimentsToBeExecuted = listFiles(directory);
 
         Collections.shuffle(experimentsToBeExecuted, getRandomToShuffleExperiments());
 
@@ -197,11 +199,11 @@ public class TuringPreparator implements ExperimentPreparator {
     }
 
     public int sizeOfAllExperimentsInDirectory(File directory) {
-        return Arrays.asList(directory.listFiles()).size();
+        return listFiles(directory).size();
     }
 
     public void executeAllExperimentsInDirectory_withSeed(File directory, int numExec, int seedValue) {
-        List<File> experimentsToBeExecuted = Arrays.asList(directory.listFiles());
+        List<File> experimentsToBeExecuted = listFiles(directory);
 
         Collections.shuffle(experimentsToBeExecuted, getRandomToShuffleExperiments());
 
@@ -285,7 +287,7 @@ public class TuringPreparator implements ExperimentPreparator {
     }
 
     public void executeAllIndividualExperimentsInDirectory_withSeed(File directory, int numExec, int seedValue) {
-        List<File> experimentsToBeExecuted = Arrays.asList(directory.listFiles());
+        List<File> experimentsToBeExecuted = listFiles(directory);
 
         Collections.shuffle(experimentsToBeExecuted, getRandomToShuffleExperiments());
 
@@ -307,5 +309,15 @@ public class TuringPreparator implements ExperimentPreparator {
             }
             Global.show("==============================\n");
         });
+    }
+
+    private List<File> listFiles(File directory) {
+        if (directory.exists() && directory.isDirectory()) {
+            return Arrays.asList(directory.listFiles());
+        } else if (!directory.exists()) {
+            return Collections.EMPTY_LIST;
+        } else {
+            throw new IllegalArgumentException("'" + directory.getAbsolutePath() + "' is not a directory");
+        }
     }
 }

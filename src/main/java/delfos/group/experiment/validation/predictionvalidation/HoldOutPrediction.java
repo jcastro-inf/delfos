@@ -60,23 +60,20 @@ public class HoldOutPrediction extends GroupPredictionProtocol {
         addParameter(trainingPercent);
     }
 
-    private Set<Integer> getItemsToPredict(DatasetLoader<? extends Rating> datasetLoader, GroupOfUsers group, long seed) throws CannotLoadRatingsDataset {
+    private Set<Long> getItemsToPredict(DatasetLoader<? extends Rating> datasetLoader, GroupOfUsers group, long seed) throws CannotLoadRatingsDataset {
 
         Random random = new Random(getSeedValue());
-        Set<Integer> ratedProducts = new TreeSet<>();
-        for (int idUser : group.getIdMembers()) {
-            try {
-                ratedProducts.addAll(datasetLoader.getRatingsDataset().getUserRated(idUser));
-            } catch (UserNotFound ex) {
-                ERROR_CODES.USER_NOT_FOUND.exit(ex);
-            }
-        }
-        Set<Integer> trainSet = new TreeSet<>();
+        Set<Long> ratedProducts =group.getIdMembers().stream()
+                .flatMap(member ->datasetLoader.getRatingsDataset().getUserRated(member).stream())
+                .collect(Collectors.toSet());
+
+
+        Set<Long> trainSet = new TreeSet<>();
         final double trainingPercentValue = (Double) getParameterValue(trainingPercent);
 
         while ((trainSet.size() / (double) ratedProducts.size()) < trainingPercentValue) {
 
-            int idItem = (Integer) ratedProducts.toArray()[random.nextInt(ratedProducts.size())];
+            long idItem = (Integer) ratedProducts.toArray()[random.nextInt(ratedProducts.size())];
             ratedProducts.remove(idItem);
             trainSet.add(idItem);
         }
@@ -86,13 +83,13 @@ public class HoldOutPrediction extends GroupPredictionProtocol {
     @Override
     public Collection<GroupRecommendationRequest> getGroupRecommendationRequests(DatasetLoader<? extends Rating> trainDatasetLoader, DatasetLoader<? extends Rating> testDatasetLoader, GroupOfUsers group) throws CannotLoadRatingsDataset, UserNotFound {
 
-        Set<Integer> itemsToPredict = getItemsToPredict(testDatasetLoader, group, getSeedValue());
+        Set<Long> itemsToPredict = getItemsToPredict(testDatasetLoader, group, getSeedValue());
 
-        Map<Integer, Map<Integer, Number>> membersRatings_byItem = DatasetUtilities.getMembersRatings_byItem(group, testDatasetLoader);
+        Map<Long, Map<Long, Number>> membersRatings_byItem = DatasetUtilities.getMembersRatings_byItem(group, testDatasetLoader);
         itemsToPredict.stream().forEach((idItem) -> membersRatings_byItem.remove(idItem));
 
-        Map<Integer, Map<Integer, Number>> predictionMembersRatings_byUser = DatasetUtilities.transformIndexedByItemToIndexedByUser_Map(membersRatings_byItem);
-        Map<Integer, Map<Integer, Rating>> predictionMembersRatings_byUser_Rating = DatasetUtilities.getMapOfMaps_Rating(predictionMembersRatings_byUser);
+        Map<Long, Map<Long, Number>> predictionMembersRatings_byUser = DatasetUtilities.transformIndexedByItemToIndexedByUser_Map(membersRatings_byItem);
+        Map<Long, Map<Long, Rating>> predictionMembersRatings_byUser_Rating = DatasetUtilities.getMapOfMaps_Rating(predictionMembersRatings_byUser);
 
         DatasetLoader<Rating> predictionPhaseDatasetLoader
                 = new DatasetLoaderGivenRatingsDataset<>(trainDatasetLoader,

@@ -78,10 +78,10 @@ public class UserUserSimilarity_buffered extends SimilarityMeasureAdapter implem
     }
 
     @Override
-    public double similarity(DatasetLoader<? extends Rating> datasetLoader, int idUser1, int idUser2) {
+    public double similarity(DatasetLoader<? extends Rating> datasetLoader, long idUser1, long idUser2) {
 
-        Map<Integer, ? extends Rating> user1Ratings = datasetLoader.getRatingsDataset().getUserRatingsRated(idUser1);
-        Map<Integer, ? extends Rating> user2Ratings = datasetLoader.getRatingsDataset().getUserRatingsRated(idUser2);
+        Map<Long, ? extends Rating> user1Ratings = datasetLoader.getRatingsDataset().getUserRatingsRated(idUser1);
+        Map<Long, ? extends Rating> user2Ratings = datasetLoader.getRatingsDataset().getUserRatingsRated(idUser2);
 
         final int hashCode_user1Ratings = user1Ratings.hashCode();
         final int hashCode_user2Ratings = user2Ratings.hashCode();
@@ -112,7 +112,7 @@ public class UserUserSimilarity_buffered extends SimilarityMeasureAdapter implem
         } else {
 
             try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(file))) {
-                Map<Integer, ? extends Rating> user1Ratings_file = (Map<Integer, ? extends Rating>) ois.readObject();
+                Map<Long, ? extends Rating> user1Ratings_file = (Map<Long, ? extends Rating>) ois.readObject();
                 if (user1Ratings_file.hashCode() != hashCode_user1Ratings) {
                     Global.showWarning("The hash code in the name of loaded file (" + hashCode_user1Ratings
                             + ") does not match the hash code of user1 ratings (" + user1Ratings_file.hashCode() + ")\n");
@@ -122,7 +122,7 @@ public class UserUserSimilarity_buffered extends SimilarityMeasureAdapter implem
                     Global.showError(ex);
                 }
 
-                Map<Integer, ? extends Rating> user2Ratings_file = (Map<Integer, ? extends Rating>) ois.readObject();
+                Map<Long, ? extends Rating> user2Ratings_file = (Map<Long, ? extends Rating>) ois.readObject();
                 if (user2Ratings_file.hashCode() != hashCode_user2Ratings) {
                     Global.showWarning("The hash code in the name of loaded file (" + hashCode_user2Ratings
                             + ") does not match the hash code of user2 ratings (" + user2Ratings_file.hashCode() + ")\n");

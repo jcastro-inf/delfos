@@ -88,7 +88,7 @@ public class DatasetPrinterManager extends DatabaseCaseUseSubManager {
                 List<String> idUserStrings = consoleParameters.getValues(PRINT_USER_RATINGS);
 
                 for (String idUserString : idUserStrings) {
-                    int idUser = Integer.parseInt(idUserString);
+                    long idUser = new Long(idUserString);
                     System.out.println(printUserRatings(datasetLoader, idUser));
                 }
             } catch (UndefinedParameterException ex) {
@@ -101,7 +101,7 @@ public class DatasetPrinterManager extends DatabaseCaseUseSubManager {
                 List<String> idItemStrings = consoleParameters.getValues(PRINT_ITEM_RATINGS);
 
                 for (String idItemString : idItemStrings) {
-                    int idItem = Integer.parseInt(idItemString);
+                    long idItem = new Long(idItemString);
                     System.out.println(printItemRatings(datasetLoader, idItem));
                 }
             } catch (UndefinedParameterException ex) {
@@ -115,16 +115,16 @@ public class DatasetPrinterManager extends DatabaseCaseUseSubManager {
 
     }
 
-    public String printUserRatings(DatasetLoader datasetLoader, int idUser) throws RuntimeException {
+    public String printUserRatings(DatasetLoader datasetLoader, long idUser) throws RuntimeException {
         StringBuilder str = new StringBuilder();
         try {
 
             User user = datasetLoader.getUsersDataset().getUser(idUser);
-            Map<Integer, Rating> userRatings = datasetLoader.getRatingsDataset().getUserRatingsRated(idUser);
+            Map<Long, Rating> userRatings = datasetLoader.getRatingsDataset().getUserRatingsRated(idUser);
             str.append("==============================================================\n");
             str.append("User '").append(user.getName()).append("' (id=").append(idUser).append(") ratings size: ").append(userRatings.size()).append("\n");
-            for (Map.Entry<Integer, Rating> entry : userRatings.entrySet()) {
-                int idItem = entry.getKey();
+            for (Map.Entry<Long, Rating> entry : userRatings.entrySet()) {
+                long idItem = entry.getKey();
                 Rating rating = entry.getValue();
 
                 try {
@@ -142,16 +142,16 @@ public class DatasetPrinterManager extends DatabaseCaseUseSubManager {
         return str.toString();
     }
 
-    public String printItemRatings(DatasetLoader datasetLoader, int idItem) throws RuntimeException {
+    public String printItemRatings(DatasetLoader datasetLoader, long idItem) throws RuntimeException {
         StringBuilder str = new StringBuilder();
         try {
 
             Item item = datasetLoader.getContentDataset().getItem(idItem);
-            Map<Integer, Rating> userRatings = datasetLoader.getRatingsDataset().getItemRatingsRated(item.getId());
+            Map<Long, Rating> userRatings = datasetLoader.getRatingsDataset().getItemRatingsRated(item.getId());
             str.append("==============================================================").append("\n");
             str.append("User '").append(item.getName()).append("' (id=").append(idItem).append(") ratings size: ").append(userRatings.size()).append("\n");
-            for (Map.Entry<Integer, Rating> entry : userRatings.entrySet()) {
-                int idUser = entry.getKey();
+            for (Map.Entry<Long, Rating> entry : userRatings.entrySet()) {
+                long idUser = entry.getKey();
                 Rating rating = entry.getValue();
 
                 try {
@@ -170,12 +170,12 @@ public class DatasetPrinterManager extends DatabaseCaseUseSubManager {
     }
 
     public String printItemSet(DatasetLoader datasetLoader) throws CannotLoadContentDataset, RuntimeException {
-        TreeSet<Integer> items = new TreeSet<>(datasetLoader.getContentDataset().allIDs());
+        TreeSet<Long> items = new TreeSet<>(datasetLoader.getContentDataset().allIDs());
 
         StringBuilder str = new StringBuilder();
         str.append("==============================================================").append("\n");
         str.append("Item set size: ").append(items.size());
-        for (int idItem : items) {
+        for (long idItem : items) {
             try {
                 Item item = datasetLoader.getContentDataset().getItem(idItem);
                 str.append("\tidItem '").append(idItem).append("' with name ").append(item.getName()).append("\n");
@@ -192,10 +192,10 @@ public class DatasetPrinterManager extends DatabaseCaseUseSubManager {
 
         StringBuilder str = new StringBuilder();
 
-        TreeSet<Integer> users = new TreeSet<>(datasetLoader.getUsersDataset().allIDs());
+        TreeSet<Long> users = new TreeSet<>(datasetLoader.getUsersDataset().allIDs());
         str.append("==============================================================").append("\n");
         str.append("User set size: ").append(users.size());
-        for (int idUser : users) {
+        for (long idUser : users) {
             try {
                 User u = datasetLoader.getUsersDataset().get(idUser);
                 str.append("\tidUser '").append(idUser).append("' with name ").append(u.getName()).append("\n");
@@ -210,8 +210,8 @@ public class DatasetPrinterManager extends DatabaseCaseUseSubManager {
     }
 
     public String printRatingsTable(DatasetLoader datasetLoader) {
-        Collection<Integer> users = datasetLoader.getUsersDataset().allIDs();
-        Collection<Integer> items = datasetLoader.getContentDataset().allIDs();
+        Collection<Long> users = datasetLoader.getUsersDataset().allIDs();
+        Collection<Long> items = datasetLoader.getContentDataset().allIDs();
 
         StringBuilder str = new StringBuilder();
         if (!users.isEmpty() && !items.isEmpty()) {

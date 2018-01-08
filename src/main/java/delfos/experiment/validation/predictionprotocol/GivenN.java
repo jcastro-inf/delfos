@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -20,18 +20,19 @@ import delfos.common.Global;
 import delfos.common.exceptions.dataset.users.UserNotFound;
 import delfos.common.parameters.Parameter;
 import delfos.common.parameters.restriction.IntegerParameter;
+import delfos.dataset.basic.item.Item;
+import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
-import delfos.dataset.basic.rating.RatingsDataset;
+import delfos.dataset.basic.user.User;
 import delfos.rs.RecommenderSystemAdapter;
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.List;
 import java.util.Random;
 import java.util.Set;
 import java.util.TreeSet;
 
 /**
- * Implementa la validación de predicción que realiza una validación dadas N
- * valoraciones para el usuario que se predice
+ * Implementa la validación de predicción que realiza una validación dadas N valoraciones para el usuario que se predice
  *
  * @author jcastro-inf ( https://github.com/jcastro-inf )
  */
@@ -52,11 +53,10 @@ public class GivenN extends PredictionProtocol {
     }
 
     /**
-     * Constructor que asigna el n especificado en el parámetro <code>n</code>
-     * para que se use dicho número de valoraciones de cada usuario
+     * Constructor que asigna el n especificado en el parámetro <code>n</code> para que se use dicho número de
+     * valoraciones de cada usuario
      *
-     * @param n Cantidad de valoraciones que se usan en la predicción para un
-     * usuario
+     * @param n Cantidad de valoraciones que se usan en la predicción para un usuario
      */
     public GivenN(int n) {
         addParameter(GivenN.n);
@@ -64,42 +64,44 @@ public class GivenN extends PredictionProtocol {
     }
 
     /**
-     * Devuelve las valoraciones que se han de predecir en una lista
-     * independiente. Para un correcto uso de los resultados, se deben extraer
-     * del dataset de valoraciones que el sistema de recomendación usa todas las
+     * Devuelve las valoraciones que se han de predecir en una lista independiente. Para un correcto uso de los
+     * resultados, se deben extraer del dataset de valoraciones que el sistema de recomendación usa todas las
      * valoraciones que se van a predecir.
      *
-     * @param idUser
-     * @return Lista de listas con los elementos que se predicen. Cada lista
-     * representa una petición de recomendaciones, es decir, una llamada a
-     * {@link RecommenderSystemAdapter#recommendOnly(java.lang.Integer, java.util.Collection) }
+     * @param user
+     * @return Lista de listas con los elementos que se predicen. Cada lista representa una petición de recomendaciones,
+     * es decir, una llamada a la predicción
      * en la que la colección que se pasan son los elementos de la lista.
      * @throws UserNotFound
      */
     @Override
-    public Collection<Set<Integer>> getRecommendationRequests(RatingsDataset<? extends Rating> testRatingsDataset, int idUser) throws UserNotFound {
+    public <RatingType extends Rating> List<Set<Item>> getRecommendationRequests(
+            DatasetLoader<RatingType> trainingDatasetLoader,
+            DatasetLoader<RatingType> testDatasetLoader,
+            User user) throws UserNotFound {
+
         Random random = new Random(getSeedValue());
-        Integer[] itemsRated = testRatingsDataset.getUserRatingsRated(idUser).keySet().toArray(new Integer[0]);
+        Item[] itemsRated = testDatasetLoader.getRatingsDataset().getUserRatingsRated(user.getId()).values().toArray(new Item[0]);
         int nValue = (Integer) getParameterValue(n);
-        Set<Integer> dadosN = new TreeSet<>();
+        Set<Item> dadosN = new TreeSet<>();
 
         if (nValue > itemsRated.length) {
             Global.showWarning("Cannot apply " + GivenN.class.getName() + "\n");
-            Global.showWarning("cause: user '" + idUser + "' have less than " + nValue + " ratings");
+            Global.showWarning("cause: user '" + user.getId() + "' have less than " + nValue + " ratings");
         }
 
         while (dadosN.size() < nValue) {
             dadosN.add(itemsRated[random.nextInt(itemsRated.length)]);
         }
 
-        Set<Integer> predecir = new TreeSet<>();
-        for (int idItem : itemsRated) {
-            if (!dadosN.contains(idItem)) {
-                predecir.add(idItem);
+        Set<Item> predecir = new TreeSet<>();
+        for (Item item : itemsRated) {
+            if (!dadosN.contains(item)) {
+                predecir.add(item);
             }
         }
 
-        Collection<Set<Integer>> ret = new ArrayList<>(predecir.size());
+        List<Set<Item>> ret = new ArrayList<>(predecir.size());
         ret.add(predecir);
         return ret;
     }

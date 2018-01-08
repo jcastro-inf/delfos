@@ -19,6 +19,7 @@ package delfos.configuration.scopes;
 import delfos.Constants;
 import delfos.ERROR_CODES;
 import delfos.common.Global;
+import delfos.common.parameters.ParameterOwnerNotFoundException;
 import delfos.configuration.ConfigurationManager;
 import delfos.configuration.ConfigurationScope;
 import delfos.configureddatasets.ConfiguredDataset;
@@ -141,14 +142,18 @@ public class ConfiguredDatasetsScope extends ConfigurationScope {
                         ERROR_CODES.CANNOT_READ_CONFIGURED_DATASETS_FILE.exit(ex);
                     }
 
-                    DatasetLoader<? extends Rating> datasetLoader = DatasetLoaderXML.getDatasetLoader(datasetLoaderElement);
+                    try {
+                        DatasetLoader<? extends Rating> datasetLoader = DatasetLoaderXML.getDatasetLoader(datasetLoaderElement);
 
-                    if (Global.isVerboseAnnoying()) {
-                        Global.showInfoMessage("\tConfigured dataset '" + name + "' loaded.\n");
+                        if (Global.isVerboseAnnoying()) {
+                            Global.showInfoMessage("\tConfigured dataset '" + name + "' loaded.\n");
+                        }
+
+                        configuredDatasets.add(new ConfiguredDataset(name, description, datasetLoader));
+
+                    }catch (ParameterOwnerNotFoundException ex){
+                        Global.showWarning(ex.getMessage());
                     }
-
-                    configuredDatasets.add(new ConfiguredDataset(name, description, datasetLoader));
-
                 }
                 if (configuredDatasets.isEmpty()) {
                     Global.showWarning("No configured datasets found, check configuration file.");

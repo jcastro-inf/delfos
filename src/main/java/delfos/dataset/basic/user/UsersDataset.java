@@ -36,5 +36,5 @@ public interface UsersDataset extends CollectionOfEntitiesWithFeatures<User> {
      * @return
      * @throws delfos.common.exceptions.dataset.users.UserNotFound
      */
-    public User getUser(int idUser) throws UserNotFound;
+    public User getUser(long idUser) throws UserNotFound;
 }

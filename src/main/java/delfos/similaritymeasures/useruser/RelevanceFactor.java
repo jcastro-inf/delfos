@@ -51,7 +51,11 @@ public class RelevanceFactor extends SimilarityMeasureAdapter implements UserUse
     }
 
     @Override
-    public double similarity(DatasetLoader<? extends Rating> datasetLoader, int idUser1, int idUser2) throws UserNotFound, CouldNotComputeSimilarity {
+    public double similarity(
+            DatasetLoader<? extends Rating> datasetLoader,
+            long idUser1,
+            long idUser2)
+            throws UserNotFound, CouldNotComputeSimilarity {
 
         final int relevanceFactorValule = (Integer) getParameterValue(RELEVANCE_FACTOR);
 
@@ -59,16 +63,16 @@ public class RelevanceFactor extends SimilarityMeasureAdapter implements UserUse
             return 1;
         }
 
-        Collection<Integer> user1Ratings = datasetLoader.getRatingsDataset().getUserRated(idUser1);
-        Collection<Integer> user2Ratings = datasetLoader.getRatingsDataset().getUserRated(idUser2);
+        Collection<Long> user1Ratings = datasetLoader.getRatingsDataset().getUserRated(idUser1);
+        Collection<Long> user2Ratings = datasetLoader.getRatingsDataset().getUserRated(idUser2);
 
-        Set<Integer> intersection = new TreeSet<>(user1Ratings);
+        Set<Long> intersection = new TreeSet<>(user1Ratings);
         intersection.retainAll(user2Ratings);
 
         return getSimilarity(intersection);
     }
 
-    public double getSimilarity(Set<Integer> intersection) {
+    public double getSimilarity(Set<Long> intersection) {
 
         final int relevanceFactorValule = (Integer) getParameterValue(RELEVANCE_FACTOR);
         double similarity;

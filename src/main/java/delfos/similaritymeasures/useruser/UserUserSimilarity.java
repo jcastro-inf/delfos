@@ -37,7 +37,7 @@ public interface UserUserSimilarity extends SimilarityMeasure {
      * @return
      */
     @Deprecated
-    public double similarity(DatasetLoader<? extends Rating> datasetLoader, int idUser1, int idUser2);
+    public double similarity(DatasetLoader<? extends Rating> datasetLoader, long idUser1, long idUser2);
 
     public double similarity(DatasetLoader<? extends Rating> datasetLoader, User user1, User user2);
 }

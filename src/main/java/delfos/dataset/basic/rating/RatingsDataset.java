@@ -41,14 +41,14 @@ public interface RatingsDataset<RatingType extends Rating> extends Iterable<Rati
      * @throws UserNotFound Si el usuario no existe.
      * @throws ItemNotFound Si el producto no existe.
      */
-    public RatingType getRating(int idUser, int idItem) throws UserNotFound, ItemNotFound;
+    public RatingType getRating(long idUser, long idItem) throws UserNotFound, ItemNotFound;
 
     /**
      * Obtiene el conjunto de los id de todos los usuarios que tienen valoraciones en el dataset
      *
      * @return Conjunto de id de usuarios
      */
-    public Set<Integer> allUsers();
+    public Set<Long> allUsers();
 
     /**
      * Implementación por defecto del método que devuelve todos los items del dataset. En datasets con un gran número de
@@ -57,12 +57,12 @@ public interface RatingsDataset<RatingType extends Rating> extends Iterable<Rati
      *
      * <p>
      * <p>
-     * Para obtener todos los productos se debe usar el método {@link ContentDataset#allItems()} y considerar la
+     * Para obtener todos los productos se debe usar el método ContentDataset.allItems() y considerar la
      * posibilidad de que un producto no tenga valoraciones.
      *
      * @return Conjunto con los id de los items que han sido valorados
      */
-    public Set<Integer> allRatedItems();
+    public Set<Long> allRatedItems();
 
     /**
      * Devuelve las peliculas valoradas por un usuario
@@ -72,7 +72,7 @@ public interface RatingsDataset<RatingType extends Rating> extends Iterable<Rati
      *
      * @throws UserNotFound Si el usuario no existe.
      */
-    public Set<Integer> getUserRated(Integer idUser) throws UserNotFound;
+    public Set<Long> getUserRated(long idUser) throws UserNotFound;
 
     /**
      * Devuelve los usuarios que han valorado el item
@@ -82,7 +82,7 @@ public interface RatingsDataset<RatingType extends Rating> extends Iterable<Rati
      *
      * @throws ItemNotFound Si el producto no existe.
      */
-    public Set<Integer> getItemRated(Integer idItem) throws ItemNotFound;
+    public Set<Long> getItemRated(long idItem) throws ItemNotFound;
 
     /**
      * Devuelve las valoraciones de un usuario, indexadas por id de producto.
@@ -92,7 +92,7 @@ public interface RatingsDataset<RatingType extends Rating> extends Iterable<Rati
      *
      * @throws UserNotFound Si el usuario no existe.
      */
-    public Map<Integer, RatingType> getUserRatingsRated(Integer idUser) throws UserNotFound;
+    public Map<Long, RatingType> getUserRatingsRated(long idUser) throws UserNotFound;
 
     /**
      * Devuelve las valoraciones sobre un producto, indexadas por id de usuario.
@@ -102,7 +102,7 @@ public interface RatingsDataset<RatingType extends Rating> extends Iterable<Rati
      *
      * @throws ItemNotFound Si el producto no existe.
      */
-    public Map<Integer, RatingType> getItemRatingsRated(Integer idItem) throws ItemNotFound;
+    public Map<Long, RatingType> getItemRatingsRated(long idItem) throws ItemNotFound;
 
     /**
      * Devuelve el rating medio del producto cuyo id se especifica.
@@ -112,7 +112,7 @@ public interface RatingsDataset<RatingType extends Rating> extends Iterable<Rati
      *
      * @throws ItemNotFound Si el producto no existe.
      */
-    public double getMeanRatingItem(int idItem) throws ItemNotFound;
+    public double getMeanRatingItem(long idItem) throws ItemNotFound;
 
     /**
      * Devuelve el la valoración media que un usuario ha dado a los productos.
@@ -122,7 +122,7 @@ public interface RatingsDataset<RatingType extends Rating> extends Iterable<Rati
      *
      * @throws UserNotFound Si el usuario no existe.
      */
-    public double getMeanRatingUser(int idUser) throws UserNotFound;
+    public double getMeanRatingUser(long idUser) throws UserNotFound;
 
     /**
      * Devuelve el dominio de valoración de este dataset.
@@ -133,12 +133,12 @@ public interface RatingsDataset<RatingType extends Rating> extends Iterable<Rati
 
     /**
      * Devuelve el número de valoraciones totales que tiene almacenado el dataset <br> NOTA: Por defecto se calcula
-     * sumando el método {@link RatingsDataset#sizeOfUserRatings(int)} por lo que puede ser necesario sobreescribir el
+     * sumando el método {@link RatingsDataset#sizeOfUserRatings(long)} por lo que puede ser necesario sobreescribir el
      * método para una implementación más eficiente.
      *
      * @return Número de valoraciones que todos los usuarios han hecho sobre los productos.
      */
-    public int getNumRatings();
+    public long getNumRatings();
 
     /**
      * Devuelve el número de valoraciones que un usuario ha hecho
@@ -148,7 +148,7 @@ public interface RatingsDataset<RatingType extends Rating> extends Iterable<Rati
      *
      * @throws UserNotFound Si el usuario no existe.
      */
-    public int sizeOfUserRatings(int idUser) throws UserNotFound;
+    public long sizeOfUserRatings(long idUser) throws UserNotFound;
 
     /**
      * Devuelve el número de valoraciones que un producto tiemne
@@ -158,7 +158,7 @@ public interface RatingsDataset<RatingType extends Rating> extends Iterable<Rati
      *
      * @throws ItemNotFound Si el producto no existe.
      */
-    public int sizeOfItemRatings(int idItem) throws ItemNotFound;
+    public long sizeOfItemRatings(long idItem) throws ItemNotFound;
 
     /**
      * Comprueba si un usuario tiene valoraciones.
@@ -167,7 +167,7 @@ public interface RatingsDataset<RatingType extends Rating> extends Iterable<Rati
      * @return True si tiene valoraciones.
      * @throws UserNotFound Si no se encuentra el usuario especificado.
      */
-    public boolean isRatedUser(int idUser) throws UserNotFound;
+    public boolean isRatedUser(long idUser) throws UserNotFound;
 
     /**
      * Comprueba si un producto tiene valoraciones.
@@ -176,7 +176,7 @@ public interface RatingsDataset<RatingType extends Rating> extends Iterable<Rati
      * @return True si tiene valoraciones.
      * @throws ItemNotFound Si no se encuentra el producto especificado.
      */
-    public boolean isRatedItem(int idItem) throws ItemNotFound;
+    public boolean isRatedItem(long idItem) throws ItemNotFound;
 
     /**
      * Devuelve el valor medio de todas las valoraciones del conjunto.

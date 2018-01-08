@@ -20,9 +20,11 @@ import delfos.Constants;
 import delfos.ERROR_CODES;
 import delfos.common.FileUtilities;
 import delfos.common.Global;
+import delfos.common.parameters.ParameterOwner;
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RelevanceCriteria;
+import delfos.experiment.SeedHolder;
 import delfos.experiment.casestudy.CaseStudy;
 import delfos.experiment.casestudy.CaseStudyConfiguration;
 import delfos.experiment.casestudy.CaseStudyResults;
@@ -37,6 +39,7 @@ import delfos.io.xml.validationtechnique.ValidationTechniqueXML;
 import delfos.results.MeasureResult;
 import delfos.results.evaluationmeasures.EvaluationMeasure;
 import delfos.rs.GenericRecommenderSystem;
+import delfos.rs.RecommenderSystem;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -45,6 +48,7 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.function.Predicate;
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
@@ -66,39 +70,56 @@ public class CaseStudyXML {
     public static final String AGGREGATE_VALUES_ELEMENT_NAME = "Aggregate_values";
     public static final String EXECUTIONS_RESULTS_ELEMENT_NAME = "Executions";
 
-    private static Element getResultsElement(CaseStudy c) {
+    public static Predicate<File> RESULTS_FILES = (file) -> {
+        try {
+            CaseStudyResults loadCaseResults = loadCaseResults(file);
+            return true;
+        } catch (JDOMException ex) {
+            return false;
+        } catch (IOException ex) {
+            ERROR_CODES.CANNOT_READ_FILE.exit(ex);
+            return false;
+        }
+    };
 
-        Element ejecuciones = new Element(EXECUTIONS_RESULTS_ELEMENT_NAME);
-        Element ejecucion;
-        int numExecutions = c.getNumExecutions();
-        int numSplits = c.getNumberOfSplits();
-        for (int ex = 0; ex < numExecutions; ex++) {
-            ejecucion = new Element("Execution");
-            for (int nSplit = 0; nSplit < numSplits; nSplit++) {
-                Element split = new Element("Split");
-                for (EvaluationMeasure em : c.getEvaluationMeasures()) {
+    private static <RecommendationModel extends Object, RatingType extends Rating> Element getResultsElement(
+            CaseStudy<RecommendationModel, RatingType> caseStudy) {
 
-                    MeasureResult mr = c.getMeasureResult(em, ex, nSplit);
-                    split.addContent((Element) mr.getXMLElement().clone());
+        Element executionsElement = new Element(EXECUTIONS_RESULTS_ELEMENT_NAME);
+        Element executionElement;
+        int numExecutions = caseStudy.getNumExecutions();
+        int numSplits = caseStudy.getNumSplits();
+        for (int execution = 0; execution < numExecutions; execution++) {
+            executionElement = new Element("Execution");
+            for (int split = 0; split < numSplits; split++) {
+                Element splitElement = new Element("Split");
+                for (EvaluationMeasure evaluationMeasure : caseStudy.getEvaluationMeasures()) {
+
+                    MeasureResult measureResult = caseStudy.getMeasureResult(evaluationMeasure, execution, split);
+                    splitElement.addContent((Element) measureResult.getXMLElement().clone());
+
                 }
-                ejecucion.addContent(split);
+                executionElement.addContent(splitElement);
             }
-            ejecuciones.addContent(ejecucion);
+            executionsElement.addContent(executionElement);
         }
-        return ejecuciones;
+        return executionsElement;
     }
 
-    private static Element getAggregatedResultsElement(CaseStudy c) {
-        Element mediaMedidas = new Element(AGGREGATE_VALUES_ELEMENT_NAME);
-        for (EvaluationMeasure em : c.getEvaluationMeasures()) {
-            Element element = c.getMeasureResult(em).getXMLElement();
-            mediaMedidas.addContent(element);
+    private static <RecommendationModel extends Object, RatingType extends Rating>
+            Element getAggregatedResultsElement(
+                    CaseStudy<RecommendationModel, RatingType> caseStudy) {
+
+        Element aggregatedResultsElement = new Element(AGGREGATE_VALUES_ELEMENT_NAME);
+        for (EvaluationMeasure evaluationMeasure : caseStudy.getEvaluationMeasures()) {
+            Element evaluationMesureElement = caseStudy.getMeasureResult(evaluationMeasure).getXMLElement();
+            aggregatedResultsElement.addContent(evaluationMesureElement);
         }
 
-        return mediaMedidas;
+        return aggregatedResultsElement;
     }
 
-    public synchronized static void caseStudyToXMLFile(CaseStudy caseStudy, File file) {
+    public synchronized static <RecommendationModel extends Object, RatingType extends Rating> void caseStudyToXMLFile(CaseStudy caseStudy, File file) {
         if (!caseStudy.isFinished()) {
             throw new UnsupportedOperationException("No se ha ejecutado el caso de uso todavía");
         }
@@ -132,7 +153,7 @@ public class CaseStudyXML {
     public static final String SEED_ATTRIBUTE_NAME = "seed";
     public static final String NUM_EXEC_ATTRIBUTE_NAME = "numExec";
 
-    public static void saveCaseResults(CaseStudy caseStudy) {
+    public static <RecommendationModel extends Object, RatingType extends Rating> void saveCaseResults(CaseStudy caseStudy) {
         Date date = new Date();
         String dateBasedName = "aux";
         try {
@@ -149,6 +170,7 @@ public class CaseStudyXML {
 
         File tmp = new File(Constants.getTempDirectory().getAbsolutePath() + File.separator + dateBasedName);
 
+        FileUtilities.createDirectoriesForFileIfNotExist(tmp);
         CaseStudyXML.caseStudyToXMLFile(caseStudy, tmp);
     }
 
@@ -182,7 +204,7 @@ public class CaseStudyXML {
                 relevanceCriteria);
     }
 
-    public static String getDefaultFileName(CaseStudy caseStudy) {
+    public static <RecommendationModel extends Object, RatingType extends Rating> String getDefaultFileName(CaseStudy caseStudy) {
         Date date = new Date();
         String dateBasedName = "aux";
         try {
@@ -201,7 +223,7 @@ public class CaseStudyXML {
         return f.getAbsolutePath();
     }
 
-    public synchronized static void caseStudyToXMLFile(CaseStudy caseStudy, String descriptiveName, File f) {
+    public synchronized static <RecommendationModel extends Object, RatingType extends Rating> void caseStudyToXMLFile(CaseStudy caseStudy, String descriptiveName, File f) {
         if (!caseStudy.isFinished()) {
             throw new UnsupportedOperationException("No se ha ejecutado el caso de uso todavía");
         }
@@ -229,21 +251,41 @@ public class CaseStudyXML {
         }
     }
 
-    public static void saveCaseDescription(CaseStudy caseStudy, String file) {
+    public static <RecommendationModel extends Object, RatingType extends Rating>
+            void saveCaseDescription(
+                    CaseStudy caseStudy,
+                    String file) {
+
         CaseStudyXML.caseStudyToXMLFile_onlyDescription(caseStudy, new File(file));
     }
 
-    public static void saveCaseResults(CaseStudy caseStudy, String descriptivePrefix, String file) {
-        File fileFile = FileUtilities.addPrefix(new File(file), descriptivePrefix);
+    public static <RecommendationModel extends Object, RatingType extends Rating>
+            void saveCaseResults(
+                    CaseStudy<RecommendationModel, RatingType> caseStudy,
+                    File file) {
+
         if (Constants.isPrintFullXML()) {
-            caseStudyToXMLFile(caseStudy, "", FileUtilities.addSufix(fileFile, "_FULL"));
+            caseStudyToXMLFile(caseStudy, "", FileUtilities.addSufix(file, "_FULL"));
         }
 
-        File aggregateFileName = FileUtilities.addSufix(fileFile, "_AGGR");
-        caseStudyToXMLFile_onlyAggregate(caseStudy, descriptivePrefix, aggregateFileName);
+        if (file.isDirectory()) {
+            File directory = file;
+
+            FileUtilities.createDirectoryPathIfNotExists(directory);
+            String fileName = getCaseStudyFileName(caseStudy);
+            file = new File(directory.getPath() + File.separator + fileName + ".xml");
+        } else {
+            FileUtilities.createDirectoriesForFileIfNotExist(file);
+        }
+
+        File aggregateFileName = FileUtilities.addSufix(file, "_AGGR");
+        caseStudyToXMLFile_onlyAggregate(caseStudy, aggregateFileName);
     }
 
-    private static void caseStudyToXMLFile_onlyDescription(CaseStudy caseStudy, File file) {
+    private static <RecommendationModel extends Object, RatingType extends Rating>
+            void caseStudyToXMLFile_onlyDescription(
+                    CaseStudy caseStudy,
+                    File file) {
 
         if (caseStudy.isFinished()) {
             throw new IllegalArgumentException("Ya se ha ejecutado el caso de estudio!");
@@ -260,12 +302,11 @@ public class CaseStudyXML {
         casoDeUso.addContent(RelevanceCriteriaXML.getElement(caseStudy.getRelevanceCriteria()));
         casoDeUso.addContent(DatasetLoaderXML.getElement(caseStudy.getDatasetLoader()));
 
-        //casoDeUso.addContent(getResultsElement(caseStudy));
-        //casoDeUso.addContent(getAggregatedResultsElement(caseStudy));
         doc.addContent(casoDeUso);
 
         XMLOutputter outputter = new XMLOutputter(Constants.getXMLFormat());
 
+        FileUtilities.createDirectoriesForFile(file);
         try (FileWriter fileWriter = new FileWriter(file)) {
             outputter.output(doc, fileWriter);
         } catch (IOException ex) {
@@ -273,7 +314,7 @@ public class CaseStudyXML {
         }
     }
 
-    private static void caseStudyToXMLFile_onlyAggregate(CaseStudy caseStudy, String descriptivePrefix, File file) {
+    private static void caseStudyToXMLFile_onlyAggregate(CaseStudy caseStudy, File file) {
         if (!caseStudy.isFinished()) {
             throw new UnsupportedOperationException("No se ha ejecutado el caso de uso todavía");
         }
@@ -297,6 +338,8 @@ public class CaseStudyXML {
 
         doc.addContent(casoDeUso);
 
+        FileUtilities.createDirectoriesForFileIfNotExist(file);
+
         XMLOutputter outputter = new XMLOutputter(Constants.getXMLFormat());
         try (FileWriter fileWriter = new FileWriter(file)) {
             outputter.output(doc, fileWriter);
@@ -305,39 +348,69 @@ public class CaseStudyXML {
         }
     }
 
+    public static <RecommendationModel extends Object, RatingType extends Rating>
+            CaseStudyResults<RecommendationModel, RatingType> loadCaseResults(
+                    File file,
+                    Class<RecommendationModel> recommendationModelClass,
+                    Class<RatingType> ratingTypeClass
+            ) throws JDOMException, IOException {
+
+        return (CaseStudyResults<RecommendationModel, RatingType>) loadCaseResults(file);
+    }
+
     /**
      * Carga un caso de estudio desde un archivo XML
      *
+     * @param <RecommendationModel>
+     * @param <RatingType>
      * @param file Archivo XML del que se carga la configuración del caso de estudio.
      * @return
      * @throws org.jdom2.JDOMException
      * @throws java.io.IOException
      */
-    public static CaseStudyResults loadCaseResults(File file) throws JDOMException, IOException {
+    public static <RecommendationModel extends Object, RatingType extends Rating> CaseStudyResults<RecommendationModel, RatingType> loadCaseResults(File file) throws JDOMException, IOException {
 
         SAXBuilder builder = new SAXBuilder();
         Document doc = builder.build(file);
 
-        Element caseStudy = doc.getRootElement();
-        if (!caseStudy.getName().equals(CASE_ROOT_ELEMENT_NAME)) {
+        Element caseStudyElement = doc.getRootElement();
+        if (!caseStudyElement.getName().equals(CASE_ROOT_ELEMENT_NAME)) {
             throw new IllegalArgumentException("The XML does not contains a Case Study.");
         }
-        GenericRecommenderSystem<Object> recommenderSystem = RecommenderSystemXML.getRecommenderSystem(caseStudy.getChild(RecommenderSystemXML.ELEMENT_NAME));
-        ValidationTechnique validationTechnique = ValidationTechniqueXML.getValidationTechnique(caseStudy.getChild(ValidationTechniqueXML.ELEMENT_NAME));
-        PredictionProtocol predictionProtocol = PredictionProtocolXML.getPredictionProtocol(caseStudy.getChild(PredictionProtocolXML.ELEMENT_NAME));
-        DatasetLoader<? extends Rating> datasetLoader = DatasetLoaderXML.getDatasetLoader(caseStudy.getChild(DatasetLoaderXML.ELEMENT_NAME));
+        RecommenderSystem<? extends Object> recommenderSystem = (RecommenderSystem<? extends Object>) RecommenderSystemXML
+                .getRecommenderSystem(caseStudyElement.getChild(RecommenderSystemXML.ELEMENT_NAME));
 
-        EvaluationMeasuresResults aggregatedElement = getAggregateEvaluationMeasures(caseStudy.getChild("Aggregate_values"));
+        DatasetLoader<? extends Rating> datasetLoader = DatasetLoaderXML
+                .getDatasetLoader(caseStudyElement.getChild(DatasetLoaderXML.ELEMENT_NAME));
 
-        return new CaseStudyResults(
+        ValidationTechnique validationTechnique = ValidationTechniqueXML
+                .getValidationTechnique(caseStudyElement.getChild(ValidationTechniqueXML.ELEMENT_NAME));
+
+        PredictionProtocol predictionProtocol = PredictionProtocolXML
+                .getPredictionProtocol(caseStudyElement.getChild(PredictionProtocolXML.ELEMENT_NAME));
+
+        RelevanceCriteria relevanceCriteria = RelevanceCriteriaXML
+                .getRelevanceCriteria(caseStudyElement.getChild(RelevanceCriteriaXML.ELEMENT_NAME));
+
+        Map<EvaluationMeasure, MeasureResult> evaluationMeasuresResults = getEvaluationMeasures(caseStudyElement);
+
+        long seed = Long.parseLong(caseStudyElement.getAttributeValue(SeedHolder.SEED.getName()));
+        int numExecutions = Integer.parseInt(caseStudyElement.getAttributeValue(NUM_EXEC_ATTRIBUTE_NAME));
+        String caseStudyAlias = caseStudyElement.getAttributeValue(ParameterOwner.ALIAS.getName());
+
+        CaseStudy caseStudy = new CaseStudy(
                 recommenderSystem,
-                datasetLoader,
-                validationTechnique,
+                datasetLoader, validationTechnique,
                 predictionProtocol,
-                aggregatedElement.evaluationMeasuresResults,
-                aggregatedElement.buildTime,
-                aggregatedElement.recommendationTime);
+                relevanceCriteria,
+                evaluationMeasuresResults.keySet(),
+                numExecutions);
 
+        caseStudy.setAlias(caseStudyAlias);
+        caseStudy.setSeedValue(seed);
+        caseStudy.setAggregateResults(evaluationMeasuresResults);
+
+        return new CaseStudyResults(caseStudy);
     }
 
     static class EvaluationMeasuresResults {
@@ -373,12 +446,43 @@ public class CaseStudyXML {
             double measureValue = new Double(valueString);
 
             if (evaluationMeasure == null) {
-                throw new IllegalStateException("Evaluation measure cannot be null.");
+                IllegalStateException ex = new IllegalStateException("Evaluation measure '" + evaluationMeasureName + "' not in factory.");
+                Global.showError(ex);
+            } else {
+                ret.put(evaluationMeasure, measureValue);
             }
-
-            ret.put(evaluationMeasure, measureValue);
         }
 
         return new EvaluationMeasuresResults(ret, buildTime, recommendationTime);
+    }
+
+    private static Map<EvaluationMeasure, MeasureResult> getEvaluationMeasures(Element caseStudy) {
+
+        Map<EvaluationMeasure, MeasureResult> evaluationMeasuresResults = new TreeMap<>();
+
+        Element aggregateValues = caseStudy.getChild(AGGREGATE_VALUES_ELEMENT_NAME);
+
+        if (aggregateValues == null) {
+            throw new IllegalStateException("Unable to load a case study description only, the XML must have results details.");
+        }
+
+        for (Element evaluationMeasureResultElement : aggregateValues.getChildren()) {
+            String name = evaluationMeasureResultElement.getName();
+
+            EvaluationMeasure evaluationMeasure = EvaluationMeasuresFactory.getInstance().getClassByName(name);
+            if (evaluationMeasure == null) {
+                throw new IllegalStateException("The group evaluation measure '" + name + "' does not exists in delfos' factory");
+            } else {
+                evaluationMeasuresResults.put(evaluationMeasure, evaluationMeasure.getEvaluationMeasureResultFromXML(evaluationMeasureResultElement));
+            }
+        }
+
+        return evaluationMeasuresResults;
+    }
+
+    public static String getCaseStudyFileName(CaseStudy caseStudy) {
+        return caseStudy.getAlias()
+                + "_" + SeedHolder.SEED.getName() + "=" + caseStudy.getSeedValue()
+                + "_" + CaseStudy.NUM_EXECUTIONS.getName() + "=" + caseStudy.getNumExecutions();
     }
 }

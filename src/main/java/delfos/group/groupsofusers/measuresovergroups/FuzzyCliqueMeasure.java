@@ -113,7 +113,7 @@ public class FuzzyCliqueMeasure extends GroupMeasureAdapter {
     public double getMeasure(DatasetLoader<? extends Rating> datasetLoader, GroupOfUsers group) throws CannotLoadRatingsDataset {
         checkRestrictions();
 
-        WeightedGraph<Integer> trustNetwork = getWeightedGraphCalculation().computeTrustValues(datasetLoader);
+        WeightedGraph<Long> trustNetwork = getWeightedGraphCalculation().computeTrustValues(datasetLoader);
 
         if (Global.isVerboseAnnoying()) {
             trustNetwork.printTable(System.out);
@@ -121,8 +121,8 @@ public class FuzzyCliqueMeasure extends GroupMeasureAdapter {
 
         double valueOfC1 = 1;
         double numNodos = trustNetwork.allNodes().size();
-        for (int x_i : group) {
-            for (int x_j : group) {
+        for (long x_i : group) {
+            for (long x_j : group) {
 
                 //No se tiene en cuenta la conexión consigo mismo.
                 if (x_i == x_j) {
@@ -147,8 +147,8 @@ public class FuzzyCliqueMeasure extends GroupMeasureAdapter {
         }
 
         double maxInnerValueOfC2 = 0;
-        for (int x : group) {
-            for (int z : trustNetwork.allNodes()) {
+        for (long x : group) {
+            for (long z : trustNetwork.allNodes()) {
                 if (group.contains(z)) {
                     continue;
                 }

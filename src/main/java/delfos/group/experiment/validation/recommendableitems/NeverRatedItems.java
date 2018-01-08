@@ -37,10 +37,10 @@ import delfos.group.groupsofusers.GroupOfUsers;
 public class NeverRatedItems extends RecomendableItemTechnique {
 
     @Override
-    public Collection<Integer> getRecommendableItems(GroupOfUsers groupOfUsers, RatingsDataset<? extends Rating> ratingsDataset, ContentDataset contentDataset) {
-        Set<Integer> ret = new TreeSet<Integer>(contentDataset.allIDs());
+    public Collection<Long> getRecommendableItems(GroupOfUsers groupOfUsers, RatingsDataset<? extends Rating> ratingsDataset, ContentDataset contentDataset) {
+        Set<Long> ret = new TreeSet<Long>(contentDataset.allIDs());
 
-        for (int idUser : groupOfUsers.getIdMembers()) {
+        for (Long idUser : groupOfUsers.getIdMembers()) {
             try {
                 ret.removeAll(ratingsDataset.getUserRated(idUser));
             } catch (UserNotFound ex) {

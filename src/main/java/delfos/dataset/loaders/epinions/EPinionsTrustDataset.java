@@ -42,13 +42,13 @@ public class EPinionsTrustDataset implements TrustDataset<EPinionsTrustStatement
 
     private final TrustDatasetAbstract<EPinionsTrustStatement> trustDataset;
 
-    private final DoubleMapping<Long, Integer> usersIndex;
+    private final DoubleMapping<Long, Long> usersIndex;
 
     public EPinionsTrustDataset(File trustFile) throws IOException {
-        this(trustFile, new DoubleMapping<Long, Integer>());
+        this(trustFile, new DoubleMapping<Long, Long>());
     }
 
-    public EPinionsTrustDataset(File trustFile, DoubleMapping<Long, Integer> usersIndex) throws IOException {
+    public EPinionsTrustDataset(File trustFile, DoubleMapping<Long, Long> usersIndex) throws IOException {
 
         this.usersIndex = usersIndex;
 
@@ -65,11 +65,11 @@ public class EPinionsTrustDataset implements TrustDataset<EPinionsTrustStatement
 
             long MY_ID = new Long(columns[0]);
             if (!usersIndex.containsType1Value(MY_ID)) {
-                usersIndex.add(MY_ID, usersIndex.size() + 1);
+                usersIndex.add(MY_ID, (long) (usersIndex.size() + 1));
             }
             long OTHER_ID = new Long(columns[1]);
             if (!usersIndex.containsType1Value(OTHER_ID)) {
-                usersIndex.add(OTHER_ID, usersIndex.size() + 1);
+                usersIndex.add(OTHER_ID, (long) (usersIndex.size() + 1));
             }
 
             double VALUE = new Double(columns[2]);
@@ -83,8 +83,8 @@ public class EPinionsTrustDataset implements TrustDataset<EPinionsTrustStatement
                 throw new IOException(ex);
             }
 
-            int idUserSource = usersIndex.typeOneToTypeTwo(MY_ID);
-            int idUserDestiny = usersIndex.typeOneToTypeTwo(OTHER_ID);
+            long idUserSource = usersIndex.typeOneToTypeTwo(MY_ID);
+            long idUserDestiny = usersIndex.typeOneToTypeTwo(OTHER_ID);
 
             trustStatements.add(new EPinionsTrustStatement(idUserSource, idUserDestiny, VALUE, CREATION));
 
@@ -100,12 +100,12 @@ public class EPinionsTrustDataset implements TrustDataset<EPinionsTrustStatement
     }
 
     @Override
-    public Collection<? extends Integer> allUsers() {
+    public Collection<? extends Long> allUsers() {
         return trustDataset.allUsers();
     }
 
     @Override
-    public Collection<EPinionsTrustStatement> getUserTrustStatements(int idUser) throws UserNotFound {
+    public Collection<EPinionsTrustStatement> getUserTrustStatements(long idUser) throws UserNotFound {
         return trustDataset.getUserTrustStatements(idUser);
     }
 }

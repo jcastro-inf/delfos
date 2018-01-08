@@ -28,7 +28,7 @@ import java.util.TreeMap;
  *
  * @version 14-oct-2013
  */
-public class TfIdfCBRSModel extends TreeMap<Integer, SparseVector> {
+public class TfIdfCBRSModel extends TreeMap<Long, SparseVector> {
 
     private static final long serialVersionUID = -3387516993124229948L;
 

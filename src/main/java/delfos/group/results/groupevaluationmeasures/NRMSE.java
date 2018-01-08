@@ -37,13 +37,10 @@ import java.util.TreeMap;
  * dió para el producto, si lo ha valorado.
  *
  * <p>
- * Es una extensión de la medida de evaluación {@link delfos.Results.EvaluationMeasures.RatingPrediction.NRMSE} para
+ * Es una extensión de la medida de evaluación NRMSE para
  * recomendaciones individuales.
  *
  * @author jcastro-inf ( https://github.com/jcastro-inf )
- *
- * @version 19-Febrero-2014
- * @see delfos.Results.EvaluationMeasures.RatingPrediction.NMAE
  */
 public class NRMSE extends GroupEvaluationMeasure {
 
@@ -60,8 +57,8 @@ public class NRMSE extends GroupEvaluationMeasure {
                     .getGroupOutput(groupOfUsers)
                     .getRecommendations().getRecommendations();
 
-            Map<Integer, Map<Integer, ? extends Rating>> groupTrueRatings = new TreeMap<>();
-            for (int idUser : groupOfUsers.getIdMembers()) {
+            Map<Long, Map<Long, ? extends Rating>> groupTrueRatings = new TreeMap<>();
+            for (long idUser : groupOfUsers.getIdMembers()) {
                 try {
                     groupTrueRatings.put(idUser, testDatasetLoader.getRatingsDataset().getUserRatingsRated(idUser));
                 } catch (UserNotFound ex) {
@@ -73,8 +70,8 @@ public class NRMSE extends GroupEvaluationMeasure {
                 if (Double.isNaN(recommendation.getPreference().doubleValue())) {
                     continue;
                 }
-                int idItem = recommendation.getIdItem();
-                for (int idUser : groupOfUsers.getIdMembers()) {
+                long idItem = recommendation.getIdItem();
+                for (long idUser : groupOfUsers.getIdMembers()) {
                     if (groupTrueRatings.get(idUser).containsKey(idItem)) {
                         double trueRating = groupTrueRatings.get(idUser).get(idItem).getRatingValue().doubleValue();
                         double predictedRating = recommendation.getPreference().doubleValue();

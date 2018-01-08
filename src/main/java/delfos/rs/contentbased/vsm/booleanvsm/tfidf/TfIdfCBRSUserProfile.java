@@ -40,7 +40,7 @@ public class TfIdfCBRSUserProfile implements BooleanUserProfile {
     /**
      * Id del usuario al que se refiere este perfil.
      */
-    private final int _idUser;
+    private final long _idUser;
     /**
      * Valor del perfil para cada valor de cada característica.
      */
@@ -60,7 +60,7 @@ public class TfIdfCBRSUserProfile implements BooleanUserProfile {
      * @param userProfileWeights Importancia de cada una de los características
      * para el usuario.
      */
-    public TfIdfCBRSUserProfile(int idUser, Map<Feature, Map<Object, Double>> userProfileValues, Map<Feature, Map<Object, Double>> userProfileWeights) {
+    public TfIdfCBRSUserProfile(long idUser, Map<Feature, Map<Object, Double>> userProfileValues, Map<Feature, Map<Object, Double>> userProfileWeights) {
         this._idUser = idUser;
         this._values = userProfileValues;
         this._weights = userProfileWeights;
@@ -105,7 +105,7 @@ public class TfIdfCBRSUserProfile implements BooleanUserProfile {
     }
 
     @Override
-    public int getId() {
+    public long getId() {
         return _idUser;
     }
 

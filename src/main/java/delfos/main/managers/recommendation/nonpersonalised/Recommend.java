@@ -75,7 +75,7 @@ public class Recommend extends CaseUseSubManager {
         User user;
         if (consoleParameters.isParameterDefined(SingleUserRecommendation.TARGET_USER)) {
             String idUser = consoleParameters.getValue(SingleUserRecommendation.TARGET_USER);
-            user = new User(Integer.parseInt(idUser));
+            user = new User(new Long(idUser));
         } else {
             user = User.ANONYMOUS_USER;
         }
@@ -102,7 +102,7 @@ public class Recommend extends CaseUseSubManager {
             ERROR_CODES.FAILURE_IN_PERSISTENCE.exit(ex);
             throw new IllegalStateException(ex);
         }
-        Collection<Integer> candidateItems;
+        Collection<Long> candidateItems;
         try {
             candidateItems = rsc.recommendationCandidatesSelector.candidateItems(rsc.datasetLoader, user).stream().map(item -> item.getId()).collect(Collectors.toSet());
         } catch (UserNotFound ex) {

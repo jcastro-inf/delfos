@@ -36,12 +36,12 @@ public class FuzzyCliqueMeasureTest {
         WeightedGraph trustNetwork = implicitTrustComputation.computeTrustValues(datasetLoader, ratingsDataset.allUsers());
         FuzzyCliqueMeasure fuzzyClique = new FuzzyCliqueMeasure();
 
-        for (int user1 : ratingsDataset.allUsers()) {
-            for (int user2 : ratingsDataset.allUsers()) {
+        for (long user1 : ratingsDataset.allUsers()) {
+            for (long user2 : ratingsDataset.allUsers()) {
                 if (user1 >= user2) {
                     continue;
                 }
-                for (int user3 : ratingsDataset.allUsers()) {
+                for (long user3 : ratingsDataset.allUsers()) {
                     if (user2 >= user3) {
                         continue;
                     }

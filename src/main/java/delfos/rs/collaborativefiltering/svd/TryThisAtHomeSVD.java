@@ -36,15 +36,13 @@ import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RatingsDataset;
 import delfos.experiment.SeedHolder;
 import delfos.rs.collaborativefiltering.CollaborativeRecommender;
+import delfos.rs.collaborativefiltering.als.Bias;
 import delfos.rs.persistence.DatabasePersistence;
 import delfos.rs.persistence.FailureInPersistence;
 import delfos.rs.persistence.database.DAOTryThisAtHomeDatabaseModel;
 import delfos.rs.recommendation.Recommendation;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Random;
-import java.util.TreeMap;
+
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -155,7 +153,6 @@ public class TryThisAtHomeSVD
     @Override
     public TryThisAtHomeSVDModel buildRecommendationModel(DatasetLoader<? extends Rating> datasetLoader) throws CannotLoadRatingsDataset, CannotLoadRatingsDataset, CannotLoadContentDataset {
 
-        boolean normalise = (Boolean) getParameterValue(NORMALIZE_WITH_USER_MEAN);
         final double lrate = getLearningRate();
         final int numFeatures = (Integer) getParameterValue(NUM_FEATURES);
         final int numIterationsPerFeature = (Integer) getParameterValue(NUM_ITER_PER_FEATURE);
@@ -165,16 +162,16 @@ public class TryThisAtHomeSVD
         final double maxInitialisation = (double) Math.sqrt(ratingsDataset.getRatingsDomain().max().doubleValue() / numFeatures);
         final double minInitialisation = (double) Math.sqrt(ratingsDataset.getRatingsDomain().min().doubleValue() / numFeatures);
 
-        final TreeMap<Integer, Integer> itemsIndex = new TreeMap<>();
-        final TreeMap<Integer, Integer> usersIndex = new TreeMap<>();
+        final TreeMap<Long, Integer> itemsIndex = new TreeMap<>();
+        final TreeMap<Long, Integer> usersIndex = new TreeMap<>();
         int index = 0;
-        for (int idItem : ratingsDataset.allRatedItems()) {
+        for (Long idItem : ratingsDataset.allRatedItems()) {
             itemsIndex.put(idItem, index);
             index++;
         }
 
         index = 0;
-        for (int idUser : ratingsDataset.allUsers()) {
+        for (Long idUser : ratingsDataset.allUsers()) {
             usersIndex.put(idUser, index);
             index++;
         }
@@ -235,7 +232,13 @@ public class TryThisAtHomeSVD
         /**
          * Modelo que se entrena a continuación.
          */
-        TryThisAtHomeSVDModel model = new TryThisAtHomeSVDModel(usersFeatures, usersIndex, itemsFeatures, itemsIndex);
+        TryThisAtHomeSVDModel model;
+        if (isNormalised()) {
+            Bias bias = new Bias(datasetLoader);
+            model = new TryThisAtHomeSVDModel(usersFeatures, usersIndex, itemsFeatures, itemsIndex, bias);
+        } else {
+            model = new TryThisAtHomeSVDModel(usersFeatures, usersIndex, itemsFeatures, itemsIndex);
+        }
 
         double maeAnterior = 0;
         for (int indexFeature = 0; indexFeature < numFeatures; indexFeature++) {
@@ -246,8 +249,8 @@ public class TryThisAtHomeSVD
                 c.reset();
                 MeanIterative meanAbsoluteError = new MeanIterative();
                 for (Rating rating : ratingsDataset) {
-                    int idUser = rating.getIdUser();
-                    int idItem = rating.getIdItem();
+                    long idUser = rating.getIdUser();
+                    long idItem = rating.getIdItem();
                     Integer indexUser = usersIndex.get(rating.getIdUser());
                     Integer indexItem = itemsIndex.get(rating.getIdItem());
 
@@ -340,11 +343,11 @@ public class TryThisAtHomeSVD
      * @throws delfos.common.exceptions.dataset.users.UserNotFound
      * @throws delfos.common.exceptions.dataset.items.ItemNotFound
      */
-    protected final double privatePredictRating(
+    protected final static double privatePredictRating(
             DatasetLoader<? extends Rating> datasetLoadder,
             TryThisAtHomeSVDModel model,
-            int idUser,
-            int idItem,
+            long idUser,
+            long idItem,
             int numFeatures
     ) throws NotEnoughtUserInformation, NotEnoughtItemInformation, UserNotFound, ItemNotFound {
         double prediction = 0;
@@ -371,19 +374,20 @@ public class TryThisAtHomeSVD
             Global.showWarning("Rating prediction overflow occured. Please revise learning rate parammeter");
         }
 
-        if (isNormalised()) {
-            RatingsDataset<? extends Rating> ratingsDataset = datasetLoadder.getRatingsDataset();
-            double meanRating = ratingsDataset.getMeanRating();
-            double meanRatingUser = meanRating - ratingsDataset.getMeanRatingUser(idUser);
-            double meanRatingItem = meanRating - ratingsDataset.getMeanRatingItem(idItem);
-
-            prediction = prediction + meanRating + meanRatingUser + meanRatingItem;
+        if (model.getBias() != null) {
+            prediction = model.getBias().restoreBias(idUser, idItem, prediction);
         }
+
         return prediction;
     }
 
     @Override
-    public Collection<Recommendation> recommendToUser(DatasetLoader<? extends Rating> datasetLoader, TryThisAtHomeSVDModel model, Integer idUser, java.util.Set<Integer> candidateItems) throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset {
+    public Collection<Recommendation> recommendToUser(
+            DatasetLoader<? extends Rating> datasetLoader,
+            TryThisAtHomeSVDModel model,
+            long idUser,
+            Set<Long> candidateItems)
+            throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset {
         if (model == null) {
             throw new IllegalArgumentException("SVD recommendation model is null.");
         }
@@ -462,7 +466,11 @@ public class TryThisAtHomeSVD
     }
 
     @Override
-    public TryThisAtHomeSVDModel loadRecommendationModel(DatabasePersistence databasePersistence, Collection<Integer> users, Collection<Integer> items, DatasetLoader<? extends Rating> datasetLoader) throws FailureInPersistence {
+    public TryThisAtHomeSVDModel loadRecommendationModel(
+            DatabasePersistence databasePersistence,
+            Collection<Long> users,
+            Collection<Long> items, DatasetLoader<? extends Rating> datasetLoader)
+            throws FailureInPersistence {
         return new DAOTryThisAtHomeDatabaseModel().loadModel(databasePersistence, users, items, datasetLoader);
     }
 

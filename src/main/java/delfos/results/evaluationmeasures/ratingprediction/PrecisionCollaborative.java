@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,24 +16,24 @@
  */
 package delfos.results.evaluationmeasures.ratingprediction;
 
-import java.util.Map;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RatingsDataset;
 import delfos.dataset.basic.rating.RelevanceCriteria;
-import delfos.ERROR_CODES;
-import delfos.rs.recommendation.Recommendation;
-import delfos.results.evaluationmeasures.EvaluationMeasure;
-import delfos.results.RecommendationResults;
 import delfos.results.MeasureResult;
-import delfos.common.exceptions.dataset.users.UserNotFound;
+import delfos.results.RecommendationResults;
+import delfos.results.evaluationmeasures.EvaluationMeasure;
+import delfos.results.evaluationmeasures.confusionmatrix.ConfusionMatrix;
+import delfos.rs.recommendation.Recommendation;
+import java.util.Collection;
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 /**
- * Clase que implementa el algoritmo de cálculo de la precisión en predicción en
- * sistemas de recomendación colaborativos. La precisión en predicción se
- * refiere a comprobar que los que el sistema predice como positivos son
- * positivos, es decir, supone que el número de recomendaciones es, para cada
- * usuario, las predicciones que el criterio de relevancia clasifica como
- * positivas.
+ * Clase que implementa el algoritmo de cálculo de la precisión en predicción en sistemas de recomendación
+ * colaborativos. La precisión en predicción se refiere a comprobar que los que el sistema predice como positivos son
+ * positivos, es decir, supone que el número de recomendaciones es, para cada usuario, las predicciones que el criterio
+ * de relevancia clasifica como positivas.
  *
  * @author jcastro-inf ( https://github.com/jcastro-inf )
  * @version 1.0 (19 de Octubre 2011)
@@ -45,37 +45,18 @@ public class PrecisionCollaborative extends EvaluationMeasure {
     @Override
     public MeasureResult getMeasureResult(RecommendationResults recommendationResults, RatingsDataset<? extends Rating> testDataset, RelevanceCriteria relevanceCriteria) {
         double precision;
-        int relevantesRecomendadas = 0;
-        int relevantesNoRecomendadas = 0;
-        int noRelevantesRecomendadas = 0;
-        int noRelevantesNoRecomendadas = 0;
 
-        for (int idUser : testDataset.allUsers()) {
-            try {
-                Map<Integer, ? extends Rating> userRatingsRated = testDataset.getUserRatingsRated(idUser);
-                for (Recommendation r : recommendationResults.getRecommendationsForUser(idUser)) {
-                    int idItem = r.getIdItem();
-                    if (relevanceCriteria.isRelevant(userRatingsRated.get(idItem).getRatingValue())) {
-                        if (relevanceCriteria.isRelevant(r.getPreference())) {
-                            relevantesRecomendadas++;
-                        } else {
-                            relevantesNoRecomendadas++;
-                        }
-                    } else if (relevanceCriteria.isRelevant(r.getPreference())) {
-                        noRelevantesRecomendadas++;
-                    } else {
-                        noRelevantesNoRecomendadas++;
-                    }
-                }
-            } catch (UserNotFound ex) {
-                ERROR_CODES.USER_NOT_FOUND.exit(ex);
-            }
-        }
+        ConfusionMatrix confusionMatrixCollaborative = getConfusionMatrixCollaborative(recommendationResults, testDataset, relevanceCriteria);
 
-        if ((relevantesRecomendadas + noRelevantesRecomendadas) == 0) {
+        final int truePositive = confusionMatrixCollaborative.getTruePositive();
+        final int trueNegative = confusionMatrixCollaborative.getTrueNegative();
+        final int falsePositive = confusionMatrixCollaborative.getFalsePositive();
+        final int falseNegative = confusionMatrixCollaborative.getFalseNegative();
+
+        if ((truePositive + falsePositive) == 0) {
             precision = 0;
         } else {
-            precision = (double) relevantesRecomendadas / ((double) relevantesRecomendadas + (double) noRelevantesRecomendadas);
+            precision = (double) truePositive / (truePositive + falsePositive);
         }
 
         return new MeasureResult(this, precision);
@@ -84,5 +65,64 @@ public class PrecisionCollaborative extends EvaluationMeasure {
     @Override
     public boolean usesRatingPrediction() {
         return true;
+    }
+
+    public static ConfusionMatrix getConfusionMatrixCollaborative(RecommendationResults recommendationResults, RatingsDataset<? extends Rating> testDataset, RelevanceCriteria relevanceCriteria) {
+
+        final AtomicInteger falsePositive = new AtomicInteger(0);
+        final AtomicInteger truePositive = new AtomicInteger(0);
+        final AtomicInteger falseNegative = new AtomicInteger(0);
+        final AtomicInteger trueNegative = new AtomicInteger(0);
+
+        for (long idUser : testDataset.allUsers()) {
+            Collection<Recommendation> recommendationList = recommendationResults.getRecommendationsForUser(idUser);
+            if (recommendationList == null) {
+                continue;
+            }
+
+            Map<Long, Double> testRatings = testDataset
+                    .getUserRatingsRated(idUser)
+                    .values()
+                    .parallelStream()
+                    .filter(rating -> !Double.isNaN(rating.getRatingValue().doubleValue()))
+                    .filter(rating -> !Double.isInfinite(rating.getRatingValue().doubleValue()))
+                    .collect(Collectors.toMap(
+                            rating -> rating.getItem().getId(),
+                            rating -> rating.getRatingValue().doubleValue())
+                    );
+
+            recommendationList.parallelStream().forEach(recommendation -> {
+                final Long idItem = recommendation.getItem().getId();
+
+                boolean isInTestSet = testRatings.containsKey(idItem);
+
+                Double prediction = recommendation.getPreference().doubleValue();
+                Double rating = isInTestSet ? testRatings.get(idItem) : null;
+
+                boolean isRatingRelevant = isInTestSet ? relevanceCriteria.isRelevant(rating) : false;
+                boolean isPredictionRelevant = relevanceCriteria.isRelevant(prediction);
+
+                if (isRatingRelevant && isPredictionRelevant) {
+                    truePositive.incrementAndGet();
+                } else if (isRatingRelevant && !isPredictionRelevant) {
+                    falseNegative.incrementAndGet();
+                } else if (!isRatingRelevant && isPredictionRelevant) {
+                    falsePositive.incrementAndGet();
+                } else if (!isRatingRelevant && !isPredictionRelevant) {
+                    trueNegative.incrementAndGet();
+                } else {
+                    throw new IllegalStateException("Error situation");
+                }
+
+            });
+
+        }
+
+        return new ConfusionMatrix(
+                falsePositive.get(),
+                falseNegative.get(),
+                truePositive.get(),
+                trueNegative.get());
+
     }
 }

@@ -153,8 +153,8 @@ public class DAOEntropyDependenceCBRSModel {
             }
 
             for (EntropyDependenceCBRSItemProfile itemProfile : model.values()) {
-                int idItemI = itemProfile.getId();
-                String idItem = Integer.toString(idItemI);
+                long idItemI = itemProfile.getId();
+                String idItem = Long.toString(idItemI);
                 for (Feature feature : itemProfile.getFeatures()) {
                     String featureName = feature.getName();
                     String featureValue = itemProfile.getFeatureValue(feature).toString();
@@ -174,12 +174,15 @@ public class DAOEntropyDependenceCBRSModel {
         }
     }
 
-    public EntropyDependenceCBRSModel loadModel(DatabasePersistence databasePersistence, Collection<Integer> users, Collection<Integer> items) throws FailureInPersistence {
+    public EntropyDependenceCBRSModel loadModel(
+            DatabasePersistence databasePersistence,
+            Collection<Long> users,
+            Collection<Long> items) throws FailureInPersistence {
         try (
                 Statement statement = databasePersistence.getConection().doConnection().createStatement()) {
             FeatureGenerator featureGenerator = new FeatureGenerator();
 
-            Map<Integer, EntropyDependenceCBRSItemProfile> itemProfiles = new TreeMap<>();
+            Map<Long, EntropyDependenceCBRSItemProfile> itemProfiles = new TreeMap<>();
             Map<Feature, Number> weights = new TreeMap<>();
             Map<String, FeatureType> featureTypes = new TreeMap<>();
 
@@ -218,14 +221,14 @@ public class DAOEntropyDependenceCBRSModel {
 
             {
 
-                Map<Integer, Map<Feature, Object>> itemFeatureValues = new TreeMap<>();
+                Map<Long, Map<Feature, Object>> itemFeatureValues = new TreeMap<>();
                 //Reading item profiles.
                 String selectItemProfiles = "Select " + ITEM_PROFILES_FIELD_ID_ITEM + "," + ITEM_PROFILES_FIELD_FEATURE + "," + ITEM_PROFILES_FIELD_FEATURE_VALUE + " \n"
                         + " from " + getITEM_PROFILES_TABLE_NAME(databasePersistence) + " \n;";
                 ResultSet executeQuery = statement.executeQuery(selectItemProfiles);
 
                 while (executeQuery.next()) {
-                    int idItem = executeQuery.getInt(ITEM_PROFILES_FIELD_ID_ITEM);
+                    long idItem = executeQuery.getInt(ITEM_PROFILES_FIELD_ID_ITEM);
                     String featureName = executeQuery.getString(ITEM_PROFILES_FIELD_FEATURE);
                     String featureValueString = executeQuery.getString(ITEM_PROFILES_FIELD_FEATURE_VALUE);
 
@@ -241,8 +244,8 @@ public class DAOEntropyDependenceCBRSModel {
                     itemProfile.put(feature, featureValue);
                 }
 
-                for (Map.Entry<Integer, Map<Feature, Object>> entry : itemFeatureValues.entrySet()) {
-                    int idItem = entry.getKey();
+                for (Map.Entry<Long, Map<Feature, Object>> entry : itemFeatureValues.entrySet()) {
+                    long idItem = entry.getKey();
                     Map<Feature, Object> values = entry.getValue();
                     itemProfiles.put(idItem, new EntropyDependenceCBRSItemProfile(idItem, values));
                 }

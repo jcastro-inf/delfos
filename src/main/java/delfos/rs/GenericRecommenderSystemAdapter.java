@@ -96,7 +96,7 @@ public abstract class GenericRecommenderSystemAdapter<RecommendationModel>
 
     @Override
     @SuppressWarnings("unchecked")
-    public RecommendationModel loadRecommendationModel(FilePersistence filePersistence, Collection<Integer> users, Collection<Integer> items) throws FailureInPersistence {
+    public RecommendationModel loadRecommendationModel(FilePersistence filePersistence, Collection<Long> users, Collection<Long> items) throws FailureInPersistence {
         String completeFileName = filePersistence.getCompleteFileName();
         RecommendationModel model;
 
@@ -141,7 +141,7 @@ public abstract class GenericRecommenderSystemAdapter<RecommendationModel>
     }
 
     @Override
-    public RecommendationModel loadRecommendationModel(DatabasePersistence databasePersistence, Collection<Integer> users, Collection<Integer> items, DatasetLoader<? extends Rating> datasetLoader) throws FailureInPersistence {
+    public RecommendationModel loadRecommendationModel(DatabasePersistence databasePersistence, Collection<Long> users, Collection<Long> items, DatasetLoader<? extends Rating> datasetLoader) throws FailureInPersistence {
         throw new UnsupportedOperationException("The system " + this.getClass() + " does not implement the database persistence: this method should be overrided and perform the model loading.");
     }
 }

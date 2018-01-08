@@ -149,7 +149,7 @@ public class AggregationOfIndividualRecommendations extends GroupRecommenderSyst
         return new GroupRecommendations(recommendations.getGroupOfUsers(), recommendationsIntersected);
     }
 
-    public static Map<User, Collection<Recommendation>> applyItemIntersection(Map<User, Collection<Recommendation>> usersRecommendations, Set<Integer> items) {
+    public static Map<User, Collection<Recommendation>> applyItemIntersection(Map<User, Collection<Recommendation>> usersRecommendations, Set<Long> items) {
         Map<User, Collection<Recommendation>> userRecommendationsIntersected = new TreeMap<>();
         usersRecommendations.entrySet().stream().forEach((Map.Entry<User, Collection<Recommendation>> entry) -> {
             User idUser = entry.getKey();
@@ -305,7 +305,7 @@ public class AggregationOfIndividualRecommendations extends GroupRecommenderSyst
     }
 
     public static Collection<RecommendationsToUser>
-            performSingleUserRecommendations(Collection<Integer> users,
+            performSingleUserRecommendations(Collection<Long> users,
                     RecommenderSystem<? extends Object> singleUserRecommender,
                     DatasetLoader<? extends Rating> datasetLoader,
                     SingleRecommendationModel recommendationModel,
@@ -317,7 +317,7 @@ public class AggregationOfIndividualRecommendations extends GroupRecommenderSyst
                 .collect(Collectors.toList());
     }
 
-    public static Map<User, Collection<Recommendation>> performSingleUserRecommendationsOld(Collection<Integer> users, RecommenderSystem<? extends Object> singleUserRecommender, DatasetLoader<? extends Rating> datasetLoader, SingleRecommendationModel recommendationModel, Set<Item> candidateItems) throws UserNotFound {
+    public static Map<User, Collection<Recommendation>> performSingleUserRecommendationsOld(Collection<Long> users, RecommenderSystem<? extends Object> singleUserRecommender, DatasetLoader<? extends Rating> datasetLoader, SingleRecommendationModel recommendationModel, Set<Item> candidateItems) throws UserNotFound {
 
         return users.parallelStream()
                 .map(idUser -> new SingleUserRecommendationTask(
@@ -340,7 +340,7 @@ public class AggregationOfIndividualRecommendations extends GroupRecommenderSyst
     }
 
     @Override
-    public SingleRecommendationModel loadRecommendationModel(DatabasePersistence databasePersistence, Collection<Integer> users, Collection<Integer> items, DatasetLoader<? extends Rating> datasetLoader) throws FailureInPersistence {
+    public SingleRecommendationModel loadRecommendationModel(DatabasePersistence databasePersistence, Collection<Long> users, Collection<Long> items, DatasetLoader<? extends Rating> datasetLoader) throws FailureInPersistence {
         RecommenderSystem singleUserRecommender = getSingleUserRecommender();
         Object loadRecommendationModel = singleUserRecommender.loadRecommendationModel(
                 databasePersistence,

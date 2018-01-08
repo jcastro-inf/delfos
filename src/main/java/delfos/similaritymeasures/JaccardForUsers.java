@@ -33,27 +33,27 @@ import delfos.rs.RecommenderSystemAdapter;
  */
 public class JaccardForUsers {
 
-    public double similarity(RatingsDataset<? extends Rating> ratings, int idUser1, int idUser2) throws CouldNotComputeSimilarity {
+    public double similarity(RatingsDataset<? extends Rating> ratings, long idUser1, long idUser2) throws CouldNotComputeSimilarity {
 
         //Calculo el Jaccard
-        Collection<Integer> user1Ratings;
+        Collection<Long> user1Ratings;
         try {
             user1Ratings = ratings.getUserRated(idUser1);
         } catch (UserNotFound ex) {
             throw new CouldNotComputeSimilarity(ex);
         }
 
-        Collection<Integer> user2Ratings;
+        Collection<Long> user2Ratings;
         try {
             user2Ratings = ratings.getUserRated(idUser2);
         } catch (UserNotFound ex) {
             throw new CouldNotComputeSimilarity(ex);
         }
 
-        TreeSet<Integer> intersection = new TreeSet<>(user1Ratings);
+        TreeSet<Long> intersection = new TreeSet<>(user1Ratings);
         intersection.retainAll(user2Ratings);
 
-        TreeSet<Integer> union = new TreeSet<>(user1Ratings);
+        TreeSet<Long> union = new TreeSet<>(user1Ratings);
         union.addAll(user2Ratings);
 
         if (union.isEmpty()) {

@@ -36,7 +36,7 @@ public interface MultivaluedItemProfile extends Serializable, ItemProfile {
      * @return Id del producto.
      */
     @Override
-    public int getId();
+    public long getId();
 
     /**
      * Devuelve las características definidas para este perfil de producto.

@@ -18,31 +18,28 @@ package delfos.group.results.groupevaluationmeasures;
 
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
-import delfos.dataset.basic.rating.RatingsDataset;
 import delfos.dataset.basic.rating.RelevanceCriteria;
 import delfos.group.groupsofusers.GroupOfUsers;
 import delfos.group.results.grouprecomendationresults.GroupRecommenderSystemResult;
 import delfos.rs.recommendation.Recommendation;
 
 /**
- * Medida de evaluación para calcular la cobertura del sistema de recomendación
- * evaluado.
+ * Medida de evaluación para calcular la cobertura del sistema de recomendación evaluado.
  *
  * <p>
- * Es una extensión de la medida de evaluación
- * {@link delfos.Results.EvaluationMeasures.Coverage} para recomendaciones
- * individuales.
+ * Es una extensión de la medida de evaluación Coverage para recomendaciones individuales.
  *
  * @author jcastro-inf ( https://github.com/jcastro-inf )
- *
- * @version 1.0 (26-01-2013)
- * @see delfos.Results.EvaluationMeasures.RatingPrediction.MAE_ForGroups
  */
 public class Coverage extends GroupEvaluationMeasure {
 
     @Override
     public GroupEvaluationMeasureResult getMeasureResult(
-            GroupRecommenderSystemResult groupRecommenderSystemResult, DatasetLoader<? extends Rating> originalDatasetLoader, RelevanceCriteria relevanceCriteria, DatasetLoader<? extends Rating> trainingDatasetLoader, DatasetLoader<? extends Rating> testDatasetLoader) {
+            GroupRecommenderSystemResult groupRecommenderSystemResult,
+            DatasetLoader<? extends Rating> originalDatasetLoader,
+            RelevanceCriteria relevanceCriteria,
+            DatasetLoader<? extends Rating> trainingDatasetLoader,
+            DatasetLoader<? extends Rating> testDatasetLoader) {
 
         int predichas = 0;
         int solicitudes = 0;

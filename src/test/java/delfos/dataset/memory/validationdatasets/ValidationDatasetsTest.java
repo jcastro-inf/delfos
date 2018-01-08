@@ -6,6 +6,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
+
+import delfos.dataset.basic.item.Item;
+import delfos.dataset.basic.user.User;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -64,10 +67,10 @@ public class ValidationDatasetsTest extends DelfosTest {
         }
         BothIndexRatingsDataset<Rating> originalDataset = new BothIndexRatingsDataset<Rating>(ratings);
 
-        Map<Integer, Set<Integer>> testItems = new TreeMap<Integer, Set<Integer>>();
-        for (int idUser = 1; idUser <= 5; idUser++) {
-            testItems.put(idUser, new TreeSet<Integer>());
-            testItems.get(idUser).add(6 - idUser);
+        Map<User, Set<Item>> testItems = new TreeMap<>();
+        for (long idUser = 1; idUser <= 5; idUser++) {
+            testItems.put(new User(idUser), new TreeSet<>());
+            testItems.get(idUser).add(new Item(6 - idUser));
         }
 
         TrainingRatingsDataset<Rating> trainingRatingsDataset = ValidationDatasets.getInstance().createTrainingDataset(originalDataset, testItems);

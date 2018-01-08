@@ -96,7 +96,12 @@ public class HybridAlternatingListRS extends HybridRecommender<HybridRecommendat
     }
 
     @Override
-    public Collection<Recommendation> recommendToUser(DatasetLoader<? extends Rating> datasetLoader, HybridRecommendationModel model, Integer idUser, java.util.Set<Integer> candidateItems) throws UserNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset, ItemNotFound, NotEnoughtUserInformation {
+    public Collection<Recommendation> recommendToUser(
+            DatasetLoader<? extends Rating> datasetLoader,
+            HybridRecommendationModel model,
+            long idUser,
+            Set<Long> candidateItems)
+    throws UserNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset, ItemNotFound, NotEnoughtUserInformation {
 
         RecommenderSystem<Object> firstTechnique = (RecommenderSystem<Object>) getParameterValue(FIRST_TECHNIQUE);
 
@@ -129,7 +134,7 @@ public class HybridAlternatingListRS extends HybridRecommender<HybridRecommendat
     private Collection<Recommendation> joinRecommendationLists(Collection<Recommendation> l1, Collection<Recommendation> l2) {
         final double numItems;
         {
-            Set<Integer> allItems = new TreeSet<>();
+            Set<Long> allItems = new TreeSet<>();
             for (Recommendation recommendation : l1) {
                 allItems.add(recommendation.getIdItem());
             }
@@ -139,7 +144,7 @@ public class HybridAlternatingListRS extends HybridRecommender<HybridRecommendat
             numItems = allItems.size();
         }
 
-        Set<Integer> alreadyAddedItems = new TreeSet<>();
+        Set<Long> alreadyAddedItems = new TreeSet<>();
         Collection<Recommendation> ret = new ArrayList<>();
 
         int i = 0;

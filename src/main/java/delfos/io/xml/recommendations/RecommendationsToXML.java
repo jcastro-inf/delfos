@@ -82,7 +82,7 @@ public class RecommendationsToXML {
 
         for (Recommendation r : recommendationsSortedById) {
             Element recommendation = new Element(RECOMMENDATION_ELEMENT_NAME);
-            recommendation.setAttribute(ID_ITEM_ATTRIBUTE_NAME, Integer.toString(r.getIdItem()));
+            recommendation.setAttribute(ID_ITEM_ATTRIBUTE_NAME, Long.toString(r.getIdItem()));
             recommendation.setAttribute(PREFERENCE_ATTRIBUTE_NAME, r.getPreference().toString());
             recommendation.setAttribute(RANK_ATTRIBUTE_NAME, r.getPreference().toString());
             element.addContent(recommendation);
@@ -114,9 +114,6 @@ public class RecommendationsToXML {
      *
      * @throws IllegalArgumentException Si el elemento no contiene la información necesaria para recuperar un objeto
      * {@link Recommendations}.
-     *
-     * @see RecommendationsToXML#getRecommendationsElement(delfos.RS.Recommendation.Recommendations)
-     *
      */
     public static Recommendations getRecommendations(Element element) {
 
@@ -150,7 +147,7 @@ public class RecommendationsToXML {
             if (!recommendationElement.getName().equals(RECOMMENDATION_ELEMENT_NAME)) {
                 throw new IllegalArgumentException("Element name doesn't match this reader: found '" + recommendationElement.getName() + "' expected '" + RECOMMENDATION_ELEMENT_NAME + "'");
             }
-            int idItem = Integer.parseInt(recommendationElement.getAttributeValue(ID_ITEM_ATTRIBUTE_NAME));
+            long idItem = new Long(recommendationElement.getAttributeValue(ID_ITEM_ATTRIBUTE_NAME));
             double preference = Double.parseDouble(recommendationElement.getAttributeValue(PREFERENCE_ATTRIBUTE_NAME));
             recommendations.add(new Recommendation(idItem, preference));
         }

@@ -214,7 +214,7 @@ public class ConsensusGRS extends GroupRecommenderSystemAdapter<SingleRecommenda
 
         RatingsDataset<? extends Rating> ratingsDataset = datasetLoader.getRatingsDataset();
 
-        Map<Integer, Map<Integer, Rating>> membersRatings = DatasetOperations.selectRatings((RatingsDataset<Rating>) ratingsDataset,
+        Map<Long, Map<Long, Rating>> membersRatings = DatasetOperations.selectRatings((RatingsDataset<Rating>) ratingsDataset,
                 groupOfUsers.getIdMembers()
         );
 
@@ -313,7 +313,7 @@ public class ConsensusGRS extends GroupRecommenderSystemAdapter<SingleRecommenda
     }
 
     public <RatingType extends Rating> void saveGroupInputDataAndRequests(
-            Map<Integer, Map<Integer, RatingType>> membersRatings,
+            Map<Long, Map<Long, RatingType>> membersRatings,
             Collection<Item> candidateItems) {
 
         File consensusInputFilesDirectory = (File) getParameterValue(CONSENSUS_INPUT_FILES_DIRECTORY);

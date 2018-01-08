@@ -28,6 +28,8 @@ import delfos.dataset.basic.user.User;
 import delfos.dataset.storage.memory.BothIndexRatingsDataset;
 import delfos.group.groupsofusers.GroupOfUsers;
 import delfos.rs.collaborativefiltering.profile.Neighbor;
+import delfos.rs.recommendation.Recommendation;
+import delfos.rs.recommendation.RecommendationsToUser;
 import delfos.rs.trustbased.WeightedGraph;
 import dnl.utils.text.table.TextTable;
 import java.io.ByteArrayOutputStream;
@@ -54,7 +56,7 @@ public class DatasetPrinter {
 
     private static final int numDecimals = 4;
 
-    public static void printCompactUserUserTable(Map<Integer, Map<Integer, Number>> values, Collection<Integer> users) {
+    public static void printCompactUserUserTable(Map<Long, Map<Long, Number>> values, Collection<Long> users) {
 
         //Escribo la cabecera
         {
@@ -72,9 +74,9 @@ public class DatasetPrinter {
         }
 
         //Escribo cada línea
-        for (int idUser : users) {
+        for (Long idUser : users) {
             Global.showInfoMessage("|U_" + idUser + "\t|");
-            for (int idUser2 : users) {
+            for (Long idUser2 : users) {
                 try {
                     if (!values.containsKey(idUser)) {
                         throw new UserNotFound(idUser);
@@ -94,15 +96,15 @@ public class DatasetPrinter {
 
         //Cierro la tabla
         Global.showInfoMessage("+-------+");
-        for (int idItem : users) {
+        for (Long idItem : users) {
             Global.showInfoMessage("-------+");
         }
         Global.showInfoMessage("\n");
     }
 
-    public static void printOneColumnUserTable(Map<Integer, Number> values) {
+    public static void printOneColumnUserTable(Map<Long, Number> values) {
 
-        Set<Integer> users = values.keySet();
+        Set<Long> users = values.keySet();
 
         //Escribo la cabecera
         {
@@ -111,7 +113,7 @@ public class DatasetPrinter {
         }
 
         //Escribo cada línea
-        for (int idUser : users) {
+        for (Long idUser : users) {
             Global.showInfoMessage("|U_" + idUser + "\t|");
 
             Number value = values.get(idUser);
@@ -124,12 +126,12 @@ public class DatasetPrinter {
         }
     }
 
-    public static void printNeighborsUsers(Map<Integer, Set<Neighbor>> neighbors) {
+    public static void printNeighborsUsers(Map<Long, Set<Neighbor>> neighbors) {
 
         Global.showInfoMessage("User\t|\tNeighbors\n");
         Global.showInfoMessage("+-------+-------+\n");
 
-        for (int idUser : neighbors.keySet()) {
+        for (Long idUser : neighbors.keySet()) {
 
             Global.showInfoMessage("|U_" + idUser + "\t|");
             for (Neighbor n : neighbors.get(idUser)) {
@@ -141,12 +143,12 @@ public class DatasetPrinter {
         Global.showInfoMessage("+-------+-------+\n");
     }
 
-    public static void printNeighborsItems(Map<Integer, Collection<Neighbor>> neighbors) {
+    public static void printNeighborsItems(Map<Long, Collection<Neighbor>> neighbors) {
 
         Global.showInfoMessage("Item\t|\tNeighbors\n");
         Global.showInfoMessage("+-------+-------+\n");
 
-        for (int idItem : neighbors.keySet()) {
+        for (Long idItem : neighbors.keySet()) {
 
             Global.showInfoMessage("|I_" + idItem + "\t|");
             for (Neighbor n : neighbors.get(idItem)) {
@@ -175,11 +177,11 @@ public class DatasetPrinter {
     private DatasetPrinter() {
     }
 
-    public static void printFancyRatingTable(Map<Integer, Map<Integer, Number>> ratings, Collection<Integer> users, Collection<Integer> items) {
+    public static void printFancyRatingTable(Map<Long, Map<Long, Number>> ratings, Collection<Long> users, Collection<Long> items) {
         printFancyRatingTable(new BothIndexRatingsDataset(ratings), users, items);
     }
 
-    public static void printFancyRatingTable(RatingsDataset<? extends Rating> ratingsDataset, Collection<Integer> users, Collection<Integer> items) {
+    public static void printFancyRatingTable(RatingsDataset<? extends Rating> ratingsDataset, Collection<Long> users, Collection<Long> items) {
         //Escribo la cabecera
         {
             Global.showInfoMessage("|\t\t|");
@@ -196,9 +198,9 @@ public class DatasetPrinter {
         }
 
         //Escribo cada línea
-        for (int idUser : users) {
+        for (Long idUser : users) {
             Global.showInfoMessage("|\tU_" + idUser + "\t|");
-            for (int idItem : items) {
+            for (Long idItem : items) {
                 try {
                     Rating rating = ratingsDataset.getRating(idUser, idItem);
                     if (rating == null) {
@@ -222,16 +224,16 @@ public class DatasetPrinter {
         Global.showInfoMessage("\n");
     }
 
-    public static String printCompactRatingTable(Map<Integer, Map<Integer, Number>> ratings) {
-        Set<Integer> users = new TreeSet<>(ratings.keySet());
-        Set<Integer> items = new TreeSet<>();
+    public static String printCompactRatingTable(Map<Long, Map<Long, Number>> ratings) {
+        Set<Long> users = new TreeSet<>(ratings.keySet());
+        Set<Long> items = new TreeSet<>();
 
-        Map<Integer, Map<Integer, Rating>> ratings_r = new TreeMap<>();
-        for (int idUser : ratings.keySet()) {
+        Map<Long, Map<Long, Rating>> ratings_r = new TreeMap<>();
+        for (Long idUser : ratings.keySet()) {
             items.addAll(ratings.get(idUser).keySet());
             ratings_r.put(idUser, new TreeMap<>());
-            for (Map.Entry<Integer, Number> entry : ratings.get(idUser).entrySet()) {
-                int idItem = entry.getKey();
+            for (Map.Entry<Long, Number> entry : ratings.get(idUser).entrySet()) {
+                Long idItem = entry.getKey();
                 Number ratingValue = entry.getValue();
                 ratings_r.get(idUser).put(idItem, new Rating(idUser, idItem, ratingValue));
             }
@@ -242,22 +244,22 @@ public class DatasetPrinter {
     }
 
     public static <RatingType extends Rating> String printCompactRatingTable(RatingsDataset<RatingType> ratings) {
-        Set<Integer> users = new TreeSet<>(ratings.allUsers());
-        Set<Integer> items = new TreeSet<>(ratings.allRatedItems());
+        Set<Long> users = new TreeSet<>(ratings.allUsers());
+        Set<Long> items = new TreeSet<>(ratings.allRatedItems());
         return printCompactRatingTable(new BothIndexRatingsDataset<>(ratings), new ArrayList<>(users), new ArrayList<>(items));
     }
 
-    public static String printCompactRatingTable(Collection<Rating> ratings) {
-        return printCompactRatingTable(new BothIndexRatingsDataset<Rating>(ratings));
+    public static <RatingType extends Rating> String printCompactRatingTable(Collection<RatingType> ratings) {
+        return printCompactRatingTable(new BothIndexRatingsDataset<RatingType>(ratings));
     }
 
-    public static String printCompactRatingTable(Map<Integer, Map<Integer, Number>> ratings, Collection<Integer> users, Collection<Integer> items) {
-        Map<Integer, Map<Integer, Rating>> ratings_r = new TreeMap<>();
-        for (int idUser : ratings.keySet()) {
+    public static String printCompactRatingTable(Map<Long, Map<Long, Number>> ratings, Collection<Long> users, Collection<Long> items) {
+        Map<Long, Map<Long, Rating>> ratings_r = new TreeMap<>();
+        for (Long idUser : ratings.keySet()) {
             items.addAll(ratings.get(idUser).keySet());
             ratings_r.put(idUser, new TreeMap<>());
-            for (Map.Entry<Integer, Number> entry : ratings.get(idUser).entrySet()) {
-                int idItem = entry.getKey();
+            for (Map.Entry<Long, Number> entry : ratings.get(idUser).entrySet()) {
+                Long idItem = entry.getKey();
                 Number ratingValue = entry.getValue();
                 ratings_r.get(idUser).put(idItem, new Rating(idUser, idItem, ratingValue));
             }
@@ -267,7 +269,7 @@ public class DatasetPrinter {
         return printCompactRatingTable(new BothIndexRatingsDataset<>(ratings_r), users, items);
     }
 
-    public static String printCompactRatingTable(RatingsDataset<? extends Rating> ratingsDataset, Collection<Integer> users, Collection<Integer> items) {
+    public static String printCompactRatingTable(RatingsDataset<? extends Rating> ratingsDataset, Collection<Long> users, Collection<Long> items) {
 
         StringBuilder str = new StringBuilder();
 
@@ -287,9 +289,9 @@ public class DatasetPrinter {
         }
 
         //Escribo cada línea
-        for (int idUser : users) {
+        for (Long idUser : users) {
             str.append("|U_").append(idUser).append("\t|");
-            for (int idItem : items) {
+            for (Long idItem : items) {
                 try {
                     Rating rating = ratingsDataset.getRating(idUser, idItem);
                     if (rating == null) {
@@ -367,7 +369,7 @@ public class DatasetPrinter {
 
             data[indexUser][0] = user.toString();
 
-            Map<Integer, ? extends Rating> userRatingsRated = datasetLoader.getRatingsDataset().getUserRatingsRated(user.getId());
+            Map<Long, ? extends Rating> userRatingsRated = datasetLoader.getRatingsDataset().getUserRatingsRated(user.getId());
 
             IntStream.range(0, itemsAllUsersRated.size()).forEach(indexItem -> {
                 Item item = itemsAllUsersRated.get(indexItem);
@@ -436,6 +438,114 @@ public class DatasetPrinter {
             str.append("-------+");
         });
         str.append("\n");
+
+        return str.toString();
+    }
+
+    /**
+     * Obtains a CSV of the recommendations sorted by preference with the test ratings
+     *
+     * @param <RatingType>
+     * @param datasetLoader
+     * @param user
+     * @param recommendationsToUser
+     * @return
+     */
+    public static <RatingType extends Rating>
+            String printRecommendationsWithRatings(
+                    DatasetLoader<RatingType> datasetLoader,
+                    User user,
+                    RecommendationsToUser recommendationsToUser) {
+
+        Set<Item> items = datasetLoader.getContentDataset()
+                .stream().collect(Collectors.toSet());
+
+        Map<Long, Double> recommendations = DatasetUtilities
+                .convertToMapOfRecommendations(recommendationsToUser)
+                .entrySet()
+                .parallelStream()
+                .filter(entry -> !Double.isNaN(entry.getValue().getPreference().doubleValue()))
+                .filter(entry -> !Double.isInfinite(entry.getValue().getPreference().doubleValue()))
+                .collect(Collectors.toMap(
+                        entry -> entry.getKey().getId(),
+                        entry -> entry.getValue().getPreference().doubleValue())
+                );
+
+        Map<Long, Double> testRatings = datasetLoader.getRatingsDataset()
+                .getUserRatingsRated(user.getId())
+                .values()
+                .parallelStream()
+                .filter(rating -> !Double.isNaN(rating.getRatingValue().doubleValue()))
+                .filter(rating -> !Double.isInfinite(rating.getRatingValue().doubleValue()))
+                .collect(Collectors.toMap(
+                        rating -> rating.getItem().getId(),
+                        rating -> rating.getRatingValue().doubleValue())
+                );
+
+        List<Item> sortedItems = items.stream()
+                .filter(item -> testRatings.containsKey(item.getId()) || recommendations.containsKey(item.getId()))
+                .map(item -> {
+
+                    double prediction = recommendations.containsKey(item.getId())
+                            ? recommendations.get(item.getId())
+                            : Double.NaN;
+
+                    return new Recommendation(item, prediction);
+                })
+                .sorted(Recommendation.BY_PREFERENCE_DESC)
+                .map(recommendation -> recommendation.getItem())
+                .collect(Collectors.toList());
+
+        StringBuilder str = new StringBuilder();
+
+        str.append("item\tname\tprediction\trating\n");
+
+        sortedItems.forEach(item -> {
+
+            double rating = testRatings.containsKey(item.getId())
+                    ? testRatings.get(item.getId())
+                    : Double.NaN;
+            double prediction = recommendations.containsKey(item.getId())
+                    ? recommendations.get(item.getId())
+                    : Double.NaN;
+
+            str
+                    .append(item.getId()).append("\t")
+                    .append(item.getName()).append("\t")
+                    .append(prediction).append("\t")
+                    .append(rating).append("\n");
+
+        });
+
+        return str.toString();
+
+    }
+
+    public static String printItemItem(Map<Item, Map<Item, Double>> itemItemSimilarities) {
+        StringBuilder str = new StringBuilder();
+        Set<Item> items = itemItemSimilarities.keySet();
+
+        Set<Item> rowItems = itemItemSimilarities.keySet();
+        Set<Item> columnItems =itemItemSimilarities.values().stream().flatMap(map -> map.keySet().stream()).collect(Collectors.toSet());
+
+        if(!rowItems.equals(columnItems)){
+            throw new IllegalStateException("Row and columns have different items");
+        }
+
+        str.append("i\\i\t");
+        items.stream().forEach(item -> str.append(item.getName()).append("\t"));
+        str.replace(str.length()-1,str.length(),"\n");
+
+
+        items.forEach(item -> {
+            str.append(item.getName()).append("\t");
+
+            Map<Item, Double> thisItemSimilarities = itemItemSimilarities.get(item);
+            items.stream().forEach(item2-> str.append(thisItemSimilarities.get(item2)).append("\t"));
+
+            str.replace(str.length()-1,str.length(),"\n");
+        });
+
 
         return str.toString();
     }

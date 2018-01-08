@@ -47,7 +47,7 @@ public class MAE_popular extends GroupEvaluationMeasure {
 
         MeanIterative maePopularItems = new MeanIterative();
         TreeMap<GroupOfUsers, MeanIterative> maeGroups = new TreeMap<>();
-        TreeMap<Integer, MeanIterative> maeAllMembers = new TreeMap<>();
+        TreeMap<Long, MeanIterative> maeAllMembers = new TreeMap<>();
 
         Set<Item> popularItems = getPopularItems(originalDatasetLoader, POPULARITY_THRESHOLD);
 
@@ -59,12 +59,12 @@ public class MAE_popular extends GroupEvaluationMeasure {
                 continue;
             }
             MeanIterative maeGroup = new MeanIterative();
-            Map<Integer, MeanIterative> maeMembers = new TreeMap<>();
+            Map<Long, MeanIterative> maeMembers = new TreeMap<>();
             for (User member : groupOfUsers.getMembers()) {
                 maeMembers.put(member.getId(), new MeanIterative());
             }
 
-            Map<Integer, Map<Integer, ? extends Rating>> groupTrueRatings = new TreeMap<>();
+            Map<Long, Map<Long, ? extends Rating>> groupTrueRatings = new TreeMap<>();
 
             groupOfUsers.getIdMembers().stream().forEach((idUser) -> {
                 try {
@@ -85,7 +85,7 @@ public class MAE_popular extends GroupEvaluationMeasure {
                 }
                 double itemWeight = 1;
 
-                for (int idUser : groupOfUsers.getIdMembers()) {
+                for (long idUser : groupOfUsers.getIdMembers()) {
                     if (groupTrueRatings.get(idUser).containsKey(item.getId())) {
                         double trueRating = groupTrueRatings.get(idUser).get(item.getId()).getRatingValue().doubleValue();
                         double predicted = recommendation.getPreference().doubleValue();

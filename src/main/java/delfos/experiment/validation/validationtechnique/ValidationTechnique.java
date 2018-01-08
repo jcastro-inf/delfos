@@ -103,7 +103,7 @@ public abstract class ValidationTechnique extends ParameterOwnerAdapter implemen
      * @param datasetLoader Conjunto de datos iniciales.
      * @return Vector en el que cada elemento contiene un par training/test.
      */
-    public abstract <RatingType extends Rating> PairOfTrainTestRatingsDataset[] shuffle(DatasetLoader<RatingType> datasetLoader)
+    public abstract <RatingType extends Rating> PairOfTrainTestRatingsDataset<RatingType>[] shuffle(DatasetLoader<RatingType> datasetLoader)
             throws CannotLoadRatingsDataset, CannotLoadContentDataset;
 
     /**

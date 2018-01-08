@@ -41,7 +41,7 @@ import java.util.stream.IntStream;
  */
 public class TryThisAtHomeSVDModel implements Serializable {
 
-    private static final long serialVersionUID = 108L;
+    private static final long serialVersionUID = 109L;
     /**
      * Matriz para guardar los valores que describen a cada usuario. Es una matriz de vectores, cada vector indica el
      * perfil del usuario i
@@ -53,15 +53,13 @@ public class TryThisAtHomeSVDModel implements Serializable {
      */
     private List<List<Double>> _itemFeatures;
     /**
-     * Mapa que almacena para cada id de usuario (clave en el mapa) el indice que le corresponde en la matriz
-     * {@link TryThisAtHomeSVD#_userFeatures} (valor en el mapa)
+     * Mapa que almacena para cada id de usuario (clave en el mapa) el indice que le corresponde en la matriz (valor en el mapa)
      */
-    private Map<Integer, Integer> _itemsIndex;
+    private Map<Long, Integer> _itemsIndex;
     /**
-     * Mapa que almacena para cada id de producto (clave en el mapa) el indice que le corresponde en la matriz
-     * {@link TryThisAtHomeSVD#_itemFeatures} (valor en el mapa)
+     * Mapa que almacena para cada id de producto (clave en el mapa) el indice que le corresponde en la matriz (valor en el mapa)
      */
-    private Map<Integer, Integer> _usersIndex;
+    private Map<Long, Integer> _usersIndex;
     private Bias bias;
 
     private String modelName = "";
@@ -84,7 +82,11 @@ public class TryThisAtHomeSVDModel implements Serializable {
      * @param itemsIndex Índice que indica en qué fila de la matriz de características de los productos están las
      * características de un producto.
      */
-    public TryThisAtHomeSVDModel(List<List<Double>> userFeatures, TreeMap<Integer, Integer> usersIndex, List<List<Double>> itemFeatures, TreeMap<Integer, Integer> itemsIndex) {
+    public TryThisAtHomeSVDModel(
+            List<List<Double>> userFeatures,
+            TreeMap<Long, Integer> usersIndex,
+            List<List<Double>> itemFeatures,
+            TreeMap<Long, Integer> itemsIndex) {
 
         if (userFeatures.size() != usersIndex.size()) {
             throw new IllegalArgumentException("The feature matrix and the user index do not have the same size.");
@@ -104,16 +106,56 @@ public class TryThisAtHomeSVDModel implements Serializable {
         this._itemsIndex = itemsIndex;
     }
 
-    public TryThisAtHomeSVDModel(Map<User, List<Double>> userFeatures, Map<Item, List<Double>> itemFeatures, Bias bias) {
+    /**
+     * Crea el modelo a partir de las matrices de características para los usuarios y productos.
+     *
+     * @param userFeatures Matriz de características de los usuarios.
+     * @param usersIndex Índice que indica en qué fila de la matriz de características de los usuarios están las
+     * características de un usuario.
+     * @param itemFeatures Matriz de características de los productos.
+     * @param itemsIndex Índice que indica en qué fila de la matriz de características de los productos están las
+     * características de un producto.
+     * @param bias
+     */
+    public TryThisAtHomeSVDModel(
+            List<List<Double>> userFeatures,
+            TreeMap<Long, Integer> usersIndex,
+            List<List<Double>> itemFeatures,
+            TreeMap<Long, Integer> itemsIndex,
+            Bias bias) {
+
+        if (userFeatures.size() != usersIndex.size()) {
+            throw new IllegalArgumentException("The feature matrix and the user index do not have the same size.");
+        }
+        if (itemFeatures.size() != itemsIndex.size()) {
+            throw new IllegalArgumentException("The feature matrix and the item index do not have the same size.");
+        }
+
+        if (userFeatures.get(0).size() != itemFeatures.get(0).size()) {
+            throw new IllegalArgumentException("The model have different number of features for users and items.");
+        }
+
+        this._userFeatures = userFeatures;
+        this._usersIndex = usersIndex;
+
+        this._itemFeatures = itemFeatures;
+        this._itemsIndex = itemsIndex;
+        this.bias = bias;
+    }
+
+    public TryThisAtHomeSVDModel(
+            Map<User, List<Double>> userFeatures,
+            Map<Item, List<Double>> itemFeatures,
+            Bias bias) {
 
         List<User> usersSorted = userFeatures.keySet().stream().sorted().collect(Collectors.toList());
         List<Item> itemsSorted = itemFeatures.keySet().stream().sorted().collect(Collectors.toList());
 
-        Map<Integer, Integer> usersIndex = IntStream.range(0, usersSorted.size()).boxed().collect(Collectors.toMap(
+        Map<Long, Integer> usersIndex = IntStream.range(0, usersSorted.size()).boxed().collect(Collectors.toMap(
                 i -> usersSorted.get(i).getId(),
                 i -> i));
 
-        Map<Integer, Integer> itemsIndex = IntStream.range(0, itemsSorted.size()).boxed().collect(Collectors.toMap(
+        Map<Long, Integer> itemsIndex = IntStream.range(0, itemsSorted.size()).boxed().collect(Collectors.toMap(
                 index -> itemsSorted.get(index).getId(),
                 index -> index));
 
@@ -161,7 +203,7 @@ public class TryThisAtHomeSVDModel implements Serializable {
      *
      * @return
      */
-    public Map<Integer, Integer> getUsersIndex() {
+    public Map<Long, Integer> getUsersIndex() {
         return _usersIndex;
     }
 
@@ -171,7 +213,7 @@ public class TryThisAtHomeSVDModel implements Serializable {
      *
      * @return
      */
-    public Map<Integer, Integer> getItemsIndex() {
+    public Map<Long, Integer> getItemsIndex() {
         return _itemsIndex;
     }
 
@@ -201,7 +243,7 @@ public class TryThisAtHomeSVDModel implements Serializable {
      * @param newUserFeatures Vector de características del usuario a agregar.
      * @return Modelo ampliado.
      */
-    public static TryThisAtHomeSVDModel addUser(TryThisAtHomeSVDModel model, int idUser, List<Double> newUserFeatures) {
+    public static TryThisAtHomeSVDModel addUser(TryThisAtHomeSVDModel model, long idUser, List<Double> newUserFeatures) {
         if (model == null) {
             throw new IllegalArgumentException("The model cannot be null.");
         }
@@ -219,27 +261,30 @@ public class TryThisAtHomeSVDModel implements Serializable {
         }
 
         List<List<Double>> userFeatures = new ArrayList<>(model._userFeatures);
-        TreeMap<Integer, Integer> usersIndex = new TreeMap<>(model._usersIndex);
+        TreeMap<Long, Integer> usersIndex = new TreeMap<>(model._usersIndex);
         int idUserIndex = userFeatures.size();
         usersIndex.put(idUser, idUserIndex);
         userFeatures.add(newUserFeatures);
         List<List<Double>> itemFeatures = new ArrayList<>(model._itemFeatures);
-        TreeMap<Integer, Integer> itemsIndex = new TreeMap<>(model._itemsIndex);
+        TreeMap<Long, Integer> itemsIndex = new TreeMap<>(model._itemsIndex);
 
         return new TryThisAtHomeSVDModel(userFeatures, usersIndex, itemFeatures, itemsIndex);
     }
 
-    public List<Double> getUserFeatures(int idUser) {
+    public List<Double> getUserFeatures(long idUser) {
         return _userFeatures.get(_usersIndex.get(idUser));
     }
 
-    public List<Double> getItemFeatures(int idItem) {
+    public List<Double> getItemFeatures(long idItem) {
         return _itemFeatures.get(_itemsIndex.get(idItem));
     }
 
-    private Set<Integer> itemsWarned = null;
+    private Set<Long> itemsWarned = null;
 
-    public synchronized void warningItemNotInModel(int idItem, String message, NotEnoughtItemInformation ex) {
+    public synchronized void warningItemNotInModel(
+            long idItem,
+            String message,
+            NotEnoughtItemInformation ex) {
         if (itemsWarned == null) {
             itemsWarned = new TreeSet<>();
         }
@@ -260,9 +305,9 @@ public class TryThisAtHomeSVDModel implements Serializable {
 
     }
 
-    private Set<Integer> usersWarned = new TreeSet<>();
+    private Set<Long> usersWarned = new TreeSet<>();
 
-    public synchronized void warningUserNotInModel(int idUser, String message, NotEnoughtUserInformation ex) {
+    public synchronized void warningUserNotInModel(long idUser, String message, NotEnoughtUserInformation ex) {
         if (usersWarned == null) {
             usersWarned = new TreeSet<>();
         }
@@ -298,6 +343,10 @@ public class TryThisAtHomeSVDModel implements Serializable {
         } else {
             return bias.restoreBias(user, item, predict);
         }
+    }
+
+    public Bias getBias() {
+        return bias;
     }
 
 }

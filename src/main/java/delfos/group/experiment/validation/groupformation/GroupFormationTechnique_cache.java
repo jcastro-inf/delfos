@@ -155,7 +155,7 @@ public class GroupFormationTechnique_cache extends GroupFormationTechnique {
                 Global.showWarning("Created directory path " + file.getAbsoluteFile().getParentFile() + " for recommendation model");
             }
 
-            Collection<Collection<Integer>> groupsGeneratedIDs = groupsGenerated.stream().map(group -> group.getIdMembers()).collect(Collectors.toList());
+            Collection<Collection<Long>> groupsGeneratedIDs = groupsGenerated.stream().map(group -> group.getIdMembers()).collect(Collectors.toList());
 
             try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(file))) {
                 oos.writeObject(groupsGeneratedIDs);

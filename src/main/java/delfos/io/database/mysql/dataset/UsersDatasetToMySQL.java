@@ -89,7 +89,7 @@ public class UsersDatasetToMySQL {
         }
 
         for (User user : usersDataset) {
-            int idUser = user.getId();
+            long idUser = user.getId();
             StringBuilder insert = new StringBuilder();
             insert.append(beginingOfInsert);
 

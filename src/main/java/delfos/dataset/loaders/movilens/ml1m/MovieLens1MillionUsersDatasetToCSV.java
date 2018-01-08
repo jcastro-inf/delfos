@@ -96,7 +96,7 @@ public class MovieLens1MillionUsersDatasetToCSV implements UsersDatasetToCSV {
 
         for (User user : usersDataset) {
 
-            int idUser = user.getId();
+            long idUser = user.getId();
             StringBuilder linea = new StringBuilder();
 
             //Escribir el id y el nombre

@@ -475,7 +475,7 @@ public class RecommendationsExplainedWindow extends JFrame {
                 List<User> usersList = usersDataset.allIDs().parallelStream().map((idUser) -> {
                     return ((User) usersDataset.get(idUser));
                 }).collect(Collectors.toList());
-                Collections.sort(usersList, (User o1, User o2) -> o1.getId() - o2.getId());
+                Collections.sort(usersList, User.BY_ID);
                 users = usersList.toArray(new User[0]);
             }
 

@@ -29,7 +29,7 @@ import delfos.dataset.basic.features.EntityWithFeatures;
 public class EntityNotFound extends RuntimeException {
 
     private static final long serialVersionUID = 1L;
-    private final int id;
+    private final long id;
     private final Class<?> entityClass;
 
     /**
@@ -39,31 +39,31 @@ public class EntityNotFound extends RuntimeException {
      * @param entityClass
      * @param id Identificador de la entidad no encontrada.
      */
-    public EntityNotFound(Class<?> entityClass, int id) {
+    public EntityNotFound(Class<?> entityClass, long id) {
         super("Entitiy of class " + entityClass.getName() + " '" + id + "' not found");
         this.id = id;
         this.entityClass = entityClass;
     }
 
-    public EntityNotFound(Class<?> entityClass, int id, Throwable cause) {
+    public EntityNotFound(Class<?> entityClass, long id, Throwable cause) {
         super("Entitiy '" + id + "' not found", cause);
         this.id = id;
         this.entityClass = entityClass;
     }
 
-    public EntityNotFound(Class<?> entityClass, int id, String msg) {
+    public EntityNotFound(Class<?> entityClass, long id, String msg) {
         super(msg);
         this.id = id;
         this.entityClass = entityClass;
     }
 
-    public EntityNotFound(Class<?> entityClass, int id, Throwable cause, String msg) {
+    public EntityNotFound(Class<?> entityClass, long id, Throwable cause, String msg) {
         super(msg, cause);
         this.id = id;
         this.entityClass = entityClass;
     }
 
-    public int getIdEntity() {
+    public long getIdEntity() {
         return id;
     }
 

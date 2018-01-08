@@ -22,21 +22,21 @@ import delfos.common.Global;
 import delfos.common.exceptions.dataset.CannotLoadContentDataset;
 import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
 import delfos.common.filefilters.FileFilterByExtension;
-import delfos.common.parallelwork.notblocking.MultiThreadExecutionManager_NotBlocking;
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
 import delfos.experiment.casestudy.CaseStudyConfiguration;
 import delfos.factories.EvaluationMeasuresFactory;
-import delfos.group.io.excel.casestudy.GroupCaseStudyExcel;
 import delfos.io.excel.casestudy.CaseStudyExcel;
 import delfos.io.xml.casestudy.CaseStudyXML;
 import delfos.results.evaluationmeasures.EvaluationMeasure;
+import delfos.utils.algorithm.progress.ProgressChangedController;
+import delfos.utils.algorithm.progress.ProgressChangedListenerDefault;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.List;
 import jxl.write.WriteException;
 import org.jdom2.JDOMException;
 
@@ -87,22 +87,14 @@ public class XMLexperimentsExecution {
         File experimentsDirectoryDirectory = new File(experimentsDirectory);
         File datasetsDirectoryDirectory = new File(datasetsDirectory);
         File resultsDirectory = new File(experimentsDirectory + File.separator + "results" + File.separator);
-        if (resultsDirectory.exists()) {
-            FileUtilities.deleteDirectoryRecursive(resultsDirectory);
-        }
-        resultsDirectory.mkdirs();
+
+        FileUtilities.createDirectoryPathIfNotExists(resultsDirectory);
 
         File[] datasetFiles = datasetsDirectoryDirectory.listFiles(new FileFilterByExtension(false, "xml"));
         if (datasetFiles.length == 0) {
             throw new IllegalStateException("No dataset files in '" + datasetsDirectoryDirectory.getAbsolutePath() + "'");
         }
-
-        MultiThreadExecutionManager_NotBlocking<ExecuteCaseStudy_Task> multiThreadExecutionManager
-                = new MultiThreadExecutionManager_NotBlocking<>(
-                        "Execute case",
-                        CaseStudy_SingleTaskExecute.class);
-
-        multiThreadExecutionManager.runInBackground();
+        List<ExecuteCaseStudy_Task> allTasks = new ArrayList<>();
 
         for (File datasetFile : datasetFiles) {
             try {
@@ -117,7 +109,7 @@ public class XMLexperimentsExecution {
                 for (File experimentFile : experimentsDirectoryDirectory.listFiles(new FileFilterByExtension(false, "xml"))) {
 
                     CaseStudyConfiguration caseStudyConfiguration = CaseStudyXML.loadCase(experimentFile);
-                    multiThreadExecutionManager.addTask(new ExecuteCaseStudy_Task(
+                    allTasks.add(new ExecuteCaseStudy_Task(
                             experimentsDirectoryDirectory,
                             experimentFile.getName(),
                             caseStudyConfiguration,
@@ -132,15 +124,22 @@ public class XMLexperimentsExecution {
             }
         }
 
-        try {
-            multiThreadExecutionManager.waitUntilFinished();
-        } catch (InterruptedException ex) {
-            Logger.getLogger(XMLexperimentsExecution.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        CaseStudy_SingleTaskExecute caseStudy_SingleTaskExecute = new CaseStudy_SingleTaskExecute();
+
+        ProgressChangedController progressChangedController = new ProgressChangedController(
+                "Case studies executor",
+                allTasks.size(),
+                new ProgressChangedListenerDefault(System.out, 10000)
+        );
+
+        allTasks.parallelStream().forEach(task -> {
+            caseStudy_SingleTaskExecute.accept(task);
+            progressChangedController.setTaskFinished();
+        });
 
         File aggregateFile = FileUtilities.addSufix(resultsDirectory, File.separator + AGGREGATE_RESULTS_EXCEL_DEFAULT_FILE_NAME);
         try {
-            GroupCaseStudyExcel.aggregateExcels(
+            CaseStudyExcel.aggregateExcels(
                     resultsDirectory.listFiles(new FileFilterByExtension(false, "xls")),
                     aggregateFile);
         } catch (WriteException ex) {

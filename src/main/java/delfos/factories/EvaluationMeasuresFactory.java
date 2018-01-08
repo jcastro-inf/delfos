@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,16 +16,43 @@
  */
 package delfos.factories;
 
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
 import delfos.results.evaluationmeasures.Coverage;
 import delfos.results.evaluationmeasures.EvaluationMeasure;
-import delfos.results.evaluationmeasures.NDCG;
 import delfos.results.evaluationmeasures.NumberOfRecommendations;
-import delfos.results.evaluationmeasures.PRSpace;
-import delfos.results.evaluationmeasures.prediction.PredicitonErrorHistogram;
+import delfos.results.evaluationmeasures.ndcg.NDCG;
+import delfos.results.evaluationmeasures.ndcg.NDCG_01;
+import delfos.results.evaluationmeasures.ndcg.NDCG_02;
+import delfos.results.evaluationmeasures.ndcg.NDCG_03;
+import delfos.results.evaluationmeasures.ndcg.NDCG_04;
+import delfos.results.evaluationmeasures.ndcg.NDCG_05;
+import delfos.results.evaluationmeasures.ndcg.NDCG_06;
+import delfos.results.evaluationmeasures.ndcg.NDCG_07;
+import delfos.results.evaluationmeasures.ndcg.NDCG_08;
+import delfos.results.evaluationmeasures.ndcg.NDCG_09;
+import delfos.results.evaluationmeasures.ndcg.NDCG_10;
+import delfos.results.evaluationmeasures.prediction.PredictionErrorHistogram;
 import delfos.results.evaluationmeasures.prediction.list.HalfLifeUtility;
+import delfos.results.evaluationmeasures.prspace.PRSpace;
+import delfos.results.evaluationmeasures.prspace.precision.Precision_01;
+import delfos.results.evaluationmeasures.prspace.precision.Precision_02;
+import delfos.results.evaluationmeasures.prspace.precision.Precision_03;
+import delfos.results.evaluationmeasures.prspace.precision.Precision_04;
+import delfos.results.evaluationmeasures.prspace.precision.Precision_05;
+import delfos.results.evaluationmeasures.prspace.precision.Precision_06;
+import delfos.results.evaluationmeasures.prspace.precision.Precision_07;
+import delfos.results.evaluationmeasures.prspace.precision.Precision_08;
+import delfos.results.evaluationmeasures.prspace.precision.Precision_09;
+import delfos.results.evaluationmeasures.prspace.precision.Precision_10;
+import delfos.results.evaluationmeasures.prspace.recall.Recall_01;
+import delfos.results.evaluationmeasures.prspace.recall.Recall_02;
+import delfos.results.evaluationmeasures.prspace.recall.Recall_03;
+import delfos.results.evaluationmeasures.prspace.recall.Recall_04;
+import delfos.results.evaluationmeasures.prspace.recall.Recall_05;
+import delfos.results.evaluationmeasures.prspace.recall.Recall_06;
+import delfos.results.evaluationmeasures.prspace.recall.Recall_07;
+import delfos.results.evaluationmeasures.prspace.recall.Recall_08;
+import delfos.results.evaluationmeasures.prspace.recall.Recall_09;
+import delfos.results.evaluationmeasures.prspace.recall.Recall_10;
 import delfos.results.evaluationmeasures.ratingprediction.FScoreCollaborative;
 import delfos.results.evaluationmeasures.ratingprediction.MAE;
 import delfos.results.evaluationmeasures.ratingprediction.NMAE;
@@ -34,10 +61,12 @@ import delfos.results.evaluationmeasures.ratingprediction.PrecisionCollaborative
 import delfos.results.evaluationmeasures.ratingprediction.RMSE;
 import delfos.results.evaluationmeasures.ratingprediction.RecallCollaborative;
 import delfos.results.evaluationmeasures.roccurve.AreaUnderROC;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
 
 /**
- * Clase que permite recuperar todas las medidas de evaluación que la biblioteca
- * conoce.
+ * Clase que permite recuperar todas las medidas de evaluación que la biblioteca conoce.
  *
  * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
@@ -70,16 +99,49 @@ public class EvaluationMeasuresFactory extends Factory<EvaluationMeasure> {
         instance.addClass(NRMSE.class);
 
         instance.addClass(HalfLifeUtility.class);
-        instance.addClass(PredicitonErrorHistogram.class);
+        instance.addClass(PredictionErrorHistogram.class);
+
+        instance.addClass(Precision_01.class);
+        instance.addClass(Precision_02.class);
+        instance.addClass(Precision_03.class);
+        instance.addClass(Precision_04.class);
+        instance.addClass(Precision_05.class);
+        instance.addClass(Precision_06.class);
+        instance.addClass(Precision_07.class);
+        instance.addClass(Precision_08.class);
+        instance.addClass(Precision_09.class);
+        instance.addClass(Precision_10.class);
+
+        instance.addClass(Recall_01.class);
+        instance.addClass(Recall_02.class);
+        instance.addClass(Recall_03.class);
+        instance.addClass(Recall_04.class);
+        instance.addClass(Recall_05.class);
+        instance.addClass(Recall_06.class);
+        instance.addClass(Recall_07.class);
+        instance.addClass(Recall_08.class);
+        instance.addClass(Recall_09.class);
+        instance.addClass(Recall_10.class);
+
+        instance.addClass(NDCG_01.class);
+        instance.addClass(NDCG_02.class);
+        instance.addClass(NDCG_03.class);
+        instance.addClass(NDCG_04.class);
+        instance.addClass(NDCG_05.class);
+        instance.addClass(NDCG_06.class);
+        instance.addClass(NDCG_07.class);
+        instance.addClass(NDCG_08.class);
+        instance.addClass(NDCG_09.class);
+        instance.addClass(NDCG_10.class);
+
     }
 
     private EvaluationMeasuresFactory() {
     }
 
     /**
-     * Devuelve todas las medidas de evaluación que no necesitan que los
-     * valoraciones de preferencia indicados para las recomendaciones sean
-     * predicciones de valoraciones.
+     * Devuelve todas las medidas de evaluación que no necesitan que los valoraciones de preferencia indicados para las
+     * recomendaciones sean predicciones de valoraciones.
      *
      * @return Colección de medidas de evaluación.
      */

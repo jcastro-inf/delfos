@@ -64,18 +64,18 @@ public class OutliersItemsStandardDeviationTopPercentFilter extends GroupRatings
     }
 
     @Override
-    public Map<Integer, Map<Integer, Number>> getFilteredRatings(Map<Integer, Map<Integer, Number>> ratingsByUser) {
+    public Map<Long, Map<Long, Number>> getFilteredRatings(Map<Long, Map<Long, Number>> ratingsByUser) {
         final double percentToDelete = ((Number) getParameterValue(PERCENTAGE_FILTERED_OUT)).doubleValue();
 
         List<ItemValuePair> itemsSortedByStandardDeviation = new ArrayList<>();
 
-        Map<Integer, Map<Integer, Number>> ratingsByItem = DatasetUtilities.transformIndexedByUsersToIndexedByItems_Map(ratingsByUser);
+        Map<Long, Map<Long, Number>> ratingsByItem = DatasetUtilities.transformIndexedByUsersToIndexedByItems_Map(ratingsByUser);
 
         if (ratingsByItem.size() == 1) {
             throw new IllegalArgumentException("The number of items rated by the group is 1, cannot filter items.");
         }
 
-        for (int idItem : ratingsByItem.keySet()) {
+        for (Long idItem : ratingsByItem.keySet()) {
             double standardDeviation = new StandardDeviation(ratingsByItem.get(idItem).values()).getStandardDeviation();
             itemsSortedByStandardDeviation.add(new ItemValuePair(idItem, standardDeviation));
         }
@@ -98,24 +98,24 @@ public class OutliersItemsStandardDeviationTopPercentFilter extends GroupRatings
         }
 
         List<ItemValuePair> itemsNotFiltered = itemsSortedByStandardDeviation.subList(numItemsToDelete, itemsSortedByStandardDeviation.size());
-        Map<Integer, Map<Integer, Number>> filteredRatingsByItem = new TreeMap<>();
+        Map<Long, Map<Long, Number>> filteredRatingsByItem = new TreeMap<>();
 
         for (ItemValuePair itemValuePair : itemsNotFiltered) {
-            int idItem = itemValuePair.idItem;
+            long idItem = itemValuePair.idItem;
             filteredRatingsByItem.put(idItem, new TreeMap<>(ratingsByItem.get(idItem)));
         }
 
-        Map<Integer, Map<Integer, Number>> filteredRatingsByUser
+        Map<Long, Map<Long, Number>> filteredRatingsByUser
                 = DatasetUtilities.transformIndexedByItemToIndexedByUser_Map(filteredRatingsByItem);
         return filteredRatingsByUser;
     }
 
     private class ItemValuePair implements Comparable<ItemValuePair> {
 
-        public final int idItem;
+        public final long idItem;
         public final double value;
 
-        public ItemValuePair(int idItem, double value) {
+        public ItemValuePair(long idItem, double value) {
             this.idItem = idItem;
             this.value = value;
         }

@@ -6,7 +6,7 @@ import delfos.rs.output.sort.SortBy;
 import delfos.rs.recommendation.Recommendation;
 import delfos.rs.recommendation.Recommendations;
 import delfos.rs.recommendation.RecommendationsFactory;
-import delfos.rs.recommendation.SingleUserRecommendations;
+import delfos.rs.recommendation.RecommendationsToUser;
 import java.util.LinkedList;
 import java.util.List;
 import org.junit.Test;
@@ -44,18 +44,18 @@ public class RecommendationsOutputStandardRawTest extends DelfosTest {
     private Recommendations getRecommendations() {
         int idUser = 1;
         List<Recommendation> recommendations = new LinkedList<>();
-        recommendations.add(new Recommendation(1, 4.98));
-        recommendations.add(new Recommendation(3, 4.53));
-        recommendations.add(new Recommendation(2, 4.34));
-        recommendations.add(new Recommendation(10, 3.98));
-        recommendations.add(new Recommendation(31, 3.53));
-        recommendations.add(new Recommendation(12, 2.34));
-        recommendations.add(new Recommendation(15, 1.98));
-        recommendations.add(new Recommendation(37, 2.53));
-        recommendations.add(new Recommendation(28, 1.34));
-        recommendations.add(new Recommendation(19, 2.98));
+        recommendations.add(new Recommendation(1l, 4.98));
+        recommendations.add(new Recommendation(3l, 4.53));
+        recommendations.add(new Recommendation(2l, 4.34));
+        recommendations.add(new Recommendation(10l, 3.98));
+        recommendations.add(new Recommendation(31l, 3.53));
+        recommendations.add(new Recommendation(12l, 2.34));
+        recommendations.add(new Recommendation(15l, 1.98));
+        recommendations.add(new Recommendation(37l, 2.53));
+        recommendations.add(new Recommendation(28l, 1.34));
+        recommendations.add(new Recommendation(19l, 2.98));
 
-        SingleUserRecommendations recommendationsToUser = RecommendationsFactory.createRecommendations(new User(idUser), recommendations);
+        RecommendationsToUser recommendationsToUser = RecommendationsFactory.createRecommendations(new User(idUser), recommendations);
         return recommendationsToUser;
     }
 

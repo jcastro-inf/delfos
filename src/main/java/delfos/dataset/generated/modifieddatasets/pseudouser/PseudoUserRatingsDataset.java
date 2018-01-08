@@ -45,7 +45,7 @@ public class PseudoUserRatingsDataset<RatingType extends Rating> extends Ratings
     private final DatasetLoader<RatingType> originalDatasetLoader;
     private final Map<User, Map<Item, RatingType>> pseudoUsersRatings;
 
-    private final Map<Integer, User> pseudoUsersById;
+    private final Map<Long, User> pseudoUsersById;
 
     public PseudoUserRatingsDataset(DatasetLoader<RatingType> originalDatasetLoader, Map<User, Map<Item, RatingType>> pseudoUsersRatings) {
 
@@ -56,7 +56,7 @@ public class PseudoUserRatingsDataset<RatingType extends Rating> extends Ratings
     }
 
     @Override
-    public RatingType getRating(int idUser, int idItem) throws UserNotFound, ItemNotFound {
+    public RatingType getRating(long idUser, long idItem) throws UserNotFound, ItemNotFound {
 
         RatingType rating = originalDatasetLoader.getRatingsDataset().getRating(idUser, idItem);
         if (rating != null) {
@@ -81,8 +81,8 @@ public class PseudoUserRatingsDataset<RatingType extends Rating> extends Ratings
     }
 
     @Override
-    public Set<Integer> allUsers() {
-        Set<Integer> allUsers = new TreeSet<>();
+    public Set<Long> allUsers() {
+        Set<Long> allUsers = new TreeSet<>();
 
         allUsers.addAll(originalDatasetLoader.getRatingsDataset().allUsers());
         allUsers.addAll(pseudoUsersRatings.keySet().stream()
@@ -91,13 +91,13 @@ public class PseudoUserRatingsDataset<RatingType extends Rating> extends Ratings
     }
 
     @Override
-    public Set<Integer> allRatedItems() {
+    public Set<Long> allRatedItems() {
 
-        Set<Integer> allRatedItems = new TreeSet<>();
+        Set<Long> allRatedItems = new TreeSet<>();
 
         allRatedItems.addAll(originalDatasetLoader.getRatingsDataset().allRatedItems());
 
-        Set<Integer> itemsRatedByPseudoUsers = pseudoUsersRatings.values().stream()
+        Set<Long> itemsRatedByPseudoUsers = pseudoUsersRatings.values().stream()
                 .flatMap(userRatings -> userRatings.keySet().stream())
                 .map(item -> item.getId())
                 .collect(Collectors.toSet());
@@ -109,22 +109,22 @@ public class PseudoUserRatingsDataset<RatingType extends Rating> extends Ratings
     }
 
     @Override
-    public Set<Integer> getUserRated(Integer idUser) throws UserNotFound {
+    public Set<Long> getUserRated(long idUser) throws UserNotFound {
         return getItemRatingsRated(idUser).keySet();
     }
 
     @Override
-    public Set<Integer> getItemRated(Integer idItem) throws ItemNotFound {
+    public Set<Long> getItemRated(long idItem) throws ItemNotFound {
         return getItemRatingsRated(idItem).keySet();
     }
 
     @Override
-    public Map<Integer, RatingType> getUserRatingsRated(Integer idUser) throws UserNotFound {
+    public Map<Long, RatingType> getUserRatingsRated(long idUser) throws UserNotFound {
         boolean containsKey = pseudoUsersById.containsKey(idUser);
 
         if (containsKey) {
             User pseudoUser = pseudoUsersById.get(idUser);
-            Map<Integer, RatingType> pseudoUserRatings
+            Map<Long, RatingType> pseudoUserRatings
                     = pseudoUsersRatings.get(pseudoUser)
                     .entrySet().stream()
                     .collect(Collectors.toMap(
@@ -138,21 +138,21 @@ public class PseudoUserRatingsDataset<RatingType extends Rating> extends Ratings
     }
 
     @Override
-    public Map<Integer, RatingType> getItemRatingsRated(Integer idItem) throws ItemNotFound {
+    public Map<Long, RatingType> getItemRatingsRated(long idItem) throws ItemNotFound {
 
-        Map<Integer, RatingType> itemRatingsRated = originalDatasetLoader.getRatingsDataset().getItemRatingsRated(idItem);
+        Map<Long, RatingType> itemRatingsRated = originalDatasetLoader.getRatingsDataset().getItemRatingsRated(idItem);
 
         Collection<RatingType> ratedByPseudoUsers = pseudoUsersRatings.values().parallelStream()
                 .flatMap(pseudoUserRatings -> pseudoUserRatings.values().stream())
                 .filter(rating -> rating.getIdItem() == idItem)
                 .collect(Collectors.toList());
 
-        Map<Integer, RatingType> itemsRatingsRated_byPseudoUsers = ratedByPseudoUsers
+        Map<Long, RatingType> itemsRatingsRated_byPseudoUsers = ratedByPseudoUsers
                 .stream().collect(Collectors.toMap(
                         rating -> rating.getIdItem(),
                         rating -> rating));
 
-        Map<Integer, RatingType> ret = new TreeMap<>();
+        Map<Long, RatingType> ret = new TreeMap<>();
 
         ret.putAll(itemRatingsRated);
         ret.putAll(itemsRatingsRated_byPseudoUsers);
@@ -184,11 +184,11 @@ public class PseudoUserRatingsDataset<RatingType extends Rating> extends Ratings
 
         ratingsSorted.stream().forEachOrdered(rating -> pseudoRatingsHashCodeBuilder.append(rating.toString()));
 
-        Integer pseudoRatingsHashCode = pseudoRatingsHashCodeBuilder.build();
+        int pseudoRatingsHashCode = pseudoRatingsHashCodeBuilder.build();
 
         HashCodeBuilder finalHash = new HashCodeBuilder(37, 11);
 
-        Integer finalHashValue = finalHash.append(originalDatasetHash).append(pseudoRatingsHashCode).build();
+        int finalHashValue = finalHash.append(originalDatasetHash).append(pseudoRatingsHashCode).build();
 
         return finalHashValue;
 

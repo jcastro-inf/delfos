@@ -49,5 +49,8 @@ public abstract class RecomendableItemTechnique {
      * @return Colección con los productos que el sistema de recomendación debe
      * tener en cuenta para recomendar
      */
-    public abstract Collection<Integer> getRecommendableItems(GroupOfUsers groupOfUsers, RatingsDataset<? extends Rating> ratingsDataset, ContentDataset contentDataset);
+    public abstract Collection<Long> getRecommendableItems(
+            GroupOfUsers groupOfUsers,
+            RatingsDataset<? extends Rating> ratingsDataset,
+            ContentDataset contentDataset);
 }

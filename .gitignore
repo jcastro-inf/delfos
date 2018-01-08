@@ -9,7 +9,7 @@
 /.config/
 
 # Delfos directory to deploy in any linux machine
-/delfos-install/.config/
+/delfos-install/
 
 # Nano (text editor) backups.
 *~
@@ -20,3 +20,10 @@
 *.tar.gz
 hs_err_*
 /nbproject/
+
+*.csv
+*.dat
+
+
+.idea/
+*.iml

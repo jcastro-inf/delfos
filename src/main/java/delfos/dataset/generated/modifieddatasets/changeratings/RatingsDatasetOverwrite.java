@@ -38,7 +38,7 @@ public class RatingsDatasetOverwrite<RatingType extends Rating> extends RatingsD
 
     public static <RatingType extends Rating> RatingsDatasetOverwrite<RatingType> createRatingsDataset(
             RatingsDataset<RatingType> ratingsDataset,
-            Map<Integer, Map<Integer, RatingType>> newRatings_byUser) {
+            Map<Long, Map<Long, RatingType>> newRatings_byUser) {
 
         return new RatingsDatasetOverwrite<>(ratingsDataset, copyRatingsMap(newRatings_byUser));
     }
@@ -47,7 +47,7 @@ public class RatingsDatasetOverwrite<RatingType extends Rating> extends RatingsD
             RatingsDataset<RatingType> ratingsDataset,
             Collection<RatingType> newRatings) {
 
-        final Map<Integer, Map<Integer, RatingType>> newRatings_byUser = new TreeMap<>();
+        final Map<Long, Map<Long, RatingType>> newRatings_byUser = new TreeMap<>();
         for (RatingType rating : newRatings) {
             if (!newRatings_byUser.containsKey(rating.getIdUser())) {
                 newRatings_byUser.put(rating.getIdUser(), new TreeMap<>());
@@ -64,8 +64,8 @@ public class RatingsDatasetOverwrite<RatingType extends Rating> extends RatingsD
     }
 
     private final RatingsDataset<RatingType> originalRatingsDataset;
-    private final Map<Integer, Map<Integer, RatingType>> newRatings_byUser;
-    private final Map<Integer, Map<Integer, RatingType>> newRatings_byItem;
+    private final Map<Long, Map<Long, RatingType>> newRatings_byUser;
+    private final Map<Long, Map<Long, RatingType>> newRatings_byItem;
 
     private RatingsDatasetOverwrite() {
         this.originalRatingsDataset = null;
@@ -75,7 +75,7 @@ public class RatingsDatasetOverwrite<RatingType extends Rating> extends RatingsD
     }
 
     private RatingsDatasetOverwrite(RatingsDataset<RatingType> ratingsDataset,
-            Map<Integer, Map<Integer, RatingType>> newRatings_byUser) {
+            Map<Long, Map<Long, RatingType>> newRatings_byUser) {
 
         this.originalRatingsDataset = ratingsDataset;
         this.newRatings_byUser = newRatings_byUser;
@@ -83,7 +83,7 @@ public class RatingsDatasetOverwrite<RatingType extends Rating> extends RatingsD
     }
 
     @Override
-    public RatingType getRating(int idUser, int idItem) throws UserNotFound, ItemNotFound {
+    public RatingType getRating(long idUser, long idItem) throws UserNotFound, ItemNotFound {
         if (newRatings_byUser.containsKey(idUser) && newRatings_byUser.get(idUser).containsKey(idItem)) {
             return newRatings_byUser.get(idUser).get(idItem);
         } else {
@@ -92,8 +92,8 @@ public class RatingsDatasetOverwrite<RatingType extends Rating> extends RatingsD
     }
 
     @Override
-    public Set<Integer> allUsers() {
-        Set<Integer> allUsers = new TreeSet<>();
+    public Set<Long> allUsers() {
+        Set<Long> allUsers = new TreeSet<>();
 
         allUsers.addAll(originalRatingsDataset.allUsers());
         allUsers.addAll(newRatings_byUser.keySet());
@@ -102,8 +102,8 @@ public class RatingsDatasetOverwrite<RatingType extends Rating> extends RatingsD
     }
 
     @Override
-    public Set<Integer> allRatedItems() {
-        Set<Integer> allRatedItems = new TreeSet<>();
+    public Set<Long> allRatedItems() {
+        Set<Long> allRatedItems = new TreeSet<>();
 
         allRatedItems.addAll(originalRatingsDataset.allRatedItems());
         allRatedItems.addAll(newRatings_byItem.keySet());
@@ -112,19 +112,19 @@ public class RatingsDatasetOverwrite<RatingType extends Rating> extends RatingsD
     }
 
     @Override
-    public Set<Integer> getUserRated(Integer idUser) throws UserNotFound {
+    public Set<Long> getUserRated(long idUser) throws UserNotFound {
         return getUserRatingsRated(idUser).keySet();
     }
 
     @Override
-    public Set<Integer> getItemRated(Integer idItem) throws ItemNotFound {
+    public Set<Long> getItemRated(long idItem) throws ItemNotFound {
         return getItemRatingsRated(idItem).keySet();
     }
 
     @Override
-    public Map<Integer, RatingType> getUserRatingsRated(Integer idUser) throws UserNotFound {
+    public Map<Long, RatingType> getUserRatingsRated(long idUser) throws UserNotFound {
         if (newRatings_byUser.containsKey(idUser)) {
-            Map<Integer, RatingType> modifiedRatings = new TreeMap<>();
+            Map<Long, RatingType> modifiedRatings = new TreeMap<>();
 
             modifiedRatings.putAll(originalRatingsDataset.getUserRatingsRated(idUser));
             modifiedRatings.putAll(newRatings_byUser.get(idUser));
@@ -137,10 +137,10 @@ public class RatingsDatasetOverwrite<RatingType extends Rating> extends RatingsD
     }
 
     @Override
-    public Map<Integer, RatingType> getItemRatingsRated(Integer idItem) throws ItemNotFound {
+    public Map<Long, RatingType> getItemRatingsRated(long idItem) throws ItemNotFound {
 
         if (newRatings_byItem.containsKey(idItem)) {
-            Map<Integer, RatingType> modifiedRatings = new TreeMap<>();
+            Map<Long, RatingType> modifiedRatings = new TreeMap<>();
 
             modifiedRatings.putAll(originalRatingsDataset.getItemRatingsRated(idItem));
             modifiedRatings.putAll(newRatings_byItem.get(idItem));
@@ -158,12 +158,12 @@ public class RatingsDatasetOverwrite<RatingType extends Rating> extends RatingsD
         return originalRatingsDataset.getRatingsDomain();
     }
 
-    public static <RatingType extends Rating> Map<Integer, Map<Integer, RatingType>> copyRatingsMap(Map<Integer, Map<Integer, RatingType>> newRatings) {
+    public static <RatingType extends Rating> Map<Long, Map<Long, RatingType>> copyRatingsMap(Map<Long, Map<Long, RatingType>> newRatings) {
 
-        Map<Integer, Map<Integer, RatingType>> newRatings_byUser = new TreeMap<>();
-        for (int idUser : newRatings.keySet()) {
-            for (Map.Entry<Integer, RatingType> entry : newRatings.get(idUser).entrySet()) {
-                int idItem = entry.getKey();
+        Map<Long, Map<Long, RatingType>> newRatings_byUser = new TreeMap<>();
+        for (long idUser : newRatings.keySet()) {
+            for (Map.Entry<Long, RatingType> entry : newRatings.get(idUser).entrySet()) {
+                long idItem = entry.getKey();
                 RatingType rating = entry.getValue();
 
                 if (idUser != rating.getIdUser()) {
@@ -186,11 +186,11 @@ public class RatingsDatasetOverwrite<RatingType extends Rating> extends RatingsD
         return newRatings_byUser;
     }
 
-    private Map<Integer, Map<Integer, RatingType>> changeIndexation(Map<Integer, Map<Integer, RatingType>> ratings) {
-        Map<Integer, Map<Integer, RatingType>> changedIndexation = new TreeMap<>();
+    private Map<Long, Map<Long, RatingType>> changeIndexation(Map<Long, Map<Long, RatingType>> ratings) {
+        Map<Long, Map<Long, RatingType>> changedIndexation = new TreeMap<>();
 
-        for (int rowsIndex : ratings.keySet()) {
-            for (int columnsIndex : ratings.get(rowsIndex).keySet()) {
+        for (long rowsIndex : ratings.keySet()) {
+            for (long columnsIndex : ratings.get(rowsIndex).keySet()) {
                 if (!changedIndexation.containsKey(columnsIndex)) {
                     changedIndexation.put(columnsIndex, new TreeMap<>());
                 }

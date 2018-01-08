@@ -51,7 +51,7 @@ public class MAE_unpopular extends GroupEvaluationMeasure {
 
         MeanIterative maeUnpopularItems = new MeanIterative();
         TreeMap<GroupOfUsers, MeanIterative> maeGroups = new TreeMap<>();
-        TreeMap<Integer, MeanIterative> maeAllMembers = new TreeMap<>();
+        TreeMap<Long, MeanIterative> maeAllMembers = new TreeMap<>();
 
         Set<Item> popularItems = getPopularItems(originalDatasetLoader, POPULARITY_THRESHOLD);
 
@@ -63,12 +63,12 @@ public class MAE_unpopular extends GroupEvaluationMeasure {
                 continue;
             }
             MeanIterative maeGroup = new MeanIterative();
-            Map<Integer, MeanIterative> maeMembers = new TreeMap<>();
+            Map<Long, MeanIterative> maeMembers = new TreeMap<>();
             for (User member : groupOfUsers.getMembers()) {
                 maeMembers.put(member.getId(), new MeanIterative());
             }
 
-            Map<Integer, Map<Integer, ? extends Rating>> groupTrueRatings = new TreeMap<>();
+            Map<Long, Map<Long, ? extends Rating>> groupTrueRatings = new TreeMap<>();
 
             groupOfUsers.getIdMembers().stream().forEach((idUser) -> {
                 try {
@@ -89,7 +89,7 @@ public class MAE_unpopular extends GroupEvaluationMeasure {
                 }
                 double itemWeight = 1;
 
-                for (int idUser : groupOfUsers.getIdMembers()) {
+                for (long idUser : groupOfUsers.getIdMembers()) {
                     if (groupTrueRatings.get(idUser).containsKey(item.getId())) {
                         double trueRating = groupTrueRatings.get(idUser).get(item.getId()).getRatingValue().doubleValue();
                         double predicted = recommendation.getPreference().doubleValue();
@@ -126,21 +126,23 @@ public class MAE_unpopular extends GroupEvaluationMeasure {
      * @return
      * @throws CannotLoadContentDataset
      */
-    public static Set<Item> getPopularItems(DatasetLoader<? extends Rating> originalDatasetLoader, double popularityThreshold) throws CannotLoadContentDataset {
+    public static Set<Item> getPopularItems(
+            DatasetLoader<? extends Rating> originalDatasetLoader,
+            double popularityThreshold) throws CannotLoadContentDataset {
         final ContentDataset contentDataset = originalDatasetLoader.getContentDataset();
         final RatingsDataset<? extends Rating> ratingsDataset = originalDatasetLoader.getRatingsDataset();
 
-        Map<Item, Integer> itemsWithNumRatings = contentDataset.parallelStream().collect(
+        Map<Item, Long> itemsWithNumRatings = contentDataset.parallelStream().collect(
                 Collectors.toMap(item -> item, item -> {
 
-                    int numUsersRated = ratingsDataset.getItemRated(item.getId()).size();
+                    long numUsersRated = ratingsDataset.getItemRated(item.getId()).size();
                     return numUsersRated;
                 })).entrySet().parallelStream()
                 .filter(entry -> entry.getValue() != 0)
                 .collect(Collectors.toMap(entry -> entry.getKey(), entry -> entry.getValue()));
 
         int indexPopular = itemsWithNumRatings.size() - (int) (popularityThreshold * itemsWithNumRatings.size());
-        int numRatingsToBePopular = itemsWithNumRatings.values().stream().sorted().mapToInt(entry -> entry).toArray()[indexPopular];
+        long numRatingsToBePopular = itemsWithNumRatings.values().stream().sorted().mapToLong(entry -> entry).toArray()[indexPopular];
         Set<Item> popularItems = itemsWithNumRatings.entrySet()
                 .parallelStream()
                 .filter(entry -> entry.getValue() >= numRatingsToBePopular)

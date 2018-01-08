@@ -56,7 +56,7 @@ public abstract class PredictionTechnique extends ParameterOwnerAdapter {
      * @throws UserNotFound Si el usuario no existe.
      * @throws ItemNotFound Si el producto no existe.
      */
-    public abstract double predictRating(int idUser, int idItem, Collection<MatchRating> ratings, RatingsDataset<? extends Rating> ratingsDataset) throws CouldNotPredictRating, UserNotFound, ItemNotFound;
+    public abstract double predictRating(long idUser, long idItem, Collection<MatchRating> ratings, RatingsDataset<? extends Rating> ratingsDataset) throws CouldNotPredictRating, UserNotFound, ItemNotFound;
 
     @Override
     public boolean equals(Object obj) {

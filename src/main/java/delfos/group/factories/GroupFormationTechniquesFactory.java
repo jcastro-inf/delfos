@@ -22,6 +22,7 @@ import delfos.group.experiment.validation.groupformation.DissimilarMembers;
 import delfos.group.experiment.validation.groupformation.DissimilarMembers_OnlyNGroups;
 import delfos.group.experiment.validation.groupformation.FixedGroupSize;
 import delfos.group.experiment.validation.groupformation.FixedGroupSize_OnlyNGroups;
+import delfos.group.experiment.validation.groupformation.FixedGroupSize_OnlyNGroups_withOverlapingMembers;
 import delfos.group.experiment.validation.groupformation.GivenGroups;
 import delfos.group.experiment.validation.groupformation.GroupFormationTechnique;
 import delfos.group.experiment.validation.groupformation.GroupFormationTechnique_cache;
@@ -53,6 +54,8 @@ public class GroupFormationTechniquesFactory extends Factory<GroupFormationTechn
         instance.addClass(AllPossibleGroups.class);
         instance.addClass(FixedGroupSize.class);
         instance.addClass(FixedGroupSize_OnlyNGroups.class);
+        instance.addClass(FixedGroupSize_OnlyNGroups_withOverlapingMembers.class);
+
         instance.addClass(ProbabilityDistributionOfSizes.class);
 
         instance.addClass(GivenGroups.class);

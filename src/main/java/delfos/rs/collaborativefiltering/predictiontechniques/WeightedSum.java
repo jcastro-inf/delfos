@@ -37,7 +37,7 @@ public class WeightedSum extends PredictionTechnique {
     private static final long serialVersionUID = 1L;
 
     @Override
-    public double predictRating(int idUser, int idItem, Collection<MatchRating> ratings, RatingsDataset<? extends Rating> rd) throws CouldNotPredictRating {
+    public double predictRating(long idUser, long idItem, Collection<MatchRating> ratings, RatingsDataset<? extends Rating> rd) throws CouldNotPredictRating {
         double numerador = 0, denominador = 0;
 
         if (ratings.isEmpty()) {

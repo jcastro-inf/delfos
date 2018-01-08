@@ -20,15 +20,14 @@ import delfos.ERROR_CODES;
 import delfos.common.Global;
 import delfos.common.exceptions.dataset.items.ItemNotFound;
 import delfos.common.exceptions.dataset.users.UserNotFound;
+import delfos.dataset.basic.item.Item;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RatingsDataset;
 import delfos.dataset.basic.rating.RatingsDatasetAdapter;
 import delfos.dataset.basic.rating.domain.Domain;
-import java.util.Collections;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeMap;
-import java.util.TreeSet;
+import delfos.dataset.basic.user.User;
+
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -46,7 +45,10 @@ public class TestRatingsDataset_CPU<RatingType extends Rating> extends RatingsDa
     /**
      * Valoraciones de test. Son las valoraciones que son accesibles.
      */
-    private final Map<Integer, Set<Integer>> testRatings_byUser;
+    private final Map<User, Set<Item>> testRatings_byUser;
+
+    private final Map<Long, User > userById;
+    private final Map<Long, Item> itemById;
     /**
      * Dataset original que contiene el conjunto de datos completo.
      */
@@ -54,16 +56,23 @@ public class TestRatingsDataset_CPU<RatingType extends Rating> extends RatingsDa
     /**
      * Buffer para almacenar el conjunto de productos valorados.
      */
-    private Set<Integer> allRatedItems;
+    private Set<Item> allRatedItems;
 
-    public TestRatingsDataset_CPU(RatingsDataset<RatingType> originalDatset, Map<Integer, Set<Integer>> testSet) throws UserNotFound, ItemNotFound {
+    public TestRatingsDataset_CPU(RatingsDataset<RatingType> originalDatset, Map<User, Set<Item>> testSet) throws UserNotFound, ItemNotFound {
         super();
         this.originalDataset = originalDatset;
 
         this.testRatings_byUser = testSet;
-        for (int idUser : testSet.keySet()) {
-            for (int idItem : testSet.get(idUser)) {
-                if (originalDatset.getRating(idUser, idItem) == null) {
+        userById = new HashMap<>() ;
+        itemById = new HashMap<>();
+
+        for(RatingType rating : originalDataset){
+            userById.put(rating.getUser().getId(), rating.getUser());
+            itemById.put(rating.getItem().getId(),rating.getItem());
+        }
+        for (User user : testSet.keySet()) {
+            for (Item item : testSet.get(user)) {
+                if (originalDatset.getRating(user.getId(),item.getId()) == null) {
                     throw new IllegalArgumentException("Specified rating isn't found in originalDataset");
                 }
             }
@@ -71,8 +80,10 @@ public class TestRatingsDataset_CPU<RatingType extends Rating> extends RatingsDa
     }
 
     @Override
-    public RatingType getRating(int idUser, int idItem) throws UserNotFound, ItemNotFound {
-        if (testRatings_byUser.containsKey(idUser) && testRatings_byUser.get(idUser).contains(idItem)) {
+    public RatingType getRating(long idUser, long idItem) throws UserNotFound, ItemNotFound {
+        User user = userById.get(idUser);
+        Item item = itemById.get(idItem);
+        if (testRatings_byUser.containsKey(user) && testRatings_byUser.get(user).contains(item)) {
             return originalDataset.getRating(idUser, idItem);
         } else {
             return null;
@@ -80,39 +91,41 @@ public class TestRatingsDataset_CPU<RatingType extends Rating> extends RatingsDa
     }
 
     @Override
-    public Set<Integer> allUsers() {
-        return testRatings_byUser.keySet();
+    public Set<Long> allUsers() {
+        return testRatings_byUser.keySet().stream().map(user-> user.getId()).collect(Collectors.toSet());
     }
 
     @Override
-    public Set<Integer> allRatedItems() {
+    public Set<Long> allRatedItems() {
         if (this.allRatedItems == null) {
             allRatedItems = new TreeSet<>();
 
-            for (Integer idUser : testRatings_byUser.keySet()) {
-                allRatedItems.addAll(testRatings_byUser.get(idUser));
+            for (User user: testRatings_byUser.keySet()) {
+                allRatedItems.addAll(testRatings_byUser.get(user));
             }
         }
 
-        return Collections.unmodifiableSet(allRatedItems);
+        return Collections.unmodifiableSet(allRatedItems.stream().map(item-> item.getId()).collect(Collectors.toSet()));
     }
 
     @Override
-    public Set<Integer> getUserRated(Integer idUser) throws UserNotFound {
-        if (testRatings_byUser.containsKey(idUser)) {
-            Set<Integer> ret = new TreeSet<>();
-            ret.addAll(testRatings_byUser.get(idUser));
+    public Set<Long> getUserRated(long idUser) throws UserNotFound {
+        User user  = userById.get(idUser);
+        if (testRatings_byUser.containsKey(user)) {
+            Set<Long> ret = new TreeSet<>();
+            ret.addAll(testRatings_byUser.get(user).stream().map(item-> item.getId()).collect(Collectors.toSet()));
             return ret;
         } else {
             throw new UserNotFound(idUser);
         }
     }
 
-    private final Set<Integer> usersWarned = Collections.synchronizedSet(new TreeSet<>());
+    private final Set<Long> usersWarned = Collections.synchronizedSet(new TreeSet<>());
 
     @Override
-    public Map<Integer, RatingType> getUserRatingsRated(Integer idUser) throws UserNotFound {
-        if (!testRatings_byUser.containsKey(idUser)) {
+    public Map<Long, RatingType> getUserRatingsRated(long idUser) throws UserNotFound {
+        User user = userById.get(idUser);
+        if (!testRatings_byUser.containsKey(user)) {
             synchronized (usersWarned) {
                 if (!usersWarned.contains(idUser)) {
                     usersWarned.add(idUser);
@@ -126,12 +139,12 @@ public class TestRatingsDataset_CPU<RatingType extends Rating> extends RatingsDa
             return Collections.EMPTY_MAP;
         }
 
-        Map<Integer, RatingType> userRatingsRated = testRatings_byUser.get(idUser).parallelStream()
+        Map<Long, RatingType> userRatingsRated = testRatings_byUser.get(user).parallelStream()
                 .collect(Collectors.toMap(
-                        idItem -> idItem,
-                        idItem -> {
+                        item -> item.getId(),
+                        item -> {
                             try {
-                                return originalDataset.getRating(idUser, idItem);
+                                return originalDataset.getRating(idUser, item.getId());
                             } catch (ItemNotFound ex) {
                                 Global.showError(ex);
                                 ERROR_CODES.ITEM_NOT_FOUND.exit(ex);
@@ -144,27 +157,31 @@ public class TestRatingsDataset_CPU<RatingType extends Rating> extends RatingsDa
     }
 
     @Override
-    public Set<Integer> getItemRated(Integer idItem) {
-        Set<Integer> ret = new TreeSet<>();
+    public Set<Long> getItemRated(long idItem) {
+        Set<Long> ret = new TreeSet<>();
 
         testRatings_byUser
                 .keySet().stream()
                 .filter(
-                        (idUser) -> (testRatings_byUser.get(idUser).contains(idItem)))
-                .forEach((idUser) -> {
-                    ret.add(idUser);
+                        (user) -> {
+                            Item item = itemById.get(idItem);
+                            return testRatings_byUser.get(user).contains(item);
+                        })
+                .forEach((user) -> {
+                    ret.add(user.getId());
                 });
         return ret;
     }
 
     @Override
-    public Map<Integer, RatingType> getItemRatingsRated(Integer idItem) throws ItemNotFound {
-        Map<Integer, RatingType> ret = new TreeMap<>();
+    public Map<Long, RatingType> getItemRatingsRated(long idItem) throws ItemNotFound {
+        Map<Long, RatingType> ret = new TreeMap<>();
 
-        for (int idUser : testRatings_byUser.keySet()) {
-            if (testRatings_byUser.get(idUser).contains(idItem)) {
+        Item item  = itemById.get(idItem);
+        for (User user  : testRatings_byUser.keySet()) {
+            if (testRatings_byUser.get(user).contains(item)) {
                 try {
-                    ret.put(idUser, originalDataset.getRating(idUser, idItem));
+                    ret.put(user.getId(), originalDataset.getRating(user.getId(), idItem));
                 } catch (UserNotFound ex) {
                     Global.showError(ex);
                     ERROR_CODES.USER_NOT_FOUND.exit(ex);

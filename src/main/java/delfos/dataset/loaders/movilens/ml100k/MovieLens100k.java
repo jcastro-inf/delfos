@@ -102,7 +102,7 @@ public class MovieLens100k extends CompleteDatasetLoaderAbstract<Rating> {
     }
 
     @Override
-    public RatingsDataset<Rating> getRatingsDataset() throws CannotLoadRatingsDataset {
+    public synchronized RatingsDataset<Rating> getRatingsDataset() throws CannotLoadRatingsDataset {
         if (ratingsDataset == null) {
             getUsersDataset();
             getContentDataset();
@@ -159,7 +159,7 @@ public class MovieLens100k extends CompleteDatasetLoaderAbstract<Rating> {
     }
 
     @Override
-    public ContentDataset getContentDataset() throws CannotLoadContentDataset {
+    public synchronized ContentDataset getContentDataset() throws CannotLoadContentDataset {
         if (contentDataset == null) {
             Map<String, Integer> generos_byName = new TreeMap<>();
             List<String> generos_byIndex = new ArrayList<>();
@@ -269,7 +269,7 @@ public class MovieLens100k extends CompleteDatasetLoaderAbstract<Rating> {
     }
 
     @Override
-    public UsersDataset getUsersDataset() throws CannotLoadUsersDataset {
+    public synchronized UsersDataset getUsersDataset() throws CannotLoadUsersDataset {
 
         if (usersDataset == null) {
 

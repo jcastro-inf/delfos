@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -27,9 +27,8 @@ import delfos.configfile.rs.single.RecommenderSystemConfiguration;
 import delfos.configfile.rs.single.RecommenderSystemConfigurationFileParser;
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
-import delfos.experiment.casestudy.CaseStudy;
 import delfos.experiment.casestudy.CaseStudyConfiguration;
-import delfos.experiment.casestudy.defaultcase.DefaultCaseStudy;
+import delfos.experiment.casestudy.CaseStudy;
 import delfos.io.xml.casestudy.CaseStudyXML;
 import delfos.rs.RecommenderSystem;
 import java.io.File;
@@ -153,20 +152,19 @@ public class ExecuteManyExperiments {
                 RecommenderSystem<Object> recommenderSystem = (RecommenderSystem<Object>) caseStudyConfiguration.getRecommenderSystem();
                 for (DatasetLoader<? extends Rating> datasetLoader : datasets) {
 
-                    CaseStudy caseStudy = new DefaultCaseStudy(
+                    CaseStudy caseStudy = new CaseStudy(
                             recommenderSystem,
                             datasetLoader,
                             caseStudyConfiguration.getValidationTechnique(),
                             caseStudyConfiguration.getPredictionProtocol(), datasetLoader.getDefaultRelevanceCriteria(), caseStudyConfiguration.getEvaluationMeasures(), numExecutions);
 
-                    caseStudy.addExperimentListener(new ExperimentListerner_default(System.out, 10000));
-                    //caseStudy.addExecutionProgressListener(new ExecutionProgressListener_onlyChanges(System.out, 10000));
+                    caseStudy.addExperimentListener(new ExperimentListener_default(System.out, 10000));
 
                     String defaultFileName = CaseStudyXML.getDefaultFileName(caseStudy);
-                    File fileWithAlias = FileUtilities.addPrefix(new File(defaultFileName), caseStudy.getRecommenderSystem().getAlias() + " -- ");
-                    CaseStudyXML.saveCaseDescription(caseStudy, fileWithAlias.getAbsolutePath() + ".tmp");
+                    File file = FileUtilities.addPrefix(new File(defaultFileName), caseStudy.getRecommenderSystem().getAlias() + " -- ");
+                    CaseStudyXML.saveCaseDescription(caseStudy, file.getAbsolutePath() + ".tmp");
                     caseStudy.execute();
-                    CaseStudyXML.saveCaseResults(caseStudy, caseStudy.getRecommenderSystem().getAlias(), defaultFileName);
+                    CaseStudyXML.saveCaseResults(caseStudy, file);
 
                     Global.showInfoMessage("================ FIN Sistema " + i + " de " + caseStudyConfigurations.size() + "=================== \n");
                     i++;

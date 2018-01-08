@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -20,48 +20,44 @@ import delfos.common.exceptions.dataset.users.UserNotFound;
 import delfos.common.parameters.Parameter;
 import delfos.common.parameters.restriction.DoubleParameter;
 import delfos.common.parameters.restriction.IntegerParameter;
+import delfos.dataset.basic.item.Item;
+import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
-import delfos.dataset.basic.rating.RatingsDataset;
+import delfos.dataset.basic.user.User;
+
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.List;
 import java.util.Random;
 import java.util.Set;
 import java.util.TreeSet;
 
 /**
- * Técnica de validación que permite controlar de una manera avanzada el número
- * usuarios para los que se realiza una predicción y el número de valoraciones
- * que se predicen para cada uno de ellos. Consta de dos parámetros que
- * controlan el número de datos que se predicen y otro parámetro que funciona
- * como restricción
- *
- * Esta técnica de predicción surge al comprobar que la validación
+ * Prediction protocol that allows to control, in an advanced way, the number of users for which a prediction is
+ * requested and the number of ratings predicted for each of them. It has two parameters: one to control the number of
+ * items predicted and other to ensure a minimum number of ratings for users in the test set.
+ * <p>
+ * <p>
+ * This prediction protocol is used without validation, it does all the job by itself.
  *
  * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
- *
- * @version 1.1 21-Jan-2013
- * @version 1.0 Unknow date
  */
 public class ValidacionPersonalizada extends PredictionProtocol {
 
     private static final long serialVersionUID = 1L;
     /**
-     * Cantidad de valoraciones que se usan en la predicción para un usuario
+     * Minimum ratings that a test user has.
      */
     public static Parameter minRatings = new Parameter("minRatings", new IntegerParameter(1, 10000, 4));
     /**
-     * Porcentaje de usuarios que se comprueban en la validación.
+     * Percent of users in the test set.
      */
     public static Parameter userPercent = new Parameter("userPercent", new DoubleParameter(0.0001f, 1, 1));
     /**
-     * Porcentaje de valoraciones que se comprueban de cada usuario.
+     * Percent of ratings requested to each user in the test set.
      */
     public static Parameter ratingsToPredictPercent = new Parameter("ratingsToPredictPercent", new DoubleParameter(0.0001f, 1, 1));
 
-    /**
-     * Constructor por defecto que deja el numero de valoraciones a 4
-     */
     public ValidacionPersonalizada() {
         super();
         addParameter(minRatings);
@@ -70,14 +66,12 @@ public class ValidacionPersonalizada extends PredictionProtocol {
     }
 
     /**
-     * Crea la técnica de validación asignando los valores de los parámetros que
-     * controlan el número de datos que se evaluan.
+     * Crea la técnica de validación asignando los valores de los parámetros que controlan el número de datos que se
+     * evaluan.
      *
-     * @param minRatingsValue Número mínimo de ratings que un usuario tiene en
-     * el conjunto de entrenamiento
-     * @param userPercentValue Porcentaje de usuarios que se comprueban
-     * @param ratingsToPredictPercentValue Porcentaje de valoraciones de un
-     * usuario que se comprueban.
+     * @param minRatingsValue Minimum ratings that a test user has.
+     * @param userPercentValue Percent of users in the test set.
+     * @param ratingsToPredictPercentValue Percent of ratings requested to each user in the test set.
      */
     public ValidacionPersonalizada(int minRatingsValue, double userPercentValue, double ratingsToPredictPercentValue) {
         addParameter(minRatings);
@@ -90,7 +84,10 @@ public class ValidacionPersonalizada extends PredictionProtocol {
     }
 
     @Override
-    public Collection<Set<Integer>> getRecommendationRequests(RatingsDataset<? extends Rating> testRatingsDataset, int idUser) throws UserNotFound {
+    public <RatingType extends Rating> List<Set<Item>> getRecommendationRequests(
+            DatasetLoader<RatingType> trainingDatasetLoader,
+            DatasetLoader<RatingType> testDatasetLoader,
+            User user) throws UserNotFound {
         Random random = new Random(getSeedValue());
 
         double userPercentValue = (Double) getParameterValue(userPercent);
@@ -100,13 +97,13 @@ public class ValidacionPersonalizada extends PredictionProtocol {
         int minRatingsValue = (Integer) getParameterValue(minRatings);
         double ratingsToPredictPercentValue = (Double) getParameterValue(ratingsToPredictPercent);
 
-        Integer[] itemsRated = testRatingsDataset.getUserRatingsRated(idUser).keySet().toArray(new Integer[0]);
+        Item[] itemsRated = testDatasetLoader.getRatingsDataset().getUserRatingsRated(user.getId()).values().toArray(new Item[0]);
         int extraer = (int) (itemsRated.length * (1 - ratingsToPredictPercentValue));
         if (extraer < minRatingsValue) {
             extraer = minRatingsValue;
         }
 
-        Set<Integer> extraidos = new TreeSet<>();
+        Set<Item> extraidos = new TreeSet<>();
         if (extraer > itemsRated.length) {
             return new ArrayList<>();
         }
@@ -116,7 +113,7 @@ public class ValidacionPersonalizada extends PredictionProtocol {
             extraidos.add(itemsRated[index]);
         }
 
-        Collection<Set<Integer>> ret = new ArrayList<>(extraidos.size());
+        List<Set<Item>> ret = new ArrayList<>(extraidos.size());
         ret.add(extraidos);
         return ret;
     }

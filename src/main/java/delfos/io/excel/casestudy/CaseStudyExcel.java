@@ -17,24 +17,41 @@
 package delfos.io.excel.casestudy;
 
 import delfos.ERROR_CODES;
+import delfos.common.FileUtilities;
+import delfos.common.Global;
 import delfos.common.decimalnumbers.NumberRounder;
 import delfos.common.parameters.Parameter;
 import delfos.common.parameters.ParameterOwner;
+import delfos.common.parameters.chain.CaseStudyResultMatrix;
+import delfos.common.parameters.chain.ParameterChain;
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RelevanceCriteria;
 import delfos.experiment.casestudy.CaseStudy;
+import delfos.experiment.casestudy.CaseStudyResults;
 import delfos.experiment.validation.predictionprotocol.PredictionProtocol;
 import delfos.experiment.validation.validationtechnique.ValidationTechnique;
+import delfos.group.io.excel.casestudy.GroupCaseStudyExcel.Combination;
+import static delfos.group.io.excel.casestudy.GroupCaseStudyExcel.obtainDifferentParameterInCollumn;
+import delfos.io.excel.parameterowner.ParameterOwnerExcel;
+import delfos.io.xml.casestudy.CaseStudyXML;
+import delfos.results.MeasureResult;
 import delfos.results.evaluationmeasures.EvaluationMeasure;
-import delfos.results.evaluationmeasures.PRSpace;
 import delfos.rs.RecommenderSystem;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
+import java.util.TreeSet;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.stream.Collectors;
 import jxl.Cell;
 import jxl.CellType;
 import jxl.CellView;
@@ -70,17 +87,87 @@ public class CaseStudyExcel {
 
     public static final String ALL_EXPERIMENTS_SHEET_NAME = "AllExperiments";
 
+    public static final String CASE_DEFINITION_SHEET_NAME = "CaseDefinition";
+
+    public static final String EXECUTIONS_SHEET_NAME = "Executions";
+
+    public static final String EXECUTIONS_SHEET_ID_LOOP_COLUMN_NAME = "#";
+    public static final String EXECUTIONS_SHEET_EXECUTION_COLUMN_NAME = "Execution";
+    public static final String EXECUTIONS_SHEET_SPLIT_COLUMN_NAME = "Split";
+    public static final String EXECUTIONS_SHEET_BUILD_TIME_COLUMN_NAME = "BuildTime";
+    public static final String EXECUTIONS_SHEET_RECOMMENDATION_TIME_COLUMN_NAME = "RecommendationTime";
+
+    public static final String AGGREGATE_RESULTS_SHEET_NAME = "AggregateResults";
+    public static final String ALL_CASES_AGGREGATE_RESULTS_HASH_COLUMN_NAME = "hash";
+    public static final String ALL_CASES_AGGREGATE_RESULTS_HASH_DATA_VALIDATION_COLUMN_NAME = "hashDataValidation";
+    public static final String ALL_CASES_AGGREGATE_RESULTS_HASH_TECHNIQUE_COLUMN_NAME = "hashTechnique";
+
     public static final String AGGREGATE_RESULTS_EXCEL_DEFAULT_FILE_NAME = "aggregateResults.xls";
     public static final String EXPERIMENT_NAME_COLUMN_NAME = "ExperimentName";
     public static final String DATASET_LOADER_COLUMN_NAME = "DatasetLoader";
-
-    public static final String AGGREGATE_RESULTS_SHEET_NAME = "AggregateResults";
 
     private static WritableCellFormat titleFormat;
     private static WritableCellFormat defaultFormat;
     private static WritableCellFormat decimalFormat;
     private static WritableCellFormat integerFormat;
-    private static final int titleCellWidth = 3 - 1;
+    private static final int TITLE_CELL_WIDTH = 3 - 1;
+
+    public static final int EXPERIMENT_NAME_COLUMN = 0;
+    public static final int DATASET_LOADER_ALIAS_COLUMN = 1;
+    public static final int EVALUATION_MEASURES_OFFSET = 2;
+
+    public static final String NAN_CELL_STRING = "NaN";
+
+    static {
+        try {
+            initTitleFormat();
+            initIntegerFormat();
+            initDecimalFormat();
+            initDefaultFormat();
+        } catch (WriteException ex) {
+            Logger.getLogger(CaseStudyExcel.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    private static void initTitleFormat() throws WriteException {
+        if (titleFormat == null) {
+            // create create a bold font with unterlines
+            WritableFont times14ptBoldUnderline = new WritableFont(WritableFont.TIMES, 14, WritableFont.BOLD, false,
+                    UnderlineStyle.SINGLE);
+
+            titleFormat = new WritableCellFormat(times14ptBoldUnderline);
+            titleFormat.setAlignment(Alignment.CENTRE);
+
+            //Column width control
+            titleFormat.setWrap(false);
+        }
+    }
+
+    private static void initIntegerFormat() {
+
+        // Lets create a times font
+        WritableFont times10pt = new WritableFont(WritableFont.TIMES, 10);
+        integerFormat = new WritableCellFormat(times10pt, new NumberFormat("0"));
+    }
+
+    private static void initDecimalFormat() {
+
+        // Lets create a times font
+        WritableFont times10pt = new WritableFont(WritableFont.TIMES, 10);
+        decimalFormat = new WritableCellFormat(times10pt, new NumberFormat("0.00000"));
+    }
+
+    private static void initDefaultFormat() throws WriteException {
+
+        // Lets create a times font
+        WritableFont times10pt = new WritableFont(WritableFont.TIMES, 10);
+        // Define the cell format
+        defaultFormat = new WritableCellFormat(times10pt);
+
+        //Column width control
+        defaultFormat.setWrap(false);
+
+    }
 
     public static void aggregateExcels(File[] inputFiles, File outputFile) throws WriteException {
 
@@ -111,8 +198,10 @@ public class CaseStudyExcel {
 
                         Double measureValue = numberRecord.getValue();
                         valoresDeMetricas.put(measureName, measureValue);
+                    } else if (type == CellType.EMPTY) {
+                        valoresDeMetricas.put(measureName, 0.0);
                     } else {
-                        throw new IllegalStateException("CAnnot recognize cell type");
+                        throw new IllegalStateException("Cannot recognize cell type");
                     }
                 }
 
@@ -188,6 +277,15 @@ public class CaseStudyExcel {
         if (!caseStudy.isFinished()) {
             throw new UnsupportedOperationException("No se ha ejecutado el caso de uso todavía");
         }
+        if (file.isDirectory()) {
+            File directory = file;
+
+            FileUtilities.createDirectoryPathIfNotExists(directory);
+            String fileName = CaseStudyXML.getCaseStudyFileName(caseStudy);
+            file = new File(directory.getPath() + File.separator + fileName + ".xml");
+        } else {
+            FileUtilities.createDirectoriesForFileIfNotExist(file);
+        }
 
         try {
             WorkbookSettings wbSettings = new WorkbookSettings();
@@ -199,7 +297,7 @@ public class CaseStudyExcel {
             try {
                 workbook = Workbook.createWorkbook(file, wbSettings);
             } catch (IOException ex) {
-                ERROR_CODES.CANNOT_WRITE_FILE.exit(new FileNotFoundException("Cannot access file " + file.getAbsolutePath() + "."));
+                ERROR_CODES.CANNOT_WRITE_FILE.exit(ex);
                 return;
             }
 
@@ -208,7 +306,7 @@ public class CaseStudyExcel {
             createCaseDefinitionSheet(caseStudy, caseDefinitionSheet);
             autoSizeColumns(caseDefinitionSheet);
 
-            WritableSheet executionsSheet = workbook.createSheet("Executions", 1);
+            WritableSheet executionsSheet = workbook.createSheet(EXECUTIONS_SHEET_NAME, 1);
             createLabel(executionsSheet);
             createExecutionsSheet(caseStudy, executionsSheet);
             autoSizeColumns(executionsSheet);
@@ -225,7 +323,6 @@ public class CaseStudyExcel {
             ERROR_CODES.CANNOT_WRITE_FILE.exit(ex);
         }
     }
-    public static final String CASE_DEFINITION_SHEET_NAME = "CaseDefinition";
 
     private static void createCaseDefinitionSheet(CaseStudy caseStudy, WritableSheet sheet) throws WriteException {
 
@@ -235,7 +332,7 @@ public class CaseStudyExcel {
         //Create table for GRS
         {
             RecommenderSystem recommenderSystem = caseStudy.getRecommenderSystem();
-            sheet.mergeCells(column + 0, row, column + titleCellWidth, row);
+            sheet.mergeCells(column + 0, row, column + TITLE_CELL_WIDTH, row);
             addTitleText(sheet, column, row, " Recommender System");
             row++;
             addText(sheet, column, row, recommenderSystem.getName());
@@ -251,7 +348,7 @@ public class CaseStudyExcel {
         //Create table for DatasetLoader
         {
             DatasetLoader<? extends Rating> datasetLoader = caseStudy.getDatasetLoader();
-            sheet.mergeCells(column + 0, row, column + titleCellWidth, row);
+            sheet.mergeCells(column + 0, row, column + TITLE_CELL_WIDTH, row);
             addTitleText(sheet, column, row, "Dataset Loader");
             row++;
             addText(sheet, column, row, datasetLoader.getName());
@@ -267,7 +364,7 @@ public class CaseStudyExcel {
         //Create table for ValidationTechnique
         {
             ValidationTechnique validationTechnique = caseStudy.getValidationTechnique();
-            sheet.mergeCells(column + 0, row, column + titleCellWidth, row);
+            sheet.mergeCells(column + 0, row, column + TITLE_CELL_WIDTH, row);
             addTitleText(sheet, column, row, " Validation Technique");
             row++;
             addText(sheet, column, row, validationTechnique.getName());
@@ -282,14 +379,14 @@ public class CaseStudyExcel {
 
         //Create table for PredictionProtocol
         {
-            PredictionProtocol groupPredictionProtocol = caseStudy.getPredictionProtocol();
-            sheet.mergeCells(column + 0, row, column + titleCellWidth, row);
+            PredictionProtocol PredictionProtocol = caseStudy.getPredictionProtocol();
+            sheet.mergeCells(column + 0, row, column + TITLE_CELL_WIDTH, row);
             addTitleText(sheet, column, row, " Prediction Protocol");
             row++;
-            addText(sheet, column, row, groupPredictionProtocol.getName());
+            addText(sheet, column, row, PredictionProtocol.getName());
             row++;
-            for (Parameter parameter : groupPredictionProtocol.getParameters()) {
-                Object parameterValue = groupPredictionProtocol.getParameterValue(parameter);
+            for (Parameter parameter : PredictionProtocol.getParameters()) {
+                Object parameterValue = PredictionProtocol.getParameterValue(parameter);
                 row = writeParameterAndValue(parameter, parameterValue, sheet, column, row);
                 row++;
             }
@@ -299,7 +396,7 @@ public class CaseStudyExcel {
         //Create table for RelevanceCriteria
         {
             RelevanceCriteria relevanceCriteria = caseStudy.getRelevanceCriteria();
-            sheet.mergeCells(column + 0, row, column + titleCellWidth, row);
+            sheet.mergeCells(column + 0, row, column + TITLE_CELL_WIDTH, row);
             addTitleText(sheet, column, row, "Relevance Criteria threshold >= " + relevanceCriteria.getThreshold().doubleValue());
             row++;
         }
@@ -359,7 +456,10 @@ public class CaseStudyExcel {
 
     final static int MAX_LIST_SIZE = 20;
 
-    private static void createExecutionsSheet(CaseStudy caseStudy, WritableSheet sheet) throws WriteException {
+    private static <RecommendationModel extends Object, RatingType extends Rating> void createExecutionsSheet(
+            CaseStudy<RecommendationModel, RatingType> caseStudy,
+            WritableSheet sheet)
+            throws WriteException {
 
         int row = 0;
 
@@ -369,16 +469,12 @@ public class CaseStudyExcel {
         final int vueltaColumn = 0;
         final int executionColumn = 1;
         final int splitColumn = 2;
-        /**
-         * Numero de recomendaciones que se consideran para la precisión.
-         */
 
         //Escribo los titulos de las columnas.
-        addTitleText(sheet, vueltaColumn, row, "#");
-        addTitleText(sheet, executionColumn, row, "Execution");
-        addTitleText(sheet, splitColumn, row, "Split");
+        addTitleText(sheet, vueltaColumn, row, EXECUTIONS_SHEET_ID_LOOP_COLUMN_NAME);
+        addTitleText(sheet, executionColumn, row, EXECUTIONS_SHEET_EXECUTION_COLUMN_NAME);
+        addTitleText(sheet, splitColumn, row, EXECUTIONS_SHEET_SPLIT_COLUMN_NAME);
 
-        PRSpace pRSpace = null;
         Map<String, Integer> indexOfMeasures = new TreeMap<>();
         Map<String, EvaluationMeasure> metricsByName = new TreeMap<>();
         {
@@ -388,15 +484,9 @@ public class CaseStudyExcel {
 
                 metricsByName.put(evaluationMeasure.getName(), evaluationMeasure);
 
-                if (evaluationMeasure instanceof PRSpace) {
-                    pRSpace = (PRSpace) evaluationMeasure;
-                    for (int listSize = 1; listSize <= MAX_LIST_SIZE; listSize++) {
-                        indexOfMeasures.put("Precision@" + listSize, i++);
-                    }
-                }
             }
-            indexOfMeasures.put("BuildTime", i++);
-            indexOfMeasures.put("RecommendationTime", i++);
+            indexOfMeasures.put(EXECUTIONS_SHEET_BUILD_TIME_COLUMN_NAME, i++);
+            indexOfMeasures.put(EXECUTIONS_SHEET_RECOMMENDATION_TIME_COLUMN_NAME, i++);
         }
 
         for (Map.Entry<String, Integer> entry : indexOfMeasures.entrySet()) {
@@ -425,8 +515,8 @@ public class CaseStudyExcel {
 
                     //Es una medida cualquiera.
                     if (metricsByName.containsKey(name)) {
-                        EvaluationMeasure groupEvaluationMeasure = metricsByName.get(name);
-                        value = caseStudy.getMeasureResult(groupEvaluationMeasure, thisExecution, thisSplit).getValue();
+                        EvaluationMeasure EvaluationMeasure = metricsByName.get(name);
+                        value = caseStudy.getMeasureResult(EvaluationMeasure, thisExecution, thisSplit).getValue();
                     } else {
                         value = Double.NaN;
                     }
@@ -447,28 +537,22 @@ public class CaseStudyExcel {
 
     }
 
-    private static void createAggregateResultsSheet(CaseStudy caseStudy, WritableSheet sheet) throws WriteException {
+    private static <RecommendationModel extends Object, RatingType extends Rating> void
+            createAggregateResultsSheet(CaseStudy<RecommendationModel, RatingType> caseStudy, WritableSheet sheet)
+            throws WriteException {
         int row = 0;
 
-        PRSpace pRSpaces = null;
         Map<String, Integer> indexOfMeasures = new TreeMap<>();
         Map<String, EvaluationMeasure> metricsByName = new TreeMap<>();
         {
             int i = 0;
-            for (EvaluationMeasure groupEvaluationMeasure : caseStudy.getEvaluationMeasures()) {
-                indexOfMeasures.put(groupEvaluationMeasure.getName(), i++);
+            for (EvaluationMeasure EvaluationMeasure : caseStudy.getEvaluationMeasures()) {
+                indexOfMeasures.put(EvaluationMeasure.getName(), i++);
 
-                metricsByName.put(groupEvaluationMeasure.getName(), groupEvaluationMeasure);
-
-                if (groupEvaluationMeasure instanceof PRSpace) {
-                    pRSpaces = (PRSpace) groupEvaluationMeasure;
-                    for (int listSize = 1; listSize <= MAX_LIST_SIZE; listSize++) {
-                        indexOfMeasures.put("Precision@" + listSize, i++);
-                    }
-                }
+                metricsByName.put(EvaluationMeasure.getName(), EvaluationMeasure);
             }
-            indexOfMeasures.put("BuildTime", i++);
-            indexOfMeasures.put("RecommendationTime", i++);
+            indexOfMeasures.put(EXECUTIONS_SHEET_BUILD_TIME_COLUMN_NAME, i++);
+            indexOfMeasures.put(EXECUTIONS_SHEET_RECOMMENDATION_TIME_COLUMN_NAME, i++);
         }
 
         for (Map.Entry<String, Integer> entry : indexOfMeasures.entrySet()) {
@@ -487,13 +571,13 @@ public class CaseStudyExcel {
             final double value;
 
             //Es una medida cualquiera.
-            EvaluationMeasure groupEvaluationMeasure = metricsByName.get(name);
+            EvaluationMeasure EvaluationMeasure = metricsByName.get(name);
 
-            if (groupEvaluationMeasure == null) {
+            if (EvaluationMeasure == null) {
                 continue;
             }
 
-            value = caseStudy.getAggregateMeasureResult(groupEvaluationMeasure).getValue();
+            value = caseStudy.getAggregateMeasureResult(EvaluationMeasure).getValue();
 
             if (!Double.isNaN(value)) {
                 double decimalTrimmedValue = NumberRounder.round(value);
@@ -595,5 +679,568 @@ public class CaseStudyExcel {
         Label label;
         label = new Label(column, row, s, defaultFormat);
         sheet.addCell(label);
+    }
+
+    public static <RecommendationModel extends Object, RatingType extends Rating>
+            void writeGeneralSheet(List<CaseStudyResults<RecommendationModel, RatingType>> caseStudyResultss,
+                    List<String> dataValidationParametersOrder,
+                    List<String> techniqueParametersOrder,
+                    List<String> evaluationMeasuresOrder,
+                    WritableWorkbook workbook)
+            throws WriteException, IOException {
+
+        WritableSheet allCasesAggregateResults = workbook.createSheet("AllCasesAggregateResults", 0);
+
+        {
+
+            int column = 0;
+            final int titlesRow = 0;
+
+            //ExperimentNamesColumn
+            addTitleText(allCasesAggregateResults, column, titlesRow, EXPERIMENT_NAME_COLUMN_NAME);
+            for (int index = 0; index < caseStudyResultss.size(); index++) {
+                int row = index + 1;
+                setCellText(allCasesAggregateResults, column, row, caseStudyResultss.get(index).getCaseStudyAlias());
+            }
+            column++;
+
+            //General hash
+            addTitleText(allCasesAggregateResults, column, titlesRow, ALL_CASES_AGGREGATE_RESULTS_HASH_COLUMN_NAME);
+            for (int index = 0; index < caseStudyResultss.size(); index++) {
+                int row = index + 1;
+                setCellIntegerNumber(allCasesAggregateResults, column, row, caseStudyResultss.get(index).getCaseStudy().hashCode());
+            }
+            column++;
+
+            //dataValidation hash
+            addTitleText(allCasesAggregateResults, column, titlesRow, ALL_CASES_AGGREGATE_RESULTS_HASH_DATA_VALIDATION_COLUMN_NAME);
+            for (int index = 0; index < caseStudyResultss.size(); index++) {
+                int row = index + 1;
+                setCellIntegerNumber(allCasesAggregateResults, column, row, caseStudyResultss.get(index).getCaseStudy().hashDataValidation());
+            }
+            column++;
+
+            for (String dataValidationParameter : dataValidationParametersOrder) {
+
+                addTitleText(allCasesAggregateResults, column, titlesRow, dataValidationParameter);
+                for (int index = 0; index < caseStudyResultss.size(); index++) {
+                    int row = index + 1;
+
+                    CaseStudyResults caseStudyResults = caseStudyResultss.get(index);
+                    if (caseStudyResults.getDefinedDataValidationParameters().contains(dataValidationParameter)) {
+
+                        Object dataValidationParameterValue = caseStudyResults.getDataValidationParameterValue(dataValidationParameter);
+                        setCellContent(allCasesAggregateResults, column, row, dataValidationParameterValue);
+                    }
+                }
+                column++;
+            }
+
+            //technique hash
+            addTitleText(allCasesAggregateResults, column, titlesRow, ALL_CASES_AGGREGATE_RESULTS_HASH_TECHNIQUE_COLUMN_NAME);
+            for (int index = 0; index < caseStudyResultss.size(); index++) {
+                int row = index + 1;
+                setCellIntegerNumber(allCasesAggregateResults, column, row, caseStudyResultss.get(index).getCaseStudy().hashTechnique());
+            }
+            column++;
+
+            for (String techniqueParameter : techniqueParametersOrder) {
+
+                addTitleText(allCasesAggregateResults, column, titlesRow, techniqueParameter);
+                for (int index = 0; index < caseStudyResultss.size(); index++) {
+                    int row = index + 1;
+                    CaseStudyResults caseStudyResults = caseStudyResultss.get(index);
+                    if (caseStudyResults.getDefinedTechniqueParameters().contains(techniqueParameter)) {
+                        Object techniqueParameterValue = caseStudyResults.getTechniqueParameterValue(techniqueParameter);
+                        setCellContent(allCasesAggregateResults, column, row, techniqueParameterValue);
+                    }
+                }
+                column++;
+            }
+
+            for (String evaluationMeasure : evaluationMeasuresOrder) {
+
+                addTitleText(allCasesAggregateResults, column, titlesRow, evaluationMeasure);
+                for (int index = 0; index < caseStudyResultss.size(); index++) {
+                    int row = index + 1;
+                    CaseStudyResults caseStudyResults = caseStudyResultss.get(index);
+                    if (caseStudyResults.getDefinedEvaluationMeasures().contains(evaluationMeasure)) {
+                        Object evaluationMeasureValue = caseStudyResults.getEvaluationMeasureValue(evaluationMeasure);
+                        setCellContent(allCasesAggregateResults, column, row, evaluationMeasureValue);
+                    }
+                }
+                column++;
+            }
+        }
+
+        autoSizeColumns(allCasesAggregateResults);
+
+    }
+
+    private static void setCellText(WritableSheet sheet, int column, int row, String s)
+            throws WriteException, RowsExceededException {
+        Label label;
+        label = new Label(column, row, s, defaultFormat);
+        sheet.addCell(label);
+    }
+
+    /**
+     * Converts the parameter structure of the case study definition (dataset,Formation and validations) into a plain
+     * key-> value map.
+     *
+     * @param <RecommendationModel>
+     * @param <RatingType>
+     * @param caseStudy
+     * @return
+     */
+    public static <RecommendationModel extends Object, RatingType extends Rating> Map<String, Object> extractDataValidationParameters(CaseStudy caseStudy) {
+
+        Map<String, Object> caseStudyParameters = new TreeMap<>();
+
+        Map<String, Object> datasetLoaderParameters = ParameterOwnerExcel
+                .extractParameterValues(caseStudy.getDatasetLoader());
+        caseStudyParameters.putAll(datasetLoaderParameters);
+
+        Map<String, Object> validationTechniqueParameters = ParameterOwnerExcel
+                .extractParameterValues(caseStudy.getValidationTechnique());
+        caseStudyParameters.putAll(validationTechniqueParameters);
+
+        Map<String, Object> PredictionProtocolParameters = ParameterOwnerExcel
+                .extractParameterValues(caseStudy.getPredictionProtocol());
+        caseStudyParameters.putAll(PredictionProtocolParameters);
+
+        return caseStudyParameters;
+    }
+
+    private static void setCellDoubleNumber(WritableSheet sheet, int column, int row,
+            double value) throws WriteException, RowsExceededException {
+        double rounded = NumberRounder.round(value);
+
+        Number number = new Number(column, row, rounded, decimalFormat);
+        sheet.addCell(number);
+    }
+
+    private static void setCellIntegerNumber(WritableSheet sheet, int column, int row,
+            long integer) throws WriteException, RowsExceededException {
+        Number number = new Number(column, row, integer, integerFormat);
+        sheet.addCell(number);
+    }
+
+    private static void setCellContent(WritableSheet sheet, int column, int row,
+            Object content) throws WriteException, RowsExceededException {
+
+        if (content instanceof Long) {
+            setCellIntegerNumber(sheet, column, row, (Long) content);
+        } else if (content instanceof Integer) {
+            setCellIntegerNumber(sheet, column, row, (Integer) content);
+        } else if (content instanceof Double) {
+            setCellDoubleNumber(sheet, column, row, (Double) content);
+        } else if (content instanceof Double) {
+            setCellDoubleNumber(sheet, column, row, (Double) content);
+        } else {
+            setCellText(sheet, column, row, content.toString());
+        }
+    }
+
+    /**
+     * Converts the parameter structure of the case study technique (RecommenderSystem) into a plain key-> value map.
+     *
+     * @param <RecommendationModel>
+     * @param <RatingType>
+     * @param caseStudy
+     * @return
+     */
+    public static <RecommendationModel extends Object, RatingType extends Rating>
+            Map<String, Object> extractTechniqueParameters(CaseStudy caseStudy) {
+        Map<String, Object> techniqueParameters = new TreeMap<>();
+
+        Map<String, Object> RecommenderSystemParameters = ParameterOwnerExcel
+                .extractParameterValues(caseStudy.getRecommenderSystem());
+        techniqueParameters.putAll(RecommenderSystemParameters);
+
+        return techniqueParameters;
+    }
+
+    public static <RecommendationModel extends Object, RatingType extends Rating>
+            Map<String, java.lang.Number> extractEvaluationMeasuresValues(
+                    CaseStudy<RecommendationModel, RatingType> caseStudy) {
+
+        Map<String, java.lang.Number> evaluationMeasuresValues = new TreeMap<>();
+
+        for (EvaluationMeasure evaluationMeasure : caseStudy.getEvaluationMeasures()) {
+
+            MeasureResult measureResult = caseStudy.getAggregateMeasureResult(evaluationMeasure);
+            double measureValue = measureResult.getValue();
+            evaluationMeasuresValues.put(evaluationMeasure.getName(), measureValue);
+
+        }
+
+        return evaluationMeasuresValues;
+    }
+
+    public static <RecommendationModel extends Object, RatingType extends Rating>
+            void writeNumExecutionsSheet(
+                    List<CaseStudyResults<RecommendationModel, RatingType>> caseStudyResultses,
+                    List<String> dataValidationParametersOrder,
+                    List<String> techniqueParametersOrder,
+                    List<String> evaluationMeasuresOrder,
+                    WritableWorkbook workbook)
+            throws WriteException {
+
+        List<CaseStudy> caseStudys = caseStudyResultses.stream().map(caseStudyResults -> caseStudyResults.getCaseStudy()).collect(Collectors.toList());
+
+        Set<CaseStudyResults> dataValidationAliases = new TreeSet<>(
+                CaseStudyResults.dataValidationComparator);
+        Set<CaseStudyResults> techniqueAliases = new TreeSet<>(
+                CaseStudyResults.techniqueComparator);
+
+        dataValidationAliases.addAll(caseStudyResultses);
+        techniqueAliases.addAll(caseStudyResultses);
+
+        Map<String, List<CaseStudy>> byCaseStudy = caseStudys.stream().collect(Collectors
+                .groupingBy(CaseStudy -> CaseStudy.getAlias()));
+
+        caseStudys = byCaseStudy.values().parallelStream().map(sameCaseStudyWithDifferentNumExecutions -> {
+            Map<Integer, List<CaseStudy>> byNumExecutions = sameCaseStudyWithDifferentNumExecutions
+                    .parallelStream()
+                    .collect(Collectors.groupingBy(CaseStudy -> CaseStudy.getNumExecutions()));
+
+            int maxExec = byNumExecutions.keySet().stream().mapToInt(numExec -> numExec)
+                    .max().orElse(-1);
+
+            if (byNumExecutions.get(maxExec).size() > 1) {
+                byNumExecutions.get(maxExec).forEach(CaseStudy -> Global.showWarning(CaseStudy.getAlias() + "\""));
+                throw new IllegalStateException("More than one execution with the maximum! (" + byNumExecutions.get(maxExec).size() + ")");
+            }
+
+            return byNumExecutions.get(maxExec).get(0);
+        }).collect(Collectors.toList());
+
+        Global.showInfoMessage("Processing " + caseStudys.size() + " different results files.\n");
+
+        List<ParameterChain> differentChainsWithAliasesAndSeed = ParameterChain.obtainDifferentChains(caseStudys);
+
+        List<ParameterChain> differentChains = differentChainsWithAliasesAndSeed.stream()
+                .filter(chain -> !chain.isAlias())
+                .filter(chain -> !chain.isSeed())
+                .collect(Collectors.toList());
+
+        List<ParameterChain> dataValidationDifferentChains = differentChains.stream()
+                .filter(chain -> chain.isDataValidationParameter())
+                .filter(chain -> !chain.isNumExecutions())
+                .collect(Collectors.toList());
+
+        List<ParameterChain> techniqueDifferentChains = differentChains.stream()
+                .filter(chain -> chain.isTechniqueParameter()).collect(Collectors.toList());
+
+        if (techniqueDifferentChains.isEmpty()) {
+            ParameterChain grsAliasChain = new ParameterChain(caseStudys.get(0))
+                    .createWithNode(CaseStudy.RECOMMENDER_SYSTEM, null)
+                    .createWithLeaf(ParameterOwner.ALIAS, null);
+            techniqueDifferentChains.add(grsAliasChain);
+        }
+        if (dataValidationDifferentChains.isEmpty()) {
+            ParameterChain datasetLoaderAliasChain = new ParameterChain(caseStudys.get(0))
+                    .createWithNode(CaseStudy.DATASET_LOADER, null)
+                    .createWithLeaf(ParameterOwner.ALIAS, null);
+
+            dataValidationDifferentChains.add(datasetLoaderAliasChain);
+        }
+
+        CaseStudyResultMatrix matrix = getNumExecutionsMatrix(techniqueDifferentChains, dataValidationDifferentChains, caseStudyResultses);
+
+        writeMatrixInSheet(workbook, CaseStudy.NUM_EXECUTIONS.getName(), matrix, CaseStudy.NUM_EXECUTIONS.getName());
+    }
+
+    public static <RecommendationModel extends Object, RatingType extends Rating> CaseStudyResultMatrix getNumExecutionsMatrix(
+            List<ParameterChain> techniqueDifferentChains,
+            List<ParameterChain> dataValidationDifferentChains,
+            List<CaseStudyResults<RecommendationModel, RatingType>> caseStudyResultses) {
+        CaseStudyResultMatrix matrix = new CaseStudyResultMatrix(techniqueDifferentChains, dataValidationDifferentChains, CaseStudy.NUM_EXECUTIONS.getName());
+        caseStudyResultses.stream().forEach(caseStudyResults -> {
+            int numExecutions = caseStudyResults.getNumExecutions();
+            java.lang.Number existingNumExecutions = matrix.getValue(caseStudyResults.getCaseStudy());
+
+            if (existingNumExecutions == null) {
+                matrix.addValue(caseStudyResults.getCaseStudy(), numExecutions);
+            } else if (numExecutions > existingNumExecutions.intValue()) {
+                matrix.addValue(caseStudyResults.getCaseStudy(), numExecutions);
+            }
+        });
+        return matrix;
+    }
+
+    public static <RecommendationModel extends Object, RatingType extends Rating>
+            void writeEvaluationMeasureSpecificSheet(
+                    List<CaseStudyResults<RecommendationModel, RatingType>> caseStudyResultses,
+                    List<String> dataValidationParametersOrder,
+                    List<String> techniqueParametersOrder,
+                    String evaluationMeasure,
+                    WritableWorkbook workbook)
+            throws WriteException, IOException {
+
+        List<CaseStudy<RecommendationModel, RatingType>> caseStudys = caseStudyResultses.stream()
+                .map(caseStudyResult -> caseStudyResult.getCaseStudy())
+                .collect(Collectors.toList());
+
+        Set<CaseStudyResults<RecommendationModel, RatingType>> dataValidationAliases = new TreeSet<>(
+                CaseStudyResults.dataValidationComparator);
+        Set<CaseStudyResults<RecommendationModel, RatingType>> techniqueAliases = new TreeSet<>(
+                CaseStudyResults.techniqueComparator);
+
+        dataValidationAliases.addAll(caseStudyResultses);
+        techniqueAliases.addAll(caseStudyResultses);
+
+        List<ParameterChain> differentChainsWithAliases = ParameterChain.obtainDifferentChains(caseStudys);
+
+        List<ParameterChain> differentChains = differentChainsWithAliases.stream()
+                .filter(chain -> !chain.isAlias())
+                .filter(chain -> !chain.isSeed())
+                .collect(Collectors.toList());
+
+        List<ParameterChain> dataValidationDifferentChains = differentChains.stream()
+                .filter(chain -> chain.isDataValidationParameter())
+                .filter(chain -> !chain.isNumExecutions())
+                .collect(Collectors.toList());
+        List<ParameterChain> techniqueDifferentChains = differentChains.stream()
+                .filter(chain -> chain.isTechniqueParameter())
+                .collect(Collectors.toList());
+
+        writeRowAndColumnCombination(techniqueDifferentChains, caseStudys, dataValidationDifferentChains, evaluationMeasure, caseStudyResultses, workbook);
+    }
+
+    public static <RecommendationModel extends Object, RatingType extends Rating>
+            void writeRowAndColumnCombination(
+                    List<ParameterChain> rowChains,
+                    List<CaseStudy<RecommendationModel, RatingType>> CaseStudys,
+                    List<ParameterChain> columnChains,
+                    String evaluationMeasure,
+                    List<CaseStudyResults<RecommendationModel, RatingType>> CaseStudyResults,
+                    WritableWorkbook workbook) throws WriteException {
+
+        writeRowAndColumnCombination(rowChains, CaseStudys, columnChains, evaluationMeasure, CaseStudyResults, workbook, evaluationMeasure);
+    }
+
+    public static <RecommendationModel extends Object, RatingType extends Rating>
+            void writeRowAndColumnCombination(
+                    List<ParameterChain> rowChains,
+                    List<CaseStudy<RecommendationModel, RatingType>> CaseStudys,
+                    List<ParameterChain> columnChains,
+                    String evaluationMeasure,
+                    List<CaseStudyResults<RecommendationModel, RatingType>> CaseStudyResults,
+                    WritableWorkbook workbook,
+                    String sheetName) throws WriteException {
+        if (rowChains.isEmpty()) {
+            ParameterChain grsAliasChain = new ParameterChain(CaseStudys.get(0))
+                    .createWithNode(CaseStudy.RECOMMENDER_SYSTEM, null)
+                    .createWithLeaf(ParameterOwner.ALIAS, null);
+            rowChains.add(grsAliasChain);
+        }
+        if (columnChains.isEmpty()) {
+            ParameterChain datasetLoaderAliasChain = new ParameterChain(CaseStudys.get(0))
+                    .createWithNode(CaseStudy.DATASET_LOADER, null)
+                    .createWithLeaf(ParameterOwner.ALIAS, null);
+
+            columnChains.add(datasetLoaderAliasChain);
+        }
+
+        CaseStudyResultMatrix matrix = prepareExcelMatrix(
+                rowChains,
+                columnChains,
+                evaluationMeasure,
+                CaseStudyResults);
+
+        writeMatrixInSheet(workbook, evaluationMeasure, matrix, sheetName);
+    }
+
+    public static <RecommendationModel extends Object, RatingType extends Rating> CaseStudyResultMatrix prepareExcelMatrix(
+            List<ParameterChain> rowChains,
+            List<ParameterChain> columnChains,
+            String evaluationMeasure,
+            List<CaseStudyResults<RecommendationModel, RatingType>> caseStudyResultses) {
+
+        CaseStudyResultMatrix matrix = new CaseStudyResultMatrix(rowChains, columnChains, evaluationMeasure);
+        matrix.prepareColumnAndRowNames(caseStudyResultses);
+        List<CaseStudyResults> CaseStudyResultsMaxNumExecutions = new ArrayList<>();
+        for (String rowName : matrix.getRowNames()) {
+            for (String columnName : matrix.getColumnNames()) {
+
+                List<CaseStudyResults> thisCellCaseStudys = caseStudyResultses.stream()
+                        .filter(CaseStudyResult -> matrix.getRow((ParameterOwner) CaseStudyResult.getCaseStudy()).equals(rowName))
+                        .filter(CaseStudyResult -> matrix.getColumn((ParameterOwner) CaseStudyResult.getCaseStudy()).equals(columnName))
+                        .sorted(((CaseStudyResult1, CaseStudyResult2) -> Integer.compare(CaseStudyResult1.getNumExecutions(), CaseStudyResult2.getNumExecutions())))
+                        .collect(Collectors.toList());
+                Collections.reverse(thisCellCaseStudys);
+
+                if (thisCellCaseStudys.isEmpty()) {
+                    continue;
+                }
+
+                if (thisCellCaseStudys.size() == 1) {
+                    CaseStudyResultsMaxNumExecutions.addAll(thisCellCaseStudys);
+                } else {
+
+                    if (Global.isVerboseAnnoying()) {
+                        String row = matrix.getRow(thisCellCaseStudys.get(0).getCaseStudy());
+                        String column = matrix.getColumn(thisCellCaseStudys.get(0).getCaseStudy());
+                        Global.show("Executions for cell (" + row + "," + column + ")\n");
+                        thisCellCaseStudys.stream().forEach((CaseStudyResultsMaxNumExecution) -> {
+                            Global.show(CaseStudyResultsMaxNumExecution.getNumExecutions() + "\n");
+                        });
+                    }
+
+                    CaseStudyResultsMaxNumExecutions.add(thisCellCaseStudys.get(0));
+                }
+            }
+        }
+        CaseStudyResultsMaxNumExecutions.stream().forEach(CaseStudyResult -> {
+            java.lang.Number evaluationMeasureValue = CaseStudyResult.getEvaluationMeasureValue(evaluationMeasure);
+            matrix.addValue(CaseStudyResult.getCaseStudy(), evaluationMeasureValue);
+        });
+        return matrix;
+    }
+
+    public static void writeMatrixInSheet(
+            WritableWorkbook workbook,
+            String evaluationMeasure,
+            CaseStudyResultMatrix matrix,
+            String sheetName) throws WriteException {
+        final int sheetNameMaxLenght = 30;
+
+        if (sheetName.length() > sheetNameMaxLenght) {
+
+            String shortenName = sheetName.substring(0, Math.min(sheetNameMaxLenght, sheetName.length()));
+            Global.showInfoMessage("Sheet name too long! " + sheetName + " --> " + shortenName);
+            sheetName = shortenName;
+        }
+
+        WritableSheet sheet = workbook.createSheet(sheetName, workbook.getNumberOfSheets());
+
+        {
+
+            int column = 0;
+            int row = 0;
+
+            //Titles ROW
+            addTitleText(sheet, column, row, evaluationMeasure);
+            column++;
+
+            for (String columnName : matrix.getColumnNames()) {
+                setCellContent(sheet, column, row, columnName);
+                column++;
+            }
+
+            row++;
+
+            //Titles row
+            for (String rowName : matrix.getRowNames()) {
+
+                column = 0;
+                setCellContent(sheet, column, row, rowName);
+                column++;
+                for (String columnName : matrix.getColumnNames()) {
+
+                    if (matrix.containsValue(rowName, columnName)) {
+                        Object value = matrix.getValue(rowName, columnName);
+                        setCellContent(sheet, column, row, value);
+                    }
+                    column++;
+                }
+                row++;
+            }
+        }
+
+        autoSizeColumns(sheet);
+    }
+
+    public static <RecommendationModel extends Object, RatingType extends Rating>
+            boolean isOnlyOneColumn(List<CaseStudyResults<RecommendationModel, RatingType>> caseStudyResultses) {
+        List<CaseStudy<RecommendationModel, RatingType>> caseStudys = caseStudyResultses.stream()
+                .map(caseStudyResult -> caseStudyResult.getCaseStudy())
+                .collect(Collectors.toList());
+
+        List<ParameterChain> differentChainsWithAliases = ParameterChain.obtainDifferentChains(caseStudys);
+
+        List<ParameterChain> differentChains = differentChainsWithAliases.stream()
+                .filter(chain -> !chain.isAlias())
+                .filter(chain -> !chain.isSeed())
+                .collect(Collectors.toList());
+
+        List<ParameterChain> dataValidationDifferentChains = differentChains.stream()
+                .filter(chain -> chain.isDataValidationParameter())
+                .filter(chain -> !chain.isNumExecutions())
+                .collect(Collectors.toList());
+
+        return dataValidationDifferentChains.isEmpty() || dataValidationDifferentChains.size() == 1;
+    }
+
+    public static <RecommendationModel extends Object, RatingType extends Rating>
+            void writeEvaluationMeasureParameterCombinationsSheets(
+                    List<CaseStudyResults<RecommendationModel, RatingType>> caseStudyResultses,
+                    List<String> dataValidationParametersOrder,
+                    List<String> techniqueParametersOrder,
+                    String evaluationMeasure,
+                    WritableWorkbook workbook
+            ) throws WriteException {
+
+        List<CaseStudy<RecommendationModel, RatingType>> caseStudys = caseStudyResultses.stream().map(caseStudyResult -> caseStudyResult.getCaseStudy()).collect(Collectors.toList());
+
+        Set<CaseStudyResults<RecommendationModel, RatingType>> dataValidationAliases = new TreeSet<>(
+                CaseStudyResults.dataValidationComparator);
+        Set<CaseStudyResults<RecommendationModel, RatingType>> techniqueAliases = new TreeSet<>(
+                CaseStudyResults.techniqueComparator);
+
+        dataValidationAliases.addAll(caseStudyResultses);
+        techniqueAliases.addAll(caseStudyResultses);
+
+        List<ParameterChain> differentChainsWithAliases = ParameterChain
+                .obtainDifferentChains(caseStudys);
+
+        List<ParameterChain> differentChains = differentChainsWithAliases
+                .stream()
+                .filter(chain -> !chain.isAlias())
+                .filter(chain -> !chain.isNumExecutions())
+                .filter(chain -> !chain.isSeed())
+                .collect(Collectors.toList());
+
+        Set<Combination> combinationsOfColumnRowParameters = obtainDifferentParameterInCollumn(differentChains)
+                .stream()
+                .filter(combination -> combination.row.size() + combination.column.size() == differentChains.size())
+                .collect(Collectors.toCollection(TreeSet::new));
+
+        List<ParameterChain> columnChains = differentChains.stream()
+                .filter(chain -> chain.isDataValidationParameter())
+                .filter(chain -> !chain.isNumExecutions())
+                .collect(Collectors.toList());
+
+        List<ParameterChain> rowChains = differentChains.stream()
+                .filter(chain -> chain.isTechniqueParameter())
+                .collect(Collectors.toList());
+        combinationsOfColumnRowParameters.add(new Combination(rowChains, columnChains));
+
+        combinationsOfColumnRowParameters.parallelStream().forEach(combination -> {
+            try {
+
+                String sheetName = evaluationMeasure;
+                for (ParameterChain chain : combination.column) {
+                    sheetName = sheetName + "_" + chain.getParameterName();
+                }
+
+                List<ParameterChain> rowList = combination.row.stream().sorted().collect(Collectors.toList());
+                List<ParameterChain> columnList = combination.column.stream().sorted().collect(Collectors.toList());
+                writeRowAndColumnCombination(
+                        rowList,
+                        caseStudys,
+                        columnList,
+                        evaluationMeasure,
+                        caseStudyResultses,
+                        workbook,
+                        sheetName
+                );
+            } catch (WriteException ex) {
+                Logger.getLogger(CaseStudyExcel.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        });
+
     }
 }

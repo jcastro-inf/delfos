@@ -52,7 +52,7 @@ public class ImplicitTrustComputation_pearson {
      * @param users Usuarios para los que se calcula la red de confianza.
      * @return
      */
-    public WeightedGraph<Integer> computeTrustValues(RatingsDataset<? extends Rating> ratingsDataset, Collection<Integer> users) {
+    public WeightedGraph<Long> computeTrustValues(RatingsDataset<? extends Rating> ratingsDataset, Collection<Long> users) {
         boolean printPartialResults;
 
         printPartialResults = ratingsDataset.allRatedItems().size() <= 100 && ratingsDataset.allUsers().size() <= 28;
@@ -61,15 +61,15 @@ public class ImplicitTrustComputation_pearson {
             printPartialResults = false;
         }
 
-        Map<Integer, Map<Integer, Number>> pearson = new TreeMap<>();
+        Map<Long, Map<Long, Number>> pearson = new TreeMap<>();
 
         PearsonCorrelationCoefficient pearsonCorrelationCoefficient = new PearsonCorrelationCoefficient();
 
-        for (int idUser : users) {
+        for (Long idUser : users) {
 
             pearson.put(idUser, new TreeMap<>());
 
-            Map<Integer, ? extends Rating> userRatings = null;
+            Map<Long, ? extends Rating> userRatings = null;
             try {
                 userRatings = ratingsDataset.getUserRatingsRated(idUser);
             } catch (UserNotFound ex) {
@@ -78,15 +78,15 @@ public class ImplicitTrustComputation_pearson {
             }
 
             //Para cada vecino calculo el MSD
-            for (int idUserNeighbor : users) {
+            for (Long idUserNeighbor : users) {
 
-                Map<Integer, ? extends Rating> neighborRatings;
+                Map<Long, ? extends Rating> neighborRatings;
                 try {
                     neighborRatings = ratingsDataset.getUserRatingsRated(idUserNeighbor);
 
                     List<Double> userList = new LinkedList<>();
                     List<Double> neighborList = new LinkedList<>();
-                    for (int idItem : userRatings.keySet()) {
+                    for (Long idItem : userRatings.keySet()) {
                         if (neighborRatings.containsKey(idItem)) {
                             userList.add(userRatings.get(idItem).getRatingValue().doubleValue());
                             neighborList.add(neighborRatings.get(idItem).getRatingValue().doubleValue());

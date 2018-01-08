@@ -37,6 +37,7 @@ import delfos.rs.RecommenderSystemAdapter;
 import delfos.rs.recommendation.Recommendation;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Set;
 
 /**
  *
@@ -95,13 +96,13 @@ public class InterestLMSPredictor extends RecommenderSystemAdapter<InterestLMSPr
 
         Domain domain = datasetLoader.getRatingsDataset().getRatingsDomain();
 
-        int numRatings = datasetLoader.getRatingsDataset().getNumRatings();
+        long numRatings = datasetLoader.getRatingsDataset().getNumRatings();
         int i = 0;
         RatingsDataset<? extends Rating> ratingDataset = datasetLoader.getRatingsDataset();
         for (Rating rating : ratingDataset) {
             try {
-                int idUser = rating.getIdUser();
-                int idItem = rating.getIdItem();
+                long idUser = rating.getIdUser();
+                long idItem = rating.getIdItem();
                 Item item = contentDataset.get(idItem);
 
                 Number ratingValue = rating.getRatingValue();
@@ -113,14 +114,19 @@ public class InterestLMSPredictor extends RecommenderSystemAdapter<InterestLMSPr
             }
             i++;
 
-            fireBuildingProgressChangedEvent("Training InterestLMSPredictor", i * 100 / numRatings, -1);
+            fireBuildingProgressChangedEvent("Training InterestLMSPredictor", (int) (i * 100 / numRatings), -1);
         }
 
         return predictorModel;
     }
 
     @Override
-    public Collection<Recommendation> recommendToUser(DatasetLoader<? extends Rating> datasetLoader, InterestLMSPredictorModel model, Integer idUser, java.util.Set<Integer> candidateItems) throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset {
+    public Collection<Recommendation> recommendToUser(
+            DatasetLoader<? extends Rating> datasetLoader,
+            InterestLMSPredictorModel model,
+            long idUser,
+            Set<Long> candidateItems)
+            throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset {
         final ContentDataset contentDataset;
         if (datasetLoader instanceof ContentDatasetLoader) {
             ContentDatasetLoader contentDatasetLoader = (ContentDatasetLoader) datasetLoader;
@@ -130,7 +136,7 @@ public class InterestLMSPredictor extends RecommenderSystemAdapter<InterestLMSPr
         }
 
         Collection<Recommendation> ret = new ArrayList<>(candidateItems.size());
-        for (int idItem : candidateItems) {
+        for (long idItem : candidateItems) {
             try {
                 Item item = contentDataset.get(idItem);
                 double prediction = model.predict(idUser, item);

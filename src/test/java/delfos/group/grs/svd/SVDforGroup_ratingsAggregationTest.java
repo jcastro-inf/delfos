@@ -30,7 +30,7 @@ public class SVDforGroup_ratingsAggregationTest {
         grs.setParameterValue(TryThisAtHomeSVD.K, 0.02f);
         TryThisAtHomeSVDModel recommendationModel = grs.buildRecommendationModel(randomDataset);
 
-        GroupOfUsers group = new GroupOfUsers(1, 2, 3);
+        GroupOfUsers group = new GroupOfUsers(1l, 2l, 3l);
         GroupSVDModel groupModel = grs.buildGroupModel(randomDataset, recommendationModel, group);
 
         Set<Item> candidateItems = candidateItems = group.getMembers().stream()

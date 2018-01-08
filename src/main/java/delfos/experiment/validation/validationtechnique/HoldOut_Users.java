@@ -70,26 +70,26 @@ public class HoldOut_Users extends ValidationTechnique {
     }
 
     @Override
-    public <RatingType extends Rating> PairOfTrainTestRatingsDataset[] shuffle(DatasetLoader<RatingType> datasetLoader) throws CannotLoadRatingsDataset, CannotLoadContentDataset {
+    public <RatingType extends Rating> PairOfTrainTestRatingsDataset<RatingType>[] shuffle(DatasetLoader<RatingType> datasetLoader) throws CannotLoadRatingsDataset, CannotLoadContentDataset {
         Random random = new Random(getSeedValue());
         PairOfTrainTestRatingsDataset[] ret = new PairOfTrainTestRatingsDataset[1];
 
-        List<Integer> users = new ArrayList<>(datasetLoader.getRatingsDataset().allUsers());
+        List<Long> users = new ArrayList<>(datasetLoader.getRatingsDataset().allUsers());
 
         int numUserInTest = (users.size() * (100 - getTrainPercentValue())) / 100;
-        Set<Integer> usersInTest = new TreeSet<>();
+        Set<Long> usersInTest = new TreeSet<>();
 
         while (usersInTest.size() < numUserInTest && !users.isEmpty()) {
             int index = random.nextInt(users.size());
-            int idUser = users.remove(index);
+            long idUser = users.remove(index);
             usersInTest.add(idUser);
         }
 
-        Set<Integer> allItems = new TreeSet<>(datasetLoader.getRatingsDataset().allRatedItems());
+        Set<Long> allItems = new TreeSet<>(datasetLoader.getRatingsDataset().allRatedItems());
 
         Global.showInfoMessage("Original dataset #users " + datasetLoader.getRatingsDataset().allUsers().size() + "\n");
 
-        Set<Integer> usuariosEnTraining = new TreeSet<>(datasetLoader.getRatingsDataset().allUsers());
+        Set<Long> usuariosEnTraining = new TreeSet<>(datasetLoader.getRatingsDataset().allUsers());
         usuariosEnTraining.removeAll(usersInTest);
 
         SelectionDataset training = new SelectionDataset(datasetLoader.getRatingsDataset());
@@ -100,7 +100,7 @@ public class HoldOut_Users extends ValidationTechnique {
         test.setAllowedItems(allItems);
         test.setAllowedUsers(usersInTest);
 
-        ret[0] = new PairOfTrainTestRatingsDataset(datasetLoader, training, test,
+        ret[0] = new PairOfTrainTestRatingsDataset<>(datasetLoader, training, test,
                 "_" + this.getClass().getSimpleName() + "_seed=" + getSeedValue());
 
         Global.showInfoMessage("Training dataset #users " + training.allUsers().size() + "\n");

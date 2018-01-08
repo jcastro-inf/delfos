@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,19 +16,16 @@
  */
 package delfos.view;
 
+import delfos.experiment.casestudy.CaseStudy;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.SwingWorker;
-import delfos.experiment.casestudy.CaseStudy;
 
 /**
- * Clase que realiza la ejecución en paralelo de un caso de estudio, para que la
- * interfaz pueda seguir respondiendo eventos.
+ * Clase que realiza la ejecución en paralelo de un caso de estudio, para que la interfaz pueda seguir respondiendo
+ * eventos.
  *
  * @author jcastro-inf ( https://github.com/jcastro-inf )
- *
- * @version 1.0 Unknown date
- * @version 1.1 20-Mar-2013
  */
 public class ParallelExecution extends SwingWorker<Void, Void> {
 

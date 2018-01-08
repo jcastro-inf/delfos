@@ -28,7 +28,7 @@ class EPinionsTrustStatement extends TrustStatement {
 
     long timestamp;
 
-    public EPinionsTrustStatement(int idUserSource, int idUserDestiny, double trustValue, long timestamp) {
+    public EPinionsTrustStatement(long idUserSource, long idUserDestiny, double trustValue, long timestamp) {
         super(idUserSource, idUserDestiny, trustValue);
         this.timestamp = timestamp;
     }

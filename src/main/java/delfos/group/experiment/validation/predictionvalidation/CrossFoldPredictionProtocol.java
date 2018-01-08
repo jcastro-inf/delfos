@@ -57,7 +57,7 @@ public class CrossFoldPredictionProtocol extends GroupPredictionProtocol {
         setParameterValue(numFolds, c);
     }
 
-    private Collection<Integer> getRatedItems(DatasetLoader<? extends Rating> datasetLoader, GroupOfUsers group) throws CannotLoadRatingsDataset, UserNotFound {
+    private Collection<Long> getRatedItems(DatasetLoader<? extends Rating> datasetLoader, GroupOfUsers group) throws CannotLoadRatingsDataset, UserNotFound {
         return DatasetUtilities.getMembersRatings_byItem(group, datasetLoader).keySet();
     }
 
@@ -66,33 +66,33 @@ public class CrossFoldPredictionProtocol extends GroupPredictionProtocol {
 
         Random random = new Random(getSeedValue());
 
-        ArrayList<Set<Integer>> crossFoldValidations = new ArrayList<>();
-        Collection<Integer> items = getRatedItems(testDatasetLoader, group);
+        ArrayList<Set<Long>> crossFoldValidations = new ArrayList<>();
+        Collection<Long> items = getRatedItems(testDatasetLoader, group);
 
         for (int i = 0; i < getNumPartitions(); i++) {
             crossFoldValidations.add(new TreeSet<>());
         }
         int n = 0;
         while (!items.isEmpty()) {
-            int idItem = items.toArray(new Integer[0])[random.nextInt(items.size())];
+            long idItem = items.toArray(new Long[0])[random.nextInt(items.size())];
             items.remove(idItem);
             int partition = n % getNumPartitions();
             crossFoldValidations.get(partition).add(idItem);
             n++;
         }
 
-        Collection<Integer> ratedItems = getRatedItems(testDatasetLoader, group);
+        Collection<Long> ratedItems = getRatedItems(testDatasetLoader, group);
 
         ArrayList<GroupRecommendationRequest> groupRecommendationRequests = new ArrayList<>(ratedItems.size());
 
-        for (Set<Integer> itemsInThisFold : crossFoldValidations) {
+        for (Set<Long> itemsInThisFold : crossFoldValidations) {
 
-            Map<Integer, Map<Integer, Number>> membersRatings_byItem = DatasetUtilities.getMembersRatings_byItem(group, testDatasetLoader);
+            Map<Long, Map<Long, Number>> membersRatings_byItem = DatasetUtilities.getMembersRatings_byItem(group, testDatasetLoader);
 
             itemsInThisFold.stream().forEach((idItem) -> membersRatings_byItem.remove(idItem));
 
-            Map<Integer, Map<Integer, Number>> predictionMembersRatings_byUser = DatasetUtilities.transformIndexedByItemToIndexedByUser_Map(membersRatings_byItem);
-            Map<Integer, Map<Integer, Rating>> predictionMembersRatings_byUser_Rating = DatasetUtilities.getMapOfMaps_Rating(predictionMembersRatings_byUser);
+            Map<Long, Map<Long, Number>> predictionMembersRatings_byUser = DatasetUtilities.transformIndexedByItemToIndexedByUser_Map(membersRatings_byItem);
+            Map<Long, Map<Long, Rating>> predictionMembersRatings_byUser_Rating = DatasetUtilities.getMapOfMaps_Rating(predictionMembersRatings_byUser);
             DatasetLoader<Rating> predictionPhaseDatasetLoader
                     = new DatasetLoaderGivenRatingsDataset<>(trainDatasetLoader,
                             RatingsDatasetOverwrite.createRatingsDataset(

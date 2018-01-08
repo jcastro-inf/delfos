@@ -32,21 +32,21 @@ import delfos.rs.contentbased.vsm.multivalued.profile.MultivaluedItemProfile;
 public class EntropyDependenceCBRSItemProfile implements MultivaluedItemProfile {
 
     private static final long serialVersionUID = 1L;
-    private final int idItem;
+    private final long idItem;
     private final Map<Feature, Object> featureValues;
 
     private EntropyDependenceCBRSItemProfile() {
-        idItem = Integer.MIN_VALUE;
+        idItem = Long.MIN_VALUE;
         featureValues = null;
     }
 
-    public EntropyDependenceCBRSItemProfile(int idItem, Map<Feature, Object> featureValue) {
+    public EntropyDependenceCBRSItemProfile(long idItem, Map<Feature, Object> featureValue) {
         this.featureValues = new TreeMap<Feature, Object>(featureValue);
         this.idItem = idItem;
     }
 
     @Override
-    public int getId() {
+    public long getId() {
         return idItem;
     }
 

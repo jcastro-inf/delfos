@@ -179,7 +179,10 @@ public class RecommenderSystem_cacheRecommendationModel<RecommendationModel> ext
     }
 
     @Override
-    public Collection<Recommendation> recommendToUser(DatasetLoader<? extends Rating> datasetLoader, RecommendationModel model, Integer idUser, java.util.Set<Integer> candidateItems) throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset, NotEnoughtUserInformation {
+    public Collection<Recommendation> recommendToUser(
+            DatasetLoader<? extends Rating> datasetLoader,
+            RecommendationModel model,
+            long idUser, java.util.Set<Long> candidateItems) throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset, NotEnoughtUserInformation {
         Collection<Recommendation> recommendations;
 
         recommendations = getRecommenderSystem().recommendToUser(datasetLoader, model, idUser, candidateItems);

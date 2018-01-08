@@ -23,10 +23,12 @@ import delfos.dataset.basic.item.ContentDataset;
 import delfos.dataset.basic.loader.types.CompleteDatasetLoaderAbstract_withTrust;
 import delfos.dataset.basic.loader.types.ContentDatasetLoader;
 import delfos.dataset.basic.loader.types.DatasetLoader;
+import delfos.dataset.basic.loader.types.TagsDatasetLoader;
 import delfos.dataset.basic.loader.types.UsersDatasetLoader;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RatingsDataset;
 import delfos.dataset.basic.rating.RelevanceCriteria;
+import delfos.dataset.basic.tags.TagsDataset;
 import delfos.dataset.basic.user.UsersDataset;
 
 /**
@@ -45,8 +47,7 @@ public class DatasetLoaderGivenRatingsDataset<RatingType extends Rating> extends
     private final RatingsDataset<RatingType> ratingsDataset;
 
     /**
-     * Replaces the original ratings dataset in the dataset loader for the one
-     * provided.
+     * Replaces the original ratings dataset in the dataset loader for the one provided.
      *
      * @param datasetLoader
      * @param ratingsDataset
@@ -59,13 +60,11 @@ public class DatasetLoaderGivenRatingsDataset<RatingType extends Rating> extends
     }
 
     /**
-     * Replaces the original ratings dataset in the dataset loader for the one
-     * provided.
+     * Replaces the original ratings dataset in the dataset loader for the one provided.
      *
      * @param datasetLoader
      * @param ratingsDataset
-     * @param aliasSuffix Alias suffix, to identify how this dataset has been
-     * generated.
+     * @param aliasSuffix Alias suffix, to identify how this dataset has been generated.
      */
     public DatasetLoaderGivenRatingsDataset(
             DatasetLoader<? extends Rating> datasetLoader,
@@ -110,5 +109,19 @@ public class DatasetLoaderGivenRatingsDataset<RatingType extends Rating> extends
         }
 
         return usersDataset;
+    }
+
+    @Override
+    public synchronized TagsDataset getTagsDataset() throws CannotLoadUsersDataset {
+        final TagsDataset tagsDataset;
+        if (datasetLoader instanceof TagsDatasetLoader) {
+            TagsDatasetLoader tagsDatasetLoader = (TagsDatasetLoader) datasetLoader;
+
+            tagsDataset = tagsDatasetLoader.getTagsDataset();
+        } else {
+            throw new CannotLoadUsersDataset("The dataset loader is not a UsersDatasetLoader, cannot return the users dataset");
+        }
+
+        return tagsDataset;
     }
 }

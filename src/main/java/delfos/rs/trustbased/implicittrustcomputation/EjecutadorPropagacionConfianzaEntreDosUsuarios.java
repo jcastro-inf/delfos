@@ -37,9 +37,9 @@ public class EjecutadorPropagacionConfianzaEntreDosUsuarios implements SingleTas
 
     @Override
     public void executeSingleTask(TareaPropagarConfianzaEntreUsuarios task) {
-        final Map<Integer, Map<Integer, Number>> usersTrust = task.usersTrust;
-        final int idSourceUser = task.idSourceUser;
-        final int idTargetUser = task.idTargetUser;
+        final Map<Long, Map<Long, Number>> usersTrust = task.usersTrust;
+        final long idSourceUser = task.idSourceUser;
+        final long idTargetUser = task.idTargetUser;
         final RatingsDataset<? extends Rating> ratingsDataset = task.ratingsDataset;
 
         if (usersTrust.get(idSourceUser).containsKey(idTargetUser)) {
@@ -50,7 +50,7 @@ public class EjecutadorPropagacionConfianzaEntreDosUsuarios implements SingleTas
                 Global.showInfoMessage("Propagating trust between user " + idSourceUser + " and user " + idTargetUser + "\n");
             }
 
-            Set<Integer> adyacentesAAmbos = new TreeSet<Integer>(usersTrust.get(idSourceUser).keySet());
+            Set<Long> adyacentesAAmbos = new TreeSet<Long>(usersTrust.get(idSourceUser).keySet());
             adyacentesAAmbos.retainAll(usersTrust.get(idTargetUser).keySet());
 
             if (adyacentesAAmbos.isEmpty()) {
@@ -58,12 +58,12 @@ public class EjecutadorPropagacionConfianzaEntreDosUsuarios implements SingleTas
             } else {
                 double numerador = 0;
                 double denominador = 0;
-                for (int idIntermediateUser : adyacentesAAmbos) {
+                for (long idIntermediateUser : adyacentesAAmbos) {
                     double usersTrustAB = usersTrust.get(idSourceUser).get(idIntermediateUser).doubleValue();
                     double usersTrustBC = usersTrust.get(idIntermediateUser).get(idTargetUser).doubleValue();
                     int numCommonAB;
                     try {
-                        TreeSet<Integer> commonAB = new TreeSet<Integer>(ratingsDataset.getUserRated(idSourceUser));
+                        TreeSet<Long> commonAB = new TreeSet<Long>(ratingsDataset.getUserRated(idSourceUser));
                         commonAB.retainAll(ratingsDataset.getUserRated(idIntermediateUser));
                         numCommonAB = commonAB.size();
                     } catch (UserNotFound ex) {
@@ -73,7 +73,7 @@ public class EjecutadorPropagacionConfianzaEntreDosUsuarios implements SingleTas
 
                     int numCommonBC;
                     try {
-                        TreeSet<Integer> commonBC = new TreeSet<Integer>(ratingsDataset.getUserRated(idIntermediateUser));
+                        TreeSet<Long> commonBC = new TreeSet<Long>(ratingsDataset.getUserRated(idIntermediateUser));
                         commonBC.retainAll(ratingsDataset.getUserRated(idTargetUser));
                         numCommonBC = commonBC.size();
                     } catch (UserNotFound ex) {

@@ -52,7 +52,7 @@ public class SimilarMembers_exceptTest extends DelfosTest {
         Collection<GroupOfUsers> result = instance.generateGroups(datasetLoader);
 
         Collection<GroupOfUsers> expResult = new ArrayList<>();
-        expResult.add(new GroupOfUsers(5, 12, 16, 260, 886));
+        expResult.add(new GroupOfUsers(5l, 12l, 16l, 260l, 886l));
         assertEquals(expResult, result);
     }
 
@@ -88,7 +88,7 @@ public class SimilarMembers_exceptTest extends DelfosTest {
 
         groups.stream().forEach((group1) -> {
             groups.stream().filter((group2) -> !(group1 == group2)).forEach((group2) -> {
-                Set<Integer> intersection = new TreeSet<>();
+                Set<Long> intersection = new TreeSet<>();
                 intersection.addAll(group1.getIdMembers());
                 intersection.retainAll(group2.getIdMembers());
                 if (!intersection.isEmpty()) {

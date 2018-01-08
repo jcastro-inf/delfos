@@ -79,12 +79,12 @@ public class ChangeableRatingsDatasetCSV<RatingType extends Rating> extends Both
     }
 
     @Override
-    public void addRating(int idUser, int idItem, RatingType ratingValue) {
+    public void addRating(long idUser, long idItem, RatingType ratingValue) {
         super.addOneRating(ratingValue);
     }
 
     @Override
-    public void removeRating(int idUser, int idItem) {
+    public void removeRating(long idUser, long idItem) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 

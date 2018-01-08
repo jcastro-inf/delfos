@@ -51,13 +51,13 @@ public abstract class GroupRatingsFilter extends ParameterOwnerAdapter {
      * @param group Grupo para el que se calcula el conjunto de valoraciones.
      * @return Devuelve las valoraciones del grupo que se utilizan.
      */
-    public Map<Integer, Map<Integer, Rating>> getFilteredRatings(RatingsDataset<? extends Rating> ratingsDataset, GroupOfUsers group) {
-        Map<Integer, Map<Integer, Number>> groupRatings = new TreeMap<>();
-        for (int idUser : group) {
+    public Map<Long, Map<Long, Rating>> getFilteredRatings(RatingsDataset<? extends Rating> ratingsDataset, GroupOfUsers group) {
+        Map<Long, Map<Long, Number>> groupRatings = new TreeMap<>();
+        for (Long idUser : group) {
             try {
-                Map<Integer, ? extends Rating> userRatingsRated = ratingsDataset.getUserRatingsRated(idUser);
+                Map<Long, ? extends Rating> userRatingsRated = ratingsDataset.getUserRatingsRated(idUser);
 
-                Map<Integer, Number> userRatings_Number = new TreeMap<>();
+                Map<Long, Number> userRatings_Number = new TreeMap<>();
                 for (Rating rating : userRatingsRated.values()) {
                     userRatings_Number.put(rating.getIdItem(), rating.getRatingValue());
                 }
@@ -66,7 +66,7 @@ public abstract class GroupRatingsFilter extends ParameterOwnerAdapter {
                 ERROR_CODES.USER_NOT_FOUND.exit(ex);
             }
         }
-        Map<Integer, Map<Integer, Number>> filteredRatingsByUser = getFilteredRatings(groupRatings);
+        Map<Long, Map<Long, Number>> filteredRatingsByUser = getFilteredRatings(groupRatings);
 
         return DatasetUtilities.getMapOfMaps_Rating(filteredRatingsByUser);
     }
@@ -79,7 +79,7 @@ public abstract class GroupRatingsFilter extends ParameterOwnerAdapter {
      *
      * @return Devuelve las valoraciones filtradas.
      */
-    public abstract Map<Integer, Map<Integer, Number>> getFilteredRatings(Map<Integer, Map<Integer, Number>> ratingsByUser);
+    public abstract Map<Long, Map<Long, Number>> getFilteredRatings(Map<Long, Map<Long, Number>> ratingsByUser);
 
     @Override
     public boolean equals(Object obj) {

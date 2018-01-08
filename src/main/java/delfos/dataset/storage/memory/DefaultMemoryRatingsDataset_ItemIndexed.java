@@ -43,8 +43,8 @@ import java.util.TreeSet;
 public class DefaultMemoryRatingsDataset_ItemIndexed<RatingType extends Rating> extends RatingsDatasetAdapter<RatingType> {
 
     private final List<List<RatingType>> ratings;
-    private final TreeSet<Integer> users;
-    private final TreeMap<Integer, Integer> itemsIndex;
+    private final TreeSet<Long> users;
+    private final TreeMap<Long, Integer> itemsIndex;
     private DecimalDomain rc = null;
 
     /**
@@ -66,7 +66,7 @@ public class DefaultMemoryRatingsDataset_ItemIndexed<RatingType extends Rating> 
     }
 
     @Override
-    public RatingType getRating(int idUser, int idItem) {
+    public RatingType getRating(long idUser, long idItem) {
         RatingType rating = null;
         Iterator<RatingType> it = ratings.get(itemsIndex.get(idItem)).listIterator();
         while (it.hasNext() && rating == null) {
@@ -79,7 +79,7 @@ public class DefaultMemoryRatingsDataset_ItemIndexed<RatingType extends Rating> 
         return rating;
     }
 
-    private void addRating(int idUser, int idItem, RatingType rating) {
+    private void addRating(long idUser, long idItem, RatingType rating) {
 
         if (rc == null) {
             rc = new DecimalDomain(rating.getRatingValue().doubleValue(), rating.getRatingValue().doubleValue());
@@ -103,20 +103,20 @@ public class DefaultMemoryRatingsDataset_ItemIndexed<RatingType extends Rating> 
     }
 
     @Override
-    public Set<Integer> allUsers() {
+    public Set<Long> allUsers() {
         return Collections.unmodifiableSet(users);
     }
 
     @Override
-    public Set<Integer> allRatedItems() {
+    public Set<Long> allRatedItems() {
         return itemsIndex.keySet();
     }
     private boolean getUserRatingsWarningMessageShown = false;
 
     @Override
-    public Set<Integer> getUserRated(Integer idUser) {
+    public Set<Long> getUserRated(long idUser) {
         if (!getUserRatingsWarningMessageShown) {
-            RatingDatasetEfficiencyException ratingDatasetEfficiencyException = new RatingDatasetEfficiencyException(this.getClass().getSimpleName() + ": Using an inefficient method:[getUserRated(Integer idUser):Collection<Integer>]");
+            RatingDatasetEfficiencyException ratingDatasetEfficiencyException = new RatingDatasetEfficiencyException(this.getClass().getSimpleName() + ": Using an inefficient method:[getUserRated(Long idUser):Collection<Long>]");
             Global.showWarning(ratingDatasetEfficiencyException);
 
             getUserRatingsWarningMessageShown = true;
@@ -125,20 +125,20 @@ public class DefaultMemoryRatingsDataset_ItemIndexed<RatingType extends Rating> 
     }
 
     @Override
-    public Set<Integer> getItemRated(Integer idItem) {
+    public Set<Long> getItemRated(long idItem) {
         return getItemRatingsRated(idItem).keySet();
     }
     private boolean getUserRatingsRatedWarningMessageShown = false;
 
     @Override
-    public Map<Integer, RatingType> getUserRatingsRated(Integer idUser) {
+    public Map<Long, RatingType> getUserRatingsRated(long idUser) {
         if (!getUserRatingsRatedWarningMessageShown) {
-            RatingDatasetEfficiencyException ratingDatasetEfficiencyException = new RatingDatasetEfficiencyException(this.getClass().getSimpleName() + ": Using an inefficient method:[getUserRatingsRated(Integer idUser):Map<Integer, Byte>]");
+            RatingDatasetEfficiencyException ratingDatasetEfficiencyException = new RatingDatasetEfficiencyException(this.getClass().getSimpleName() + ": Using an inefficient method:[getUserRatingsRated(Long idUser):Map<Long, Byte>]");
             Global.showWarning(ratingDatasetEfficiencyException);
 
             getUserRatingsRatedWarningMessageShown = true;
         }
-        Map<Integer, RatingType> ret = new TreeMap<>();
+        Map<Long, RatingType> ret = new TreeMap<>();
         for (int i = 0; i < itemsIndex.size(); i++) {
             for (Iterator<RatingType> it = ratings.get(i).listIterator(); it.hasNext();) {
                 RatingType rating = it.next();
@@ -152,9 +152,9 @@ public class DefaultMemoryRatingsDataset_ItemIndexed<RatingType extends Rating> 
     }
 
     @Override
-    public Map<Integer, RatingType> getItemRatingsRated(Integer idItem) {
+    public Map<Long, RatingType> getItemRatingsRated(long idItem) {
 
-        Map<Integer, RatingType> ret = new TreeMap<>();
+        Map<Long, RatingType> ret = new TreeMap<>();
         Integer index = itemsIndex.get(idItem);
         if (index == null) {
             return new TreeMap<>();

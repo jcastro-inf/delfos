@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -19,7 +19,7 @@ package delfos.results;
 import delfos.dataset.basic.user.User;
 import delfos.rs.recommendation.Recommendation;
 import delfos.rs.recommendation.Recommendations;
-import delfos.rs.recommendation.SingleUserRecommendations;
+import delfos.rs.recommendation.RecommendationsToUser;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -31,17 +31,18 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 
 /**
- * Guarda los resultados de una ejecución, es decir, las recomendaciones que se
- * hacen a todos los usuarios con el mismo conjunto de datos de training
+ * Guarda los resultados de una ejecución, es decir, las recomendaciones que se hacen a todos los usuarios con el mismo
+ * conjunto de datos de training
  *
  * @author jcastro-inf ( https://github.com/jcastro-inf )
  * @version 1.0 (19 Octubre 2011)
  */
 public class RecommendationResults {
 
-    private final Map<Integer, List<Recommendation>> recommendationResults;
+    private final Map<Long, List<Recommendation>> recommendationResults;
+    private long modelBuildTime;
 
-    public Set<Integer> usersWithRecommendations() {
+    public Set<Long> usersWithRecommendations() {
         return new TreeSet<>(recommendationResults.keySet());
     }
 
@@ -49,10 +50,10 @@ public class RecommendationResults {
      * Añade las recomendaciones de un usuario a los resultados
      *
      * @param idUser id del usuario para el que se añaden las recomendaciones
-     * @param recommendations lista de recomendaciones que se le dan ordenadas
-     * por relevancia (similitud o valoración predicha)
+     * @param recommendations lista de recomendaciones que se le dan ordenadas por relevancia (similitud o valoración
+     * predicha)
      */
-    public void add(int idUser, Collection<Recommendation> recommendations) {
+    public void add(long idUser, Collection<Recommendation> recommendations) {
 
         ArrayList<Recommendation> recommendationList = new ArrayList<>(recommendations);
         Collections.sort(recommendationList);
@@ -71,11 +72,11 @@ public class RecommendationResults {
         this.recommendationResults = new TreeMap<>();
     }
 
-    public RecommendationResults(List<SingleUserRecommendations> allRecommendations) {
+    public RecommendationResults(List<RecommendationsToUser> allRecommendations) {
 
         this.recommendationResults = new TreeMap<>();
         for (Recommendations recommendations : allRecommendations) {
-            Integer idUser = User.parseIdTarget(recommendations.getTargetIdentifier()).getId();
+            Long idUser = User.parseIdTarget(recommendations.getTargetIdentifier()).getId();
 
             add(idUser, recommendations.getRecommendations());
         }
@@ -86,8 +87,8 @@ public class RecommendationResults {
      *
      * @param idUser id del usuario para el que se realiza la comprobación
      * @param idItem id del item que se desea comprobar si se le ha recomendado
-     * @return true si al usuario con id <code>idUser</code> se le ha
-     * recomendado el item con id  <code>idItem</code>, false si no.
+     * @return true si al usuario con id <code>idUser</code> se le ha recomendado el item con id  <code>idItem</code>,
+     * false si no.
      */
     public boolean containsRecommendation(int idUser, int idItem) {
         if (recommendationResults.containsKey(idUser)) {
@@ -103,16 +104,25 @@ public class RecommendationResults {
 
     }
 
-    public List<Recommendation> getRecommendationsForUser(int idUser) {
+    public List<Recommendation> getRecommendationsForUser(long idUser) {
         return recommendationResults.get(idUser);
     }
 
+    public long getModelBuildTime() {
+        return modelBuildTime;
+    }
+
     public void clear() {
-        for (Iterator<Map.Entry<Integer, List<Recommendation>>> it = recommendationResults.entrySet().iterator(); it.hasNext();) {
-            Map.Entry<Integer, List<Recommendation>> list = it.next();
+        for (Iterator<Map.Entry<Long, List<Recommendation>>> it = recommendationResults.entrySet().iterator(); it.hasNext();) {
+            Map.Entry<Long, List<Recommendation>> list = it.next();
             list.getValue().clear();
             it.remove();
         }
         recommendationResults.clear();
+    }
+
+    public void setModelBuildTime(long modelBuildTime) {
+        this.modelBuildTime = modelBuildTime;
+
     }
 }

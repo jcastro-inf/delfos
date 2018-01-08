@@ -24,11 +24,15 @@ import delfos.common.exceptions.dataset.items.ItemNotFound;
 import delfos.common.exceptions.dataset.users.UserNotFound;
 import delfos.common.parameters.Parameter;
 import delfos.common.parameters.restriction.IntegerParameter;
+import delfos.dataset.basic.item.Item;
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.user.User;
 import delfos.dataset.storage.validationdatasets.PairOfTrainTestRatingsDataset;
 import delfos.dataset.storage.validationdatasets.ValidationDatasets;
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.Pair;
+
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -39,6 +43,7 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import java.util.stream.LongStream;
 import java.util.stream.Stream;
 
 /**
@@ -68,7 +73,7 @@ public class CrossFoldValidation_Ratings extends ValidationTechnique {
     }
 
     @Override
-    public <RatingType extends Rating> PairOfTrainTestRatingsDataset[] shuffle(DatasetLoader<RatingType> datasetLoader) throws CannotLoadRatingsDataset, CannotLoadContentDataset {
+    public <RatingType extends Rating> PairOfTrainTestRatingsDataset<RatingType>[] shuffle(DatasetLoader<RatingType> datasetLoader) throws CannotLoadRatingsDataset, CannotLoadContentDataset {
         long generalSeed = getSeedValue();
 
         int numSplit = getNumberOfPartitions();
@@ -76,7 +81,8 @@ public class CrossFoldValidation_Ratings extends ValidationTechnique {
         PairOfTrainTestRatingsDataset[] ret = new PairOfTrainTestRatingsDataset[numSplit];
 
         //cross validationDatasets initialization
-        Map<Integer, Map<Integer, Set<Integer>>> todosConjuntosTest = IntStream.range(0, numSplit).boxed().collect(Collectors.toMap(Function.identity(), i -> new HashMap<>()));
+        Map<Integer, Map<User, Set<Item>>> todosConjuntosTest = IntStream.range(0, numSplit).boxed()
+                .collect(Collectors.toMap(Function.identity(), i -> new HashMap<>()));
 
         Map<Integer, List<RatingType>> ratingsPartition = getUsersInTestSet(datasetLoader)
                 .map(user -> {
@@ -92,13 +98,17 @@ public class CrossFoldValidation_Ratings extends ValidationTechnique {
                     List<RatingType> randomizedRatings = userRatings.stream().collect(Collectors.toList());
                     Collections.shuffle(randomizedRatings, randomThisUser);
 
-                    Map<Integer, List<Integer>> ratingsByPartitions = IntStream.range(0, randomizedRatings.size()).boxed().collect(Collectors
-                            .groupingBy(index -> index % numSplit));
+                    Map<Integer, List<Integer>> ratingsByPartitions = IntStream.range(0, randomizedRatings.size())
+                            .boxed()
+                            .collect(Collectors
+                            .groupingBy( index -> index % numSplit));
 
                     Map<Integer, List<RatingType>> thisUserPartition = ratingsByPartitions.entrySet().parallelStream()
                             .collect(Collectors.toMap(
                                     entry -> entry.getKey(),
-                                    entry -> entry.getValue().parallelStream().map(index -> randomizedRatings.get(index)).collect(Collectors.toList())));
+                                    entry -> entry.getValue().parallelStream()
+                                            .map(index -> randomizedRatings.get(index))
+                                            .collect(Collectors.toList())));
                     return thisUserPartition;
 
                 })
@@ -107,9 +117,9 @@ public class CrossFoldValidation_Ratings extends ValidationTechnique {
                 .entrySet().parallelStream()
                 .flatMap(entry -> {
 
-                    List<RatingType> ratingsThisPartition = entry.getValue().parallelStream().flatMap(entryValue -> {
-                        return entryValue.getValue().parallelStream();
-                    }).collect(Collectors.toList());
+                    List<RatingType> ratingsThisPartition = entry.getValue().parallelStream()
+                            .flatMap(entryValue ->entryValue.getValue().parallelStream())
+                            .collect(Collectors.toList());
 
                     Map<Integer, List<RatingType>> map = new HashMap<>();
                     map.put(entry.getKey(), ratingsThisPartition);
@@ -120,20 +130,20 @@ public class CrossFoldValidation_Ratings extends ValidationTechnique {
 
         ratingsPartition.entrySet().forEach(partitionData -> {
 
-            Integer idPartition = partitionData.getKey();
+            int idPartition = partitionData.getKey();
 
             Map<User, List<RatingType>> collect = partitionData.getValue().parallelStream()
                     .collect(Collectors.groupingBy(rating -> rating.getUser()));
 
-            Map<Integer, Set<Integer>> trainingSet = collect.entrySet().parallelStream().collect(Collectors.toMap(
+            Map<User, Set<Item>> trainingSet = collect.entrySet().parallelStream().collect(Collectors.toMap(
                     userTestSetEntry -> {
                         User user = userTestSetEntry.getKey();
-                        return user.getId();
+                        return user;
                     },
-                    entry -> {
-                        List<RatingType> ratingsInTestSet = entry.getValue();
-                        Set<Integer> idItem_testSet = ratingsInTestSet.stream()
-                        .map(rating -> rating.getItem().getId())
+                    userTestSetEntry -> {
+                        List<RatingType> ratingsInTestSet = userTestSetEntry.getValue();
+                        Set<Item> idItem_testSet = ratingsInTestSet.stream()
+                        .map(rating -> rating.getItem())
                         .collect(Collectors.toSet());
 
                         return idItem_testSet;

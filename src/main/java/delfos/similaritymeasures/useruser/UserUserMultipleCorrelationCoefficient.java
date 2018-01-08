@@ -78,14 +78,14 @@ public class UserUserMultipleCorrelationCoefficient extends SimilarityMeasureAda
     }
 
     @Override
-    public double similarity(DatasetLoader<? extends Rating> datasetLoader, int idUser1, int idUser2) {
+    public double similarity(DatasetLoader<? extends Rating> datasetLoader, long idUser1, long idUser2) {
 
-        Map<Integer, Double> values = new TreeMap<>();
+        Map<Long, Double> values = new TreeMap<>();
         MeanIterative mean = new MeanIterative();
         double rangeWidth = 0.05;
         HistogramNumbersSmart histogram = new HistogramNumbersSmart(rangeWidth);
 
-        for (int idNeighbor : datasetLoader.getRatingsDataset().allUsers()) {
+        for (Long idNeighbor : datasetLoader.getRatingsDataset().allUsers()) {
             if (idNeighbor == idUser1 || idNeighbor == idUser2) {
                 continue;
             }
@@ -131,24 +131,28 @@ public class UserUserMultipleCorrelationCoefficient extends SimilarityMeasureAda
         return value;
     }
 
-    protected double computeRValue(DatasetLoader<? extends Rating> datasetLoader, int a, int b, int c_i) throws UserNotFound, CouldNotComputeSimilarity {
+    protected double computeRValue(
+            DatasetLoader<? extends Rating> datasetLoader,
+            long a,
+            long b,
+            long c_i) throws UserNotFound, CouldNotComputeSimilarity {
 
         //Para que esta medida funcione correctamente, tengo que rellenar los vectores de valoraciones.
-        Set<Integer> itemsRated = new TreeSet<>();
+        Set<Long> itemsRated = new TreeSet<>();
         itemsRated.addAll(datasetLoader.getRatingsDataset().getUserRated(a));
         itemsRated.addAll(datasetLoader.getRatingsDataset().getUserRated(b));
         itemsRated.addAll(datasetLoader.getRatingsDataset().getUserRated(c_i));
 
         Collection<Rating> completedRatings = new ArrayList<>(itemsRated.size() * 3);
 
-        Collection<Integer> users = new ArrayList<>();
+        Collection<Long> users = new ArrayList<>();
         users.add(a);
         users.add(b);
         users.add(c_i);
 
-        for (int idUser : users) {
+        for (long idUser : users) {
 
-            Map<Integer, ? extends Rating> userRatings = datasetLoader.getRatingsDataset().getUserRatingsRated(idUser);
+            Map<Long, ? extends Rating> userRatings = datasetLoader.getRatingsDataset().getUserRatingsRated(idUser);
             double meanUserRating = datasetLoader.getRatingsDataset().getMeanRatingUser(idUser);
 
             itemsRated.stream().forEach((idItem) -> {
@@ -177,24 +181,24 @@ public class UserUserMultipleCorrelationCoefficient extends SimilarityMeasureAda
         return computeRValueFromSimilarities(simAB, simAC_I, simBC_I);
     }
 
-    protected double simAB(DatasetLoader<? extends Rating> datasetLoader, int a, int b, int c_i) throws UserNotFound, CouldNotComputeSimilarity {
+    protected double simAB(DatasetLoader<? extends Rating> datasetLoader, long a, long b, long c_i) throws UserNotFound, CouldNotComputeSimilarity {
 
         //Para que esta medida funcione correctamente, tengo que rellenar los vectores de valoraciones.
-        Set<Integer> itemsRated = new TreeSet<>();
+        Set<Long> itemsRated = new TreeSet<>();
         itemsRated.addAll(datasetLoader.getRatingsDataset().getUserRated(a));
         itemsRated.addAll(datasetLoader.getRatingsDataset().getUserRated(b));
         itemsRated.addAll(datasetLoader.getRatingsDataset().getUserRated(c_i));
 
         Collection<Rating> completedRatings = new ArrayList<>(itemsRated.size() * 3);
 
-        Collection<Integer> users = new ArrayList<>();
+        Collection<Long> users = new ArrayList<>();
         users.add(a);
         users.add(b);
         users.add(c_i);
 
-        for (int idUser : users) {
+        for (long idUser : users) {
 
-            Map<Integer, ? extends Rating> userRatings = datasetLoader.getRatingsDataset().getUserRatingsRated(idUser);
+            Map<Long, ? extends Rating> userRatings = datasetLoader.getRatingsDataset().getUserRatingsRated(idUser);
             double meanUserRating = datasetLoader.getRatingsDataset().getMeanRatingUser(idUser);
 
             itemsRated.stream().forEach((idItem) -> {
@@ -215,24 +219,24 @@ public class UserUserMultipleCorrelationCoefficient extends SimilarityMeasureAda
         return simAB;
     }
 
-    protected double simAC_i(DatasetLoader<? extends Rating> datasetLoader, int a, int b, int c_i) throws UserNotFound, CouldNotComputeSimilarity {
+    protected double simAC_i(DatasetLoader<? extends Rating> datasetLoader, long a, long b, long c_i) throws UserNotFound, CouldNotComputeSimilarity {
 
         //Para que esta medida funcione correctamente, tengo que rellenar los vectores de valoraciones.
-        Set<Integer> itemsRated = new TreeSet<>();
+        Set<Long> itemsRated = new TreeSet<>();
         itemsRated.addAll(datasetLoader.getRatingsDataset().getUserRated(a));
         itemsRated.addAll(datasetLoader.getRatingsDataset().getUserRated(b));
         itemsRated.addAll(datasetLoader.getRatingsDataset().getUserRated(c_i));
 
         Collection<Rating> completedRatings = new ArrayList<>(itemsRated.size() * 3);
 
-        Collection<Integer> users = new ArrayList<>();
+        Collection<Long> users = new ArrayList<>();
         users.add(a);
         users.add(b);
         users.add(c_i);
 
-        for (int idUser : users) {
+        for (long idUser : users) {
 
-            Map<Integer, ? extends Rating> userRatings = datasetLoader.getRatingsDataset().getUserRatingsRated(idUser);
+            Map<Long, ? extends Rating> userRatings = datasetLoader.getRatingsDataset().getUserRatingsRated(idUser);
             double meanUserRating = datasetLoader.getRatingsDataset().getMeanRatingUser(idUser);
 
             itemsRated.stream().forEach((idItem) -> {
@@ -253,24 +257,24 @@ public class UserUserMultipleCorrelationCoefficient extends SimilarityMeasureAda
         return simAC_I;
     }
 
-    protected double simBC_i(DatasetLoader<? extends Rating> datasetLoader, int a, int b, int c_i) throws UserNotFound, CouldNotComputeSimilarity {
+    protected double simBC_i(DatasetLoader<? extends Rating> datasetLoader, long a, long b, long c_i) throws UserNotFound, CouldNotComputeSimilarity {
 
         //Para que esta medida funcione correctamente, tengo que rellenar los vectores de valoraciones.
-        Set<Integer> itemsRated = new TreeSet<>();
+        Set<Long> itemsRated = new TreeSet<>();
         itemsRated.addAll(datasetLoader.getRatingsDataset().getUserRated(a));
         itemsRated.addAll(datasetLoader.getRatingsDataset().getUserRated(b));
         itemsRated.addAll(datasetLoader.getRatingsDataset().getUserRated(c_i));
 
         Collection<Rating> completedRatings = new ArrayList<>(itemsRated.size() * 3);
 
-        Collection<Integer> users = new ArrayList<>();
+        Collection<Long> users = new ArrayList<>();
         users.add(a);
         users.add(b);
         users.add(c_i);
 
-        for (int idUser : users) {
+        for (long idUser : users) {
 
-            Map<Integer, ? extends Rating> userRatings = datasetLoader.getRatingsDataset().getUserRatingsRated(idUser);
+            Map<Long, ? extends Rating> userRatings = datasetLoader.getRatingsDataset().getUserRatingsRated(idUser);
             double meanUserRating = datasetLoader.getRatingsDataset().getMeanRatingUser(idUser);
 
             itemsRated.stream().forEach((idItem) -> {

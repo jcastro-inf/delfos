@@ -16,12 +16,12 @@
  */
 package delfos.group.results.groupevaluationmeasures.precisionrecall;
 
-import delfos.ERROR_CODES;
-import delfos.common.exceptions.dataset.users.UserNotFound;
+import delfos.common.Global;
 import delfos.common.statisticalfuncions.MeanIterative;
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RelevanceCriteria;
+import delfos.dataset.util.DatasetUtilities;
 import delfos.group.groupsofusers.GroupOfUsers;
 import delfos.group.results.groupevaluationmeasures.GroupEvaluationMeasure;
 import delfos.group.results.groupevaluationmeasures.GroupEvaluationMeasureResult;
@@ -30,9 +30,11 @@ import delfos.results.evaluationmeasures.confusionmatrix.ConfusionMatricesCurve;
 import delfos.rs.recommendation.Recommendation;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Medida de evaluación para sistemas de recomendación a grupos que calcula la precisión y recall a lo largo de todos
@@ -84,28 +86,31 @@ public class PRSpaceGroups extends GroupEvaluationMeasure {
             DatasetLoader<? extends Rating> trainingDatasetLoader,
             DatasetLoader<? extends Rating> testDatasetLoader) {
 
-        Map<GroupOfUsers, ConfusionMatricesCurve> prCurves = new TreeMap<>();
+        Map<GroupOfUsers, ConfusionMatricesCurve> prCurves = Collections.synchronizedMap(new TreeMap<>());
 
-        int gruposSinMatriz = 0;
-        for (GroupOfUsers group : groupRecommenderSystemResult.getGroupsOfUsers()) {
+        AtomicInteger gruposSinMatriz = new AtomicInteger(0);
+        groupRecommenderSystemResult.getGroupsOfUsers().parallelStream().forEach((group) -> {
             Collection<Recommendation> groupRecommendations = groupRecommenderSystemResult
                     .getGroupOutput(group)
                     .getRecommendations()
                     .getRecommendations();
 
+            Map<Long, Map<Long, Number>> membersRatings_byUser = DatasetUtilities.getMembersRatings_byUser(group, testDatasetLoader);
+
             List<Boolean> recommendacionesGrupo = new ArrayList<>(groupRecommendations.size());
             for (Recommendation r : groupRecommendations) {
-                int idItem = r.getIdItem();
+                Long idItem = r.getItem().getId();
 
                 MeanIterative mean = new MeanIterative();
-                for (int idUser : group.getIdMembers()) {
-                    try {
-                        Map<Integer, ? extends Rating> userRatings = testDatasetLoader.getRatingsDataset().getUserRatingsRated(idUser);
-                        if (userRatings.containsKey(idItem)) {
-                            mean.addValue(testDatasetLoader.getRatingsDataset().getUserRatingsRated(idUser).get(idItem).getRatingValue().doubleValue());
-                        }
-                    } catch (UserNotFound ex) {
-                        ERROR_CODES.USER_NOT_FOUND.exit(ex);
+                for (Long idUser : group.getIdMembers()) {
+
+                    if (!membersRatings_byUser.containsKey(idUser)) {
+                        Global.showError(new IllegalStateException("User '" + idUser + "' has no ratings"));
+
+                    } else if (membersRatings_byUser.get(idUser).containsKey(idItem)) {
+
+                        Number rating = membersRatings_byUser.get(idUser).get(idItem);
+                        mean.addValue(rating.doubleValue());
                     }
                 }
                 recommendacionesGrupo.add(relevanceCriteria.isRelevant(mean.getMean()));
@@ -114,9 +119,9 @@ public class PRSpaceGroups extends GroupEvaluationMeasure {
             try {
                 prCurves.put(group, new ConfusionMatricesCurve(recommendacionesGrupo));
             } catch (IllegalArgumentException iae) {
-                gruposSinMatriz++;
+                gruposSinMatriz.incrementAndGet();
             }
-        }
+        });
 
         ConfusionMatricesCurve agregada = ConfusionMatricesCurve.mergeCurves(prCurves.values());
 

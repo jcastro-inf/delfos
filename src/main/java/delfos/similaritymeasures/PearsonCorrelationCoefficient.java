@@ -16,6 +16,7 @@
  */
 package delfos.similaritymeasures;
 
+import delfos.dataset.basic.item.Item;
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.user.User;
@@ -56,7 +57,6 @@ public class PearsonCorrelationCoefficient extends WeightedSimilarityMeasureAdap
     /**
      * Devuelve el PCC de las listas de valores. El valor está entre -1 y 1. Si
      * las listas están vacías, lanza una excepción
-     * {@link CouldNotComputeSimilarity}.
      *
      * @param v1
      * @param v2
@@ -192,7 +192,7 @@ public class PearsonCorrelationCoefficient extends WeightedSimilarityMeasureAdap
     }
 
     @Override
-    public double similarity(DatasetLoader<? extends Rating> datasetLoader, int idUser1, int idUser2) {
+    public double similarity(DatasetLoader<? extends Rating> datasetLoader, long idUser1, long idUser2) {
         User user1 = datasetLoader.getUsersDataset().get(idUser1);
         User user2 = datasetLoader.getUsersDataset().get(idUser2);
 
@@ -209,5 +209,14 @@ public class PearsonCorrelationCoefficient extends WeightedSimilarityMeasureAdap
 
         return similarity(l1, l2);
 
+    }
+
+    public double similarity(DatasetLoader<? extends Rating> datasetLoader, Item item1, Item item2) {
+        List<CommonRating> intersection = CommonRating.intersection(datasetLoader, item1, item2).stream().collect(Collectors.toList());
+
+        List<Double> l1 = intersection.stream().map(commonRating -> commonRating.getRating1()).collect(Collectors.toList());
+        List<Double> l2 = intersection.stream().map(commonRating -> commonRating.getRating2()).collect(Collectors.toList());
+
+        return similarity(l1, l2);
     }
 }

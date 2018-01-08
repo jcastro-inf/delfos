@@ -25,7 +25,7 @@ import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RelevanceCriteria;
 import delfos.group.groupsofusers.GroupOfUsers;
 import delfos.group.results.grouprecomendationresults.GroupRecommenderSystemResult;
-import static delfos.results.evaluationmeasures.NDCG.computeDCG;
+import static delfos.results.evaluationmeasures.ndcg.NDCG.computeDCG;
 import delfos.rs.recommendation.Recommendation;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -69,11 +69,11 @@ public class NDCG extends GroupEvaluationMeasure {
                 continue;
             }
 
-            for (int idUser : group) {
+            for (long idUser : group) {
 
                 List<Recommendation> idealRecommendations = new ArrayList<>();
                 List<Recommendation> recommendationsIntersectUserRatings = new ArrayList<>();
-                Map<Integer, ? extends Rating> userRatings;
+                Map<Long, ? extends Rating> userRatings;
                 try {
                     userRatings = testDatasetLoader.getRatingsDataset().getUserRatingsRated(idUser);
                 } catch (UserNotFound ex) {
@@ -83,7 +83,7 @@ public class NDCG extends GroupEvaluationMeasure {
 
                 for (Recommendation recommendation : groupRecommendations) {
                     Item item = recommendation.getItem();
-                    final Integer idItem = item.getId();
+                    final Long idItem = item.getId();
 
                     if (userRatings.containsKey(idItem)) {
                         idealRecommendations.add(new Recommendation(item, userRatings.get(idItem).getRatingValue()));
@@ -95,8 +95,16 @@ public class NDCG extends GroupEvaluationMeasure {
 
                     Collections.sort(idealRecommendations);
 
-                    double idealGain = computeDCG(idealRecommendations, userRatings);
-                    double gain = computeDCG(recommendationsIntersectUserRatings, userRatings);
+                    double idealGain = computeDCG(
+                            idealRecommendations,
+                            userRatings
+                    );
+
+                    double gain = computeDCG(
+                            recommendationsIntersectUserRatings,
+                            userRatings
+                    );
+
                     double score = gain / idealGain;
 
                     if (Double.isNaN(score)) {

@@ -53,9 +53,9 @@ public class MostPopularRS extends RecommenderSystemAdapter<Collection<Recommend
         final double numUsers = datasetLoader.getRatingsDataset().allUsers().size();
         Collection<Recommendation> model = new ArrayList<>(datasetLoader.getRatingsDataset().allRatedItems().size());
         RatingsDataset<? extends Rating> ratingDataset = datasetLoader.getRatingsDataset();
-        for (int idItem : ratingDataset.allRatedItems()) {
+        for (long idItem : ratingDataset.allRatedItems()) {
             try {
-                int numRatings = datasetLoader.getRatingsDataset().sizeOfItemRatings(idItem);
+                long numRatings = datasetLoader.getRatingsDataset().sizeOfItemRatings(idItem);
 
                 model.add(new Recommendation(idItem, numRatings / numUsers));
             } catch (ItemNotFound ex) {
@@ -67,10 +67,10 @@ public class MostPopularRS extends RecommenderSystemAdapter<Collection<Recommend
     }
 
     @Override
-    public Collection<Recommendation> recommendToUser(DatasetLoader<? extends Rating> datasetLoader, Collection<Recommendation> model, Integer idUser, java.util.Set<Integer> candidateItems) throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset {
+    public Collection<Recommendation> recommendToUser(DatasetLoader<? extends Rating> datasetLoader, Collection<Recommendation> model, long idUser, java.util.Set<Long> candidateItems) throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset {
         Collection<Recommendation> ret = new ArrayList<>(candidateItems.size());
 
-        Set<Integer> added = new TreeSet<>();
+        Set<Long> added = new TreeSet<>();
         for (Recommendation recommendation : model) {
             if (candidateItems.contains(recommendation.getIdItem())) {
                 ret.add(new Recommendation(recommendation.getIdItem(), recommendation.getPreference()));
@@ -79,9 +79,9 @@ public class MostPopularRS extends RecommenderSystemAdapter<Collection<Recommend
         }
 
         //Para que la cobertura sea 1 en todos los casos.
-        Set<Integer> toAdd = new TreeSet<>(candidateItems);
+        Set<Long> toAdd = new TreeSet<>(candidateItems);
         toAdd.removeAll(added);
-        for (int idItem : toAdd) {
+        for (long idItem : toAdd) {
             ret.add(new Recommendation(idItem, 0));
         }
 

@@ -27,7 +27,7 @@ public class RecommendationWithNeighbors extends Recommendation {
     private final List<Neighbor> neighbors;
 
     @Deprecated
-    public RecommendationWithNeighbors(Integer idItem, Number preference, List<Neighbor> neighbors) {
+    public RecommendationWithNeighbors(long idItem, Number preference, List<Neighbor> neighbors) {
         super(idItem, preference);
         this.neighbors = Collections.unmodifiableList(new ArrayList<Neighbor>(neighbors));
     }

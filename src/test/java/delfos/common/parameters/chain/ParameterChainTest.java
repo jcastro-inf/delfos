@@ -7,7 +7,7 @@ import delfos.group.casestudy.defaultcase.GroupCaseStudy;
 import delfos.group.grs.GroupRecommenderSystem;
 import delfos.group.grs.aggregation.AggregationOfIndividualRatings;
 import delfos.group.grs.aggregation.AggregationOfIndividualRecommendations;
-import delfos.rs.collaborativefiltering.knn.memorybased.nwr.KnnMemoryBasedNWR;
+import delfos.rs.collaborativefiltering.knn.memorybased.KnnMemoryBasedCFRS;
 import java.util.List;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -23,8 +23,7 @@ public class ParameterChainTest {
     }
 
     /**
-     * Test of obtainDataValidationParameterChains method, of class
-     * ParameterChain.
+     * Test of obtainDataValidationParameterChains method, of class ParameterChain.
      */
     @Test
     public void testObtainAllParameterChains() {
@@ -38,8 +37,7 @@ public class ParameterChainTest {
     }
 
     /**
-     * Test of obtainDataValidationParameterChains method, of class
-     * ParameterChain.
+     * Test of obtainDataValidationParameterChains method, of class ParameterChain.
      */
     @Test
     public void testObtainDataValidationParameterChains() {
@@ -57,7 +55,7 @@ public class ParameterChainTest {
     @Test
     public void testObtainTechniqueParameterChains() {
         GroupCaseStudy groupCaseStudy = new GroupCaseStudy(new ConfiguredDatasetLoader("ml-100k"));
-        groupCaseStudy.setGroupRecommenderSystem(new AggregationOfIndividualRatings(new KnnMemoryBasedNWR(), new Mean()));
+        groupCaseStudy.setGroupRecommenderSystem(new AggregationOfIndividualRatings(new KnnMemoryBasedCFRS(), new Mean()));
 
         List<ParameterChain> result = ParameterChain.obtainTechniqueParameterChains(groupCaseStudy);
 
@@ -72,9 +70,9 @@ public class ParameterChainTest {
     @Test
     public void testAreCompatible() {
 
-        AggregationOfIndividualRatings aoiRatingsMean = new AggregationOfIndividualRatings(new KnnMemoryBasedNWR(), new Mean());
-        AggregationOfIndividualRatings aoiRatingsMinimum = new AggregationOfIndividualRatings(new KnnMemoryBasedNWR(), new MinimumValue());
-        AggregationOfIndividualRecommendations aoiRecommendationsMinimum = new AggregationOfIndividualRecommendations(new KnnMemoryBasedNWR(), new MinimumValue());
+        AggregationOfIndividualRatings aoiRatingsMean = new AggregationOfIndividualRatings(new KnnMemoryBasedCFRS(), new Mean());
+        AggregationOfIndividualRatings aoiRatingsMinimum = new AggregationOfIndividualRatings(new KnnMemoryBasedCFRS(), new MinimumValue());
+        AggregationOfIndividualRecommendations aoiRecommendationsMinimum = new AggregationOfIndividualRecommendations(new KnnMemoryBasedCFRS(), new MinimumValue());
 
         ParameterChain aoiRatingsMeanChain = new ParameterChain(aoiRatingsMean).createWithLeaf(AggregationOfIndividualRatings.AGGREGATION_OPERATOR, new Mean());
         ParameterChain aoiRatingsMinChain = new ParameterChain(aoiRatingsMinimum).createWithLeaf(AggregationOfIndividualRatings.AGGREGATION_OPERATOR, new MinimumValue());
@@ -91,9 +89,9 @@ public class ParameterChainTest {
     @Test
     public void testAreCompatibleWithNodes() {
 
-        AggregationOfIndividualRatings aoiRatingsMean = new AggregationOfIndividualRatings(new KnnMemoryBasedNWR(), new Mean());
-        AggregationOfIndividualRatings aoiRatingsMin = new AggregationOfIndividualRatings(new KnnMemoryBasedNWR(), new MinimumValue());
-        AggregationOfIndividualRecommendations aoiRecommendationsMin = new AggregationOfIndividualRecommendations(new KnnMemoryBasedNWR(), new MinimumValue());
+        AggregationOfIndividualRatings aoiRatingsMean = new AggregationOfIndividualRatings(new KnnMemoryBasedCFRS(), new Mean());
+        AggregationOfIndividualRatings aoiRatingsMin = new AggregationOfIndividualRatings(new KnnMemoryBasedCFRS(), new MinimumValue());
+        AggregationOfIndividualRecommendations aoiRecommendationsMin = new AggregationOfIndividualRecommendations(new KnnMemoryBasedCFRS(), new MinimumValue());
 
         GroupCaseStudy aoiRatingsMeanGroupCaseStudy = new GroupCaseStudy();
         aoiRatingsMeanGroupCaseStudy.setParameterValue(GroupCaseStudy.GROUP_RECOMMENDER_SYSTEM, aoiRatingsMean);
@@ -126,9 +124,9 @@ public class ParameterChainTest {
      */
     @Test
     public void testAreSame() {
-        AggregationOfIndividualRatings aoiRatingsMean = new AggregationOfIndividualRatings(new KnnMemoryBasedNWR(), new Mean());
-        AggregationOfIndividualRatings aoiRatingsMean_2 = new AggregationOfIndividualRatings(new KnnMemoryBasedNWR(), new Mean());
-        AggregationOfIndividualRatings aoiRatingsMin = new AggregationOfIndividualRatings(new KnnMemoryBasedNWR(), new MinimumValue());
+        AggregationOfIndividualRatings aoiRatingsMean = new AggregationOfIndividualRatings(new KnnMemoryBasedCFRS(), new Mean());
+        AggregationOfIndividualRatings aoiRatingsMean_2 = new AggregationOfIndividualRatings(new KnnMemoryBasedCFRS(), new Mean());
+        AggregationOfIndividualRatings aoiRatingsMin = new AggregationOfIndividualRatings(new KnnMemoryBasedCFRS(), new MinimumValue());
 
         GroupCaseStudy aoiRatingsMeanGroupCaseStudy = new GroupCaseStudy();
         aoiRatingsMeanGroupCaseStudy.setParameterValue(GroupCaseStudy.GROUP_RECOMMENDER_SYSTEM, aoiRatingsMean);
@@ -160,8 +158,8 @@ public class ParameterChainTest {
      */
     @Test
     public void isCompatibleWith() {
-        AggregationOfIndividualRatings aoiRatingsMean = new AggregationOfIndividualRatings(new KnnMemoryBasedNWR(), new Mean());
-        AggregationOfIndividualRatings aoiRatingsMin = new AggregationOfIndividualRatings(new KnnMemoryBasedNWR(), new MinimumValue());
+        AggregationOfIndividualRatings aoiRatingsMean = new AggregationOfIndividualRatings(new KnnMemoryBasedCFRS(), new Mean());
+        AggregationOfIndividualRatings aoiRatingsMin = new AggregationOfIndividualRatings(new KnnMemoryBasedCFRS(), new MinimumValue());
 
         GroupCaseStudy aoiRatingsMeanGroupCaseStudy = new GroupCaseStudy();
         aoiRatingsMeanGroupCaseStudy.setParameterValue(GroupCaseStudy.GROUP_RECOMMENDER_SYSTEM, aoiRatingsMean);
@@ -182,8 +180,8 @@ public class ParameterChainTest {
      */
     @Test
     public void testEquals() {
-        AggregationOfIndividualRatings aoiRatingsMean = new AggregationOfIndividualRatings(new KnnMemoryBasedNWR(), new Mean());
-        AggregationOfIndividualRecommendations aoiRecommendations = new AggregationOfIndividualRecommendations(new KnnMemoryBasedNWR(), new Mean());
+        AggregationOfIndividualRatings aoiRatingsMean = new AggregationOfIndividualRatings(new KnnMemoryBasedCFRS(), new Mean());
+        AggregationOfIndividualRecommendations aoiRecommendations = new AggregationOfIndividualRecommendations(new KnnMemoryBasedCFRS(), new Mean());
 
         GroupCaseStudy aoiRatingsMeanGroupCaseStudy = new GroupCaseStudy();
         aoiRatingsMeanGroupCaseStudy.setParameterValue(GroupCaseStudy.GROUP_RECOMMENDER_SYSTEM, aoiRatingsMean);
@@ -212,8 +210,8 @@ public class ParameterChainTest {
      */
     @Test
     public void testIsApplicableTo() {
-        AggregationOfIndividualRatings aoiRatingsMean = new AggregationOfIndividualRatings(new KnnMemoryBasedNWR(), new Mean());
-        AggregationOfIndividualRecommendations aoiRecommendations = new AggregationOfIndividualRecommendations(new KnnMemoryBasedNWR(), new Mean());
+        AggregationOfIndividualRatings aoiRatingsMean = new AggregationOfIndividualRatings(new KnnMemoryBasedCFRS(), new Mean());
+        AggregationOfIndividualRecommendations aoiRecommendations = new AggregationOfIndividualRecommendations(new KnnMemoryBasedCFRS(), new Mean());
 
         GroupCaseStudy aoiRatingsMeanGroupCaseStudy = new GroupCaseStudy();
         aoiRatingsMeanGroupCaseStudy.setParameterValue(GroupCaseStudy.GROUP_RECOMMENDER_SYSTEM, aoiRatingsMean);

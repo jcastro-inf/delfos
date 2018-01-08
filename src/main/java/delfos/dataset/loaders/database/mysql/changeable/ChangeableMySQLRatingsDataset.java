@@ -80,37 +80,37 @@ public final class ChangeableMySQLRatingsDataset implements RatingsDataset<Ratin
     }
 
     @Override
-    public Rating getRating(int idUser, int idItem) throws ItemNotFound, UserNotFound {
+    public Rating getRating(long idUser, long idItem) throws ItemNotFound, UserNotFound {
         return ratingsDataset.getRating(idUser, idItem);
     }
 
     @Override
-    public Set<Integer> allUsers() {
+    public Set<Long> allUsers() {
         return ratingsDataset.allUsers();
     }
 
     @Override
-    public Set<Integer> allRatedItems() {
+    public Set<Long> allRatedItems() {
         return ratingsDataset.allRatedItems();
     }
 
     @Override
-    public Set<Integer> getUserRated(Integer idUser) throws UserNotFound {
+    public Set<Long> getUserRated(long idUser) throws UserNotFound {
         return ratingsDataset.getUserRated(idUser);
     }
 
     @Override
-    public Map<Integer, Rating> getUserRatingsRated(Integer idUser) throws UserNotFound {
+    public Map<Long, Rating> getUserRatingsRated(long idUser) throws UserNotFound {
         return ratingsDataset.getUserRatingsRated(idUser);
     }
 
     @Override
-    public Set<Integer> getItemRated(Integer idItem) throws ItemNotFound {
+    public Set<Long> getItemRated(long idItem) throws ItemNotFound {
         return ratingsDataset.getItemRated(idItem);
     }
 
     @Override
-    public Map<Integer, Rating> getItemRatingsRated(Integer idItem) throws ItemNotFound {
+    public Map<Long, Rating> getItemRatingsRated(long idItem) throws ItemNotFound {
         return ratingsDataset.getItemRatingsRated(idItem);
     }
 
@@ -122,7 +122,7 @@ public final class ChangeableMySQLRatingsDataset implements RatingsDataset<Ratin
     public static boolean mostradoWarning = false;
 
     @Override
-    public void addRating(int idUser, int idItem, Rating ratingValue) {
+    public void addRating(long idUser, long idItem, Rating ratingValue) {
 
         if (ratingValue instanceof RatingWithTimestamp) {
             if (!mostradoWarning) {
@@ -155,7 +155,7 @@ public final class ChangeableMySQLRatingsDataset implements RatingsDataset<Ratin
     }
 
     @Override
-    public void removeRating(int idUser, int idItem) {
+    public void removeRating(long idUser, long idItem) {
         try (Statement statement = mySQLConnection.doConnection().createStatement()) {
             String delete = "delete from `" + getRatingsTable_nameWithPrefix()
                     + " where " + ratingsTable_UserIDField + " = " + idUser + " and "
@@ -226,37 +226,37 @@ public final class ChangeableMySQLRatingsDataset implements RatingsDataset<Ratin
     }
 
     @Override
-    public double getMeanRatingItem(int idItem) throws ItemNotFound {
+    public double getMeanRatingItem(long idItem) throws ItemNotFound {
         return ratingsDataset.getMeanRatingItem(idItem);
     }
 
     @Override
-    public double getMeanRatingUser(int idUser) throws UserNotFound {
+    public double getMeanRatingUser(long idUser) throws UserNotFound {
         return ratingsDataset.getMeanRatingUser(idUser);
     }
 
     @Override
-    public int getNumRatings() {
+    public long getNumRatings() {
         return ratingsDataset.getNumRatings();
     }
 
     @Override
-    public int sizeOfUserRatings(int idUser) throws UserNotFound {
+    public long sizeOfUserRatings(long idUser) throws UserNotFound {
         return ratingsDataset.sizeOfUserRatings(idUser);
     }
 
     @Override
-    public int sizeOfItemRatings(int idItem) throws ItemNotFound {
+    public long sizeOfItemRatings(long idItem) throws ItemNotFound {
         return ratingsDataset.sizeOfItemRatings(idItem);
     }
 
     @Override
-    public boolean isRatedUser(int idUser) throws UserNotFound {
+    public boolean isRatedUser(long idUser) throws UserNotFound {
         return ratingsDataset.isRatedUser(idUser);
     }
 
     @Override
-    public boolean isRatedItem(int idItem) throws ItemNotFound {
+    public boolean isRatedItem(long idItem) throws ItemNotFound {
         return ratingsDataset.isRatedItem(idItem);
     }
 

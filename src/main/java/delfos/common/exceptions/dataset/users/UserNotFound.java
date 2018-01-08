@@ -32,34 +32,34 @@ import delfos.common.exceptions.dataset.entity.EntityNotFound;
 public class UserNotFound extends EntityNotFound {
 
     private static final long serialVersionUID = 1L;
-    private final int idUser;
+    private final long idUser;
 
     /**
      * Crea la excepción a partir del id del usuario que no se encuentra.
      *
      * @param idUser Id del usuario no encontrado.
      */
-    public UserNotFound(int idUser) {
+    public UserNotFound(long idUser) {
         super(User.class, idUser, "User '" + idUser + "' not found");
         this.idUser = idUser;
     }
 
-    public UserNotFound(int idUser, Throwable cause) {
+    public UserNotFound(long idUser, Throwable cause) {
         super(User.class, idUser, cause, "User '" + idUser + "' not found");
         this.idUser = idUser;
     }
 
-    public UserNotFound(int idUser, String msg) {
+    public UserNotFound(long idUser, String msg) {
         super(User.class, idUser, msg);
         this.idUser = idUser;
     }
 
-    public UserNotFound(int idUser, Throwable cause, String msg) {
+    public UserNotFound(long idUser, Throwable cause, String msg) {
         super(User.class, idUser, cause, msg);
         this.idUser = idUser;
     }
 
-    public int getIdUser() {
+    public long getIdUser() {
         return idUser;
     }
 }

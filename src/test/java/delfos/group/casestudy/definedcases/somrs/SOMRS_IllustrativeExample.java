@@ -75,7 +75,7 @@ public class SOMRS_IllustrativeExample {
     }
 
     public static final GroupFormationTechnique givenGroups
-            = new GivenGroups(Arrays.asList(new GroupOfUsers(35, 369, 585, 621, 876)).toString());
+            = new GivenGroups(Arrays.asList(new GroupOfUsers(35l, 369l, 585l, 621l, 876l)).toString());
 
     private GroupFormationTechnique getGroupFormationTechnique() {
         return givenGroups;

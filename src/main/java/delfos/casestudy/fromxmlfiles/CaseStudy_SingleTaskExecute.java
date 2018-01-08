@@ -20,14 +20,12 @@ import delfos.ERROR_CODES;
 import delfos.common.FileUtilities;
 import delfos.common.exceptions.dataset.CannotLoadContentDataset;
 import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
-import delfos.common.parallelwork.SingleTaskExecute;
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RelevanceCriteria;
-import delfos.experiment.ExperimentListerner_default;
-import delfos.experiment.casestudy.CaseStudy;
+import delfos.experiment.ExperimentListener_default;
 import delfos.experiment.casestudy.CaseStudyConfiguration;
-import delfos.experiment.casestudy.defaultcase.DefaultCaseStudy;
+import delfos.experiment.casestudy.CaseStudy;
 import delfos.experiment.validation.predictionprotocol.PredictionProtocol;
 import delfos.experiment.validation.validationtechnique.ValidationTechnique;
 import delfos.io.excel.casestudy.CaseStudyExcel;
@@ -36,6 +34,7 @@ import delfos.results.evaluationmeasures.EvaluationMeasure;
 import delfos.rs.RecommenderSystem;
 import java.io.File;
 import java.util.Collection;
+import java.util.function.Consumer;
 
 /**
  *
@@ -43,7 +42,7 @@ import java.util.Collection;
  *
  * @version 27-ene-2014
  */
-public class CaseStudy_SingleTaskExecute implements SingleTaskExecute<ExecuteCaseStudy_Task> {
+public class CaseStudy_SingleTaskExecute implements Consumer<ExecuteCaseStudy_Task> {
 
     private void executeCaseStudy(
             File experimentsDirectory,
@@ -61,7 +60,7 @@ public class CaseStudy_SingleTaskExecute implements SingleTaskExecute<ExecuteCas
         PredictionProtocol predictionProtocol = caseStudyConfiguration.getPredictionProtocol();
         ValidationTechnique validationTechnique = caseStudyConfiguration.getValidationTechnique();
 
-        CaseStudy caseStudyRecommendation = new DefaultCaseStudy(
+        CaseStudy caseStudyRecommendation = new CaseStudy(
                 recommenderSystem,
                 datasetLoader,
                 validationTechnique,
@@ -75,7 +74,7 @@ public class CaseStudy_SingleTaskExecute implements SingleTaskExecute<ExecuteCas
         String newThreadName = threadName + "_" + caseStudyRecommendation.getAlias();
         Thread.currentThread().setName(newThreadName);
 
-        caseStudyRecommendation.addExperimentListener(new ExperimentListerner_default(System.out, 10000));
+        caseStudyRecommendation.addExperimentListener(new ExperimentListener_default(System.out, 10000));
         caseStudyRecommendation.setSeedValue(seed);
 
         caseStudyRecommendation.execute();
@@ -85,13 +84,13 @@ public class CaseStudy_SingleTaskExecute implements SingleTaskExecute<ExecuteCas
         File excelFile = FileUtilities.changeExtension(fileToSaveResults, "xls");
         File xmlFile = FileUtilities.changeExtension(fileToSaveResults, "xml");
 
-        CaseStudyXML.saveCaseResults(caseStudyRecommendation, "", xmlFile.getAbsolutePath());
+        CaseStudyXML.saveCaseResults(caseStudyRecommendation, xmlFile.getAbsoluteFile());
         CaseStudyExcel.saveCaseResults(caseStudyRecommendation, excelFile);
 
     }
 
     @Override
-    public void executeSingleTask(ExecuteCaseStudy_Task task) {
+    public void accept(ExecuteCaseStudy_Task task) {
         try {
             executeCaseStudy(
                     task.getExperimentsDirectory(),

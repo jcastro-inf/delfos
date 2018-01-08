@@ -31,15 +31,15 @@ public class GroupModelRatingsPreFilter implements Serializable {
 
     private static final long serialVersionUID = 123L;
 
-    private final Map<Integer, Map<Integer, Rating>> ratings;
+    private final Map<Long, Map<Long, Rating>> ratings;
     private final Object innerGRSGroupModel;
 
-    public GroupModelRatingsPreFilter(Map<Integer, Map<Integer, Rating>> filteredRatings, Object innerGRSGroupModel) {
+    public GroupModelRatingsPreFilter(Map<Long, Map<Long, Rating>> filteredRatings, Object innerGRSGroupModel) {
         this.ratings = filteredRatings;
         this.innerGRSGroupModel = innerGRSGroupModel;
     }
 
-    public Map<Integer, Map<Integer, Rating>> getRatings() {
+    public Map<Long, Map<Long, Rating>> getRatings() {
         return Collections.unmodifiableMap(ratings);
     }
 

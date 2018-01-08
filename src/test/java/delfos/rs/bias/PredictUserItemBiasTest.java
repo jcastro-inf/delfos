@@ -2,7 +2,6 @@ package delfos.rs.bias;
 
 import delfos.common.Global;
 import delfos.common.datastructures.histograms.HistogramNumbersSmart;
-import delfos.common.statisticalfuncions.MeanIterative;
 import delfos.configureddatasets.ConfiguredDatasetsFactory;
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
@@ -15,7 +14,7 @@ import delfos.results.RecommendationResults;
 import delfos.results.evaluationmeasures.Coverage;
 import delfos.results.evaluationmeasures.ratingprediction.MAE;
 import delfos.rs.recommendation.Recommendation;
-import delfos.rs.recommendation.SingleUserRecommendations;
+import delfos.rs.recommendation.RecommendationsToUser;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -40,21 +39,21 @@ public class PredictUserItemBiasTest {
         DatasetLoader<? extends Rating> datasetLoader = ConfiguredDatasetsFactory.getInstance().getDatasetLoader("ml-100k");
 
         User user = new User(45);
-        Set<Integer> candidateItems = datasetLoader.getRatingsDataset().allRatedItems();
+        Set<Long> candidateItems = datasetLoader.getRatingsDataset().allRatedItems();
         PredictUserItemBias bias = new PredictUserItemBias();
 
         Object model = bias.buildRecommendationModel(datasetLoader);
 
-        SingleUserRecommendations singleUserRecommendations = new SingleUserRecommendations(user, bias.recommendToUser(datasetLoader, model, user.getId(), candidateItems));
+        RecommendationsToUser recommendationsToUser = new RecommendationsToUser(user, bias.recommendToUser(datasetLoader, model, user.getId(), candidateItems));
 
         RatingsDataset rd = new RecommenderBasedDataset(datasetLoader);
 
-        MeanIterative userMAE = new MAE().getUserResult(
-                singleUserRecommendations,
+        MeasureResult userMAE = new MAE().getUserResult(
+                recommendationsToUser,
                 datasetLoader.getRatingsDataset().getUserRatingsRated(user.getId())
         );
 
-        Global.showln("User " + user.getTargetId() + " mae is '" + userMAE.getMean() + "'");
+        Global.showln("User " + user.getTargetId() + " mae is '" + userMAE.getValue() + "'");
 
     }
 
@@ -68,25 +67,25 @@ public class PredictUserItemBiasTest {
         HistogramNumbersSmart histogramMAE = new HistogramNumbersSmart(0, datasetLoader.getRatingsDataset().getRatingsDomain().width().doubleValue(), 0.05);
         HistogramNumbersSmart histogramCoverage = new HistogramNumbersSmart(0, 1, 0.05);
 
-        List<SingleUserRecommendations> allRecommendations = new ArrayList<>(datasetLoader.getRatingsDataset().allUsers().size());
-        for (int idUser : datasetLoader.getRatingsDataset().allUsers()) {
+        List<RecommendationsToUser> allRecommendations = new ArrayList<>(datasetLoader.getRatingsDataset().allUsers().size());
+        for (long idUser : datasetLoader.getRatingsDataset().allUsers()) {
             User user = new User(idUser);
             Collection<Recommendation> recommendations = bias.recommendToUser(datasetLoader, model, idUser, datasetLoader.getRatingsDataset().getUserRated(idUser));
-            final SingleUserRecommendations singleUserRecommendations = new SingleUserRecommendations(new User(idUser), recommendations);
+            final RecommendationsToUser singleUserRecommendations = new RecommendationsToUser(new User(idUser), recommendations);
             allRecommendations.add(singleUserRecommendations);
-            final Map<Integer, ? extends Rating> userRatingsRated = datasetLoader.getRatingsDataset().getUserRatingsRated(user.getId());
+            final Map<Long, ? extends Rating> userRatingsRated = datasetLoader.getRatingsDataset().getUserRatingsRated(user.getId());
 
-            MeanIterative userMAE = new MAE().getUserResult(singleUserRecommendations, userRatingsRated);
-            MeanIterative userCoverage = new Coverage().getUserResult(singleUserRecommendations, userRatingsRated);
+            MeasureResult userMAE = new MAE().getUserResult(singleUserRecommendations, userRatingsRated);
+            MeasureResult userCoverage = new Coverage().getUserResult(singleUserRecommendations, userRatingsRated);
 
-            if (userCoverage.getMean() != 1) {
+            if (userCoverage.getValue() != 1) {
                 fail("No user should get a coverage lower than 1.");
             }
 
-            Global.showln("User " + user.getTargetId() + " coverage '" + userCoverage.getMean() + "' mae '" + userMAE.getMean() + "'");
+            Global.showln("User " + user.getTargetId() + " coverage '" + userCoverage.getValue() + "' mae '" + userMAE.getValue() + "'");
 
-            histogramMAE.addValue(userMAE.getMean());
-            histogramCoverage.addValue(userCoverage.getMean());
+            histogramMAE.addValue(userMAE.getValue());
+            histogramCoverage.addValue(userCoverage.getValue());
         }
 
         Global.showln("==============================================================");

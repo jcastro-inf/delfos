@@ -78,7 +78,7 @@ public class WilsonScoreLowerBound extends NonPersonalisedRecommender<MeanRating
 
         for (Item item : datasetLoader.getContentDataset()) {
             try {
-                Map<Integer, ? extends Rating> itemRatings = ratingsDataset.getItemRatingsRated(item.getId());
+                Map<Long, ? extends Rating> itemRatings = ratingsDataset.getItemRatingsRated(item.getId());
 
                 double numRatings = 0;
                 double positiveRatings = 0;
@@ -122,7 +122,10 @@ public class WilsonScoreLowerBound extends NonPersonalisedRecommender<MeanRating
     }
 
     @Override
-    public Collection<Recommendation> recommendOnly(DatasetLoader<? extends Rating> datasetLoader, MeanRatingRSModel model, Collection<Integer> candidateItems) throws ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset {
+    public Collection<Recommendation> recommendOnly(
+            DatasetLoader<? extends Rating> datasetLoader,
+            MeanRatingRSModel model,
+            Collection<Long> candidateItems) throws ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset {
 
         Map<Item, MeanRating> meanRatingsByItem = model
                 .getSortedMeanRatings().parallelStream()
@@ -150,7 +153,7 @@ public class WilsonScoreLowerBound extends NonPersonalisedRecommender<MeanRating
     }
 
     @Override
-    public MeanRatingRSModel loadRecommendationModel(DatabasePersistence databasePersistence, Collection<Integer> users, Collection<Integer> items, DatasetLoader<? extends Rating> datasetLoader) throws FailureInPersistence {
+    public MeanRatingRSModel loadRecommendationModel(DatabasePersistence databasePersistence, Collection<Long> users, Collection<Long> items, DatasetLoader<? extends Rating> datasetLoader) throws FailureInPersistence {
         DAOMeanRatingProfile dAOMeanRatingProfile = new DAOMeanRatingProfile();
         return dAOMeanRatingProfile.loadModel(databasePersistence, users, items, datasetLoader);
     }

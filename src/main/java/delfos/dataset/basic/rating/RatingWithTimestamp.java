@@ -35,7 +35,7 @@ public class RatingWithTimestamp extends Rating {
     private final long timestamp;
 
     @Deprecated
-    public RatingWithTimestamp(int idUser, int idItem, Number rating, long timestamp) {
+    public RatingWithTimestamp(long idUser, long idItem, Number rating, long timestamp) {
         super(idUser, idItem, rating);
         this.timestamp = timestamp;
     }
@@ -58,8 +58,8 @@ public class RatingWithTimestamp extends Rating {
     @Override
     public int hashCode() {
         int hash = 3;
-        hash = 47 * hash + this.getIdUser();
-        hash = 47 * hash + this.getIdItem();
+        hash = 47 * hash + Long.hashCode(this.getIdUser());
+        hash = 47 * hash + Long.hashCode(this.getIdItem());
         hash = 59 * hash + (int) (this.timestamp ^ (this.timestamp >>> 32));
         return hash;
     }
@@ -125,4 +125,30 @@ public class RatingWithTimestamp extends Rating {
         return "(u=" + getIdUser() + " i=" + getIdItem() + " r=" + ratingString + " t=" + timestampString + ")";
     }
 
+    @Override
+    public RatingWithTimestamp copyWithItem(Item item) {
+        return new RatingWithTimestamp(
+                this.getUser(),
+                item,
+                this.getRatingValue(),
+                this.getTimestamp());
+    }
+
+    @Override
+    public RatingWithTimestamp copyWithUser(User user) {
+        return new RatingWithTimestamp(
+                user,
+                this.getItem(),
+                this.getRatingValue(),
+                this.getTimestamp());
+    }
+
+    @Override
+    public RatingWithTimestamp   copyWithRatingValue(Number ratingValue) {
+        return new RatingWithTimestamp(
+                this.getUser(),
+                this.getItem(),
+                ratingValue ,
+                this.getTimestamp());
+    }
 }

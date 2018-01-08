@@ -77,8 +77,8 @@ public class UserUserMultipleCorrelationCoefficientTest {
 
         Global.showln("idUser\tidNeighbor\tpcc\tpccMulti");
 
-        for (int idUser : datasetLoader.getRatingsDataset().allUsers()) {
-            for (int idNeighbor : datasetLoader.getRatingsDataset().allUsers()) {
+        for (long idUser : datasetLoader.getRatingsDataset().allUsers()) {
+            for (long idNeighbor : datasetLoader.getRatingsDataset().allUsers()) {
                 if (idUser == idNeighbor) {
                     continue;
                 }
@@ -162,14 +162,14 @@ public class UserUserMultipleCorrelationCoefficientTest {
             stdOutput.write(headerLine);
             errOutput.write(headerLine);
 
-            final Integer[] allUsers = datasetLoader.getRatingsDataset().allUsers().toArray(new Integer[0]);
+            final Long[] allUsers = datasetLoader.getRatingsDataset().allUsers().toArray(new Long[0]);
             final Random random = new Random(0);
 
             while (true) {
 
-                int idTargetUser = allUsers[random.nextInt(allUsers.length)];
-                int idNeighborUser = allUsers[random.nextInt(allUsers.length)];
-                int idFriendOfNeighborUser = allUsers[random.nextInt(allUsers.length)];
+                long idTargetUser = allUsers[random.nextInt(allUsers.length)];
+                long idNeighborUser = allUsers[random.nextInt(allUsers.length)];
+                long idFriendOfNeighborUser = allUsers[random.nextInt(allUsers.length)];
 
                 if (idTargetUser == idNeighborUser || idNeighborUser == idFriendOfNeighborUser || idTargetUser == idFriendOfNeighborUser) {
                     continue;
@@ -187,7 +187,7 @@ public class UserUserMultipleCorrelationCoefficientTest {
                     stdOutput.write(contentLine);
                     histogramPccMulti.addValue(computeRValue);
                 } else {
-                    Collection<Integer> users = new ArrayList<>();
+                    Collection<Long> users = new ArrayList<>();
                     users.add(idTargetUser);
                     users.add(idNeighborUser);
                     users.add(idFriendOfNeighborUser);
@@ -219,7 +219,7 @@ public class UserUserMultipleCorrelationCoefficientTest {
     public void testWithFullMatrix() throws UserNotFound {
         DatasetLoader<? extends Rating> randomDataset = new RandomDatasetLoader(50, 50, 1);
 
-        Collection<Integer> users = randomDataset.getRatingsDataset().allUsers();
+        Collection<Long> users = randomDataset.getRatingsDataset().allUsers();
 
         PearsonCorrelationCoefficient pcc = new PearsonCorrelationCoefficient();
         UserUserMultipleCorrelationCoefficient pcc_multi = new UserUserMultipleCorrelationCoefficient(pcc);
@@ -227,9 +227,9 @@ public class UserUserMultipleCorrelationCoefficientTest {
         UserUserSimilarityWrapper pcc_wrapped = new UserUserSimilarityWrapper(pcc);
 
         HistogramNumbersSmart histogramPccMulti = new HistogramNumbersSmart(.1);
-        for (int idUser : users) {
-            for (int idNeighbor : users) {
-                for (int idFriendOfNeighbor : users) {
+        for (long idUser : users) {
+            for (long idNeighbor : users) {
+                for (long idFriendOfNeighbor : users) {
                     if (idUser == idNeighbor || idUser == idFriendOfNeighbor
                             || idNeighbor == idFriendOfNeighbor) {
                         continue;

@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 jcastro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -25,6 +25,7 @@ import delfos.common.parameters.Parameter;
 import delfos.common.parameters.restriction.FileParameter;
 import delfos.common.parameters.restriction.ObjectParameter;
 import delfos.dataset.basic.item.ContentDataset;
+import delfos.dataset.basic.item.Item;
 import delfos.dataset.basic.loader.types.ContentDatasetLoader;
 import delfos.dataset.basic.loader.types.DatasetLoaderAbstract;
 import delfos.dataset.basic.loader.types.RatingsDatasetLoader;
@@ -53,8 +54,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
- * Construye el RatingsDataset<? extends Rating>y ContentDataset a partir de dos
- * archivos CSV, uno para cada dataset
+ * Construye el RatingsDataset<? extends Rating>y ContentDataset a partir de dos archivos CSV, uno para cada dataset
  *
  * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
@@ -134,7 +134,20 @@ public class CSVfileDatasetLoader extends DatasetLoaderAbstract<Rating> implemen
         if (ratingsDataset == null) {
             try {
                 RatingsDatasetToCSV ratingsDatasetToCSV = new RatingsDatasetToCSV_JavaCSV20();
-                Collection<Rating> ratings = ratingsDatasetToCSV.readRatingsDataset(getRatingsDatasetFile());
+
+                getContentDataset();
+                getUsersDataset();
+
+                Collection<Rating> ratings = ratingsDatasetToCSV
+                        .readRatingsDataset(getRatingsDatasetFile())
+                        .stream().map(rating -> {
+                            User user = usersDataset.get(rating.getIdUser());
+                            Item item = contentDataset.get(rating.getIdItem());
+                            Number ratingValue = rating.getRatingValue();
+
+                            return new Rating(user, item, ratingValue);
+                        })
+                        .collect(Collectors.toList());
 
                 String indexationMode = getIndexationMode();
                 if (indexationMode.equals(INDEX_NONE)) {
@@ -229,8 +242,7 @@ public class CSVfileDatasetLoader extends DatasetLoaderAbstract<Rating> implemen
     }
 
     /**
-     * Devuelve el nombre del archivo en que se almacena el dataset de
-     * valoraciones.
+     * Devuelve el nombre del archivo en que se almacena el dataset de valoraciones.
      *
      * @return
      */
@@ -239,8 +251,7 @@ public class CSVfileDatasetLoader extends DatasetLoaderAbstract<Rating> implemen
     }
 
     /**
-     * Devuelve el nombre del archivo en que se almacena el dataset de contenido
-     * de los productos.
+     * Devuelve el nombre del archivo en que se almacena el dataset de contenido de los productos.
      *
      * @return
      */

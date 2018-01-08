@@ -19,7 +19,7 @@ import delfos.group.grs.consensus.ConsensusGRS;
 import delfos.group.grs.consensus.itemselector.GroupRecommendationsSelector;
 import delfos.rs.RecommenderSystem;
 import delfos.rs.bufferedrecommenders.RecommenderSystem_fixedFilePersistence;
-import delfos.rs.collaborativefiltering.knn.memorybased.nwr.KnnMemoryBasedNWR;
+import delfos.rs.collaborativefiltering.knn.memorybased.KnnMemoryBasedCFRS;
 import delfos.rs.collaborativefiltering.svd.SVDFoldingIn;
 import delfos.rs.persistence.FilePersistence;
 import java.io.File;
@@ -112,8 +112,8 @@ public class ConsensusGRS_CaseStudy {
         return GRSs;
     }
 
-    public KnnMemoryBasedNWR getKnnUserRecommender() {
-        return new KnnMemoryBasedNWR();
+    public KnnMemoryBasedCFRS getKnnUserRecommender() {
+        return new KnnMemoryBasedCFRS();
     }
 
     public void createConsensusCaseStudyXML() {

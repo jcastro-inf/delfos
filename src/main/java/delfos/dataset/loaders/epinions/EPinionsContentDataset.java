@@ -45,9 +45,9 @@ import java.util.stream.Collectors;
  */
 public class EPinionsContentDataset implements ContentDataset {
 
-    private final DoubleMapping<Long, Integer> productsIndex = new DoubleMapping<>();
-    private final DoubleMapping<Long, Integer> authorsIndex = new DoubleMapping<>();
-    private final DoubleMapping<Long, Integer> subjectsIndex = new DoubleMapping<>();
+    private final DoubleMapping<Long, Long> productsIndex = new DoubleMapping<>();
+    private final DoubleMapping<Long, Long> authorsIndex = new DoubleMapping<>();
+    private final DoubleMapping<Long, Long> subjectsIndex = new DoubleMapping<>();
 
     private final ContentDatasetDefault contentDataset;
 
@@ -77,13 +77,13 @@ public class EPinionsContentDataset implements ContentDataset {
 
             CONTENT_ID = new Long(columns[0]);
             if (!productsIndex.containsType1Value(CONTENT_ID)) {
-                productsIndex.add(CONTENT_ID, productsIndex.size() + 1);
+                productsIndex.add(CONTENT_ID, (long) (productsIndex.size() + 1));
             }
 
             AUTHOR_ID_STRING = columns[1];
             long AUTHOR_ID = new Long(AUTHOR_ID_STRING);
             if (!authorsIndex.containsType1Value(AUTHOR_ID)) {
-                authorsIndex.add(AUTHOR_ID, authorsIndex.size() + 1);
+                authorsIndex.add(AUTHOR_ID, (long) (authorsIndex.size() + 1));
             }
 
             Feature[] features;
@@ -93,7 +93,7 @@ public class EPinionsContentDataset implements ContentDataset {
                 long SUBJECT_ID = new Long(SUBJECT_ID_STRING);
 
                 if (!subjectsIndex.containsType1Value(SUBJECT_ID)) {
-                    subjectsIndex.add(SUBJECT_ID, subjectsIndex.size() + 1);
+                    subjectsIndex.add(SUBJECT_ID, (long) (subjectsIndex.size() + 1));
                 }
 
                 features = new Feature[2];
@@ -112,7 +112,7 @@ public class EPinionsContentDataset implements ContentDataset {
                 values[0] = AUTHOR_ID_STRING;
             }
 
-            int idItem = productsIndex.typeOneToTypeTwo(CONTENT_ID);
+            long idItem = productsIndex.typeOneToTypeTwo(CONTENT_ID);
 
             Item item = new Item(idItem, "Item_" + idItem, features, values);
             items.add(item);
@@ -131,12 +131,12 @@ public class EPinionsContentDataset implements ContentDataset {
 
     }
 
-    public DoubleMapping<Long, Integer> getProductsIndex() {
+    public DoubleMapping<Long, Long> getProductsIndex() {
         return productsIndex;
     }
 
     @Override
-    public Item get(int idItem) throws EntityNotFound {
+    public Item get(long idItem) throws EntityNotFound {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
@@ -146,17 +146,17 @@ public class EPinionsContentDataset implements ContentDataset {
     }
 
     @Override
-    public Collection<Integer> allIDs() {
+    public Collection<Long> allIDs() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public Collection<Integer> getAvailableItems() {
+    public Collection<Long> getAvailableItems() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public void setItemAvailable(int idItem, boolean available) throws ItemNotFound {
+    public void setItemAvailable(long idItem, boolean available) throws ItemNotFound {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
@@ -206,7 +206,7 @@ public class EPinionsContentDataset implements ContentDataset {
     }
 
     @Override
-    public Map<Feature, Object> parseEntityFeaturesAndAddToExisting(int idEntity, Map<String, String> features) throws EntityNotFound {
+    public Map<Feature, Object> parseEntityFeaturesAndAddToExisting(long idEntity, Map<String, String> features) throws EntityNotFound {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
@@ -215,16 +215,16 @@ public class EPinionsContentDataset implements ContentDataset {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
-    public DoubleMapping<Long, Integer> getAuthorsIndex() {
+    public DoubleMapping<Long, Long> getAuthorsIndex() {
         return authorsIndex;
     }
 
-    public DoubleMapping<Long, Integer> getSubjectsIndex() {
+    public DoubleMapping<Long, Long> getSubjectsIndex() {
         return subjectsIndex;
     }
 
     @Override
-    public Item getItem(int idItem) throws ItemNotFound {
+    public Item getItem(long idItem) throws ItemNotFound {
         try {
             return get(idItem);
         } catch (EntityNotFound ex) {

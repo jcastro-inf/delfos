@@ -5,9 +5,9 @@ import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RelevanceCriteria;
 import delfos.dataset.generated.random.RandomDatasetLoader;
-import delfos.experiment.ExperimentListerner_default;
+import delfos.experiment.ExperimentListener_default;
 import delfos.experiment.casestudy.CaseStudy;
-import delfos.experiment.casestudy.defaultcase.DefaultCaseStudy;
+import delfos.experiment.casestudy.CaseStudy;
 import delfos.experiment.validation.predictionprotocol.NoPredictionProtocol;
 import delfos.experiment.validation.validationtechnique.CrossFoldValidation_Ratings;
 import delfos.factories.EvaluationMeasuresFactory;
@@ -49,7 +49,7 @@ public class TrustModificationKnnMemoryTest extends DelfosTest {
 
         recommenderSystem.setParameterValue(BELIEF_DERIVATION, new LinearBelief());
 
-        CaseStudy caseStudy = new DefaultCaseStudy(
+        CaseStudy caseStudy = new CaseStudy(
                 recommenderSystem,
                 datasetLoader,
                 new CrossFoldValidation_Ratings(),
@@ -57,7 +57,7 @@ public class TrustModificationKnnMemoryTest extends DelfosTest {
                 new RelevanceCriteria(4),
                 EvaluationMeasuresFactory.getInstance().getAllClasses(),
                 1);
-        caseStudy.addExperimentListener(new ExperimentListerner_default(System.out, 5000));
+        caseStudy.addExperimentListener(new ExperimentListener_default(System.out, 5000));
         caseStudy.execute();
 
         CaseStudyXML.saveCaseResults(caseStudy);

@@ -72,7 +72,7 @@ public class PRSpace_EachMember extends GroupEvaluationMeasure {
             Collection<Recommendation> groupRecommendations = groupRecommenderSystemResult
                     .getGroupOutput(group).getRecommendations().getRecommendations();
 
-            Set<Integer> recommendedItems = new TreeSet<>();
+            Set<Long> recommendedItems = new TreeSet<>();
             for (Recommendation r : groupRecommendations) {
                 recommendedItems.add(r.getIdItem());
             }
@@ -100,18 +100,18 @@ public class PRSpace_EachMember extends GroupEvaluationMeasure {
                 relevanteParaUser.add(new TreeSet<>());
             }
 
-            Map<Integer, ConfusionMatricesCurve> matricesParaCadaMiembro = new TreeMap<>();
+            Map<Long, ConfusionMatricesCurve> matricesParaCadaMiembro = new TreeMap<>();
 
-            for (int idUser : group.getIdMembers()) {
+            for (long idUser : group.getIdMembers()) {
                 Element userElement = new Element("User");
-                userElement.setAttribute("idUser", Integer.toString(idUser));
+                userElement.setAttribute("idUser", Long.toString(idUser));
 
                 int truePositive = 0;
                 int falseNegative = 0;
                 int falsePositive = 0;
                 int trueNegative = 0;
 
-                Map<Integer, ? extends Rating> userRatings = null;
+                Map<Long, ? extends Rating> userRatings = null;
                 try {
                     userRatings = testDatasetLoader.getRatingsDataset().getUserRatingsRated(idUser);
                 } catch (UserNotFound ex) {
@@ -119,7 +119,7 @@ public class PRSpace_EachMember extends GroupEvaluationMeasure {
                     throw new IllegalArgumentException(ex);
                 }
 
-                for (int idItem : userRatings.keySet()) {
+                for (long idItem : userRatings.keySet()) {
                     if (recommendedItems.contains(idItem) && relevanceCriteria.isRelevant(userRatings.get(idItem).getRatingValue())) {
                         falseNegative++;
                     } else {
@@ -133,7 +133,7 @@ public class PRSpace_EachMember extends GroupEvaluationMeasure {
                 int i = 0;
                 for (Recommendation r : groupRecommendations) {
 
-                    int idItem = r.getIdItem();
+                    long idItem = r.getIdItem();
                     if (!userRatings.containsKey(idItem)) {
                         continue;
                     }

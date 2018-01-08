@@ -41,12 +41,14 @@ public class ConditionalProbability extends SimilarityMeasureAdapter implements 
     }
 
     @Override
-    public double similarity(Collection<CommonRating> commonRatings, RatingsDataset<? extends Rating> ratings) throws CouldNotComputeSimilarity {
+    public double similarity(
+            Collection<CommonRating> commonRatings,
+            RatingsDataset<? extends Rating> ratings) throws CouldNotComputeSimilarity {
         double intersectionSize = commonRatings.size();
 
         double ret = commonRatings.stream().findAny().map(commonRating -> {
 
-            int idUser1 = commonRating.getIdR1();
+            long idUser1 = commonRating.getIdR1();
 
             double user1size = ratings.getUserRatingsRated(idUser1).size();
 
@@ -69,7 +71,10 @@ public class ConditionalProbability extends SimilarityMeasureAdapter implements 
     }
 
     @Override
-    public double similarity(DatasetLoader<? extends Rating> datasetLoader, int idUser1, int idUser2) {
+    public double similarity(
+            DatasetLoader<? extends Rating> datasetLoader,
+            long idUser1,
+            long idUser2) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 

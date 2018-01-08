@@ -42,14 +42,14 @@ public class NoFilter extends GroupRatingsFilter {
     }
 
     @Override
-    public Map<Integer, Map<Integer, Rating>> getFilteredRatings(RatingsDataset<? extends Rating> ratingsDataset, GroupOfUsers group) {
+    public Map<Long, Map<Long, Rating>> getFilteredRatings(RatingsDataset<? extends Rating> ratingsDataset, GroupOfUsers group) {
 
         //Fetch dataset.
-        Map<Integer, Map<Integer, Number>> groupRatings = new TreeMap<Integer, Map<Integer, Number>>();
-        for (int idUser : group) {
+        Map<Long, Map<Long, Number>> groupRatings = new TreeMap<Long, Map<Long, Number>>();
+        for (Long idUser : group) {
             try {
-                groupRatings.put(idUser, new TreeMap<Integer, Number>());
-                for (Map.Entry<Integer, ? extends Rating> entry : ratingsDataset.getUserRatingsRated(idUser).entrySet()) {
+                groupRatings.put(idUser, new TreeMap<Long, Number>());
+                for (Map.Entry<Long, ? extends Rating> entry : ratingsDataset.getUserRatingsRated(idUser).entrySet()) {
                     Rating rating = entry.getValue();
                     groupRatings.get(idUser).put(rating.getIdItem(), rating.getRatingValue());
                 }
@@ -61,18 +61,18 @@ public class NoFilter extends GroupRatingsFilter {
     }
 
     @Override
-    public Map<Integer, Map<Integer, Number>> getFilteredRatings(Map<Integer, Map<Integer, Number>> originalSet) {
+    public Map<Long, Map<Long, Number>> getFilteredRatings(Map<Long, Map<Long, Number>> originalSet) {
 
         //Copy the originalSet into ret
-        Map<Integer, Map<Integer, Number>> ret = new TreeMap<Integer, Map<Integer, Number>>();
+        Map<Long, Map<Long, Number>> ret = new TreeMap<Long, Map<Long, Number>>();
 
-        for (Map.Entry<Integer, Map<Integer, Number>> userRatings : originalSet.entrySet()) {
-            int idUser = userRatings.getKey();
-            Map<Integer, Number> userRatingsMap = userRatings.getValue();
+        for (Map.Entry<Long, Map<Long, Number>> userRatings : originalSet.entrySet()) {
+            Long idUser = userRatings.getKey();
+            Map<Long, Number> userRatingsMap = userRatings.getValue();
 
-            ret.put(idUser, new TreeMap<Integer, Number>());
-            for (Map.Entry<Integer, Number> entry : userRatingsMap.entrySet()) {
-                int idItem = entry.getKey();
+            ret.put(idUser, new TreeMap<Long, Number>());
+            for (Map.Entry<Long, Number> entry : userRatingsMap.entrySet()) {
+                Long idItem = entry.getKey();
                 Number rating = entry.getValue();
                 ret.get(idUser).put(idItem, rating.doubleValue());
             }

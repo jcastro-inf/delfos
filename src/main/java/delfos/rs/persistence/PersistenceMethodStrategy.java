@@ -33,8 +33,8 @@ public class PersistenceMethodStrategy {
     public static <RecommendationModel> RecommendationModel loadModel(
             GenericRecommenderSystem<RecommendationModel> recommenderSystem,
             PersistenceMethod persistenceMethod,
-            Collection<Integer> users,
-            Collection<Integer> items,
+            Collection<Long> users,
+            Collection<Long> items,
             DatasetLoader<? extends Rating> datasetLoader)
             throws FailureInPersistence {
 

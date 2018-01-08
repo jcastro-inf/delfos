@@ -9,14 +9,13 @@ import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.experiment.casestudy.cluster.TuringPreparator;
 import delfos.experiment.validation.validationtechnique.HoldOut_Ratings;
 import delfos.group.casestudy.defaultcase.GroupCaseStudy;
-import static delfos.group.casestudy.definedcases.hesitant.experiment0.HesitantGRS_CaseStudy.SEED_VALUE;
 import delfos.group.experiment.validation.groupformation.FixedGroupSize_OnlyNGroups;
 import delfos.group.experiment.validation.groupformation.GroupFormationTechnique;
 import delfos.group.experiment.validation.predictionvalidation.NoPredictionProtocol;
 import delfos.group.grs.GroupRecommenderSystem;
 import delfos.group.grs.aggregation.AggregationOfIndividualRatings;
 import delfos.group.grs.aggregation.AggregationOfIndividualRecommendations;
-import delfos.rs.collaborativefiltering.knn.memorybased.nwr.KnnMemoryBasedNWR;
+import delfos.rs.collaborativefiltering.knn.memorybased.KnnMemoryBasedCFRS;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -50,10 +49,10 @@ public class XMLJoinTest {
         DatasetLoader ml100k = new ConfiguredDatasetLoader("ml-100k");
 
         List<GroupRecommenderSystem> groupRecommenderSystems = Arrays.asList(
-                new AggregationOfIndividualRatings(new KnnMemoryBasedNWR(), new Mean()),
-                new AggregationOfIndividualRatings(new KnnMemoryBasedNWR(), new MaximumValue()),
-                new AggregationOfIndividualRecommendations(new KnnMemoryBasedNWR(), new MaximumValue()),
-                new AggregationOfIndividualRecommendations(new KnnMemoryBasedNWR(), new Mean())
+                new AggregationOfIndividualRatings(new KnnMemoryBasedCFRS(), new Mean()),
+                new AggregationOfIndividualRatings(new KnnMemoryBasedCFRS(), new MaximumValue()),
+                new AggregationOfIndividualRecommendations(new KnnMemoryBasedCFRS(), new MaximumValue()),
+                new AggregationOfIndividualRecommendations(new KnnMemoryBasedCFRS(), new Mean())
         );
 
         for (GroupFormationTechnique groupFormationTechnique : groupFormationTechniques) {
@@ -65,7 +64,7 @@ public class XMLJoinTest {
                         .setValidationTechnique(new HoldOut_Ratings())
                         .setNumExecutions(1);
 
-                groupCaseStudy.setSeedValue(SEED_VALUE);
+                groupCaseStudy.setSeedValue(123456L);
 
                 groupCaseStudy.setAlias(
                         "_dataValidation=" + groupCaseStudy.hashDataValidation()

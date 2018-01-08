@@ -70,22 +70,22 @@ public class GroupSatisfaction_Average extends GroupEvaluationMeasure {
             MeanIterative maeGupos = new MeanIterative();
 
             /* Hago esta reordenación de los resultados para ganar eficiencia */
-            Map<Integer, Recommendation> recomendacionesAlGrupoReordenadas = new HashMap<>();
+            Map<Long, Recommendation> recomendacionesAlGrupoReordenadas = new HashMap<>();
             for (Recommendation r : groupRecommendations) {
                 recomendacionesAlGrupoReordenadas.put(r.getIdItem(), r);
             }
 
             //Calculo las recomendaciones individuales de cada miembro del grupo
-            for (int idUser : groupOfUsers.getIdMembers()) {
+            for (long idUser : groupOfUsers.getIdMembers()) {
                 try {
                     MeanIterative maeActual = new MeanIterative();
 
-                    Map<Integer, ? extends Rating> userRated = testDatasetLoader.getRatingsDataset().getUserRatingsRated(idUser);
+                    Map<Long, ? extends Rating> userRated = testDatasetLoader.getRatingsDataset().getUserRatingsRated(idUser);
 
-                    Set<Integer> commonItems = new TreeSet<>(recomendacionesAlGrupoReordenadas.keySet());
+                    Set<Long> commonItems = new TreeSet<>(recomendacionesAlGrupoReordenadas.keySet());
                     commonItems.retainAll(userRated.keySet());
 
-                    for (int idItem : commonItems) {
+                    for (long idItem : commonItems) {
                         double prediccionGrupo = recomendacionesAlGrupoReordenadas.get(idItem).getPreference().doubleValue();
                         double prediccionIndividuo = userRated.get(idItem).getRatingValue().doubleValue();
                         maeActual.addValue(Math.abs(prediccionGrupo - prediccionIndividuo));

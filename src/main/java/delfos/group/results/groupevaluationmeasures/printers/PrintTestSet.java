@@ -74,19 +74,19 @@ public class PrintTestSet extends GroupEvaluationMeasureInformationPrinter {
             if (groupRecommendations.isEmpty()) {
                 str.append("No recommendations for group ").append(groupOfUsers).append("\n");
             } else {
-                Set<Integer> items = Recommendation.getSetOfItems(groupRecommendations);
+                Set<Long> items = Recommendation.getSetOfItems(groupRecommendations);
 
-                Map<Integer, Map<Integer, Number>> membersRatings = new TreeMap<>();
+                Map<Long, Map<Long, Number>> membersRatings = new TreeMap<>();
 
-                membersRatings.put(8888, Recommendation.convertToMapOfNumbers_onlyRankPreference(groupRecommendations));
-                membersRatings.put(9999, Recommendation.convertToMapOfNumbers(groupRecommendations));
+                membersRatings.put(8888l, Recommendation.convertToMapOfNumbers_onlyRankPreference(groupRecommendations));
+                membersRatings.put(9999l, Recommendation.convertToMapOfNumbers(groupRecommendations));
 
                 groupOfUsers
                         .getIdMembers().stream().forEach((idMember) -> {
-                            Map<Integer, Number> thisMemberRatings = new TreeMap<>();
+                            Map<Long, Number> thisMemberRatings = new TreeMap<>();
 
                             try {
-                                Map<Integer, ? extends Rating> memberRatings = testDatasetLoader.getRatingsDataset().getUserRatingsRated(idMember);
+                                Map<Long, ? extends Rating> memberRatings = testDatasetLoader.getRatingsDataset().getUserRatingsRated(idMember);
 
                                 memberRatings.values().stream()
                                         .filter((rating) -> (items.contains(rating.getIdItem())))
@@ -123,12 +123,12 @@ public class PrintTestSet extends GroupEvaluationMeasureInformationPrinter {
         return new GroupEvaluationMeasureResult(this, 1.0);
     }
 
-    private StringBuilder printRawOutput(GroupOfUsers groupOfUsers, List<Recommendation> recommendations, Map<Integer, Map<Integer, Number>> membersRatings) {
+    private StringBuilder printRawOutput(GroupOfUsers groupOfUsers, List<Recommendation> recommendations, Map<Long, Map<Long, Number>> membersRatings) {
 
         StringBuilder rawData = new StringBuilder();
 
         rawData.append("idItem\tprediction\trank\t");
-        for (Integer member : groupOfUsers) {
+        for (Long member : groupOfUsers) {
             rawData.append(member).append("\t");
         }
         rawData.setCharAt(rawData.length() - 1, '\n');
@@ -136,19 +136,19 @@ public class PrintTestSet extends GroupEvaluationMeasureInformationPrinter {
         List<Recommendation> recommendationsSortedById = new ArrayList<>(recommendations);
         Collections.sort(recommendationsSortedById, Recommendation.BY_ID);
 
-        Map<Recommendation, Integer> recommendationsRank = new TreeMap();
+        Map<Recommendation, Long> recommendationsRank = new TreeMap();
 
         ArrayList<Recommendation> groupRecommendationSortedByPreference = new ArrayList<>(recommendations);
         Collections.sort(groupRecommendationSortedByPreference, Recommendation.BY_PREFERENCE_DESC);
         groupRecommendationSortedByPreference.stream().forEachOrdered((recommendation) -> {
-            recommendationsRank.put(recommendation, recommendationsRank.size() + 1);
+            recommendationsRank.put(recommendation, (long) (recommendationsRank.size() + 1));
         });
         recommendationsSortedById.stream().forEachOrdered(recommendation -> {
             rawData.append(
                     recommendation.getIdItem()).append("\t")
                     .append(recommendation.getPreference().doubleValue()).append("\t")
                     .append(recommendationsRank.get(recommendation)).append("\t");
-            for (Integer member : groupOfUsers) {
+            for (Long member : groupOfUsers) {
                 String ratingStr;
                 if (membersRatings.get(member).containsKey(recommendation.getIdItem())) {
                     ratingStr = membersRatings.get(member).get(recommendation.getIdItem()).toString();

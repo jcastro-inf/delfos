@@ -89,7 +89,7 @@ public class RandomRatingsDataset extends ParameterOwnerAdapter implements Ratin
         );
     }
 
-    public RandomRatingsDataset(Set<Integer> users, Set<Integer> items, double loadFactor, Domain ratingsDomain, long seed) {
+    public RandomRatingsDataset(Set<Long> users, Set<Long> items, double loadFactor, Domain ratingsDomain, long seed) {
         super();
 
         init();
@@ -98,13 +98,13 @@ public class RandomRatingsDataset extends ParameterOwnerAdapter implements Ratin
 
         long generateRatingWithTimestamps = (long) (users.size() * items.size() * loadFactor);
 
-        Map<Integer, Map<Integer, RatingWithTimestamp>> ratings_byUser = new TreeMap<>();
+        Map<Long, Map<Long, RatingWithTimestamp>> ratings_byUser = new TreeMap<>();
 
         int numGeneratedRatingWithTimestamps = 0;
         int valorAnterior = -1;
         while (numGeneratedRatingWithTimestamps < generateRatingWithTimestamps) {
-            int idUser = (Integer) users.toArray()[random.nextInt(users.size())];
-            Set<Integer> userNotRated = new TreeSet<>(items);
+            long idUser = (Long) users.toArray()[random.nextInt(users.size())];
+            Set<Long> userNotRated = new TreeSet<>(items);
             if (ratings_byUser.containsKey(idUser)) {
                 userNotRated.removeAll(ratings_byUser.get(idUser).keySet());
             } else {
@@ -114,7 +114,7 @@ public class RandomRatingsDataset extends ParameterOwnerAdapter implements Ratin
             if (userNotRated.isEmpty()) {
                 users.remove(idUser);
             } else {
-                int idItem = (Integer) userNotRated.toArray()[random.nextInt(userNotRated.size())];
+                long idItem = (Long) userNotRated.toArray()[random.nextInt(userNotRated.size())];
                 Number rating = ratingsDomain.getValueAssociatedToProbability(random.nextDouble());
                 long timestamp = timestampDomain.getValueAssociatedToProbability(random.nextDouble());
 
@@ -131,7 +131,7 @@ public class RandomRatingsDataset extends ParameterOwnerAdapter implements Ratin
         dataset = new BothIndexRatingsDataset<>(ratings_byUser);
     }
 
-    public RandomRatingsDataset(Set<Integer> users, Set<Integer> items, int numRatingsPerUser, Domain ratingDomain, long seed) {
+    public RandomRatingsDataset(Set<Long> users, Set<Long> items, int numRatingsPerUser, Domain ratingDomain, long seed) {
         super();
 
         init();
@@ -139,14 +139,14 @@ public class RandomRatingsDataset extends ParameterOwnerAdapter implements Ratin
 
         validateParametersNumRatings(users, items, numRatingsPerUser);
 
-        Map<Integer, Map<Integer, RatingWithTimestamp>> ratings_byUser = new TreeMap<>();
+        Map<Long, Map<Long, RatingWithTimestamp>> ratings_byUser = new TreeMap<>();
 
-        for (Integer idUser : users) {
-            Set<Integer> userNotRated = new TreeSet<>(items);
+        for (Long idUser : users) {
+            Set<Long> userNotRated = new TreeSet<>(items);
             ratings_byUser.put(idUser, new TreeMap<>());
 
             for (int n = 0; n < numRatingsPerUser; n++) {
-                int idItem = (Integer) userNotRated.toArray()[random.nextInt(userNotRated.size())];
+                long idItem = (Long) userNotRated.toArray()[random.nextInt(userNotRated.size())];
 
                 Number rating = ratingDomain.getValueAssociatedToProbability(random.nextDouble());
                 long timestamp = timestampDomain.getValueAssociatedToProbability(random.nextDouble()).longValue();
@@ -157,7 +157,7 @@ public class RandomRatingsDataset extends ParameterOwnerAdapter implements Ratin
         dataset = new BothIndexRatingsDataset<>(ratings_byUser);
     }
 
-    private void validateParametersNumRatings(Set<Integer> users, Set<Integer> items, int numRatingsPerUser) throws IllegalArgumentException {
+    private void validateParametersNumRatings(Set<Long> users, Set<Long> items, int numRatingsPerUser) throws IllegalArgumentException {
         if (users.isEmpty()) {
             throw new IllegalArgumentException("No users specified");
         }
@@ -175,7 +175,7 @@ public class RandomRatingsDataset extends ParameterOwnerAdapter implements Ratin
         }
     }
 
-    private void validateParametersLoadFactor(Set<Integer> users, Set<Integer> items, double loadFactor) throws IllegalArgumentException {
+    private void validateParametersLoadFactor(Set<Long> users, Set<Long> items, double loadFactor) throws IllegalArgumentException {
         if (users.isEmpty()) {
             throw new IllegalArgumentException("No users specified");
         }
@@ -194,37 +194,37 @@ public class RandomRatingsDataset extends ParameterOwnerAdapter implements Ratin
     }
 
     @Override
-    public RatingWithTimestamp getRating(int idUser, int idItem) throws UserNotFound, ItemNotFound {
+    public RatingWithTimestamp getRating(long idUser, long idItem) throws UserNotFound, ItemNotFound {
         return dataset.getRating(idUser, idItem);
     }
 
     @Override
-    public Set<Integer> allUsers() {
+    public Set<Long> allUsers() {
         return dataset.allUsers();
     }
 
     @Override
-    public Set<Integer> allRatedItems() {
+    public Set<Long> allRatedItems() {
         return dataset.allRatedItems();
     }
 
     @Override
-    public Set<Integer> getUserRated(Integer idUser) throws UserNotFound {
+    public Set<Long> getUserRated(long idUser) throws UserNotFound {
         return dataset.getUserRated(idUser);
     }
 
     @Override
-    public Set<Integer> getItemRated(Integer idItem) throws ItemNotFound {
+    public Set<Long> getItemRated(long idItem) throws ItemNotFound {
         return dataset.getItemRated(idItem);
     }
 
     @Override
-    public Map<Integer, RatingWithTimestamp> getUserRatingsRated(Integer idUser) throws UserNotFound {
+    public Map<Long, RatingWithTimestamp> getUserRatingsRated(long idUser) throws UserNotFound {
         return dataset.getUserRatingsRated(idUser);
     }
 
     @Override
-    public Map<Integer, RatingWithTimestamp> getItemRatingsRated(Integer idItem) throws ItemNotFound {
+    public Map<Long, RatingWithTimestamp> getItemRatingsRated(long idItem) throws ItemNotFound {
         return dataset.getItemRatingsRated(idItem);
     }
 
@@ -267,37 +267,37 @@ public class RandomRatingsDataset extends ParameterOwnerAdapter implements Ratin
     }
 
     @Override
-    public double getMeanRatingItem(int idItem) throws ItemNotFound {
+    public double getMeanRatingItem(long idItem) throws ItemNotFound {
         return dataset.getMeanRatingItem(idItem);
     }
 
     @Override
-    public double getMeanRatingUser(int idUser) throws UserNotFound {
+    public double getMeanRatingUser(long idUser) throws UserNotFound {
         return dataset.getMeanRatingUser(idUser);
     }
 
     @Override
-    public int getNumRatings() {
+    public long getNumRatings() {
         return dataset.getNumRatings();
     }
 
     @Override
-    public int sizeOfUserRatings(int idUser) throws UserNotFound {
+    public long sizeOfUserRatings(long idUser) throws UserNotFound {
         return dataset.sizeOfUserRatings(idUser);
     }
 
     @Override
-    public int sizeOfItemRatings(int idItem) throws ItemNotFound {
+    public long sizeOfItemRatings(long idItem) throws ItemNotFound {
         return dataset.sizeOfItemRatings(idItem);
     }
 
     @Override
-    public boolean isRatedUser(int idUser) throws UserNotFound {
+    public boolean isRatedUser(long idUser) throws UserNotFound {
         return dataset.isRatedUser(idUser);
     }
 
     @Override
-    public boolean isRatedItem(int idItem) throws ItemNotFound {
+    public boolean isRatedItem(long idItem) throws ItemNotFound {
         return dataset.isRatedItem(idItem);
     }
     private double meanRating = Double.NaN;

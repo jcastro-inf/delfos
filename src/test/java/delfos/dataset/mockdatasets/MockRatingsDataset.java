@@ -40,77 +40,77 @@ import java.util.TreeSet;
  */
 public class MockRatingsDataset implements RatingsDataset<Rating> {
 
-    private final Map<Integer, Map<Integer, Integer>> ratings;
-    private final Set<Integer> users;
-    private final Set<Integer> items;
+    private final Map<Long, Map<Long, Long>> ratings;
+    private final Set<Long> users;
+    private final Set<Long> items;
 
     public MockRatingsDataset() {
         ratings = new TreeMap<>();
 
         //User1 ratings
-        ratings.put(1, new TreeMap<>());
-        ratings.get(1).put(1, 1);
-        ratings.get(1).put(3, 5);
-        ratings.get(1).put(5, 5);
-        ratings.get(1).put(6, 4);
-        ratings.get(1).put(7, 4);
+        ratings.put(1l, new TreeMap<>());
+        ratings.get(1l).put(1l, 1l);
+        ratings.get(1l).put(3l, 5l);
+        ratings.get(1l).put(5l, 5l);
+        ratings.get(1l).put(6l, 4l);
+        ratings.get(1l).put(7l, 4l);
 
         //User2 ratings
-        ratings.put(2, new TreeMap<>());
-        ratings.get(2).put(2, 4);
-        ratings.get(2).put(4, 3);
-        ratings.get(2).put(8, 5);
-        ratings.get(2).put(9, 5);
+        ratings.put(2l, new TreeMap<>());
+        ratings.get(2l).put(2l, 4l);
+        ratings.get(2l).put(4l, 3l);
+        ratings.get(2l).put(8l, 5l);
+        ratings.get(2l).put(9l, 5l);
 
         //User3 ratings
-        ratings.put(3, new TreeMap<>());
-        ratings.get(3).put(3, 4);
-        ratings.get(3).put(4, 4);
-        ratings.get(3).put(7, 5);
-        ratings.get(3).put(8, 5);
+        ratings.put(3l, new TreeMap<>());
+        ratings.get(3l).put(3l, 4l);
+        ratings.get(3l).put(4l, 4l);
+        ratings.get(3l).put(7l, 5l);
+        ratings.get(3l).put(8l, 5l);
 
         //User4 ratings
-        ratings.put(4, new TreeMap<>());
-        ratings.get(4).put(1, 4);
-        ratings.get(4).put(2, 4);
-        ratings.get(4).put(3, 1);
-        ratings.get(4).put(9, 5);
+        ratings.put(4l, new TreeMap<>());
+        ratings.get(4l).put(1l, 4l);
+        ratings.get(4l).put(2l, 4l);
+        ratings.get(4l).put(3l, 1l);
+        ratings.get(4l).put(9l, 5l);
 
         //User5 ratings
-        ratings.put(5, new TreeMap<>());
-        ratings.get(5).put(10, 5);
-        ratings.get(5).put(11, 3);
-        ratings.get(5).put(12, 4);
+        ratings.put(5l, new TreeMap<>());
+        ratings.get(5l).put(10l, 5l);
+        ratings.get(5l).put(11l, 3l);
+        ratings.get(5l).put(12l, 4l);
 
         users = new TreeSet<>(ratings.keySet());
 
         items = new TreeSet<>();
-        for (int idItem = 1; idItem <= 12; idItem++) {
+        for (long idItem = 1; idItem <= 12; idItem++) {
             items.add(idItem);
         }
 
     }
 
-    private void checkUser(int idUser) throws UserNotFound {
+    private void checkUser(long idUser) throws UserNotFound {
         if (!users.contains(idUser)) {
             throw new UserNotFound(idUser);
         }
     }
 
-    private void checkItem(int idItem) throws ItemNotFound {
+    private void checkItem(long idItem) throws ItemNotFound {
         if (!items.contains(idItem)) {
             throw new ItemNotFound(idItem);
         }
     }
 
     @Override
-    public Rating getRating(int idUser, int idItem) throws UserNotFound, ItemNotFound {
+    public Rating getRating(long idUser, long idItem) throws UserNotFound, ItemNotFound {
         checkUser(idUser);
         checkItem(idItem);
 
         if (ratings.containsKey(idUser)) {
             if (ratings.get(idUser).containsKey(idItem)) {
-                Integer ratingValue = ratings.get(idUser).get(idItem);
+                Long ratingValue = ratings.get(idUser).get(idItem);
                 return new Rating(idUser, idItem, ratingValue);
             } else {
                 return null;
@@ -121,33 +121,33 @@ public class MockRatingsDataset implements RatingsDataset<Rating> {
     }
 
     @Override
-    public Set<Integer> allUsers() {
+    public Set<Long> allUsers() {
         return new TreeSet<>(users);
     }
 
     @Override
-    public Set<Integer> allRatedItems() {
+    public Set<Long> allRatedItems() {
         return new TreeSet<>(items);
     }
 
     @Override
-    public Set<Integer> getUserRated(Integer idUser) throws UserNotFound {
+    public Set<Long> getUserRated(long idUser) throws UserNotFound {
         return getUserRatingsRated(idUser).keySet();
     }
 
     @Override
-    public Set<Integer> getItemRated(Integer idItem) throws ItemNotFound {
+    public Set<Long> getItemRated(long idItem) throws ItemNotFound {
         return getItemRatingsRated(idItem).keySet();
     }
 
     @Override
-    public Map<Integer, Rating> getUserRatingsRated(Integer idUser) throws UserNotFound {
+    public Map<Long, Rating> getUserRatingsRated(long idUser) throws UserNotFound {
         checkUser(idUser);
 
-        Map<Integer, Rating> ret = new TreeMap<>();
+        Map<Long, Rating> ret = new TreeMap<>();
         ratings.get(idUser).entrySet().stream().forEach((entry) -> {
-            int idItem = entry.getKey();
-            int ratingValue = entry.getValue();
+            long idItem = entry.getKey();
+            long ratingValue = entry.getValue();
             ret.put(idItem, new Rating(idUser, idItem, ratingValue));
         });
 
@@ -155,10 +155,10 @@ public class MockRatingsDataset implements RatingsDataset<Rating> {
     }
 
     @Override
-    public Map<Integer, Rating> getItemRatingsRated(Integer idItem) throws ItemNotFound {
+    public Map<Long, Rating> getItemRatingsRated(long idItem) throws ItemNotFound {
         checkItem(idItem);
 
-        Map<Integer, Rating> ret = new TreeMap<>();
+        Map<Long, Rating> ret = new TreeMap<>();
         ratings.keySet().stream().filter((idUser) -> (ratings.get(idUser).containsKey(idItem))).forEach((idUser) -> {
             ret.put(idUser, new Rating(idUser, idItem, idUser));
         });
@@ -167,7 +167,7 @@ public class MockRatingsDataset implements RatingsDataset<Rating> {
     }
 
     @Override
-    public double getMeanRatingItem(int idItem) throws ItemNotFound {
+    public double getMeanRatingItem(long idItem) throws ItemNotFound {
 
         checkItem(idItem);
         Collection<Rating> itemRatings = getItemRatingsRated(idItem).values();
@@ -183,7 +183,7 @@ public class MockRatingsDataset implements RatingsDataset<Rating> {
     }
 
     @Override
-    public double getMeanRatingUser(int idUser) throws UserNotFound {
+    public double getMeanRatingUser(long idUser) throws UserNotFound {
         checkUser(idUser);
 
         Collection<Rating> userRatings = getUserRatingsRated(idUser).values();
@@ -204,46 +204,41 @@ public class MockRatingsDataset implements RatingsDataset<Rating> {
     }
 
     @Override
-    public int getNumRatings() {
+    public long getNumRatings() {
         int numRatings = 0;
         numRatings = users.stream()
-                .map((idUser) -> ratings.get(idUser).size())
-                .reduce(numRatings, Integer::sum);
+                .mapToInt((idUser) -> ratings.get(idUser).size())
+                .sum();
 
         return numRatings;
     }
 
     @Override
-    public int sizeOfUserRatings(int idUser) throws UserNotFound {
+    public long sizeOfUserRatings(long idUser) throws UserNotFound {
         checkUser(idUser);
-
         return getUserRated(idUser).size();
     }
 
     @Override
-    public int sizeOfItemRatings(int idItem) throws ItemNotFound {
-
+    public long sizeOfItemRatings(long idItem) throws ItemNotFound {
         checkItem(idItem);
-
         return getItemRated(idItem).size();
     }
 
     @Override
-    public boolean isRatedUser(int idUser) throws UserNotFound {
+    public boolean isRatedUser(long idUser) throws UserNotFound {
         checkUser(idUser);
         return !ratings.get(idUser).isEmpty();
     }
 
     @Override
-    public boolean isRatedItem(int idItem) throws ItemNotFound {
+    public boolean isRatedItem(long idItem) throws ItemNotFound {
         checkItem(idItem);
-
         return !getItemRated(idItem).isEmpty();
     }
 
     @Override
     public double getMeanRating() {
-
         double mean = 0;
         int count = 0;
 
@@ -257,12 +252,11 @@ public class MockRatingsDataset implements RatingsDataset<Rating> {
 
     @Override
     public Iterator<Rating> iterator() {
-
-        List<Rating> _ratings = new ArrayList<>(getNumRatings());
+        List<Rating> _ratings = new ArrayList<Rating>((int) getNumRatings());
 
         ratings.keySet().stream().forEach((idUser) -> {
             ratings.get(idUser).keySet().stream().forEach((idItem) -> {
-                Integer ratingValue = ratings.get(idUser).get(idItem);
+                Long ratingValue = ratings.get(idUser).get(idItem);
                 _ratings.add(new Rating(idUser, idItem, ratingValue));
             });
         });

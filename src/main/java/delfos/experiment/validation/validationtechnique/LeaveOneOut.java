@@ -18,9 +18,11 @@ package delfos.experiment.validation.validationtechnique;
 
 import delfos.common.exceptions.dataset.CannotLoadContentDataset;
 import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
+import delfos.dataset.basic.item.Item;
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RatingsDataset;
+import delfos.dataset.basic.user.User;
 import delfos.dataset.storage.validationdatasets.PairOfTrainTestRatingsDataset;
 import delfos.dataset.storage.validationdatasets.ValidationDatasets;
 import java.util.Map;
@@ -34,9 +36,6 @@ import java.util.TreeSet;
  *
  * @author jcastro-inf ( https://github.com/jcastro-inf )
  *
- * @version 1.0 (19 Octubre 2011)
- * @version 1.1 21-02-2013 Adecuación a la implementación de {@link SeedHolder}
- * @version 1.1 19-04-2013 Corrección del código para que implemente el algoritmo All-but-one.
  */
 public class LeaveOneOut extends ValidationTechnique {
 
@@ -51,21 +50,21 @@ public class LeaveOneOut extends ValidationTechnique {
     }
 
     @Override
-    public <RatingType extends Rating> PairOfTrainTestRatingsDataset[] shuffle(DatasetLoader<RatingType> datasetLoader) throws CannotLoadRatingsDataset, CannotLoadContentDataset {
+    public <RatingType extends Rating> PairOfTrainTestRatingsDataset<RatingType>[] shuffle(DatasetLoader<RatingType> datasetLoader) throws CannotLoadRatingsDataset, CannotLoadContentDataset {
 
-        int numRatings = datasetLoader.getRatingsDataset().getNumRatings();
+        int numRatings = (int) datasetLoader.getRatingsDataset().getNumRatings();
 
-        PairOfTrainTestRatingsDataset[] ret = new PairOfTrainTestRatingsDataset[numRatings];
-        RatingsDataset<? extends Rating> ratingsDataset = datasetLoader.getRatingsDataset();
+        PairOfTrainTestRatingsDataset<RatingType>[] ret = new PairOfTrainTestRatingsDataset[numRatings];
+        RatingsDataset<RatingType> ratingsDataset = datasetLoader.getRatingsDataset();
 
         int split = 0;
         for (Rating rating : ratingsDataset) {
 
-            Map<Integer, Set<Integer>> conjuntoTest = new TreeMap<>();
-            conjuntoTest.put(rating.getIdUser(), new TreeSet<>());
-            conjuntoTest.get(rating.getIdUser()).add(rating.getIdItem());
+            Map<User, Set<Item>> conjuntoTest = new TreeMap<>();
+            conjuntoTest.put(rating.getUser(), new TreeSet<>());
+            conjuntoTest.get(rating.getIdUser()).add(rating.getItem());
 
-            ret[split] = new PairOfTrainTestRatingsDataset(
+            ret[split] = new PairOfTrainTestRatingsDataset<>(
                     datasetLoader,
                     ValidationDatasets.getInstance().createTrainingDataset(datasetLoader.getRatingsDataset(), conjuntoTest),
                     ValidationDatasets.getInstance().createTestDataset(datasetLoader.getRatingsDataset(), conjuntoTest),

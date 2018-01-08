@@ -41,6 +41,8 @@ import delfos.group.grs.recommendations.GroupRecommendations;
 import delfos.group.results.groupevaluationmeasures.GroupEvaluationMeasure;
 import delfos.group.results.groupevaluationmeasures.GroupEvaluationMeasureResult;
 import delfos.group.results.grouprecomendationresults.GroupRecommenderSystemResult;
+import delfos.utils.algorithm.progress.ProgressChangedController;
+import delfos.utils.algorithm.progress.ProgressChangedListenerDefault;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -153,10 +155,14 @@ public class ExecutionSplitConsumer implements Comparable<ExecutionSplitConsumer
             }
         });
 
+        final ProgressChangedController progressChangedController = new ProgressChangedController(
+                groupCaseStudy.getAlias(),
+                taskGroupRecommendationInput.size(),
+                new ProgressChangedListenerDefault(System.out, 10000));
+
         List<SingleGroupRecommendationTaskOutput> taskGroupRecommendationOutput = taskGroupRecommendationInput
                 .parallelStream()
-                .map(new SingleGroupRecommendationFunction()
-                )
+                .map(new SingleGroupRecommendationFunction(progressChangedController))
                 .collect(Collectors.toList());
 
         taskGroupRecommendationOutput.parallelStream().forEach(task -> {

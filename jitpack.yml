@@ -1,0 +1,8 @@
+jdk:
+  - oraclejdk8
+before_install:
+   - echo "Running a custom script to prepare the compilation environment building math4"
+   - ./prepare-build.sh
+install:
+   - mvn clean install -DskipTests
+

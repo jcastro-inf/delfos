@@ -140,8 +140,8 @@ public class Jester extends DatasetLoaderAbstract {
                 }
                 Feature[] features = new Feature[0];
                 Object[] values = new Object[0];
-                for (int idItem : ratingsDataset.allRatedItems()) {
-                    items.add(new Item(idItem, Integer.toString(idItem), features, values));
+                for (long idItem : ratingsDataset.allRatedItems()) {
+                    items.add(new Item(idItem, Long.toString(idItem), features, values));
                 }
 
                 contentDataset = new ContentDatasetDefault(items);
