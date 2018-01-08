@@ -1,6 +1,6 @@
 #!/bin/bash
 set -e
 
-./preparebuild.sh
+./prepare-build.sh
 ./build.sh
 ./install.sh
