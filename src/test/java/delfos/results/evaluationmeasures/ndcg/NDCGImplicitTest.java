@@ -21,22 +21,26 @@ import delfos.dataset.basic.item.Item;
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.user.User;
+import delfos.main.managers.recommendation.singleuser.Recommend;
+import delfos.rs.nonpersonalised.randomrecommender.RandomRecommendationModel;
+import delfos.rs.nonpersonalised.randomrecommender.RandomRecommender;
 import delfos.rs.recommendation.Recommendation;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-import java.util.stream.Collectors;
-import static org.junit.Assert.assertEquals;
+import delfos.rs.recommendation.Recommendations;
+import delfos.rs.recommendation.RecommendationsToUser;
 import org.junit.Test;
+
+import java.util.*;
+import java.util.stream.Collectors;
+
+import static org.junit.Assert.assertEquals;
 
 /**
  *
  * @author jcastro
  */
-public class NDCGTest {
+public class NDCGImplicitTest {
 
-    public NDCGTest() {
+    public NDCGImplicitTest() {
     }
 
     /**
@@ -46,48 +50,132 @@ public class NDCGTest {
     public void testComputeDCG() {
         System.out.println("testComputeDCG");
 
-        DatasetLoader<Rating> datasetLoader = (DatasetLoader<Rating>) ConfiguredDatasetsFactory.getInstance()
+        DatasetLoader<? extends Rating> datasetLoader = ConfiguredDatasetsFactory
+                .getInstance()
                 .getDatasetLoader("ml-100k");
 
         User user = datasetLoader.getUsersDataset().get(1);
 
-        Map<Long, ? extends Rating> userRatingsByItemId = datasetLoader.getRatingsDataset().getUserRatingsRated(user.getId());
-        Map<Item, Rating> collect = userRatingsByItemId.values().stream().collect(Collectors.toMap(r -> r.getItem(), r -> r));
+        Map<Long, ? extends Rating> userRatingsByItemId = datasetLoader
+                .getRatingsDataset()
+                .getUserRatingsRated(user.getId());
 
-        List<Rating> sortedRatings = collect.values().stream().sorted(Rating.SORT_BY_RATING_DESC).collect(Collectors.toList());
+        Map<Item, Rating> userRatingsByItem = userRatingsByItemId.values().stream()
+                .collect(Collectors.toMap(rating -> rating.getItem(), rating -> rating));
 
-        List<Recommendation> recommendations
-                = new Random(0).ints(10, 0, sortedRatings.size()).distinct().boxed()
-                .map(i -> sortedRatings.get(i))
-                .map(rating -> {
-                    final double preference = rating.getRatingValue().doubleValue();
-                    final Item item = rating.getItem();
+        Set<Item> candidateItems = datasetLoader
+                .getContentDataset()
+                .stream()
+                .collect(Collectors.toSet());
 
-                    return new Recommendation(item, preference);
-                })
-                .collect(Collectors.toList());
+        RandomRecommender randomRecommender = new RandomRecommender();
+        randomRecommender.setSeedValue(123456L);
+        RandomRecommendationModel<Long> recommendationModel = randomRecommender.
+                buildRecommendationModel(datasetLoader);
 
-        List<Recommendation> recommendationPerfect = recommendations.stream().map(r -> userRatingsByItemId.get(r.getItem().getId()))
-                .map(rating -> new Recommendation(rating.getItem(), rating.getRatingValue().doubleValue()))
+        RecommendationsToUser recommendationsToUser = randomRecommender.recommendToUser(
+                datasetLoader,
+                recommendationModel,
+                user,
+                candidateItems);
+
+        List<Recommendation> recommendations = recommendationsToUser
+                .getRecommendations().stream()
                 .sorted(Recommendation.BY_PREFERENCE_DESC)
                 .collect(Collectors.toList());
 
-        double dcg = NDCG.computeDCG(recommendations, userRatingsByItemId);
+        List<Recommendation> recommendationsPerfect = userRatingsByItem.entrySet().stream()
+                .map(entryItemRating -> new Recommendation(entryItemRating.getKey(), entryItemRating.getValue().getRatingValue().doubleValue()))
+                .sorted(Recommendation.BY_PREFERENCE_DESC)
+                .collect(Collectors.toList());
 
-        double dcg_perfect = NDCG.computeDCG(recommendationPerfect, userRatingsByItemId);
+        double dcg = NDCGImplicit.computeDCG(recommendations, userRatingsByItemId);
+        double dcg_perfect = NDCGImplicit.computeDCG(recommendationsPerfect, userRatingsByItemId);
+
         double ndcg = dcg / dcg_perfect;
 
-        double dcg_expected = 14.023716584582989;
-        double dcg_perfect_expected = 16.65435365823412;
-        double ndcg_expected = 0.842045081566374;
+        double dcg_expected = 113.2835112192644;
+        double dcg_perfect_expected = 174.31149492536096;
+        double ndcg_expected = 0.6498912264378872;
 
         assertEquals(dcg_expected, dcg, 0.00001);
         assertEquals(dcg_perfect_expected, dcg_perfect, 0.00001);
         assertEquals(ndcg_expected, ndcg, 0.00001);
     }
 
+    @Test
+    public void testComputeNDCG_zeroPerfectDCG(){
+        System.out.println("testComputeNDCG_zeroPerfectDCG");
+
+
+        DatasetLoader<? extends Rating> datasetLoader = ConfiguredDatasetsFactory
+                .getInstance()
+                .getDatasetLoader("ml-100k");
+
+        User user = datasetLoader.getUsersDataset().get(1);
+
+        Map<Long, ? extends Rating> userRatingsByItemId = datasetLoader
+                .getRatingsDataset()
+                .getUserRatingsRated(user.getId()).values()
+                .stream()
+                .map(rating -> rating.copyWithRatingValue(0.0))
+                .collect(Collectors.toMap(
+                        rating -> rating.getIdItem(),
+                        rating->rating
+                ));
+
+        Map<Item, Rating> userRatingsByItem = userRatingsByItemId
+                .values().stream()
+                .collect(Collectors.toMap(
+                        rating -> rating.getItem(),
+                        rating -> rating.copyWithRatingValue(0.0)
+                ));
+
+        Set<Item> candidateItems = datasetLoader
+                .getContentDataset()
+                .stream()
+                .collect(Collectors.toSet());
+
+        RandomRecommender randomRecommender = new RandomRecommender();
+        randomRecommender.setSeedValue(123456L);
+        RandomRecommendationModel<Long> recommendationModel = randomRecommender.
+                buildRecommendationModel(datasetLoader);
+
+        RecommendationsToUser recommendationsToUser = randomRecommender
+                .recommendToUser(
+                    datasetLoader,
+                    recommendationModel,
+                    user,
+                    candidateItems
+                );
+
+        List<Recommendation> recommendations = recommendationsToUser
+                .getRecommendations().stream()
+                .sorted(Recommendation.BY_PREFERENCE_DESC)
+                .collect(Collectors.toList());
+
+        List<Recommendation> recommendationsPerfect = userRatingsByItem.entrySet().stream()
+                .map(entryItemRating -> new Recommendation(entryItemRating.getKey(), entryItemRating.getValue().getRatingValue().doubleValue()))
+                .sorted(Recommendation.BY_PREFERENCE_DESC)
+                .collect(Collectors.toList());
+
+        double dcg = NDCGImplicit.computeDCG(recommendations, userRatingsByItemId);
+        double dcg_perfect = NDCGImplicit.computeDCG(recommendationsPerfect, userRatingsByItemId);
+
+        double ndcg = NDCGImplicit.computeNDCG(recommendations,userRatingsByItemId);
+
+        double dcg_expected = 0.0;
+        double dcg_perfect_expected = 0.0;
+        double ndcg_expected = 0.0;
+
+        assertEquals(dcg_expected, dcg, 0.00001);
+        assertEquals(dcg_perfect_expected, dcg_perfect, 0.00001);
+        assertEquals(ndcg_expected, ndcg, 0.00001);
+
+    }
+
     /**
-     * Test of computeDCG method, of class NDCG.
+     * Test of computeDCG method, of class NDCGImplicit
      */
     @Test
     public void testComputeDCG_45321() {
@@ -113,9 +201,9 @@ public class NDCGTest {
                 .sorted(Recommendation.BY_PREFERENCE_DESC)
                 .collect(Collectors.toList());
 
-        double dcg = NDCG.computeDCG(recommendations, userRatingsByItemId);
+        double dcg = NDCGImplicit.computeDCG(recommendations, userRatingsByItemId);
 
-        double dcg_perfect = NDCG.computeDCG(recommendationPerfect, userRatingsByItemId);
+        double dcg_perfect = NDCGImplicit.computeDCG(recommendationPerfect, userRatingsByItemId);
         double ndcg = dcg / dcg_perfect;
 
         double dcg_expected = 12.323465818787765;
@@ -126,7 +214,7 @@ public class NDCGTest {
     }
 
     /**
-     * Test of computeDCG method, of class NDCG.
+     * Test of computeDCG method, of class NDCGImplicit.
      */
     @Test
     public void testComputeDCG_54321() {
@@ -152,9 +240,9 @@ public class NDCGTest {
                 .sorted(Recommendation.BY_PREFERENCE_DESC)
                 .collect(Collectors.toList());
 
-        double dcg = NDCG.computeDCG(recommendations, userRatingsByItemId);
+        double dcg = NDCGImplicit.computeDCG(recommendations, userRatingsByItemId);
 
-        double dcg_perfect = NDCG.computeDCG(recommendationPerfect, userRatingsByItemId);
+        double dcg_perfect = NDCGImplicit.computeDCG(recommendationPerfect, userRatingsByItemId);
         double ndcg = dcg / dcg_perfect;
 
         double dcg_expected = 12.323465818787765;
@@ -165,7 +253,7 @@ public class NDCGTest {
     }
 
     /**
-     * Test of computeDCG method, of class NDCG.
+     * Test of computeDCG method, of class NDCGImplicit.
      */
     @Test
     public void testComputeDCG_54123() {
@@ -191,9 +279,9 @@ public class NDCGTest {
                 .sorted(Recommendation.BY_PREFERENCE_DESC)
                 .collect(Collectors.toList());
 
-        double dcg = NDCG.computeDCG(recommendations, userRatingsByItemId);
+        double dcg = NDCGImplicit.computeDCG(recommendations, userRatingsByItemId);
 
-        double dcg_perfect = NDCG.computeDCG(recommendationPerfect, userRatingsByItemId);
+        double dcg_perfect = NDCGImplicit.computeDCG(recommendationPerfect, userRatingsByItemId);
         double ndcg = dcg / dcg_perfect;
 
         double dcg_expected = 11.922959427791637;

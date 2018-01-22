@@ -1,19 +1,3 @@
-/*
- * Copyright (C) 2016 jcastro
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
 package delfos.results.evaluationmeasures.ndcg;
 
 import delfos.ERROR_CODES;
@@ -26,31 +10,25 @@ import delfos.results.MeasureResult;
 import delfos.results.RecommendationResults;
 import delfos.results.evaluationmeasures.EvaluationMeasure;
 import delfos.rs.recommendation.Recommendation;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
-/**
- * Evalúa las recomendaciones de un sistema aplicando NDCG, usando logaritmo en base 2. Se calcula el nDCG por usuarios
- * y luego se hace la media.
- *
- * @author jcastro-inf ( https://github.com/jcastro-inf )
- *
- * @version 18-Noviembre-2013
- */
-public class NDCG extends EvaluationMeasure {
+public class NDCGImplicit extends EvaluationMeasure{
 
     private static final long serialVersionUID = 1L;
 
     protected final int listSize;
 
-    public NDCG() {
+    public NDCGImplicit() {
         this.listSize = -1;
     }
 
-    protected NDCG(int listSize) {
+    protected NDCGImplicit(int listSize) {
         this.listSize = listSize;
     }
 
@@ -84,41 +62,46 @@ public class NDCG extends EvaluationMeasure {
         return new MeasureResult(this, ndcg);
     }
 
-    public static <RatingType extends Rating >  double computeNDCG(List<Recommendation> recommendations, Map<Long, RatingType> userRatings){
+    public static <RatingType extends Rating > double computeNDCG(List<Recommendation> recommendations, Map<Long,RatingType> userRatings){
         return computeNDCG(recommendations,userRatings,-1);
     }
 
     public static <RatingType extends Rating >  double computeNDCG(List<Recommendation> recommendations, Map<Long, RatingType> userRatings, int listSize) {
 
-        List<Recommendation> idealRecommendations = userRatings
+        Stream<Recommendation> idealRecommendationsStream = userRatings
                 .values().parallelStream()
                 .map(rating -> new Recommendation(rating.getItem(), rating.getRatingValue()))
-                .sorted(Recommendation.BY_PREFERENCE_DESC)
-                .collect(Collectors.toList());
+                .sorted(Recommendation.BY_PREFERENCE_DESC);
+
+        Stream<Recommendation> recommendationsSortedStream = recommendations.stream()
+                        .sorted(Recommendation.BY_PREFERENCE_DESC);
 
         if (listSize > 0) {
-            recommendations = recommendations.stream()
-                    .sorted(Recommendation.BY_PREFERENCE_DESC)
-                    .limit(listSize)
-                    .collect(Collectors.toList());
+            recommendationsSortedStream = recommendationsSortedStream
+                    .limit(listSize);
 
-            idealRecommendations = idealRecommendations.stream()
-                    .sorted(Recommendation.BY_PREFERENCE_DESC)
-                    .limit(listSize)
-                    .collect(Collectors.toList());
+            idealRecommendationsStream = idealRecommendationsStream
+                    .limit(listSize);
         }
 
+        List<Recommendation> idealRecommendations = idealRecommendationsStream.collect(Collectors.toList());
+        List<Recommendation> recommendationsSorted = recommendationsSortedStream.collect(Collectors.toList());
 
         double idealGain = computeDCG(idealRecommendations, userRatings);
-        double gain = computeDCG(recommendations, userRatings);
+        double gain = computeDCG(recommendationsSorted, userRatings);
 
-        double score = gain / idealGain;
+        final double ndcg;
+        if(idealGain == 0){
+            ndcg = 0;
+        }else {
+            ndcg = gain / idealGain;
+        }
 
-        if (Double.isNaN(score)) {
+        if (Double.isNaN(ndcg)) {
             throw new IllegalStateException("NDCG is NaN, possibly because there are ratings with a Zero value");
         }
 
-        return score;
+        return ndcg;
     }
 
     @Override
@@ -127,9 +110,14 @@ public class NDCG extends EvaluationMeasure {
     }
 
     /**
-     * Compute the DCG of a list of items with respect to a value vector.
+     * Computes the DCG of a list of items with respect to a value vector.
      *
-     * @param recommendations
+     * It considers the rating set as implicit ratings. Therefore, if a recommendation is in the rating set, then it is positive.
+     * When a recommendation is not in the rating set, it is considered negative. The ratingValue is considered in the measure.
+     *
+     * If there are items in the ratings that do not appear in the recommendation list, they are ignored.
+     *
+     * @param recommendations Recommendations, must be sorted by preference in descending order.
      * @param userRatings
      * @return
      */
@@ -138,19 +126,19 @@ public class NDCG extends EvaluationMeasure {
             Map<Long, RatingType> userRatings) {
 
         double gain = 0;
-        int rank = 0;
+        int rank = 1;
 
         Iterator<Recommendation> iit = recommendations.iterator();
         while (iit.hasNext()) {
             final Recommendation recommendation = iit.next();
             final long idItem = recommendation.getItem().getId();
+            final double rating;
 
-            if (!userRatings.containsKey(idItem)) {
-                continue;
+            if(userRatings.containsKey(idItem)){
+                rating = userRatings.get(idItem).getRatingValue().doubleValue();
+            }else{
+                rating = 0.0;
             }
-
-            final double rating = userRatings.get(idItem).getRatingValue().doubleValue();
-            rank++;
 
             double discount;
 
@@ -163,6 +151,7 @@ public class NDCG extends EvaluationMeasure {
             double increment = rating * discount;
 
             gain += increment;
+            rank++;
         }
 
         return gain;
