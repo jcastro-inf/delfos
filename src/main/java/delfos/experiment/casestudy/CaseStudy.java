@@ -110,7 +110,7 @@ public class CaseStudy<RecommendationModel extends Object, RatingType extends Ra
             "numExecutions",
             new IntegerParameter(1, 100000000, 1));
 
-    private void initParameters() {
+    protected void initParameters() {
         addParameter(SEED);
         addParameter(NUM_EXECUTIONS);
         addParameter(DATASET_LOADER);
@@ -121,8 +121,8 @@ public class CaseStudy<RecommendationModel extends Object, RatingType extends Ra
 
     protected final ArrayList<CaseStudyParameterChangedListener> propertyListeners = new ArrayList<>();
     protected final ArrayList<ExperimentListener> experimentProgressListeners = new ArrayList<>();
-    private boolean running;
-    private boolean finished = false;
+    protected boolean running;
+    protected boolean finished = false;
     protected int numExecutions;
     protected ValidationTechnique validationTechnique;
     protected int _ejecucionActual;
@@ -130,18 +130,18 @@ public class CaseStudy<RecommendationModel extends Object, RatingType extends Ra
     protected final RecommenderSystem<RecommendationModel> recommenderSystem;
     protected final Collection<EvaluationMeasure> evaluationMeasures;
 
-    private Map<Integer, Map<Integer, Map<EvaluationMeasure, MeasureResult>>> allLoopsResults = Collections
+    protected Map<Integer, Map<Integer, Map<EvaluationMeasure, MeasureResult>>> allLoopsResults = Collections
             .synchronizedMap(new HashMap<>());
 
     protected DatasetLoader<RatingType> datasetLoader;
     protected RelevanceCriteria relevanceCriteria;
-    private final PredictionProtocol predictionProtocol;
-    private final int numVueltas;
-    private int loopCount = 0;
-    private boolean errors = false;
+    protected final PredictionProtocol predictionProtocol;
+    protected final int numVueltas;
+    protected int loopCount = 0;
+    protected boolean errors = false;
 
-    private Map<EvaluationMeasure, MeasureResult> aggregateResults;
-    private File resultsDirectory = new File("." + File.separator + "temp");
+    protected Map<EvaluationMeasure, MeasureResult> aggregateResults;
+    protected File resultsDirectory = new File("." + File.separator + "temp");
 
     public void setResultsDirectory(File RESULTS_DIRECTORY) {
         if (RESULTS_DIRECTORY.exists() && !RESULTS_DIRECTORY.isDirectory()) {
@@ -394,7 +394,7 @@ public class CaseStudy<RecommendationModel extends Object, RatingType extends Ra
         });
     }
 
-    private int totalCaseStudyPercent(double percent) {
+    protected int totalCaseStudyPercent(double percent) {
         double totalPercent;
         int maxVueltas = numExecutions * getNumSplits();
         int vueltasActual = _ejecucionActual * getNumSplits() + _conjuntoActual;
@@ -475,14 +475,14 @@ public class CaseStudy<RecommendationModel extends Object, RatingType extends Ra
     public int getNumSplits() {
         return getValidationTechnique().getNumberOfSplits();
     }
-    private String executionProgressTask = "";
-    private int executionProgressPercent = 0;
-    private long executionProgressRemainingTime = -1;
-    private String experimentProgressTask = "";
-    private int experimentProgressPercent = 0;
-    private long experimentProgressRemainingTime = -1;
+    protected String executionProgressTask = "";
+    protected int executionProgressPercent = 0;
+    protected long executionProgressRemainingTime = -1;
+    protected String experimentProgressTask = "";
+    protected int experimentProgressPercent = 0;
+    protected long experimentProgressRemainingTime = -1;
 
-    private void updateExperimentProgress(
+    protected void updateExperimentProgress(
             String executionProgressTask,
             int executionProgressPercent,
             long executionProgressRemainingTime) {
@@ -498,7 +498,6 @@ public class CaseStudy<RecommendationModel extends Object, RatingType extends Ra
         this.experimentProgressTask = this.getAlias();
         this.experimentProgressPercent = (int) _experimentProgressPercent;
         this.experimentProgressRemainingTime = -1;
-
     }
 
     @Override
@@ -569,7 +568,7 @@ public class CaseStudy<RecommendationModel extends Object, RatingType extends Ra
         setNextSeedToSeedHolders(seedValue);
     }
 
-    private void setNextSeedToSeedHolders(long seedValue) {
+    protected void setNextSeedToSeedHolders(long seedValue) {
 
         if (recommenderSystem instanceof SeedHolder) {
             SeedHolder seedHolder = (SeedHolder) recommenderSystem;
@@ -627,7 +626,7 @@ public class CaseStudy<RecommendationModel extends Object, RatingType extends Ra
         return this.getRecommenderSystem().hashCode();
     }
 
-    private void registerInListeners() {
+    protected void registerInListeners() {
         this.datasetLoader.addParammeterListener(this);
     }
 
@@ -645,12 +644,12 @@ public class CaseStudy<RecommendationModel extends Object, RatingType extends Ra
         return errors;
     }
 
-    private void setErrors(boolean b) {
+    protected void setErrors(boolean b) {
         errors = b;
     }
 
     @SuppressWarnings({"unchecked", "rawtypes"})
-    private void initStructures(int executionNumber, int splitNumber) {
+    protected void initStructures(int executionNumber, int splitNumber) {
 
         for (int execution = 0; execution < executionNumber; execution++) {
             allLoopsResults.put(execution, Collections.synchronizedMap(new TreeMap<>()));
@@ -673,10 +672,10 @@ public class CaseStudy<RecommendationModel extends Object, RatingType extends Ra
         validationTechnique.setSeedValue(seed);
 
     }
-    private final Map<Integer, Map<Integer, Map<EvaluationMeasure, MeasureResult>>> resultsAsTheyFinish
+    protected final Map<Integer, Map<Integer, Map<EvaluationMeasure, MeasureResult>>> resultsAsTheyFinish
             = new TreeMap<>();
 
-    private synchronized void setResultsThisExecution(Integer newExecution, Map<Integer, Map<EvaluationMeasure, MeasureResult>> resultsNewExecution) {
+    protected synchronized void setResultsThisExecution(Integer newExecution, Map<Integer, Map<EvaluationMeasure, MeasureResult>> resultsNewExecution) {
 
         Set<Integer> executionsHoles = IntStream.range(0, this.getNumExecutions()).boxed().sorted().collect(Collectors.toSet());
         executionsHoles.removeAll(resultsAsTheyFinish.keySet());
