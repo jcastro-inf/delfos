@@ -710,6 +710,16 @@ public class CaseStudy<RecommendationModel extends Object, RatingType extends Ra
             caseStudyCloned.aggregateResults = evaluationMeasures.stream().parallel().collect(Collectors.toMap(Function.identity(),
                     evaluationMeasure -> {
 
+                        List<Map<EvaluationMeasure, MeasureResult>> maps = caseStudyCloned.allLoopsResults.values().stream().
+                                flatMap(x -> x.values().stream()).
+                                collect(Collectors.toList());
+
+                        for(Map<EvaluationMeasure, MeasureResult> map: maps){
+                            if(!map.containsKey(evaluationMeasure)){
+                                Global.showWarning(new IllegalStateException("Evaluation measure "+evaluationMeasure+" not found in map with keys: "+map.keySet()));
+                            }
+                        }
+
                         List<MeasureResult> allResultsThisMeasure
                         = caseStudyCloned.allLoopsResults.values().stream().parallel()
                         .flatMap(resultsForThisExecution -> resultsForThisExecution.values().stream())
