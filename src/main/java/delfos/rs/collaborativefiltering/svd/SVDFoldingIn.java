@@ -84,15 +84,15 @@ public class SVDFoldingIn
     }
 
     @Override
-    public TryThisAtHomeSVDModel buildRecommendationModel(
-            DatasetLoader<? extends Rating> datasetLoader)
+    public <RatingType extends Rating> TryThisAtHomeSVDModel buildRecommendationModel(
+            DatasetLoader<RatingType> datasetLoader)
             throws CannotLoadRatingsDataset, CannotLoadRatingsDataset, CannotLoadContentDataset {
         return super.buildRecommendationModel(datasetLoader);
     }
 
     @Override
-    public Collection<Recommendation> recommendToUser(
-            DatasetLoader<? extends Rating> datasetLoader,
+    public <RatingType extends Rating> Collection<Recommendation> recommendToUser(
+            DatasetLoader<RatingType> datasetLoader,
             TryThisAtHomeSVDModel model,
             long idUser,
             Set<Long> candidateItems)
@@ -109,8 +109,8 @@ public class SVDFoldingIn
     }
 
     @Override
-    public Number predictRating(
-            DatasetLoader<? extends Rating> datasetLoader,
+    public <RatingType extends Rating> Number predictRating(
+            DatasetLoader<RatingType> datasetLoader,
             TryThisAtHomeSVDModel model,
             long idUser,
             long idItem)
@@ -125,9 +125,9 @@ public class SVDFoldingIn
         return super.predictRating(datasetLoader, incrementedModel, idUser, idItem); //To change body of generated methods, choose Tools | Templates.
     }
 
-    public TryThisAtHomeSVDModel incrementModelWithUserRatings(
+    public <RatingType extends Rating> TryThisAtHomeSVDModel incrementModelWithUserRatings(
             TryThisAtHomeSVDModel oldModel,
-            DatasetLoader<? extends Rating> datasetLoader,
+            DatasetLoader<RatingType> datasetLoader,
             long idUser)
             throws UserNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset {
 
@@ -135,7 +135,7 @@ public class SVDFoldingIn
         final double lrate = ((Number) getParameterValue(INCREMENTED_MODEL_LEARNING_RATE)).doubleValue();
         final int numFeatures = getNumFeatures();
         final int numIterationsPerFeature = (Integer) getParameterValue(INCREMENTED_MODEL_NUM_ITER_PER_FEATURE);
-        final RatingsDataset<? extends Rating> ratingsDataset = datasetLoader.getRatingsDataset();
+        final RatingsDataset<RatingType> ratingsDataset = datasetLoader.getRatingsDataset();
 
         List<Double> thisUserFeatures = new ArrayList<>(numFeatures);
         int thisUserIndex = -1;
@@ -219,7 +219,7 @@ public class SVDFoldingIn
                 c.reset();
                 MeanIterative meanAbsoluteError = new MeanIterative();
 
-                Map<Long, ? extends Rating> thisUserRatings = ratingsDataset.getUserRatingsRated(idUser);
+                Map<Long, RatingType> thisUserRatings = ratingsDataset.getUserRatingsRated(idUser);
 
                 for (Long idItem : thisUserRatings.keySet()) {
                     Rating rating = thisUserRatings.get(idItem);

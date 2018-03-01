@@ -162,7 +162,7 @@ public class ConsensusGRS extends GroupRecommenderSystemAdapter<SingleRecommenda
     }
 
     @Override
-    public SingleRecommendationModel buildRecommendationModel(DatasetLoader<? extends Rating> datasetLoader) throws CannotLoadRatingsDataset, CannotLoadContentDataset {
+    public <RatingType extends Rating> SingleRecommendationModel buildRecommendationModel(DatasetLoader<RatingType> datasetLoader) throws CannotLoadRatingsDataset, CannotLoadContentDataset {
 
         saveDataset(datasetLoader);
 
@@ -175,7 +175,7 @@ public class ConsensusGRS extends GroupRecommenderSystemAdapter<SingleRecommenda
         return new SingleRecommendationModel(innerRecommendationModel);
     }
 
-    private void saveDataset(DatasetLoader<? extends Rating> datasetLoader) throws CannotLoadRatingsDataset {
+    private <RatingType extends Rating> void saveDataset(DatasetLoader<RatingType> datasetLoader) throws CannotLoadRatingsDataset {
         File datasetPersistenceDirectory = (File) getParameterValue(DATASET_PERSISTENCE_DIRECTORY);
         if (!datasetPersistenceDirectory.exists()) {
             datasetPersistenceDirectory.mkdirs();
@@ -212,7 +212,7 @@ public class ConsensusGRS extends GroupRecommenderSystemAdapter<SingleRecommenda
         final boolean isConsensusApplied = (Boolean) getParameterValue(APPLY_CONSENSUS);
         final double consensusDegree = ((Number) getParameterValue(CONSENSUS_DEGREE)).doubleValue();
 
-        RatingsDataset<? extends Rating> ratingsDataset = datasetLoader.getRatingsDataset();
+        RatingsDataset<RatingType> ratingsDataset = datasetLoader.getRatingsDataset();
 
         Map<Long, Map<Long, Rating>> membersRatings = DatasetOperations.selectRatings((RatingsDataset<Rating>) ratingsDataset,
                 groupOfUsers.getIdMembers()

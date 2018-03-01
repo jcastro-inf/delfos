@@ -45,7 +45,9 @@ public class Recommender_DatasetProperties extends CollaborativeRecommender<Numb
     private BothIndexRatingsDataset copyOfTrainingDataset;
 
     @Override
-    public Number buildRecommendationModel(DatasetLoader<? extends Rating> datasetLoader) throws CannotLoadRatingsDataset {
+    public <RatingType extends Rating> Number buildRecommendationModel(
+            DatasetLoader<RatingType> datasetLoader) throws CannotLoadRatingsDataset {
+
         this.copyOfTrainingDataset = new BothIndexRatingsDataset(datasetLoader.getRatingsDataset());
 
         Global.showInfoMessage("Showing statistics about the dataset\n");
@@ -53,7 +55,7 @@ public class Recommender_DatasetProperties extends CollaborativeRecommender<Numb
         Global.showInfoMessage("Num users   " + datasetLoader.getRatingsDataset().allUsers().size() + "\n");
         Global.showInfoMessage("Num items   " + datasetLoader.getRatingsDataset().allRatedItems().size() + "\n");
 
-        RatingsDataset<? extends Rating> ratingsDataset = datasetLoader.getRatingsDataset();
+        RatingsDataset<RatingType> ratingsDataset = datasetLoader.getRatingsDataset();
         UsersDataset usersDataset = datasetLoader.getUsersDataset();
 
         ContentDataset contentDataset = datasetLoader.getContentDataset();
@@ -97,8 +99,8 @@ public class Recommender_DatasetProperties extends CollaborativeRecommender<Numb
     }
 
     @Override
-    public Collection<Recommendation> recommendToUser(
-            DatasetLoader<? extends Rating> datasetLoader,
+    public <RatingType extends Rating> Collection<Recommendation> recommendToUser(
+            DatasetLoader<RatingType> datasetLoader,
             Number model,
             long idUser,
             Set<Long> candidateItems) throws UserNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset {
@@ -106,7 +108,7 @@ public class Recommender_DatasetProperties extends CollaborativeRecommender<Numb
         Map<Long, Rating> userRatingsInRecommendation = new TreeMap<>();
         Map<Long, Rating> userRatingsInTraining = new TreeMap<>();
 
-        RatingsDataset<? extends Rating> ratingsDataset = datasetLoader.getRatingsDataset();
+        RatingsDataset<RatingType> ratingsDataset = datasetLoader.getRatingsDataset();
 
         if (datasetLoader.getRatingsDataset().allUsers().contains(idUser)) {
             userRatingsInRecommendation.putAll(ratingsDataset.getUserRatingsRated(idUser));

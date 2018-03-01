@@ -65,8 +65,8 @@ public class WilsonScoreLowerBound extends NonPersonalisedRecommender<MeanRating
     }
 
     @Override
-    public MeanRatingRSModel buildRecommendationModel(DatasetLoader<? extends Rating> datasetLoader) throws CannotLoadRatingsDataset, CannotLoadContentDataset, CannotLoadUsersDataset {
-        final RatingsDataset<? extends Rating> ratingsDataset = datasetLoader.getRatingsDataset();
+    public <RatingType extends Rating> MeanRatingRSModel buildRecommendationModel(DatasetLoader<RatingType> datasetLoader) throws CannotLoadRatingsDataset, CannotLoadContentDataset, CannotLoadUsersDataset {
+        final RatingsDataset<RatingType> ratingsDataset = datasetLoader.getRatingsDataset();
 
         final double confidence = 0.95;
         final double ratingThreshold = 4;
@@ -78,7 +78,7 @@ public class WilsonScoreLowerBound extends NonPersonalisedRecommender<MeanRating
 
         for (Item item : datasetLoader.getContentDataset()) {
             try {
-                Map<Long, ? extends Rating> itemRatings = ratingsDataset.getItemRatingsRated(item.getId());
+                Map<Long, RatingType> itemRatings = ratingsDataset.getItemRatingsRated(item.getId());
 
                 double numRatings = 0;
                 double positiveRatings = 0;
@@ -122,8 +122,8 @@ public class WilsonScoreLowerBound extends NonPersonalisedRecommender<MeanRating
     }
 
     @Override
-    public Collection<Recommendation> recommendOnly(
-            DatasetLoader<? extends Rating> datasetLoader,
+    public <RatingType extends Rating> Collection<Recommendation> recommendOnly(
+            DatasetLoader<RatingType> datasetLoader,
             MeanRatingRSModel model,
             Collection<Long> candidateItems) throws ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset {
 
@@ -153,13 +153,22 @@ public class WilsonScoreLowerBound extends NonPersonalisedRecommender<MeanRating
     }
 
     @Override
-    public MeanRatingRSModel loadRecommendationModel(DatabasePersistence databasePersistence, Collection<Long> users, Collection<Long> items, DatasetLoader<? extends Rating> datasetLoader) throws FailureInPersistence {
+    public <RatingType extends Rating> MeanRatingRSModel loadRecommendationModel(
+            DatabasePersistence databasePersistence,
+            Collection<Long> users, Collection<Long> items,
+            DatasetLoader<RatingType> datasetLoader
+    ) throws FailureInPersistence {
+
         DAOMeanRatingProfile dAOMeanRatingProfile = new DAOMeanRatingProfile();
         return dAOMeanRatingProfile.loadModel(databasePersistence, users, items, datasetLoader);
     }
 
     @Override
-    public void saveRecommendationModel(DatabasePersistence databasePersistence, MeanRatingRSModel model) throws FailureInPersistence {
+    public void saveRecommendationModel(
+            DatabasePersistence databasePersistence,
+            MeanRatingRSModel model
+    ) throws FailureInPersistence {
+
         DAOMeanRatingProfile dAOMeanRatingProfile = new DAOMeanRatingProfile();
         dAOMeanRatingProfile.saveModel(databasePersistence, model);
     }

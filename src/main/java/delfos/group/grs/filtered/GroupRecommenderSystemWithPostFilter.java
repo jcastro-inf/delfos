@@ -136,8 +136,12 @@ public class GroupRecommenderSystemWithPostFilter extends GroupRecommenderSystem
     }
 
     @Override
-    public SingleRecommendationModel buildRecommendationModel(DatasetLoader<? extends Rating> datasetLoader) throws CannotLoadRatingsDataset, CannotLoadContentDataset {
-        Object build = getRecommenderSystem().buildRecommendationModel(datasetLoader);
+    public <RatingType extends Rating> SingleRecommendationModel buildRecommendationModel(
+            DatasetLoader<RatingType> datasetLoader
+    ) throws CannotLoadRatingsDataset, CannotLoadContentDataset {
+
+        RecommenderSystem<?> recommenderSystem = getRecommenderSystem();
+        Object build = recommenderSystem.buildRecommendationModel(datasetLoader);
         return new SingleRecommendationModel(build);
     }
 
@@ -230,8 +234,8 @@ public class GroupRecommenderSystemWithPostFilter extends GroupRecommenderSystem
         return ret;
     }
 
-    private RecommenderSystem<? extends Rating> getRecommenderSystem() {
-        return (RecommenderSystem) getParameterValue(RECOMMENDER_SYSTEM);
+    private <RSModel> RecommenderSystem<RSModel> getRecommenderSystem() {
+        return (RecommenderSystem<RSModel>) getParameterValue(RECOMMENDER_SYSTEM);
     }
 
     private GroupRatingsFilter getFilter() {

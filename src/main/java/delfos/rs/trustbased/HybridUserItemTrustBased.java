@@ -70,7 +70,7 @@ public class HybridUserItemTrustBased extends CollaborativeRecommender<HybridUse
     }
 
     @Override
-    public HybridUserItemTrustBasedModel buildRecommendationModel(DatasetLoader<? extends Rating> datasetLoader) throws CannotLoadRatingsDataset {
+    public <RatingType extends Rating> HybridUserItemTrustBasedModel buildRecommendationModel(DatasetLoader<RatingType> datasetLoader) throws CannotLoadRatingsDataset {
         //User trust module computations
         HybridUserItemTrustBasedModel.UserBasedTrustModuleModel userModel = buildUserModel(datasetLoader);
         //Item trust module computations
@@ -80,8 +80,8 @@ public class HybridUserItemTrustBased extends CollaborativeRecommender<HybridUse
     }
 
     @Override
-    public Collection<Recommendation> recommendToUser(
-            DatasetLoader<? extends Rating> datasetLoader,
+    public <RatingType extends Rating> Collection<Recommendation> recommendToUser(
+            DatasetLoader<RatingType> datasetLoader,
             HybridUserItemTrustBasedModel model, long idUser,
             Set<Long> candidateItems)
             throws UserNotFound, CannotLoadRatingsDataset {
@@ -148,7 +148,7 @@ public class HybridUserItemTrustBased extends CollaborativeRecommender<HybridUse
         return ret;
     }
 
-    private HybridUserItemTrustBasedModel.UserBasedTrustModuleModel buildUserModel(DatasetLoader<? extends Rating> datasetLoader) throws CannotLoadRatingsDataset {
+    private <RatingType extends Rating> HybridUserItemTrustBasedModel.UserBasedTrustModuleModel buildUserModel(DatasetLoader<RatingType> datasetLoader) throws CannotLoadRatingsDataset {
 
         ShambourLu_UserBasedImplicitTrustComputation implicitTrustComputation = new ShambourLu_UserBasedImplicitTrustComputation(getPropageteUsersTrustValue());
 
@@ -161,7 +161,7 @@ public class HybridUserItemTrustBased extends CollaborativeRecommender<HybridUse
 
         WeightedGraph<Long> usersTrust = implicitTrustComputation.computeTrustValues(datasetLoader, datasetLoader.getRatingsDataset().allUsers());
 
-        RatingsDataset<? extends Rating> ratingsDataset = datasetLoader.getRatingsDataset();
+        RatingsDataset<RatingType> ratingsDataset = datasetLoader.getRatingsDataset();
 
         List<Long> users = new ArrayList<>(ratingsDataset.allUsers());
         List<Long> items = new ArrayList<>(ratingsDataset.allRatedItems());
@@ -234,7 +234,7 @@ public class HybridUserItemTrustBased extends CollaborativeRecommender<HybridUse
         return new HybridUserItemTrustBasedModel.UserBasedTrustModuleModel(usersNeighbours, usersReputation, usersTrust);
     }
 
-    private HybridUserItemTrustBasedModel.ItemBasedTrustModuleModel buildItemModel(DatasetLoader<? extends Rating> datasetLoader) throws CannotLoadRatingsDataset {
+    private <RatingType extends Rating> HybridUserItemTrustBasedModel.ItemBasedTrustModuleModel buildItemModel(DatasetLoader<RatingType> datasetLoader) throws CannotLoadRatingsDataset {
 
         ShambourLu_ItemBasedImplicitTrustComputation implicitTrustComputation = new ShambourLu_ItemBasedImplicitTrustComputation();
 
@@ -243,7 +243,7 @@ public class HybridUserItemTrustBased extends CollaborativeRecommender<HybridUse
         });
 
         WeightedGraph<Long> itemBasedTrust = implicitTrustComputation.computeTrustValues(datasetLoader, datasetLoader.getRatingsDataset().allRatedItems());
-        RatingsDataset<? extends Rating> ratingsDataset = datasetLoader.getRatingsDataset();
+        RatingsDataset<RatingType> ratingsDataset = datasetLoader.getRatingsDataset();
 
         List<Long> users = new ArrayList<>(ratingsDataset.allUsers());
         List<Long> items = new ArrayList<>(ratingsDataset.allRatedItems());
@@ -261,7 +261,7 @@ public class HybridUserItemTrustBased extends CollaborativeRecommender<HybridUse
                 itemReputation.put(idUser, new TreeMap<>());
 
                 try {
-                    Map<Long, ? extends Rating> userRatings = ratingsDataset.getUserRatingsRated(idUser);
+                    Map<Long, RatingType> userRatings = ratingsDataset.getUserRatingsRated(idUser);
 
                     for (long idItem : userRatings.keySet()) {
                         double numerador = 0;
@@ -328,13 +328,13 @@ public class HybridUserItemTrustBased extends CollaborativeRecommender<HybridUse
         return new HybridUserItemTrustBasedModel.ItemBasedTrustModuleModel(itemBasedTrust, itemReputation, itemsNeighbours);
     }
 
-    public Number itemPrediction(
-            RatingsDataset<? extends Rating> ratingsDataset,
+    public <RatingType extends Rating> Number itemPrediction(
+            RatingsDataset<RatingType> ratingsDataset,
             HybridUserItemTrustBasedModel.ItemBasedTrustModuleModel itemBasedTrustModuleModel,
             long idUser,
             long idItem) throws UserNotFound, ItemNotFound {
 
-        Map<Long, ? extends Rating> userRatings = ratingsDataset.getUserRatingsRated(idUser);
+        Map<Long, RatingType> userRatings = ratingsDataset.getUserRatingsRated(idUser);
         double mediaItem = ratingsDataset.getMeanRatingItem(idItem);
 
         Global.showln("USER " + idUser + " ITEM " + idItem + " (Item prediction)");
@@ -401,8 +401,8 @@ public class HybridUserItemTrustBased extends CollaborativeRecommender<HybridUse
         }
     }
 
-    public Number userPrediction(
-            RatingsDataset<? extends Rating> ratingsDataset,
+    public <RatingType extends Rating> Number userPrediction(
+            RatingsDataset<RatingType> ratingsDataset,
             HybridUserItemTrustBasedModel.UserBasedTrustModuleModel userBasedTrustModuleModel,
             long idUser,
             long idItem)
@@ -419,7 +419,7 @@ public class HybridUserItemTrustBased extends CollaborativeRecommender<HybridUse
         for (Neighbor userNeighbor : usersNeighbours.get(idUser)) {
             double neighbourMeanRating;
             long idUserNeighbour = userNeighbor.getIdNeighbor();
-            Map<Long, ? extends Rating> neighbourRatings;
+            Map<Long, RatingType> neighbourRatings;
             try {
                 neighbourRatings = ratingsDataset.getUserRatingsRated(idUserNeighbour);
 

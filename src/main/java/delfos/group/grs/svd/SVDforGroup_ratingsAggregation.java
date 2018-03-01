@@ -99,7 +99,7 @@ public class SVDforGroup_ratingsAggregation extends GroupRecommenderSystemAdapte
     }
 
     @Override
-    public TryThisAtHomeSVDModel buildRecommendationModel(DatasetLoader<? extends Rating> datasetLoader) throws CannotLoadRatingsDataset, CannotLoadContentDataset {
+    public <RatingType extends Rating> TryThisAtHomeSVDModel buildRecommendationModel(DatasetLoader<RatingType> datasetLoader) throws CannotLoadRatingsDataset, CannotLoadContentDataset {
         return singleUserSR.buildRecommendationModel(datasetLoader);
     }
 

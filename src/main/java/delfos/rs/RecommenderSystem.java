@@ -67,8 +67,8 @@ public interface RecommenderSystem<RecommendationModel>
      * @throws NotEnoughtUserInformation
      */
     @Deprecated
-    public Collection<Recommendation> recommendToUser(
-            DatasetLoader<? extends Rating> dataset,
+    public <RatingType extends Rating> Collection<Recommendation> recommendToUser(
+            DatasetLoader<RatingType> dataset,
             RecommendationModel model,
             long idUser,
             Set<Long> candidateItems)
@@ -92,6 +92,6 @@ public interface RecommenderSystem<RecommendationModel>
      * @param candidateItems Lista de productos que pueden ser recomendados al usuario.
      * @return Objeto con los resultados de la recomendación.
      */
-    public RecommendationsToUser recommendToUser(
-            DatasetLoader<? extends Rating> dataset, RecommendationModel model, User user, Set<Item> candidateItems);
+    public <RatingType extends Rating> RecommendationsToUser recommendToUser(
+            DatasetLoader<RatingType> dataset, RecommendationModel model, User user, Set<Item> candidateItems);
 }

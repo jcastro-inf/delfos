@@ -35,6 +35,7 @@ import delfos.rs.contentbased.ContentBasedRecommender;
 import static delfos.rs.contentbased.vsm.ContentBasedVSMRS.SIMILARITY_MEASURE;
 import delfos.rs.contentbased.vsm.booleanvsm.BooleanFeaturesTransformation;
 import delfos.rs.contentbased.vsm.booleanvsm.SparseVector;
+import delfos.rs.contentbased.vsm.booleanvsm.basic.BasicBooleanCBRS;
 import delfos.rs.recommendation.Recommendation;
 import delfos.similaritymeasures.WeightedSimilarityMeasure;
 import java.util.ArrayList;
@@ -79,7 +80,7 @@ public class TfIdfCBRS extends ContentBasedRecommender<TfIdfCBRSModel, TfIdfCBRS
     }
 
     @Override
-    public TfIdfCBRSModel buildRecommendationModel(DatasetLoader<? extends Rating> datasetLoader) throws CannotLoadRatingsDataset, CannotLoadContentDataset {
+    public <RatingType extends Rating> TfIdfCBRSModel buildRecommendationModel(DatasetLoader<RatingType> datasetLoader) throws CannotLoadRatingsDataset, CannotLoadContentDataset {
         final ContentDataset contentDataset;
         if (datasetLoader instanceof ContentDatasetLoader) {
             ContentDatasetLoader contentDatasetLoader = (ContentDatasetLoader) datasetLoader;
@@ -119,7 +120,7 @@ public class TfIdfCBRS extends ContentBasedRecommender<TfIdfCBRSModel, TfIdfCBRS
         //Calculo la IUF.
         SparseVector<Long> iuf = booleanFeaturesTransformation.newProfile();
 
-        RatingsDataset<? extends Rating> ratingDataset = datasetLoader.getRatingsDataset();
+        RatingsDataset<RatingType> ratingDataset = datasetLoader.getRatingsDataset();
 
         i = 0;
         fireBuildingProgressChangedEvent("IUF calculation", 0, -1);
@@ -131,8 +132,8 @@ public class TfIdfCBRS extends ContentBasedRecommender<TfIdfCBRSModel, TfIdfCBRS
                 for (long idUser : ratingDataset.allUsers()) {
 
                     try {
-                        Map<Long, ? extends Rating> userRatingsRated = datasetLoader.getRatingsDataset().getUserRatingsRated(idUser);
-                        for (Map.Entry<Long, ? extends Rating> entry : userRatingsRated.entrySet()) {
+                        Map<Long, RatingType> userRatingsRated = datasetLoader.getRatingsDataset().getUserRatingsRated(idUser);
+                        for (Map.Entry<Long, RatingType> entry : userRatingsRated.entrySet()) {
 
                             long idItemRatedByUser = entry.getKey();
                             Rating rating = entry.getValue();
@@ -186,7 +187,7 @@ public class TfIdfCBRS extends ContentBasedRecommender<TfIdfCBRSModel, TfIdfCBRS
     }
 
     @Override
-    public TfIdfCBRSUserProfile makeUserProfile(long idUser, DatasetLoader<? extends Rating> datasetLoader, TfIdfCBRSModel model) throws CannotLoadContentDataset, CannotLoadContentDataset, UserNotFound {
+    public <RatingType extends Rating> TfIdfCBRSUserProfile makeUserProfile(long idUser, DatasetLoader<RatingType> datasetLoader, TfIdfCBRSModel model) throws CannotLoadContentDataset, CannotLoadContentDataset, UserNotFound {
         RelevanceCriteria relevanceCriteria = datasetLoader.getDefaultRelevanceCriteria();
 
         SparseVector<Long> userProfileValues = model.getBooleanFeaturesTransformation().newProfile();
@@ -194,10 +195,10 @@ public class TfIdfCBRS extends ContentBasedRecommender<TfIdfCBRSModel, TfIdfCBRS
 
         int numItemsPositivelyRated = 0;
 
-        RatingsDataset<? extends Rating> ratingDataset = datasetLoader.getRatingsDataset();
+        RatingsDataset<RatingType> ratingDataset = datasetLoader.getRatingsDataset();
         //Calculo del perfil
         userProfileValues.fill(0);
-        for (Map.Entry<Long, ? extends Rating> entry : ratingDataset.getUserRatingsRated(idUser).entrySet()) {
+        for (Map.Entry<Long, RatingType> entry : ratingDataset.getUserRatingsRated(idUser).entrySet()) {
             long idItem = entry.getKey();
             Rating rating = entry.getValue();
 
@@ -252,7 +253,13 @@ public class TfIdfCBRS extends ContentBasedRecommender<TfIdfCBRSModel, TfIdfCBRS
     }
 
     @Override
-    protected Collection<Recommendation> recommendOnly(DatasetLoader<? extends Rating> datasetLoader, TfIdfCBRSModel model, TfIdfCBRSUserProfile userProfile, Collection<Long> candidateItems) throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset {
+    protected <RatingType extends Rating> Collection<Recommendation> recommendOnly(
+            DatasetLoader<RatingType> datasetLoader,
+            TfIdfCBRSModel model,
+            TfIdfCBRSUserProfile userProfile,
+            Collection<Long> candidateItems
+    ) throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset {
+
         Collection<Recommendation> ret = new ArrayList<>(candidateItems.size());
 
         WeightedSimilarityMeasure weightedSimilarity = getSimilarityMeasure();

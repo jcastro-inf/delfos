@@ -143,7 +143,9 @@ public class CentralityWeightedAggregationGRS extends GroupRecommenderSystemAdap
     }
 
     @Override
-    public SingleRecommendationModel buildRecommendationModel(DatasetLoader<? extends Rating> datasetLoader) throws CannotLoadRatingsDataset, CannotLoadContentDataset {
+    public <RatingType extends Rating> SingleRecommendationModel buildRecommendationModel(
+            DatasetLoader<RatingType> datasetLoader
+    ) throws CannotLoadRatingsDataset, CannotLoadContentDataset {
 
         RecommendationModelBuildingProgressListener buildListener = this::fireBuildingProgressChangedEvent;
         getSingleUserRecommender().addRecommendationModelBuildingProgressListener(buildListener);
@@ -212,7 +214,12 @@ public class CentralityWeightedAggregationGRS extends GroupRecommenderSystemAdap
         return (CentralityConceptDefinition<Long>) getParameterValue(CENTRALITY_CONCEPT);
     }
 
-    public Map<Long, Number> getGroupRatings(DatasetLoader<? extends Rating> datasetLoader, GroupOfUsers groupOfUsers, WeightedGraphCalculation userTrustGenerator) throws UserNotFound, CannotLoadRatingsDataset {
+    public <RatingType extends Rating> Map<Long, Number> getGroupRatings(
+            DatasetLoader<RatingType> datasetLoader,
+            GroupOfUsers groupOfUsers,
+            WeightedGraphCalculation userTrustGenerator
+    ) throws UserNotFound, CannotLoadRatingsDataset {
+
         // Generate group social network.
         WeightedGraph<Long> userTrust = userTrustGenerator.computeTrustValues(datasetLoader, groupOfUsers.getIdMembers());
 
@@ -237,7 +244,7 @@ public class CentralityWeightedAggregationGRS extends GroupRecommenderSystemAdap
         Map<Long, Number> groupRatings = new TreeMap<>();
         {
             WeightedAggregationOperator aggregationOperator = new WeightedSumAggregation();
-            Map<Long, Map<Long, ? extends Rating>> groupMembersRatings = new TreeMap<>();
+            Map<Long, Map<Long, RatingType>> groupMembersRatings = new TreeMap<>();
             Set<Long> itemsRatedByGroup = new TreeSet<>();
             for (long idUser : groupOfUsers.getIdMembers()) {
                 groupMembersRatings.put(idUser, datasetLoader.getRatingsDataset().getUserRatingsRated(idUser));

@@ -129,7 +129,7 @@ public class AggregationOfIndividualRatings
     }
 
     @Override
-    public SingleRecommendationModel buildRecommendationModel(DatasetLoader<? extends Rating> datasetLoader) throws CannotLoadRatingsDataset, CannotLoadContentDataset {
+    public <RatingType extends Rating> SingleRecommendationModel buildRecommendationModel(DatasetLoader<RatingType> datasetLoader) throws CannotLoadRatingsDataset, CannotLoadContentDataset {
 
         RecommendationModelBuildingProgressListener buildListener = this::fireBuildingProgressChangedEvent;
         getSingleUserRecommender().addRecommendationModelBuildingProgressListener(buildListener);

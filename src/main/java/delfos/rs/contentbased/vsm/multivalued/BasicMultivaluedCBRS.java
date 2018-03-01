@@ -72,9 +72,11 @@ public class BasicMultivaluedCBRS extends ContentBasedRecommender<MultivaluedUse
     }
 
     @Override
-    public MultivaluedUserProfilesModel buildRecommendationModel(DatasetLoader<? extends Rating> datasetLoader) throws CannotLoadRatingsDataset, CannotLoadContentDataset {
+    public <RatingType extends Rating> MultivaluedUserProfilesModel buildRecommendationModel(
+            DatasetLoader<RatingType> datasetLoader
+    ) throws CannotLoadRatingsDataset, CannotLoadContentDataset {
 
-        final RatingsDataset<? extends Rating> ratingsDataset = datasetLoader.getRatingsDataset();
+        final RatingsDataset<RatingType> ratingsDataset = datasetLoader.getRatingsDataset();
         final ContentDataset contentDataset;
         if (datasetLoader instanceof ContentDatasetLoader) {
             ContentDatasetLoader contentDatasetLoader = (ContentDatasetLoader) datasetLoader;
@@ -96,7 +98,7 @@ public class BasicMultivaluedCBRS extends ContentBasedRecommender<MultivaluedUse
         for (long idUser : allUsers) {
             try {
                 BasicMultivaluedUserProfile profile = new BasicMultivaluedUserProfile(idUser);
-                Map<Long, ? extends Rating> userRated = ratingsDataset.getUserRatingsRated(idUser);
+                Map<Long, RatingType> userRated = ratingsDataset.getUserRatingsRated(idUser);
                 Set<Item> items = new LinkedHashSet<>();
                 //Calculo del perfil
                 for (long idItem : userRated.keySet()) {
@@ -129,9 +131,13 @@ public class BasicMultivaluedCBRS extends ContentBasedRecommender<MultivaluedUse
     }
 
     @Override
-    public MultivaluedUserProfile makeUserProfile(long idUser, DatasetLoader<? extends Rating> datasetLoader, MultivaluedUserProfilesModel model) throws CannotLoadContentDataset, CannotLoadContentDataset, UserNotFound {
+    public <RatingType extends Rating> MultivaluedUserProfile makeUserProfile(
+            long idUser,
+            DatasetLoader<RatingType> datasetLoader,
+            MultivaluedUserProfilesModel model
+    ) throws CannotLoadContentDataset, UserNotFound {
 
-        RatingsDataset<? extends Rating> ratingsDataset = datasetLoader.getRatingsDataset();
+        RatingsDataset<RatingType> ratingsDataset = datasetLoader.getRatingsDataset();
         final ContentDataset contentDataset;
         if (datasetLoader instanceof ContentDatasetLoader) {
             ContentDatasetLoader contentDatasetLoader = (ContentDatasetLoader) datasetLoader;
@@ -145,7 +151,7 @@ public class BasicMultivaluedCBRS extends ContentBasedRecommender<MultivaluedUse
 
         BasicMultivaluedUserProfile profile = new BasicMultivaluedUserProfile(idUser);
 
-        Map<Long, ? extends Rating> userRated = ratingsDataset.getUserRatingsRated(idUser);
+        Map<Long, RatingType> userRated = ratingsDataset.getUserRatingsRated(idUser);
         Set<Item> items = new LinkedHashSet<>();
         //Calculo del perfil
         for (long idItem : userRated.keySet()) {
@@ -168,7 +174,13 @@ public class BasicMultivaluedCBRS extends ContentBasedRecommender<MultivaluedUse
     }
 
     @Override
-    protected Collection<Recommendation> recommendOnly(DatasetLoader<? extends Rating> datasetLoader, MultivaluedUserProfilesModel model, MultivaluedUserProfile userProfile, Collection<Long> candidateItems) throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset {
+    protected <RatingType extends Rating> Collection<Recommendation> recommendOnly(
+            DatasetLoader<RatingType> datasetLoader,
+            MultivaluedUserProfilesModel model,
+            MultivaluedUserProfile userProfile,
+            Collection<Long> candidateItems
+    ) throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset {
+
         final ContentDataset contentDataset;
         if (datasetLoader instanceof ContentDatasetLoader) {
             ContentDatasetLoader contentDatasetLoader = (ContentDatasetLoader) datasetLoader;

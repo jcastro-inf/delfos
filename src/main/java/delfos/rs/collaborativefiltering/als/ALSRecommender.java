@@ -55,7 +55,9 @@ public class ALSRecommender extends CollaborativeRecommender<MatrixFactorization
     }
 
     @Override
-    public MatrixFactorizationModel buildRecommendationModel(DatasetLoader<? extends Rating> datasetLoader) throws CannotLoadRatingsDataset, CannotLoadContentDataset, CannotLoadUsersDataset {
+    public <RatingType extends Rating>  MatrixFactorizationModel buildRecommendationModel(
+            DatasetLoader<RatingType> datasetLoader
+    ) throws CannotLoadRatingsDataset, CannotLoadContentDataset, CannotLoadUsersDataset {
 
         int numIter = 1;
         int dimension = 5;
@@ -96,7 +98,7 @@ public class ALSRecommender extends CollaborativeRecommender<MatrixFactorization
 
             Map<User, List<Double>> trainedUserVectors = datasetLoader.getUsersDataset().parallelStream().collect(Collectors.toMap(user -> user,
                     (User user) -> {
-                        Map<Long, ? extends Rating> userRatings = datasetLoader.getRatingsDataset().getUserRatingsRated(user.getId());
+                        Map<Long, RatingType> userRatings = datasetLoader.getRatingsDataset().getUserRatingsRated(user.getId());
 
                         ObjectiveFunction objectiveFunction = new ObjectiveFunction((double[] pu) -> {
                             List<Double> userVector = Arrays.stream(pu).boxed().collect(Collectors.toList());
@@ -173,7 +175,7 @@ public class ALSRecommender extends CollaborativeRecommender<MatrixFactorization
             Map<Item, List<Double>> trainedItemVectors =
                     itemsWithRatings.parallelStream().collect(Collectors.toMap(item -> item,
                     item -> {
-                        Map<Long, ? extends Rating> itemRatings = datasetLoader.getRatingsDataset().getItemRatingsRated(item.getId());
+                        Map<Long, RatingType> itemRatings = datasetLoader.getRatingsDataset().getItemRatingsRated(item.getId());
 
                         ObjectiveFunction objectiveFunction = new ObjectiveFunction((double[] pu) -> {
                             List<Double> itemVector = Arrays.stream(pu).boxed().collect(Collectors.toList());
@@ -248,7 +250,11 @@ public class ALSRecommender extends CollaborativeRecommender<MatrixFactorization
         return (Long) getParameterValue(SEED);
     }
 
-    private double getModelError(Bias bias, DatasetLoader<? extends Rating> datasetLoader, MatrixFactorizationModel initialModel) {
+    private <RatingType extends Rating> double getModelError(
+            Bias bias,
+            DatasetLoader<RatingType> datasetLoader,
+            MatrixFactorizationModel initialModel) {
+
         return datasetLoader.getUsersDataset().parallelStream().flatMap(user -> {
             return datasetLoader.getRatingsDataset().getUserRatingsRated(user.getId())
                     .values()
@@ -265,7 +271,11 @@ public class ALSRecommender extends CollaborativeRecommender<MatrixFactorization
     }
 
     @Override
-    public RecommendationsToUser recommendToUser(DatasetLoader<? extends Rating> dataset, MatrixFactorizationModel recommendationModel, User user, Set<Item> candidateItems) {
+    public <RatingType extends Rating> RecommendationsToUser recommendToUser(
+            DatasetLoader<RatingType> dataset,
+            MatrixFactorizationModel recommendationModel,
+            User user,
+            Set<Item> candidateItems) {
 
         List<Recommendation> recommendations = candidateItems.parallelStream().map(item -> {
             double predictRating = recommendationModel.predictRating(user, item);

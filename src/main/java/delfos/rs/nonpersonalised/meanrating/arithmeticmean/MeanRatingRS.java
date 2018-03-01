@@ -60,7 +60,7 @@ public class MeanRatingRS extends CollaborativeRecommender<MeanRatingRSModel> {
     }
 
     @Override
-    public MeanRatingRSModel buildRecommendationModel(DatasetLoader<? extends Rating> datasetLoader) throws CannotLoadRatingsDataset, CannotLoadRatingsDataset {
+    public <RatingType extends Rating> MeanRatingRSModel buildRecommendationModel(DatasetLoader<RatingType> datasetLoader) throws CannotLoadRatingsDataset, CannotLoadRatingsDataset {
 
         List<MeanRating> sortedMeanRatings
                 = datasetLoader.getContentDataset().parallelStream()
@@ -81,8 +81,8 @@ public class MeanRatingRS extends CollaborativeRecommender<MeanRatingRSModel> {
     }
 
     @Override
-    public Collection<Recommendation> recommendToUser(
-            DatasetLoader<? extends Rating> datasetLoader,
+    public <RatingType extends Rating> Collection<Recommendation> recommendToUser(
+            DatasetLoader<RatingType> datasetLoader,
             MeanRatingRSModel model,
             long idUser,
             Set<Long> candidateItems)
@@ -102,7 +102,7 @@ public class MeanRatingRS extends CollaborativeRecommender<MeanRatingRSModel> {
     }
 
     @Override
-    public MeanRatingRSModel loadRecommendationModel(DatabasePersistence databasePersistence, Collection<Long> users, Collection<Long> items, DatasetLoader<? extends Rating> datasetLoader) throws FailureInPersistence {
+    public <RatingType extends Rating> MeanRatingRSModel loadRecommendationModel(DatabasePersistence databasePersistence, Collection<Long> users, Collection<Long> items, DatasetLoader<RatingType> datasetLoader) throws FailureInPersistence {
         DAOMeanRatingProfile dAOMeanRatingProfile = new DAOMeanRatingProfile();
         return dAOMeanRatingProfile.loadModel(databasePersistence, users, items, datasetLoader);
     }

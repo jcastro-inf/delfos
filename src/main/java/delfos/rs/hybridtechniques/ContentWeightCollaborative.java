@@ -78,7 +78,7 @@ public class ContentWeightCollaborative extends HybridRecommender<HybridRecommen
     }
 
     @Override
-    public HybridRecommendationModel buildRecommendationModel(DatasetLoader<? extends Rating> datasetLoader) throws CannotLoadRatingsDataset, CannotLoadContentDataset, CannotLoadUsersDataset {
+    public <RatingType extends Rating> HybridRecommendationModel buildRecommendationModel(DatasetLoader<RatingType> datasetLoader) throws CannotLoadRatingsDataset, CannotLoadContentDataset, CannotLoadUsersDataset {
         ContentBasedRecommender<Object, Object> contentBasedAlgorithm = (ContentBasedRecommender<Object, Object>) getParameterValue(CONTENT_BASED_TECHNIQUE);
 
         RecommendationModelBuildingProgressListener contentBasedListener = (String actualJob, int percent, long remainingSeconds) -> {
@@ -98,7 +98,7 @@ public class ContentWeightCollaborative extends HybridRecommender<HybridRecommen
     }
 
     @Override
-    public Collection<Recommendation> recommendToUser(DatasetLoader<? extends Rating> datasetLoader, HybridRecommendationModel model, long idUser, Set<Long> candidateItems) throws UserNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset, ItemNotFound, NotEnoughtUserInformation {
+    public <RatingType extends Rating> Collection<Recommendation> recommendToUser(DatasetLoader<RatingType> datasetLoader, HybridRecommendationModel model, long idUser, Set<Long> candidateItems) throws UserNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset, ItemNotFound, NotEnoughtUserInformation {
 
         ContentBasedRecommender<Object, Object> contentBasedAlgorithm = (ContentBasedRecommender<Object, Object>) getParameterValue(CONTENT_BASED_TECHNIQUE);
         CollaborativeRecommender<Object> collaborativeFilteringTechnique = (CollaborativeRecommender<Object>) getParameterValue(COLLABORATIVE_TECHNIQUE);

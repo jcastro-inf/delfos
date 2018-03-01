@@ -70,8 +70,8 @@ public abstract class RecommenderSystemAdapter<RecommendationModel>
     }
 
     @Override
-    public RecommendationsToUser recommendToUser(
-            DatasetLoader<? extends Rating> dataset,
+    public <RatingType extends Rating> RecommendationsToUser recommendToUser(
+            DatasetLoader<RatingType> dataset,
             RecommendationModel recommendationModel, User user, Set<Item> candidateItems) {
 
         try {
@@ -99,7 +99,7 @@ public abstract class RecommenderSystemAdapter<RecommendationModel>
 
     @Deprecated
     @Override
-    public Collection<Recommendation> recommendToUser(DatasetLoader<? extends Rating> dataset,
+    public <RatingType extends Rating> Collection<Recommendation> recommendToUser(DatasetLoader<RatingType> dataset,
                                                       RecommendationModel model,
                                                       long idUser, Set<Long> idItems) throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset, NotEnoughtUserInformation {
 

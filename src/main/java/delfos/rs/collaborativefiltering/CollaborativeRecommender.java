@@ -70,8 +70,8 @@ public abstract class CollaborativeRecommender<RecommendationModel>
     }
 
     @Override
-    public abstract RecommendationModel buildRecommendationModel(
-            DatasetLoader<? extends Rating> datasetLoader)
+    public abstract <RatingType extends Rating> RecommendationModel buildRecommendationModel(
+            DatasetLoader<RatingType> datasetLoader)
             throws CannotLoadRatingsDataset, CannotLoadContentDataset, CannotLoadUsersDataset;
 
     /**
@@ -82,7 +82,7 @@ public abstract class CollaborativeRecommender<RecommendationModel>
      * @param rating Predicción en bruto.
      * @return Predicción dentro del rango de valoración.
      */
-    public Number toRatingRange(DatasetLoader<? extends Rating> datasetLoader, Number rating) {
+    public <RatingType extends Rating> Number toRatingRange(DatasetLoader<RatingType> datasetLoader, Number rating) {
         try {
             if (rating.doubleValue() < datasetLoader.getRatingsDataset().getRatingsDomain().min().doubleValue()) {
                 return datasetLoader.getRatingsDataset().getRatingsDomain().min();
@@ -109,7 +109,7 @@ public abstract class CollaborativeRecommender<RecommendationModel>
      * @throws ItemNotFound Si no se encuenta el producto en los datasets.
      * @throws delfos.common.exceptions.ratings.NotEnoughtUserInformation
      */
-    public Number predictRating(DatasetLoader<? extends Rating> datasetLoader,
+    public <RatingType extends Rating> Number predictRating(DatasetLoader<RatingType> datasetLoader,
                                 RecommendationModel model, long idUser, long idItem)
             throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset, NotEnoughtUserInformation {
         if (Global.isVerboseAnnoying()) {

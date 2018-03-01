@@ -82,11 +82,11 @@ public abstract class ContentBasedRecommender<RecommendationModel, UserProfile> 
      * @throws
      * delfos.common.exceptions.ratings.NotEnoughtUserInformation
      */
-    protected abstract UserProfile makeUserProfile(long idUser, DatasetLoader<? extends Rating> datasetLoader, RecommendationModel model) throws CannotLoadRatingsDataset, CannotLoadContentDataset, UserNotFound, NotEnoughtUserInformation;
+    protected abstract <RatingType extends Rating> UserProfile makeUserProfile(long idUser, DatasetLoader<RatingType> datasetLoader, RecommendationModel model) throws CannotLoadRatingsDataset, CannotLoadContentDataset, UserNotFound, NotEnoughtUserInformation;
 
     @Override
-    public final Collection<Recommendation> recommendToUser(
-            DatasetLoader<? extends Rating> datasetLoader,
+    public final <RatingType extends Rating> Collection<Recommendation> recommendToUser(
+            DatasetLoader<RatingType> datasetLoader,
             RecommendationModel model,
             long idUser,
             Set<Long> candidateItems)
@@ -97,5 +97,5 @@ public abstract class ContentBasedRecommender<RecommendationModel, UserProfile> 
         return recommendOnly(datasetLoader, model, makeUserProfile, candidateItems);
     }
 
-    protected abstract Collection<Recommendation> recommendOnly(DatasetLoader<? extends Rating> datasetLoader, RecommendationModel model, UserProfile userProfile, Collection<Long> candidateItems) throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset;
+    protected abstract <RatingType extends Rating> Collection<Recommendation> recommendOnly(DatasetLoader<RatingType> datasetLoader, RecommendationModel model, UserProfile userProfile, Collection<Long> candidateItems) throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset;
 }

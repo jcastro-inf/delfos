@@ -37,15 +37,15 @@ import java.util.Collection;
  */
 public abstract class NonPersonalisedRecommender<RecommendationModel> extends GenericRecommenderSystemAdapter<RecommendationModel> {
 
-    public final Collection<Recommendation> recommendOnly(
-            DatasetLoader<? extends Rating> datasetLoader, RecommendationModel model,
+    public final <RatingType extends Rating> Collection<Recommendation> recommendOnly(
+            DatasetLoader<RatingType> datasetLoader, RecommendationModel model,
             long idUser, Collection<Long> candidateItems)
             throws ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset {
         return recommendOnly(datasetLoader, model, candidateItems);
     }
 
-    public abstract Collection<Recommendation> recommendOnly(
-            DatasetLoader<? extends Rating> datasetLoader,
+    public abstract <RatingType extends Rating> Collection<Recommendation> recommendOnly(
+            DatasetLoader<RatingType> datasetLoader,
             RecommendationModel model,
             Collection<Long> candidateItems) throws ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset;
 

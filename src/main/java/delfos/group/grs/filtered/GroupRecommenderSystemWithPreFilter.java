@@ -122,7 +122,7 @@ public class GroupRecommenderSystemWithPreFilter
     }
 
     @Override
-    public Object buildRecommendationModel(DatasetLoader<? extends Rating> datasetLoader) throws CannotLoadRatingsDataset, CannotLoadContentDataset {
+    public <RatingType extends Rating> Object buildRecommendationModel(DatasetLoader<RatingType> datasetLoader) throws CannotLoadRatingsDataset, CannotLoadContentDataset {
         RecommendationModelBuildingProgressListener buildListener = this::fireBuildingProgressChangedEvent;
 
         getGroupRecommenderSystem().addRecommendationModelBuildingProgressListener(buildListener);
@@ -172,7 +172,7 @@ public class GroupRecommenderSystemWithPreFilter
         return new GroupModelWithExplanation<>(new GroupModelRatingsPreFilter(filteredRatings, innerGRSGroupModel), new NestedExplanation<>("No explanation for '" + this.getName() + "' grs", explanation));
     }
 
-    public void checkFilteredRatings(DatasetLoader<? extends Rating> datasetLoader, GroupOfUsers groupOfUsers, Map<Long, Map<Long, Rating>> filteredRatings) {
+    public <RatingType extends Rating> void checkFilteredRatings(DatasetLoader<RatingType> datasetLoader, GroupOfUsers groupOfUsers, Map<Long, Map<Long, Rating>> filteredRatings) {
         Set<Long> usersWithoutRatingsDueToFiltering = new TreeSet<>();
 
         for (long idUser : groupOfUsers.getIdMembers()) {

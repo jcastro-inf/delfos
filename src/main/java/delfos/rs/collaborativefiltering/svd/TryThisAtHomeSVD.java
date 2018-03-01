@@ -151,12 +151,12 @@ public class TryThisAtHomeSVD
     }
 
     @Override
-    public TryThisAtHomeSVDModel buildRecommendationModel(DatasetLoader<? extends Rating> datasetLoader) throws CannotLoadRatingsDataset, CannotLoadRatingsDataset, CannotLoadContentDataset {
+    public <RatingType extends Rating> TryThisAtHomeSVDModel buildRecommendationModel(DatasetLoader<RatingType> datasetLoader) throws CannotLoadRatingsDataset, CannotLoadRatingsDataset, CannotLoadContentDataset {
 
         final double lrate = getLearningRate();
         final int numFeatures = (Integer) getParameterValue(NUM_FEATURES);
         final int numIterationsPerFeature = (Integer) getParameterValue(NUM_ITER_PER_FEATURE);
-        final RatingsDataset<? extends Rating> ratingsDataset = datasetLoader.getRatingsDataset();
+        final RatingsDataset<RatingType> ratingsDataset = datasetLoader.getRatingsDataset();
         final double Kvalue = getK();
 
         final double maxInitialisation = (double) Math.sqrt(ratingsDataset.getRatingsDomain().max().doubleValue() / numFeatures);
@@ -343,8 +343,8 @@ public class TryThisAtHomeSVD
      * @throws delfos.common.exceptions.dataset.users.UserNotFound
      * @throws delfos.common.exceptions.dataset.items.ItemNotFound
      */
-    protected final static double privatePredictRating(
-            DatasetLoader<? extends Rating> datasetLoadder,
+    protected final static <RatingType extends Rating> double privatePredictRating(
+            DatasetLoader<RatingType> datasetLoadder,
             TryThisAtHomeSVDModel model,
             long idUser,
             long idItem,
@@ -382,8 +382,8 @@ public class TryThisAtHomeSVD
     }
 
     @Override
-    public Collection<Recommendation> recommendToUser(
-            DatasetLoader<? extends Rating> datasetLoader,
+    public <RatingType extends Rating> Collection<Recommendation> recommendToUser(
+            DatasetLoader<RatingType> datasetLoader,
             TryThisAtHomeSVDModel model,
             long idUser,
             Set<Long> candidateItems)
@@ -466,11 +466,12 @@ public class TryThisAtHomeSVD
     }
 
     @Override
-    public TryThisAtHomeSVDModel loadRecommendationModel(
+    public <RatingType extends Rating> TryThisAtHomeSVDModel loadRecommendationModel(
             DatabasePersistence databasePersistence,
             Collection<Long> users,
-            Collection<Long> items, DatasetLoader<? extends Rating> datasetLoader)
-            throws FailureInPersistence {
+            Collection<Long> items,
+            DatasetLoader<RatingType> datasetLoader
+    ) throws FailureInPersistence {
         return new DAOTryThisAtHomeDatabaseModel().loadModel(databasePersistence, users, items, datasetLoader);
     }
 

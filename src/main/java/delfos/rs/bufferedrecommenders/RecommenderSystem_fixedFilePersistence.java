@@ -137,7 +137,7 @@ public class RecommenderSystem_fixedFilePersistence<RecommendationModel> extends
     }
 
     @Override
-    public RecommendationModel buildRecommendationModel(DatasetLoader<? extends Rating> datasetLoader) throws CannotLoadRatingsDataset, CannotLoadContentDataset, CannotLoadUsersDataset {
+    public <RatingType extends Rating> RecommendationModel buildRecommendationModel(DatasetLoader<RatingType> datasetLoader) throws CannotLoadRatingsDataset, CannotLoadContentDataset, CannotLoadUsersDataset {
 
         synchronized (exMut) {
 
@@ -193,7 +193,7 @@ public class RecommenderSystem_fixedFilePersistence<RecommendationModel> extends
     }
 
     @Override
-    public Collection<Recommendation> recommendToUser(DatasetLoader<? extends Rating> datasetLoader, RecommendationModel model, long idUser, java.util.Set<Long> candidateItems) throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset, NotEnoughtUserInformation {
+    public <RatingType extends Rating> Collection<Recommendation> recommendToUser(DatasetLoader<RatingType> datasetLoader, RecommendationModel model, long idUser, java.util.Set<Long> candidateItems) throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset, NotEnoughtUserInformation {
         Collection<Recommendation> recommendations;
 
         recommendations = getRecommenderSystem().recommendToUser(datasetLoader, model, idUser, candidateItems);

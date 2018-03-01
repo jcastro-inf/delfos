@@ -71,7 +71,7 @@ public class HybridAlternatingListRS extends HybridRecommender<HybridRecommendat
     }
 
     @Override
-    public HybridRecommendationModel buildRecommendationModel(DatasetLoader<? extends Rating> datasetLoader) throws CannotLoadRatingsDataset, CannotLoadContentDataset, CannotLoadUsersDataset {
+    public <RatingType extends Rating> HybridRecommendationModel buildRecommendationModel(DatasetLoader<RatingType> datasetLoader) throws CannotLoadRatingsDataset, CannotLoadContentDataset, CannotLoadUsersDataset {
         RecommenderSystem<Object> firstTechnique = (RecommenderSystem<Object>) getParameterValue(FIRST_TECHNIQUE);
         RecommendationModelBuildingProgressListener firstTechniqueListener = new RecommendationModelBuildingProgressListener() {
             @Override
@@ -96,8 +96,8 @@ public class HybridAlternatingListRS extends HybridRecommender<HybridRecommendat
     }
 
     @Override
-    public Collection<Recommendation> recommendToUser(
-            DatasetLoader<? extends Rating> datasetLoader,
+    public <RatingType extends Rating> Collection<Recommendation> recommendToUser(
+            DatasetLoader<RatingType> datasetLoader,
             HybridRecommendationModel model,
             long idUser,
             Set<Long> candidateItems)

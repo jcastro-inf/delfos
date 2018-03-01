@@ -71,8 +71,8 @@ public interface GenericRecommenderSystem<RecommendationModel>
      * @param datasetLoader Dataset que se utiliza para la construcción del modelo devuelto.
      * @return Modelo de recomendación calculado a partir del dataset especificado.
      */
-    public RecommendationModel buildRecommendationModel(
-            DatasetLoader<? extends Rating> datasetLoader)
+    public <RatingType extends Rating> RecommendationModel buildRecommendationModel(
+            DatasetLoader<RatingType> datasetLoader)
             throws CannotLoadRatingsDataset, CannotLoadContentDataset, CannotLoadUsersDataset;
 
     public RecommendationModel loadRecommendationModel(
@@ -81,11 +81,11 @@ public interface GenericRecommenderSystem<RecommendationModel>
             Collection<Long> items)
             throws FailureInPersistence;
 
-    public RecommendationModel loadRecommendationModel(
+    public <RatingType extends Rating> RecommendationModel loadRecommendationModel(
             DatabasePersistence databasePersistence,
             Collection<Long> users,
             Collection<Long> items,
-            DatasetLoader<? extends Rating> datasetLoader)
+            DatasetLoader<RatingType> datasetLoader)
             throws FailureInPersistence;
 
     public void saveRecommendationModel(

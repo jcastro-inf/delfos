@@ -76,7 +76,8 @@ import java.util.TreeSet;
  * @version 2.1 9-Octubre-2013 Incorporación del método makeUserModel
  *
  */
-public class EntropyDependenceCBRS extends ContentBasedRecommender<EntropyDependenceCBRSModel, EntropyDependenceCBRSUserProfile> {
+public class EntropyDependenceCBRS
+        extends ContentBasedRecommender<EntropyDependenceCBRSModel, EntropyDependenceCBRSUserProfile> {
 
     private static final long serialVersionUID = -3387516993124229948L;
 
@@ -108,7 +109,9 @@ public class EntropyDependenceCBRS extends ContentBasedRecommender<EntropyDepend
     }
 
     @Override
-    public EntropyDependenceCBRSModel buildRecommendationModel(DatasetLoader<? extends Rating> datasetLoader) throws CannotLoadContentDataset {
+    public <RatingType extends Rating> EntropyDependenceCBRSModel buildRecommendationModel(
+            DatasetLoader<RatingType> datasetLoader
+    ) throws CannotLoadContentDataset {
 
         Global.showInfoMessage(new Date().toString() + "\tBuilding model");
 
@@ -187,9 +190,12 @@ public class EntropyDependenceCBRS extends ContentBasedRecommender<EntropyDepend
     }
 
     @Override
-    public EntropyDependenceCBRSUserProfile makeUserProfile(long idUser, DatasetLoader<? extends Rating> datasetLoader, EntropyDependenceCBRSModel model) throws CannotLoadContentDataset, CannotLoadContentDataset, UserNotFound, CannotLoadRatingsDataset, NotEnoughtUserInformation {
+    public <RatingType extends Rating> EntropyDependenceCBRSUserProfile makeUserProfile(
+            long idUser,
+            DatasetLoader<RatingType> datasetLoader,
+            EntropyDependenceCBRSModel model) throws CannotLoadContentDataset, UserNotFound, CannotLoadRatingsDataset, NotEnoughtUserInformation {
 
-        final RatingsDataset<? extends Rating> ratingsDataset = datasetLoader.getRatingsDataset();
+        final RatingsDataset<RatingType> ratingsDataset = datasetLoader.getRatingsDataset();
         final ContentDataset contentDataset;
         if (datasetLoader instanceof ContentDatasetLoader) {
             ContentDatasetLoader contentDatasetLoader = (ContentDatasetLoader) datasetLoader;
@@ -205,7 +211,7 @@ public class EntropyDependenceCBRS extends ContentBasedRecommender<EntropyDepend
 
         AggregationOperator condensationFormula_ = (AggregationOperator) getParameterValue(AGGREGATION_OPERATOR);
 
-        Map<Long, ? extends Rating> userRated = ratingsDataset.getUserRatingsRated(idUser);
+        Map<Long, RatingType> userRated = ratingsDataset.getUserRatingsRated(idUser);
         if (userRated.isEmpty()) {
             throw new NotEnoughtUserInformation("User " + idUser + " has no rated items.");
         }
@@ -334,7 +340,7 @@ public class EntropyDependenceCBRS extends ContentBasedRecommender<EntropyDepend
     }
 
     @Override
-    protected Collection<Recommendation> recommendOnly(DatasetLoader<? extends Rating> datasetLoader, EntropyDependenceCBRSModel model, EntropyDependenceCBRSUserProfile userProfile, Collection<Long> candidateItems) throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset {
+    protected <RatingType extends Rating> Collection<Recommendation> recommendOnly(DatasetLoader<RatingType> datasetLoader, EntropyDependenceCBRSModel model, EntropyDependenceCBRSUserProfile userProfile, Collection<Long> candidateItems) throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset {
         final ContentDataset contentDataset;
         if (datasetLoader instanceof ContentDatasetLoader) {
             ContentDatasetLoader contentDatasetLoader = (ContentDatasetLoader) datasetLoader;
@@ -424,7 +430,7 @@ public class EntropyDependenceCBRS extends ContentBasedRecommender<EntropyDepend
     }
 
     @Override
-    public EntropyDependenceCBRSModel loadRecommendationModel(DatabasePersistence databasePersistence, Collection<Long> users, Collection<Long> items, DatasetLoader<? extends Rating> datasetLoader) throws FailureInPersistence {
+    public <RatingType extends Rating> EntropyDependenceCBRSModel loadRecommendationModel(DatabasePersistence databasePersistence, Collection<Long> users, Collection<Long> items, DatasetLoader<RatingType> datasetLoader) throws FailureInPersistence {
         DAOEntropyDependenceCBRSModel dao = new DAOEntropyDependenceCBRSModel();
         return dao.loadModel(databasePersistence, users, items);
     }

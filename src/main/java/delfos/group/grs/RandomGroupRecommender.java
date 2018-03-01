@@ -52,8 +52,10 @@ public class RandomGroupRecommender
     }
 
     @Override
-    public RandomRecommendationModel<GroupOfUsers> buildRecommendationModel(DatasetLoader<? extends Rating> datasetLoader)
-            throws CannotLoadRatingsDataset, CannotLoadContentDataset {
+    public <RatingType extends Rating> RandomRecommendationModel<GroupOfUsers> buildRecommendationModel(
+            DatasetLoader<RatingType> datasetLoader
+    ) throws CannotLoadRatingsDataset, CannotLoadContentDataset {
+        
         return new RandomRecommendationModel(
                 (int) getSeedValue(),
                 datasetLoader.getRatingsDataset().getRatingsDomain().min(),

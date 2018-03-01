@@ -88,7 +88,7 @@ public class RecommenderSystem_cacheRecommendationModel<RecommendationModel> ext
     }
 
     @Override
-    public RecommendationModel buildRecommendationModel(DatasetLoader<? extends Rating> datasetLoader) throws CannotLoadRatingsDataset, CannotLoadContentDataset, CannotLoadUsersDataset {
+    public <RatingType extends Rating> RecommendationModel buildRecommendationModel(DatasetLoader<RatingType> datasetLoader) throws CannotLoadRatingsDataset, CannotLoadContentDataset, CannotLoadUsersDataset {
 
         final RecommenderSystem<Object> recommenderSystem = getRecommenderSystem();
         final int datasetHashCode = datasetLoader.getRatingsDataset().hashCode();
@@ -135,7 +135,9 @@ public class RecommenderSystem_cacheRecommendationModel<RecommendationModel> ext
         }
     }
 
-    public RecommendationModel actuallyBuildRecommendationModel(DatasetLoader<? extends Rating> datasetLoader, final RecommenderSystem<Object> recommenderSystem) throws CannotLoadRatingsDataset, RuntimeException {
+    public <RatingType extends Rating> RecommendationModel actuallyBuildRecommendationModel(
+            DatasetLoader<RatingType> datasetLoader,
+            final RecommenderSystem<Object> recommenderSystem) {
         RecommendationModel model;
         int ratingsDatasetHashCode = datasetLoader.getRatingsDataset().hashCode();
         String datasetLoaderAlias = datasetLoader.getAlias();
@@ -179,8 +181,8 @@ public class RecommenderSystem_cacheRecommendationModel<RecommendationModel> ext
     }
 
     @Override
-    public Collection<Recommendation> recommendToUser(
-            DatasetLoader<? extends Rating> datasetLoader,
+    public <RatingType extends Rating> Collection<Recommendation> recommendToUser(
+            DatasetLoader<RatingType> datasetLoader,
             RecommendationModel model,
             long idUser, java.util.Set<Long> candidateItems) throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset, NotEnoughtUserInformation {
         Collection<Recommendation> recommendations;
@@ -190,7 +192,7 @@ public class RecommenderSystem_cacheRecommendationModel<RecommendationModel> ext
     }
 
     /**
-     * Devuelve el valor del parámetro {@link RecommenderSystem_fixedFilePersistence#groupRecommenderSystem}.
+     * Devuelve el valor del parámetro {@link RecommenderSystem_cacheRecommendationModel#RECOMMENDER_SYSTEM}.
      *
      * @return the rs_withFilePersistence
      */

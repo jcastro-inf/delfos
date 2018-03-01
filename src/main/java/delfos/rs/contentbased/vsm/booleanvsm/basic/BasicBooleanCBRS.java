@@ -77,7 +77,9 @@ public class BasicBooleanCBRS extends ContentBasedRecommender<BasicBooleanCBRSMo
     }
 
     @Override
-    public BasicBooleanCBRSModel buildRecommendationModel(DatasetLoader<? extends Rating> datasetLoader) throws CannotLoadRatingsDataset, CannotLoadContentDataset {
+    public <RatingType extends Rating> BasicBooleanCBRSModel buildRecommendationModel(
+            DatasetLoader<RatingType> datasetLoader
+    ) throws CannotLoadRatingsDataset, CannotLoadContentDataset {
 
         final ContentDataset contentDataset;
         if (datasetLoader instanceof ContentDatasetLoader) {
@@ -114,12 +116,12 @@ public class BasicBooleanCBRS extends ContentBasedRecommender<BasicBooleanCBRSMo
     }
 
     @Override
-    protected Collection<Recommendation> recommendOnly(DatasetLoader<? extends Rating> datasetLoader,
+    protected <RatingType extends Rating> Collection<Recommendation> recommendOnly(
+            DatasetLoader<RatingType> datasetLoader,
             BasicBooleanCBRSModel model,
             SparseVector<Long> userProfile,
-            Collection<Long> candidateItems)
-            throws UserNotFound, ItemNotFound,
-            CannotLoadRatingsDataset, CannotLoadContentDataset {
+            Collection<Long> candidateItems
+    ) throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset {
         if (model == null) {
             throw new IllegalArgumentException("Recommendation model is null");
         }
@@ -143,20 +145,20 @@ public class BasicBooleanCBRS extends ContentBasedRecommender<BasicBooleanCBRSMo
     }
 
     @Override
-    protected SparseVector<Long> makeUserProfile(
+    protected <RatingType extends Rating> SparseVector<Long> makeUserProfile(
             long idUser,
-            DatasetLoader<? extends Rating> datasetLoader,
-            BasicBooleanCBRSModel model)
-            throws CannotLoadRatingsDataset, CannotLoadContentDataset, UserNotFound {
+            DatasetLoader<RatingType> datasetLoader,
+            BasicBooleanCBRSModel model
+    ) throws CannotLoadRatingsDataset, CannotLoadContentDataset, UserNotFound {
 
-        final RatingsDataset<? extends Rating> ratingsDataset = datasetLoader.getRatingsDataset();
+        final RatingsDataset<RatingType> ratingsDataset = datasetLoader.getRatingsDataset();
 
         SparseVector<Long> userProfile = model.getBooleanFeaturesTransformation().newProfile();
 
-        Map<Long, ? extends Rating> userRatingsRated = ratingsDataset.getUserRatingsRated(idUser);
+        Map<Long, RatingType> userRatingsRated = ratingsDataset.getUserRatingsRated(idUser);
 
         //Calculo del perfil
-        for (Map.Entry<Long, ? extends Rating> entry : userRatingsRated.entrySet()) {
+        for (Map.Entry<Long, RatingType> entry : userRatingsRated.entrySet()) {
             long idItem = entry.getKey();
             Rating rating = entry.getValue();
             SparseVector<Long> itemProfile = model.get(idItem);

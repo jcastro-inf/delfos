@@ -47,8 +47,11 @@ public class PositiveRatingPercent extends NonPersonalisedRecommender<Collection
     }
 
     @Override
-    public Collection<Recommendation> buildRecommendationModel(DatasetLoader<? extends Rating> datasetLoader) throws CannotLoadRatingsDataset, CannotLoadContentDataset, CannotLoadUsersDataset {
-        final RatingsDataset<? extends Rating> ratingsDataset = datasetLoader.getRatingsDataset();
+    public <RatingType extends Rating> Collection<Recommendation> buildRecommendationModel(
+            DatasetLoader<RatingType> datasetLoader)
+            throws CannotLoadRatingsDataset, CannotLoadContentDataset, CannotLoadUsersDataset {
+
+        final RatingsDataset<RatingType> ratingsDataset = datasetLoader.getRatingsDataset();
 
         final double ratingThreshold = 4;
         RelevanceCriteria relevanceCriteria = new RelevanceCriteria(ratingThreshold);
@@ -57,7 +60,7 @@ public class PositiveRatingPercent extends NonPersonalisedRecommender<Collection
 
         for (long idItem : ratingsDataset.allRatedItems()) {
             try {
-                Map<Long, ? extends Rating> itemRatings = ratingsDataset.getItemRatingsRated(idItem);
+                Map<Long, RatingType> itemRatings = ratingsDataset.getItemRatingsRated(idItem);
 
                 double numRatings = 0;
                 double positiveRatings = 0;
@@ -87,8 +90,11 @@ public class PositiveRatingPercent extends NonPersonalisedRecommender<Collection
     }
 
     @Override
-    public Collection<Recommendation> recommendOnly(DatasetLoader<? extends Rating> datasetLoader, Collection<Recommendation> model, Collection<Long> candidateItems)
-            throws ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset {
+    public <RatingType extends Rating> Collection<Recommendation> recommendOnly(
+            DatasetLoader<RatingType> datasetLoader,
+            Collection<Recommendation> model,
+            Collection<Long> candidateItems
+    ) throws ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset {
         Collection<Recommendation> recommendations = new ArrayList<>();
         model.stream()
                 .filter((recommendation) -> (candidateItems.contains(recommendation.getIdItem())))

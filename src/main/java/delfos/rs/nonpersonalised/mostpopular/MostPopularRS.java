@@ -48,11 +48,11 @@ public class MostPopularRS extends RecommenderSystemAdapter<Collection<Recommend
     }
 
     @Override
-    public Collection<Recommendation> buildRecommendationModel(DatasetLoader<? extends Rating> datasetLoader) throws CannotLoadRatingsDataset, CannotLoadContentDataset, CannotLoadUsersDataset {
+    public <RatingType extends Rating> Collection<Recommendation> buildRecommendationModel(DatasetLoader<RatingType> datasetLoader) throws CannotLoadRatingsDataset, CannotLoadContentDataset, CannotLoadUsersDataset {
 
         final double numUsers = datasetLoader.getRatingsDataset().allUsers().size();
         Collection<Recommendation> model = new ArrayList<>(datasetLoader.getRatingsDataset().allRatedItems().size());
-        RatingsDataset<? extends Rating> ratingDataset = datasetLoader.getRatingsDataset();
+        RatingsDataset<RatingType> ratingDataset = datasetLoader.getRatingsDataset();
         for (long idItem : ratingDataset.allRatedItems()) {
             try {
                 long numRatings = datasetLoader.getRatingsDataset().sizeOfItemRatings(idItem);
@@ -67,7 +67,13 @@ public class MostPopularRS extends RecommenderSystemAdapter<Collection<Recommend
     }
 
     @Override
-    public Collection<Recommendation> recommendToUser(DatasetLoader<? extends Rating> datasetLoader, Collection<Recommendation> model, long idUser, java.util.Set<Long> candidateItems) throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset {
+    public <RatingType extends Rating> Collection<Recommendation> recommendToUser(
+            DatasetLoader<RatingType> datasetLoader,
+            Collection<Recommendation> model,
+            long idUser,
+            java.util.Set<Long> candidateItems
+    ) throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset {
+
         Collection<Recommendation> ret = new ArrayList<>(candidateItems.size());
 
         Set<Long> added = new TreeSet<>();

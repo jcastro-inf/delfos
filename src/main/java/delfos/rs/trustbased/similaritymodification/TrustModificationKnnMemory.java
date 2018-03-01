@@ -113,13 +113,13 @@ public class TrustModificationKnnMemory extends KnnCollaborativeRecommender<Obje
     }
 
     @Override
-    public Object buildRecommendationModel(DatasetLoader<? extends Rating> datasetLoader) {
+    public <RatingType extends Rating> Object buildRecommendationModel(DatasetLoader<RatingType> datasetLoader) {
         //No se necesitan perfiles porque se examina la base de datos directamente
         return 1l;
     }
 
     @Override
-    public Collection<Recommendation> recommendToUser(DatasetLoader<? extends Rating> datasetLoader, Object model, long idUser, java.util.Set<Long> candidateItems) throws UserNotFound {
+    public <RatingType extends Rating> Collection<Recommendation> recommendToUser(DatasetLoader<RatingType> datasetLoader, Object model, long idUser, java.util.Set<Long> candidateItems) throws UserNotFound {
 
         try {
             List<Neighbor> neighbors;
@@ -145,8 +145,8 @@ public class TrustModificationKnnMemory extends KnnCollaborativeRecommender<Obje
      * @return Lista de recomendaciones para el usuario, ordenadas por valoracion predicha.
      * @throws UserNotFound Si el usuario activo o alguno de los vecinos indicados no se encuentra en el dataset.
      */
-    public Collection<Recommendation> recommendWithNeighbors(
-            RatingsDataset<? extends Rating> ratingsDataset,
+    public <RatingType extends Rating> Collection<Recommendation> recommendWithNeighbors(
+            RatingsDataset<RatingType> ratingsDataset,
             Long idUser,
             List<Neighbor> vecinos,
             Collection<Long> candidateItems)
@@ -202,10 +202,10 @@ public class TrustModificationKnnMemory extends KnnCollaborativeRecommender<Obje
     }
 
     @Override
-    public Object loadRecommendationModel(
+    public <RatingType extends Rating> Object loadRecommendationModel(
             DatabasePersistence databasePersistence,
             Collection<Long> users,
-            Collection<Long> items, DatasetLoader<? extends Rating> datasetLoader) throws FailureInPersistence {
+            Collection<Long> items, DatasetLoader<RatingType> datasetLoader) throws FailureInPersistence {
         return 1l;
     }
 

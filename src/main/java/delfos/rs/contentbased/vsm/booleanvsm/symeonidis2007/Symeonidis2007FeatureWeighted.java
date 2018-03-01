@@ -94,7 +94,7 @@ public class Symeonidis2007FeatureWeighted extends ContentBasedRecommender<Symeo
     }
 
     @Override
-    protected Symeonidis2007UserProfile makeUserProfile(long idUser, DatasetLoader<? extends Rating> datasetLoader, Symeonidis2007Model model) throws CannotLoadRatingsDataset, CannotLoadContentDataset, UserNotFound {
+    protected <RatingType extends Rating> Symeonidis2007UserProfile makeUserProfile(long idUser, DatasetLoader<RatingType> datasetLoader, Symeonidis2007Model model) throws CannotLoadRatingsDataset, CannotLoadContentDataset, UserNotFound {
 
         SparseVector<Long> userFF = makeFFUserProfile(idUser, datasetLoader, model.getBooleanFeaturesTransformation());
 
@@ -107,7 +107,7 @@ public class Symeonidis2007FeatureWeighted extends ContentBasedRecommender<Symeo
         return new Symeonidis2007UserProfile(idUser, userProfileValuesMap);
     }
 
-    private SparseVector<Long> makeFFItemProfile(long idItem, DatasetLoader<? extends Rating> datasetLoader, BooleanFeaturesTransformation booleanFeaturesTransformation) throws ItemNotFound {
+    private <RatingType extends Rating> SparseVector<Long> makeFFItemProfile(long idItem, DatasetLoader<RatingType> datasetLoader, BooleanFeaturesTransformation booleanFeaturesTransformation) throws ItemNotFound {
         final ContentDataset contentDataset;
         if (datasetLoader instanceof ContentDatasetLoader) {
             ContentDatasetLoader contentDatasetLoader = (ContentDatasetLoader) datasetLoader;
@@ -134,15 +134,15 @@ public class Symeonidis2007FeatureWeighted extends ContentBasedRecommender<Symeo
 
     }
 
-    protected SparseVector<Long> makeFFUserProfile(long idUser, DatasetLoader<? extends Rating> datasetLoader, BooleanFeaturesTransformation booleanFeaturesTransformation) throws CannotLoadRatingsDataset, CannotLoadContentDataset, UserNotFound {
+    protected <RatingType extends Rating> SparseVector<Long> makeFFUserProfile(long idUser, DatasetLoader<RatingType> datasetLoader, BooleanFeaturesTransformation booleanFeaturesTransformation) throws CannotLoadRatingsDataset, CannotLoadContentDataset, UserNotFound {
 
         RelevanceCriteria relevanceCriteria = datasetLoader.getDefaultRelevanceCriteria();
 
         SparseVector<Long> userProfileValues = booleanFeaturesTransformation.newProfile();
 
-        RatingsDataset<? extends Rating> ratingsDataset = datasetLoader.getRatingsDataset();
+        RatingsDataset<RatingType> ratingsDataset = datasetLoader.getRatingsDataset();
         //Calculo del perfil, FF(u)
-        for (Map.Entry<Long, ? extends Rating> entry : ratingsDataset.getUserRatingsRated(idUser).entrySet()) {
+        for (Map.Entry<Long, RatingType> entry : ratingsDataset.getUserRatingsRated(idUser).entrySet()) {
             try {
                 Long idItem = entry.getKey();
                 Rating rating = entry.getValue();
@@ -174,9 +174,9 @@ public class Symeonidis2007FeatureWeighted extends ContentBasedRecommender<Symeo
     }
 
     @Override
-    public Symeonidis2007Model buildRecommendationModel(DatasetLoader<? extends Rating> datasetLoader) throws CannotLoadRatingsDataset, CannotLoadContentDataset {
+    public <RatingType extends Rating> Symeonidis2007Model buildRecommendationModel(DatasetLoader<RatingType> datasetLoader) throws CannotLoadRatingsDataset, CannotLoadContentDataset {
 
-        final RatingsDataset<? extends Rating> ratingsDataset = datasetLoader.getRatingsDataset();
+        final RatingsDataset<RatingType> ratingsDataset = datasetLoader.getRatingsDataset();
         final ContentDataset contentDataset;
         if (datasetLoader instanceof ContentDatasetLoader) {
             ContentDatasetLoader contentDatasetLoader = (ContentDatasetLoader) datasetLoader;
@@ -231,8 +231,8 @@ public class Symeonidis2007FeatureWeighted extends ContentBasedRecommender<Symeo
                     for (long idUser : ratingsDataset.allUsers()) {
 
                         try {
-                            Map<Long, ? extends Rating> userRatingsRated = ratingsDataset.getUserRatingsRated(idUser);
-                            for (Map.Entry<Long, ? extends Rating> entry : userRatingsRated.entrySet()) {
+                            Map<Long, RatingType> userRatingsRated = ratingsDataset.getUserRatingsRated(idUser);
+                            for (Map.Entry<Long, RatingType> entry : userRatingsRated.entrySet()) {
 
                                 long idItemRatedByUser = entry.getKey();
                                 Number rating = entry.getValue().getRatingValue().doubleValue();
@@ -288,8 +288,14 @@ public class Symeonidis2007FeatureWeighted extends ContentBasedRecommender<Symeo
     }
 
     @Override
-    protected Collection<Recommendation> recommendOnly(DatasetLoader<? extends Rating> datasetLoader, Symeonidis2007Model model, Symeonidis2007UserProfile userProfile, Collection<Long> candidateItems) throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset {
-        final RatingsDataset<? extends Rating> ratingsDataset = datasetLoader.getRatingsDataset();
+    protected <RatingType extends Rating> Collection<Recommendation> recommendOnly(
+            DatasetLoader<RatingType> datasetLoader,
+            Symeonidis2007Model model,
+            Symeonidis2007UserProfile userProfile,
+            Collection<Long> candidateItems
+    ) throws UserNotFound, ItemNotFound, CannotLoadRatingsDataset, CannotLoadContentDataset {
+
+        final RatingsDataset<RatingType> ratingsDataset = datasetLoader.getRatingsDataset();
         final ContentDataset contentDataset;
         if (datasetLoader instanceof ContentDatasetLoader) {
             ContentDatasetLoader contentDatasetLoader = (ContentDatasetLoader) datasetLoader;

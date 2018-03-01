@@ -134,7 +134,7 @@ public class GroupRecommenderSystem_fixedFilePersistence extends GroupRecommende
     }
 
     @Override
-    public Object buildRecommendationModel(DatasetLoader<? extends Rating> datasetLoader) throws CannotLoadRatingsDataset, CannotLoadContentDataset {
+    public <RatingType extends Rating> Object buildRecommendationModel(DatasetLoader<RatingType> datasetLoader) throws CannotLoadRatingsDataset, CannotLoadContentDataset {
 
         synchronized (exMut) {
             if (RecommendationModel == null) {

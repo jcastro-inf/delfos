@@ -51,7 +51,7 @@ public class MeanRatingGRS extends GroupRecommenderSystemAdapter<MeanRatingRSMod
     }
 
     @Override
-    public MeanRatingRSModel buildRecommendationModel(DatasetLoader<? extends Rating> datasetLoader) throws CannotLoadRatingsDataset, CannotLoadContentDataset {
+    public <RatingType extends Rating> MeanRatingRSModel buildRecommendationModel(DatasetLoader<RatingType> datasetLoader) throws CannotLoadRatingsDataset, CannotLoadContentDataset {
 
         List<MeanRating> meanRatings
                 = datasetLoader.getContentDataset().parallelStream()

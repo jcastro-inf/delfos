@@ -29,13 +29,13 @@ import java.util.TreeMap;
  * @version 1.0 13-Feb-2013
  * @version 2.0 06-Mar-2013 Mejorada la evaluación de la corrección.
  */
-public class GroupRecommender_TestValidationProtocols extends GroupRecommenderSystemAdapter<Object, Object> {
+public class GroupRecommender_TestValidationProtocols<RatingType extends Rating> extends GroupRecommenderSystemAdapter<Object, Object> {
 
     private static final long serialVersionUID = 45L;
     /**
      * Almacena el dataset usado en la fase de construcción del modelo general.
      */
-    protected RatingsDataset<? extends Rating> datasetEnBuild;
+    protected RatingsDataset<RatingType> datasetEnBuild;
     /**
      * Almacena el dataset usado en la fase de construcción del modelo del
      * grupo. Se almacenan varios porque puede cambiar.
@@ -52,8 +52,8 @@ public class GroupRecommender_TestValidationProtocols extends GroupRecommenderSy
     }
 
     @Override
-    public Object buildRecommendationModel(DatasetLoader<? extends Rating> datasetLoader) throws CannotLoadRatingsDataset {
-        datasetEnBuild = datasetLoader.getRatingsDataset();
+    public <RatingType2 extends Rating> Object buildRecommendationModel(DatasetLoader<RatingType2> datasetLoader) throws CannotLoadRatingsDataset {
+        datasetEnBuild = (RatingsDataset<RatingType>) datasetLoader.getRatingsDataset();
         Global.showInfoMessage("Built.\n");
         return null;
     }

@@ -88,13 +88,19 @@ public class KnnMemoryBasedCFRS extends KnnCollaborativeRecommender<KnnMemoryMod
     }
 
     @Override
-    public KnnMemoryModel buildRecommendationModel(DatasetLoader<? extends Rating> datasetLoader) {
+    public <RatingType extends Rating> KnnMemoryModel buildRecommendationModel(
+            DatasetLoader<RatingType> datasetLoader) {
         //No se necesitan perfiles porque se examina la base de datos directamente
         return new KnnMemoryModel();
     }
 
     @Override
-    public RecommendationsToUser recommendToUser(DatasetLoader<? extends Rating> datasetLoader, KnnMemoryModel model, User user, Set<Item> candidateItems) throws UserNotFound {
+    public <RatingType extends Rating> RecommendationsToUser recommendToUser(
+            DatasetLoader<RatingType> datasetLoader,
+            KnnMemoryModel model,
+            User user, Set<Item> candidateItems
+    ) throws UserNotFound {
+
         try {
             List<Neighbor> neighbors;
             neighbors = getNeighbors(datasetLoader, user, this);
@@ -152,8 +158,8 @@ public class KnnMemoryBasedCFRS extends KnnCollaborativeRecommender<KnnMemoryMod
      * @return Lista de recomendaciones para el usuario, ordenadas por valoracion predicha.
      * @throws UserNotFound Si el usuario activo o alguno de los vecinos indicados no se encuentra en el dataset.
      */
-    public Collection<Recommendation> recommendWithNeighbors(
-            RatingsDataset<? extends Rating> ratingsDataset,
+    public <RatingType extends Rating> Collection<Recommendation> recommendWithNeighbors(
+            RatingsDataset<RatingType> ratingsDataset,
             User user,
             List<Neighbor> neighbors,
             Collection<Item> candidateItems) {
@@ -176,7 +182,7 @@ public class KnnMemoryBasedCFRS extends KnnCollaborativeRecommender<KnnMemoryMod
 
         //Predicción de la valoración
         Collection<Recommendation> recommendations = new LinkedList<>();
-        Map<Long, Map<Long, ? extends Rating>> ratingsVecinos = neighborsWithPositiveSimilarityAndSelected
+        Map<Long, Map<Long, RatingType>> ratingsVecinos = neighborsWithPositiveSimilarityAndSelected
                 .parallelStream()
                 .collect(Collectors.toMap(
                         (neighbor -> neighbor.getIdNeighbor()),
@@ -206,7 +212,7 @@ public class KnnMemoryBasedCFRS extends KnnCollaborativeRecommender<KnnMemoryMod
     }
 
     @Override
-    public KnnMemoryModel loadRecommendationModel(DatabasePersistence databasePersistence, Collection<Long> users, Collection<Long> items, DatasetLoader<? extends Rating> datasetLoader) throws FailureInPersistence {
+    public <RatingType extends Rating> KnnMemoryModel loadRecommendationModel(DatabasePersistence databasePersistence, Collection<Long> users, Collection<Long> items, DatasetLoader<RatingType> datasetLoader) throws FailureInPersistence {
         return new KnnMemoryModel();
     }
 
@@ -232,8 +238,8 @@ public class KnnMemoryBasedCFRS extends KnnCollaborativeRecommender<KnnMemoryMod
     }
 
     @Override
-    public Collection<Recommendation> recommendToUser(
-            DatasetLoader<? extends Rating> datasetLoader,
+    public <RatingType extends Rating> Collection<Recommendation> recommendToUser(
+            DatasetLoader<RatingType> datasetLoader,
             KnnMemoryModel model,
             long idUser,
             Set<Long> candidateItems) throws UserNotFound {
@@ -270,8 +276,8 @@ public class KnnMemoryBasedCFRS extends KnnCollaborativeRecommender<KnnMemoryMod
      * @return Lista de recomendaciones para el usuario, ordenadas por valoracion predicha.
      * @throws UserNotFound Si el usuario activo o alguno de los vecinos indicados no se encuentra en el dataset.
      */
-    public static Collection<Recommendation> recommendWithNeighbors(
-            DatasetLoader<? extends Rating> datasetLoader,
+    public static <RatingType extends Rating> Collection<Recommendation> recommendWithNeighbors(
+            DatasetLoader<RatingType> datasetLoader,
             Long idUser,
             List<Neighbor> _neighborhood,
             int neighborhoodSize,
@@ -300,7 +306,7 @@ public class KnnMemoryBasedCFRS extends KnnCollaborativeRecommender<KnnMemoryMod
             Collection<MatchRating> match = new ArrayList<>();
             int numNeighborsUsed = 0;
             try {
-                Map<Long, ? extends Rating> itemRatingsRated = ratingsDataset.getItemRatingsRated(item.getId());
+                Map<Long, RatingType> itemRatingsRated = ratingsDataset.getItemRatingsRated(item.getId());
                 for (Neighbor neighbor : neighborhood) {
 
                     Rating rating = itemRatingsRated.get(neighbor.getIdNeighbor());

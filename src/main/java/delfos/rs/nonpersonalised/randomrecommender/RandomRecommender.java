@@ -42,7 +42,9 @@ import java.util.Set;
  * @version 1.0 Unknown date
  * @version 1.1 (28 de Febrero de 2013)
  */
-public class RandomRecommender extends CollaborativeRecommender<RandomRecommendationModel<Long>> implements SeedHolder {
+public class RandomRecommender 
+        extends CollaborativeRecommender<RandomRecommendationModel<Long>> 
+        implements SeedHolder {
 
     private static final long serialVersionUID = 1L;
 
@@ -58,7 +60,8 @@ public class RandomRecommender extends CollaborativeRecommender<RandomRecommenda
     }
 
     @Override
-    public RandomRecommendationModel<Long> buildRecommendationModel(DatasetLoader<? extends Rating> datasetLoader) throws CannotLoadRatingsDataset {
+    public <RatingType extends Rating> RandomRecommendationModel<Long> buildRecommendationModel(
+            DatasetLoader<RatingType> datasetLoader) throws CannotLoadRatingsDataset {
 
         Global.showln("Dataset Alias: " + datasetLoader.getAlias());
         Global.showln("#Ratings: \t" + datasetLoader.getRatingsDataset().getNumRatings());
@@ -78,8 +81,8 @@ public class RandomRecommender extends CollaborativeRecommender<RandomRecommenda
     }
 
     @Override
-    public Collection<Recommendation> recommendToUser(
-            DatasetLoader<? extends Rating> datasetLoader,
+    public <RatingType extends Rating> Collection<Recommendation> recommendToUser(
+            DatasetLoader<RatingType> datasetLoader,
             RandomRecommendationModel<Long> model,
             long idUser,
             Set<Long> candidateItems)

@@ -80,7 +80,7 @@ public class InterestLMSPredictor extends RecommenderSystemAdapter<InterestLMSPr
     }
 
     @Override
-    public InterestLMSPredictorModel buildRecommendationModel(DatasetLoader<? extends Rating> datasetLoader) throws CannotLoadRatingsDataset, CannotLoadContentDataset, CannotLoadUsersDataset {
+    public <RatingType extends Rating> InterestLMSPredictorModel buildRecommendationModel(DatasetLoader<RatingType> datasetLoader) throws CannotLoadRatingsDataset, CannotLoadContentDataset, CannotLoadUsersDataset {
         final ContentDataset contentDataset;
         if (datasetLoader instanceof ContentDatasetLoader) {
             ContentDatasetLoader contentDatasetLoader = (ContentDatasetLoader) datasetLoader;
@@ -98,7 +98,7 @@ public class InterestLMSPredictor extends RecommenderSystemAdapter<InterestLMSPr
 
         long numRatings = datasetLoader.getRatingsDataset().getNumRatings();
         int i = 0;
-        RatingsDataset<? extends Rating> ratingDataset = datasetLoader.getRatingsDataset();
+        RatingsDataset<RatingType> ratingDataset = datasetLoader.getRatingsDataset();
         for (Rating rating : ratingDataset) {
             try {
                 long idUser = rating.getIdUser();
@@ -121,8 +121,8 @@ public class InterestLMSPredictor extends RecommenderSystemAdapter<InterestLMSPr
     }
 
     @Override
-    public Collection<Recommendation> recommendToUser(
-            DatasetLoader<? extends Rating> datasetLoader,
+    public <RatingType extends Rating> Collection<Recommendation> recommendToUser(
+            DatasetLoader<RatingType> datasetLoader,
             InterestLMSPredictorModel model,
             long idUser,
             Set<Long> candidateItems)

@@ -95,8 +95,8 @@ public class PolyLens extends GroupRecommenderSystemAdapter<SingleRecommendation
     }
 
     @Override
-    public SingleRecommendationModel buildRecommendationModel(
-            DatasetLoader<? extends Rating> datasetLoader)
+    public <RatingType extends Rating> SingleRecommendationModel buildRecommendationModel(
+            DatasetLoader<RatingType> datasetLoader)
             throws CannotLoadRatingsDataset, CannotLoadContentDataset {
         return aggregationOfIndividualRecommendations.buildRecommendationModel(datasetLoader);
     }

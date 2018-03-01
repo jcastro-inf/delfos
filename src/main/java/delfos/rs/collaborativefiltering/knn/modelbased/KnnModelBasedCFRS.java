@@ -83,7 +83,10 @@ public class KnnModelBasedCFRS
     }
 
     @Override
-    public KnnModelBasedCFRSModel buildRecommendationModel(DatasetLoader<? extends Rating> datasetLoader) throws CannotLoadRatingsDataset {
+    public <RatingType extends Rating> KnnModelBasedCFRSModel buildRecommendationModel(
+            DatasetLoader<RatingType> datasetLoader
+    ) throws CannotLoadRatingsDataset {
+
         CollaborativeSimilarityMeasure similarityMeasure = getSimilarityMeasure();
         Integer relevanceFactorValue = isRelevanceFactorApplied() ? getRelevanceFactorValue() : null;
 
@@ -118,8 +121,8 @@ public class KnnModelBasedCFRS
     }
 
     @Override
-    public Collection<Recommendation> recommendToUser(
-            DatasetLoader<? extends Rating> datasetLoader,
+    public <RatingType extends Rating> Collection<Recommendation> recommendToUser(
+            DatasetLoader<RatingType> datasetLoader,
             KnnModelBasedCFRSModel model,
             long idUser,
             Set<Long> candidateItems)
@@ -128,7 +131,7 @@ public class KnnModelBasedCFRS
         PredictionTechnique prediction = (PredictionTechnique) getParameterValue(KnnModelBasedCFRS.PREDICTION_TECHNIQUE);
 
         Collection<Recommendation> recommendationList = new LinkedList<>();
-        Map<Long, ? extends Rating> userRated = datasetLoader.getRatingsDataset().getUserRatingsRated(idUser);
+        Map<Long, RatingType> userRated = datasetLoader.getRatingsDataset().getUserRatingsRated(idUser);
         if (userRated.isEmpty()) {
             return Collections.EMPTY_LIST;
         }
@@ -201,8 +204,8 @@ public class KnnModelBasedCFRS
      * @param relevanceFactorValue
      * @return A list wit a Neighbor object for each item in the dataset, sorted by similarity desc.
      */
-    public static List<Neighbor> getNeighbors(
-            DatasetLoader<? extends Rating> datasetLoader,
+    public static <RatingType extends Rating> List<Neighbor> getNeighbors(
+            DatasetLoader<RatingType> datasetLoader,
             Item item1,
             CollaborativeSimilarityMeasure similarityMeasure,
             Integer relevanceFactorValue
@@ -232,7 +235,13 @@ public class KnnModelBasedCFRS
     }
 
     @Override
-    public KnnModelBasedCFRSModel loadRecommendationModel(DatabasePersistence databasePersistence, Collection<Long> users, Collection<Long> items, DatasetLoader<? extends Rating> datasetLoader) throws FailureInPersistence {
+    public <RatingType extends Rating> KnnModelBasedCFRSModel loadRecommendationModel(
+            DatabasePersistence databasePersistence,
+            Collection<Long> users,
+            Collection<Long> items,
+            DatasetLoader<RatingType> datasetLoader
+    ) throws FailureInPersistence {
+
         DAOKnnModelBasedDatabaseModel dao = new DAOKnnModelBasedDatabaseModel();
         return dao.loadModel(databasePersistence, users, items);
     }

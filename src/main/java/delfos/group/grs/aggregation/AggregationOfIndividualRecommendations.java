@@ -234,7 +234,7 @@ public class AggregationOfIndividualRecommendations extends GroupRecommenderSyst
     }
 
     @Override
-    public SingleRecommendationModel buildRecommendationModel(DatasetLoader<? extends Rating> datasetLoader) throws CannotLoadRatingsDataset, CannotLoadContentDataset {
+    public <RatingType extends Rating> SingleRecommendationModel buildRecommendationModel(DatasetLoader<RatingType> datasetLoader) throws CannotLoadRatingsDataset, CannotLoadContentDataset {
         RecommendationModelBuildingProgressListener buildListener = (String actualJob, int percent, long remainingTime) -> {
             fireBuildingProgressChangedEvent(actualJob, percent, remainingTime);
         };
@@ -304,10 +304,10 @@ public class AggregationOfIndividualRecommendations extends GroupRecommenderSyst
         return recommendations;
     }
 
-    public static Collection<RecommendationsToUser>
+    public static <RSModel,RatingType extends Rating> Collection<RecommendationsToUser>
             performSingleUserRecommendations(Collection<Long> users,
-                    RecommenderSystem<? extends Object> singleUserRecommender,
-                    DatasetLoader<? extends Rating> datasetLoader,
+                    RecommenderSystem<RSModel> singleUserRecommender,
+                    DatasetLoader<RatingType> datasetLoader,
                     SingleRecommendationModel recommendationModel,
                     Set<Item> candidateItems) throws UserNotFound {
 
@@ -317,7 +317,9 @@ public class AggregationOfIndividualRecommendations extends GroupRecommenderSyst
                 .collect(Collectors.toList());
     }
 
-    public static Map<User, Collection<Recommendation>> performSingleUserRecommendationsOld(Collection<Long> users, RecommenderSystem<? extends Object> singleUserRecommender, DatasetLoader<? extends Rating> datasetLoader, SingleRecommendationModel recommendationModel, Set<Item> candidateItems) throws UserNotFound {
+    public static <RSModel, RatingType extends Rating> Map<User, Collection<Recommendation>> performSingleUserRecommendationsOld(
+            Collection<Long> users, RecommenderSystem<RSModel> singleUserRecommender,
+            DatasetLoader<RatingType> datasetLoader, SingleRecommendationModel recommendationModel, Set<Item> candidateItems) throws UserNotFound {
 
         return users.parallelStream()
                 .map(idUser -> new SingleUserRecommendationTask(
@@ -340,7 +342,7 @@ public class AggregationOfIndividualRecommendations extends GroupRecommenderSyst
     }
 
     @Override
-    public SingleRecommendationModel loadRecommendationModel(DatabasePersistence databasePersistence, Collection<Long> users, Collection<Long> items, DatasetLoader<? extends Rating> datasetLoader) throws FailureInPersistence {
+    public <RatingType extends Rating> SingleRecommendationModel loadRecommendationModel(DatabasePersistence databasePersistence, Collection<Long> users, Collection<Long> items, DatasetLoader<RatingType> datasetLoader) throws FailureInPersistence {
         RecommenderSystem singleUserRecommender = getSingleUserRecommender();
         Object loadRecommendationModel = singleUserRecommender.loadRecommendationModel(
                 databasePersistence,
