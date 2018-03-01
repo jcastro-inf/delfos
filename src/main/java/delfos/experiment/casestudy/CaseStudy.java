@@ -710,26 +710,25 @@ public class CaseStudy<RecommendationModel extends Object, RatingType extends Ra
             caseStudyCloned.aggregateResults = evaluationMeasures.stream().parallel().collect(Collectors.toMap(Function.identity(),
                     evaluationMeasure -> {
 
-                        List<Map<EvaluationMeasure, MeasureResult>> maps = caseStudyCloned.allLoopsResults.values().stream().
+                        List<Map<EvaluationMeasure, MeasureResult>> maps = caseStudyCloned.
+                                allLoopsResults.
+                                values().stream().
                                 flatMap(x -> x.values().stream()).
                                 collect(Collectors.toList());
+
+                        List<MeasureResult> allResultsThisMeasure = new ArrayList<>();
 
                         for(Map<EvaluationMeasure, MeasureResult> map: maps){
                             if(!map.containsKey(evaluationMeasure)){
                                 Global.showWarning(new IllegalStateException("Evaluation measure "+evaluationMeasure+" not found in map with keys: "+map.keySet()));
-                            }
-
-                            if(map.get(evaluationMeasure) == null){
+                            } else if(map.get(evaluationMeasure) == null){
                                 MeasureResult measureResult = map.get(evaluationMeasure);
                                 Global.showWarning(new IllegalStateException("Map contains a result with null EvaluationMeasure"));
+                            } else{
+                                MeasureResult measureResult = map.get(evaluationMeasure);
+                                allResultsThisMeasure.add(measureResult);
                             }
                         }
-
-                        List<MeasureResult> allResultsThisMeasure
-                        = caseStudyCloned.allLoopsResults.values().stream().parallel()
-                        .flatMap(resultsForThisExecution -> resultsForThisExecution.values().stream())
-                        .map(resultExecutionSplit -> resultExecutionSplit.get(evaluationMeasure))
-                        .collect(Collectors.toList());
 
                         MeasureResult resultsAggregated
                         = evaluationMeasure.agregateResults(allResultsThisMeasure);
