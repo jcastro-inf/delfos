@@ -718,6 +718,11 @@ public class CaseStudy<RecommendationModel extends Object, RatingType extends Ra
                             if(!map.containsKey(evaluationMeasure)){
                                 Global.showWarning(new IllegalStateException("Evaluation measure "+evaluationMeasure+" not found in map with keys: "+map.keySet()));
                             }
+
+                            if(map.get(evaluationMeasure) == null){
+                                MeasureResult measureResult = map.get(evaluationMeasure);
+                                Global.showWarning(new IllegalStateException("Map contains a result with null EvaluationMeasure");
+                            }
                         }
 
                         List<MeasureResult> allResultsThisMeasure
