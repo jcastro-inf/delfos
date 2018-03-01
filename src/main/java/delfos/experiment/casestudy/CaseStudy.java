@@ -728,11 +728,6 @@ public class CaseStudy<RecommendationModel extends Object, RatingType extends Ra
                                 MeasureResult measureResult = map.get(evaluationMeasure);
                                 allResultsThisMeasure.add(measureResult);
                             }
-
-                            if(map.get(evaluationMeasure) == null){
-                                MeasureResult measureResult = map.get(evaluationMeasure);
-                                Global.showWarning(new IllegalStateException("Map contains a result with null EvaluationMeasure");
-                            }
                         }
 
                         MeasureResult resultsAggregated
