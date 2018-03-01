@@ -19,6 +19,8 @@ package delfos.results;
 import delfos.results.evaluationmeasures.EvaluationMeasure;
 import org.jdom2.Element;
 
+import java.io.Serializable;
+
 /**
  * Almacena los resultados de una métrica de evaluación
  *
@@ -27,7 +29,7 @@ import org.jdom2.Element;
  * @version 1.0 Unknown date
  * @version 1.1 20-Mar-2013
  */
-public class MeasureResult {
+public class MeasureResult implements Serializable{
 
     private final double value;
     private final EvaluationMeasure evaluationMeasure;
