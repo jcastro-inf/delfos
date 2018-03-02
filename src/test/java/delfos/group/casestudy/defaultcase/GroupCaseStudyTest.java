@@ -81,7 +81,7 @@ public class GroupCaseStudyTest {
     }
 
     private void execute() {
-        new TuringPreparator().executeAllExperimentsInDirectory(EXPERIMENT_DIRECTORY, 20);
+        new TuringPreparator().executeAllGroupExperimentsInDirectory(EXPERIMENT_DIRECTORY, 20);
     }
 
 }

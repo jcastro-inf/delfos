@@ -88,7 +88,7 @@ public class XMLJoinTest {
         FileUtilities.deleteDirectoryRecursive(experimentDirectory);
         if (!experimentDirectory.exists()) {
             createCaseStudyXML();
-            new TuringPreparator(true).executeAllExperimentsInDirectory(experimentDirectory, 1);
+            new TuringPreparator(true).executeAllGroupExperimentsInDirectory(experimentDirectory, 1);
         }
 
         Set<String> filterMeasures = Collections.EMPTY_SET;

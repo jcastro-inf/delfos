@@ -143,7 +143,7 @@ public class TuringPreparator implements ExperimentPreparator {
         }
     }
 
-    public void executeAllExperimentsInDirectory(File directory) {
+    public void executeAllGroupExperimentsInDirectory(File directory) {
         List<File> experimentsToBeExecuted = listFiles(directory);
 
         Collections.shuffle(experimentsToBeExecuted, getRandomToShuffleExperiments());
@@ -168,7 +168,7 @@ public class TuringPreparator implements ExperimentPreparator {
         });
     }
 
-    public void executeAllExperimentsInDirectory(File directory, int numExec) {
+    public void executeAllGroupExperimentsInDirectory(File directory, int numExec) {
         List<File> experimentsToBeExecuted = listFiles(directory);
 
         Collections.shuffle(experimentsToBeExecuted, getRandomToShuffleExperiments());
@@ -210,10 +210,10 @@ public class TuringPreparator implements ExperimentPreparator {
         Stream<File> stream = parallel ? experimentsToBeExecuted.parallelStream() : experimentsToBeExecuted.stream();
         stream.forEach((singleExperimentDirectory) -> {
             String[] args = {
-                ExecuteGroupXML.SEED_PARAMETER, Integer.toString(seedValue),
-                ExecuteGroupXML.MODE_PARAMETER,
-                ExecuteGroupXML.XML_DIRECTORY, singleExperimentDirectory.getPath(),
-                ExecuteGroupXML.NUM_EXEC_PARAMETER, Integer.toString(numExec),
+                ExecuteXML.SEED_PARAMETER, Integer.toString(seedValue),
+                ExecuteXML.MODE_PARAMETER,
+                ExecuteXML.XML_DIRECTORY, singleExperimentDirectory.getPath(),
+                ExecuteXML.NUM_EXEC_PARAMETER, Integer.toString(numExec),
                 Constants.PRINT_FULL_XML,
                 Constants.RAW_DATA};
 

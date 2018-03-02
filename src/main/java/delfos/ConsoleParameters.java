@@ -37,7 +37,7 @@ public class ConsoleParameters {
     public static ConsoleParameters parseArguments(String... args) throws CommandLineParametersError {
         return new ConsoleParameters(args);
     }
-    
+
     /**
      * Función para inicializar este objeto a partir de los argumentos de la linea de comandos.
      *
