@@ -18,15 +18,7 @@ package delfos;
 
 import delfos.common.Global;
 import java.io.PrintStream;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeMap;
-import java.util.TreeSet;
+import java.util.*;
 
 /**
  * Guarda los parámetros definidos en una estructura para que sean fácilmente accesibles en el codigo de una aplicación
@@ -44,6 +36,17 @@ public class ConsoleParameters {
      */
     public static ConsoleParameters parseArguments(String... args) throws CommandLineParametersError {
         return new ConsoleParameters(args);
+    }
+    
+    /**
+     * Función para inicializar este objeto a partir de los argumentos de la linea de comandos.
+     *
+     * @param args Argumentos especificados en la llamada al programa.
+     * @return The console parameters object that is later used to access the command line.
+     * @throws delfos.CommandLineParametersError If a parameter has no values or a flag has values.
+     */
+    public static ConsoleParameters parseArguments(Collection<String> args) throws CommandLineParametersError {
+        return new ConsoleParameters(args.toArray(new String[0]));
     }
 
     /**
