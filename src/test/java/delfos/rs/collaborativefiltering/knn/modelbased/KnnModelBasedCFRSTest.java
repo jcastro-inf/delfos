@@ -127,7 +127,7 @@ public class KnnModelBasedCFRSTest {
                                 rs.setNeighborhoodSize(neighbourhoodSize);
                                 rs.setNeighborhoodSizeStore(neighbourhoodSizeStore);
 
-                                CaseStudy caseStudy = new CaseStudy(
+                                CaseStudy caseStudy = CaseStudy.create(
                                         rs,
                                         rsCourseraDataset,
                                         validationTechnique,
@@ -179,7 +179,7 @@ public class KnnModelBasedCFRSTest {
                                 rs.setNeighborhoodSize(neighbourhoodSize);
                                 rs.setNeighborhoodSizeStore(neighbourhoodSizeStore);
 
-                                CaseStudy caseStudy = new CaseStudy(
+                                CaseStudy caseStudy = CaseStudy.create(
                                         rs,
                                         ml100k,
                                         validationTechnique,

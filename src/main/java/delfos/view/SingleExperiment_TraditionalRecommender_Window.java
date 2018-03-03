@@ -308,7 +308,7 @@ public class SingleExperiment_TraditionalRecommender_Window extends JFrame imple
 
             PredictionProtocol pvt = (PredictionProtocol) comboPredictionValidationTechniques.getSelectedItem();
 
-            caseStudy = new CaseStudy(cbrs, mdc, validation, pvt, rc, ems, n);
+            caseStudy = CaseStudy.create(cbrs, mdc, validation, pvt, rc, ems, n);
             if (parallelExecution != null) {
                 parallelExecution.cancel(true);
             }

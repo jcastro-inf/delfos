@@ -34,7 +34,7 @@ public class CaseStudyXMLTest {
         ValidationTechnique validationTechnique = new HoldOut_Ratings();
         validationTechnique.setSeedValue(123456);
 
-        CaseStudy caseStudy = new CaseStudy(
+        CaseStudy caseStudy = CaseStudy.create(
                 recommenderSystem,
                 datasetLoader,
                 validationTechnique,
@@ -59,7 +59,7 @@ public class CaseStudyXMLTest {
         ValidationTechnique validationTechnique = new HoldOut_Ratings();
         validationTechnique.setSeedValue(123456);
 
-        CaseStudy caseStudy = new CaseStudy(
+        CaseStudy caseStudy = CaseStudy.create(
                 recommenderSystem,
                 datasetLoader,
                 validationTechnique,
@@ -85,7 +85,7 @@ public class CaseStudyXMLTest {
         validationTechnique.setParameterValue(CrossFoldValidation_Ratings.NUM_PARTITIONS, 2);
         validationTechnique.setSeedValue(123456);
 
-        CaseStudy caseStudy = new CaseStudy(
+        CaseStudy caseStudy = CaseStudy.create(
                 recommenderSystem,
                 datasetLoader,
                 validationTechnique,
@@ -111,7 +111,7 @@ public class CaseStudyXMLTest {
         validationTechnique.setParameterValue(CrossFoldValidation_Ratings.NUM_PARTITIONS, 2);
         validationTechnique.setSeedValue(123456);
 
-        CaseStudy caseStudy = new CaseStudy(
+        CaseStudy caseStudy = CaseStudy.create(
                 recommenderSystem,
                 datasetLoader,
                 validationTechnique,

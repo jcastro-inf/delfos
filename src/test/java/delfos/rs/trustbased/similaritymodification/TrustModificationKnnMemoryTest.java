@@ -49,7 +49,7 @@ public class TrustModificationKnnMemoryTest extends DelfosTest {
 
         recommenderSystem.setParameterValue(BELIEF_DERIVATION, new LinearBelief());
 
-        CaseStudy caseStudy = new CaseStudy(
+        CaseStudy caseStudy = CaseStudy.create(
                 recommenderSystem,
                 datasetLoader,
                 new CrossFoldValidation_Ratings(),

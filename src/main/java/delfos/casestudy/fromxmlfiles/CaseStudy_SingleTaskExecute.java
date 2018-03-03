@@ -60,7 +60,7 @@ public class CaseStudy_SingleTaskExecute implements Consumer<ExecuteCaseStudy_Ta
         PredictionProtocol predictionProtocol = caseStudyConfiguration.getPredictionProtocol();
         ValidationTechnique validationTechnique = caseStudyConfiguration.getValidationTechnique();
 
-        CaseStudy caseStudyRecommendation = new CaseStudy(
+        CaseStudy caseStudyRecommendation = CaseStudy.create(
                 recommenderSystem,
                 datasetLoader,
                 validationTechnique,

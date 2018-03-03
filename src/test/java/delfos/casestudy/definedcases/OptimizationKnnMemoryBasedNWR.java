@@ -60,7 +60,7 @@ public class OptimizationKnnMemoryBasedNWR {
 
         for (RecommenderSystem recommenderSystem : recommenderSystems) {
 
-            CaseStudy recommenderSystemCaseStudy = new CaseStudy(
+            CaseStudy recommenderSystemCaseStudy = CaseStudy.create(
                     recommenderSystem,
                     datasetLoader,
                     validationTechniqueValue,

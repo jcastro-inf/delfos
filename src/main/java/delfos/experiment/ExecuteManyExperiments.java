@@ -152,7 +152,7 @@ public class ExecuteManyExperiments {
                 RecommenderSystem<Object> recommenderSystem = (RecommenderSystem<Object>) caseStudyConfiguration.getRecommenderSystem();
                 for (DatasetLoader<? extends Rating> datasetLoader : datasets) {
 
-                    CaseStudy caseStudy = new CaseStudy(
+                    CaseStudy caseStudy = CaseStudy.create(
                             recommenderSystem,
                             datasetLoader,
                             caseStudyConfiguration.getValidationTechnique(),

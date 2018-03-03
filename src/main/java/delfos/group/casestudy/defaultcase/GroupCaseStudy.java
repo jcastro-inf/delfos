@@ -172,7 +172,7 @@ public class GroupCaseStudy extends ExperimentAdapter {
 
     private Map<GroupEvaluationMeasure, GroupEvaluationMeasureResult> aggregateResults;
 
-    public void execute() throws CannotLoadContentDataset, CannotLoadRatingsDataset, UserNotFound, ItemNotFound {
+    public void execute() {
         final DatasetLoader<? extends Rating> originalDatasetLoader = getDatasetLoader();
         int numberOfExecutionSplits = getNumSplits() * getNumExecutions();
         setNumVueltas(numberOfExecutionSplits);

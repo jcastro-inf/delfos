@@ -28,7 +28,7 @@ import java.util.LinkedList;
  * @version 1.0 (métodos para notificación del progreso de ejecución)
  * @author jcastro-inf ( https://github.com/jcastro-inf )
  */
-public abstract class ExperimentAdapter extends ParameterOwnerAdapter implements ExperimentProgress {
+public abstract class ExperimentAdapter extends ParameterOwnerAdapter implements ExperimentProgress, Experiment {
 
     /**
      * Objetos que desean ser notificados de cambios en la ejecución del experimento
@@ -201,7 +201,7 @@ public abstract class ExperimentAdapter extends ParameterOwnerAdapter implements
      * Número de vueltas que el experimento ejecuta. El número de vueltas es el número de particiones multiplicado por
      * el número de ejecuciones.
      */
-    private int numVueltas;
+    protected int numVueltas;
 
     @Override
     public int getVueltaActual() {

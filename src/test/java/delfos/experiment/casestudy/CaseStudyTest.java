@@ -45,7 +45,7 @@ public class CaseStudyTest extends DelfosTest {
      */
     @Test
     public void testExecute() {
-        CaseStudy instance = new CaseStudy(
+        CaseStudy instance = CaseStudy.create(
                 new KnnMemoryBasedCFRS(),
                 new RandomDatasetLoader(),
                 new HoldOut_Ratings(),

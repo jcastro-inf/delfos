@@ -32,6 +32,7 @@ import delfos.io.xml.casestudy.CaseStudyXML;
 import delfos.main.Main;
 import delfos.main.managers.experiment.ExecuteGroupXML;
 import delfos.main.managers.experiment.ExecuteXML;
+import delfos.rs.nonpersonalised.randomrecommender.RandomRecommendationModel;
 import delfos.rs.nonpersonalised.randomrecommender.RandomRecommender;
 import java.io.File;
 import java.lang.management.ManagementFactory;
@@ -97,7 +98,7 @@ public class TuringPreparator implements ExperimentPreparator {
 
             //generateDatasetFile
             {
-                CaseStudy datasetLoaderCaseStudy = new CaseStudy(
+                CaseStudy<RandomRecommendationModel<Long>, ? extends Rating> datasetLoaderCaseStudy = CaseStudy.create(
                         new RandomRecommender(),
                         datasetLoader
                 );

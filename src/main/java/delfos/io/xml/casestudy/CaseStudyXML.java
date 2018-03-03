@@ -398,7 +398,7 @@ public class CaseStudyXML {
         int numExecutions = Integer.parseInt(caseStudyElement.getAttributeValue(NUM_EXEC_ATTRIBUTE_NAME));
         String caseStudyAlias = caseStudyElement.getAttributeValue(ParameterOwner.ALIAS.getName());
 
-        CaseStudy caseStudy = new CaseStudy(
+        CaseStudy caseStudy = CaseStudy.create(
                 recommenderSystem,
                 datasetLoader, validationTechnique,
                 predictionProtocol,

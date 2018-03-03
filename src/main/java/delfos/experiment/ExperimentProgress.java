@@ -22,7 +22,7 @@ package delfos.experiment;
  *
  * @author jcastro-inf ( https://github.com/jcastro-inf )
  */
-public interface ExperimentProgress extends SeedHolder {
+public interface ExperimentProgress extends SeedHolder,Experiment {
 
     public final String FINISHED = "Finished";
     public final String RUNNING = "Running";
@@ -114,6 +114,8 @@ public interface ExperimentProgress extends SeedHolder {
      * @return Vuelta actual.
      */
     public int getVueltaActual();
+
+    public void setVueltaActual(int vueltaActual);
 
     /**
      * Devuelve el tiempo estimado restante.
