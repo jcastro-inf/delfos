@@ -1,7 +1,9 @@
 package delfos.experiment.casestudy;
 
+import delfos.common.FileUtilities;
 import delfos.constants.DelfosTest;
 import delfos.experiment.Experiment;
+import delfos.experiment.casestudy.cluster.TuringPreparator;
 import delfos.factories.ExperimentFactory;
 import delfos.io.xml.experiment.ExperimentXML;
 import org.jdom2.JDOMException;
@@ -11,6 +13,8 @@ import org.junit.Test;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class CustomCaseStudyTest extends DelfosTest{
 
@@ -22,7 +26,7 @@ public class CustomCaseStudyTest extends DelfosTest{
 
     @Test
     public void test() throws JDOMException, IOException {
-        File file = new File(getTemporalDirectoryForTest().getPath()+
+        File file = new File(getTemporalDirectoryForTest(this.getClass()).getPath()+
                 File.separator+"CustomCaseStudyMock.xml");
 
         Experiment originalExperiment = new CustomCaseStudyMock();
@@ -38,7 +42,7 @@ public class CustomCaseStudyTest extends DelfosTest{
 
     @Test
     public void testDifferent() throws JDOMException, IOException {
-        File file = new File(getTemporalDirectoryForTest().getPath()+
+        File file = new File(getTemporalDirectoryForTest(this.getClass()).getPath()+
                 File.separator+"CustomCaseStudyMock.xml");
 
         Experiment originalExperiment = new CustomCaseStudyMock();
@@ -55,5 +59,20 @@ public class CustomCaseStudyTest extends DelfosTest{
                 "Original and loaded experiment match and they should not because of different NUM_EXECUTIONS",
                 experimentLoaded.equals(originalExperiment)
         );
+    }
+
+    @Test
+    public void testWithTuringPreparator(){
+
+        List<Experiment> experiments = new ArrayList<>();
+        experiments.add(new CustomCaseStudyMock());
+
+        File experimentDirectory = getTemporalDirectoryForTest(this.getClass());
+        FileUtilities.deleteDirectoryRecursive(experimentDirectory);
+
+        new TuringPreparator().prepareExperimentGeneral(experiments,experimentDirectory);
+
+
+        new TuringPreparator().executeExperimentsGeneral(experimentDirectory);
     }
 }

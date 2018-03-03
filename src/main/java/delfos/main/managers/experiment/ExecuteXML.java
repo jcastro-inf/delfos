@@ -111,7 +111,7 @@ public class ExecuteXML extends CaseUseMode {
     @Override
     public void manageCaseUse(ConsoleParameters consoleParameters) {
         try {
-            File xmlExperimentsDirectory = new File(consoleParameters.getValue(ExecuteGroupXML.XML_DIRECTORY));
+            File xmlExperimentsDirectory = new File(consoleParameters.getValue(ExecuteXML.XML_DIRECTORY));
             int numExecutions = getNumExecutions(consoleParameters);
             long seed = getSeed(consoleParameters);
             boolean forceReExecution = ExecuteXML.isForceExecution(consoleParameters);
@@ -134,7 +134,6 @@ public class ExecuteXML extends CaseUseMode {
         try {
             XMLexperimentsExecution execution = new XMLexperimentsExecution(
                     experimentsDirectory.getPath(),
-                    datasetDirectory,
                     numExecutions,
                     seed);
             execution.execute();

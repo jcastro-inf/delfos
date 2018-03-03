@@ -17,8 +17,12 @@
 package delfos.experiment;
 
 import delfos.common.Global;
+import delfos.common.parameters.Parameter;
 import delfos.common.parameters.ParameterOwnerAdapter;
+import delfos.common.parameters.restriction.DirectoryParameter;
 import delfos.experiment.casestudy.ExecutionProgressListener;
+
+import java.io.File;
 import java.util.LinkedList;
 
 /**
@@ -28,7 +32,11 @@ import java.util.LinkedList;
  * @version 1.0 (métodos para notificación del progreso de ejecución)
  * @author jcastro-inf ( https://github.com/jcastro-inf )
  */
-public abstract class ExperimentAdapter extends ParameterOwnerAdapter implements ExperimentProgress, Experiment {
+public abstract class ExperimentAdapter extends ParameterOwnerAdapter implements Experiment {
+
+    public static final Parameter RESULTS_DIRECTORY = new Parameter(
+            "RESULTS_DIRECTORY",
+            new DirectoryParameter(new File("temp")));
 
     /**
      * Objetos que desean ser notificados de cambios en la ejecución del experimento
@@ -227,5 +235,17 @@ public abstract class ExperimentAdapter extends ParameterOwnerAdapter implements
     @Override
     public final long getExperimentRemainingTime() {
         return experimentProgressRemainingTime;
+    }
+
+    public void setResultsDirectory(File resultsDirectory) {
+        if (resultsDirectory.exists() && !resultsDirectory.isDirectory()) {
+            throw new IllegalStateException("Must be a directory");
+        }
+        setParameterValue(RESULTS_DIRECTORY,resultsDirectory);
+    }
+
+    @Override
+    public File getResultsDirectory() {
+        return (File) getParameterValue(RESULTS_DIRECTORY);
     }
 }

@@ -62,7 +62,7 @@ public class ExperimentListener_default implements ExperimentListener {
     }
 
     @Override
-    public synchronized void progressChanged(ExperimentProgress algorithmExperiment) {
+    public synchronized void progressChanged(Experiment algorithmExperiment) {
 
         String executionTask = algorithmExperiment.getExecutionProgressTask();
         int executionPercent = algorithmExperiment.getExecutionProgressPercent();
@@ -82,7 +82,7 @@ public class ExperimentListener_default implements ExperimentListener {
 
     }
 
-    private void printProgress(ExperimentProgress algorithmExperiment) {
+    private void printProgress(Experiment algorithmExperiment) {
 
         String experimentMessage
                 = new Date().toString()

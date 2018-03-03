@@ -21,8 +21,7 @@ package delfos.experiment;
  * estado en la ejecución de un experimento
  * 
  * @author jcastro-inf ( https://github.com/jcastro-inf )
- * @see ExperimentProgress
- * @see AlgorithmExperimentAdapter
+ * @see Experiment
  */
 public interface ExperimentListener {
     
@@ -31,5 +30,5 @@ public interface ExperimentListener {
      * estado de ejecución del algoritmo que se observa.
      * @param algorithmExperiment Algoritmo que lanza el evento
      */
-    public void progressChanged(ExperimentProgress algorithmExperiment);
+    public void progressChanged(Experiment algorithmExperiment);
 }

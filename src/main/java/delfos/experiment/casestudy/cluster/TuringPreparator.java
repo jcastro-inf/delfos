@@ -24,11 +24,12 @@ import delfos.common.parameters.chain.CaseStudyResultMatrix;
 import delfos.common.parameters.chain.ParameterChain;
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
-import delfos.experiment.casestudy.CaseStudy;
+import delfos.experiment.Experiment;
 import delfos.experiment.casestudy.CaseStudy;
 import delfos.group.casestudy.defaultcase.GroupCaseStudy;
 import delfos.group.io.xml.casestudy.GroupCaseStudyXML;
 import delfos.io.xml.casestudy.CaseStudyXML;
+import delfos.io.xml.experiment.ExperimentXML;
 import delfos.main.Main;
 import delfos.main.managers.experiment.ExecuteGroupXML;
 import delfos.main.managers.experiment.ExecuteXML;
@@ -72,6 +73,59 @@ public class TuringPreparator implements ExperimentPreparator {
         Random random = new Random(seed);
 
         return random;
+    }
+
+    @Override
+    public <ExperimentType extends Experiment> void prepareExperimentGeneral(
+            List<ExperimentType> experiments, File experimentBaseDirectory
+    ) {
+
+        for (ExperimentType experiment : experiments) {
+            String aliasForDirName = experiment.getAlias().
+                    replace("(", "").
+                    replace(")", "").
+                    replace(",", ".");
+
+            String fileName = aliasForDirName + ".xml";
+
+            File experimentDirectory = new File(experimentBaseDirectory + File.separator + aliasForDirName);
+
+            if(experimentDirectory.exists()){
+                Global.showWarning("Directory '"+experimentDirectory+"' already exists.");
+            }
+
+            FileUtilities.deleteDirectoryRecursive(experimentDirectory);
+            experimentDirectory.mkdirs();
+
+            File experimentFile = new File(experimentDirectory + File.separator + fileName);
+            ExperimentXML.saveExperiment(experiment, experimentFile);
+        }
+    }
+
+    @Override
+    public void executeExperimentsGeneral(File directory) {
+        List<File> experimentsToBeExecuted = listFiles(directory);
+
+        Collections.shuffle(experimentsToBeExecuted, getRandomToShuffleExperiments());
+
+        Stream<File> experimentsToBeExecutedStream
+                = parallel
+                ? experimentsToBeExecuted.parallelStream()
+                : experimentsToBeExecuted.stream();
+
+        experimentsToBeExecutedStream.forEach((singleExperimentDirectory) -> {
+            String[] args = {
+                    ExecuteXML.MODE_PARAMETER,
+                    ExecuteXML.XML_DIRECTORY, singleExperimentDirectory.getPath(),
+                    Constants.PRINT_FULL_XML,
+                    Constants.RAW_DATA};
+            try {
+                Main.mainWithExceptions(args);
+            } catch (Exception ex) {
+                Global.showWarning("Experiment failed in directory '" + singleExperimentDirectory.getAbsolutePath());
+                Global.showError(ex);
+            }
+        });
     }
 
     @Override

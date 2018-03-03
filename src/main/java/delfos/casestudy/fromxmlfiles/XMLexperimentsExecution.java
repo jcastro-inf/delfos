@@ -24,10 +24,14 @@ import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
 import delfos.common.filefilters.FileFilterByExtension;
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
+import delfos.experiment.Experiment;
+import delfos.experiment.SeedHolder;
+import delfos.experiment.casestudy.CaseStudy;
 import delfos.experiment.casestudy.CaseStudyConfiguration;
 import delfos.factories.EvaluationMeasuresFactory;
 import delfos.io.excel.casestudy.CaseStudyExcel;
 import delfos.io.xml.casestudy.CaseStudyXML;
+import delfos.io.xml.experiment.ExperimentXML;
 import delfos.results.evaluationmeasures.EvaluationMeasure;
 import delfos.utils.algorithm.progress.ProgressChangedController;
 import delfos.utils.algorithm.progress.ProgressChangedListenerDefault;
@@ -53,11 +57,10 @@ public class XMLexperimentsExecution {
     private final long seed;
     private final String experimentsDirectory;
     private final int numExecutions;
-    private final String datasetsDirectory;
 
     public static final String AGGREGATE_RESULTS_EXCEL_DEFAULT_FILE_NAME = CaseStudyExcel.AGGREGATE_RESULTS_EXCEL_DEFAULT_FILE_NAME;
 
-    public XMLexperimentsExecution(String experimentsDirectory, String datasetDirectory, int numExecutions, long seed) {
+    public XMLexperimentsExecution(String experimentsDirectory, int numExecutions, long seed) {
         this.experimentsDirectory = experimentsDirectory;
 
         if (!new File(experimentsDirectory).exists()) {
@@ -67,64 +70,59 @@ public class XMLexperimentsExecution {
             throw new IllegalArgumentException("The value '" + experimentsDirectory + "' not a directory [" + new File(experimentsDirectory).getAbsolutePath() + "]");
         }
 
-        if (!new File(datasetDirectory).exists()) {
-            throw new IllegalArgumentException("The file '" + datasetDirectory + "' do not exists [" + new File(datasetDirectory).getAbsolutePath() + "]");
-        }
-
-        if (!new File(datasetDirectory).isDirectory()) {
-            throw new IllegalArgumentException("The value '" + datasetDirectory + "' not a directory [" + new File(datasetDirectory).getAbsolutePath() + "]");
-        }
         this.numExecutions = numExecutions;
-        this.datasetsDirectory = datasetDirectory;
         this.seed = seed;
     }
 
     public void execute() throws CannotLoadContentDataset, CannotLoadRatingsDataset {
 
-        Global.showMessageTimestamped("Execute XMLExperiment allocated in directory '" + experimentsDirectory + "'");
+        Global.showMessageTimestamped("Execute XMLExperiment located in directory '" + experimentsDirectory + "'");
         Collection<EvaluationMeasure> evaluationMeasures = EvaluationMeasuresFactory.getInstance().getAllClasses();
 
         File experimentsDirectoryDirectory = new File(experimentsDirectory);
-        File datasetsDirectoryDirectory = new File(datasetsDirectory);
         File resultsDirectory = new File(experimentsDirectory + File.separator + "results" + File.separator);
 
         FileUtilities.createDirectoryPathIfNotExists(resultsDirectory);
 
-        File[] datasetFiles = datasetsDirectoryDirectory.listFiles(new FileFilterByExtension(false, "xml"));
-        if (datasetFiles.length == 0) {
-            throw new IllegalStateException("No dataset files in '" + datasetsDirectoryDirectory.getAbsolutePath() + "'");
-        }
-        List<ExecuteCaseStudy_Task> allTasks = new ArrayList<>();
+        List<Experiment> allTasks = new ArrayList<>();
 
-        for (File datasetFile : datasetFiles) {
-            try {
-                final DatasetLoader<? extends Rating> datasetLoader = CaseStudyXML.loadCase(datasetFile).getDatasetLoader();
+        try {
+            File[] experimentFiles = experimentsDirectoryDirectory.listFiles(new FileFilterByExtension(false, "xml"));
 
-                File[] experimentFiles = experimentsDirectoryDirectory.listFiles(new FileFilterByExtension(false, "xml"));
-
-                if (experimentFiles.length == 0) {
-                    throw new IllegalStateException("No experiments files in '" + experimentsDirectoryDirectory.getAbsolutePath() + "'");
-                }
-                Arrays.sort(experimentFiles, (File o1, File o2) -> o1.getName().compareTo(o2.getName()));
-                for (File experimentFile : experimentsDirectoryDirectory.listFiles(new FileFilterByExtension(false, "xml"))) {
-
-                    CaseStudyConfiguration caseStudyConfiguration = CaseStudyXML.loadCase(experimentFile);
-                    allTasks.add(new ExecuteCaseStudy_Task(
-                            experimentsDirectoryDirectory,
-                            experimentFile.getName(),
-                            caseStudyConfiguration,
-                            datasetLoader,
-                            caseStudyConfiguration.getRelevanceCriteria(),
-                            evaluationMeasures,
-                            numExecutions,
-                            seed));
-                }
-            } catch (JDOMException | IOException ex) {
-                ERROR_CODES.CANNOT_READ_CASE_STUDY_XML.exit(ex);
+            if (experimentFiles.length == 0) {
+                throw new IllegalStateException("No experiments files in '" + experimentsDirectoryDirectory.getAbsolutePath() + "'");
             }
+            Arrays.sort(experimentFiles, (File o1, File o2) -> o1.getName().compareTo(o2.getName()));
+            for (File experimentFile : experimentsDirectoryDirectory.listFiles(new FileFilterByExtension(false, "xml"))) {
+                Experiment experiment = ExperimentXML.loadExperiment(experimentFile);
+
+                File resultsDirectoryThisExperiment = new File(experimentFile.getParentFile().getPath() + File.separator + "results");
+                experiment.setResultsDirectory(resultsDirectoryThisExperiment);
+
+                allTasks.add(experiment);
+            }
+        } catch (JDOMException | IOException ex) {
+            ERROR_CODES.CANNOT_READ_CASE_STUDY_XML.exit(ex);
         }
 
-        CaseStudy_SingleTaskExecute caseStudy_SingleTaskExecute = new CaseStudy_SingleTaskExecute();
+
+        allTasks.forEach(experiment -> {
+            if(experiment.haveParameter(CaseStudy.NUM_EXECUTIONS)){
+                experiment.setParameterValue(CaseStudy.NUM_EXECUTIONS,numExecutions);
+            }else{
+                Global.showWarning("Experiment '"+experiment.getAlias()+"' does not have parameter "+CaseStudy.NUM_EXECUTIONS );
+            }
+
+            if(experiment.haveParameter(SeedHolder.SEED)){
+                experiment.setParameterValue(SeedHolder.SEED,seed);
+            }else{
+                Global.showWarning("Experiment '"+experiment.getAlias()+"' does not have parameter "+SeedHolder.SEED);
+            }
+        });
+
+
+        
+        Experiment_SingleTaskExecute caseStudy_SingleTaskExecute = new Experiment_SingleTaskExecute();
 
         ProgressChangedController progressChangedController = new ProgressChangedController(
                 "Case studies executor",

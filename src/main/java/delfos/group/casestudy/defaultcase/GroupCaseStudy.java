@@ -37,6 +37,8 @@ import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RelevanceCriteria;
 import delfos.experiment.ExperimentAdapter;
 import static delfos.experiment.SeedHolder.SEED;
+import static delfos.experiment.casestudy.CaseStudy.RESULTS_DIRECTORY;
+
 import delfos.experiment.casestudy.CaseStudyParameterChangedListener;
 import delfos.experiment.validation.validationtechnique.CrossFoldValidation_Ratings;
 import delfos.experiment.validation.validationtechnique.ValidationTechnique;
@@ -106,15 +108,6 @@ public class GroupCaseStudy extends ExperimentAdapter {
 
     protected final LinkedList<CaseStudyParameterChangedListener> propertyListeners = new LinkedList<>();
 
-    private File resultsDirectory = new File("." + File.separator + "temp");
-
-    public void setResultsDirectory(File RESULTS_DIRECTORY) {
-        if (RESULTS_DIRECTORY.exists() && !RESULTS_DIRECTORY.isDirectory()) {
-            throw new IllegalStateException("Must be a directory");
-        }
-        this.resultsDirectory = RESULTS_DIRECTORY;
-    }
-
     public GroupCaseStudy() {
         addParameter(SEED);
         addParameter(NUM_EXECUTIONS);
@@ -123,6 +116,7 @@ public class GroupCaseStudy extends ExperimentAdapter {
         addParameter(VALIDATION_TECHNIQUE);
         addParameter(GROUP_PREDICTION_PROTOCOL);
         addParameter(GROUP_RECOMMENDER_SYSTEM);
+        addParameter(RESULTS_DIRECTORY);
     }
 
     public GroupCaseStudy(DatasetLoader<? extends Rating> datasetLoader) {
@@ -565,11 +559,25 @@ public class GroupCaseStudy extends ExperimentAdapter {
                         return resultsAggregated;
                     }));
 
+            File resultsDirectory = getResultsDirectory();
+
             GroupCaseStudyXML.saveCaseResults(groupCaseStudyCloned, resultsDirectory);
             GroupCaseStudyExcel.saveCaseResults(groupCaseStudyCloned, resultsDirectory);
 
         });
 
+    }
+
+    public void setResultsDirectory(File resultsDirectory) {
+        if (resultsDirectory.exists() && !resultsDirectory.isDirectory()) {
+            throw new IllegalStateException("Must be a directory");
+        }
+        setParameterValue(RESULTS_DIRECTORY,resultsDirectory);
+    }
+
+    @Override
+    public File getResultsDirectory() {
+        return (File) getParameterValue(RESULTS_DIRECTORY);
     }
 
 }

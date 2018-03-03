@@ -9,6 +9,7 @@ public class CustomCaseStudyMock extends ExperimentAdapter{
     public CustomCaseStudyMock(){
         addParameter(SEED);
         addParameter(CaseStudy.NUM_EXECUTIONS);
+        addParameter(ExperimentAdapter.RESULTS_DIRECTORY);
     }
     @Override
     public boolean isFinished() {

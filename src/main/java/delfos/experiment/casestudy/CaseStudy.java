@@ -26,10 +26,7 @@ import delfos.common.exceptions.dataset.CannotLoadUsersDataset;
 import delfos.common.parameters.Parameter;
 import delfos.common.parameters.ParameterListener;
 import delfos.common.parameters.ParameterOwnerType;
-import delfos.common.parameters.restriction.DoubleParameter;
-import delfos.common.parameters.restriction.IntegerParameter;
-import delfos.common.parameters.restriction.ParameterOwnerRestriction;
-import delfos.common.parameters.restriction.StringParameter;
+import delfos.common.parameters.restriction.*;
 import delfos.configureddatasets.ConfiguredDatasetLoader;
 import delfos.dataset.basic.loader.types.ContentDatasetLoader;
 import delfos.dataset.basic.loader.types.DatasetLoader;
@@ -109,6 +106,7 @@ public class CaseStudy<RecommendationModel extends Object, RatingType extends Ra
             new DoubleParameter(-1000,1000,4.0)
     );
 
+
     protected void initParameters() {
         addParameter(SEED);
         addParameter(NUM_EXECUTIONS);
@@ -118,6 +116,7 @@ public class CaseStudy<RecommendationModel extends Object, RatingType extends Ra
         addParameter(RECOMMENDER_SYSTEM);
         addParameter(EVALUATION_MEASURES_AS_STRING);
         addParameter(RELEVANCE_CRITERIA);
+        addParameter(RESULTS_DIRECTORY);
     }
 
     protected final ArrayList<CaseStudyParameterChangedListener> propertyListeners = new ArrayList<>();
@@ -133,14 +132,8 @@ public class CaseStudy<RecommendationModel extends Object, RatingType extends Ra
     protected boolean errors = false;
 
     protected Map<EvaluationMeasure, MeasureResult> aggregateResults;
-    protected File resultsDirectory = new File("." + File.separator + "temp");
 
-    public void setResultsDirectory(File RESULTS_DIRECTORY) {
-        if (RESULTS_DIRECTORY.exists() && !RESULTS_DIRECTORY.isDirectory()) {
-            throw new IllegalStateException("Must be a directory");
-        }
-        this.resultsDirectory = RESULTS_DIRECTORY;
-    }
+
 
     public CaseStudy(){
         initParameters();
@@ -675,6 +668,8 @@ public class CaseStudy<RecommendationModel extends Object, RatingType extends Ra
                     }));
 
             caseStudyCloned.setFinished();
+
+            File resultsDirectory = getResultsDirectory();
 
             CaseStudyXML.saveCaseResults(caseStudyCloned, resultsDirectory);
             CaseStudyExcel.saveCaseResults(caseStudyCloned, resultsDirectory);

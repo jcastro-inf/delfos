@@ -24,8 +24,8 @@ import delfos.configuration.scopes.SwingGUIScope;
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RelevanceCriteria;
+import delfos.experiment.Experiment;
 import delfos.experiment.ExperimentListener;
-import delfos.experiment.ExperimentProgress;
 import delfos.experiment.casestudy.CaseStudy;
 import delfos.experiment.validation.predictionprotocol.PredictionProtocol;
 import delfos.experiment.validation.validationtechnique.ValidationTechnique;
@@ -695,7 +695,7 @@ public class SingleExperiment_TraditionalRecommender_Window extends JFrame imple
     }
 
     @Override
-    public void progressChanged(ExperimentProgress algorithmExperiment) {
+    public void progressChanged(Experiment algorithmExperiment) {
 
         final String executionProgressTask = algorithmExperiment.getExecutionProgressTask();
         final int executionProgressPercent = algorithmExperiment.getExecutionProgressPercent();
