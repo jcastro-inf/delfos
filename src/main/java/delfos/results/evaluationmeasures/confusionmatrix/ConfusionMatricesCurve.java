@@ -31,6 +31,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 /**
  * Representa una curva ROC. Proporciona operaciones básicas sobre curvas, como la agregación de varias o el cálculo del
@@ -53,24 +54,43 @@ public class ConfusionMatricesCurve {
     }
 
     public static ConfusionMatricesCurve getConfusionMatricesCurve(RatingsDataset<? extends Rating> testDataset, RecommendationResults recommendationResults, RelevanceCriteria relevanceCriteria) throws RuntimeException {
-        int maxLength = 0;
-        for (long idUser : testDataset.allUsers()) {
-            Collection<Recommendation> lr = recommendationResults.getRecommendationsForUser(idUser);
-            if (lr.size() > maxLength) {
-                maxLength = lr.size();
-            }
-        }
-        Map<Long, ConfusionMatricesCurve> allUsersCurves = new TreeMap<>();
+
+        final int maxLength = testDataset.allUsers().stream().map(user -> recommendationResults.getRecommendationsForUser(user))
+                .mapToInt(recommmendations -> recommmendations.size())
+                .max().orElse(0);
+
+        Map<Long, ConfusionMatricesCurve> allUsersCurves =testDataset.allUsers().parallelStream().collect(Collectors.toMap(idUser -> idUser,idUser->{
+
+            List<Recommendation> recommendationsForUser = recommendationResults.getRecommendationsForUser(idUser);
+            List<Boolean> binaryResults = recommendationsForUser.stream().
+                    map(recommendation -> {
+                        long idItem =recommendation.getItem().getId();
+
+                        if(testDataset.getUserRatingsRated(idUser).containsKey(idItem)){
+                            return relevanceCriteria.isRelevant(testDataset.getUserRatingsRated(idUser).get(idItem));
+                        }else{
+                            return false;
+                        }
+                    }).collect(Collectors.toList());
+
+            ConfusionMatricesCurve thisUserConfusionMatricesCurve = new ConfusionMatricesCurve(binaryResults);
+            
+            return thisUserConfusionMatricesCurve;
+        }));
+
         AtomicInteger usersWithoutMatrix = new AtomicInteger(0);
         for (long idUser : testDataset.allUsers()) {
-            List<Boolean> resultados = new ArrayList<>(recommendationResults.usersWithRecommendations().size());
-            Collection<Recommendation> recommendationList = recommendationResults.getRecommendationsForUser(idUser);
+            List<Boolean> resultados = new ArrayList<>(recommendationResults.
+                    usersWithRecommendations().size());
+            Collection<Recommendation> recommendationList = recommendationResults.
+                    getRecommendationsForUser(idUser);
             try {
                 Map<Long, ? extends Rating> userRatings = testDataset.getUserRatingsRated(idUser);
                 for (Recommendation r : recommendationList) {
                     long idItem = r.getItem().getId();
                     if (userRatings.containsKey(idItem)) {
-                        resultados.add(relevanceCriteria.isRelevant(userRatings.get(idItem).getRatingValue()));
+                        resultados.add(relevanceCriteria.isRelevant(userRatings.get(idItem).
+                                getRatingValue()));
                     } else {
                         resultados.add(false);
                     }
@@ -232,6 +252,10 @@ public class ConfusionMatricesCurve {
         return matrices.size();
     }
 
+    public int maxRank(){
+        return size()-1;
+    }
+
     /**
      * Devuelve el área bajo la curva definida.
      *
@@ -263,21 +287,21 @@ public class ConfusionMatricesCurve {
         return (double) areaUnderROC;
     }
 
-    private ConfusionMatrix getMatrixAt(int index) {
-        if (index >= size()) {
-            throw new IndexOutOfBoundsException(
-                    "Index: " + index + ", Size: " + size());
+    private ConfusionMatrix getMatrixAt(int recommendationRank) {
+        if (recommendationRank > maxRank()) {
+            return matrices.get(maxRank());
+        }else{
+            return matrices.get(recommendationRank);
         }
-        return matrices.get(index);
     }
 
     /**
      *
-     * @param index
+     * @param recommendationRank
      * @return
      */
-    public int getFalsePositiveAt(int index) {
-        return getMatrixAt(index).getFalsePositive();
+    public int getFalsePositiveAt(int recommendationRank) {
+        return getMatrixAt(recommendationRank).getFalsePositive();
     }
 
     /**
@@ -328,21 +352,21 @@ public class ConfusionMatricesCurve {
     /**
      * Devuelve el fpr de un punto en una posición dada.
      *
-     * @param i Posición.
+     * @param recommendationRank Posición.
      * @return Componente fpr del punto.
      */
-    public double getFalsePositiveRateAt(int i) {
-        return matrices.get(i).getFalsePositiveRate();
+    public double getFalsePositiveRateAt(int recommendationRank) {
+        return matrices.get(recommendationRank).getFalsePositiveRate();
     }
 
     /**
      * Devuelve el tpr de un punto en una posición dada
      *
-     * @param i Posición.
+     * @param recommendationRank Posición.
      * @return Componente tpr del punto.
      */
-    public double getTruePositiveRateAt(int i) {
-        return matrices.get(i).getTruePositiveRate();
+    public double getTruePositiveRateAt(int recommendationRank) {
+        return matrices.get(recommendationRank).getTruePositiveRate();
     }
 
     /**
@@ -362,17 +386,17 @@ public class ConfusionMatricesCurve {
                 return false;
             }
 
-            for (int i = 0; i < size(); i++) {
-                if (matrices.get(i).falseNegative != curve.matrices.get(i).falseNegative) {
+            for (int recommendationRank = 0; recommendationRank < size(); recommendationRank++) {
+                if (matrices.get(recommendationRank).falseNegative != curve.matrices.get(recommendationRank).falseNegative) {
                     return false;
                 }
-                if (matrices.get(i).falsePositive != curve.matrices.get(i).falsePositive) {
+                if (matrices.get(recommendationRank).falsePositive != curve.matrices.get(recommendationRank).falsePositive) {
                     return false;
                 }
-                if (matrices.get(i).trueNegative != curve.matrices.get(i).trueNegative) {
+                if (matrices.get(recommendationRank).trueNegative != curve.matrices.get(recommendationRank).trueNegative) {
                     return false;
                 }
-                if (matrices.get(i).truePositive != curve.matrices.get(i).truePositive) {
+                if (matrices.get(recommendationRank).truePositive != curve.matrices.get(recommendationRank).truePositive) {
                     return false;
                 }
             }

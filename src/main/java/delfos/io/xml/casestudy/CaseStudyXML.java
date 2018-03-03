@@ -33,6 +33,7 @@ import delfos.experiment.validation.validationtechnique.ValidationTechnique;
 import delfos.factories.EvaluationMeasuresFactory;
 import delfos.io.xml.dataset.DatasetLoaderXML;
 import delfos.io.xml.dataset.RelevanceCriteriaXML;
+import delfos.io.xml.experiment.ExperimentXML;
 import delfos.io.xml.predictionprotocol.PredictionProtocolXML;
 import delfos.io.xml.rs.RecommenderSystemXML;
 import delfos.io.xml.validationtechnique.ValidationTechniqueXML;
@@ -125,7 +126,7 @@ public class CaseStudyXML {
         }
 
         Document doc = new Document();
-        Element casoDeUso = new Element(CASE_ROOT_ELEMENT_NAME);
+        Element casoDeUso = new Element(ExperimentXML.ELEMENT_NAME);
 
         casoDeUso.setAttribute(SEED_ATTRIBUTE_NAME, Long.toString(caseStudy.getSeedValue()));
         casoDeUso.setAttribute(NUM_EXEC_ATTRIBUTE_NAME, Integer.toString(caseStudy.getNumExecutions()));
@@ -188,7 +189,7 @@ public class CaseStudyXML {
         Document doc = builder.build(file);
 
         Element caseStudy = doc.getRootElement();
-        if (!caseStudy.getName().equals(CASE_ROOT_ELEMENT_NAME)) {
+        if (!caseStudy.getName().equals(ExperimentXML.ELEMENT_NAME)) {
             throw new IllegalArgumentException("The XML does not contains a Case Study (" + file.getAbsolutePath() + ")");
         }
         GenericRecommenderSystem<Object> recommenderSystem = RecommenderSystemXML.getRecommenderSystem(caseStudy.getChild(RecommenderSystemXML.ELEMENT_NAME));
@@ -292,7 +293,7 @@ public class CaseStudyXML {
         }
 
         Document doc = new Document();
-        Element casoDeUso = new Element(CASE_ROOT_ELEMENT_NAME);
+        Element casoDeUso = new Element(ExperimentXML.ELEMENT_NAME);
 
         casoDeUso.addContent(RecommenderSystemXML.getElement(caseStudy.getRecommenderSystem()));
         casoDeUso.addContent(ValidationTechniqueXML.getElement(caseStudy.getValidationTechnique()));
@@ -374,7 +375,11 @@ public class CaseStudyXML {
         Document doc = builder.build(file);
 
         Element caseStudyElement = doc.getRootElement();
-        if (!caseStudyElement.getName().equals(CASE_ROOT_ELEMENT_NAME)) {
+        return loadCaseResults(caseStudyElement);
+    }
+
+    public static <RecommendationModel extends Object, RatingType extends Rating> CaseStudyResults<RecommendationModel,RatingType> loadCaseResults(Element caseStudyElement) {
+        if (!caseStudyElement.getName().equals(ExperimentXML.ELEMENT_NAME)) {
             throw new IllegalArgumentException("The XML does not contains a Case Study.");
         }
         RecommenderSystem<? extends Object> recommenderSystem = (RecommenderSystem<? extends Object>) RecommenderSystemXML
@@ -412,6 +417,7 @@ public class CaseStudyXML {
 
         return new CaseStudyResults(caseStudy);
     }
+
 
     static class EvaluationMeasuresResults {
 

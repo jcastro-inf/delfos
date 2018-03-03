@@ -1,6 +1,8 @@
 package delfos.experiment;
 
-public interface Experiment {
+import delfos.common.parameters.ParameterOwner;
+
+public interface Experiment extends ParameterOwner{
 
     public void execute();
 }

@@ -38,9 +38,9 @@ import delfos.group.io.xml.predictionprotocol.GroupPredictionProtocolXML;
 import delfos.group.results.groupevaluationmeasures.GroupEvaluationMeasure;
 import delfos.group.results.groupevaluationmeasures.GroupEvaluationMeasureResult;
 import delfos.io.xml.casestudy.CaseStudyXML;
-import static delfos.io.xml.casestudy.CaseStudyXML.CASE_ROOT_ELEMENT_NAME;
 import delfos.io.xml.dataset.DatasetLoaderXML;
 import delfos.io.xml.dataset.RelevanceCriteriaXML;
+import delfos.io.xml.experiment.ExperimentXML;
 import delfos.io.xml.validationtechnique.ValidationTechniqueXML;
 import java.io.File;
 import java.io.FileWriter;
@@ -67,7 +67,7 @@ import org.jdom2.output.XMLOutputter;
  */
 public class GroupCaseStudyXML {
 
-    public static String RESULT_EXTENSION = "xml";
+    public static final String RESULT_EXTENSION = "xml";
     public static final String HASH_ATTRIBUTE_NAME = "hash";
     public static final String HASH_DATA_VALIDATION_ATTRIBUTE_NAME = "hash_DataValidation";
     public static final String HASH_TECHNIQUE_ATTRIBUTE_NAME = "hash_Technique";
@@ -132,7 +132,7 @@ public class GroupCaseStudyXML {
         }
 
         Document doc = new Document();
-        Element casoDeUso = new Element("Case");
+        Element casoDeUso = new Element(ExperimentXML.ELEMENT_NAME);
 
         casoDeUso.setAttribute(SeedHolder.SEED.getName(), Long.toString(caseStudyGroup.getSeedValue()));
         casoDeUso.setAttribute(NUM_EXEC_ATTRIBUTE_NAME, Integer.toString(caseStudyGroup.getNumExecutions()));
@@ -225,7 +225,7 @@ public class GroupCaseStudyXML {
         }
 
         Document doc = new Document();
-        Element casoDeUso = new Element(CASE_ROOT_ELEMENT_NAME);
+        Element casoDeUso = new Element(ExperimentXML.ELEMENT_NAME);
 
         casoDeUso.setAttribute(SeedHolder.SEED.getName(), Long.toString(caseStudyGroup.getSeedValue()));
         casoDeUso.setAttribute(NUM_EXEC_ATTRIBUTE_NAME, Integer.toString(caseStudyGroup.getNumExecutions()));
@@ -260,7 +260,7 @@ public class GroupCaseStudyXML {
         }
 
         Document doc = new Document();
-        Element casoDeUso = new Element(CASE_ROOT_ELEMENT_NAME);
+        Element casoDeUso = new Element(ExperimentXML.ELEMENT_NAME);
 
         casoDeUso.setAttribute(SeedHolder.SEED.getName(), Long.toString(caseStudyGroup.getSeedValue()));
         casoDeUso.setAttribute(NUM_EXEC_ATTRIBUTE_NAME, Integer.toString(caseStudyGroup.getNumExecutions()));
@@ -307,22 +307,27 @@ public class GroupCaseStudyXML {
         SAXBuilder builder = new SAXBuilder();
 
         Document doc = builder.build(file);
-        Element caseStudy = doc.getRootElement();
-        if (!caseStudy.getName().equals(CASE_ROOT_ELEMENT_NAME)) {
+        Element groupCaseStudy = doc.getRootElement();
+
+        return loadGroupCaseDescription(groupCaseStudy);
+    }
+
+    public static GroupCaseStudyConfiguration loadGroupCaseDescription(Element groupCaseStudy) {
+        if (!groupCaseStudy.getName().equals(ExperimentXML.ELEMENT_NAME)) {
             throw new IllegalArgumentException("The XML does not contains a Case Study.");
         }
-        GroupRecommenderSystem<Object, Object> groupRecommenderSystem = GroupRecommenderSystemXML.getGroupRecommenderSystem(caseStudy.getChild(GroupRecommenderSystemXML.ELEMENT_NAME));
+        GroupRecommenderSystem<Object, Object> groupRecommenderSystem = GroupRecommenderSystemXML.getGroupRecommenderSystem(groupCaseStudy.getChild(GroupRecommenderSystemXML.ELEMENT_NAME));
 
-        GroupFormationTechnique groupFormationTechnique = GroupFormationTechniqueXML.getGroupFormationTechnique(caseStudy.getChild(GroupFormationTechniqueXML.ELEMENT_NAME));
-        ValidationTechnique validationTechnique = ValidationTechniqueXML.getValidationTechnique(caseStudy.getChild(ValidationTechniqueXML.ELEMENT_NAME));
-        GroupPredictionProtocol groupPredictionProtocol = GroupPredictionProtocolXML.getGroupPredictionProtocol(caseStudy.getChild(GroupPredictionProtocolXML.ELEMENT_NAME));
-        RelevanceCriteria relevanceCriteria = RelevanceCriteriaXML.getRelevanceCriteria(caseStudy.getChild(RelevanceCriteriaXML.ELEMENT_NAME));
+        GroupFormationTechnique groupFormationTechnique = GroupFormationTechniqueXML.getGroupFormationTechnique(groupCaseStudy.getChild(GroupFormationTechniqueXML.ELEMENT_NAME));
+        ValidationTechnique validationTechnique = ValidationTechniqueXML.getValidationTechnique(groupCaseStudy.getChild(ValidationTechniqueXML.ELEMENT_NAME));
+        GroupPredictionProtocol groupPredictionProtocol = GroupPredictionProtocolXML.getGroupPredictionProtocol(groupCaseStudy.getChild(GroupPredictionProtocolXML.ELEMENT_NAME));
+        RelevanceCriteria relevanceCriteria = RelevanceCriteriaXML.getRelevanceCriteria(groupCaseStudy.getChild(RelevanceCriteriaXML.ELEMENT_NAME));
 
-        DatasetLoader<? extends Rating> datasetLoader = DatasetLoaderXML.getDatasetLoader(caseStudy.getChild(DatasetLoaderXML.ELEMENT_NAME));
+        DatasetLoader<? extends Rating> datasetLoader = DatasetLoaderXML.getDatasetLoader(groupCaseStudy.getChild(DatasetLoaderXML.ELEMENT_NAME));
 
-        long seed = Long.parseLong(caseStudy.getAttributeValue(SeedHolder.SEED.getName()));
-        int numExecutions = Integer.parseInt(caseStudy.getAttributeValue(NUM_EXEC_ATTRIBUTE_NAME));
-        String caseStudyAlias = caseStudy.getAttributeValue(ParameterOwner.ALIAS.getName());
+        long seed = Long.parseLong(groupCaseStudy.getAttributeValue(SeedHolder.SEED.getName()));
+        int numExecutions = Integer.parseInt(groupCaseStudy.getAttributeValue(NUM_EXEC_ATTRIBUTE_NAME));
+        String caseStudyAlias = groupCaseStudy.getAttributeValue(ParameterOwner.ALIAS.getName());
 
         return new GroupCaseStudyConfiguration(
                 groupRecommenderSystem, datasetLoader,
@@ -351,7 +356,7 @@ public class GroupCaseStudyXML {
 
         Document doc = builder.build(file);
         Element caseStudy = doc.getRootElement();
-        if (!caseStudy.getName().equals(CASE_ROOT_ELEMENT_NAME)) {
+        if (!caseStudy.getName().equals(ExperimentXML.ELEMENT_NAME)) {
             throw new IllegalArgumentException("The XML does not contains a Case Study.");
         }
         GroupRecommenderSystem<Object, Object> groupRecommenderSystem = GroupRecommenderSystemXML.getGroupRecommenderSystem(caseStudy.getChild(GroupRecommenderSystemXML.ELEMENT_NAME));
@@ -386,7 +391,7 @@ public class GroupCaseStudyXML {
 
         Document doc = builder.build(groupCaseStudyXML);
         Element caseStudy = doc.getRootElement();
-        if (!caseStudy.getName().equals(CASE_ROOT_ELEMENT_NAME)) {
+        if (!caseStudy.getName().equals(ExperimentXML.ELEMENT_NAME)) {
             throw new IllegalArgumentException("The XML does not contains a Case Study.");
         }
 

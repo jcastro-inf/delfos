@@ -51,7 +51,7 @@ public class ParameterXML {
      */
     public static final String PARAMETER_NAME = "parameterName";
     public static final String PARAMETER_TYPE = "parameterType";
-    public static String PARAMETER_VALUE = "value";
+    public static final String PARAMETER_VALUE = "value";
 
     /**
      * Obtiene el valor del parámetro descrito en el elemento de XML y lo asigna

@@ -16,17 +16,7 @@
  */
 package delfos.common.parameters;
 
-import delfos.factories.AggregationOperatorFactory;
-import delfos.factories.DatasetLoadersFactory;
-import delfos.factories.EvaluationMeasuresFactory;
-import delfos.factories.PredictionProtocolFactory;
-import delfos.factories.PredictionTechniquesFactory;
-import delfos.factories.RecommendationCandidatesSelectorFactory;
-import delfos.factories.RecommendationsOutputMethodFactory;
-import delfos.factories.RecommenderSystemsFactory;
-import delfos.factories.SimilarityMeasuresFactory;
-import delfos.factories.ValidationTechniquesFactory;
-import delfos.factories.WeightedGraphCalculatorFactory;
+import delfos.factories.*;
 import delfos.group.factories.GroupEvaluationMeasuresFactory;
 import delfos.group.factories.GroupFormationTechniquesFactory;
 import delfos.group.factories.GroupPredictionProtocolsFactory;
@@ -122,6 +112,8 @@ public enum ParameterOwnerType {
                 return ValidationTechniquesFactory.getInstance().getClassByName(className);
             case WEIGHTED_GRAPH_CALCULATION:
                 return WeightedGraphCalculatorFactory.getInstance().getClassByName(className);
+            case CASE_STUDY:
+                return ExperimentFactory.getInstance().getClassByName(className);
             default:
                 throw new IllegalArgumentException("This parameter owner type '" + this + "' does not have an associated factory.");
         }

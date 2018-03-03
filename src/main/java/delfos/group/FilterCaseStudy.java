@@ -92,7 +92,7 @@ public class FilterCaseStudy implements Runnable {
 
     public void execute() throws CannotLoadRatingsDataset, CannotLoadContentDataset, UserNotFound, ItemNotFound {
 
-        Global.showInfoMessage("SEED OF THIS EXPERIMENT = " + SEED + "\n");
+        Global.showInfoMessage("SEED OF THIS EXPERIMENT_TYPE_ATTRIBUTE = " + SEED + "\n");
 
         ArrayList<GroupRecommenderSystem> grsList;
         if (directory != null) {

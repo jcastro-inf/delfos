@@ -137,7 +137,7 @@ public class ExecuteManyExperiments {
 
     private void execute() throws CannotLoadRatingsDataset, CannotLoadContentDataset, UserNotFound, ItemNotFound {
 
-        Global.showInfoMessage("SEED OF THIS EXPERIMENT = " + SEED + "\n");
+        Global.showInfoMessage("SEED OF THIS EXPERIMENT_TYPE_ATTRIBUTE = " + SEED + "\n");
 
         ArrayList<CaseStudyConfiguration> caseStudyConfigurations;
         if (inputDirectory != null) {

@@ -11,6 +11,10 @@ public class ExperimentFactory extends Factory<ExperimentAdapter> {
 
     }
 
+    public static ExperimentFactory getInstance() {
+        return instance;
+    }
+
     static {
         instance = new ExperimentFactory();
 
