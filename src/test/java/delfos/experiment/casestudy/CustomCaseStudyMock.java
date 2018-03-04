@@ -3,8 +3,12 @@ package delfos.experiment.casestudy;
 import delfos.common.parameters.ParameterOwnerType;
 import delfos.experiment.ExperimentAdapter;
 import delfos.experiment.SeedHolder;
+import org.jdom2.Element;
 
 public class CustomCaseStudyMock extends ExperimentAdapter{
+
+    boolean finished = false;
+    double result = Double.NaN;
 
     public CustomCaseStudyMock(){
         addParameter(SEED);
@@ -13,7 +17,7 @@ public class CustomCaseStudyMock extends ExperimentAdapter{
     }
     @Override
     public boolean isFinished() {
-        return false;
+        return finished;
     }
 
     @Override
@@ -28,7 +32,8 @@ public class CustomCaseStudyMock extends ExperimentAdapter{
 
     @Override
     public void execute() {
-
+        finished = true;
+        result = 1.0;
     }
 
     @Override
@@ -40,4 +45,29 @@ public class CustomCaseStudyMock extends ExperimentAdapter{
     public long getSeedValue() {
         return ((Number) getParameterValue(SEED)).longValue();
     }
+
+    @Override
+    public void addResultsToElement(Element experimentElement) {
+        if(!isFinished()) {
+            return;
+        }
+
+        Element resultsElement = new Element("Results");
+        resultsElement.setAttribute("value", Double.toString(result));
+
+        experimentElement.addContent(resultsElement);
+    }
+
+    @Override
+    public void setResultsFromElement(Element experimentElement) {
+
+        if(experimentElement.getChild("Results") == null){
+            return;
+        }
+        Element resultsElement = experimentElement.getChild("Results");
+
+        String valueString = resultsElement.getAttributeValue("value");
+        result = Double.parseDouble(valueString);
+    }
+
 }

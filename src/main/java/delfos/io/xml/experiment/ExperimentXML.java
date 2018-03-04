@@ -25,23 +25,30 @@ public class ExperimentXML {
     public static final String EXPERIMENT_TYPE_ATTRIBUTE = "experimentType";
 
     public static Element getElement(Experiment experiment){
-        Element element = ParameterOwnerXML.getElement(experiment);
+        Element experimentElement = ParameterOwnerXML.getElement(experiment);
 
-        element.setName(ELEMENT_NAME);
-        element.setAttribute(EXPERIMENT_TYPE_ATTRIBUTE,experiment.getClass().getSimpleName());
+        experimentElement.setName(ELEMENT_NAME);
+        experimentElement.setAttribute(EXPERIMENT_TYPE_ATTRIBUTE,experiment.getClass().getSimpleName());
 
-        return element;
+        if(experiment.isFinished()) {
+            experiment.addResultsToElement(experimentElement);
+        }
+        return experimentElement;
     }
 
     public static Experiment getExperiment(Element element){
-        String experimentType = element.getAttributeValue(EXPERIMENT_TYPE_ATTRIBUTE);
-
-        if(CaseStudy.class.getSimpleName().equals(experimentType)) {
-            return CaseStudyXML.loadCaseResults(element).getCaseStudy();
-        } else if(GroupCaseStudy.class.getSimpleName().equals(experimentType)) {
-            return GroupCaseStudyXML.loadGroupCaseDescription(element).createGroupCaseStudy();
-        } else {
+        if(1==1) {
             return (Experiment) ParameterOwnerXML.getParameterOwner(element);
+        } else {
+            String experimentType = element.getAttributeValue(EXPERIMENT_TYPE_ATTRIBUTE);
+
+            if (CaseStudy.class.getSimpleName().equals(experimentType)) {
+                return CaseStudyXML.loadCaseResults(element).getCaseStudy();
+            } else if (GroupCaseStudy.class.getSimpleName().equals(experimentType)) {
+                return GroupCaseStudyXML.loadGroupCaseDescription(element).createGroupCaseStudy();
+            } else {
+                return (Experiment) ParameterOwnerXML.getParameterOwner(element);
+            }
         }
     }
 
@@ -64,6 +71,8 @@ public class ExperimentXML {
         Element experimentElement = doc.getRootElement();
 
         Experiment experiment = getExperiment(experimentElement);
+        experiment.setResultsFromElement(experimentElement);
+
         return experiment;
     }
 }

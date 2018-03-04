@@ -89,10 +89,10 @@ public class GroupCaseStudyXML {
         }
     };
 
-    private GroupCaseStudyXML() {
+    public GroupCaseStudyXML() {
     }
 
-    private static Element getResultsElement(GroupCaseStudy c) {
+    public static Element getResultsElement(GroupCaseStudy c) {
 
         Element ejecuciones = new Element("Executions");
         Element ejecucion;
@@ -115,7 +115,7 @@ public class GroupCaseStudyXML {
         return ejecuciones;
     }
 
-    private static Element getAggregatedResultsElement(GroupCaseStudy c) {
+    public static Element getAggregatedResultsElement(GroupCaseStudy c) {
         Element mediaMedidas = new Element("Aggregate_values");
         for (GroupEvaluationMeasure em : c.getEvaluationMeasures()) {
 //            MeasureResult aggregateResults = em.agregateResults(allResults.get(em));
@@ -254,7 +254,7 @@ public class GroupCaseStudyXML {
         }
     }
 
-    private static void caseStudyToXMLFile_aggregateResults(GroupCaseStudy caseStudyGroup, File file) {
+    public static void caseStudyToXMLFile_aggregateResults(GroupCaseStudy caseStudyGroup, File file) {
         if (!caseStudyGroup.isFinished()) {
             throw new UnsupportedOperationException("No se ha ejecutado el caso de uso todavía");
         }
@@ -400,7 +400,7 @@ public class GroupCaseStudyXML {
         return numExec;
     }
 
-    private static Map<GroupEvaluationMeasure, GroupEvaluationMeasureResult> getEvaluationMeasures(Element caseStudy) {
+    public static Map<GroupEvaluationMeasure, GroupEvaluationMeasureResult> getEvaluationMeasures(Element caseStudy) {
 
         Map<GroupEvaluationMeasure, GroupEvaluationMeasureResult> groupEvaluationMeasures = new TreeMap<>();
 

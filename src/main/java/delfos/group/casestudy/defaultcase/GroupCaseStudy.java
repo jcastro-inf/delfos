@@ -54,6 +54,8 @@ import delfos.group.io.xml.casestudy.GroupCaseStudyXML;
 import delfos.group.results.groupevaluationmeasures.GroupEvaluationMeasure;
 import delfos.group.results.groupevaluationmeasures.GroupEvaluationMeasureResult;
 import delfos.utils.algorithm.progress.ProgressChangedController;
+import org.jdom2.Element;
+
 import java.io.File;
 import java.util.Collection;
 import java.util.Collections;
@@ -580,4 +582,14 @@ public class GroupCaseStudy extends ExperimentAdapter {
         return (File) getParameterValue(RESULTS_DIRECTORY);
     }
 
+
+    @Override
+    public void addResultsToElement(Element experimentElement) {
+        throw new IllegalStateException("Not implemented yet");
+    }
+
+    @Override
+    public void setResultsFromElement(Element experimentElement) {
+        throw new IllegalStateException("Not implemented yet");
+    }
 }

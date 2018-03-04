@@ -50,6 +50,8 @@ import delfos.rs.RecommendationModelBuildingProgressListener;
 import delfos.rs.RecommenderSystem;
 import delfos.rs.nonpersonalised.randomrecommender.RandomRecommender;
 import delfos.utils.algorithm.progress.ProgressChangedController;
+import org.jdom2.Element;
+
 import java.io.File;
 import java.util.*;
 import java.util.function.Function;
@@ -765,5 +767,56 @@ public class CaseStudy<RecommendationModel extends Object, RatingType extends Ra
 
         setParameterValue(DATASET_LOADER,datasetLoader);
         return this;
+    }
+
+    @Override
+    public void addResultsToElement(Element experimentElement) {
+        if(!isFinished()){
+            return;
+        }
+
+        Element resultsElement = CaseStudyXML.getAllResultsElement(this);
+        experimentElement.addContent(resultsElement);
+
+        Element aggregateResultsElement = CaseStudyXML.getAggregatedResultsElement(this);
+        experimentElement.addContent(aggregateResultsElement);
+    }
+
+    @Override
+    public void setResultsFromElement(Element experimentElement) {
+        Element resultsElement = experimentElement.getChild(CaseStudyXML.EXECUTIONS_RESULTS_ELEMENT_NAME);
+        if(resultsElement!=null){
+            Map<Integer, Map<Integer, Map<EvaluationMeasure, MeasureResult>>> loadedResults = CaseStudyXML.
+                    getAllResultsFromElement(this, experimentElement);
+
+            if(loadedResults.size() !=  this.getNumExecutions()){
+                Global.showWarning("Num executions in results do not match case study description: "+
+                        loadedResults.size()+" != "+ this.getNumExecutions());
+            }
+
+            Set<Integer> numSplitsEachExecution = loadedResults.values().stream().
+                    map(x -> x.keySet().size()).distinct().collect(Collectors.toSet());
+
+            if(numSplitsEachExecution.size() == 1 ){
+
+                Integer splits = numSplitsEachExecution.iterator().next();
+                if(splits!= this.getNumSplits()){
+                    Global.showWarning("Num splits from element do not match case study description: "+
+                            splits+ " != "+this.getNumSplits());
+                }
+            } else {
+                Global.showWarning("Executions do not have same number of splits: "+
+                        numSplitsEachExecution.toString());
+            }
+
+            this.allLoopsResults = loadedResults;
+        }
+
+        Element aggregateResultsElement = experimentElement.getChild(CaseStudyXML.AGGREGATE_VALUES_ELEMENT_NAME);
+        if(aggregateResultsElement!= null) {
+            Map<EvaluationMeasure, MeasureResult> caseStudyAggregateResults = CaseStudyXML.getCaseStudyAggregateResults(experimentElement);
+            this.setAggregateResults(caseStudyAggregateResults);
+        }
+
     }
 }

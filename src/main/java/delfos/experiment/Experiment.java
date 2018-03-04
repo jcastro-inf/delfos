@@ -1,6 +1,7 @@
 package delfos.experiment;
 
 import delfos.common.parameters.ParameterOwner;
+import org.jdom2.Element;
 
 import java.io.File;
 
@@ -113,4 +114,7 @@ public interface Experiment extends ParameterOwner,SeedHolder {
 
     public void setResultsDirectory(File directory);
     public File getResultsDirectory();
+
+    public void addResultsToElement(Element experimentElement);
+    public void setResultsFromElement(Element experimentElement);
 }

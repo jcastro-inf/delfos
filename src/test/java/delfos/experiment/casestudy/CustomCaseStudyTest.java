@@ -75,4 +75,31 @@ public class CustomCaseStudyTest extends DelfosTest{
 
         new TuringPreparator().executeExperimentsGeneral(experimentDirectory);
     }
+
+
+    @Test
+    public void testSaveAndLoadExecutedCaseStudy() throws JDOMException, IOException {
+        File experimentDescriptionFile = new File(getTemporalDirectoryForTest(this.getClass()).getPath()+
+                File.separator+"CustomCaseStudyMock-testSaveAndLoadExecutedCaseStudy.xml");
+
+        File experimentExecutedFile = new File(getTemporalDirectoryForTest(this.getClass()).getPath()+
+                File.separator+"CustomCaseStudyMock-testSaveAndLoadExecutedCaseStudy-executed.xml");
+
+        Experiment originalExperiment = new CustomCaseStudyMock();
+        ExperimentXML.saveExperiment(originalExperiment,experimentDescriptionFile);
+        Experiment experimentLoaded = ExperimentXML.loadExperiment(experimentDescriptionFile);
+
+        Experiment experimentExecuted = (Experiment) experimentLoaded.clone();
+        experimentExecuted.execute();
+
+        ExperimentXML.saveExperiment(experimentExecuted,experimentExecutedFile);
+
+        Experiment experimentExecutedLoaded = ExperimentXML.loadExperiment(experimentExecutedFile);
+
+        Assert.assertTrue(
+                "Original and loaded experiment match and they should not because of different NUM_EXECUTIONS",
+                experimentExecutedLoaded.equals(experimentExecuted)
+        );
+
+    }
 }

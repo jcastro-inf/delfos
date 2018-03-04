@@ -45,11 +45,9 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Locale;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
 import java.util.function.Predicate;
+
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
@@ -83,7 +81,7 @@ public class CaseStudyXML {
         }
     };
 
-    private static <RecommendationModel extends Object, RatingType extends Rating> Element getResultsElement(
+    public static <RecommendationModel extends Object, RatingType extends Rating> Element getAllResultsElement(
             CaseStudy<RecommendationModel, RatingType> caseStudy) {
 
         Element executionsElement = new Element(EXECUTIONS_RESULTS_ELEMENT_NAME);
@@ -107,7 +105,48 @@ public class CaseStudyXML {
         return executionsElement;
     }
 
-    private static <RecommendationModel extends Object, RatingType extends Rating>
+    public static <RecommendationModel extends Object, RatingType extends Rating>
+    Map<Integer, Map<Integer, Map<EvaluationMeasure, MeasureResult>>> getAllResultsFromElement(
+            CaseStudy<RecommendationModel, RatingType> caseStudy,
+            Element caseStudyElement){
+
+        Element executionsElement = caseStudyElement.getChild(EXECUTIONS_RESULTS_ELEMENT_NAME);
+
+        Map<Integer, Map<Integer, Map<EvaluationMeasure, MeasureResult>>> results = Collections.synchronizedMap(new HashMap<>());
+
+        List<Element> executionsElements = executionsElement.getChildren("Execution");
+        int execution = 0;
+        for(Element executionElement:executionsElements) {
+
+            executionsElement.getChildren();
+
+
+            Map<Integer, Map<EvaluationMeasure, MeasureResult>> executionResults =  Collections.synchronizedMap(new HashMap<>());
+
+            int split = 0;
+            List<Element> splitsElements = executionElement.getChildren("Split");
+            for(Element splitElement: splitsElements){
+
+
+                Map<EvaluationMeasure, MeasureResult> thisExecutionSplitResults = getResultsFromExecutionSplitElement(splitElement);
+
+
+
+                executionResults.put(split, thisExecutionSplitResults);
+
+                split++;
+            }
+
+            results.put(execution,executionResults);
+
+
+            execution++;
+        }
+
+        return results;
+    }
+
+    public static <RecommendationModel extends Object, RatingType extends Rating>
             Element getAggregatedResultsElement(
                     CaseStudy<RecommendationModel, RatingType> caseStudy) {
 
@@ -138,7 +177,7 @@ public class CaseStudyXML {
         casoDeUso.addContent(RelevanceCriteriaXML.getElement(caseStudy.getRelevanceCriteria()));
         casoDeUso.addContent(DatasetLoaderXML.getElement(caseStudy.getDatasetLoader()));
 
-        casoDeUso.addContent(getResultsElement(caseStudy));
+        casoDeUso.addContent(getAllResultsElement(caseStudy));
         casoDeUso.addContent(getAggregatedResultsElement(caseStudy));
         doc.addContent(casoDeUso);
 
@@ -240,7 +279,7 @@ public class CaseStudyXML {
         casoDeUso.addContent(RelevanceCriteriaXML.getElement(caseStudy.getRelevanceCriteria()));
         casoDeUso.addContent(DatasetLoaderXML.getElement(caseStudy.getDatasetLoader()));
 
-        casoDeUso.addContent(getResultsElement(caseStudy));
+        casoDeUso.addContent(getAllResultsElement(caseStudy));
         casoDeUso.addContent(getAggregatedResultsElement(caseStudy));
         doc.addContent(casoDeUso);
 
@@ -334,7 +373,7 @@ public class CaseStudyXML {
         casoDeUso.addContent(RelevanceCriteriaXML.getElement(caseStudy.getRelevanceCriteria()));
         casoDeUso.addContent(DatasetLoaderXML.getElement(caseStudy.getDatasetLoader()));
 
-        //casoDeUso.addContent(getResultsElement(caseStudy));
+        //casoDeUso.addContent(getAllResultsElement(caseStudy));
         casoDeUso.addContent(getAggregatedResultsElement(caseStudy));
 
         doc.addContent(casoDeUso);
@@ -397,7 +436,7 @@ public class CaseStudyXML {
         RelevanceCriteria relevanceCriteria = RelevanceCriteriaXML
                 .getRelevanceCriteria(caseStudyElement.getChild(RelevanceCriteriaXML.ELEMENT_NAME));
 
-        Map<EvaluationMeasure, MeasureResult> evaluationMeasuresResults = getEvaluationMeasures(caseStudyElement);
+        Map<EvaluationMeasure, MeasureResult> evaluationMeasuresResults = getCaseStudyAggregateResults(caseStudyElement);
 
         long seed = Long.parseLong(caseStudyElement.getAttributeValue(SeedHolder.SEED.getName()));
         int numExecutions = Integer.parseInt(caseStudyElement.getAttributeValue(NUM_EXEC_ATTRIBUTE_NAME));
@@ -462,7 +501,7 @@ public class CaseStudyXML {
         return new EvaluationMeasuresResults(ret, buildTime, recommendationTime);
     }
 
-    private static Map<EvaluationMeasure, MeasureResult> getEvaluationMeasures(Element caseStudy) {
+    public static Map<EvaluationMeasure, MeasureResult> getCaseStudyAggregateResults(Element caseStudy) {
 
         Map<EvaluationMeasure, MeasureResult> evaluationMeasuresResults = new TreeMap<>();
 
@@ -473,6 +512,24 @@ public class CaseStudyXML {
         }
 
         for (Element evaluationMeasureResultElement : aggregateValues.getChildren()) {
+            String name = evaluationMeasureResultElement.getName();
+
+            EvaluationMeasure evaluationMeasure = EvaluationMeasuresFactory.getInstance().getClassByName(name);
+            if (evaluationMeasure == null) {
+                throw new IllegalStateException("The group evaluation measure '" + name + "' does not exists in delfos' factory");
+            } else {
+                evaluationMeasuresResults.put(evaluationMeasure, evaluationMeasure.getEvaluationMeasureResultFromXML(evaluationMeasureResultElement));
+            }
+        }
+
+        return evaluationMeasuresResults;
+    }
+
+    public static Map<EvaluationMeasure, MeasureResult> getResultsFromExecutionSplitElement(Element executionSplitResultsElement) {
+
+        Map<EvaluationMeasure, MeasureResult> evaluationMeasuresResults = new TreeMap<>();
+
+        for (Element evaluationMeasureResultElement : executionSplitResultsElement.getChildren()) {
             String name = evaluationMeasureResultElement.getName();
 
             EvaluationMeasure evaluationMeasure = EvaluationMeasuresFactory.getInstance().getClassByName(name);

@@ -7,12 +7,14 @@ import delfos.dataset.generated.random.RandomDatasetLoader;
 import delfos.experiment.validation.predictionprotocol.NoPredictionProtocol;
 import delfos.experiment.validation.validationtechnique.HoldOut_Ratings;
 import delfos.factories.EvaluationMeasuresFactory;
+import delfos.io.xml.casestudy.CaseStudyXML;
+import delfos.io.xml.experiment.ExperimentXML;
 import delfos.rs.collaborativefiltering.knn.memorybased.KnnMemoryBasedCFRS;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.jdom2.JDOMException;
+import org.junit.*;
+
+import java.io.File;
+import java.io.IOException;
 
 /**
  *
@@ -44,8 +46,8 @@ public class CaseStudyTest extends DelfosTest {
      * Test of execute method, of class CaseStudy.
      */
     @Test
-    public void testExecute() {
-        CaseStudy instance = CaseStudy.create(
+    public void testExecute() throws JDOMException, IOException {
+        CaseStudy caseStudyKnnMemoryExecuted = CaseStudy.create(
                 new KnnMemoryBasedCFRS(),
                 new RandomDatasetLoader(),
                 new HoldOut_Ratings(),
@@ -53,6 +55,14 @@ public class CaseStudyTest extends DelfosTest {
                 new RelevanceCriteria(),
                 EvaluationMeasuresFactory.getInstance().getAllContentBasedEvaluationMeasures(),
                 10);
-        instance.execute();
+        caseStudyKnnMemoryExecuted.execute();
+
+        File resultsFile = new File(getTemporalDirectoryForTest(this.getClass()) + File.separator + caseStudyKnnMemoryExecuted.getAlias());
+
+        ExperimentXML.saveExperiment(caseStudyKnnMemoryExecuted,resultsFile);
+
+        CaseStudy caseStudyLoaded = (CaseStudy) ExperimentXML.loadExperiment(resultsFile);
+
+        Assert.assertTrue("Case studies do not match!",caseStudyLoaded.equals(caseStudyKnnMemoryExecuted));
     }
 }
