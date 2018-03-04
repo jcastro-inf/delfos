@@ -216,6 +216,8 @@ public class CaseStudyExcel {
 
     public static void writeExcelFromMatrix(File outputFile, Map<String, Integer> indexColumn, Map<String, Map<String, Double>> valores) {
         //Escribo resultado.
+
+        FileUtilities.createDirectoriesForFile(outputFile);
         try {
             WorkbookSettings wbSettings = new WorkbookSettings();
 

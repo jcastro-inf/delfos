@@ -21,8 +21,6 @@ import delfos.common.exceptions.dataset.CannotLoadContentDataset;
 import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
 import delfos.common.exceptions.dataset.CannotLoadTrustDataset;
 import delfos.common.exceptions.dataset.CannotLoadUsersDataset;
-import delfos.common.exceptions.dataset.items.ItemNotFound;
-import delfos.common.exceptions.dataset.users.UserNotFound;
 import delfos.common.parameters.Parameter;
 import delfos.common.parameters.ParameterOwner;
 import delfos.common.parameters.ParameterOwnerType;
@@ -36,8 +34,8 @@ import delfos.dataset.basic.loader.types.UsersDatasetLoader;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RelevanceCriteria;
 import delfos.experiment.ExperimentAdapter;
-import static delfos.experiment.SeedHolder.SEED;
-import static delfos.experiment.casestudy.CaseStudy.RESULTS_DIRECTORY;
+
+import static delfos.experiment.casestudy.CaseStudy.EVALUATION_MEASURES_AS_STRING;
 
 import delfos.experiment.casestudy.CaseStudyParameterChangedListener;
 import delfos.experiment.validation.validationtechnique.CrossFoldValidation_Ratings;
@@ -591,5 +589,17 @@ public class GroupCaseStudy extends ExperimentAdapter {
     @Override
     public void setResultsFromElement(Element experimentElement) {
         throw new IllegalStateException("Not implemented yet");
+    }
+
+    public GroupCaseStudy setEvaluationMeasures(
+            Collection<GroupEvaluationMeasure> evaluationMeasures) {
+
+        String evaluationMeasuresAsString = evaluationMeasures.stream().
+                map(evaluationMeasure -> evaluationMeasure.toString()).
+                reduce((s, s2) -> s +","+s2).
+                orElse("");
+
+        setParameterValue(EVALUATION_MEASURES_AS_STRING,evaluationMeasuresAsString);
+        return this;
     }
 }

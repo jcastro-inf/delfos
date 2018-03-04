@@ -37,10 +37,8 @@ import delfos.utils.algorithm.progress.ProgressChangedController;
 import delfos.utils.algorithm.progress.ProgressChangedListenerDefault;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
+
 import jxl.write.WriteException;
 import org.jdom2.JDOMException;
 
@@ -54,13 +52,13 @@ import org.jdom2.JDOMException;
  */
 public class XMLexperimentsExecution {
 
-    private final long seed;
+    private final Optional<Long> seed;
     private final String experimentsDirectory;
-    private final int numExecutions;
+    private final Optional<Integer> numExecutions;
 
     public static final String AGGREGATE_RESULTS_EXCEL_DEFAULT_FILE_NAME = CaseStudyExcel.AGGREGATE_RESULTS_EXCEL_DEFAULT_FILE_NAME;
 
-    public XMLexperimentsExecution(String experimentsDirectory, int numExecutions, long seed) {
+    public XMLexperimentsExecution(String experimentsDirectory, Optional<Integer> numExecutions, Optional<Long> seed) {
         this.experimentsDirectory = experimentsDirectory;
 
         if (!new File(experimentsDirectory).exists()) {
@@ -76,29 +74,35 @@ public class XMLexperimentsExecution {
 
     public void execute() throws CannotLoadContentDataset, CannotLoadRatingsDataset {
 
-        Global.showMessageTimestamped("Execute XMLExperiment located in directory '" + experimentsDirectory + "'");
-        Collection<EvaluationMeasure> evaluationMeasures = EvaluationMeasuresFactory.getInstance().getAllClasses();
+        Global.showMessageTimestamped("Execute XMLExperiment located in directory provided as '" + experimentsDirectory + "'");
 
-        File experimentsDirectoryDirectory = new File(experimentsDirectory);
-        File resultsDirectory = new File(experimentsDirectory + File.separator + "results" + File.separator);
+        File experimentDirectoryFile = new File(experimentsDirectory);
 
-        FileUtilities.createDirectoryPathIfNotExists(resultsDirectory);
+        File experimentBaseDirectory;
+        if(experimentDirectoryFile.getName().equals("descriptions") ){
+            experimentBaseDirectory = experimentDirectoryFile.getParentFile();
+        }else{
+            experimentBaseDirectory = experimentDirectoryFile;
+        }
+        Global.showWarning("Experiment base directory is '"+experimentBaseDirectory.getAbsolutePath()+"'");
+
+        File experimentXMLDescriptionsDir = new File(experimentBaseDirectory + File.separator + "descriptions");
+        File resultsDirectory = new File(experimentBaseDirectory + File.separator + "results");
+        File aggregateResultsDirectory = new File(experimentBaseDirectory + File.separator + "aggregate");
 
         List<Experiment> allTasks = new ArrayList<>();
 
         try {
-            File[] experimentFiles = experimentsDirectoryDirectory.listFiles(new FileFilterByExtension(false, "xml"));
+            File[] experimentFiles = experimentXMLDescriptionsDir.
+                    listFiles(new FileFilterByExtension(false, "xml"));
 
             if (experimentFiles.length == 0) {
-                throw new IllegalStateException("No experiments files in '" + experimentsDirectoryDirectory.getAbsolutePath() + "'");
+                throw new IllegalStateException("No experiments files in '" + experimentXMLDescriptionsDir.getAbsolutePath() + "'");
             }
-            Arrays.sort(experimentFiles, (File o1, File o2) -> o1.getName().compareTo(o2.getName()));
-            for (File experimentFile : experimentsDirectoryDirectory.listFiles(new FileFilterByExtension(false, "xml"))) {
+            Arrays.sort(experimentFiles, Comparator.comparing(File::getName));
+            for (File experimentFile : experimentFiles) {
                 Experiment experiment = ExperimentXML.loadExperiment(experimentFile);
-
-                File resultsDirectoryThisExperiment = new File(experimentFile.getParentFile().getPath() + File.separator + "results");
-                experiment.setResultsDirectory(resultsDirectoryThisExperiment);
-
+                //experiment.setResultsDirectory(resultsDirectory);
                 allTasks.add(experiment);
             }
         } catch (JDOMException | IOException ex) {
@@ -108,20 +112,22 @@ public class XMLexperimentsExecution {
 
         allTasks.forEach(experiment -> {
             if(experiment.haveParameter(CaseStudy.NUM_EXECUTIONS)){
-                experiment.setParameterValue(CaseStudy.NUM_EXECUTIONS,numExecutions);
+                if(numExecutions.isPresent()) {
+                    experiment.setParameterValue(CaseStudy.NUM_EXECUTIONS, numExecutions.get());
+                }
             }else{
                 Global.showWarning("Experiment '"+experiment.getAlias()+"' does not have parameter "+CaseStudy.NUM_EXECUTIONS );
             }
 
             if(experiment.haveParameter(SeedHolder.SEED)){
-                experiment.setParameterValue(SeedHolder.SEED,seed);
+                if(seed.isPresent()) {
+                    experiment.setParameterValue(SeedHolder.SEED, seed.get());
+                }
             }else{
                 Global.showWarning("Experiment '"+experiment.getAlias()+"' does not have parameter "+SeedHolder.SEED);
             }
         });
 
-
-        
         Experiment_SingleTaskExecute caseStudy_SingleTaskExecute = new Experiment_SingleTaskExecute();
 
         ProgressChangedController progressChangedController = new ProgressChangedController(
@@ -135,13 +141,18 @@ public class XMLexperimentsExecution {
             progressChangedController.setTaskFinished();
         });
 
-        File aggregateFile = FileUtilities.addSufix(resultsDirectory, File.separator + AGGREGATE_RESULTS_EXCEL_DEFAULT_FILE_NAME);
-        try {
-            CaseStudyExcel.aggregateExcels(
-                    resultsDirectory.listFiles(new FileFilterByExtension(false, "xls")),
-                    aggregateFile);
-        } catch (WriteException ex) {
-            ERROR_CODES.CANNOT_WRITE_CASE_STUDY_XML.exit(ex);
+
+        boolean isCaseStudy = allTasks.stream().anyMatch(experiment -> experiment instanceof CaseStudy);
+
+        if(isCaseStudy) {
+            File aggregateFile = FileUtilities.addSufix(aggregateResultsDirectory, File.separator + AGGREGATE_RESULTS_EXCEL_DEFAULT_FILE_NAME);
+            try {
+                CaseStudyExcel.aggregateExcels(
+                        resultsDirectory.listFiles(new FileFilterByExtension(false, "xls")),
+                        aggregateFile);
+            } catch (WriteException ex) {
+                ERROR_CODES.CANNOT_WRITE_CASE_STUDY_XML.exit(ex);
+            }
         }
     }
 }

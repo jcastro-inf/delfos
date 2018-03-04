@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.jdom2.Element;
@@ -47,8 +48,8 @@ public class ExecuteGroupCaseStudy_Task extends Task {
     private final GroupCaseStudyConfiguration groupCaseStudyConfiguration;
     private final DatasetLoader<? extends Rating> datasetLoader;
     private final Collection<GroupEvaluationMeasure> groupEvaluationMeasures;
-    private final int numExecutions;
-    private final long seed;
+    private final Optional<Integer> numExecutions;
+    private final Optional<Long> seed;
 
     public ExecuteGroupCaseStudy_Task(
             File experimentsDirectory,
@@ -56,8 +57,8 @@ public class ExecuteGroupCaseStudy_Task extends Task {
             GroupCaseStudyConfiguration groupCaseStudyConfiguration,
             DatasetLoader<? extends Rating> datasetLoader,
             Collection<GroupEvaluationMeasure> groupEvaluationMeasures,
-            int numExecutions,
-            long seed) {
+            Optional<Integer> numExecutions,
+            Optional<Long> seed) {
 
         this.experimentsDirectory = experimentsDirectory;
         this.caseName = caseName;
@@ -102,11 +103,11 @@ public class ExecuteGroupCaseStudy_Task extends Task {
         return Collections.unmodifiableCollection(groupEvaluationMeasures);
     }
 
-    public int getNumExecutions() {
+    public Optional<Integer> getNumExecutions() {
         return numExecutions;
     }
 
-    public long getSeed() {
+    public Optional<Long> getSeed() {
         return seed;
     }
 }

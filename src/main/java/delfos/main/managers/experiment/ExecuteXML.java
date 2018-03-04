@@ -29,6 +29,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
+
 import org.jdom2.JDOMException;
 
 /**
@@ -112,16 +114,20 @@ public class ExecuteXML extends CaseUseMode {
     public void manageCaseUse(ConsoleParameters consoleParameters) {
         try {
             File xmlExperimentsDirectory = new File(consoleParameters.getValue(ExecuteXML.XML_DIRECTORY));
-            int numExecutions = getNumExecutions(consoleParameters);
-            long seed = getSeed(consoleParameters);
+            Optional<Integer> numExecutions = getNumExecutions(consoleParameters);
+            Optional<Long> seed = getSeed(consoleParameters);
             boolean forceReExecution = ExecuteXML.isForceExecution(consoleParameters);
 
             consoleParameters.printUnusedParameters(System.err);
 
-            if (ExecuteXML.shouldExecuteTheExperiment(xmlExperimentsDirectory, numExecutions, forceReExecution)) {
+            if (ExecuteXML.shouldExecuteTheExperiment(xmlExperimentsDirectory, numExecutions.orElse(1), forceReExecution)) {
                 Global.showMessageTimestamped("The experiment is going to be executed (" + xmlExperimentsDirectory.getAbsolutePath() + ")");
                 Global.showMessageTimestamped("command: " + consoleParameters.printOriginalParameters());
-                manageCaseUse(xmlExperimentsDirectory, xmlExperimentsDirectory + File.separator + "dataset" + File.separator, numExecutions, seed);
+                manageCaseUse(
+                        xmlExperimentsDirectory,
+                        xmlExperimentsDirectory + File.separator + "dataset" + File.separator,
+                        numExecutions,
+                        seed);
             } else {
                 Global.showMessageTimestamped("The experiment was already executed. (" + xmlExperimentsDirectory.getPath() + ")");
             }
@@ -130,7 +136,7 @@ public class ExecuteXML extends CaseUseMode {
         }
     }
 
-    public static void manageCaseUse(File experimentsDirectory, String datasetDirectory, int numExecutions, long seed) {
+    public static void manageCaseUse(File experimentsDirectory, String datasetDirectory, Optional<Integer> numExecutions, Optional<Long> seed) {
         try {
             XMLexperimentsExecution execution = new XMLexperimentsExecution(
                     experimentsDirectory.getPath(),
@@ -144,19 +150,20 @@ public class ExecuteXML extends CaseUseMode {
         }
     }
 
-    public static long getSeed(ConsoleParameters consoleParameters) throws NumberFormatException {
+    public static Optional<Long> getSeed(ConsoleParameters consoleParameters) throws NumberFormatException {
         try {
-            return Long.parseLong(consoleParameters.getValue(SEED_PARAMETER));
+            return Optional.of(Long.parseLong(consoleParameters.getValue(SEED_PARAMETER)));
+
         } catch (UndefinedParameterException ex) {
-            return System.currentTimeMillis();
+            return Optional.empty();
         }
     }
 
-    public static int getNumExecutions(ConsoleParameters consoleParameters) throws NumberFormatException {
+    public static Optional<Integer> getNumExecutions(ConsoleParameters consoleParameters) throws NumberFormatException {
         try {
-            return Integer.parseInt(consoleParameters.getValue(NUM_EXEC_PARAMETER));
+            return Optional.of(Integer.parseInt(consoleParameters.getValue(NUM_EXEC_PARAMETER)));
         } catch (UndefinedParameterException ex) {
-            return 1;
+            return Optional.empty();
         }
     }
 }

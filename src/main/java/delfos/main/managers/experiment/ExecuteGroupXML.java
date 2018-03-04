@@ -25,6 +25,7 @@ import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
 import delfos.group.casestudy.fromxmlfiles.GroupXMLexperimentsExecution;
 import delfos.main.managers.CaseUseMode;
 import java.io.File;
+import java.util.Optional;
 
 /**
  *
@@ -64,13 +65,13 @@ public class ExecuteGroupXML extends CaseUseMode {
     public void manageCaseUse(ConsoleParameters consoleParameters) {
         try {
             File xmlExperimentsDirectory = new File(consoleParameters.getValue(ExecuteGroupXML.XML_DIRECTORY));
-            int NUM_EJECUCIONES = ExecuteXML.getNumExecutions(consoleParameters);
-            long SEED = ExecuteXML.getSeed(consoleParameters);
+            Optional<Integer> NUM_EJECUCIONES = ExecuteXML.getNumExecutions(consoleParameters);
+            Optional<Long> SEED = ExecuteXML.getSeed(consoleParameters);
             boolean forceReExecution = ExecuteXML.isForceExecution(consoleParameters);
 
             consoleParameters.printUnusedParameters(System.err);
 
-            if (ExecuteXML.shouldExecuteTheExperiment(xmlExperimentsDirectory, NUM_EJECUCIONES, forceReExecution)) {
+            if (ExecuteXML.shouldExecuteTheExperiment(xmlExperimentsDirectory, NUM_EJECUCIONES.orElse(1), forceReExecution)) {
 
                 Global.showMessageTimestamped("The experiment is going to be executed (" + xmlExperimentsDirectory.getAbsolutePath() + ")");
                 Global.showMessageTimestamped("command: " + consoleParameters.printOriginalParameters());
@@ -83,7 +84,7 @@ public class ExecuteGroupXML extends CaseUseMode {
         }
     }
 
-    public static void manageCaseUse(File experimentsDirectory, String datasetDirectory, int numExecutions, long seed) {
+    public static void manageCaseUse(File experimentsDirectory, String datasetDirectory, Optional<Integer> numExecutions, Optional<Long> seed) {
         try {
             GroupXMLexperimentsExecution execution = new GroupXMLexperimentsExecution(
                     experimentsDirectory.getPath(),

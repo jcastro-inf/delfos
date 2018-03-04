@@ -126,12 +126,7 @@ public class CaseStudyXML {
             int split = 0;
             List<Element> splitsElements = executionElement.getChildren("Split");
             for(Element splitElement: splitsElements){
-
-
                 Map<EvaluationMeasure, MeasureResult> thisExecutionSplitResults = getResultsFromExecutionSplitElement(splitElement);
-
-
-
                 executionResults.put(split, thisExecutionSplitResults);
 
                 split++;

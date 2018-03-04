@@ -28,6 +28,9 @@ import delfos.experiment.ExperimentListener_default;
 import delfos.experiment.casestudy.CaseStudy;
 import delfos.experiment.validation.predictionprotocol.PredictionProtocol;
 import delfos.experiment.validation.validationtechnique.ValidationTechnique;
+import delfos.group.casestudy.defaultcase.GroupCaseStudy;
+import delfos.group.io.excel.casestudy.GroupCaseStudyExcel;
+import delfos.io.excel.casestudy.CaseStudyExcel;
 import delfos.io.xml.experiment.ExperimentXML;
 import delfos.results.evaluationmeasures.EvaluationMeasure;
 import delfos.rs.RecommenderSystem;
@@ -66,10 +69,17 @@ public class Experiment_SingleTaskExecute implements Consumer<Experiment> {
 
         File fileToSaveResults = new File(experiment.getResultsDirectory().getPath() + File.separator + experiment.getAlias());
 
-        File excelFile = FileUtilities.changeExtension(fileToSaveResults, "xls");
-        File xmlFile = FileUtilities.changeExtension(fileToSaveResults, "xml");
+        File excelFile = FileUtilities.addSufix(fileToSaveResults, ".xls");
+        File xmlFile = FileUtilities.addSufix(fileToSaveResults, ".xml");
 
         ExperimentXML.saveExperiment(experiment, xmlFile.getAbsoluteFile());
+        if(experiment instanceof CaseStudy) {
+            CaseStudy caseStudy = (CaseStudy) experiment;
+            CaseStudyExcel.saveCaseResults(caseStudy, excelFile);
+        } else if (experiment instanceof GroupCaseStudy){
+            GroupCaseStudy groupCaseStudy = (GroupCaseStudy) experiment;
+            GroupCaseStudyExcel.saveCaseResults(groupCaseStudy,excelFile);
+        }
     }
 
 }

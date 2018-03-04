@@ -88,17 +88,19 @@ public class TuringPreparator implements ExperimentPreparator {
 
             String fileName = aliasForDirName + ".xml";
 
-            File experimentDirectory = new File(experimentBaseDirectory + File.separator + aliasForDirName);
+            File experimentDescriptionDirectory = new File(experimentBaseDirectory + File.separator + "descriptions");
+            File experimentResultsDirectory = new File(experimentBaseDirectory + File.separator + "results");
 
-            if(experimentDirectory.exists()){
-                Global.showWarning("Directory '"+experimentDirectory+"' already exists.");
+            if(experimentBaseDirectory.exists()){
+                Global.showWarning("Directory '"+experimentDescriptionDirectory+"' already exists.");
             }
 
-            FileUtilities.deleteDirectoryRecursive(experimentDirectory);
-            experimentDirectory.mkdirs();
+            Experiment experimentWithResultsDirectorySet = (Experiment) experiment.clone();
+            experimentWithResultsDirectorySet.setResultsDirectory(experimentResultsDirectory);
 
-            File experimentFile = new File(experimentDirectory + File.separator + fileName);
-            ExperimentXML.saveExperiment(experiment, experimentFile);
+            File experimentFile = new File(experimentDescriptionDirectory + File.separator + fileName);
+
+            ExperimentXML.saveExperiment(experimentWithResultsDirectorySet, experimentFile);
         }
     }
 

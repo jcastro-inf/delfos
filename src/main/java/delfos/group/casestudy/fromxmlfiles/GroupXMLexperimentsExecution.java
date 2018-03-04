@@ -33,12 +33,7 @@ import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
-import java.util.TimeZone;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.jdom2.JDOMException;
@@ -54,11 +49,11 @@ import org.jdom2.JDOMException;
 public class GroupXMLexperimentsExecution {
 
     private final String experimentsDirectory;
-    private final int numExecutions;
+    private final Optional<Integer> numExecutions;
     private final String datasetsDirectory;
-    private final long seed;
+    private final Optional<Long> seed;
 
-    public GroupXMLexperimentsExecution(String experimentsDirectory, String datasetDirectory, int numExecutions, long seed) {
+    public GroupXMLexperimentsExecution(String experimentsDirectory, String datasetDirectory, Optional<Integer> numExecutions, Optional<Long> seed) {
         this.experimentsDirectory = experimentsDirectory;
 
         if (!new File(experimentsDirectory).exists()) {

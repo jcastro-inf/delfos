@@ -18,6 +18,7 @@ package delfos.experiment.casestudy;
 
 import delfos.casestudy.defaultcase.ExecutionSplitDescriptor;
 import delfos.casestudy.parallelisation.ExecutionSplitConsumer;
+import delfos.common.FileUtilities;
 import delfos.common.Global;
 import delfos.common.exceptions.dataset.CannotLoadContentDataset;
 import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
@@ -671,10 +672,15 @@ public class CaseStudy<RecommendationModel extends Object, RatingType extends Ra
 
             caseStudyCloned.setFinished();
 
-            File resultsDirectory = getResultsDirectory();
+            File fileToSaveResults = new File(getResultsDirectory().getPath() + File.separator + getAlias());
 
-            CaseStudyXML.saveCaseResults(caseStudyCloned, resultsDirectory);
-            CaseStudyExcel.saveCaseResults(caseStudyCloned, resultsDirectory);
+            File excelFile = FileUtilities.addSufix(fileToSaveResults, ".xls");
+            File xmlFile = FileUtilities.addSufix(fileToSaveResults, ".xml");
+
+            FileUtilities.createDirectoriesForFile(xmlFile);
+
+            CaseStudyXML.saveCaseResults(caseStudyCloned, xmlFile);
+            CaseStudyExcel.saveCaseResults(caseStudyCloned, excelFile);
 
         });
     }

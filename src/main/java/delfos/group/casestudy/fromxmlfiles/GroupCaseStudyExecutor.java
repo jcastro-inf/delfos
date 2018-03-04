@@ -26,6 +26,7 @@ import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RelevanceCriteria;
 import delfos.experiment.ExperimentListener_default;
+import delfos.experiment.casestudy.CaseStudy;
 import delfos.experiment.casestudy.ExecutionProgressListener_default;
 import delfos.experiment.validation.validationtechnique.ValidationTechnique;
 import delfos.group.casestudy.GroupCaseStudyConfiguration;
@@ -39,6 +40,7 @@ import delfos.group.results.groupevaluationmeasures.GroupEvaluationMeasure;
 import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
+import java.util.Optional;
 import java.util.function.Consumer;
 import org.jdom2.JDOMException;
 
@@ -56,8 +58,8 @@ public class GroupCaseStudyExecutor implements Consumer<ExecuteGroupCaseStudy_Ta
             GroupCaseStudyConfiguration caseStudyConfiguration,
             DatasetLoader<? extends Rating> datasetLoader,
             Collection<GroupEvaluationMeasure> groupEvaluationMeasures,
-            int numExecutions,
-            long seed)
+            Optional<Integer> numExecutions,
+            Optional<Long> seed)
             throws CannotLoadContentDataset, JDOMException, IOException, CannotLoadRatingsDataset {
 
         GroupRecommenderSystem<? extends Object, ? extends Object> groupRecommenderSystem = caseStudyConfiguration.getGroupRecommenderSystem();
@@ -68,14 +70,14 @@ public class GroupCaseStudyExecutor implements Consumer<ExecuteGroupCaseStudy_Ta
 
         RelevanceCriteria relevanceCriteria = caseStudyConfiguration.getRelevanceCriteria();
 
-        GroupCaseStudy caseStudyGroupRecommendation = new GroupCaseStudy(
-                datasetLoader,
-                groupRecommenderSystem,
-                groupFormationTechnique,
-                validationTechnique, groupPredictionProtocol,
-                groupEvaluationMeasures,
-                relevanceCriteria,
-                numExecutions);
+        GroupCaseStudy caseStudyGroupRecommendation = new GroupCaseStudy();
+
+        caseStudyGroupRecommendation.setDatasetLoader(datasetLoader);
+        caseStudyGroupRecommendation.setGroupRecommenderSystem(groupRecommenderSystem);
+        caseStudyGroupRecommendation.setGroupFormationTechnique(groupFormationTechnique);
+        caseStudyGroupRecommendation.setValidationTechnique(validationTechnique);
+        caseStudyGroupRecommendation.setGroupPredictionProtocol(groupPredictionProtocol);
+        caseStudyGroupRecommendation.setParameterValue(CaseStudy.RELEVANCE_CRITERIA,relevanceCriteria);
 
         caseStudyGroupRecommendation.setAlias("[" + datasetLoader.getAlias() + "]" + caseStudyConfiguration.getCaseStudyAlias());
 
@@ -84,7 +86,15 @@ public class GroupCaseStudyExecutor implements Consumer<ExecuteGroupCaseStudy_Ta
 
         caseStudyGroupRecommendation.addExperimentListener(new ExperimentListener_default(System.out, 10000));
         caseStudyGroupRecommendation.addExecutionProgressListener(new ExecutionProgressListener_default(System.out, 10000));
-        caseStudyGroupRecommendation.setSeedValue(seed);
+
+
+        if(seed.isPresent()) {
+            caseStudyGroupRecommendation.setSeedValue(seed.get());
+        }
+
+        if(numExecutions.isPresent()){
+            caseStudyGroupRecommendation.setNumExecutions(numExecutions.get());
+        }
 
         File resultsDirectory = new File(
                 experimentsDirectory.getAbsolutePath() + File.separator

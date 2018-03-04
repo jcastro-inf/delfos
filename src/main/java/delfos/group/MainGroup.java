@@ -30,9 +30,10 @@ import delfos.group.factories.GroupRecommenderSystemsFactory;
 import delfos.main.managers.experiment.ExecuteGroupXML;
 import java.io.File;
 import java.io.IOException;
+import java.util.Optional;
 
 /**
- * Clase principal que sirve como punto de entrada para ejecutar la recomendación a grupos implementada hasta el
+ * Clase principal que sirve como punto de entrada para ejecutar la recomendación a grupos implementada hasta elnModel, RatingType>
  * momento. No proporciona interfaz y las opciones son introducidas usando el método <b>Hard coded</b>.
  *
  * @author jcastro-inf ( https://github.com/jcastro-inf )
@@ -184,8 +185,8 @@ public class MainGroup {
             GroupXMLexperimentsExecution execution = new GroupXMLexperimentsExecution(
                     experimentsDirectory,
                     datasetDirectory,
-                    numExecutions,
-                    seed);
+                    Optional.of(numExecutions),
+                    Optional.of(seed));
             execution.execute();
         } catch (CannotLoadContentDataset ex) {
             ERROR_CODES.CANNOT_LOAD_CONTENT_DATASET.exit(ex);
