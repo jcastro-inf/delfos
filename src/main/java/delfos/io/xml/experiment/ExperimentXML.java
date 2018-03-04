@@ -37,19 +37,7 @@ public class ExperimentXML {
     }
 
     public static Experiment getExperiment(Element element){
-        if(1==1) {
-            return (Experiment) ParameterOwnerXML.getParameterOwner(element);
-        } else {
-            String experimentType = element.getAttributeValue(EXPERIMENT_TYPE_ATTRIBUTE);
-
-            if (CaseStudy.class.getSimpleName().equals(experimentType)) {
-                return CaseStudyXML.loadCaseResults(element).getCaseStudy();
-            } else if (GroupCaseStudy.class.getSimpleName().equals(experimentType)) {
-                return GroupCaseStudyXML.loadGroupCaseDescription(element).createGroupCaseStudy();
-            } else {
-                return (Experiment) ParameterOwnerXML.getParameterOwner(element);
-            }
-        }
+        return (Experiment) ParameterOwnerXML.getParameterOwner(element);
     }
 
     public static void saveExperiment(Experiment experiment, File file) {
