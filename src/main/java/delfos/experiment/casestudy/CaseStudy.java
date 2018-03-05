@@ -688,14 +688,17 @@ public class CaseStudy<RecommendationModel extends Object, RatingType extends Ra
     public Collection<EvaluationMeasure> getEvaluationMeasures(){
         String evaluationMeasuresAsString = getParameterValue(EVALUATION_MEASURES_AS_STRING).toString();
 
-
-        List<EvaluationMeasure> evaluationMeasures = Arrays.stream(evaluationMeasuresAsString.
+        String[] evaluationMeasuresAsVector = evaluationMeasuresAsString.
                 replace(",", " ").
-                split(" ")).
-                map(evaluatonMeasureAsString -> {
+                split(" ");
 
-                    return EvaluationMeasuresFactory.getInstance().getClassByName(evaluatonMeasureAsString);
-                }).collect(Collectors.toList());
+        Map<String,EvaluationMeasure> evaluationMeasuresByName = Arrays.stream(evaluationMeasuresAsVector).
+                collect(Collectors.toMap(x->x,x ->EvaluationMeasuresFactory.getInstance().getClassByName(x)));
+
+        List<EvaluationMeasure> evaluationMeasures = evaluationMeasuresByName.
+                values().stream().
+                filter(evaluationMeasure -> evaluationMeasure != null).
+                collect(Collectors.toList());
 
         return evaluationMeasures;
     }
@@ -763,8 +766,8 @@ public class CaseStudy<RecommendationModel extends Object, RatingType extends Ra
                 map(evaluationMeasure -> evaluationMeasure.toString()).
                 reduce((s, s2) -> s +","+s2).
                 orElse("");
-
         setParameterValue(EVALUATION_MEASURES_AS_STRING,evaluationMeasuresAsString);
+        
         return this;
     }
 
