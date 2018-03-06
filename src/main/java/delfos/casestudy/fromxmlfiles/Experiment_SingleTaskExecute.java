@@ -69,8 +69,8 @@ public class Experiment_SingleTaskExecute implements Consumer<Experiment> {
 
         File fileToSaveResults = new File(experiment.getResultsDirectory().getPath() + File.separator + experiment.getAlias());
 
-        File excelFile = FileUtilities.addSufix(fileToSaveResults, ".xls");
-        File xmlFile = FileUtilities.addSufix(fileToSaveResults, ".xml");
+        File excelFile = new File(fileToSaveResults + ".xls");
+        File xmlFile = new File(fileToSaveResults + ".xml");
 
         ExperimentXML.saveExperiment(experiment, xmlFile.getAbsoluteFile());
         if(experiment instanceof CaseStudy) {
