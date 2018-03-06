@@ -672,15 +672,15 @@ public class CaseStudy<RecommendationModel extends Object, RatingType extends Ra
 
             caseStudyCloned.setFinished();
 
-            File fileToSaveResults = new File(getResultsDirectory().getPath() + File.separator + getAlias());
+            File fileToSaveResultsWithoutExtension = new File(getResultsDirectory().getPath() + File.separator + getAlias());
 
-            File excelFile = FileUtilities.addSufix(fileToSaveResults, ".xls");
-            File xmlFile = FileUtilities.addSufix(fileToSaveResults, ".xml");
+            File xlsFile = new File(fileToSaveResultsWithoutExtension + ".xls");
+            File xmlFile = new File(fileToSaveResultsWithoutExtension + ".xml");
 
             FileUtilities.createDirectoriesForFile(xmlFile);
 
             CaseStudyXML.saveCaseResults(caseStudyCloned, xmlFile);
-            CaseStudyExcel.saveCaseResults(caseStudyCloned, excelFile);
+            CaseStudyExcel.saveCaseResults(caseStudyCloned, xlsFile);
 
         });
     }
