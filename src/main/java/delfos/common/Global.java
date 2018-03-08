@@ -190,6 +190,16 @@ public class Global {
         Global.parallelExecutionSplits = parallelExecutionSplits;
     }
 
+    private static boolean isParallelExecutionOfExperiments = false;
+
+    public static void setParallelExecutionOfExperiments(boolean isParallelExecutionOfExperiments){
+        Global.isParallelExecutionOfExperiments = isParallelExecutionOfExperiments;
+    }
+
+    public static boolean isIsParallelExecutionOfExperiments() {
+        return isParallelExecutionOfExperiments;
+    }
+
     public enum MessageLevel {
 
         /**

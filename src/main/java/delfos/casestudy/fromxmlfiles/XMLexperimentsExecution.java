@@ -38,6 +38,7 @@ import delfos.utils.algorithm.progress.ProgressChangedListenerDefault;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
+import java.util.stream.Stream;
 
 import jxl.write.WriteException;
 import org.jdom2.JDOMException;
@@ -136,7 +137,11 @@ public class XMLexperimentsExecution {
                 new ProgressChangedListenerDefault(System.out, 10000)
         );
 
-        allTasks.parallelStream().forEach(task -> {
+        Stream<Experiment> allTasksStream = Global.isIsParallelExecutionOfExperiments() ?
+                allTasks.parallelStream() :
+                allTasks.stream();
+
+        allTasksStream.forEach(task -> {
             caseStudy_SingleTaskExecute.accept(task);
             progressChangedController.setTaskFinished();
         });
