@@ -117,4 +117,7 @@ public interface Experiment extends ParameterOwner,SeedHolder {
 
     public void addResultsToElement(Element experimentElement);
     public void setResultsFromElement(Element experimentElement);
+
+    public int getNumExecutions();
+    public boolean hasResultsForAllExecutions();
 }

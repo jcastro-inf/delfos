@@ -45,6 +45,7 @@ import delfos.experiment.validation.validationtechnique.ValidationTechnique;
 import delfos.factories.EvaluationMeasuresFactory;
 import delfos.io.excel.casestudy.CaseStudyExcel;
 import delfos.io.xml.casestudy.CaseStudyXML;
+import delfos.io.xml.experiment.ExperimentXML;
 import delfos.results.MeasureResult;
 import delfos.results.evaluationmeasures.EvaluationMeasure;
 import delfos.rs.RecommendationModelBuildingProgressListener;
@@ -672,14 +673,14 @@ public class CaseStudy<RecommendationModel extends Object, RatingType extends Ra
 
             caseStudyCloned.setFinished();
 
-            File fileToSaveResultsWithoutExtension = new File(getResultsDirectory().getPath() + File.separator + getAlias());
+            File fileToSaveResultsWithoutExtension = new File(getResultsDirectory().getPath() + File.separator + getAlias()+"-execution="+execution);
 
             File xlsFile = new File(fileToSaveResultsWithoutExtension + ".xls");
             File xmlFile = new File(fileToSaveResultsWithoutExtension + ".xml");
 
             FileUtilities.createDirectoriesForFile(xmlFile);
 
-            CaseStudyXML.saveCaseResults(caseStudyCloned, xmlFile);
+            ExperimentXML.saveExperiment(caseStudyCloned, xmlFile);
             CaseStudyExcel.saveCaseResults(caseStudyCloned, xlsFile);
 
         });
@@ -827,5 +828,18 @@ public class CaseStudy<RecommendationModel extends Object, RatingType extends Ra
             this.setAggregateResults(caseStudyAggregateResults);
         }
 
+    }
+
+    @Override
+    public boolean hasResultsForAllExecutions() {
+
+        int numExecutions = getNumExecutions();
+
+        Set<Integer> allExecutionsRequested = IntStream.range(0, numExecutions).boxed().collect(Collectors.toSet());
+        Set<Integer> allExecutionsFound = allLoopsResults.keySet();
+
+        boolean isSameExecutions =  allExecutionsRequested.equals(allExecutionsFound);
+
+        return isSameExecutions;
     }
 }

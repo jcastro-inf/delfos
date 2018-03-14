@@ -70,4 +70,15 @@ public class CustomCaseStudyMock extends ExperimentAdapter{
         result = Double.parseDouble(valueString);
     }
 
+    @Override
+    public int getNumExecutions() {
+        return ((Number) getParameterValue(CaseStudy.NUM_EXECUTIONS)).intValue();
+    }
+
+
+    @Override
+    public boolean hasResultsForAllExecutions() {
+        return true;
+    }
+
 }

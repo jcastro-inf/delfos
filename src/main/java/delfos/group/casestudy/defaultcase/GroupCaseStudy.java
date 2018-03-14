@@ -602,4 +602,19 @@ public class GroupCaseStudy extends ExperimentAdapter {
         setParameterValue(EVALUATION_MEASURES_AS_STRING,evaluationMeasuresAsString);
         return this;
     }
+
+
+
+    @Override
+    public boolean hasResultsForAllExecutions() {
+
+        int numExecutions = getNumExecutions();
+
+        Set<Integer> allExecutionsRequested = IntStream.range(0, numExecutions).boxed().collect(Collectors.toSet());
+        Set<Integer> allExecutionsFound = allLoopsResults.keySet();
+
+        boolean isSameExecutions =  allExecutionsRequested.equals(allExecutionsFound);
+
+        return isSameExecutions;
+    }
 }

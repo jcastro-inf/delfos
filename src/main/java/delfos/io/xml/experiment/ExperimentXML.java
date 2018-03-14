@@ -3,12 +3,14 @@ package delfos.io.xml.experiment;
 import delfos.Constants;
 import delfos.ERROR_CODES;
 import delfos.common.FileUtilities;
+import delfos.common.parameters.Parameter;
 import delfos.experiment.Experiment;
 import delfos.experiment.casestudy.CaseStudy;
 import delfos.group.casestudy.defaultcase.GroupCaseStudy;
 import delfos.group.io.xml.casestudy.GroupCaseStudyXML;
 import delfos.io.xml.casestudy.CaseStudyXML;
 import delfos.io.xml.parameterowner.ParameterOwnerXML;
+import delfos.io.xml.parameterowner.parameter.ParameterXML;
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
@@ -28,11 +30,14 @@ public class ExperimentXML {
         Element experimentElement = ParameterOwnerXML.getElement(experiment);
 
         experimentElement.setName(ELEMENT_NAME);
-        experimentElement.setAttribute(EXPERIMENT_TYPE_ATTRIBUTE,experiment.getClass().getSimpleName());
+        experimentElement.setAttribute(ExperimentXML.EXPERIMENT_TYPE_ATTRIBUTE,experiment.getClass().getSimpleName());
+        experimentElement.setAttribute(ParameterOwnerXML.PARAMETER_OWNER_ATTRIBUTE_NAME,experiment.getClass().getSimpleName());
+        experimentElement.setAttribute(ParameterOwnerXML.PARAMETER_OWNER_ATTRIBUTE_TYPE,experiment.getParameterOwnerType().toString());
 
         if(experiment.isFinished()) {
             experiment.addResultsToElement(experimentElement);
         }
+
         return experimentElement;
     }
 
@@ -49,7 +54,7 @@ public class ExperimentXML {
             new XMLOutputter(Constants.getXMLFormat()).output(doc, fileWriter);
         } catch (IOException ex) {
             ERROR_CODES.CANNOT_WRITE_RESULTS_FILE.exit(ex);
-        }
+         }
     }
 
     public static Experiment loadExperiment(File file) throws JDOMException, IOException {
