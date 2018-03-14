@@ -79,8 +79,12 @@ public class TuringPreparator implements ExperimentPreparator {
     public <ExperimentType extends Experiment> void prepareExperimentGeneral(
             List<ExperimentType> experiments, File experimentBaseDirectory
     ) {
+        Stream<ExperimentType> experimentsStream =
+                parallel ?
+                experiments.parallelStream():
+                experiments.stream();
 
-        for (ExperimentType experiment : experiments) {
+        experimentsStream.forEach(experiment -> {
             String aliasForDirName = experiment.getAlias().
                     replace("(", "").
                     replace(")", "").
@@ -101,7 +105,7 @@ public class TuringPreparator implements ExperimentPreparator {
             File experimentFile = new File(experimentDescriptionDirectory + File.separator + fileName);
 
             ExperimentXML.saveExperiment(experimentWithResultsDirectorySet, experimentFile);
-        }
+        });
     }
 
     public List<File> getXMLsFromDirectory(File directory){
