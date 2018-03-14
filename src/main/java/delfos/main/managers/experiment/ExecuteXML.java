@@ -20,16 +20,20 @@ import delfos.ConsoleParameters;
 import delfos.ERROR_CODES;
 import delfos.UndefinedParameterException;
 import delfos.casestudy.fromxmlfiles.XMLexperimentsExecution;
+import delfos.common.FileUtilities;
 import delfos.common.Global;
 import delfos.common.exceptions.dataset.CannotLoadContentDataset;
 import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
+import delfos.experiment.Experiment;
 import delfos.group.io.xml.casestudy.GroupCaseStudyXML;
+import delfos.io.xml.experiment.ExperimentXML;
 import delfos.main.managers.CaseUseMode;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.jdom2.JDOMException;
 
@@ -46,6 +50,7 @@ public class ExecuteXML extends CaseUseMode {
      * The directory that contains the group xml to be executed.
      */
     public static final String XML_DIRECTORY = "-directory";
+    public static final String XML_FILE = "-file";
     public static final String SEED_PARAMETER = "-seed";
     public static final String NUM_EXEC_PARAMETER = "-num-exec";
     public static final String FORCE_EXECUTION = "--force-execution";
@@ -98,6 +103,57 @@ public class ExecuteXML extends CaseUseMode {
         }
     }
 
+
+    public static boolean shouldExecuteTheExperimentOfFile(File xmlExperimentFile, int NUM_EJECUCIONES, boolean forceReExecution) {
+
+        if (forceReExecution) {
+            return true;
+        } else {
+            try {
+                Experiment experiment = ExperimentXML.loadExperiment(xmlExperimentFile);
+
+                File results = experiment.getResultsDirectory();
+                if (!results.exists()) {
+                    return true;
+                }
+
+                List<File> resultsFiles = FileUtilities.findInDirectory(results);
+
+                List<File> resultsXMLFiles = resultsFiles.stream().
+                        filter(file -> file.getName().endsWith(".xml")).
+                        collect(Collectors.toList());
+
+                boolean isResultWithSpecifiedExecutionsPresent = resultsXMLFiles.stream().
+                        anyMatch(file -> {
+                            try {
+                                Experiment experimentResult = ExperimentXML.loadExperiment(file);
+
+                                boolean isSameExperiment = experiment.equals(experimentResult);
+                                if(!isSameExperiment)
+                                    return false;
+
+                                boolean hasResultsForAllExecutions = experimentResult.hasResultsForAllExecutions();
+
+                                return hasResultsForAllExecutions;
+                            } catch (JDOMException e) {
+                                e.printStackTrace();
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                            return false;
+                        });
+
+                return !isResultWithSpecifiedExecutionsPresent;
+            } catch (JDOMException e) {
+                e.printStackTrace();
+                return true;
+            } catch (IOException e) {
+                e.printStackTrace();
+                return true;
+            }
+
+        }
+    }
     private static class Holder {
 
         private static final ExecuteXML INSTANCE = new ExecuteXML();
@@ -112,27 +168,55 @@ public class ExecuteXML extends CaseUseMode {
 
     @Override
     public void manageCaseUse(ConsoleParameters consoleParameters) {
-        try {
-            File xmlExperimentsDirectory = new File(consoleParameters.getValue(ExecuteXML.XML_DIRECTORY));
-            Optional<Integer> numExecutions = getNumExecutions(consoleParameters);
-            Optional<Long> seed = getSeed(consoleParameters);
-            boolean forceReExecution = ExecuteXML.isForceExecution(consoleParameters);
 
-            consoleParameters.printUnusedParameters(System.err);
+        if(consoleParameters.isParameterDefined(ExecuteXML.XML_DIRECTORY)){
+            try {
+                File xmlExperimentsDirectory = new File(consoleParameters.getValue(ExecuteXML.XML_DIRECTORY));
+                Optional<Integer> numExecutions = getNumExecutions(consoleParameters);
+                Optional<Long> seed = getSeed(consoleParameters);
+                boolean forceReExecution = ExecuteXML.isForceExecution(consoleParameters);
 
-            if (ExecuteXML.shouldExecuteTheExperiment(xmlExperimentsDirectory, numExecutions.orElse(1), forceReExecution)) {
-                Global.showMessageTimestamped("The experiment is going to be executed (" + xmlExperimentsDirectory.getAbsolutePath() + ")");
-                Global.showMessageTimestamped("command: " + consoleParameters.printOriginalParameters());
-                manageCaseUse(
-                        xmlExperimentsDirectory,
-                        xmlExperimentsDirectory + File.separator + "dataset" + File.separator,
-                        numExecutions,
-                        seed);
-            } else {
-                Global.showMessageTimestamped("The experiment was already executed. (" + xmlExperimentsDirectory.getPath() + ")");
+                consoleParameters.printUnusedParameters(System.err);
+
+                if (ExecuteXML.shouldExecuteTheExperiment(xmlExperimentsDirectory, numExecutions.orElse(1), forceReExecution)) {
+                    Global.showMessageTimestamped("The experiment is going to be executed (" + xmlExperimentsDirectory.getAbsolutePath() + ")");
+                    Global.showMessageTimestamped("command: " + consoleParameters.printOriginalParameters());
+                    manageCaseUse(
+                            xmlExperimentsDirectory,
+                            xmlExperimentsDirectory + File.separator + "dataset" + File.separator,
+                            numExecutions,
+                            seed);
+                } else {
+                    Global.showMessageTimestamped("The experiment was already executed. (" + xmlExperimentsDirectory.getPath() + ")");
+                }
+            } catch (UndefinedParameterException ex) {
+                consoleParameters.printUnusedParameters(System.err);
             }
-        } catch (UndefinedParameterException ex) {
-            consoleParameters.printUnusedParameters(System.err);
+        }
+
+        if(consoleParameters.isParameterDefined(ExecuteXML.XML_FILE)){
+            try {
+                File xmlExperimentFile = new File(consoleParameters.getValue(ExecuteXML.XML_FILE));
+                Optional<Integer> numExecutions = getNumExecutions(consoleParameters);
+                Optional<Long> seed = getSeed(consoleParameters);
+                boolean forceReExecution = ExecuteXML.isForceExecution(consoleParameters);
+
+                consoleParameters.printUnusedParameters(System.err);
+
+                if (ExecuteXML.shouldExecuteTheExperimentOfFile(xmlExperimentFile, numExecutions.orElse(1), forceReExecution)) {
+                    Global.showMessageTimestamped("The experiment is going to be executed (" + xmlExperimentFile.getAbsolutePath() + ")");
+                    Global.showMessageTimestamped("command: " + consoleParameters.printOriginalParameters());
+                    manageCaseUse(
+                            xmlExperimentFile,
+                            xmlExperimentFile + File.separator + "dataset" + File.separator,
+                            numExecutions,
+                            seed);
+                } else {
+                    Global.showMessageTimestamped("The experiment was already executed. (" + xmlExperimentFile.getPath() + ")");
+                }
+            } catch (UndefinedParameterException ex) {
+                consoleParameters.printUnusedParameters(System.err);
+            }
         }
     }
 

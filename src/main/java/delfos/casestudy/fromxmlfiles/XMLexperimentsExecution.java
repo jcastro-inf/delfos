@@ -22,17 +22,11 @@ import delfos.common.Global;
 import delfos.common.exceptions.dataset.CannotLoadContentDataset;
 import delfos.common.exceptions.dataset.CannotLoadRatingsDataset;
 import delfos.common.filefilters.FileFilterByExtension;
-import delfos.dataset.basic.loader.types.DatasetLoader;
-import delfos.dataset.basic.rating.Rating;
 import delfos.experiment.Experiment;
 import delfos.experiment.SeedHolder;
 import delfos.experiment.casestudy.CaseStudy;
-import delfos.experiment.casestudy.CaseStudyConfiguration;
-import delfos.factories.EvaluationMeasuresFactory;
 import delfos.io.excel.casestudy.CaseStudyExcel;
-import delfos.io.xml.casestudy.CaseStudyXML;
 import delfos.io.xml.experiment.ExperimentXML;
-import delfos.results.evaluationmeasures.EvaluationMeasure;
 import delfos.utils.algorithm.progress.ProgressChangedController;
 import delfos.utils.algorithm.progress.ProgressChangedListenerDefault;
 import java.io.File;
@@ -54,60 +48,70 @@ import org.jdom2.JDOMException;
 public class XMLexperimentsExecution {
 
     private final Optional<Long> seed;
-    private final String experimentsDirectory;
+    private final String experimentPath;
     private final Optional<Integer> numExecutions;
 
     public static final String AGGREGATE_RESULTS_EXCEL_DEFAULT_FILE_NAME = CaseStudyExcel.AGGREGATE_RESULTS_EXCEL_DEFAULT_FILE_NAME;
 
-    public XMLexperimentsExecution(String experimentsDirectory, Optional<Integer> numExecutions, Optional<Long> seed) {
-        this.experimentsDirectory = experimentsDirectory;
+    public XMLexperimentsExecution(String experimentPath, Optional<Integer> numExecutions, Optional<Long> seed) {
+        this.experimentPath = experimentPath;
 
-        if (!new File(experimentsDirectory).exists()) {
-            throw new IllegalArgumentException("The file '" + experimentsDirectory + "' do not exists [" + new File(experimentsDirectory).getAbsolutePath() + "]");
-        }
-        if (!new File(experimentsDirectory).isDirectory()) {
-            throw new IllegalArgumentException("The value '" + experimentsDirectory + "' not a directory [" + new File(experimentsDirectory).getAbsolutePath() + "]");
+        if (!new File(this.experimentPath).exists()) {
+            throw new IllegalArgumentException("The file '" + this.experimentPath + "' do not exists [" + new File(this.experimentPath).getAbsolutePath() + "]");
         }
 
         this.numExecutions = numExecutions;
         this.seed = seed;
     }
 
+    File getBaseDirectory(File file){
+        String absolutePath = file.getAbsolutePath();
+
+        if(absolutePath.contains("descriptions")){
+            return getBaseDirectory(file.getParentFile());
+        } else {
+            return file;
+        }
+    }
+
     public void execute() throws CannotLoadContentDataset, CannotLoadRatingsDataset {
 
-        Global.showMessageTimestamped("Execute XMLExperiment located in directory provided as '" + experimentsDirectory + "'");
+        Global.showMessageTimestamped("Execute XMLExperiment in path provided as '" + experimentPath + "'");
 
-        File experimentDirectoryFile = new File(experimentsDirectory);
+        List<Experiment> allTasks = new ArrayList<>();
 
-        File experimentBaseDirectory;
-        if(experimentDirectoryFile.getName().equals("descriptions") ){
-            experimentBaseDirectory = experimentDirectoryFile.getParentFile();
-        }else{
-            experimentBaseDirectory = experimentDirectoryFile;
-        }
-        Global.showWarning("Experiment base directory is '"+experimentBaseDirectory.getAbsolutePath()+"'");
+        File experimentBaseDirectory = getBaseDirectory(new File(experimentPath));
+        Global.showWarning("Experiment base directory is '" + experimentBaseDirectory.getAbsolutePath() + "'");
 
         File experimentXMLDescriptionsDir = new File(experimentBaseDirectory + File.separator + "descriptions");
         File resultsDirectory = new File(experimentBaseDirectory + File.separator + "results");
         File aggregateResultsDirectory = new File(experimentBaseDirectory + File.separator + "aggregate");
 
-        List<Experiment> allTasks = new ArrayList<>();
 
-        try {
-            File[] experimentFiles = experimentXMLDescriptionsDir.
-                    listFiles(new FileFilterByExtension(false, "xml"));
+        if(new File(experimentPath).isDirectory()){
+            try {
+                File[] experimentFiles = experimentXMLDescriptionsDir.
+                        listFiles(new FileFilterByExtension(false, "xml"));
 
-            if (experimentFiles.length == 0) {
-                throw new IllegalStateException("No experiments files in '" + experimentXMLDescriptionsDir.getAbsolutePath() + "'");
+                if (experimentFiles.length == 0) {
+                    throw new IllegalStateException("No experiments files in '" + experimentXMLDescriptionsDir.getAbsolutePath() + "'");
+                }
+                Arrays.sort(experimentFiles, Comparator.comparing(File::getName));
+                for (File experimentFile : experimentFiles) {
+                    Experiment experiment = ExperimentXML.loadExperiment(experimentFile);
+                    //experiment.setResultsDirectory(resultsDirectory);
+                    allTasks.add(experiment);
+                }
+            } catch (JDOMException | IOException ex) {
+                ERROR_CODES.CANNOT_READ_CASE_STUDY_XML.exit(ex);
             }
-            Arrays.sort(experimentFiles, Comparator.comparing(File::getName));
-            for (File experimentFile : experimentFiles) {
-                Experiment experiment = ExperimentXML.loadExperiment(experimentFile);
-                //experiment.setResultsDirectory(resultsDirectory);
-                allTasks.add(experiment);
+        }else{
+            try {
+                Experiment experiment = ExperimentXML.loadExperiment(new File(experimentPath));
+                allTasks=Arrays.asList(experiment);
+            } catch (JDOMException | IOException ex) {
+                ERROR_CODES.CANNOT_READ_CASE_STUDY_XML.exit(ex);
             }
-        } catch (JDOMException | IOException ex) {
-            ERROR_CODES.CANNOT_READ_CASE_STUDY_XML.exit(ex);
         }
 
 
@@ -153,11 +157,15 @@ public class XMLexperimentsExecution {
             File aggregateFile = FileUtilities.addSufix(aggregateResultsDirectory, File.separator + AGGREGATE_RESULTS_EXCEL_DEFAULT_FILE_NAME);
             try {
                 CaseStudyExcel.aggregateExcels(
-                        resultsDirectory.listFiles(new FileFilterByExtension(false, "xls")),
+                        getMostRelevantExcels(resultsDirectory),
                         aggregateFile);
             } catch (WriteException ex) {
                 ERROR_CODES.CANNOT_WRITE_CASE_STUDY_XML.exit(ex);
             }
         }
+    }
+
+    private File[] getMostRelevantExcels(File resultsDirectory) {
+        return resultsDirectory.listFiles(new FileFilterByExtension(false, "xls"));
     }
 }

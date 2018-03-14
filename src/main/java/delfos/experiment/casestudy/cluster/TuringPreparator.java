@@ -104,9 +104,21 @@ public class TuringPreparator implements ExperimentPreparator {
         }
     }
 
+    public List<File> getXMLsFromDirectory(File directory){
+        File descriptionsDirectory = new File(directory.getPath() + File.separator + "descriptions");
+        if(!directory.isDirectory()){
+            return Arrays.asList(directory);
+        } else if(descriptionsDirectory.exists()){
+            List<File> xmls = FileUtilities.findInDirectory(descriptionsDirectory);
+            return xmls;
+        }else {
+            return listFiles(directory);
+        }
+    }
+
     @Override
     public void executeExperimentsGeneral(File directory) {
-        List<File> experimentsToBeExecuted = listFiles(directory);
+        List<File> experimentsToBeExecuted = getXMLsFromDirectory(directory);
 
         Collections.shuffle(experimentsToBeExecuted, getRandomToShuffleExperiments());
 
@@ -115,17 +127,31 @@ public class TuringPreparator implements ExperimentPreparator {
                 ? experimentsToBeExecuted.parallelStream()
                 : experimentsToBeExecuted.stream();
 
-        experimentsToBeExecutedStream.forEach((singleExperimentDirectory) -> {
-            String[] args = {
-                    ExecuteXML.MODE_PARAMETER,
-                    ExecuteXML.XML_DIRECTORY, singleExperimentDirectory.getPath(),
-                    Constants.PRINT_FULL_XML,
-                    Constants.RAW_DATA};
-            try {
-                Main.mainWithExceptions(args);
-            } catch (Exception ex) {
-                Global.showWarning("Experiment failed in directory '" + singleExperimentDirectory.getAbsolutePath());
-                Global.showError(ex);
+        experimentsToBeExecutedStream.forEach((path) -> {
+            if(path.isDirectory()){
+                String[] args = {
+                        ExecuteXML.MODE_PARAMETER,
+                        ExecuteXML.XML_DIRECTORY, path.getPath(),
+                        Constants.PRINT_FULL_XML,
+                        Constants.RAW_DATA};
+                try {
+                    Main.mainWithExceptions(args);
+                } catch (Exception ex) {
+                    Global.showWarning("Experiment failed in directory '" + path.getAbsolutePath());
+                    Global.showError(ex);
+                }
+            }else{
+                String[] args = {
+                        ExecuteXML.MODE_PARAMETER,
+                        ExecuteXML.XML_FILE, path.getPath(),
+                        Constants.PRINT_FULL_XML,
+                        Constants.RAW_DATA};
+                try {
+                    Main.mainWithExceptions(args);
+                } catch (Exception ex) {
+                    Global.showWarning("Experiment failed in directory '" + path.getAbsolutePath());
+                    Global.showError(ex);
+                }
             }
         });
     }
