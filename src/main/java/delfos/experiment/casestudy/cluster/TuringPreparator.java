@@ -92,8 +92,15 @@ public class TuringPreparator implements ExperimentPreparator {
 
             String fileName = aliasForDirName + ".xml";
 
-            File experimentDescriptionDirectory = new File(experimentBaseDirectory + File.separator + "descriptions");
-            File experimentResultsDirectory = new File(experimentBaseDirectory + File.separator + "results");
+            String datasetLoaderAlias = ((DatasetLoader)experiment.getParameterValue(CaseStudy.DATASET_LOADER)).getAlias();
+
+            File experimentDescriptionDirectory = new File(experimentBaseDirectory +
+                    File.separator + datasetLoaderAlias +
+                    File.separator + "descriptions");
+
+            File experimentResultsDirectory = new File(experimentBaseDirectory +
+                    File.separator + datasetLoaderAlias +
+                    File.separator + "results");
 
             if(experimentBaseDirectory.exists()){
                 Global.showWarning("Directory '"+experimentDescriptionDirectory+"' already exists.");
