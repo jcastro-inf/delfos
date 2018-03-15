@@ -58,13 +58,25 @@ public class ExecuteXML extends CaseUseMode {
     public static boolean isAnyResultAggregatedXMLPresent(File xmlExperimentsDirectory) {
         File xmlExperimentResultsDirectory = new File(xmlExperimentsDirectory.getPath() + File.separator + "results" + File.separator);
         if (!xmlExperimentResultsDirectory.exists()) {
+            Global.showMessage("xmlExperimentResultsDirectory exists: '"+xmlExperimentResultsDirectory+"'");
             return false;
         }
         if (!xmlExperimentResultsDirectory.isDirectory()) {
             throw new IllegalStateException("Results directory not found (is a file) ['" + xmlExperimentResultsDirectory.getAbsolutePath() + "']");
         }
-        List<File> aggregateResults = Arrays.asList(xmlExperimentResultsDirectory.listFiles((File dir, String name) -> name.contains("_AGGR.xml")));
-        return !aggregateResults.isEmpty();
+
+        List<File> filesInResultsDirectory = FileUtilities.findInDirectory(xmlExperimentsDirectory);
+        List<File> aggregateResultsFiles = filesInResultsDirectory.
+                stream().
+                filter(file -> {
+                    String name = file.getName();
+
+                    boolean isAggrFile = name.contains("_AGGR.xml");
+                    return isAggrFile;
+                }).
+                collect(Collectors.toList());
+
+        return !aggregateResultsFiles.isEmpty();
     }
 
     public static boolean isNumExecGreaterThanAllTheExisting(File xmlExperimentsDirectory, int NUM_EJECUCIONES) {
@@ -95,10 +107,16 @@ public class ExecuteXML extends CaseUseMode {
 
     public static boolean shouldExecuteTheExperiment(File xmlExperimentsDirectory, int NUM_EJECUCIONES, boolean forceReExecution) {
         if (forceReExecution) {
+            Global.showMessageTimestamped("Execution is being forced"+"\n");
             return true;
-        } else if (isAnyResultAggregatedXMLPresent(xmlExperimentsDirectory)) {
+        }
+
+        Global.showMessageTimestamped("Cheking isAnyResultAggregatedXMLPresent("+xmlExperimentsDirectory+")"+"\n");
+        if (isAnyResultAggregatedXMLPresent(xmlExperimentsDirectory)) {
+            Global.showMessageTimestamped("XML is not present"+"\n");
             return isNumExecGreaterThanAllTheExisting(xmlExperimentsDirectory, NUM_EJECUCIONES);
         } else {
+            Global.showMessageTimestamped("XML is not present"+"\n");
             return true;
         }
     }

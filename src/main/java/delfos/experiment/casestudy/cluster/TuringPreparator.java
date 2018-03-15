@@ -115,21 +115,33 @@ public class TuringPreparator implements ExperimentPreparator {
         });
     }
 
-    public List<File> getXMLsFromDirectory(File directory){
+    public List<File> getDescriptionsXMLsFromDirectory(File directory){
         File descriptionsDirectory = new File(directory.getPath() + File.separator + "descriptions");
         if(!directory.isDirectory()){
             return Arrays.asList(directory);
-        } else if(descriptionsDirectory.exists()){
+        }
+
+        if(descriptionsDirectory.exists()){
             List<File> xmls = FileUtilities.findInDirectory(descriptionsDirectory);
             return xmls;
         }else {
-            return listFiles(directory);
+
+            List<File> directoryChildren = FileUtilities.findInDirectory(directory);
+
+            List<File> xmlFiles = directoryChildren.stream().filter(file -> file.getName().endsWith(".xml")).collect(Collectors.toList());
+
+            List<File> xmlInDescriptionDirectoryFiles = xmlFiles.stream().filter(file -> {
+                boolean isInDescriptionDirectory = file.getAbsolutePath().contains(File.separator+"descriptions"+File.separator);
+                return isInDescriptionDirectory;
+            }).collect(Collectors.toList());
+
+            return xmlInDescriptionDirectoryFiles;
         }
     }
 
     @Override
     public void executeExperimentsGeneral(File directory) {
-        List<File> experimentsToBeExecuted = getXMLsFromDirectory(directory);
+        List<File> experimentsToBeExecuted = getDescriptionsXMLsFromDirectory(directory);
 
         Collections.shuffle(experimentsToBeExecuted, getRandomToShuffleExperiments());
 
