@@ -65,17 +65,17 @@ public class ExecuteGroupXML extends CaseUseMode {
     public void manageCaseUse(ConsoleParameters consoleParameters) {
         try {
             File xmlExperimentsDirectory = new File(consoleParameters.getValue(ExecuteGroupXML.XML_DIRECTORY));
-            Optional<Integer> NUM_EJECUCIONES = ExecuteXML.getNumExecutions(consoleParameters);
+            Optional<Integer> numExecutionsRequestedByCommandLine = ExecuteXML.getNumExecutions(consoleParameters);
             Optional<Long> SEED = ExecuteXML.getSeed(consoleParameters);
             boolean forceReExecution = ExecuteXML.isForceExecution(consoleParameters);
 
             consoleParameters.printUnusedParameters(System.err);
 
-            if (ExecuteXML.shouldExecuteTheExperiment(xmlExperimentsDirectory, NUM_EJECUCIONES.orElse(1), forceReExecution)) {
+            if (forceReExecution || ExecuteXML.shouldExecuteTheExperiment(xmlExperimentsDirectory, numExecutionsRequestedByCommandLine)) {
 
                 Global.showMessageTimestamped("The experiment is going to be executed (" + xmlExperimentsDirectory.getAbsolutePath() + ")");
                 Global.showMessageTimestamped("command: " + consoleParameters.printOriginalParameters());
-                manageCaseUse(xmlExperimentsDirectory, xmlExperimentsDirectory + File.separator + "dataset" + File.separator, NUM_EJECUCIONES, SEED);
+                manageCaseUse(xmlExperimentsDirectory, xmlExperimentsDirectory + File.separator + "dataset" + File.separator, numExecutionsRequestedByCommandLine, SEED);
             } else {
                 Global.showMessageTimestamped("The experiment was already executed. (" + xmlExperimentsDirectory.getPath() + ")");
             }
