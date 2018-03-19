@@ -37,10 +37,7 @@ import delfos.rs.nonpersonalised.randomrecommender.RandomRecommendationModel;
 import delfos.rs.nonpersonalised.randomrecommender.RandomRecommender;
 import java.io.File;
 import java.lang.management.ManagementFactory;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -137,6 +134,16 @@ public class TuringPreparator implements ExperimentPreparator {
 
             return xmlInDescriptionDirectoryFiles;
         }
+    }
+
+    /**
+     * Loads an experiment and looks for its results. If they are not present, the experiment should be executed.
+     * @param experimentFile File with the experimentDescription.
+     * @param numExecutions Number of executions that the results should have.
+     * @return
+     */
+    public boolean shouldExecuteExperiment(File experimentFile,Optional<Integer> numExecutions){
+        return ExecuteXML.shouldExecuteTheExperiment(experimentFile,numExecutions);
     }
 
     @Override
