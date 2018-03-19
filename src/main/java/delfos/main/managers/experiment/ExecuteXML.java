@@ -17,7 +17,6 @@
 package delfos.main.managers.experiment;
 
 import delfos.ConsoleParameters;
-import delfos.Constants;
 import delfos.ERROR_CODES;
 import delfos.UndefinedParameterException;
 import delfos.casestudy.fromxmlfiles.XMLexperimentsExecution;
@@ -31,13 +30,9 @@ import delfos.main.Main;
 import delfos.main.managers.CaseUseMode;
 import java.io.File;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
-import jdk.nashorn.internal.runtime.options.Option;
 import org.jdom2.JDOMException;
 
 /**
@@ -235,13 +230,15 @@ public class ExecuteXML extends CaseUseMode {
                 filter( file -> !file.isDirectory()).
                 filter( file -> file.getPath().contains(File.separator+"descriptions"+File.separator)).
                 forEach( experimentFile ->{
-                    String[] args = {
-                            ExecuteXML.MODE_PARAMETER,
-                            ExecuteXML.XML_FILE, experimentFile.getPath(),
-                            Constants.PRINT_FULL_XML,
-                            Constants.RAW_DATA};
+                    List<String> flags = getAdditionalFlagsAndParameters(consoleParameters);
+                    List<String> modeAndInputs = Arrays.asList(ExecuteXML.MODE_PARAMETER,ExecuteXML.XML_FILE, experimentFile.getPath());
+
+                    List<String> args = new ArrayList<>();
+                    args.addAll(modeAndInputs);
+                    args.addAll(flags);
+
                     try {
-                        Main.mainWithExceptions(args);
+                        Main.mainWithExceptions(args.toArray(new String[0]));
                     } catch (Exception ex) {
                         Global.showWarning("Experiment failed in directory '" + experimentFile.getAbsolutePath());
                         Global.showError(ex);
@@ -278,5 +275,30 @@ public class ExecuteXML extends CaseUseMode {
         } catch (UndefinedParameterException ex) {
             return Optional.empty();
         }
+    }
+
+
+    public static List<String> getAdditionalFlagsAndParameters(ConsoleParameters consoleParameters){
+
+        List<String> ret = new ArrayList<>();
+
+        if(consoleParameters.isParameterDefined(SEED_PARAMETER)){
+            List<String> seeds = consoleParameters.getValues(SEED_PARAMETER);
+
+            ret.add(SEED_PARAMETER);
+            ret.addAll(seeds);
+        }
+
+        if(consoleParameters.isParameterDefined(NUM_EXEC_PARAMETER)){
+            List<String> numExecs = consoleParameters.getValues(NUM_EXEC_PARAMETER);
+
+            ret.add(NUM_EXEC_PARAMETER);
+            ret.addAll(numExecs);
+        }
+
+        if(consoleParameters.isFlagDefined(FORCE_EXECUTION)){
+            ret.add(FORCE_EXECUTION);
+        }
+        return ret;
     }
 }

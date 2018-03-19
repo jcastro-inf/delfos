@@ -1,5 +1,7 @@
 package delfos.experiment.casestudy;
 
+import delfos.CommandLineParametersError;
+import delfos.ConsoleParameters;
 import delfos.common.FileUtilities;
 import delfos.constants.DelfosTest;
 import delfos.experiment.Experiment;
@@ -62,7 +64,7 @@ public class CustomCaseStudyTest extends DelfosTest{
     }
 
     @Test
-    public void testWithTuringPreparator(){
+    public void testWithTuringPreparator() throws CommandLineParametersError {
 
         List<Experiment> experiments = new ArrayList<>();
         experiments.add(new CustomCaseStudyMock());
@@ -72,8 +74,7 @@ public class CustomCaseStudyTest extends DelfosTest{
 
         new TuringPreparator().prepareExperimentGeneral(experiments,experimentDirectory);
 
-
-        new TuringPreparator().executeExperimentsGeneral(experimentDirectory);
+        new TuringPreparator().executeExperimentsGeneral(experimentDirectory, ConsoleParameters.parseArguments(new ArrayList<>()));
     }
 
 

@@ -1,5 +1,7 @@
 package delfos.experiment.casestudy.cluster;
 
+import delfos.CommandLineParametersError;
+import delfos.ConsoleParameters;
 import delfos.common.FileUtilities;
 import delfos.constants.DelfosTest;
 import delfos.dataset.basic.rating.RelevanceCriteria;
@@ -13,15 +15,14 @@ import delfos.rs.collaborativefiltering.knn.modelbased.KnnModelBasedCFRS;
 import org.junit.Test;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
-import static org.junit.Assert.*;
 
 public class TuringPreparatorTest extends DelfosTest {
 
     @Test
-    public void test(){
+    public void test() throws CommandLineParametersError {
         File experimentDirectory = getTemporalDirectoryForTest(this.getClass());
 
         FileUtilities.deleteDirectoryRecursive(experimentDirectory);
@@ -49,11 +50,11 @@ public class TuringPreparatorTest extends DelfosTest {
         List<CaseStudy> caseStudies = Arrays.asList(caseStudyKnnMemoryExecuted, caseStudyKnnModelExecuted);
 
         turingPreparator.prepareExperimentGeneral(caseStudies,experimentDirectory);
-        turingPreparator.executeExperimentsGeneral(experimentDirectory);
+        turingPreparator.executeExperimentsGeneral(experimentDirectory, ConsoleParameters.parseArguments(new ArrayList<>()));
     }
 
     @Test
-    public void testExecuteTwice(){
+    public void testExecuteTwice() throws CommandLineParametersError {
         File experimentDirectory = getTemporalDirectoryForTest(this.getClass());
 
         FileUtilities.deleteDirectoryRecursive(experimentDirectory);
@@ -82,9 +83,9 @@ public class TuringPreparatorTest extends DelfosTest {
 
         turingPreparator.prepareExperimentGeneral(caseStudies,experimentDirectory);
 
-        turingPreparator.executeExperimentsGeneral(experimentDirectory);
+        turingPreparator.executeExperimentsGeneral(experimentDirectory, ConsoleParameters.parseArguments(new ArrayList<>()));
 
-        turingPreparator.executeExperimentsGeneral(experimentDirectory);
+        turingPreparator.executeExperimentsGeneral(experimentDirectory, ConsoleParameters.parseArguments(new ArrayList<>()));
     }
 
 }

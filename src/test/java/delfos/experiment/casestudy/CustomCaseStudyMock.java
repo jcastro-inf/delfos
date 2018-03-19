@@ -14,6 +14,7 @@ public class CustomCaseStudyMock extends ExperimentAdapter{
         addParameter(SEED);
         addParameter(CaseStudy.NUM_EXECUTIONS);
         addParameter(ExperimentAdapter.RESULTS_DIRECTORY);
+        addParameter(CaseStudy.DATASET_LOADER);
     }
     @Override
     public boolean isFinished() {

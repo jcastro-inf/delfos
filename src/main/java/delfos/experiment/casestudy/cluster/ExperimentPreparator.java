@@ -18,6 +18,8 @@ package delfos.experiment.casestudy.cluster;
 
 import java.io.File;
 import java.util.List;
+
+import delfos.ConsoleParameters;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.experiment.Experiment;
@@ -34,7 +36,7 @@ public interface ExperimentPreparator {
     public <ExperimentType extends Experiment> void prepareExperimentGeneral(
             List<ExperimentType> experiments, File directory);
 
-    public void executeExperimentsGeneral(File directory);
+    public void executeExperimentsGeneral(File directory, ConsoleParameters consoleParameters);
 
     public void prepareExperiment(File directory, List<CaseStudy> caseStudies, DatasetLoader< ? extends Rating> datasetLoader);
 

@@ -16,6 +16,7 @@
  */
 package delfos.experiment.casestudy.cluster;
 
+import delfos.ConsoleParameters;
 import delfos.Constants;
 import delfos.common.FileUtilities;
 import delfos.common.Global;
@@ -147,7 +148,7 @@ public class TuringPreparator implements ExperimentPreparator {
     }
 
     @Override
-    public void executeExperimentsGeneral(File directory) {
+    public void executeExperimentsGeneral(File directory, ConsoleParameters consoleParameters) {
         List<File> experimentsToBeExecuted = getDescriptionsXMLsFromDirectory(directory);
 
         Collections.shuffle(experimentsToBeExecuted, getRandomToShuffleExperiments());
@@ -159,27 +160,31 @@ public class TuringPreparator implements ExperimentPreparator {
 
         experimentsToBeExecutedStream.forEach((path) -> {
             if(path.isDirectory()){
-                String[] args = {
-                        ExecuteXML.MODE_PARAMETER,
-                        ExecuteXML.XML_DIRECTORY, path.getPath(),
-                        Constants.PRINT_FULL_XML,
-                        Constants.RAW_DATA};
+                List<String> flags = ExecuteXML.getAdditionalFlagsAndParameters(consoleParameters);
+                List<String> modeAndInputs = Arrays.asList(ExecuteXML.MODE_PARAMETER,ExecuteXML.XML_DIRECTORY, path.getPath());
+
+                List<String> args = new ArrayList<>();
+                args.addAll(modeAndInputs);
+                args.addAll(flags);
+
                 try {
-                    Main.mainWithExceptions(args);
+                    Main.mainWithExceptions(args.toArray(new String[0]));
                 } catch (Exception ex) {
                     Global.showWarning("Experiment failed in directory '" + path.getAbsolutePath());
                     Global.showError(ex);
                 }
             }else{
-                String[] args = {
-                        ExecuteXML.MODE_PARAMETER,
-                        ExecuteXML.XML_FILE, path.getPath(),
-                        Constants.PRINT_FULL_XML,
-                        Constants.RAW_DATA};
+                List<String> flags = ExecuteXML.getAdditionalFlagsAndParameters(consoleParameters);
+                List<String> modeAndInputs = Arrays.asList(ExecuteXML.MODE_PARAMETER,ExecuteXML.XML_FILE, path.getPath());
+
+                List<String> args = new ArrayList<>();
+                args.addAll(modeAndInputs);
+                args.addAll(flags);
+
                 try {
-                    Main.mainWithExceptions(args);
+                    Main.mainWithExceptions(args.toArray(new String[0]));
                 } catch (Exception ex) {
-                    Global.showWarning("Experiment failed in directory '" + path.getAbsolutePath());
+                    Global.showWarning("Experiment failed in file '" + path.getAbsolutePath());
                     Global.showError(ex);
                 }
             }
