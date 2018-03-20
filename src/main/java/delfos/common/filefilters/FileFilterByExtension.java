@@ -18,6 +18,7 @@ package delfos.common.filefilters;
 
 import java.io.File;
 import java.io.FileFilter;
+import java.util.function.Predicate;
 
 /**
  * Filtro de ficheros que acepta sólo los ficheros que son directorios.
@@ -27,7 +28,7 @@ import java.io.FileFilter;
  * @version 10-Enero-2014 Ahora se permite especificar si se listan directorios
  * o no.
  */
-public class FileFilterByExtension implements FileFilter {
+public class FileFilterByExtension implements FileFilter,Predicate<File> {
 
     private final boolean listDirectorys;
 
@@ -79,5 +80,10 @@ public class FileFilterByExtension implements FileFilter {
             }
         }
         return false;
+    }
+
+    @Override
+    public boolean test(File file) {
+        return accept(file);
     }
 }

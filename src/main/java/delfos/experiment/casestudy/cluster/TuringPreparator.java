@@ -438,4 +438,10 @@ public class TuringPreparator implements ExperimentPreparator {
             throw new IllegalArgumentException("'" + directory.getAbsolutePath() + "' is not a directory");
         }
     }
+
+
+    @Override
+    public void joinDirectoryResults(File directory, ConsoleParameters consoleParameters) {
+
+    }
 }

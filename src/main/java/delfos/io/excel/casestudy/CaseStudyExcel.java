@@ -27,6 +27,7 @@ import delfos.common.parameters.chain.ParameterChain;
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RelevanceCriteria;
+import delfos.experiment.Experiment;
 import delfos.experiment.casestudy.CaseStudy;
 import delfos.experiment.casestudy.CaseStudyResults;
 import delfos.experiment.validation.predictionprotocol.PredictionProtocol;
@@ -35,20 +36,14 @@ import delfos.group.io.excel.casestudy.GroupCaseStudyExcel.Combination;
 import static delfos.group.io.excel.casestudy.GroupCaseStudyExcel.obtainDifferentParameterInCollumn;
 import delfos.io.excel.parameterowner.ParameterOwnerExcel;
 import delfos.io.xml.casestudy.CaseStudyXML;
+import delfos.io.xml.experiment.ExperimentXML;
 import delfos.results.MeasureResult;
 import delfos.results.evaluationmeasures.EvaluationMeasure;
 import delfos.rs.RecommenderSystem;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeMap;
-import java.util.TreeSet;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -72,6 +67,7 @@ import jxl.write.WritableSheet;
 import jxl.write.WritableWorkbook;
 import jxl.write.WriteException;
 import jxl.write.biff.RowsExceededException;
+import org.jdom2.JDOMException;
 
 /**
  * Clase encargada de hacer la entrada/salida de los resultados de la ejeución de un caso de uso concreto.
@@ -167,6 +163,10 @@ public class CaseStudyExcel {
         //Column width control
         defaultFormat.setWrap(false);
 
+    }
+
+    public static void aggregateExcels(List<File> inputFiles, File outputFile) throws WriteException {
+        aggregateExcels(inputFiles.toArray(new File[0]),outputFile);
     }
 
     public static void aggregateExcels(File[] inputFiles, File outputFile) throws WriteException {
@@ -1243,6 +1243,78 @@ public class CaseStudyExcel {
                 Logger.getLogger(CaseStudyExcel.class.getName()).log(Level.SEVERE, null, ex);
             }
         });
+    }
 
+    public static class Pair<F, S> {
+        private F first; //first member of pair
+        private S second; //second member of pair
+
+        public Pair(F first, S second) {
+            this.first = first;
+            this.second = second;
+        }
+
+        public void setFirst(F first) {
+            this.first = first;
+        }
+
+        public void setSecond(S second) {
+            this.second = second;
+        }
+
+        public F getFirst() {
+            return first;
+        }
+
+        public S getSecond() {
+            return second;
+        }
+    }
+
+    public static List<File> filterLargestExecutionResultIfXMLisPresent(List<File> xlsFilesWithResults){
+
+        List<File> experimentsThatFailedAtLoading = new ArrayList<>();
+
+        List<Pair<Experiment,File>> experimentsAlreadyAnalysed = new ArrayList<>();
+
+        for(File xlsFileWithResults: xlsFilesWithResults) {
+
+            String path = xlsFileWithResults.getPath();
+            String xmlFileWithResults = path.substring(0, path.lastIndexOf(".xls"))+".xml";
+            Experiment experimentWithResults;
+            try {
+                experimentWithResults = ExperimentXML.loadExperiment(new File(xmlFileWithResults));
+            } catch (JDOMException | IOException e) {
+                e.printStackTrace();
+                experimentsThatFailedAtLoading.add(xlsFileWithResults);
+                continue;
+            }
+            Pair<Experiment, File> thisLoopPair = new Pair<>(experimentWithResults, xlsFileWithResults);
+
+            List<Pair<Experiment, File>> matchingExperiments = experimentsAlreadyAnalysed.stream().
+                    filter(experimentAlreadyAnalysed -> experimentAlreadyAnalysed.first.equals(experimentWithResults)).
+                    collect(Collectors.toList());
+
+            Optional<Pair<Experiment, File>> experimentWithLargestExecutionNumber = matchingExperiments.stream().
+                    reduce((e1, e2) -> e1.first.getNumExecutions() > e2.first.getNumExecutions() ? e1 : e2);
+
+            if (experimentWithLargestExecutionNumber.isPresent()) {
+                int thisFileExecutions =experimentWithResults.getNumExecutions();
+                int largestExecutions = experimentWithLargestExecutionNumber.get().first.getNumExecutions();
+                if (thisFileExecutions > largestExecutions) {
+                    experimentsAlreadyAnalysed.remove(experimentWithLargestExecutionNumber.get());
+                    experimentsAlreadyAnalysed.add(thisLoopPair);
+                }
+            } else {
+                experimentsAlreadyAnalysed.add(thisLoopPair);
+            }
+        }
+
+        List<File> filesSelected = experimentsAlreadyAnalysed.stream().map(pair -> pair.second).collect(Collectors.toList());
+
+        ArrayList<File> ret = new ArrayList<>();
+        ret.addAll(filesSelected);
+        ret.addAll(experimentsThatFailedAtLoading);
+        return ret;
     }
 }

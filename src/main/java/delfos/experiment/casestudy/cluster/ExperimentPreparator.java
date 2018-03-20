@@ -41,4 +41,6 @@ public interface ExperimentPreparator {
     public void prepareExperiment(File directory, List<CaseStudy> caseStudies, DatasetLoader< ? extends Rating> datasetLoader);
 
     public void prepareGroupExperiment(File experimentBaseDirectory, List<GroupCaseStudy> groupCaseStudies, DatasetLoader<? extends Rating>... datasetLoader);
+
+    public void joinDirectoryResults(File directory, ConsoleParameters consoleParameters);
 }

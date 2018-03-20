@@ -32,6 +32,7 @@ import delfos.utils.algorithm.progress.ProgressChangedListenerDefault;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import jxl.write.WriteException;
@@ -165,7 +166,13 @@ public class XMLexperimentsExecution {
         }
     }
 
-    private File[] getMostRelevantExcels(File resultsDirectory) {
-        return resultsDirectory.listFiles(new FileFilterByExtension(false, "xls"));
+    private List<File> getMostRelevantExcels(File resultsDirectory) {
+        FileFilterByExtension xlsFilter = new FileFilterByExtension(false, "xls");
+
+        List<File> allXLSs = FileUtilities.findInDirectory(resultsDirectory).stream().filter(xlsFilter).
+                collect(Collectors.toList());
+
+        List<File> largestExecutionResults = CaseStudyExcel.filterLargestExecutionResultIfXMLisPresent(allXLSs);
+        return largestExecutionResults;
     }
 }

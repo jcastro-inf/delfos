@@ -20,6 +20,7 @@ import delfos.common.Global;
 import delfos.common.parameters.Parameter;
 import delfos.common.parameters.ParameterOwnerAdapter;
 import delfos.common.parameters.restriction.DirectoryParameter;
+import delfos.experiment.casestudy.CaseStudy;
 import delfos.experiment.casestudy.ExecutionProgressListener;
 
 import java.io.File;
@@ -248,4 +249,33 @@ public abstract class ExperimentAdapter extends ParameterOwnerAdapter implements
     public File getResultsDirectory() {
         return (File) getParameterValue(RESULTS_DIRECTORY);
     }
+
+
+    @Override
+    public boolean equals(Object obj) {
+        if(obj instanceof Experiment){
+            Experiment that = ((Experiment) obj);
+            return this.equalsIgnoreAliasAndExecutionNumber(that);
+        }else{
+            return super.equals(obj);
+        }
+    }
+
+    public boolean equalsIgnoreAliasAndExecutionNumber(Experiment parameterOwner) {
+        String regex = ALIAS.getName() + "=([^\\s]+)";
+        String regexNumExecutions = CaseStudy.NUM_EXECUTIONS.getName()+ "=([^\\s]+)";
+
+        String myNameWithParameters = this.getNameWithParameters().
+                replaceAll(regex, "").
+                replaceAll(regexNumExecutions,"");
+
+
+        String otherNameWithParameters = parameterOwner.getNameWithParameters().
+                replaceAll(regex, "").
+                replaceAll(regexNumExecutions,"");
+
+        boolean equals = myNameWithParameters.equals(otherNameWithParameters);
+        return equals;
+    }
+
 }
