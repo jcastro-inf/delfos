@@ -57,7 +57,7 @@ public class ConsoleParameters {
     private final Map<String, List<String>> parametersWithValues;
     private final Set<String> presentFlags;
 
-    private final TreeSet<String> unusedParameters;
+    private final Set<String> unusedParameters;
     private final String[] consoleRawParameters;
 
     /**
@@ -70,9 +70,9 @@ public class ConsoleParameters {
      * @throws delfos.CommandLineParametersError If the parameter specification does not follow the required syntax.
      */
     protected ConsoleParameters(String... console) throws CommandLineParametersError {
-        this.parametersWithValues = new TreeMap<>();
-        this.presentFlags = new TreeSet<>();
-        this.unusedParameters = new TreeSet<>();
+        this.parametersWithValues = Collections.synchronizedMap(new TreeMap<>());
+        this.presentFlags = Collections.synchronizedSet(new TreeSet<>());
+        this.unusedParameters = Collections.synchronizedSet(new TreeSet<>());
         this.consoleRawParameters = console;
 
         for (int i = 0; i < console.length; i++) {
