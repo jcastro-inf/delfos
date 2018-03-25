@@ -173,8 +173,20 @@ public class ExecuteXML extends CaseUseMode {
     private ExecuteXML() {
     }
 
+    public void touchParametersAndPrintUnused(ConsoleParameters consoleParameters){
+        consoleParameters.isParameterDefined(ExecuteXML.XML_FILE);
+        consoleParameters.isParameterDefined(ExecuteXML.XML_DIRECTORY);
+        consoleParameters.isParameterDefined(ExecuteXML.SEED_PARAMETER);
+        consoleParameters.isParameterDefined(ExecuteXML.NUM_EXEC_PARAMETER);
+
+        consoleParameters.isFlagDefined(ExecuteXML.FORCE_EXECUTION);
+
+        consoleParameters.printUnusedParameters(System.err);
+    }
+
     @Override
     public void manageCaseUse(ConsoleParameters consoleParameters) {
+        touchParametersAndPrintUnused(consoleParameters);
 
         if(consoleParameters.isParameterDefined(ExecuteXML.XML_FILE)){
             try {
@@ -201,12 +213,8 @@ public class ExecuteXML extends CaseUseMode {
         }
 
         if(consoleParameters.isParameterDefined(ExecuteXML.XML_DIRECTORY)){
-
-            consoleParameters.printUnusedParameters(System.err);
             findInDirectoryAndCallDelfosOneTimeForEachXMLDescriptionFile(consoleParameters);
         }
-
-
     }
 
     private void findInDirectoryAndCallDelfosOneTimeForEachXMLDescriptionFile(ConsoleParameters consoleParameters) {
@@ -225,10 +233,14 @@ public class ExecuteXML extends CaseUseMode {
             });
         }
 
-        directoriesSpecified.stream().
+        List<File> directoriesToExecuteSuffled = directoriesSpecified.stream().
                 flatMap(directory -> FileUtilities.findInDirectory(directory).stream()).
-                filter( file -> !file.isDirectory()).
-                filter( file -> file.getPath().contains(File.separator+"descriptions"+File.separator)).
+                filter(file -> !file.isDirectory()).
+                filter(file -> file.getPath().contains(File.separator + "descriptions" + File.separator)).collect(Collectors.toList());
+
+        Collections.shuffle(directoriesToExecuteSuffled,new Random(System.currentTimeMillis()));
+
+        directoriesToExecuteSuffled.stream().
                 forEach( experimentFile ->{
                     List<String> flags = getAdditionalFlagsAndParameters(consoleParameters);
                     List<String> modeAndInputs = Arrays.asList(ExecuteXML.MODE_PARAMETER,ExecuteXML.XML_FILE, experimentFile.getPath());
