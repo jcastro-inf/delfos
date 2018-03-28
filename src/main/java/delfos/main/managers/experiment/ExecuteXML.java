@@ -53,6 +53,10 @@ public class ExecuteXML extends CaseUseMode {
     public static final String NUM_EXEC_PARAMETER = "-num-exec";
     public static final String FORCE_EXECUTION = "--force-execution";
 
+    public static final String PARALLEL_EXECUTIONS_WITHIN_EXPERIMENT = "--parallel-executions";
+    public static final String PARALLEL_EXPERIMENT = "--parallel-experiments";
+
+
     public static boolean isAnyResultAggregatedXMLPresent(File xmlExperimentsDirectory) {
         File xmlExperimentResultsDirectory = new File(xmlExperimentsDirectory.getPath() + File.separator + "results" + File.separator);
         if (!xmlExperimentResultsDirectory.exists()) {
@@ -173,40 +177,40 @@ public class ExecuteXML extends CaseUseMode {
     private ExecuteXML() {
     }
 
-    public void touchParametersAndPrintUnused(ConsoleParameters consoleParameters){
-        consoleParameters.isParameterDefined(ExecuteXML.XML_FILE);
-        consoleParameters.isParameterDefined(ExecuteXML.XML_DIRECTORY);
-        consoleParameters.isParameterDefined(ExecuteXML.SEED_PARAMETER);
-        consoleParameters.isParameterDefined(ExecuteXML.NUM_EXEC_PARAMETER);
-
-        consoleParameters.isFlagDefined(ExecuteXML.FORCE_EXECUTION);
-
-        consoleParameters.printUnusedParameters(System.err);
-    }
-
     @Override
     public void manageCaseUse(ConsoleParameters consoleParameters) {
         touchParametersAndPrintUnused(consoleParameters);
 
         if(consoleParameters.isParameterDefined(ExecuteXML.XML_FILE)){
             try {
-                File xmlExperimentFile = new File(consoleParameters.getValue(ExecuteXML.XML_FILE));
+                List<File> xmlExperimentFiles = consoleParameters.
+                        getValues(ExecuteXML.XML_FILE).
+                        stream().
+                        map(path -> new File(path)).
+                        collect(Collectors.toList());
+
                 Optional<Integer> numExecutions = getNumExecutions(consoleParameters);
                 Optional<Long> seed = getSeed(consoleParameters);
 
                 consoleParameters.printUnusedParameters(System.err);
 
-                if (ExecuteXML.isForceExecution(consoleParameters) || ExecuteXML.shouldExecuteTheExperiment(xmlExperimentFile,numExecutions)) {
-                    Global.showMessageTimestamped("The experiment is going to be executed (" + xmlExperimentFile.getAbsolutePath() + ")");
-                    Global.showMessageTimestamped("command: " + consoleParameters.printOriginalParameters());
-                    manageCaseUse(
-                            xmlExperimentFile,
-                            xmlExperimentFile + File.separator + "dataset" + File.separator,
-                            numExecutions,
-                            seed);
-                } else {
-                    Global.showMessageTimestamped("The experiment was already executed. (" + xmlExperimentFile.getPath() + ")");
-                }
+                Stream<File> stream = consoleParameters.isFlagDefined(ExecuteXML.PARALLEL_EXPERIMENT) ?
+                        xmlExperimentFiles.parallelStream() :
+                        xmlExperimentFiles.stream();
+
+                stream.forEach(xmlExperimentFile -> {
+                    if (ExecuteXML.isForceExecution(consoleParameters) || ExecuteXML.shouldExecuteTheExperiment(xmlExperimentFile, numExecutions)) {
+                        Global.showMessageTimestamped("The experiment is going to be executed (" + xmlExperimentFile.getAbsolutePath() + ")");
+                        Global.showMessageTimestamped("command: " + consoleParameters.printOriginalParameters());
+                        manageCaseUse(
+                                xmlExperimentFile,
+                                xmlExperimentFile + File.separator + "dataset" + File.separator,
+                                numExecutions,
+                                seed);
+                    } else {
+                        Global.showMessageTimestamped("The experiment was already executed. (" + xmlExperimentFile.getPath() + ")");
+                    }
+                });
             } catch (UndefinedParameterException ex) {
                 consoleParameters.printUnusedParameters(System.err);
             }
@@ -229,18 +233,22 @@ public class ExecuteXML extends CaseUseMode {
 
         if(directoriesSpecified.stream().anyMatch(directory -> ! directory.isDirectory())){
             directoriesSpecified.stream().filter(directory -> ! directory.isDirectory()).forEach(file -> {
-                Global.showWarning(file + " is not a directory");
+                Global.showWarning(file + " is not a directory, it should be spedified with -file");
             });
         }
 
-        List<File> directoriesToExecuteSuffled = directoriesSpecified.stream().
+        List<File> filesToExecuteSuffled = directoriesSpecified.stream().
                 flatMap(directory -> FileUtilities.findInDirectory(directory).stream()).
                 filter(file -> !file.isDirectory()).
                 filter(file -> file.getPath().contains(File.separator + "descriptions" + File.separator)).collect(Collectors.toList());
 
-        Collections.shuffle(directoriesToExecuteSuffled,new Random(System.currentTimeMillis()));
+        Collections.shuffle(filesToExecuteSuffled,new Random(System.currentTimeMillis()));
 
-        directoriesToExecuteSuffled.stream().
+        Stream<File> streamToExecute = consoleParameters.isFlagDefined(PARALLEL_EXPERIMENT) ?
+                filesToExecuteSuffled.parallelStream() :
+                filesToExecuteSuffled.stream();
+
+        streamToExecute.
                 forEach( experimentFile ->{
                     List<String> flags = getAdditionalFlagsAndParameters(consoleParameters);
                     List<String> modeAndInputs = Arrays.asList(ExecuteXML.MODE_PARAMETER,ExecuteXML.XML_FILE, experimentFile.getPath());
@@ -311,6 +319,28 @@ public class ExecuteXML extends CaseUseMode {
         if(consoleParameters.isFlagDefined(FORCE_EXECUTION)){
             ret.add(FORCE_EXECUTION);
         }
+
+        if(consoleParameters.isFlagDefined(ExecuteXML.PARALLEL_EXECUTIONS_WITHIN_EXPERIMENT)) {
+            ret.add(ExecuteXML.PARALLEL_EXECUTIONS_WITHIN_EXPERIMENT);
+        }
+
+        if(consoleParameters.isFlagDefined(ExecuteXML.PARALLEL_EXPERIMENT)){
+            ret.add(ExecuteXML.PARALLEL_EXPERIMENT);
+        }
+
         return ret;
+    }
+
+    public void touchParametersAndPrintUnused(ConsoleParameters consoleParameters){
+        consoleParameters.isParameterDefined(ExecuteXML.XML_FILE);
+        consoleParameters.isParameterDefined(ExecuteXML.XML_DIRECTORY);
+        consoleParameters.isParameterDefined(ExecuteXML.SEED_PARAMETER);
+        consoleParameters.isParameterDefined(ExecuteXML.NUM_EXEC_PARAMETER);
+
+        consoleParameters.isFlagDefined(ExecuteXML.FORCE_EXECUTION);
+        consoleParameters.isFlagDefined(ExecuteXML.PARALLEL_EXECUTIONS_WITHIN_EXPERIMENT);
+        consoleParameters.isFlagDefined(ExecuteXML.PARALLEL_EXPERIMENT);
+
+        consoleParameters.printUnusedParameters(System.err);
     }
 }
