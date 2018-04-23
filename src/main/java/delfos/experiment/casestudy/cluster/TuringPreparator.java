@@ -100,10 +100,6 @@ public class TuringPreparator implements ExperimentPreparator {
                     File.separator + datasetLoaderAlias +
                     File.separator + "results");
 
-            if(experimentBaseDirectory.exists()){
-                Global.showWarning("Directory '"+experimentDescriptionDirectory+"' already exists.");
-            }
-
             Experiment experimentWithResultsDirectorySet = (Experiment) experiment.clone();
             experimentWithResultsDirectorySet.setResultsDirectory(experimentResultsDirectory);
 
