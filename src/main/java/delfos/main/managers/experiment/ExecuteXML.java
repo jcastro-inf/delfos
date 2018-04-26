@@ -136,6 +136,15 @@ public class ExecuteXML extends CaseUseMode {
                 }
 
             } catch (JDOMException|IOException e) {
+
+                Global.showWarning("Failed when reading file: "+file.getPath());
+                Global.showWarning(e.getMessage());
+
+                Throwable cause = e.getCause();
+                while(cause != null){
+                    Global.showWarning("\tCause: "+cause.getMessage());
+
+                }
                 e.printStackTrace();
             }
             return ret;
