@@ -143,7 +143,7 @@ public class ExecuteXML extends CaseUseMode {
                 Throwable cause = e.getCause();
                 while(cause != null){
                     Global.showWarning("\tCause: "+cause.getMessage());
-
+                    cause = cause.getCause();
                 }
                 e.printStackTrace();
             }
