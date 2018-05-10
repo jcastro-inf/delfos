@@ -97,13 +97,9 @@ public class ExecuteXML extends CaseUseMode {
             experimentLoaded = ExperimentXML.loadExperiment(xmlExperimentFile);
         } catch (JDOMException|IOException e) {
             e.printStackTrace();
-            experimentLoaded = null;
-            ERROR_CODES.CANNOT_READ_CASE_STUDY_XML.exit(e);
+            return true;
         }
 
-        if(experimentLoaded == null){
-            throw new IllegalStateException("Experiment loaded is null.");
-        }
         Experiment experimentDescription = experimentLoaded;
 
 
