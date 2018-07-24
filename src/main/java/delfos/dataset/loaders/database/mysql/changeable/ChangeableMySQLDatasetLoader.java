@@ -172,6 +172,9 @@ public class ChangeableMySQLDatasetLoader extends ChangeableDatasetLoaderAbstrac
     @Override
     public synchronized ChangeableMySQLRatingsDataset getChangeableRatingsDataset() throws CannotLoadRatingsDataset {
         if (ratingsDataset == null) {
+            
+            usersDataset = (ChangeableMySQLUsersDataset) getChangeableUsersDataset();
+            contentDataset = getChangeableContentDataset();
             try {
                 ratingsDataset = new ChangeableMySQLRatingsDataset(
                         getMySQLConnectionDescription(),
@@ -179,7 +182,9 @@ public class ChangeableMySQLDatasetLoader extends ChangeableDatasetLoaderAbstrac
                         getRatingsTable_UserIDField(),
                         getRatingsTable_ItemIDField(),
                         getRatingsTable_RatingField(),
-                        getRatingsTable_TimestampField());
+                        getRatingsTable_TimestampField(),
+                        usersDataset,
+                        contentDataset);
             } catch (SQLException ex) {
                 throw new CannotLoadRatingsDataset(ex);
             }
@@ -223,7 +228,7 @@ public class ChangeableMySQLDatasetLoader extends ChangeableDatasetLoaderAbstrac
     }
 
     @Override
-    public synchronized ChangeableUsersDataset getChangeableUsersDataset() throws CannotLoadUsersDataset {
+    public synchronized ChangeableMySQLUsersDataset getChangeableUsersDataset() throws CannotLoadUsersDataset {
         if (usersDataset == null) {
 
             try {
@@ -285,13 +290,17 @@ public class ChangeableMySQLDatasetLoader extends ChangeableDatasetLoaderAbstrac
         }
 
         try {
+            usersDataset = getChangeableUsersDataset();
+            contentDataset = getChangeableContentDataset();
             ratingsDataset = new ChangeableMySQLRatingsDataset(
                     getMySQLConnectionDescription(),
                     getRatingsTable_name(),
                     getRatingsTable_UserIDField(),
                     getRatingsTable_ItemIDField(),
                     getRatingsTable_RatingField(),
-                    getRatingsTable_TimestampField());
+                    getRatingsTable_TimestampField(),
+                    usersDataset,
+                    contentDataset);
             ratingsDataset.createTables();
         } catch (SQLException ex) {
             Global.showWarning("Problems at initialisating ratings dataset.");

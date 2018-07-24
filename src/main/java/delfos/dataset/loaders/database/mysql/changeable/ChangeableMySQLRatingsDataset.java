@@ -19,13 +19,18 @@ package delfos.dataset.loaders.database.mysql.changeable;
 import delfos.ERROR_CODES;
 import delfos.common.Global;
 import delfos.common.LockedIterator;
+import delfos.common.exceptions.dataset.entity.EntityNotFound;
 import delfos.common.exceptions.dataset.items.ItemNotFound;
 import delfos.common.exceptions.dataset.users.UserNotFound;
 import delfos.databaseconnections.MySQLConnection;
+import delfos.dataset.basic.item.ContentDataset;
+import delfos.dataset.basic.item.Item;
 import delfos.dataset.basic.rating.Rating;
 import delfos.dataset.basic.rating.RatingWithTimestamp;
 import delfos.dataset.basic.rating.RatingsDataset;
 import delfos.dataset.basic.rating.domain.Domain;
+import delfos.dataset.basic.user.User;
+import delfos.dataset.basic.user.UsersDataset;
 import delfos.dataset.changeable.ChangeableRatingsDataset;
 import delfos.dataset.storage.memory.BothIndexRatingsDataset;
 import java.sql.Date;
@@ -37,6 +42,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 /**
  * Implementa un dataset de valoraciones modificable sobre fichero CSV.
@@ -60,7 +68,9 @@ public final class ChangeableMySQLRatingsDataset implements RatingsDataset<Ratin
             String ratingsTable_UserIDField,
             String ratingsTable_ItemIDField,
             String ratingsTable_RatingField,
-            String ratingsTable_TimestampField) {
+            String ratingsTable_TimestampField,
+            UsersDataset usersDataset,
+            ContentDataset contentDataset) {
         this.mySQLConnection = connection;
         this.ratingsTable_name = ratingsTable_name;
         this.ratingsTable_UserIDField = ratingsTable_UserIDField;
@@ -70,7 +80,7 @@ public final class ChangeableMySQLRatingsDataset implements RatingsDataset<Ratin
 
         if (MySQLConnection.existsTable(connection, ratingsTable_name)) {
             try {
-                loadRatingsFromExistingTable();
+                loadRatingsFromExistingTable(usersDataset, contentDataset);
             } catch (SQLException ex) {
                 ERROR_CODES.DATABASE_NOT_READY.exit(ex);
             }
@@ -194,7 +204,7 @@ public final class ChangeableMySQLRatingsDataset implements RatingsDataset<Ratin
         }
     }
 
-    private void loadRatingsFromExistingTable() throws SQLException {
+    private void loadRatingsFromExistingTable(UsersDataset usersDataset, ContentDataset contentDataset) throws SQLException {
 
         try (Statement statement = mySQLConnection.doConnection().createStatement()) {
 
@@ -202,6 +212,9 @@ public final class ChangeableMySQLRatingsDataset implements RatingsDataset<Ratin
                     + " from " + getRatingsTable_nameWithPrefix();
             ResultSet result = statement.executeQuery(select);
 
+            Map<Long,User> usersNotFound = new TreeMap<>();
+            Map<Long,Item> itemsNotFound = new TreeMap<>();
+            
             List<Rating> ratings = new LinkedList<>();
 
             while (result.next()) {
@@ -211,11 +224,32 @@ public final class ChangeableMySQLRatingsDataset implements RatingsDataset<Ratin
                 Date timestamp = result.getDate(4);
 
                 long timestamp_ms = timestamp.getTime();
-
-                RatingWithTimestamp rating = new RatingWithTimestamp(idUser, idItem, ratingValue, timestamp_ms);
+                User user;
+                try {
+                    user = usersDataset.get(idUser);
+                }catch(EntityNotFound ex){
+                    if(!usersNotFound.containsKey((long) idUser)){
+                        usersNotFound.put((long) idUser, new User(idUser, "User_"+idUser));
+                    }
+                    user = usersNotFound.get( (long) idUser);
+                }
+                Item item ;
+                try{
+                    item = contentDataset.get(idItem);
+                } catch(EntityNotFound ex){
+                    if(!itemsNotFound.containsKey((long) idItem)){
+                        itemsNotFound.put((long) idItem, new Item(idItem, "Item_"+idItem));
+                    }
+                    item = itemsNotFound.get((long) idItem);
+                }
+                
+                RatingWithTimestamp rating = new RatingWithTimestamp(user,item, ratingValue, timestamp_ms);
 
                 ratings.add(rating);
             }
+            
+            if(!itemsNotFound.isEmpty()) Global.showWarning("There were missing items from the ratings table: "+itemsNotFound.keySet().stream().map(l1 -> l1.toString()+", ").collect(Collectors.joining(",")));
+            if(!usersNotFound.isEmpty()) Global.showWarning("There were missing users from the ratings table: "+usersNotFound.keySet().stream().map(l1 -> l1.toString()+", ").collect(Collectors.joining(",")));
 
             ratingsDataset = new BothIndexRatingsDataset(ratings);
         }
