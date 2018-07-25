@@ -160,9 +160,12 @@ public class BothIndexRatingsDataset<RatingType extends Rating> extends RatingsD
         checkUniqueIdUsers(ratings);
         checkUniqueIdItems(ratings);
         checkUniqueRatings(ratings);
+        
+        
+        Map<User, List<RatingType>> usersWithRatings = ratings.parallelStream()
+                .collect(Collectors.groupingBy(rating -> rating.getUser(), Collectors.toList()));
 
-        Map<Long, Map<Long, RatingType>> ratingsByUser = ratings.parallelStream()
-                .collect(Collectors.groupingBy(rating -> rating.getUser(), Collectors.toList()))
+        Map<Long, Map<Long, RatingType>> ratingsByUser = usersWithRatings
                 .entrySet().parallelStream()
                 .filter(userRatingsEntry -> !userRatingsEntry.getValue().isEmpty())
                 .collect(Collectors.toMap(
@@ -175,8 +178,10 @@ public class BothIndexRatingsDataset<RatingType extends Rating> extends RatingsD
 
         userIndex = ratingsByUser;
 
-        Map<Long, Map<Long, RatingType>> ratingsByItem = ratings.parallelStream()
-                .collect(Collectors.groupingBy(rating -> rating.getItem(), Collectors.toList()))
+        Map<Item,List<RatingType>> itemsWithRatings = ratings.parallelStream()
+                .collect(Collectors.groupingBy(rating -> rating.getItem(), Collectors.toList()));
+        
+        Map<Long, Map<Long, RatingType>> ratingsByItem = itemsWithRatings                
                 .entrySet().parallelStream()
                 .filter(itemRatingsEntry -> !itemRatingsEntry.getValue().isEmpty())
                 .collect(Collectors.toMap(
