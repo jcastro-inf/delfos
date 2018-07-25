@@ -37,7 +37,22 @@ public abstract class ExperimentAdapter extends ParameterOwnerAdapter implements
 
     public static final Parameter RESULTS_DIRECTORY = new Parameter(
             "RESULTS_DIRECTORY",
-            new DirectoryParameter(new File("temp")));
+            new DirectoryParameter(new File("temp")),
+            "Results directory specified at case study creation");
+
+    public static final Parameter RESULTS_DIRECTORY_LOCAL = new Parameter(
+            "RESULTS_DIRECTORY_LOCAL",
+            new DirectoryParameter(new File("temp")),
+            "Results directory calculated when loading from file");
+
+    private File loadedExperimentLocation;
+    public void setLoadedExperimentLocation(File file){
+        loadedExperimentLocation = file;
+    }
+
+    public File getLoadedExperimentLocation(){
+        return loadedExperimentLocation;
+    }
 
     /**
      * Objetos que desean ser notificados de cambios en la ejecución del experimento
@@ -250,12 +265,28 @@ public abstract class ExperimentAdapter extends ParameterOwnerAdapter implements
         return (File) getParameterValue(RESULTS_DIRECTORY);
     }
 
+    public void setResultsDirectoryLocal(File resultsDirectory) {
+        if (resultsDirectory.exists() && !resultsDirectory.isDirectory()) {
+            throw new IllegalStateException("Must be a directory");
+        }
+        setParameterValue(RESULTS_DIRECTORY_LOCAL,resultsDirectory);
+    }
+
+    @Override
+    public File getResultsDirectoryLocal() {
+        return (File) getParameterValue(RESULTS_DIRECTORY_LOCAL);
+    }
 
     @Override
     public boolean equals(Object obj) {
         if(obj instanceof Experiment){
             Experiment that = ((Experiment) obj);
-            return this.equalsIgnoreAliasAndExecutionNumber(that);
+
+            if(this.equalsIgnoreAliasAndExecutionNumber(that)){
+                return true;
+            }else {
+                return this.equalsIgnoreAliasAndExecutionNumberAndResultsDirectoryAndResultsDirectoryLocal(that);
+            }
         }else{
             return super.equals(obj);
         }
@@ -269,10 +300,31 @@ public abstract class ExperimentAdapter extends ParameterOwnerAdapter implements
                 replaceAll(regex, "").
                 replaceAll(regexNumExecutions,"");
 
-
         String otherNameWithParameters = parameterOwner.getNameWithParameters().
                 replaceAll(regex, "").
                 replaceAll(regexNumExecutions,"");
+
+        boolean equals = myNameWithParameters.equals(otherNameWithParameters);
+        return equals;
+    }
+
+    public boolean equalsIgnoreAliasAndExecutionNumberAndResultsDirectoryAndResultsDirectoryLocal(Experiment parameterOwner) {
+        String regexAlias = ALIAS.getName() + "=([^\\s]+)";
+        String regexNumExecutions = CaseStudy.NUM_EXECUTIONS.getName()+ "=([^\\s]+)";
+        String regexResultsDirectory = CaseStudy.RESULTS_DIRECTORY.getName()+ "=([^\\s]+)";
+        String regexResultsDirectoryLocal = CaseStudy.RESULTS_DIRECTORY_LOCAL.getName()+ "=([^\\s]+)";
+
+        String myNameWithParameters = this.getNameWithParameters().
+                replaceAll(regexAlias, "").
+                replaceAll(regexNumExecutions,"").
+                replaceAll(regexResultsDirectory, "").
+                replaceAll(regexResultsDirectoryLocal, "");
+
+        String otherNameWithParameters = parameterOwner.getNameWithParameters().
+                replaceAll(regexAlias, "").
+                replaceAll(regexNumExecutions,"").
+                replaceAll(regexResultsDirectory, "").
+                replaceAll(regexResultsDirectoryLocal, "");
 
         boolean equals = myNameWithParameters.equals(otherNameWithParameters);
         return equals;

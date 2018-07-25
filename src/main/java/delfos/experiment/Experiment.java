@@ -115,9 +115,17 @@ public interface Experiment extends ParameterOwner,SeedHolder {
     public void setResultsDirectory(File directory);
     public File getResultsDirectory();
 
+    public void setResultsDirectoryLocal(File directory);
+    public File getResultsDirectoryLocal();
+
     public void addResultsToElement(Element experimentElement);
     public void setResultsFromElement(Element experimentElement);
 
     public int getNumExecutions();
     public boolean hasResultsForAllExecutions();
+
+
+    public void setLoadedExperimentLocation(File file);
+    public File getLoadedExperimentLocation();
+
 }

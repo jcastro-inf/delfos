@@ -117,6 +117,7 @@ public class GroupCaseStudy extends ExperimentAdapter {
         addParameter(GROUP_PREDICTION_PROTOCOL);
         addParameter(GROUP_RECOMMENDER_SYSTEM);
         addParameter(RESULTS_DIRECTORY);
+        addParameter(RESULTS_DIRECTORY_LOCAL);
     }
 
     public GroupCaseStudy(DatasetLoader<? extends Rating> datasetLoader) {
@@ -559,10 +560,18 @@ public class GroupCaseStudy extends ExperimentAdapter {
                         return resultsAggregated;
                     }));
 
-            File resultsDirectory = getResultsDirectory();
+            {
+                File resultsDirectory = getResultsDirectory();
 
-            GroupCaseStudyXML.saveCaseResults(groupCaseStudyCloned, resultsDirectory);
-            GroupCaseStudyExcel.saveCaseResults(groupCaseStudyCloned, resultsDirectory);
+                GroupCaseStudyXML.saveCaseResults(groupCaseStudyCloned, resultsDirectory);
+                GroupCaseStudyExcel.saveCaseResults(groupCaseStudyCloned, resultsDirectory);
+            }
+            {
+                File resultsDirectory = getResultsDirectoryLocal();
+
+                GroupCaseStudyXML.saveCaseResults(groupCaseStudyCloned, resultsDirectory);
+                GroupCaseStudyExcel.saveCaseResults(groupCaseStudyCloned, resultsDirectory);
+            }
 
         });
 

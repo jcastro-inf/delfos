@@ -121,6 +121,7 @@ public class CaseStudy<RecommendationModel extends Object, RatingType extends Ra
         addParameter(EVALUATION_MEASURES_AS_STRING);
         addParameter(RELEVANCE_CRITERIA);
         addParameter(RESULTS_DIRECTORY);
+        addParameter(RESULTS_DIRECTORY_LOCAL);
     }
 
     protected final ArrayList<CaseStudyParameterChangedListener> propertyListeners = new ArrayList<>();
@@ -653,36 +654,47 @@ public class CaseStudy<RecommendationModel extends Object, RatingType extends Ra
 
                         List<MeasureResult> allResultsThisMeasure = new ArrayList<>();
 
-                        for(Map<EvaluationMeasure, MeasureResult> map: maps){
-                            if(!map.containsKey(evaluationMeasure)){
-                                Global.showWarning(new IllegalStateException("Evaluation measure "+evaluationMeasure+" not found in map with keys: "+map.keySet()));
-                            } else if(map.get(evaluationMeasure) == null){
+                        for (Map<EvaluationMeasure, MeasureResult> map : maps) {
+                            if (!map.containsKey(evaluationMeasure)) {
+                                Global.showWarning(new IllegalStateException("Evaluation measure " + evaluationMeasure + " not found in map with keys: " + map.keySet()));
+                            } else if (map.get(evaluationMeasure) == null) {
                                 MeasureResult measureResult = map.get(evaluationMeasure);
                                 Global.showWarning(new IllegalStateException("Map contains a result with null EvaluationMeasure"));
-                            } else{
+                            } else {
                                 MeasureResult measureResult = map.get(evaluationMeasure);
                                 allResultsThisMeasure.add(measureResult);
                             }
                         }
 
                         MeasureResult resultsAggregated
-                        = evaluationMeasure.agregateResults(allResultsThisMeasure);
+                                = evaluationMeasure.agregateResults(allResultsThisMeasure);
 
                         return resultsAggregated;
                     }));
 
             caseStudyCloned.setFinished();
+            {
+                File fileToSaveResultsWithoutExtension = new File(getResultsDirectory().getPath() + File.separator + getAlias() + "-execution=" + execution);
 
-            File fileToSaveResultsWithoutExtension = new File(getResultsDirectory().getPath() + File.separator + getAlias()+"-execution="+execution);
+                File xlsFile = new File(fileToSaveResultsWithoutExtension + ".xls");
+                File xmlFile = new File(fileToSaveResultsWithoutExtension + ".xml");
 
-            File xlsFile = new File(fileToSaveResultsWithoutExtension + ".xls");
-            File xmlFile = new File(fileToSaveResultsWithoutExtension + ".xml");
+                FileUtilities.createDirectoriesForFile(xmlFile);
 
-            FileUtilities.createDirectoriesForFile(xmlFile);
+                ExperimentXML.saveExperiment(caseStudyCloned, xmlFile);
+                CaseStudyExcel.saveCaseResults(caseStudyCloned, xlsFile);
+            }
+            {
+                File fileToSaveResultsWithoutExtension = new File(getResultsDirectoryLocal().getPath() + File.separator + getAlias() + "-execution=" + execution);
 
-            ExperimentXML.saveExperiment(caseStudyCloned, xmlFile);
-            CaseStudyExcel.saveCaseResults(caseStudyCloned, xlsFile);
+                File xlsFile = new File(fileToSaveResultsWithoutExtension + ".xls");
+                File xmlFile = new File(fileToSaveResultsWithoutExtension + ".xml");
 
+                FileUtilities.createDirectoriesForFile(xmlFile);
+
+                ExperimentXML.saveExperiment(caseStudyCloned, xmlFile);
+                CaseStudyExcel.saveCaseResults(caseStudyCloned, xlsFile);
+            }
         });
     }
 

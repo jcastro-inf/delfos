@@ -66,6 +66,21 @@ public class ExperimentXML {
         Experiment experiment = getExperiment(experimentElement);
         experiment.setResultsFromElement(experimentElement);
 
+        File resultsDirectoryLocal = getResultsDirectoryLocal(file);
+        experiment.setResultsDirectoryLocal(resultsDirectoryLocal);
+
+        experiment.setLoadedExperimentLocation(file);
+
         return experiment;
+    }
+
+    public static File  getResultsDirectoryLocal(File file){
+        String path = file.getPath();
+
+        String parentParentPath = file.getParentFile().getParentFile().getPath();
+
+        String resultsDirectoryPath = parentParentPath + File.separator+"results";
+
+        return new File(resultsDirectoryPath);
     }
 }

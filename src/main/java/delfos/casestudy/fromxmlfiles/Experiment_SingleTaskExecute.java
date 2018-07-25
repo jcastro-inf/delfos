@@ -67,18 +67,35 @@ public class Experiment_SingleTaskExecute implements Consumer<Experiment> {
         experiment.addExperimentListener(new ExperimentListener_default(System.out, 10000));
         experiment.execute();
 
-        File fileToSaveResults = new File(experiment.getResultsDirectory().getPath() + File.separator + experiment.getAlias());
+        {
+            File fileToSaveResults = new File(experiment.getResultsDirectory().getPath() + File.separator + experiment.getAlias());
 
-        File excelFile = new File(fileToSaveResults + ".xls");
-        File xmlFile = new File(fileToSaveResults + ".xml");
+            File excelFile = new File(fileToSaveResults + ".xls");
+            File xmlFile = new File(fileToSaveResults + ".xml");
 
-        ExperimentXML.saveExperiment(experiment, xmlFile.getAbsoluteFile());
-        if(experiment instanceof CaseStudy) {
-            CaseStudy caseStudy = (CaseStudy) experiment;
-            CaseStudyExcel.saveCaseResults(caseStudy, excelFile);
-        } else if (experiment instanceof GroupCaseStudy){
-            GroupCaseStudy groupCaseStudy = (GroupCaseStudy) experiment;
-            GroupCaseStudyExcel.saveCaseResults(groupCaseStudy,excelFile);
+            ExperimentXML.saveExperiment(experiment, xmlFile.getAbsoluteFile());
+            if(experiment instanceof CaseStudy) {
+                CaseStudy caseStudy = (CaseStudy) experiment;
+                CaseStudyExcel.saveCaseResults(caseStudy, excelFile);
+            } else if (experiment instanceof GroupCaseStudy){
+                GroupCaseStudy groupCaseStudy = (GroupCaseStudy) experiment;
+                GroupCaseStudyExcel.saveCaseResults(groupCaseStudy,excelFile);
+            }
+        }
+        {
+            File fileToSaveResults = new File(experiment.getResultsDirectoryLocal().getPath() + File.separator + experiment.getAlias());
+
+            File excelFile = new File(fileToSaveResults + ".xls");
+            File xmlFile = new File(fileToSaveResults + ".xml");
+
+            ExperimentXML.saveExperiment(experiment, xmlFile.getAbsoluteFile());
+            if(experiment instanceof CaseStudy) {
+                CaseStudy caseStudy = (CaseStudy) experiment;
+                CaseStudyExcel.saveCaseResults(caseStudy, excelFile);
+            } else if (experiment instanceof GroupCaseStudy){
+                GroupCaseStudy groupCaseStudy = (GroupCaseStudy) experiment;
+                GroupCaseStudyExcel.saveCaseResults(groupCaseStudy,excelFile);
+            }
         }
     }
 
