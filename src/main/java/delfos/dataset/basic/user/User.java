@@ -30,7 +30,7 @@ import java.util.*;
  *
  * @version 24-jul-2013
  */
-public class    User implements Comparable<User>, EntityWithFeatures, Serializable {
+public class User implements Comparable<User>, EntityWithFeatures, Serializable {
 
     public static User ANONYMOUS_USER = new User(0, "User_Anonymous");
 

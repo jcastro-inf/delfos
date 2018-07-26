@@ -110,7 +110,9 @@ public class RatingWithTimestamp extends Rating {
 
     @Override
     public Rating clone() throws CloneNotSupportedException {
-        return new RatingWithTimestamp(getIdUser(), getIdItem(), getRatingValue(), timestamp);
+        super.clone();
+        
+        return new RatingWithTimestamp(getUser(), getItem(), getRatingValue(), timestamp);
     }
 
     @Override

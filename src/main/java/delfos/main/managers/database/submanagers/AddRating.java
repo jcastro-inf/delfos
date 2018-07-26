@@ -26,8 +26,10 @@ import delfos.common.exceptions.dataset.CannotLoadUsersDataset;
 import delfos.common.exceptions.dataset.entity.EntityNotFound;
 import delfos.common.exceptions.dataset.items.ItemNotFound;
 import delfos.common.exceptions.dataset.users.UserNotFound;
+import delfos.dataset.basic.item.Item;
 import delfos.dataset.basic.loader.types.DatasetLoader;
 import delfos.dataset.basic.rating.RatingWithTimestamp;
+import delfos.dataset.basic.user.User;
 import delfos.dataset.changeable.ChangeableDatasetLoader;
 import static delfos.main.managers.database.DatabaseManager.MANAGE_RATING_DATABASE_ADD_RATING;
 import static delfos.main.managers.database.DatabaseManager.MANAGE_RATING_DATABASE_ID_ITEM;
@@ -91,9 +93,10 @@ public class AddRating extends DatabaseCaseUseSubManager {
             if (Global.isVerboseAnnoying()) {
                 Global.showInfoMessage("Adding rating (idUser=" + idUser + ", idItem=" + idItem + " ) --> " + ratingValue + "\n");
             }
-            changeableDatasetLoader.getChangeableContentDataset().get(idItem);
-            changeableDatasetLoader.getChangeableUsersDataset().get(idUser);
-            changeableDatasetLoader.getChangeableRatingsDataset().addRating(idUser, idItem, new RatingWithTimestamp(idUser, idItem, ratingValue, System.currentTimeMillis()));
+            Item item = changeableDatasetLoader.getChangeableContentDataset().get(idItem);
+            User user = changeableDatasetLoader.getChangeableUsersDataset().get(idUser);
+            
+            changeableDatasetLoader.getChangeableRatingsDataset().addRating(idUser, idItem, new RatingWithTimestamp(user,item, ratingValue, System.currentTimeMillis()));
         } catch (CannotLoadRatingsDataset ex) {
             ERROR_CODES.CANNOT_LOAD_RATINGS_DATASET.exit(ex);
             throw new IllegalArgumentException(ex);

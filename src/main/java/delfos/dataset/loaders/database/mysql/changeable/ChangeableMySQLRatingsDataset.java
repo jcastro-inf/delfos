@@ -45,6 +45,7 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import org.apache.commons.collections4.IteratorUtils;
 
 /**
  * Implementa un dataset de valoraciones modificable sobre fichero CSV.
@@ -132,22 +133,26 @@ public final class ChangeableMySQLRatingsDataset implements RatingsDataset<Ratin
     public static boolean mostradoWarning = false;
 
     @Override
-    public void addRating(long idUser, long idItem, Rating ratingValue) {
+    public void addRating(long idUser, long idItem, Rating newRating) {
 
-        if (ratingValue instanceof RatingWithTimestamp) {
+        RatingWithTimestamp ratingWithTimestamp;
+        if (newRating instanceof RatingWithTimestamp) {
             if (!mostradoWarning) {
                 Global.showWarning("Implement rating with timestamps.");
                 mostradoWarning = true;
             }
+            ratingWithTimestamp = (RatingWithTimestamp) newRating;
+        }else{
+            ratingWithTimestamp = new RatingWithTimestamp(newRating.getUser(), newRating.getItem(), newRating.getRatingValue(),System.currentTimeMillis());
         }
 
-        java.sql.Date date = new Date(System.currentTimeMillis());
+        java.sql.Date date = new Date(ratingWithTimestamp.getTimestamp());
 
         String insert = "INSERT INTO `" + getRatingsTable_nameWithPrefix() + "` (`" + ratingsTable_UserIDField + "`, `" + ratingsTable_ItemIDField + "`, `" + ratingsTable_RatingField + "`, `" + ratingsTable_TimestampField + "`) "
                 + "VALUES ("
                 + idUser + ","
                 + idItem + ","
-                + ratingValue.getRatingValue().doubleValue() + ","
+                + newRating.getRatingValue().doubleValue() + ","
                 + "'" + date.toString() + "');";
         try (Statement statement = mySQLConnection.doConnection().createStatement()) {
             statement.execute(insert);
@@ -155,11 +160,8 @@ public final class ChangeableMySQLRatingsDataset implements RatingsDataset<Ratin
             ERROR_CODES.DATABASE_NOT_READY.exit(ex);
         }
 
-        List<Rating> ratings = new LinkedList<Rating>();
-        for (Rating r : ratingsDataset) {
-            ratings.add(r);
-        }
-        ratings.add(new RatingWithTimestamp(idUser, idItem, ratingValue.getRatingValue().doubleValue(), System.currentTimeMillis()));
+        List<Rating> ratings = IteratorUtils.toList(ratingsDataset.iterator());
+        ratings.add(newRating);
 
         ratingsDataset = new BothIndexRatingsDataset(ratings);
     }
