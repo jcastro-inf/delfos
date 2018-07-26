@@ -124,6 +124,11 @@ public class DAOKnnModelBasedDatabaseModel {
                         Global.showWarning("Similarity of items " + profile.getIdItem() + " and " + neighbor.getIdNeighbor() + " was " + sim.toString() + " set to 0");
                         sim = 0.0;
                     }
+                    
+                    if(Double.isNaN(sim)){
+                        Global.showWarning("Similarity of items " + profile.getIdItem() + " and " + neighbor.getIdNeighbor() + " was " + sim.toString() + " set to 0");
+                        sim = 0.0;
+                    }
 
                     c.append("(").append(profile.getIdItem()).append(",");
                     c.append(neighbor.getIdNeighbor()).append(",").append(sim).append("),");
