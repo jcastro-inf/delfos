@@ -41,7 +41,10 @@ import delfos.similaritymeasures.CollaborativeSimilarityMeasure;
 import delfos.utils.algorithm.progress.ProgressChangedController;
 
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Sistema de recomendación basado en el filtrado colaborativo basado en productos, también denominado Item-Item o
@@ -130,61 +133,64 @@ public class KnnModelBasedCFRS
 
         PredictionTechnique prediction = (PredictionTechnique) getParameterValue(KnnModelBasedCFRS.PREDICTION_TECHNIQUE);
 
-        Collection<Recommendation> recommendationList = new LinkedList<>();
+        
         Map<Long, RatingType> userRated = datasetLoader.getRatingsDataset().getUserRatingsRated(idUser);
         if (userRated.isEmpty()) {
-            return Collections.EMPTY_LIST;
+            return candidateItems.parallelStream().
+                    map(idItem -> datasetLoader.getContentDataset().get(idItem)).
+                    map(item -> new Recommendation(item, Double.NaN)).collect(Collectors.toList());
         }
 
         int neighborhoodSize = (Integer) getParameterValue(NEIGHBORHOOD_SIZE);
 
         final ContentDataset contentDataset = datasetLoader.getContentDataset();
-
-        int itemsWithProfile = 0;
-        for (long idItem : candidateItems) {
-            Item item = contentDataset.get(idItem);
-
-            List<MatchRating> matchRatings = new LinkedList<>();
-            KnnModelItemProfile profile = model.getItemProfile(idItem);
-
-            if (profile == null) {
-                continue;
-            }
-
-            itemsWithProfile++;
-            Collection<Neighbor> neighbors = profile.getAllNeighbors().stream()
-                    .filter(neighbor -> !Double.isNaN(neighbor.getSimilarity()))
-                    .filter(neighbor -> neighbor.getSimilarity()> 0)
-                    .collect(Collectors.toList());
-
-            for (Neighbor neighbor : neighbors) {
-                long idItemNeighbor = neighbor.getIdNeighbor();
-                double similarity = neighbor.getSimilarity();
-                Rating rating = userRated.get(idItemNeighbor);
-                if (rating != null) {
-                    matchRatings.add(new MatchRating(RecommendationEntity.USER, idUser, idItemNeighbor, rating, similarity));
-                    if (Global.isVerboseAnnoying()) {
-                        Global.showInfoMessage(idItemNeighbor + "\the prediction is\t" + rating + "\n");
+        
+        Collection<Recommendation> recommendationList = candidateItems.parallelStream().
+                map(idItem -> contentDataset.get(idItem)).
+                map(item -> {
+                    KnnModelItemProfile profile = model.getItemProfile(item.getId());
+                            
+                    if(profile == null){
+                        return new Recommendation(item, Double.NaN);
                     }
-                }
+                    
+                    Collection<Neighbor> neighbors = profile.getAllNeighbors().stream()
+                            .filter(neighbor -> !Double.isNaN(neighbor.getSimilarity()))
+                            .filter(neighbor -> neighbor.getSimilarity()> 0)
+                            .sorted(Neighbor.BY_SIMILARITY_DESC)
+                            .limit(neighborhoodSize)
+                            .collect(Collectors.toList());
 
-                if (matchRatings.size() >= neighborhoodSize) {
-                    break;
-                }
-            }
+                    List<MatchRating> matchRatings = neighbors.parallelStream().flatMap(neighbor->{
+                        long idItemNeighbor = neighbor.getIdNeighbor();
+                        double similarity = neighbor.getSimilarity();
+                        Rating rating = userRated.get(idItemNeighbor);
 
-            if (!matchRatings.isEmpty()) {
-                Double predictedRating;
-                try {
-                    predictedRating = prediction.predictRating(idUser, idItem, matchRatings, datasetLoader.getRatingsDataset());
-                    recommendationList.add(new Recommendation(item, predictedRating));
-                } catch (UserNotFound | ItemNotFound ex) {
-                    throw new IllegalArgumentException(ex);
-                } catch (CouldNotPredictRating ex) {
-                }
-            }
+                        if(rating==null) return (Stream<MatchRating>) Collections.EMPTY_LIST.stream();
+                        else{
+                            MatchRating matchRating = new MatchRating(RecommendationEntity.USER, idUser, idItemNeighbor, rating, similarity);
+                            return (Stream<MatchRating>) Arrays.asList(matchRating).stream();
+                        }
+                    }).collect(Collectors.toList());
+                    
+            
 
-        }
+                    Double predictedRating = Double.NaN;
+                    if (!matchRatings.isEmpty()) {
+                        try {
+                            predictedRating = prediction.predictRating(idUser, item.getId(), matchRatings, datasetLoader.getRatingsDataset());
+
+                        } catch (UserNotFound | ItemNotFound ex) {
+                            throw new IllegalArgumentException(ex);
+                        } catch (CouldNotPredictRating ex) {
+                            
+                        } 
+                    }
+                    
+                    return new Recommendation(item, predictedRating);
+                }).
+                collect(Collectors.toList());
+        
         return recommendationList;
     }
 
